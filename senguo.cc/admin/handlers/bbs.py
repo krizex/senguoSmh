@@ -14,7 +14,8 @@ class Main(FruitzoneBaseHandler):
 		return self.render("bbs/main.html")
 
 class Detail(FruitzoneBaseHandler):
-	def get(self):
+	def get(self,_id):
+		article = self.session.query(models.Article).filter_by(id=_id).first()
 		return self.render("bbs/artical-detail.html")
 
 class Publish(FruitzoneBaseHandler):

@@ -1623,7 +1623,7 @@ class Article(MapBase, _CommonApi):
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
 	title = Column(String(20))
 	article = Column(String(2000))
-	classify = Column(Integer,default = 0)
+	classify = Column(Integer,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
 	create_time = Column(DateTime,default = func.now())
 	_type = Column(Integer,default = 0) #0:匿名 1:实名
 	great = Column(Integer,default = 0) #点赞数
