@@ -2,7 +2,8 @@
  * Created by Administrator on 2015/6/15.
  */
 $(document).ready(function(){
-
+    var height = $(window).height();
+    $(".atical-list").css("minHeight",height-40);
     $("#bbs-menu").on("click",function(){
         $(".wrap-menu-list").toggleClass("h0");
     });
