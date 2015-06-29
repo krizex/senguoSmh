@@ -1,13 +1,13 @@
 /*首页*/
 .bbs-menu{background-image: url('/static/bbs/img/icon_menu.png');background-size: 20px;padding-left: 26px;}
-.wrap-menu-list{position: absolute;width: 100px;background-color: #48b6a4;top:100%;left: 0;-webkit-transition:all .2s ease-in-out;height: 176px;z-index:99;}
-.menu-list{padding: 10px 0;}
-.menu-list>li{cursor: pointer;height: 26px;line-height: 26px;text-align: center;color: #fff;}
+.wrap-menu-list{position: absolute;width: 100px;background-color: #48b6a4;top:100%;left: 0;-webkit-transition:all .2s ease-in-out;z-index:99;}
+.menu-list{padding: 5px 0;}
+.menu-list>li{cursor: pointer;height: 26px;line-height: 26px;text-align: center;color: #fff;margin: 5px 0;}
 .atical-list{background-color: #fff;}
 .atical-list>li{padding: 10px;border-bottom: 1px solid #dadada;}
-.atical-list .title{color: #333;line-height: 18px;}
+.atical-list .title{color: #333;line-height: 24px;}
 .atical-mark{display: inline-block;height: 16px;line-height: 16px;font-size:12px;margin-right:5px;position:relative;top:-2px;padding: 0 10px;border: 1px solid #999;color: #999;border-radius: 9px;}
-.atical-attr{margin-top: 10px;color: #999;}
+.atical-attr{margin-top: 10px;color: #999;font-size: 14px;}
 .atical-attr>span{display: inline-block;}
 .wrap-icon{display: inline-block;color: #999;position: relative;padding-left: 24px;}
 .wrap-icon>i{position: absolute;left: 0;top: 4px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
@@ -15,7 +15,7 @@
 .wrap-icon .icon-dz-active{background-position: 0 -34px;height: 10px;}
 .wrap-icon .icon-com{background-position: 0 -13px;left: 5px;}
 .wrap-icon .icon-see{background-position: 0 0;width: 21px;}
-.wrap-icon .post-dz{background-position: 0 -52px;}
+.wrap-icon .post-dz{background-position: 0 -52px;left: 2px;}
 .wrap-icon .post-dz-active{background-position: 0 -56px;}
 .wrap-post{}
 .post-box{background-color: #fff;padding: 10px;}
