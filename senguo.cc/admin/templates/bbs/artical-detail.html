@@ -19,8 +19,8 @@
         </div>
         <div class="post-attr">
             {% if if_admin == True %}
-                <a href="javascript:;" id="del-atical" class="del-atical fr c999 f12" data-id='{{article["id"]}}'>删除</a>
-                <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 f12 mr10">编辑</a>
+                <a href="javascript:;" id="del-atical" class="del-atical fr c999" data-id='{{article["id"]}}'>删除</a>
+                <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 mr10">编辑</a>
             {% end %}
             <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
             <span class="wrap-icon dianzan article-great" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
@@ -39,7 +39,7 @@
                     <dt>
                         <p class="com-first"><a href="javascript:;" class="wrap-icon dianzan fr comment-great" data-id="{{comment['id']}}"><i class="post-dz {% if comment['great_if'] %}post-dz-active{% end %}"></i><span class="num">{{comment['great_num']}}</span></a><a href="javascript:;" class="nickname"  data-id="{{comment['id']}}">{{comment['nickname']}}</a></p>
                         <p class="com-detail">{% if comment['type']==1 %}@{{comment['nick_name']}}{% end %} {{comment['comment']}}</p>
-                        <p class="f12 c999 mt4">{{comment['time']}}</p>
+                        <p class="f12 c999 mt2">{{comment['time']}}</p>
                     </dt>
                 </dl>
             </li>

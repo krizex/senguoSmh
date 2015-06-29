@@ -89,7 +89,7 @@ var item=' <li data-id="{{id}}">'+
                             '<a href="javascript:;" class="nickname"  data-id="{{id}}">{{nickname}}</a>'+
                         '</p>'+
                         '<p class="com-detail">{{ if type==1 }}@{{nick_name}}{{/if}} {{comment}}</p>'+
-                        '<p class="f12 c999 mt4">{{time}}</p>'+
+                        '<p class="f12 c999 mt2">{{time}}</p>'+
                     '</dt>'+
                 '</dl>'+
             '</li>';
