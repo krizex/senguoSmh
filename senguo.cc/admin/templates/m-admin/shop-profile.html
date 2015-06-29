@@ -25,7 +25,7 @@
 {% elif shop.status in[2,3] %}
 {% set shop_auth="企业认证" %}
 {% end %}
-<div class="shop-profile">
+<div class="shop-profile pb45">
     <div class="profile-top white-box">
         <div class="sw-tip shopping" data-status="1"></div>
         <span class="sw-tip-txt">{{shop_status}}</span>
@@ -71,14 +71,14 @@
         <ul class="group stat-order-list pm8">
             <a href="{{reverse_url('MadminOrder')}}">
                 <li>
-                    <p class="name">按时达</p>
-                    <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
-                </li>
-            </a>
-            <a href="{{reverse_url('MadminOrder')}}">
-                <li>
                     <p class="name">立即送</p>
                     <p class="num"><span class="tip-num">{{intime_count}}</span></p>
+                </li>
+            </a>
+             <a href="{{reverse_url('MadminOrder')}}">
+                <li>
+                    <p class="name">按时达</p>
+                    <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
                 </li>
             </a>
             <a href="{{reverse_url('MadminOrder')}}">
