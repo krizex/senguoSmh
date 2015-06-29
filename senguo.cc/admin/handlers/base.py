@@ -349,7 +349,7 @@ class GlobalBaseHandler(BaseHandler):
 
 	def getArticleComment(self,new_comment):
 		great_if = False
-		if new_comment[2]:
+		if new_comment[2] and new_comment[2]:
 			great_if=True
 		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
 				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],

@@ -727,6 +727,8 @@ class Order(AdminBaseHandler):
 			# print("[订单管理]当前店铺：",self.current_shop)
 			
 			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
+		if self.is_pc_browser()==False:
+			return self.redirect(self.reverse_url("MadminOrder"))
 		return self.render("admin/orders.html",order_type=order_type, context=dict(subpage='order'))
 
 
@@ -1875,6 +1877,8 @@ class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
 	def get(self):
+		# if self.is_pc_browser()==False:
+		# 	return self.redirect(self.reverse_url("MadminComment"))
 		action = self.args["action"]
 		order_by = self.args["order_by"]
 		page = self.args["page"]

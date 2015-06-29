@@ -10,7 +10,7 @@ import base64
 import json
 
 class Main(FruitzoneBaseHandler):
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
 	def get(self):
 		if "page" in self.args and self.args["page"] !=[]:
@@ -42,7 +42,7 @@ class Main(FruitzoneBaseHandler):
 		return self.render("bbs/main.html",if_admin=if_admin)
 
 class Detail(FruitzoneBaseHandler):
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	def get(self,_id):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.ArticleGreat)\
@@ -52,16 +52,16 @@ class Detail(FruitzoneBaseHandler):
 		except:
 			return self.write("没有该文章的任何信息")
 
-		if not article[3]:
-			article[0].scan_num = article[0].scan_num +1
-			self.session.add(models.ArticleGreat(article_id = _id,
-					account_id = self.current_user.id,
-					scan=1))
-		else:
-			if article[3].scan==0 :
-				article[3].scan = 1 
-				article[0].scan_num = article[0].scan_num +1
-
+		# if not article[3]:
+		# 	article[0].scan_num = article[0].scan_num +1
+		# 	self.session.add(models.ArticleGreat(article_id = _id,
+		# 			account_id = self.current_user.id,
+		# 			scan=1))
+		# else:
+		# 	if article[3].scan==0 :
+		# 		article[3].scan = 1 
+		# 		article[0].scan_num = article[0].scan_num +1
+		article[0].scan_num = article[0].scan_num +1
 		self.session.commit()
 
 		great_if = False
@@ -265,11 +265,11 @@ class DetailEdit(FruitzoneBaseHandler):
 		return self.send_success()
 
 class Search(FruitzoneBaseHandler):
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	def get(self):
 		return self.render("bbs/search.html")
 
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("page","data")	
 	def post(self):
 		page = int(self.args["page"])

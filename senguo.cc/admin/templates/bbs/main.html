@@ -48,8 +48,12 @@
 </div>
 <p class="loading txt-center c999 mt10 hide"></p>
 <div class="fix-center publish-btns">
+{% if handler.current_user %}
 {% if if_admin == True %}
 <a href="{{reverse_url('BbsPublish')}}" class="publish-tie">发布</a>
+{% end %}
+{% else %}
+<a href="{{reverse_url('customerLogin')}}" class="publish-tie">发布</a>
 {% end %}
 </div>
 {% end %}

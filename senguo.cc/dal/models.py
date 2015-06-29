@@ -1,5 +1,5 @@
 from sqlalchemy import create_engine, func, ForeignKey, Column
-from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, DateTime, Time, SMALLINT,REAL
+from sqlalchemy.types import String, Integer, Boolean, Float, Date, BigInteger, DateTime, Time, SMALLINT,REAL,Text
 from sqlalchemy.orm import relationship, backref
 from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy.dialects.mysql import TINYINT
@@ -1622,7 +1622,7 @@ class Article(MapBase, _CommonApi):
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
 	title = Column(String(100))
-	article = Column(String(8000))
+	article = Column(Text)
 	classify = Column(Integer,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
 	great_num = Column(Integer,default = 0) #点赞数
 	comment_num = Column(Integer,default = 0)#评论数
