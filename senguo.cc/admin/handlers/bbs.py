@@ -19,10 +19,12 @@ class Main(FruitzoneBaseHandler):
 			page_size = 20
 			nomore = False
 			datalist = []
+			today =  time.strftime('%Y-%m-%d', time.localtime() )
 			try:
-				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
-					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.status==1)\
-					.order_by(models.Article.create_time.desc())
+				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname,models.ArticleGreat)\
+					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
+					.outerjoin(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
+					.filter(models.Article.status==1).distinct().order_by(models.Article.create_time.desc())
 			except:
 				article_lsit = None
 
@@ -43,20 +45,40 @@ class Detail(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self,_id):
 		try:
-			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).first()
+			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.ArticleGreat)\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
+				.outerjoin(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
+				.filter(models.Article.id==_id,models.Article.status==1).first()
 		except:
 			return self.write("没有该文章的任何信息")
 
-		article[0].scan_num = article[0].scan_num +1
+		if not article[3]:
+			article[0].scan_num = article[0].scan_num +1
+			self.session.add(models.ArticleGreat(article_id = _id,
+					account_id = self.current_user.id,
+					scan=1))
+		else:
+			if article[3].scan==0 :
+				article[3].scan = 1 
+				article[0].scan_num = article[0].scan_num +1
+
 		self.session.commit()
+
+		great_if = False
+		collect_if = False
+		if article[3]:
+			if article[3].great == 1:
+				great_if=True
+			if article[3].collect == 1 :
+				collect_if=True
 		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].create_time,"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
-						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num}
+						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
 
 		try:
-			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
+			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname,models.ArticleCommentGreat)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
+				.outerjoin(models.ArticleCommentGreat,models.ArticleComment.id==models.ArticleCommentGreat.comment_id)\
 				.filter(models.ArticleComment.article_id==_id).order_by(models.ArticleComment.create_time.desc()).all()
 		except:
 			comments = None
@@ -74,48 +96,76 @@ class Detail(FruitzoneBaseHandler):
 		if "data" in self.args:
 			data=self.args["data"]
 
-		if action in ["article_great","comment_great","collect"]:
-			now =  time.strftime('%Y-%m-%d', time.localtime() )
-			_great = self.session.query(models.ArticleGreat).filter_by(account_id = self.current_user.id)
-			if action == "article_great":
-				_type = 0
-				comment_id = 0
-			elif action == "comment_great":
-				_type = 1
-				comment_id = data["comment_id"]
-			elif action == "collect":
-				_type = 2
-				comment_id = 0
-			else:
-				return send_fail("no such action")
+		if action in ["article_great","collect"]:
+
 			try:
-				new_great = _great.filter_by(article_id = _id,comment_id=comment_id,_type=_type).order_by(models.ArticleGreat.create_time.desc()).first()
+				record = self.session.query(models.ArticleGreat).filter_by(article_id = _id,account_id = self.current_user.id).first()
 			except:
-				new_great = None
+				record = None
 
-			if new_great and _type == 2:
-				return self.send_fail('已收藏过该文章啦！')
+			num_1 = 1
+			if record:
+				if action == "article_great":
+					if record.great == 0:
+						record.great = 1 
+					else:
+						num_1 = -1
+						record.great = 0
+				elif action == "collect":
+					record.collect = 1 if record.collect ==0 else 0
+			else:
+				if action == "article_great":
+					great = models.ArticleGreat(
+						article_id = _id,
+						account_id = self.current_user.id,
+						great = 1
+					)
+				elif action == "collect":
+					great = models.ArticleGreat(
+						article_id = _id,
+						account_id = self.current_user.id,
+						collect = 1
+					)
+				self.session.add(great)
 
-			if new_great and new_great.create_time.strftime('%Y-%m-%d') == now and _type!=2:
-				return self.send_fail('您今天已经点过赞啦！')
+			if action == "article_great":
+				try:
+					article = self.session.query(models.Article).filter_by( id = _id).first()
+				except:
+					return self.send_fail("no such article")
+				if article:
+					article.great_num = article.great_num +num_1
+					article.if_scan = 0
+			self.session.commit()
+			return self.send_success()
 
-			if _type == 0:		
-				article = self.session.query(models.Article).filter_by( id = _id).first()
-				article.great_num = article.great_num +1
-				article.if_scan = 0
-			elif _type == 1:
+		elif action == "comment_great":
+			comment_id = int(data["comment_id"])
+			great_record = self.session.query(models.ArticleCommentGreat).filter_by(comment_id = comment_id,account_id = self.current_user.id)
+			try:
+				_great = great_record.first()
+			except:
+				_great = None
+
+			num_1= 1
+			if _great:
+				great_record.delete()
+				num_1=-1
+			else:
+				great = models.ArticleCommentGreat(
+					comment_id = comment_id,
+					account_id = self.current_user.id
+				)
+				self.session.add(great)
+
+			try:
 				_comment = self.session.query(models.ArticleComment).filter_by(id=comment_id).first()
-				_comment.great_num = _comment.great_num +1
+			except:
+				_comment = None
+			print(num_1,_comment)
+			if _comment:
+				_comment.great_num = _comment.great_num +num_1
 				_comment.if_scan = 0
-
-
-			great = models.ArticleGreat(
-				article_id = _id,
-				comment_id = comment_id,
-				account_id = self.current_user.id,
-				_type = _type
-			)
-			self.session.add(great)
 			self.session.commit()
 			return self.send_success()
 
@@ -144,7 +194,7 @@ class Detail(FruitzoneBaseHandler):
 			article.if_scan = 0
 			self.session.add(comment)
 			self.session.commit()
-			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
+			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname,models.ArticleCommentGreat)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
 				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==_type).order_by(models.ArticleComment.create_time.desc()).first()
 			data=self.getArticleComment(new_comment)

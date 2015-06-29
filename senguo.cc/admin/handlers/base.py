@@ -339,14 +339,21 @@ class GlobalBaseHandler(BaseHandler):
 		return data
 
 	def getArticle(self,article):
+		great_if = False
+		if article[2] and article[2].great == 1:	
+			great_if=True
 		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
-			"comment_num":article[0].comment_num}
+			"comment_num":article[0].comment_num,"great_if":great_if}
 		return data
+
 	def getArticleComment(self,new_comment):
+		great_if = False
+		if new_comment[2]:
+			great_if=True
 		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
 				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],
-				"type":new_comment[0]._type}
+				"type":new_comment[0]._type,"great_if":great_if}
 		return data
 
 class FrontBaseHandler(GlobalBaseHandler):

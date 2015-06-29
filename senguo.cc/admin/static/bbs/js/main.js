@@ -42,8 +42,13 @@ $(document).ready(function(){
     var args={action:"article_great",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
-            var num = parseInt($this.text()+1);
+            var num_1=1;
+            if($this.children("i").hasClass('icon-dz-active')){
+                num_1=-1;
+            }
+            var num = parseInt($this.text())+num_1;
         	$this.children("span").html(num);
+            $this.children("i").toggleClass('icon-dz-active');
         }else{
             Tip(res.error_text);
         }
@@ -57,7 +62,7 @@ var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
                 '<span class="fr">'+
-                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz"></i><span>{{great_num}}</span></a>'+
+                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz {{great_if}}"></i><span>{{great_num}}</span></a>'+
                     '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>{{comment_num}}</a>'+
                 '</span>'+
                 '<span class="time mr10">{{time}}</span>'+
@@ -104,6 +109,10 @@ function articleList(page){
                         var nickname=datalist[i]['nickname'];
                         var great_num=datalist[i]['great_num'];
                         var comment_num=datalist[i]['comment_num'];
+                        var great_if=datalist[i]['great_if'];
+                        if(great_if==true){
+                            great_if='icon-dz-active';
+                        }
                         var list_item =render({
                             id:id,
                             title:title,
@@ -111,7 +120,8 @@ function articleList(page){
                             type:type,
                             nickname:nickname,
                             great_num:great_num,
-                            comment_num:comment_num
+                            comment_num:comment_num,
+                            great_if:great_if
                         });
                         $(".atical-list").append(list_item);
                     }
