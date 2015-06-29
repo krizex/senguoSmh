@@ -153,6 +153,10 @@ function admireAtical(id,action){
     }
     var args = {action:action,data:data};
     $.postJson(url,args,function(res){
+        if(action=="reply"){
+            $(".wrap-reply-box").addClass("hide");
+            $(".reply-ipt").val("");
+        }
         if(res.success){
             $('.comment .num').text(parseInt($('.comment .num').text()));
             var data=res.data;
@@ -178,10 +182,6 @@ function admireAtical(id,action){
                 imgurl:imgurl
             });
             $(".comment-list").prepend(list_item);
-            if(action=="reply"){
-                $(".wrap-reply-box").addClass("hide");
-                $(".reply-ipt").val("");
-            }
         }else{
             Tip(res.error_text);
         }
