@@ -26,7 +26,7 @@ function publishAtical(){
         return Tip("标题不能为空且不能超过20个字");
     }
     var article=$("#kindEditor").val();
-    if(article>4000){
+    if(article.length>4000){
         return Tip("文章内容太长了");
     }
     var args = {
