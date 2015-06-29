@@ -10,7 +10,13 @@
 </div>
 {% end %}
 {% block content %}
-<div class="wrap-post pm20">
+{% set if_login = '' %}
+{% if handler.current_user %}
+{% set if_login = True %}
+{% else %}
+{% set if_login = False %}
+{% end %}
+<div class="wrap-post pm20" data-id="{{if_login}}">
     <div class="post-box">
         <h3 class="post-title">{{article["title"]}}</h3>
         <p class="post-2title mt10 c999"><span class="author">{{article["nickname"]}}</span>{{article["time"]}}</p>
@@ -56,6 +62,11 @@
     <a href="javascript:;" class="com" id="com-atical" data-id="{{article['id']}}"><i class="i-com"></i></a>
     <a href="javascript:;" class="admire" id="admire-atical" data-id="{{article['id']}}"><i class="i-admire {% if article['great_if'] == True %}i-admire-active{% end %}"></i></a>
 </div>
+{% if not if_login %}
+<div class="fix-left publish-btns">
+<a href="{{reverse_url('customerLogin')}}" class="publish-tie">登录</a>
+</div>
+{% end %}
 {% end %}
 {% block bottom %}
 <script src="{{static_url('bbs/js/artical-detail.js')}}"></script>

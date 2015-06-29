@@ -1,15 +1,23 @@
 /**
  * Created by Administrator on 2015/6/12.
  */
+ var if_login=$('.wrap-post').attr('data-id');
 $(document).ready(function(){
-
-    
     $("#com-atical").on("click",function(){//评论按钮
+        if(if_login=='False'){
+            console.log(23333);
+            Tip('请先登录');
+            return false;
+        }
         var id = $(this).attr("data-id");
         $(".wrap-reply-box").removeClass("hide");
         $('.reply-btn').attr("id","comment").attr("data-id",id);
     });
 }).on("click","#store-atical",function(){//收藏
+    if(if_login=='False'){
+        Tip('请先登录');
+        return false;
+    }
     var id = $(this).attr("data-id");
     var $this=$(this);
     var id=$this.attr("data-id");
@@ -23,6 +31,10 @@ $(document).ready(function(){
         }
     });
 }).on("click",".comment-great",function(){//评论点赞
+    if(if_login=='False'){
+        Tip('请先登录');
+        return false;
+    }
     var id = $(this).attr("data-id");
     var $this=$(this);
     var id=$this.attr("data-id");
@@ -42,11 +54,19 @@ $(document).ready(function(){
         }
     });
 }).on("click",".comment-list .nickname",function(){//评论回复
+    if(if_login=='False'){
+        Tip('请先登录');
+        return false;
+    }
     var id = $(this).attr("data-id");
     $(".reply-ipt").attr("placeholder","@"+$(this).html());
     $('.reply-btn').attr("id","reply").attr("data-id",id);
     $(".wrap-reply-box").removeClass("hide");
 }).on("click","#admire-atical",function(){
+    if(if_login=='False'){
+        Tip('请先登录');
+        return false;
+    }
     var $this=$(this);
     var id=$this.attr("data-id");
     var url="";
@@ -65,12 +85,24 @@ $(document).ready(function(){
         }
     });
 }).on("click","#reply",function(){//发表回复
+    if(if_login=='False'){
+        Tip('请先登录');
+        return false;
+    }
     var id = $(this).attr("data-id");
     admireAtical(id,"reply");
 }).on("click","#comment",function(){//发表评论
+    if(if_login=='False'){
+        Tip('请先登录');
+        return false;
+    }
     var id = $(this).attr("data-id");
     admireAtical(id,"comment");
 }).on("click","#del-atical",function(){//删除
+    if(if_login=='False'){
+        Tip('请先登录');
+        return false;
+    }
     if(confirm("确认删除？")){
         var id = $(this).attr("data-id");
         delAtical(id);
