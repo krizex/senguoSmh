@@ -3,6 +3,8 @@
  */
  var if_login=$('.wrap-post').attr('data-id');
 $(document).ready(function(){
+    var height = $(window).height();
+    $(".wrap-post").css("minHeight",height-60);
     $("#com-atical").on("click",function(){//评论按钮
         if(if_login=='False'){
             console.log(23333);

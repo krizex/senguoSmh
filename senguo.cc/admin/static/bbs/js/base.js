@@ -2,6 +2,8 @@
  * Created by Administrator on 2015/6/15.
  */
 $(document).ready(function(){
+    var height = $(window).height();
+    $(".container").css("minHeight",height-40);
 	 //fastclick initialise
     FastClick.attach(document.body);
     $(".pop-win").on("click",function(e){/*关闭模态框*/
