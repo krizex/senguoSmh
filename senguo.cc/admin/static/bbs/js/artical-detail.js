@@ -8,6 +8,7 @@ $(document).ready(function(){
         var id = $(this).attr("data-id");
         $(".wrap-reply-box").removeClass("hide");
         $('.reply-btn').attr("id","comment").attr("data-id",id);
+        $(".reply-ipt").focus();
     });
 }).on("click","#store-atical",function(){//收藏
     var id = $(this).attr("data-id");
@@ -111,41 +112,6 @@ function delAtical(id){
         }
     });
 }
-
-function replyComment(id){
-    var url = "";
-    var args = "";
-    $.postJson(url,args,function(res){
-        if(res.success){
-
-        }else{
-            Tip(res.error_text);
-        }
-    });
-}
-function zanComment(id,$obj,action){
-    var url = "";
-    var args = "";
-    $.postJson(url,args,function(res){
-        if(res.success){
-            $obj.children("i").toggleClass("post-dz-active");
-        }else{
-            Tip(res.error_text);
-        }
-    });
-}
-function storeAtical(id){
-    var url = "";
-    var args = "";
-    $.postJson(url,args,function(res){
-        if(res.success){
-            $obj.children("i").toggleClass("i-store-active");
-        }else{
-            Tip(res.error_text);
-        }
-    });
-}
-
 function admireAtical(id,action){
     var url = "";
     var comment=$('.reply-ipt').val().trim();
@@ -180,6 +146,10 @@ function admireAtical(id,action){
                 imgurl:imgurl
             });
             $(".comment-list").prepend(list_item);
+            if(action=="reply"){
+                $(".wrap-reply-box").addClass("hide");
+                $(".reply-ipt").val("");
+            }
         }else{
             Tip(res.error_text);
         }

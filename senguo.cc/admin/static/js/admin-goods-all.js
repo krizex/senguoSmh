@@ -847,6 +847,7 @@ function initEditor($obj){
             extraFileUploadParams : {'token':token1},
             token : token,
             resizeType : 0,
+            filterMode : false,
             items:[
                  'preview', 'image'
             ],
