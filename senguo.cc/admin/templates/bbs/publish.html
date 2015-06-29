@@ -12,12 +12,12 @@
 {% block content %}
 <div class="wrap-publish pm20">
     <div class="publish-board">
-        <p class="c333 mt10">选择版块<a href="javascript:;" class="select-box ml5"><span class="type">选择版块</span><i class="select-right"></i></a></p>
+        <p class="c333 mt10">选择版块<a href="javascript:;" class="select-box ml5"><span class="type" data-id="{% if edit %}{{article_data['type_id']}}{% end %}">{% if edit %}{{article_data['type']}}{% else %}选择版块{% end %}</span><i class="select-right"></i></a></p>
         <p class="c333 mt10">标题</p>
-        <input type="text" class="title-ipt" value="" placeholder="输入标题"/>
+        <input type="text" class="title-ipt" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="输入标题"/>
         <p class="c333 mt10">正文</p>
         <div class="wrap-sumary">
-            <textarea class="sumary-text" id="kindEditor"></textarea>
+            <textarea class="sumary-text" id="kindEditor">{% if edit %}{% raw article_data['article'] %}{% end %}</textarea>
         </div>
     </div>
 </div>

@@ -49,26 +49,26 @@
     <ul class="bar-list clearfix">
         <li>
             <ul class="text-list">
-                <div class="title">官方公告</div>
-                <li><a href="javascript:;" title="请所有店家尽快完善店铺信息">请所有店家尽快完善店铺信息<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="请所有店家尽快完善店铺信息">请所有店家尽快完善店铺信息<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="请所有店家尽快完善店铺信息">请所有店家尽快完善店铺信息<span class="date">06-12</span></a></li>
+                <div class="title">官方公告<a class="pull-right font12 text-grey" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official">更多>></a></div>
+                {% for a in article_list["notice"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
             </ul>
         </li>
         <li>
             <ul class="text-list">
-                <div class="title">产品更新</div>
-                <li><a href="javascript:;" title="新增到店自提、预售功能">新增到店自提、预售功能<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="新增到店自提、预售功能">新增到店自提、预售功能<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="新增到店自提、预售功能">新增到店自提、预售功能<span class="date">06-12</span></a></li>
+                <div class="title">产品更新<a class="pull-right font12 text-grey" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update">更多>></a></div>
+                {% for a in article_list["update"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
             </ul>
         </li>
         <li>
             <ul class="text-list">
-                <div class="title">森果社区</div>
-                <li><a href="javascript:;" title="手把手教你线上卖水果—采购篇">手把手教你线上卖水果—采购篇<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="手把手教你线上卖水果—采购篇">手把手教你线上卖水果—采购篇<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="手把手教你线上卖水果—采购篇">手把手教你线上卖水果—采购篇<span class="date">06-12</span></a></li>
+                <div class="title">运营干货<a class="pull-right font12 text-grey" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry">更多>></a></div>
+               {% for a in article_list["dry"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
             </ul>
         </li>
     </ul>

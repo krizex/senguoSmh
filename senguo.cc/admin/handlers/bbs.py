@@ -16,7 +16,7 @@ class Main(FruitzoneBaseHandler):
 		if "page" in self.args and self.args["page"] !=[]:
 			_type = int(self.args["type"])
 			page = int(self.args["page"])
-			page_size = 10
+			page_size = 20
 			nomore = False
 			datalist = []
 			try:
@@ -35,14 +35,16 @@ class Main(FruitzoneBaseHandler):
 				for article in article_lsit:
 					datalist.append(self.getArticle(article))
 			return self.send_success(datalist=datalist,nomore=nomore)
-		return self.render("bbs/main.html")
+
+		if_admin = self.if_super()
+		return self.render("bbs/main.html",if_admin=if_admin)
 
 class Detail(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self,_id):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id).first()
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).first()
 		except:
 			return self.write("没有该文章的任何信息")
 
@@ -61,15 +63,8 @@ class Detail(FruitzoneBaseHandler):
 		comments_list=[]
 		if comments:
 			for comment in comments:
-				comments_list.append({"id":comment[0].id,"nickname":comment[0].accountinfo.nickname,"imgurl":comment[0].accountinfo.headimgurl_small,\
-					"comment":comment[0].comment,"time":self.timedelta(comment[0].create_time),"great_num":comment[0].great_num,"nick_name":comment[1],"type":comment[0]._type})
-		if_admin = False
-		try:
-			current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
-		except:
-			current_user = None
-		if current_user:
-			if_admin = True
+				comments_list.append(self.getArticleComment(comment))
+		if_admin = self.if_super()
 		return self.render("bbs/artical-detail.html",article=article_data,comments_list=comments_list,if_admin=if_admin)
 	
 	@tornado.web.authenticated
@@ -79,32 +74,40 @@ class Detail(FruitzoneBaseHandler):
 		if "data" in self.args:
 			data=self.args["data"]
 
-		if action in ["article_great","comment_great"]:
+		if action in ["article_great","comment_great","collect"]:
 			now =  time.strftime('%Y-%m-%d', time.localtime() )
 			_great = self.session.query(models.ArticleGreat).filter_by(account_id = self.current_user.id)
 			if action == "article_great":
 				_type = 0
 				comment_id = 0
-			else:
+			elif action == "comment_great":
 				_type = 1
 				comment_id = data["comment_id"]
-
+			elif action == "collect":
+				_type = 2
+				comment_id = 0
+			else:
+				return send_fail("no such action")
 			try:
 				new_great = _great.filter_by(article_id = _id,comment_id=comment_id,_type=_type).order_by(models.ArticleGreat.create_time.desc()).first()
 			except:
 				new_great = None
 
-			if new_great and new_great.create_time.strftime('%Y-%m-%d') == now:
+			if new_great and _type == 2:
+				return self.send_fail('已收藏过该文章啦！')
+
+			if new_great and new_great.create_time.strftime('%Y-%m-%d') == now and _type!=2:
 				return self.send_fail('您今天已经点过赞啦！')
-			
+
 			if _type == 0:		
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 				article.great_num = article.great_num +1
 				article.if_scan = 0
-			else:
+			elif _type == 1:
 				_comment = self.session.query(models.ArticleComment).filter_by(id=comment_id).first()
-				_comment.great_num = article.great_num +1
+				_comment.great_num = _comment.great_num +1
 				_comment.if_scan = 0
+
 
 			great = models.ArticleGreat(
 				article_id = _id,
@@ -116,22 +119,21 @@ class Detail(FruitzoneBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
-		elif action in ["comment","replay","collect"]:
+		elif action in ["comment","reply"]:
 			try:
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 			except:
 				return self.send_fail("no such article")
+			print(article)
 			if action == "comment":
 				_type = 0
 				comment_author_id = 0
-			elif action == "replay":
+			elif action == "reply":
 				_type = 1
 				comment_author_id = self.session.query(models.ArticleComment).filter_by(id=data["comment_id"]).first().account_id
-			elif action == "collect":
-				_type = 2
-				comment_author_id = 0
-
-			comment =models.ArticleComment(
+			else:
+				return send_fail("no such action")
+			comment = models.ArticleComment(
 				article_id = _id,
 				account_id = self.current_user.id,
 				comment = self.args["data"]["comment"],
@@ -145,8 +147,7 @@ class Detail(FruitzoneBaseHandler):
 			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
 				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==_type).order_by(models.ArticleComment.create_time.desc()).first()
-			data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
-					"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"@nickname":new_comment[1]}
+			data=self.getArticleComment(new_comment)
 			return self.send_success(data=data)
 
 		elif action == "delete":
@@ -162,13 +163,12 @@ class Detail(FruitzoneBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
-
 class Publish(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
-		return self.render("bbs/publish.html",token=qiniuToken)
+		return self.render("bbs/publish.html",token=qiniuToken,edit=False)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")	
@@ -188,18 +188,26 @@ class Publish(FruitzoneBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
-class Edit(FruitzoneBaseHandler):
+class DetailEdit(FruitzoneBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
+	def get(self,_id):
+		try:
+			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).first()
+		except:
+			return self.write("没有该文章的任何信息")
+
+		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,\
+						"type":self.article_type(article[0].classify),"type_id":article[0].classify}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
-		return self.render("bbs/publish.html",token=qiniuToken)
+		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")	
-	def post(self):
+	def post(self,_id):
 		data=self.args["data"]
-		article = self.session.query(models.Article).filter_by(id=int(data["id"])).first()
+		article = self.session.query(models.Article).filter_by(id=_id).first()
 		article.title=data["title"]
 		article.article=data["article"]
 		article.classify=data["classify"]
@@ -221,7 +229,8 @@ class Search(FruitzoneBaseHandler):
 		datalist = []
 		try:
 			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.title.like("%%%s%%" % data))\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
+				.filter(models.Article.status==1,models.Article.title.like("%%%s%%" % data))\
 				.order_by(models.Article.create_time.desc())
 		except:
 			nomore = True

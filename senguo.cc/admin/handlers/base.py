@@ -343,6 +343,11 @@ class GlobalBaseHandler(BaseHandler):
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
 			"comment_num":article[0].comment_num}
 		return data
+	def getArticleComment(self,new_comment):
+		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
+				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],
+				"type":new_comment[0]._type}
+		return data
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
@@ -530,7 +535,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 
 		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
-							  policy={"returnUrl": "http://zone.senguo.cc/admin/editorCallback",
+							  policy={"returnUrl": "http://i.senguo.cc/admin/editorCallback",
 									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
@@ -598,6 +603,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return "%d分钟前" % (timedelta.seconds/60)
 		else:
 			return "刚刚"
+
+	def timeday(self,date):
+		return date.strftime("%m-%d")
+
+	def if_super(self):
+		if_super = False
+		try:
+			current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			current_user = None
+		if current_user:
+			if_super = True
+		return if_super
 
 	def write_error(self, status_code, **kwargs):
 		if status_code == 404:

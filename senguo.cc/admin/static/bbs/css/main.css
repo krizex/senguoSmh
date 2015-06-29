@@ -8,14 +8,14 @@
 .atical-list .title{color: #333;line-height: 18px;}
 .atical-mark{display: inline-block;height: 16px;line-height: 16px;font-size:12px;margin-right:5px;position:relative;top:-2px;padding: 0 10px;border: 1px solid #999;color: #999;border-radius: 9px;}
 .atical-attr{margin-top: 10px;color: #999;}
-.atical-attr>span{display: inline-block;font-size: 12px;}
-.wrap-icon{display: inline-block;font-size: 12px;color: #999;margin-left: 10px;position: relative;padding-left: 18px;}
-.wrap-icon>i{position: absolute;left: 0;top: 2px;width: 14px;height: 10px;background-size: 18px;background-image: url('/static/bbs/img/bbs_icon.png');}
-.wrap-icon .icon-dz{background-position: 0 -22px;top:1px;height:11px;}
-.wrap-icon .icon-dz-active{background-position: 0 -34px;top:2px;height: 10px;}
-.wrap-icon .icon-com{background-position: 0 -12px;}
-.wrap-icon .icon-see{background-position: 0 0;width: 15px;height: 9px;background-size: 15px;}
-.wrap-icon .post-dz{background-position: 0 -45px;top:4px;}
+.atical-attr>span{display: inline-block;}
+.wrap-icon{display: inline-block;color: #999;position: relative;padding-left: 24px;}
+.wrap-icon>i{position: absolute;left: 0;top: 4px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
+.wrap-icon .icon-dz{background-position: 0 -26px;left: 7px;}
+.wrap-icon .icon-dz-active{background-position: 0 -34px;height: 10px;}
+.wrap-icon .icon-com{background-position: 0 -13px;left: 5px;}
+.wrap-icon .icon-see{background-position: 0 0;width: 21px;}
+.wrap-icon .post-dz{background-position: 0 -52px;}
 .wrap-icon .post-dz-active{background-position: 0 -56px;}
 .wrap-post{}
 .post-box{background-color: #fff;padding: 10px;}
@@ -29,7 +29,7 @@
 .img-border{display: inline-block;border: 2px solid #76ccc0;border-radius: 50%;line-height: 1;}
 .comment-item>dd img{width: 30px;height: 30px;border-radius: 50%;}
 .comment-item>dt{}
-.com-first a{font-size: 14px;color: #999;}
+.com-first a{color: #999;}
 .com-detail{margin-top: 6px;line-height: 18px;color: #333;}
 .fix-center{position: fixed;bottom:50px;width: 100%;max-width: 800px;min-width: 320px;left: 50%;-webkit-transform:translate(-50%,0);text-align: right;}
 .wrap-post-attr>a{display: inline-block;width: 30px;height: 16px;position: relative;margin-right: 10px;border-radius: 8px;border:1px solid #999;background-color: #fff;}

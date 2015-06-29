@@ -28,7 +28,7 @@
 .intro_list li  .intro p{margin-bottom:10px;}
 .mt-3{margin-top: -3px!important;}
 .intro-top{margin-bottom: 30px;text-align: center;font-size: 22px;}
-.bg-bg{position: absolute;width: 1200px;height: 500px;top: 0;left: 50%;-webkit-transform:translate(-50%,0);background-color: rgba(0,0,0,.4);z-index:100;}
+.bg-bg{position: absolute;width: 1200px;height: 500px;top: 0;left: 50%;-webkit-transform:translate(-50%,0);background-color: rgba(0,0,0,.5);z-index:100;}
 .bg-text{width: 550px;position: absolute;top: 150px;left: 50%;color: #fff;-webkit-transform:translate(-50%,0);z-index:200;}
 .bg-text>h1{font-weight:normal;font-size: 30px;text-align: center;}
 .bg-text>p{font-size:16px;line-height:20px;text-align: center;}

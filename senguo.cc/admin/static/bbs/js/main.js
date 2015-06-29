@@ -11,9 +11,24 @@ $(document).ready(function(){
         var id = parseInt($(this).attr("data-id"));
         $(".wrap-menu-list").addClass("h0");
         page=0;
-        articleList(0,id);
+        _type=id;
+        $('.atical-list').empty();
+        articleList(0);
     });
-    articleList(0,100);
+    var link_action=$.getUrlParam("action");
+    if(link_action=="official"){
+         page=0;
+         _type=0;
+    }else if(link_action=="update"){
+         page=0;
+         _type=1;
+    }else if(link_action=="dry"){
+         page=0;
+         _type=2;
+    }else{
+        _type=100;
+    }
+    articleList(0);
     scrollLoading();
 }).on("click",".atical-list li",function(e){
     var id=$(this).attr("data-id");
@@ -34,6 +49,10 @@ $(document).ready(function(){
         }
     });
 });
+var finished=true;
+var nomore =false;
+var page=0;
+var _type=100;
 var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
@@ -46,9 +65,6 @@ var item='<li data-id="{{id}}">'+
             '</div>'+
         '</li>';
 
-var finished=true;
-var nomore =false;
-var page=0;
 function scrollLoading(){  
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
@@ -66,16 +82,15 @@ function scrollLoading(){
         }
     });
 }
-function articleList(page,type){
+function articleList(page){
     $('.wrap-loading-box').removeClass('hide');
     $.ajax({
-        url:'/bbs?page='+page+"&type="+type,
+        url:'/bbs?page='+page+"&type="+_type,
         type:"get",
         success:function(res){
             if(res.success){
                 var datalist=res.datalist;
                 nomore=res.nomore;
-                $('.atical-list').empty();
                 if(nomore==true){
                 	$('.wrap-loading-box').addClass('hide');
                     $('.loading').html("~没有更多了~").show();
