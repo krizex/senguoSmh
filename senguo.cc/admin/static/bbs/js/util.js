@@ -109,3 +109,11 @@ $.postJson = function(url, args,successCall){
 //     var s = document.getElementsByTagName("script")[0]; 
 //     s.parentNode.insertBefore(hm, s);
 // })();
+
+(function ($) {
+    $.getUrlParam = function (name, default_value) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]); return default_value || null;
+    }
+})(Zepto);

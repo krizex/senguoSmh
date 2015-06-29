@@ -13,7 +13,16 @@ class Home(FruitzoneBaseHandler):
 	def get(self):
 		# print(self)
 		shop_count = self.get_shop_count()
-		return self.render("official/home.html",context=dict(shop_count = shop_count,subpage="home"))
+		try:
+			articles = self.session.query(models.Article).filter_by(status=1)
+		except:
+			articles = None
+		if articles:
+			notice_articles = articles.filter_by(classify=0).order_by(models.Article.create_time.desc()).limit(3).all()
+			update_articles = articles.filter_by(classify=1).order_by(models.Article.create_time.desc()).limit(3).all()
+			dry_articles = articles.filter_by(classify=2).order_by(models.Article.create_time.desc()).limit(3).all()
+		article_list = {"notice":notice_articles,"update":update_articles,"dry":dry_articles}
+		return self.render("official/home.html",context=dict(shop_count = shop_count,subpage="home"),article_list=article_list)
 
 class About(FruitzoneBaseHandler):
 	def get(self):

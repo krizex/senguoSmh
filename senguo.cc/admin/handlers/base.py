@@ -604,6 +604,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		else:
 			return "刚刚"
 
+	def timeday(self,date):
+		return date.strftime("%m-%d")
+
+	def if_super(self):
+		if_super = False
+		try:
+			current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			current_user = None
+		if current_user:
+			if_super = True
+		return if_super
+
 	def write_error(self, status_code, **kwargs):
 		if status_code == 404:
 			self.render('notice/404.html')

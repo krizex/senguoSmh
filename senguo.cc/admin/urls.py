@@ -19,7 +19,6 @@ from dal import models
 
 # ]
 
-
 handlers = [
 	
 	#告白墙
@@ -32,6 +31,7 @@ handlers = [
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
+	(r"/bbs/detailEdit/(\w+)", handlers.bbs.DetailEdit, {}, "BbsDetailEdit"),
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
