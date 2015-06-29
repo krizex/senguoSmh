@@ -11,6 +11,7 @@ $(document).ready(function(){
             Tip('请先登录');
             return false;
         }
+        $(".wrap-post-attr").removeClass("bm10");
         var id = $(this).attr("data-id");
         $(".wrap-reply-box").removeClass("hide");
         $('.reply-btn').attr("id","comment").attr("data-id",id);

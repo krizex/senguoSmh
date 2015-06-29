@@ -54,6 +54,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .space-box{height: 3rem;width: 100%;}
 .pointer{cursor: pointer;}
 .white-box{background-color: #fff;padding: 0 10px;margin-bottom: 12px;}
+.bm10{bottom:10px !important;}
 /*字体大小*/
 .f12{font-size: 12px;}
 /*字体颜色*/
