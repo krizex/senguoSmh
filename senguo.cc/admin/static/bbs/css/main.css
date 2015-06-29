@@ -10,7 +10,7 @@
 .atical-attr{margin-top: 10px;color: #999;font-size: 14px;}
 .atical-attr>span{display: inline-block;}
 .wrap-icon{display: inline-block;color: #999;position: relative;padding-left: 24px;}
-.wrap-icon>i{position: absolute;left: 0;top: 2px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
+.wrap-icon>i{position: absolute;left: 0;top: 4px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
 .wrap-icon .icon-dz{background-position: 0 -26px;left: 7px;}
 .wrap-icon .icon-dz-active{background-position: 0 -39px;}
 .wrap-icon .icon-com{background-position: 0 -13px;left: 5px;}
@@ -22,7 +22,7 @@
 .post-title{line-height: 1.4;font-size: 24px;color: #333;font-weight:  normal;}
 .post-2title{color: #999;white-space: nowrap;overflow: hidden;}
 .post-2title .author{color: #6ba4ef;margin-right: 10px;}
-.post-cont{line-height: 1.6;color: #333;padding-bottom: 15px;}
+.post-cont{line-height: 1.6;color: #333;padding: 20px 0;}
 .post-attr{margin-bottom: 5px;}
 .post-attr .dianzan{margin-left: 8px;}
 .post-attr .comment{margin-left: 10px;}
