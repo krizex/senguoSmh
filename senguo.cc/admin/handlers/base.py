@@ -1501,7 +1501,7 @@ class WxOauth2:
 		postdata = {
 			'touser' : touser,
 			'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
-			"url":order_url,
+			"url":"/madmin/orderDetail/"+order_id,
 			"topcolor":"#FF0000",
 			"data":{
 				"first":{"value":"管理员 {0} 您好，店铺『{1}』收到了新的订单！".format(admin_name,shop_name),"color": "#44b549"},
