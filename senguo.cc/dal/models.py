@@ -1621,8 +1621,8 @@ class Article(MapBase, _CommonApi):
 	__tablename__ = 'article'
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
-	title = Column(String(50))
-	article = Column(String(4000))
+	title = Column(String(100))
+	article = Column(String(8000))
 	classify = Column(Integer,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
 	great_num = Column(Integer,default = 0) #点赞数
 	comment_num = Column(Integer,default = 0)#评论数
@@ -1646,13 +1646,21 @@ class ArticleComment(MapBase, _CommonApi):
 
 	accountinfo = relationship(Accountinfo)
 
-class ArticleGreat(MapBase, _CommonApi):#文章点赞
+class ArticleGreat(MapBase, _CommonApi):#文章点赞 收藏 浏览
 	__tablename__ = 'article_great'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
-	article_id = Column(Integer,default = 0)#文章id
-	comment_id = Column(Integer,default = 0)#评论id
-	_type = Column(Integer,default = 0) #0: 文章点赞  1:评论点赞 2:文章收藏
+	article_id = Column(Integer,ForeignKey(Article.id),nullable = False)#文章id
+	great = Column(Integer,default = 0) #0:未点赞  1:点赞
+	collect = Column(Integer,default = 0) #0:未收藏 1:收藏
+	scan = Column(Integer,default = 0) #0:未浏览 1:浏览
+	create_time = Column(DateTime,default = func.now())
+
+class ArticleCommentGreat(MapBase, _CommonApi):#评论点赞
+	__tablename__ = 'article_comment_great'
+	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
+	account_id = Column(Integer,ForeignKey(Accountinfo.id),nullable=False)
+	comment_id = Column(Integer,ForeignKey(ArticleComment.id),nullable=False)#评论id
 	create_time = Column(DateTime,default = func.now())
 
 

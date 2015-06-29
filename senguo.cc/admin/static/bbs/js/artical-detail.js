@@ -17,7 +17,7 @@ $(document).ready(function(){
     var args={action:"collect",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
-            $this.addClass("i-admire-active");
+            $this.children("i").toggleClass("i-store-active");
         }else{
             Tip(res.error_text);
         }
@@ -31,8 +31,12 @@ $(document).ready(function(){
     var args={action:"comment_great",data:data};
     $.postJson(url,args,function(res){
         if(res.success){
-            $this.addClass("i-admire-active");
-            $this.find('.num').text(parseInt($this.find('.num').text())+1);
+            var num_1=1;
+            if($this.children("i").hasClass('post-dz-active')){
+                num_1=-1
+            }
+            $this.find('.num').text(parseInt($this.find('.num').text())+num_1);
+            $this.children("i").toggleClass('post-dz-active')
         }else{
             Tip(res.error_text);
         }
@@ -49,8 +53,13 @@ $(document).ready(function(){
     var args={action:"article_great",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
-            $this.addClass("i-admire-active");
-            $('.dianzan .num').text(parseInt($('.dianzan .num').text())+1);
+            var num_1=1;
+            if($this.children("i").hasClass('i-admire-active')){
+                num_1=-1
+            }
+            $('.article-great .num').text(parseInt($('.article-great .num').text())+num_1);
+            $('.article-great i').toggleClass("icon-dz-active");
+            $this.children("i").toggleClass("i-admire-active");
         }else{
             Tip(res.error_text);
         }

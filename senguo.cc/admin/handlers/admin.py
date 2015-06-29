@@ -106,10 +106,21 @@ class Home(AdminBaseHandler):
 		sys_notices = self.session.query(models.SysNotice).\
 			filter((models.SysNotice.create_time < datetime.datetime.now()-datetime.timedelta(10))).all()
 		self.session.commit()
+
+		try:
+			articles = self.session.query(models.Article).filter_by(status=1)
+		except:
+			articles = None
+		if articles:
+			notice_articles = articles.filter_by(classify=0).order_by(models.Article.create_time.desc()).limit(3).all()
+			update_articles = articles.filter_by(classify=1).order_by(models.Article.create_time.desc()).limit(3).all()
+			dry_articles = articles.filter_by(classify=2).order_by(models.Article.create_time.desc()).limit(3).all()
+		article_list = {"notice":notice_articles,"update":update_articles,"dry":dry_articles}
+
 		return self.render("admin/home.html", new_order_sum=new_order_sum, order_sum=order_sum,
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,\
 						   show_balance = show_balance,new_sys_notices=new_sys_notices, \
-						   sys_notices=sys_notices, context=dict())
+						   sys_notices=sys_notices,article_list=article_list, context=dict())
 	# @tornado.web.authenticated
 	# @AdminBaseHandler.check_arguments("shop_id:int")
 	# def post(self):  # 商家多个店铺之间的切换

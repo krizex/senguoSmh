@@ -22,8 +22,8 @@ function publishAtical(){
         return Tip("请选择板块");
     }
     var title=$(".title-ipt").val();
-    if(title == "" || title.length>30){
-        return Tip("标题不能为空且不能超过30个字");
+    if(title == "" || title.length>40){
+        return Tip("标题不能为空且不能超过20个字");
     }
     var article=$("#kindEditor").val();
     if(article.length>20000){
