@@ -19,8 +19,8 @@
         </div>
         <div class="post-attr">
             {% if if_admin == True %}
-                <a href="javascript:;" id="del-atical" class="del-atical fr c999 f12" data-id='{{article["id"]}}'>删除</a>
-                <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 f12">编辑</a>
+                <a href="javascript:;" id="del-atical" class="del-atical fr c999" data-id='{{article["id"]}}'>删除</a>
+                <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999">编辑</a>
             {% end %}
             <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
             <span class="wrap-icon dianzan" data-id='{{article["id"]}}'><i class="icon-dz"></i><span class="num">{{article["great_num"]}}</span></span>
