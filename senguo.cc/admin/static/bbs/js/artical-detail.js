@@ -5,9 +5,8 @@
 $(document).ready(function(){
     var height = $(window).height();
     $(".wrap-post").css("minHeight",height-60);
-    $("#com-atical").on("click",function(){//评论按钮
+    $(".com-atical").on("click",function(){//评论按钮
         if(if_login=='False'){
-            console.log(23333);
             Tip('请先登录');
             return false;
         }
@@ -65,24 +64,23 @@ $(document).ready(function(){
     $(".reply-ipt").attr("placeholder","@"+$(this).html());
     $('.reply-btn').attr("id","reply").attr("data-id",id);
     $(".wrap-reply-box").removeClass("hide");
-}).on("click","#admire-atical",function(){
+}).on("click",".add-great",function(){
     if(if_login=='False'){
         Tip('请先登录');
         return false;
     }
-    var $this=$(this);
-    var id=$this.attr("data-id");
+    var id=$('#admire-atical').attr("data-id");
     var url="";
     var args={action:"article_great",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
             var num_1=1;
-            if($this.children("i").hasClass('i-admire-active')){
+            if($('#admire-atical').children("i").hasClass('i-admire-active')){
                 num_1=-1
             }
             $('.article-great .num').text(parseInt($('.article-great .num').text())+num_1);
             $('.article-great i').toggleClass("icon-dz-active");
-            $this.children("i").toggleClass("i-admire-active");
+            $('#admire-atical').children("i").toggleClass("i-admire-active");
         }else{
             Tip(res.error_text);
         }

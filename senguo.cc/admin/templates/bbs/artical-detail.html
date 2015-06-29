@@ -28,8 +28,8 @@
                 <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 mr10">编辑</a>
             {% end %}
             <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
-            <span class="wrap-icon dianzan article-great" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
-            <span class="wrap-icon comment" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
+            <span class="wrap-icon dianzan article-great add-great" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
+            <span class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
 
         </div>
     </div>
@@ -58,8 +58,8 @@
 </div>
 <div class="wrap-post-attr fix-center">
     <a href="javascript:;" class="store" id="store-atical" data-id="{{article['id']}}"><i class="i-store {% if article['collect_if'] == True %}i-store-active{% end %}"></i></a>
-    <a href="javascript:;" class="com" id="com-atical" data-id="{{article['id']}}"><i class="i-com"></i></a>
-    <a href="javascript:;" class="admire" id="admire-atical" data-id="{{article['id']}}"><i class="i-admire {% if article['great_if'] == True %}i-admire-active{% end %}"></i></a>
+    <a href="javascript:;" class="com com-atical" id="com-atical" data-id="{{article['id']}}"><i class="i-com"></i></a>
+    <a href="javascript:;" class="admire add-great" id="admire-atical" data-id="{{article['id']}}"><i class="i-admire {% if article['great_if'] == True %}i-admire-active{% end %}"></i></a>
 </div>
 {% if not if_login %}
 <div class="fix-left publish-btns">
