@@ -22,11 +22,11 @@ function publishAtical(){
         return Tip("请选择板块");
     }
     var title=$(".title-ipt").val();
-    if(title == "" || title.length>20){
-        return Tip("标题不能为空且不能超过20个字");
+    if(title == "" || title.length>30){
+        return Tip("标题不能为空且不能超过30个字");
     }
     var article=$("#kindEditor").val();
-    if(article.length>4000){
+    if(article.length>20000){
         return Tip("文章内容太长了");
     }
     var args = {
@@ -62,6 +62,7 @@ function initEditor(){
             extraFileUploadParams : {'token':token1},
             token : token,
             resizeType : 0,
+            filterMode : false,
             items:[
                 'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
                 'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
