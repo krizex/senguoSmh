@@ -207,19 +207,18 @@ class Detail(FruitzoneBaseHandler):
 
 		elif action == "del_comment":
 			try:
-				comment = self.session.query(models.ArticleComment,models.Article.account_id)\
+				comment = self.session.query(models.ArticleComment,models.Article)\
 				.join(models.Article,models.ArticleComment.article_id==models.Article.id)\
 				.filter(models.ArticleComment.id==int(data["id"])).one()
 			except:
 				comment = None
-			print(comment)
-			if comment and comment[1] == self.current_user.id:
-				print(comment[0])
+			if comment and comment[1] and comment[1].account_id == self.current_user.id:
 				comment[0].status=0
+				comment[1].comment_num=comment[1].comment_num-1
 				self.session.commit()
 				return self.send_success()
 			else:
-				return self.send_fail("该文章不存在或您没有操作权限")
+				return self.send_fail("该评论不存在或您没有操作权限")
 
 		elif action == "delete":
 			try:

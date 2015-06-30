@@ -30,6 +30,7 @@ $(document).ready(function(){
     $(".pop-del").removeClass("hide");
     $(".del-sure").attr("data-id",id);
     comment_item=$this.parents("li");
+    $(".com-atical .num").text(parseInt($(".com-atical .num").text())-1);
 
 }).on("click",".del-sure",function(){
     if(if_login=='False'){
