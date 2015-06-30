@@ -5,17 +5,26 @@ $(document).ready(function(){
     var height = $(window).height();
     $(".wrap-post").css("minHeight",height-60);
     $(".com-atical").on("click",function(){//评论按钮
+        var id = $(this).attr("data-id");
+        var _type= $('.reply-btn').attr("id");
          if(if_login=='False'){
            $('.pop-login').removeClass("hide");
            return false; 
         }
         $(".wrap-post-attr").removeClass("bm10");
-        $(".reply-ipt").val("").attr("placeholder","");
-        var id = $(this).attr("data-id");
+        if(_type=='reply'){
+            $(".reply-ipt").val("").attr("placeholder","");
+        } 
+        
         $(".wrap-reply-box").removeClass("hide");
         $('.reply-btn').attr("id","comment").attr("data-id",id);
         $(".reply-ipt").focus();
     });
+}).on("click","body",function(e){
+    if($(e.target).closest(".forbid_click").size()==0){
+        $('.wrap-reply-box').addClass("hide");
+        $(".wrap-post-attr").addClass("bm10");
+    }
 }).on("click","#store-atical",function(){//收藏
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
@@ -56,17 +65,20 @@ $(document).ready(function(){
             Tip(res.error_text);
         }
     });
-}).on("click",".comment-list .nickname",function(){//评论回复
+}).on("click",".comment-list .com-detail",function(){//评论回复
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
        return false; 
     }
-    var id = $(this).attr("data-id");
-    $(".reply-ipt").attr("placeholder","@"+$(this).html());
+    var _type=$('.reply-btn').attr("id");
+    var id = $(this).parents("li").find(".nickname").attr("data-id");
+    $(".reply-ipt").attr("placeholder","@"+$(this).parents("li").find(".nickname").html());
     $('.reply-btn').attr("id","reply").attr("data-id",id);
     $(".wrap-reply-box").removeClass("hide");
     $(".wrap-post-attr").removeClass("bm10");
-    $(".reply-ipt").val("");
+    if(_type=='comment'){
+        $(".reply-ipt").val("");
+    }   
 }).on("click",".add-great",function(){
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
