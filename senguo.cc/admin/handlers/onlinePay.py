@@ -282,7 +282,7 @@ class wxpayCallBack(CustomerBaseHandler):
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
 		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
-		unifiedOrder.setParameter("out_trade_no",order.num )
+		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')

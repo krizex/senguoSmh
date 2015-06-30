@@ -62,7 +62,7 @@
         <p>订单备注：<span>{{order.message or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
-    <div class="wrap-qrcode text-center" id="wrap-qrcode" style="display:none">
+    <div class="wrap-qrcode text-center" id="wrap-qrcode">
         <p class="text-centert font14">遇到不允许跨号支付？</p> 
         <div class="qrcode" id="qrcode"></div>
         <p class="text-center font14">长按图片【识别二维码】</p>
@@ -84,11 +84,11 @@
 <script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
-    new QRCode(document.getElementById('qrcode'), {
-        width : 280,//设置宽高
-        height : 280,
-        colorDark : "#433943"
-    }).makeCode($("#qr_url").val());
+ //  new QRCode(document.getElementById('qrcode'), {
+ //      width : 280,//设置宽高
+ //      height : 280,
+ //      colorDark : "#433943"
+ //  }).makeCode($("#qr_url").val());
     wx.config({
         debug: false,
         appId: "{{wxappid}}",
@@ -122,19 +122,19 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                    //  $.ajax({
-                                    //     url:"/customer/wxpayCallBack",
-                                    //     type:"get",
-                                    //     success:function(res){
-                                    //         if(res.success){
-                                    //             new QRCode(document.getElementById('qrcode'), {
-                                    //                 width : 280,//设置宽高
-                                    //                 height : 280,
-                                    //                 colorDark : "#433943"
-                                    //             }).makeCode(res.qr_url);
-                                    //         }
-                                    //     }
-                                    // });
+                                      $.ajax({
+                                         url:"/customer/wxpayCallBack",
+                                         type:"get",
+                                         success:function(res){
+                                             if(res.success){
+                                                 new QRCode(document.getElementById('qrcode'), {
+                                                     width : 280,//设置宽高
+                                                     height : 280,
+                                                     colorDark : "#433943"
+                                                 }).makeCode(res.qr_url);
+                                             }
+                                         }
+                                     });
                                 }
                             });
                         }
