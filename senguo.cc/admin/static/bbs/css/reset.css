@@ -8,7 +8,7 @@ form, label, legend,fieldset,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; border: none; outline: none; vertical-align: baseline;-webkit-appearance: none;-moz-appearance:none;appearance:none;}
 html,body,textarea,input,select,button,h1,h2,h3,h4,h5,h6{line-height: 1.25;font-size: 15px;font-family: "Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;}
 html{overflow-x: hidden;-webkit-overflow-scrolling:touch;overflow-scrolling:touch;min-height: 100%;}
-body{background-color: #f0f4f0;overflow-x: hidden;max-width: 800px;min-width: 320px;margin: 0 auto;}
+body{background-color: #f3f3f3;overflow-x: hidden;max-width: 800px;min-width: 320px;margin: 0 auto;}
 .h100{height: 100%;overflow: hidden;}
 .h0{height: 0 !important;overflow: hidden;}
 i{display: inline-block;background-size: contain;background-repeat: no-repeat;}
@@ -91,7 +91,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 /*提示框*/
 .zb-tip{width: 70%;max-width:400px;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
 /*页面头部*/
-.header{position: fixed;top: 0;z-index:999;width: 100%;max-width:800px;min-width:320px;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;}
+.header{position: fixed;top: 0;z-index:999;width: 100%;max-width:800px;min-width:320px;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;font-size: 16px;}
 .back{display: inline-block;height: 40px;min-width:40px;line-height:40px;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 10px;top: 0;background-position: left center;}
 .head-right{display: block;height: 40px;width:40px;background-size: 20px;position: absolute;right: 10px;top: 0;background-position: right center;}
 .search{background-image: url('/static/images/list_top.png');background-position: 14px -22px;top: 8px;background-size: 22px;}
