@@ -2283,7 +2283,7 @@ class payTest(CustomerBaseHandler):
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
-		print(res,type(res_dict))
+		# print(res,type(res_dict))
 		if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
 		else:
@@ -2381,7 +2381,7 @@ class wxChargeCallBack(CustomerBaseHandler):
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
-		print(res,type(res_dict))
+		# print(res,type(res_dict))
 		if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
 		else:

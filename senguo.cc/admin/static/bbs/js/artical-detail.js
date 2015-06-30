@@ -237,6 +237,7 @@ function admireAtical(id,action,target){
             $(".wrap-reply-box").addClass("hide");
             $(".reply-ipt").val("");
             $(".wrap-post-attr").addClass("bm10");
+            $(".com-atical .num").text(parseInt($(".com-atical .num").text())+1);
             target.attr("data-statu", "0");
         }else{
             target.attr("data-statu", "0");
