@@ -20,6 +20,34 @@ $(document).ready(function(){
         $('.reply-btn').attr("id","comment").attr("data-id",id);
         $(".reply-ipt").focus();
     });
+}).on("click",".del-comment",function(){  
+    if(if_login=='False'){
+       $('.pop-login').removeClass("hide");
+       return false; 
+    }
+    var $this=$(this);
+    var id = $this.attr("data-id");
+    $(".pop-del").removeClass("hide");
+    $(".del-sure").attr("data-id",id);
+    comment_item=$this.parents("li");
+
+}).on("click",".del-sure",function(){
+    if(if_login=='False'){
+       $('.pop-login').removeClass("hide");
+       return false; 
+    }
+    var $this=$(this);
+    var id = $this.attr("data-id");
+    var url="";
+    var args={action:"del_comment",data:{"id":id}};
+    $.postJson(url,args,function(res){
+        if(res.success){
+            comment_item.remove();
+            $(".pop-del").addClass("hide");
+        }else{
+            Tip(res.error_text);
+        }
+    });
 }).on("click","body",function(e){
     if($(e.target).closest(".forbid_click").size()==0){
         $('.wrap-reply-box').addClass("hide");
@@ -30,7 +58,6 @@ $(document).ready(function(){
        $('.pop-login').removeClass("hide");
        return false; 
     }
-    var id = $(this).attr("data-id");
     var $this=$(this);
     var id=$this.attr("data-id");
     var url="";
@@ -124,6 +151,7 @@ $(document).ready(function(){
         delAtical(id);
     }
 });
+var comment_item;
 var item=' <li data-id="{{id}}">'+
                 '<dl class="group comment-item">'+
                     '<dd>'+

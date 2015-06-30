@@ -84,11 +84,11 @@
 <script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
- //  new QRCode(document.getElementById('qrcode'), {
- //      width : 280,//设置宽高
- //      height : 280,
- //      colorDark : "#433943"
- //  }).makeCode($("#qr_url").val());
+  new QRCode(document.getElementById('qrcode'), {
+      width : 280,//设置宽高
+      height : 280,
+      colorDark : "#433943"
+  }).makeCode($("#qr_url").val());
     wx.config({
         debug: false,
         appId: "{{wxappid}}",
@@ -122,19 +122,19 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                      $.ajax({
-                                         url:"/customer/wxpayCallBack",
-                                         type:"get",
-                                         success:function(res){
-                                             if(res.success){
-                                                 new QRCode(document.getElementById('qrcode'), {
-                                                     width : 280,//设置宽高
-                                                     height : 280,
-                                                     colorDark : "#433943"
-                                                 }).makeCode(res.qr_url);
-                                             }
-                                         }
-                                     });
+                                     //  $.ajax({
+                                     //     url:"/customer/wxpayCallBack",
+                                     //     type:"get",
+                                     //     success:function(res){
+                                     //         if(res.success){
+                                     //             new QRCode(document.getElementById('qrcode'), {
+                                     //                 width : 280,//设置宽高
+                                     //                 height : 280,
+                                     //                 colorDark : "#433943"
+                                     //             }).makeCode(res.qr_url);
+                                     //         }
+                                     //     }
+                                     // });
                                 }
                             });
                         }

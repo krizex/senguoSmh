@@ -1643,6 +1643,7 @@ class ArticleComment(MapBase, _CommonApi):
 	_type = Column(Integer,default = 0) #0: 评论  1:回复
 	great_num = Column(Integer,default = 0) #点赞数
 	if_scan = Column(Integer,default = 0) #0:是否浏览
+	status = Column(Integer,default = 1) #0:删除 1:正常
 
 	accountinfo = relationship(Accountinfo)
 

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% block title %}文章详情{% end %}
+{% block title %}{{article["title"]}}{% end %}
 {% block head %}
 {% end %}
 {% block header %}
@@ -37,7 +37,9 @@
                     <dt>
                         <p class="com-first"><a href="javascript:;" class="wrap-icon dianzan fr comment-great" data-id="{{comment['id']}}"><i class="post-dz {% if comment['great_if'] %}post-dz-active{% end %}"></i><span class="num">{{comment['great_num']}}</span></a><a href="javascript:;" class="nickname"  data-id="{{comment['id']}}">{{comment['nickname']}}</a></p>
                         <p class="com-detail">{% if comment['type']==1 %}@{{comment['nick_name']}}{% end %} {{comment['comment']}}</p>
-                        <p class="f12 c999 mt2">{{comment['time']}}</p>
+                        <p class="f12 c999 mt2">{{comment['time']}}
+                            {% if author_if == True %}<a href="javascript:;" class="del-comment fr c999"  data-id="{{comment['id']}}">删除</a>{% end %}
+                        </p>
                     </dt>
                 </dl>
             </li>
@@ -66,6 +68,17 @@
                 {% else %}
                 <a href="{{reverse_url('customerLogin')}}?next=/bbs/detail/{{article['id']}}" class="btn">登录</a>
                 {% end %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pop-win pop-del hide">
+    <div class="pop-content">
+        <div class="login-box">
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10">将不可恢复！确认删除？</p>
+            <div class="button-box mt10">
+                <a href="javascript:;" class="btn del-sure">确认</a>
             </div>
         </div>
     </div>

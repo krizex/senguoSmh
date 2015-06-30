@@ -73,6 +73,10 @@ class Detail(FruitzoneBaseHandler):
 				great_if=True
 			if article_great.collect == 1 :
 				collect_if=True
+
+		author_if = False
+		if self.current_user and article[0].account_id == self.current_user.id:
+			author_if = True
 		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].create_time,"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
 						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
@@ -80,7 +84,7 @@ class Detail(FruitzoneBaseHandler):
 		try:
 			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
-				.filter(models.ArticleComment.article_id==_id).order_by(models.ArticleComment.create_time.desc()).all()
+				.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1).order_by(models.ArticleComment.create_time.desc()).all()
 		except:
 			comments = None
 		comments_list=[]
@@ -88,7 +92,7 @@ class Detail(FruitzoneBaseHandler):
 			for comment in comments:
 				comments_list.append(self.getArticleComment(comment))
 		if_admin = self.if_super()
-		return self.render("bbs/artical-detail.html",article=article_data,comments_list=comments_list,if_admin=if_admin)
+		return self.render("bbs/artical-detail.html",article=article_data,author_if=author_if,comments_list=comments_list,if_admin=if_admin)
 	
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:str","data?")
@@ -200,6 +204,22 @@ class Detail(FruitzoneBaseHandler):
 				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==_type).order_by(models.ArticleComment.create_time.desc()).first()
 			data=self.getArticleComment(new_comment)
 			return self.send_success(data=data)
+
+		elif action == "del_comment":
+			try:
+				comment = self.session.query(models.ArticleComment,models.Article.account_id)\
+				.join(models.Article,models.ArticleComment.article_id==models.Article.id)\
+				.filter(models.ArticleComment.id==int(data["id"])).one()
+			except:
+				comment = None
+			print(comment)
+			if comment and comment[1] == self.current_user.id:
+				print(comment[0])
+				comment[0].status=0
+				self.session.commit()
+				return self.send_success()
+			else:
+				return self.send_fail("该文章不存在或您没有操作权限")
 
 		elif action == "delete":
 			try:
