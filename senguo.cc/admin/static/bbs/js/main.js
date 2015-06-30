@@ -9,6 +9,7 @@ $(document).ready(function(){
     });
     $(".menu-list li").on("click",function(){
         var id = parseInt($(this).attr("data-id"));
+        $('#bbs-menu').text($(this).text());
         $(".wrap-menu-list").addClass("h0");
         page=0;
         _type=id;

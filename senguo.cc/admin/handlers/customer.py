@@ -50,6 +50,7 @@ class Access(CustomerBaseHandler):
 		elif self._action == 'qqoauth':
 			print('login qqoauth')
 			self.handle_qq_oauth(next_url)
+
 		else:
 			return self.send_error(404)
 

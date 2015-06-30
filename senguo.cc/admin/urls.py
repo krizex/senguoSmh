@@ -30,7 +30,6 @@ handlers = [
 
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
-	(r"/bbs/login", handlers.bbs.Access, {}, "BbsLogin"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
 	(r"/bbs/detailEdit/(\w+)", handlers.bbs.DetailEdit, {}, "BbsDetailEdit"),
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),

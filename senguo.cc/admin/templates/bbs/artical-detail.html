@@ -54,6 +54,18 @@
     <a href="javascript:;" class="com com-atical if-login" id="com-atical" data-id="{{article['id']}}"><i class="i-com"></i></a>
     <a href="javascript:;" class="admire add-great if-login" id="admire-atical" data-id="{{article['id']}}"><i class="i-admire {% if article['great_if'] == True %}i-admire-active{% end %}"></i></a>
 </div>
+<div class="pop-win pop-login hide" data-id="{{if_login}}">
+    <div class="pop-content">
+        <div class="login-box">
+            <!-- <p class="title">商家回复</p> -->
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
+            <div class="button-box mt10">
+                <a href="{{reverse_url('customerLogin')}}?next=/bbs/detail/{{article['id']}}" class="btn">登录</a>
+            </div>
+        </div>
+    </div>
+</div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('bbs/js/artical-detail.js')}}"></script>

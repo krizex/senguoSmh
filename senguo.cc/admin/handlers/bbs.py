@@ -9,14 +9,6 @@ import random
 import base64
 import json
 
-class Access(FruitzoneBaseHandler):
-	def get(self):
-		next_url = self.get_argument('next', '')
-		if self.is_wexin_browser():
-			return self.redirect(self.get_weixin_login_url())
-		else:
-			return self.render("login/m_login.html",context=dict(next_url=next_url))
-
 class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
