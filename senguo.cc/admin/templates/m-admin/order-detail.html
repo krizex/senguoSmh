@@ -48,7 +48,7 @@
         <p class="del-reason hide">订单删除原因：<span class="text">{{order.del_reason}}</span></p>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><a href="/{{shop_code}}"><span class="black-txt">{{handler.current_shop.shop_name}}</span></a><span class="arr-right"></span></h4>
+        <h4 class="top-title"><a href="{{reverse_url('MadminHome')}}"><span class="black-txt">{{handler.current_shop.shop_name}}</span></a><span class="arr-right"></span><a href="{{reverse_url('MadminHome')}}" class="shop-manage fr">管理店铺</a></h4>
         <ul class="goods-lst">
             {% set fruits = eval(order.fruits) %}
             {% for charge_type in charge_types %}
