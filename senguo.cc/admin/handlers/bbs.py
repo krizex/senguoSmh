@@ -15,7 +15,7 @@ class Access(FruitzoneBaseHandler):
 		if self.is_wexin_browser():
 			return self.redirect(self.get_weixin_login_url())
 		else:
-			return self.redirect(self.reverse_url("customerLogin"))
+			return self.render("login/m_login.html",context=dict(next_url=next_url))
 
 class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
@@ -29,9 +29,8 @@ class Main(FruitzoneBaseHandler):
 			datalist = []
 			today =  time.strftime('%Y-%m-%d', time.localtime() )
 			try:
-				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname,models.ArticleGreat)\
+				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-					.outerjoin(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
 					.filter(models.Article.status==1).distinct(models.Article.id).order_by(models.Article.create_time.desc())
 			except:
 				article_lsit = None
@@ -53,9 +52,8 @@ class Detail(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	def get(self,_id):
 		try:
-			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.ArticleGreat)\
+			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-				.outerjoin(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
 				.filter(models.Article.id==_id,models.Article.status==1).first()
 		except:
 			return self.write("没有该文章的任何信息")
@@ -74,19 +72,22 @@ class Detail(FruitzoneBaseHandler):
 
 		great_if = False
 		collect_if = False
-		if article[3]:
-			if article[3].great == 1:
+		try:
+			article_great=self.session.query(models.ArticleGreat).filter_by(article_id=article[0].id,account_id=self.current_user.id).one()
+		except:
+			article_great=None
+		if article_great:
+			if article_great.great == 1:
 				great_if=True
-			if article[3].collect == 1 :
+			if article_great.collect == 1 :
 				collect_if=True
 		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].create_time,"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
 						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
 
 		try:
-			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname,models.ArticleCommentGreat)\
+			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
-				.outerjoin(models.ArticleCommentGreat,models.ArticleComment.id==models.ArticleCommentGreat.comment_id)\
 				.filter(models.ArticleComment.article_id==_id).order_by(models.ArticleComment.create_time.desc()).all()
 		except:
 			comments = None
@@ -202,9 +203,8 @@ class Detail(FruitzoneBaseHandler):
 			article.if_scan = 0
 			self.session.add(comment)
 			self.session.commit()
-			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname,models.ArticleCommentGreat)\
+			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
-				.outerjoin(models.ArticleCommentGreat,models.ArticleComment.id==models.ArticleCommentGreat.comment_id)\
 				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==_type).order_by(models.ArticleComment.create_time.desc()).first()
 			data=self.getArticleComment(new_comment)
 			return self.send_success(data=data)
@@ -287,9 +287,8 @@ class Search(FruitzoneBaseHandler):
 		nomore = False
 		datalist = []
 		try:
-			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname,models.ArticleGreat)\
+			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-				.outerjoin(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
 				.filter(models.Article.status==1,models.Article.title.like("%%%s%%" % data))\
 				.order_by(models.Article.create_time.desc()).distinct(models.Article.id)
 		except:
