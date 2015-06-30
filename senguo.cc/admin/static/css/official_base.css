@@ -194,7 +194,7 @@ a,input,button{ outline:none; }
 .qa-text-list>li{margin-bottom: 20px;}
 .qa-text-list .qus{color: #399ae7;font-size: 14px;}
 .qa-text-list .ans{color: #333;line-height: 18px;margin-top: 8px;font-size: 14px;}
-.wrap-type{padding: 30px 80px;}
+.wrap-type{padding: 40px 80px;}
 .type-list{margin-top: 40px;}
 .type-list>li{float: left;width: 25%;padding: 0 10px;}
 .type-img{text-align: center;}
