@@ -101,8 +101,8 @@ class OrderDetail(AdminBaseHandler):
 				order.SH2 = staff_data
 
 		order.SH2s = SH2s
-
-		return self.render("m-admin/order-detail.html",order=order,charge_types=charge_types)
+		shop_code = self.current_shop.shop_code
+		return self.render("m-admin/order-detail.html",order=order,charge_types=charge_types,shop_code=shop_code)
 
 		
 class OrderSearch(AdminBaseHandler):
