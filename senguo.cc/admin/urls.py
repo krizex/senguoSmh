@@ -72,14 +72,14 @@ handlers = [
 
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
-	(r"/", handlers.superadmin.Official),
+	#(r"/", handlers.superadmin.Official),
 
 	#official
-	(r"/official",handlers.official.Home,{},"OfficialHome"),
+	(r"/",handlers.official.Home,{},"OfficialHome"),
 
-	(r"/official/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
-	(r"/official/about",handlers.official.About,{},"OfficialAbout"),
-	(r"/official/product",handlers.official.Product,{},"OfficialProduct"),
+	(r"/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
+	(r"/about",handlers.official.About,{},"OfficialAbout"),
+	(r"/product",handlers.official.Product,{},"OfficialProduct"),
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
 
