@@ -19,7 +19,7 @@
 .wrap-icon .post-dz-active{background-position: 0 -65px;}
 .wrap-post{}
 .post-box{background-color: #fff;padding: 10px 15px;}
-.post-title{line-height: 1.4;font-size: 24px;color: #333;font-weight:  normal;}
+.post-title{line-height: 1.4;font-size: 23px;color: #333;font-weight: 400;}
 .post-2title{color: #999;white-space: nowrap;overflow: hidden;}
 .post-2title .author{color: #6ba4ef;margin-right: 10px;}
 .post-cont{line-height: 1.6;color: #333;padding: 20px 0;}
@@ -33,7 +33,7 @@
 .img-border{display: inline-block;border: 2px solid #76ccc0;border-radius: 50%;line-height: 1;}
 .comment-item>dd img{width: 30px;height: 30px;border-radius: 50%;}
 .comment-item>dt{}
-.com-first a{color: #999;}
+.com-first a{color: #999;font-weight: 400;}
 .com-detail{margin-top: 6px;line-height: 18px;color: #333;}
 .fix-center{position: fixed;bottom:50px;width: 100%;max-width: 800px;min-width: 320px;z-index:999;left: 50%;-webkit-transform:translate(-50%,0);transform:translate(-50%,0);text-align: right;-webkit-box-sizing: border-box;box-sizing: border-box;}
 .wrap-post-attr>a{display: inline-block;width: 44px;height: 26px;position: relative;margin-right: 10px;border-radius: 8px;border:1px solid #999;background-color: #fff;}
