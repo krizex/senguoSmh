@@ -5,7 +5,7 @@
 {% block header %}
 <div class="header">
     <span>{{shop.shop_name}}</span>
-    <a href="/customer/profile" class="head-right profile-center"></a>
+    <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"></a>
 </div>
 {% end %}
 {% block content %}
