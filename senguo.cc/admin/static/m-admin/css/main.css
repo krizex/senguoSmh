@@ -78,7 +78,7 @@
 .staff-list .active .check{visibility:visible;}
 .staff-list>li img{width: 36px;height: 36px;border-radius: 50%;}
 .pop-staff-box .btn-box{height: 36px;line-height: 36px;text-align: center;color: #fff;background-color: #48b6a4;}
-.shop-manage{font-size: 14px;height: 30px;line-height: 30px;color:#fff;width: 88px;text-align: center;border-radius: 4px;;-webkit-box-sizing: content-box;margin-top: 6px;background-color:#33CC66}
+.shop-manage{font-size: 14px;height: 30px;line-height: 30px;color:#fff;width: 88px;text-align: center;border-radius: 4px;;-webkit-box-sizing: content-box;margin-top: 6px;background-color: #48b6a4; font-weight: normal;}
 /*订单管理*/
 .wrap-order-tab{padding: 6px 70px;}
 .order-type-list{background-color: #318b7d;border-radius: 28px;position: relative;z-index:1;}
