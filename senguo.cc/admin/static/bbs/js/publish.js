@@ -69,16 +69,16 @@ function initEditor(){
             fileManagerJson : '/admin/editorFileManage',
             extraFileUploadParams : {'token':token1},
             token : token,
-            resizeType : 0,
+            resizeType : 1,
             filterMode : false,
             items:[
                 'source', '|', 'undo', 'redo', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
-                'superscript', 'clearhtml', 'quickformat', '|', 
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent',
+                'clearhtml', 'quickformat', '|', 
                 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
                 'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
-                'emoticons', 'baidumap', 'pagebreak',
-                'anchor', 'link', 'unlink'
+                'emoticons', 'baidumap',
+                'link', 'unlink'
             ],
             afterCreate: function(){
                 this.sync();
