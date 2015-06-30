@@ -13,7 +13,6 @@
     <script>
         window.dataObj = {
             _xsrf: "{{handler.xsrf_token}}"};
-
     </script>
 </head>
 {% set home_active=''%}
@@ -32,11 +31,10 @@
 {% elif context['subpage'] == 'product'%}
 {% set product_active='active'%}
 {% end %}
-
 <body>
 	<header class="clearfix head">
-		<div class="w1200 nav-box group">
-			<div class="senguo-header pull-left ml50">
+		<div class="w1000 nav-box group">
+			<div class="senguo-header pull-left">
 				<div class="logo_box pull-left">
 					<!-- <h1 class="pull-left text-green logo">森果</h1>
 					<div class="pull-left ml5 text-center">
@@ -52,14 +50,14 @@
 					<li class="{{product_active}}"><a href="{{reverse_url('OfficialProduct')}}">产品介绍</a></li>
                     <li class="{{shop_active}}"><a href="{{reverse_url('OfficialShopList')}}">店铺列表</a></li>
 					<li class="{{about_active}}"><a href="{{reverse_url('OfficialAbout')}}">关于我们</a></li>
-                    <li class="{{community_active}}"><a href="javascript:;">森果社区</a></li>
+                    <li class="{{community_active}}"><a href="{{reverse_url('BbsMain')}}">森果社区</a></li>
                     <div class="admin-box">
                         <div class="login-box hidden-xs">
                             <ul class="text-grey header-top" id="header-top">
                                 <!--<li class="loggedout"><a href="#" id="headertop-signup">注册</a></li>
                                 <li class="loggedout"><a href="#" id="headertop-signin" class="text-grey  head-btn border-none  head-btn">登录</a></li>-->
-                                <li><a href="{{reverse_url('switchshop')}}" class="text-grey">管理后台</a></li> |
-                                <li><a href="{{reverse_url('fruitzoneShopApply')}}" class="text-grey">申请接入</a></li>
+                                <li><a href="{{reverse_url('switchshop')}}" class="text-black">管理后台</a></li> |
+                                <li><a href="{{reverse_url('fruitzoneShopApply')}}" class="text-black">申请接入</a></li>
                             </ul>
                         </div>
                     </div>

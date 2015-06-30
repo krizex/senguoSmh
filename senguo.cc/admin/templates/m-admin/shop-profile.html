@@ -5,7 +5,7 @@
 {% block header %}
 <div class="header">
     <span>{{shop.shop_name}}</span>
-    <a href="/customer/profile" class="head-right profile-center"></a>
+    <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"></a>
 </div>
 {% end %}
 {% block content %}
@@ -25,7 +25,7 @@
 {% elif shop.status in[2,3] %}
 {% set shop_auth="企业认证" %}
 {% end %}
-<div class="shop-profile">
+<div class="shop-profile pb45">
     <div class="profile-top white-box">
         <div class="sw-tip shopping" data-status="1"></div>
         <span class="sw-tip-txt">{{shop_status}}</span>
@@ -71,14 +71,14 @@
         <ul class="group stat-order-list pm8">
             <a href="{{reverse_url('MadminOrder')}}">
                 <li>
-                    <p class="name">按时达</p>
-                    <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
-                </li>
-            </a>
-            <a href="{{reverse_url('MadminOrder')}}">
-                <li>
                     <p class="name">立即送</p>
                     <p class="num"><span class="tip-num">{{intime_count}}</span></p>
+                </li>
+            </a>
+             <a href="{{reverse_url('MadminOrder')}}">
+                <li>
+                    <p class="name">按时达</p>
+                    <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
                 </li>
             </a>
             <a href="{{reverse_url('MadminOrder')}}">
@@ -88,7 +88,7 @@
                 </li>
             </a>
         </ul>
-        <a href="javascript:;">
+        <a href="javascript:;" class="developing">
             <p class="box-title btf5">
                 <span class="more fr">&nbsp;</span>
                 <span class="fr c000">{{goods_count}}</span>
@@ -125,5 +125,11 @@
             </p>
         </a>
     </div>
+</div>
+<div class="bm-tab header">
+    <ul class="tab-bm-list group">
+        <li class=""><a href="/madmin"><i class="box-icon ic-shop"></i>店铺管理</a></li>
+        <li class=""><a href="/bbs"><i class="box-icon ic-bbs"></i>森果社区</a></li>
+    </ul>
 </div>
 {% end %}

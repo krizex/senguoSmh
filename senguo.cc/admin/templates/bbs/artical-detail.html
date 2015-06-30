@@ -1,128 +1,89 @@
 {% extends 'base.html' %}
-{% block title %}订单详情{% end %}
+{% block title %}{{article["title"]}}{% end %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="/static/css/fruit-color.css">
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="javascript:;" class="back">返回</a>
-    <span>订单详情</span>
+    <a href="{{reverse_url('BbsMain')}}" class="back">返回</a>
+    <span>文章详情</span>
 </div>
 {% end %}
 {% block content %}
-<div class="order-detail-box" data-id="{{order.id}}">
-    <div class="order-grade">
-        <div class="order-line">
-            <div class="order-line-grade"></div>
-            <div class="order-wawa">
-                <a class="img-border task-staff" href="javascript:;" data-id="{{order.status}}">
-                    {% if order.status == -1%}
-                    <img src="/static/images/TDSG.png" alt="配送员头像"/>
-                    {% else %}
-                        {% if order.SH2%}
-                        <img src="{{order.SH2['headimgurl'] or '/static/images/TDSG.png'}} " alt="配送员头像"/>
-                        {% else %}
-                        <img src="/static/images/TDSG.png" alt="配送员头像"/>
-                        {% end %}
-                    {% end %}
-                </a>
-            </div>
-            <div class="order-status-txt">
-                <a class="task-staff" href="javascript:;" data-id="{{order.status}}" id="status-txt">分配员工</a>
-                {% if order.status in[4,5,6,7] and order.SH2 %}
-                <a class="tel-btn" href="tel:{{order.SH2['phone']}}">拨号</a>
-                {% end %}
-            </div>
+<div class="wrap-post pm20">
+    <div class="post-box">
+        <h3 class="post-title">{{article["title"]}}</h3>
+        <p class="post-2title mt10 c999"><span class="author">{{article["nickname"]}}</span>{{article["time"]}}</p>
+        <div class="post-cont">
+            {% raw article["article"] %}
+        </div>
+        <div class="post-attr">
+            {% if if_admin == True %}
+                <a href="javascript:;" id="del-atical" class="del-atical fr c999" data-id='{{article["id"]}}'>删除</a>
+                <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 mr10">编辑</a>
+            {% end %}
+            <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
+            <span class="wrap-icon dianzan article-great add-great" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
+            <span class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
         </div>
     </div>
-    <div class="order-item pt10">
-        <p class="text-black">订单编号：<span class="order-id" data-id="77">{{order.num}}</span></p>
-        <p>下单时间：<span>{{order.create_date}}</span></p>
-        <p>收货人：<span>{{order.receiver}}</span><span class="user-box">用户：<a href="javascript:;">{{order.customer_nickname}}</a></span></p>
-        <p>联系电话：<span>{{order.phone}}</span><a class="ml10" href="tel:{{order.phone}}">拨号</a></p>
-        <p>收货地址：<span>{{order.address_text}}</span></p>
-        <p>配送时间：<span class="send_date m-r10" style="display: none;">今天</span><span>{{order.send_time}}</span></p>
-        {% if order.message %}<p>订单备注：<span>{{order.message or '无'}}</span></p>{% end %}
-        <p class="{% if order.remark == None%}hide{% end %} remark">商家备注：<spanc class="con">{{order.remark or '无'}}</span></p>
-        <p class="text-black">支付方式：<span>{{order.pay_type_con}}</span></p>
-        <p class="del-reason hide">订单删除原因：<span class="text">{{order.del_reason}}</span></p>
-    </div>
-    <div class="order-item">
-        <h4 class="top-title"><span class="black-txt">{{handler.current_shop.shop_name}}</span><span class="arr-right"></span></h4>
-        <ul class="goods-lst">
-            {% set fruits = eval(order.fruits) %}
-            {% for charge_type in charge_types %}
-            <li class="group {{charge_type.fruit.fruit_type.code}}">
-                <dl class="goods-item dl">
-                    <dt>
-                        {% if charge_type.fruit.img_url %}
-                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView/1/w/120/h/120" alt="商品图片"/>
-                        {% else %}
-                        <img src="/static/design_img/TDSG.png" alt="商品图片"/>
-                        {% end %}
-                    </dt>
-                    <dd class="bg">
-                        <p class="color">{{fruits[charge_type.id]['fruit_name']}}</p>
-                        <p class="color txt-ar"><span class="big">{{fruits[charge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(charge_type.price*fruits[charge_type.id]['num'], 2)}}</span>元</p>
-                        <p class="color">{{fruits[charge_type.id]['charge']}}</p>
+    <div class="wrap-comment">
+        <ul class="comment-list">
+            {% for comment in comments_list %}
+            <li class="forbid_click">
+                <dl class="group comment-item">
+                    <dd>
+                        <span class="img-border"><img src="{{comment['imgurl'] or '/static/images/TDSG.png'}}" alt="用户头像"/></span>
                     </dd>
+                    <dt>
+                        <p class="com-first"><a href="javascript:;" class="wrap-icon dianzan fr comment-great" data-id="{{comment['id']}}"><i class="post-dz {% if comment['great_if'] %}post-dz-active{% end %}"></i><span class="num">{{comment['great_num']}}</span></a><a href="javascript:;" class="nickname"  data-id="{{comment['id']}}">{{comment['nickname']}}</a></p>
+                        <p class="com-detail">{% if comment['type']==1 %}@{{comment['nick_name']}}{% end %} {{comment['comment']}}</p>
+                        <p class="f12 c999 mt2">{{comment['time']}}
+                            {% if author_if == True %}<a href="javascript:;" class="del-comment fr c999"  data-id="{{comment['id']}}">删除</a>{% end %}
+                        </p>
+                    </dt>
                 </dl>
             </li>
             {% end %}
         </ul>
-        <p>商品总价<span class="fr"><span class="red-txt">{{order.totalPrice-order.freight}}元</span></span></p>
-        <p>配送费<span class="fr"><span class="red-txt">{{order.freight}}元</span></span></p>
-        <p class="dash-bt group"><span class="fr c000">应付款：<span class="red-txt">{{order.totalPrice}}元</span></span></p>
     </div>
 </div>
-<div class="wrap-bm-btn" id="nav" style="display:none;">
-    <a class="fr red-btn fun-btn" href="javascript:;">完成配送</a>
-    <a class="fr white-btn remark-order" href="javascript:;">备注</a>
-    <a class="fr white-btn delete-order" href="javascript:;">删除</a>
+<div class="fix-center wrap-reply-box hide forbid_click">
+    <input type="text" class="reply-ipt"/>
+    <a href="javascript:;" class="reply-btn if-login" id="reply">发表评论</a>
 </div>
-<div class="pop-win pop-staff hide">
+<div class="wrap-post-attr fix-center bm10 forbid_click">
+    <a href="javascript:;" class="store if-login" id="store-atical" data-id="{{article['id']}}"><i class="i-store {% if article['collect_if'] == True %}i-store-active{% end %}"></i></a>
+    <a href="javascript:;" class="com com-atical if-login" id="com-atical" data-id="{{article['id']}}"><i class="i-com"></i></a>
+    <a href="javascript:;" class="admire add-great if-login" id="admire-atical" data-id="{{article['id']}}"><i class="i-admire {% if article['great_if'] == True %}i-admire-active{% end %}"></i></a>
+</div>
+<div class="pop-win pop-login hide" data-id="{{if_login}}">
     <div class="pop-content">
-        <div class="pop-staff-box">
-            <p class="title">分配员工</p>
-            <ul class="staff-list">
-                {% for SH2 in order.SH2s %}
-                <li data-id="{{SH2['id']}}" data-tel="{{SH2['phone']}}">
-                    <span class="check fr">✓</span>
-                    <span class="img-border mr10"><img src="{{SH2['headimgurl'] or '/static/images/TDSG.png'}}" alt="员工头像"/></span>
-                    <span>{{SH2['nickname']}}</span>
-                </li>
-               {% end %}
-            </ul>
-            <p class="btn-box sure-staff" id="sure-staff">
-                确认并设为处理中
-            </p>
+        <div class="login-box">
+            <!-- <p class="title">商家回复</p> -->
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
+            <div class="button-box mt10">
+                {% if handler.is_wexin_browser()%}
+                <a href="{{handler.get_weixin_login_url()}}" class="btn">登录</a>
+                {% else %}
+                <a href="{{reverse_url('customerLogin')}}?next=/bbs/detail/{{article['id']}}" class="btn">登录</a>
+                {% end %}
+            </div>
         </div>
     </div>
 </div>
 <div class="pop-win pop-del hide">
     <div class="pop-content">
-        <div class="pop-staff-box">
-            <p class="title"></p>
+        <div class="login-box">
             <span class="close close-btn">X</span>
-            <textarea  id="order-del"></textarea>
-            <div class="button-box">
-                <button type="button" class="sure-btn">确定</button>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="pop-win pop-confirm hide">
-    <div class="pop-content">
-        <div class="pop-staff-box">
-            <p class="text txt-center"></p>
-            <span class="close close-btn">X</span>
-            <div class="button-box">
-                <button type="button" class="func-sure" id="">确定</button>
+            <p class="txt-center c999 mt10 mb10">将不可恢复！确认删除？</p>
+            <div class="button-box mt10">
+                <a href="javascript:;" class="btn del-sure">确认</a>
             </div>
         </div>
     </div>
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('m-admin/js/order-detail.js')}}"></script>
+<script src="{{static_url('bbs/js/artical-detail.js')}}"></script>
 {% end %}

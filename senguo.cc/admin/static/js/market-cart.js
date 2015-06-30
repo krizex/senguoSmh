@@ -17,7 +17,8 @@ $(document).ready(function(){
     //价格
     getPrice();
     //按时达最低起送金额提示
-    if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
+    // if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
+    if(window.dataObj.total_price<window.dataObj.mincharge_now) $('.mincharge_now').show();
     //商品数量操作
     $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);
@@ -286,6 +287,7 @@ $(document).ready(function(){
         })
     }
     else{
+        console.log(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         $('.send_now').show();
         $('.intime-intro').hide();
         $('.now-intro').show();
@@ -348,7 +350,7 @@ $(document).ready(function(){
         $('.now-intro').hide();
     }
     if(intime_on=='True'&&now_on=='True'){
-        $('.send_now').hide();
+        $('.send_now').show();
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);
