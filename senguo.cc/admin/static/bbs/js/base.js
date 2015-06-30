@@ -4,7 +4,7 @@
 $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height-40);
-	 //fastclick initialise
+	//fastclick initialise
     FastClick.attach(document.body);
     $(".pop-win").on("click",function(e){/*关闭模态框*/
         if($(e.target).closest(".pop-content").length==0){
@@ -15,9 +15,13 @@ $(document).ready(function(){
          $(".pop-win").addClass("hide");
     });
     $(".goback").on("click",function(){
-        history.go(-1);
+        if(history.length == 1){
+            window.location.href = "/bbs";
+        }
+        else{
+            history.go(-1);
+        }
     });
-    
     if($("#order-success").size()>0){
         if(location.href!=parent.location.href){
             parent.location.href = location.href;
