@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="javascript:;" class="back goback">返回</a>
+    <a href="/bbs" class="back">返回</a>
     <span>文章详情</span>
 </div>
 {% end %}
@@ -22,9 +22,8 @@
                 <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 mr10 if-login">编辑</a>
             {% end %}
             <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
-            <span class="wrap-icon dianzan article-great add-great if-login" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
-            <span class="wrap-icon comment com-atical if-login" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
-
+            <span class="wrap-icon dianzan article-great add-great" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
+            <span class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
         </div>
     </div>
     <div class="wrap-comment">

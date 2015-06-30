@@ -6,7 +6,7 @@ small, strike, strong, tt, var,
 b, u, i, center, dl, dt, dd, ol, ul, li, 
 form, label, legend,fieldset,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; border: none; outline: none; vertical-align: baseline;-webkit-appearance: none;-moz-appearance:none;appearance:none;}
-html,body,textarea,input,select,button,h1,h2,h3,h4,h5,h6{line-height: 1.25;font-size:16px;font-family: "Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;}
+html,body,textarea,input,select,button,h1,h2,h3,h4,h5,h6{line-height: 1.25;font-size: 15px;font-family: "Helvetica Neue",Helvetica,"Hiragino Sans GB","Microsoft YaHei",Arial,sans-serif;}
 html{overflow-x: hidden;-webkit-overflow-scrolling:touch;overflow-scrolling:touch;min-height: 100%;}
 body{background-color: #f0f4f0;overflow-x: hidden;max-width: 800px;min-width: 320px;margin: 0 auto;}
 .h100{height: 100%;overflow: hidden;}
@@ -99,7 +99,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .container{position: relative;z-index: 1;padding-top: 40px;width: 100%;max-width:800px;min-width:320px;margin: 0 auto;}
 /*弹出框底层*/
 .pop-win{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}
-.pop-content{width:70%;max-width:400px;padding:15px;background-color: #fff;border: 1px solid #eee;box-shadow: 1px 2px 4px 0 #ccc;position: absolute;left: 50%;top: 40%;-webkit-transform:translate(-50%,-50%);}
+.pop-content{width:80%;max-width:400px;padding:15px;background-color: #fff;border: 1px solid #eee;box-shadow: 1px 2px 4px 0 #ccc;position: absolute;left: 50%;top: 40%;-webkit-transform:translate(-50%,-50%);}
 .pop-content textarea{background:#f5f5f5;height:80px;padding:8px 0;text-indent:8px;margin-bottom:10px;}
 .pop-content .button-box{text-align: center;}
 .pop-content .button-box button{background:#48b6a4;color:#fff;border-radius:20px;width:35%;height:30px;}
