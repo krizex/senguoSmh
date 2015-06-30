@@ -1,3 +1,4 @@
+var ueditor = null;
 $(document).ready(function(){
     $(".board-list li").on("click",function(){
         var index = $(this).index();
@@ -48,7 +49,8 @@ function publishAtical(){
 }
 
 function initEditor(){
-    $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
+    ueditor = UM.getEditor('ueditor');
+   /* $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
         var token = data.res;
         var editor = KindEditor.create('#kindEditor', {
@@ -80,5 +82,5 @@ function initEditor(){
                 Tip(message);
             }
         });
-    }});
+    }});*/
 }
