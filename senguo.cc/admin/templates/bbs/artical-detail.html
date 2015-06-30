@@ -2,7 +2,7 @@
 {% block title %}{{article["title"]}}{% end %}
 {% block head %}
 <style>
-     img,section,fieldset,div,p,ul,li{max-width: 100% !important;height: auto !important;}
+     img,section,fieldset{max-width: 100% !important;height: auto !important;}
 </style>
 {% end %}
 {% block header %}
@@ -32,8 +32,7 @@
             {% end %}
             <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
             <span class="wrap-icon dianzan article-great add-great" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
-            <span class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
-
+            <a href="javascript:;" class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></a>
         </div>
     </div>
     <div class="wrap-comment">
