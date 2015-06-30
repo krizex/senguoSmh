@@ -72,7 +72,7 @@ function initEditor(){
             resizeType : 1,
             filterMode : false,
             items:[
-                'source', '|', 'undo', 'redo', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                'undo', 'redo', '|', 'justifyleft', 'justifycenter', 'justifyright',
                 'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent',
                 'clearhtml', 'quickformat', '|', 
                 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
