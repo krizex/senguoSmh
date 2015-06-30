@@ -12,8 +12,8 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="/static/m-admin/css/reset.css">
-    <link rel="stylesheet" type="text/css" href="/static/m-admin/css/main.css">
+    <link rel="stylesheet" type="text/css" href="{{static_url('m-admin/css/reset.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('m-admin/css/main.css')}}">
     {% block head %}{% end %}
     <script>
         window.dataObj = {
@@ -31,7 +31,7 @@
     {% end %}
 <script type="text/javascript" src="/static/m-admin/js/zepto.min.js"></script>
 <script type="text/javascript" src="/static/m-admin/js/util.js"></script>
-<script type="text/javascript" src="/static/m-admin/js/base.js"></script>
+<script type="text/javascript" src="{{static_url('m-admin/js/base.js')}}"></script>
 {% block bottom %}{% end %}
 </body>
-</html> 
+</html>

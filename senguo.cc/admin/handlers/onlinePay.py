@@ -78,18 +78,13 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		qr_url=""
 		if not self.is_wexin_browser():
-			res_dict = self._qrwxpay(order,wxPrice)		
-			if 'code_url' in res_dict:
-				qr_url = res_dict['code_url']
-				print(qr_url,'onlinewxpay not in weixin')
-				# return self.send_success(url = res_dict['code_url'])
-				return self.render('customer/online-qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
+			qr_url = self._qrwxpay()		
+			print(qr_url,'onlinewxpay not in weixin')
+			return self.render('customer/online-qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
 			order=order)
-			else:
-				return self.send_fail('can not get code_url!')
 
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		code = self.args.get('code',None)
@@ -126,11 +121,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
 
-			res_dict = self._qrwxpay(order,wxPrice)
-			print(res_dict,'onlinewxpay in weixin 111111111')		
-			if 'code_url' in res_dict:
-				qr_url = res_dict['code_url']
-				print(qr_url,'onlinewxpay in weixin 2222222')
+			qr_url = self._qrwxpay()
 		return self.render("fruitzone/paywx.html",qr_url = qr_url ,renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
@@ -143,17 +134,27 @@ class OnlineWxPay(CustomerBaseHandler):
 		pass
 		return
 
-	def _qrwxpay(self,order,wxPrice):
+	def _qrwxpay(self):
+		order_id = self.get_cookie("order_id")
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		totalPrice = order.totalPrice
+		wxPrice =int(totalPrice * 100)
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
 		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
-		unifiedOrder.setParameter("out_trade_no",order.num)
+		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
 		# print(res,type(res_dict))
-		return res_dict
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return qr_url
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
@@ -282,12 +283,12 @@ class wxpayCallBack(CustomerBaseHandler):
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
 		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
-		unifiedOrder.setParameter("out_trade_no",order.num )
+		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
-		print(res,type(res_dict))
+		# print(res,type(res_dict))
 		if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
 		else:

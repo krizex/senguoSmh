@@ -1,16 +1,17 @@
 /**
  * Created by Administrator on 2015/6/15.
  */
+ var if_login=$('.pop-login').attr('data-id');
 $(document).ready(function(){
+    cookie.setCookie("next_url",window.location.href);
     var height = $(window).height();
     $(".container").css("minHeight",height-40);
-	 //fastclick initialise
     $(".pop-win").on("click",function(e){/*关闭模态框*/
         if($(e.target).closest(".pop-content").length==0){
             $(".pop-win").addClass("hide");
         }
     });
-     $(".close").on("click",function(){/*关闭模态框*/
+    $(".close").on("click",function(){/*关闭模态框*/
          $(".pop-win").addClass("hide");
     });
     $(".goback").on("click",function(){

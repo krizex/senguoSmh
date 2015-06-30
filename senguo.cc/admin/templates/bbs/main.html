@@ -6,7 +6,7 @@
 <div class="header">
     <a href="javascript:;" class="back bbs-menu" id="bbs-menu">所有版块</a>
     <span>森果社区</span>
-    <a href="/bbs/search" class="head-right search"></a>
+    <a href="{{reverse_url('BbsSearch')}}" class="head-right search"></a>
     <div class="wrap-menu-list h0">
         <ul class="menu-list">
             <li data-id="0">官方公告</li>
@@ -48,13 +48,25 @@
 </div>
 <p class="loading txt-center c999 mt10 hide"></p>
 <div class="fix-center publish-btns">
-{% if handler.current_user %}
 {% if if_admin == True %}
-<a href="{{reverse_url('BbsPublish')}}" class="publish-tie">发布</a>
+<a href="{{reverse_url('BbsPublish')}}" class="publish-tie if-login">发布</a>
 {% end %}
-{% else %}
-<a href="{{reverse_url('customerLogin')}}" class="publish-tie">发布</a>
-{% end %}
+</div>
+<div class="pop-win pop-login hide" data-id="{{if_login}}">
+    <div class="pop-content">
+        <div class="login-box">
+            <!-- <p class="title">商家回复</p> -->
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
+            <div class="button-box mt10">
+                {% if handler.is_wexin_browser() %}
+                <a href="{{handler.get_weixin_login_url()}}" class="btn">登录</a>
+                {% else %}
+                <a href="{{reverse_url('customerLogin')}}?next=/bbs" class="btn">登录</a>
+                {% end %}
+            </div>
+        </div>
+    </div>
 </div>
 {% end %}
 {% block bottom %}

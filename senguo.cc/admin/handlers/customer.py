@@ -50,6 +50,7 @@ class Access(CustomerBaseHandler):
 		elif self._action == 'qqoauth':
 			print('login qqoauth')
 			self.handle_qq_oauth(next_url)
+
 		else:
 			return self.send_error(404)
 
@@ -863,7 +864,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 # 商城入口
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
-	# @get_unblock
+	@get_unblock
 	def get(self, shop_code):
 		w_follow = True
 		# fruits=''
@@ -2214,17 +2215,12 @@ class payTest(CustomerBaseHandler):
 		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
 		qr_url=""
 		if not self.is_wexin_browser():
-			res_dict=self._qr_pay(orderId,wxPrice)
-			# print(res,type(res_dict))
-			if 'code_url' in res_dict:
-				qr_url = res_dict['code_url']
-				# print(res_dict['code_url'])
-				# url = pyqrcode.create(res_dict['code_url'])
-				# url.png('really.png',scale = 8)
-				print(qr_url,'chargewxpay no in weixin')
-				return self.render("customer/qrwxpay.html" , qr_url =qr_url ,totalPrice=totalPrice)
-			else:
-				return self.send_fail('can not get code_url!')
+			qr_url=self._qr_pay()
+			# print(res_dict['code_url'])
+			# url = pyqrcode.create(res_dict['code_url'])
+			# url.png('really.png',scale = 8)
+			print(qr_url,'chargewxpay no in weixin')
+			return self.render("customer/qrwxpay.html" , qr_url =qr_url ,totalPrice=totalPrice)
 		else:
 			print(self.request.full_url())
 			path_url = self.request.full_url()
@@ -2266,11 +2262,7 @@ class payTest(CustomerBaseHandler):
 				wxappid = 'wx0ed17cdc9020a96e'
 				signature = self.signature(noncestr,timestamp,path_url)
 				# totalPrice = float(totalPrice/100)
-				res_dict=self._qr_pay(orderId,wxPrice)
-				print(res_dict,'chargewxpay in weixin 11111')
-				if 'code_url' in res_dict:
-					qr_url = res_dict['code_url']
-					print(qr_url,'chargewxpay in weixin 22222')
+				qr_url=self._qr_pay()
 			# return self.send_success(renderPayParams = renderPayParams)
 			return self.render("fruitzone/paytest.html",qr_url=qr_url,renderPayParams = renderPayParams,wxappid = wxappid,\
 				noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
@@ -2279,16 +2271,24 @@ class payTest(CustomerBaseHandler):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		pass
 		return
-	def _qr_pay(self,orderId,wxPrice):
+	def _qr_pay(self):
+		totalPrice = float(self.get_cookie('money'))
+		wxPrice    = int(totalPrice * 100)
+		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
 		unifiedOrder =   UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
 		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
-		unifiedOrder.setParameter("out_trade_no",orderId)
+		unifiedOrder.setParameter("out_trade_no",orderId+"a")
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
-		return res_dict
+		# print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return qr_url
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
@@ -2376,12 +2376,12 @@ class wxChargeCallBack(CustomerBaseHandler):
 		unifiedOrder =   UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
 		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
-		unifiedOrder.setParameter("out_trade_no",orderId)
+		unifiedOrder.setParameter("out_trade_no",orderId+"a")
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
-		print(res,type(res_dict))
+		# print(res,type(res_dict))
 		if 'code_url' in res_dict:
 				qr_url = res_dict['code_url']
 		else:

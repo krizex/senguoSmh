@@ -17,7 +17,8 @@ $(document).ready(function(){
     //价格
     getPrice();
     //按时达最低起送金额提示
-    if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
+    // if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
+    if(window.dataObj.total_price<window.dataObj.mincharge_now) $('.mincharge_now').show();
     //商品数量操作
     $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);

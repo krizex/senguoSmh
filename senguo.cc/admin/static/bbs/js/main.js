@@ -9,6 +9,7 @@ $(document).ready(function(){
     });
     $(".menu-list li").on("click",function(){
         var id = parseInt($(this).attr("data-id"));
+        $('#bbs-menu').text($(this).text());
         $(".wrap-menu-list").addClass("h0");
         page=0;
         _type=id;
@@ -19,12 +20,15 @@ $(document).ready(function(){
     if(link_action=="official"){
          page=0;
          _type=0;
+         $('#bbs-menu').text('官方公告');
     }else if(link_action=="update"){
          page=0;
          _type=1;
+         $('#bbs-menu').text('产品更新');
     }else if(link_action=="dry"){
          page=0;
          _type=2;
+         $('#bbs-menu').text('运营干货');
     }else{
         _type=100;
     }
@@ -36,6 +40,10 @@ $(document).ready(function(){
     	window.location.href="/bbs/detail/"+id;
     } 
 }).on("click",".atical-attr .dianzan",function(){
+    if(if_login=='False'){
+       $('.pop-login').removeClass("hide");
+       return false; 
+    }
 	var $this=$(this);
 	var id=$this.parents("li").attr("data-id");
 	var url="/bbs/detail/"+id;
@@ -62,8 +70,8 @@ var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
                 '<span class="fr">'+
-                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz {{great_if}}"></i><span>{{great_num}}</span></a>'+
-                    '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>{{comment_num}}</a>'+
+                    '<a href="javascript:;" class="wrap-icon dianzan mr10"><i class="icon-dz2 {{great_if}}"></i><span>{{great_num}}</span></a>'+
+                    '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com2"></i>{{comment_num}}</a>'+
                 '</span>'+
                 '<span class="time mr10">{{time}}</span>'+
                 '<span class="author">{{nickname}}</span>'+

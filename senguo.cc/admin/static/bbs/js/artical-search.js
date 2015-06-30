@@ -25,7 +25,7 @@ var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
                 '<span class="fr">'+
-                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz"></i>{{great_num}}</a>'+
+                    '<a href="javascript:;" class="wrap-icon dianzan mr10"><i class="icon-dz"></i>{{great_num}}</a>'+
                     '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>{{comment_num}}</a>'+
                 '</span>'+
                 '<span class="time mr10">{{time}}</span>'+
@@ -66,6 +66,10 @@ function articleList(page,search){
                 if(nomore==true){
                     $('.wrap-loading-box').addClass('hide');
                     $('.loading').html("~没有更多搜索结果了~").show();
+                    if(page==0&&datalist.length==0){
+                        $('.loading').html("无搜索结果").show();
+                    }
+                    
                 }
                 for(var i in datalist){
                         var render = template.compile(item);

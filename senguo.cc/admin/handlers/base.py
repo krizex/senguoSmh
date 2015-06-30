@@ -340,7 +340,11 @@ class GlobalBaseHandler(BaseHandler):
 
 	def getArticle(self,article):
 		great_if = False
-		if article[2] and article[2].great == 1:	
+		try:
+			article_great=self.session.query(models.ArticleGreat).filter_by(article_id=article[0].id,account_id=self.current_user.id).one()
+		except:
+			article_great=None
+		if article_great and article_great.great == 1:	
 			great_if=True
 		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
@@ -349,7 +353,11 @@ class GlobalBaseHandler(BaseHandler):
 
 	def getArticleComment(self,new_comment):
 		great_if = False
-		if new_comment[2] and new_comment[2]:
+		try:
+			comment_great=self.session.query(models.ArticleCommentGreat).filter_by(comment_id = new_comment[0].id,account_id = self.current_user.id).one()
+		except:
+			comment_great=None
+		if comment_great:
 			great_if=True
 		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
 				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],

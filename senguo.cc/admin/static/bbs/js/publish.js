@@ -14,19 +14,29 @@ $(document).ready(function(){
     $(".type").text(type).attr("data-id",type_id);
     $(".pop-reply").addClass("hide");
 }).on("click",".publish-tie",function(){
-    publishAtical();
+    publishAtical($(this));
 });
-function publishAtical(){
+function publishAtical(target){
+    if(target.attr("data-statu")=="1") {
+        return false;
+    }
+    target.attr("data-statu", "1");
     var url = "";
     var classify =$(".type").attr("data-id");
     if(!classify){
+        target.attr("data-statu", "0");
         return Tip("请选择板块");
     }
     var title=$(".title-ipt").val();
     if(title == "" || title.length>40){
+        target.attr("data-statu", "0");
         return Tip("标题不能为空且不能超过20个字");
     }
     var article= ueditor.getContent();
+    if(!article){
+        target.attr("data-statu", "0");
+        return Tip("文章内容不能为空");
+    }
     var args = {
         action:"",
         data:{
@@ -43,6 +53,7 @@ function publishAtical(){
                 window.location.href="/bbs"
             },2000);
         }else{
+            target.attr("data-statu", "0");
             Tip(res.error_text);
         }
     });
@@ -60,17 +71,16 @@ function initEditor(){
             fileManagerJson : '/admin/editorFileManage',
             extraFileUploadParams : {'token':token1},
             token : token,
-            resizeType : 0,
+            resizeType : 1,
             filterMode : false,
             items:[
-                'source', '|', 'undo', 'redo', '|', 'preview', 'print', 'template', 'code', 'cut', 'copy', 'paste',
-                'plainpaste', 'wordpaste', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent', 'subscript',
-                'superscript', 'clearhtml', 'quickformat', 'selectall', '|', 'fullscreen', '/',
+                'undo', 'redo', '|', 'justifyleft', 'justifycenter', 'justifyright',
+                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent',
+                'clearhtml', 'quickformat', '|', 
                 'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
                 'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
-                'flash', 'media', 'insertfile', 'table', 'hr', 'emoticons', 'baidumap', 'pagebreak',
-                'anchor', 'link', 'unlink', '|', 'about'
+                'emoticons', 'baidumap',
+                'link', 'unlink'
             ],
             afterCreate: function(){
                 this.sync();

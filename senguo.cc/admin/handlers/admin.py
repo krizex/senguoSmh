@@ -95,6 +95,8 @@ class Home(AdminBaseHandler):
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 			not_(models.Order.status.in_([-1,0]))).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+		if new_order_sum < 0:
+			new_order_sum = 0
 		# self.current_shop.new_order_sum = order_sum
 
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()

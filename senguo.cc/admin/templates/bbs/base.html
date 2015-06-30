@@ -12,8 +12,8 @@
     <meta name="format-detection" content="telephone=no">
     <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
-    <link rel="stylesheet" type="text/css" href="/static/bbs/css/reset.css">
-    <link rel="stylesheet" type="text/css" href="/static/bbs/css/main.css">
+    <link rel="stylesheet" type="text/css" href="{{static_url('bbs/css/reset.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('bbs/css/main.css')}}">
     {% block head %}{% end %}
     <script>
         window.dataObj = {
@@ -21,14 +21,18 @@
     </script>
 </head>
 <body>
+    {% set if_login = '' %}
+    {% if handler.current_user %}
+    {% set if_login = True %}
+    {% else %}
+    {% set if_login = False %}
+    {% end %}
     <header>
         {% block header %}{% end %}
     </header>
-    {% block setcontent %}
     <div class="container">
         {% block content %}{% end %}
     </div>
-    {% end %}
 {% block js %}
     <script type="text/javascript" src="/static/bbs/js/zepto.min.js"></script>
 {% end %}
