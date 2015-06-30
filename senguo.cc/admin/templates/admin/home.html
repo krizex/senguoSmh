@@ -35,24 +35,32 @@
         <div class="line"></div>
     </div>
 </div>
-<div class="index-notice-list">
-    <span class="title">系统公告</span>
-    <ul class="notice-list">
-        {% for new_sys_notice in new_sys_notices %}
-        <li>
-            <a href="#" target="_blank">{{new_sys_notice.title}}</a>
-            <i class="new-btn">NEW</i>
-            <span>{{new_sys_notice.create_time}}</span>
-        </li>
-        {% end %}
-        {% for sys_notice in sys_notices %}
-        <li>
-            <a href="#" target="_blank">{{sys_notice.title}}</a>
-            <span>{{sys_notice.create_time}}</span>
-        </li>
-        {% end %}
-    </ul>
-</div>
+ <ul class="bar-list clearfix">
+    <li>
+        <ul class="text-list">
+            <div class="title">官方公告<a class="pull-right font12 text-grey" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official">更多>></a></div>
+            {% for a in article_list["notice"]%}
+            <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+            {% end %}
+        </ul>
+    </li>
+    <li>
+        <ul class="text-list">
+            <div class="title">产品更新<a class="pull-right font12 text-grey" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update">更多>></a></div>
+            {% for a in article_list["update"]%}
+            <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+            {% end %}
+        </ul>
+    </li>
+    <li>
+        <ul class="text-list">
+            <div class="title">运营干货<a class="pull-right font12 text-grey" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry">更多>></a></div>
+           {% for a in article_list["dry"]%}
+            <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+            {% end %}
+        </ul>
+    </li>
+</ul>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/admin-realtime.js')}}"></script>

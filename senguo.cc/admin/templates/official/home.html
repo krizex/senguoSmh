@@ -49,26 +49,26 @@
     <ul class="bar-list clearfix">
         <li>
             <ul class="text-list">
-                <div class="title">官方公告</div>
-                <li><a href="javascript:;" title="请所有店家尽快完善店铺信息">请所有店家尽快完善店铺信息<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="请所有店家尽快完善店铺信息">请所有店家尽快完善店铺信息<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="请所有店家尽快完善店铺信息">请所有店家尽快完善店铺信息<span class="date">06-12</span></a></li>
+                <div class="title">官方公告<a class="pull-right font12 text-grey" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official"  target="_blank">更多>></a></div>
+                {% for a in article_list["notice"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}" target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
             </ul>
         </li>
         <li>
             <ul class="text-list">
-                <div class="title">产品更新</div>
-                <li><a href="javascript:;" title="新增到店自提、预售功能">新增到店自提、预售功能<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="新增到店自提、预售功能">新增到店自提、预售功能<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="新增到店自提、预售功能">新增到店自提、预售功能<span class="date">06-12</span></a></li>
+                <div class="title">产品更新<a class="pull-right font12 text-grey" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update"  target="_blank">更多>></a></div>
+                {% for a in article_list["update"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
             </ul>
         </li>
         <li>
             <ul class="text-list">
-                <div class="title">森果社区</div>
-                <li><a href="javascript:;" title="手把手教你线上卖水果—采购篇">手把手教你线上卖水果—采购篇<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="手把手教你线上卖水果—采购篇">手把手教你线上卖水果—采购篇<span class="date">06-12</span></a></li>
-                <li><a href="javascript:;" title="手把手教你线上卖水果—采购篇">手把手教你线上卖水果—采购篇<span class="date">06-12</span></a></li>
+                <div class="title">运营干货<a class="pull-right font12 text-grey" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry"  target="_blank">更多>></a></div>
+               {% for a in article_list["dry"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
             </ul>
         </li>
     </ul>
@@ -141,16 +141,16 @@
                 <ul class="qa-text-list">
                     <li>
                         <div class="wrap-qa-item mb20">
-                            <p class="qus">Q:森果真的是免费的吗？真的吗？森果真的是免费的吗？真的吗？</p>
-                            <p class="ans">A:我们说了很多次啦，我们说了很多次啦我们说了很多次啦一定是免费的......</p>
+                            <p class="qus">Q森果是免费的吗？</p>
+                            <p class="ans">A:森果系统对卖家是永久免费的，不仅免费，有很多原本收费的服务我们还有补贴。</p>
                         </div>
                         <div class="wrap-qa-item mb20">
-                            <p class="qus">Q:接入需要什么条件？</p>
-                            <p class="ans">A:我们说了很多次啦，一定是免费的......</p>
+                            <p class="qus">Q:森果系统只能在微信上使用吗？</p>
+                            <p class="ans">A:森果提供了微信、qq、支付宝、手机号等多种登录方式。您可以在微信、qq、支付宝、微博等多个渠道进行店铺的推广与经营。</p>
                         </div>
                         <div class="wrap-qa-item">
-                            <p class="qus">Q:我是新手想学习开店经验？</p>
-                            <p class="ans">A:我们说了很多次啦，一定是免费的......</p>
+                            <p class="qus">Q:接入需要什么条件？</p>
+                            <p class="ans">A:几乎是不需要什么条件的。不过最好您进来是卖水果的，为水果行业提供免费的互联网工具，提高行业运转效率，这是我们的初衷。</p>
                         </div>
                     </li>
                 </ul>
@@ -159,16 +159,16 @@
                 <ul class="qa-text-list">
                     <li>
                         <div class="wrap-qa-item mb20">
-                            <p class="qus">Q:怎么推广我的店铺？真的吗？森果真的是免费的吗？真的吗？</p>
-                            <p class="ans">A:我们说了很多次啦，我们说了很多次啦我们说了很多次啦一定是免费的......</p>
+                            <p class="qus">Q:我是新手想学习水果开店经验？</p>
+                            <p class="ans">A:恭喜你来对了地方！森果平台是中国最大的水果零售商聚集地。您可以联系客户加入用户交流群向同行牛人学习，也可以在森果社区学习水果行业的相关知识。</p>
                         </div>
                         <div class="wrap-qa-item mb20">
-                            <p class="qus">Q:怎么和微信绑定？</p>
-                            <p class="ans">A:我们说了很多次啦，一定是免费的......</p>
+                            <p class="qus">Q:你们提供货源吗？</p>
+                            <p class="ans">A:森果是一个免费的水果第三方平台，主要提供技术支持，目前不提供货源。不过我们会为您提供采购信息支持。</p>
                         </div>
                         <div class="wrap-qa-item">
-                            <p class="qus">Q:有区域限制吗？</p>
-                            <p class="ans">A:我们说了很多次啦，一定是免费的......</p>
+                            <p class="qus">Q:店铺认证有什么作用？</p>
+                            <p class="ans">A:为保障店铺和消费者的权益，森果开设的店铺需要进行店铺认证。认证完全免费，且流程简单。店铺认证后才能使用支付等高级功能。</p>
                         </div>
                     </li>
                 </ul>
@@ -176,7 +176,7 @@
         </ul>
     </div>
     <div class="wrap-type">
-        <p class="box-title">森果使用的水果经营模式</p>
+        <p class="box-title">森果适用的水果经营模式</p>
         <ul class="type-list">
             <li>
                 <div class="type-img"><img src="/static/official_img/icon9.png" alt="水果O2O"/></div>

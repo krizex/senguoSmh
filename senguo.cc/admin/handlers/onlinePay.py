@@ -294,6 +294,7 @@ class wxpayCallBack(CustomerBaseHandler):
 			qr_url = ""
 		return self.send_success(qr_url=qr_url)
 
+
 class OrderDetail(CustomerBaseHandler):
 	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("alipayUrl?:str","order_id?:str")

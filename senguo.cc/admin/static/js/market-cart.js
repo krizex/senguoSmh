@@ -286,6 +286,7 @@ $(document).ready(function(){
         })
     }
     else{
+        console.log(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         $('.send_now').show();
         $('.intime-intro').hide();
         $('.now-intro').show();
@@ -348,7 +349,7 @@ $(document).ready(function(){
         $('.now-intro').hide();
     }
     if(intime_on=='True'&&now_on=='True'){
-        $('.send_now').hide();
+        $('.send_now').show();
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);

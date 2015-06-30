@@ -1,4 +1,16 @@
 $(document).ready(function(){
+    var width = $("#swiper-container").width();
+    if($(".swiper-slide").size()>1){
+        $(".swiper-wrapper").width(width*$(".swiper-slide").size());
+        new Swiper('#swiper-container',{
+            mode: 'horizontal',
+            loop:true,
+            grabCursor: true,
+            pagination: '.pagination',
+            autoplay:"3000",
+            autoplayDisableOnInteraction:false
+        });
+    }
     //分类显示
     var top_title=$('.top-title');
     //get infomations of goods and push into html
@@ -39,24 +51,6 @@ $(document).ready(function(){
     if(isWeiXin()){
         wexin('',shop_logo);
     }
-    //公告滚动
-    $('#position li').first().addClass('on');
-    if($('#position li').length>0){
-        var slider =
-            Swipe(document.getElementById('slider'), {
-                auto: 3000,
-                continuous: true,
-                callback: function(pos) {
-                    var i = bullets.length;
-                    while (i--) {
-                        bullets[i].className = ' ';
-                    }
-                    bullets[pos].className = 'on';
-                }
-            });
-        var bullets = document.getElementById('position').getElementsByTagName('li');
-    }
-
     var top=$('.top-title').offset().top;
     $('goods-list').last().addClass('m-b60');
     $('.bottom-nav').find('li').addClass('add_cart');
