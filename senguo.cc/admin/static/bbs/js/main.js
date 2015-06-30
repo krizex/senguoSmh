@@ -20,12 +20,15 @@ $(document).ready(function(){
     if(link_action=="official"){
          page=0;
          _type=0;
+         $('#bbs-menu').text('官方公告');
     }else if(link_action=="update"){
          page=0;
          _type=1;
+         $('#bbs-menu').text('产品更新');
     }else if(link_action=="dry"){
          page=0;
          _type=2;
+         $('#bbs-menu').text('运营干货');
     }else{
         _type=100;
     }
