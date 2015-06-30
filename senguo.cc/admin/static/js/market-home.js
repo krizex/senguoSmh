@@ -1,5 +1,10 @@
+document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+var myScroll = null;
 $(document).ready(function(){
     var width = $("#swiper-container").width();
+    var height = $(window).height();
+    $(".container").height(height).css("overflow","hidden").css("paddingBottom","0");
+    //$("#wrap-home-box").height(height-50);
     if($(".swiper-slide").size()>1){
         $(".swiper-wrapper").width(width*$(".swiper-slide").size());
         new Swiper('#swiper-container',{
@@ -56,33 +61,25 @@ $(document).ready(function(){
     $('.bottom-nav').find('li').addClass('add_cart');
     //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
     //分类导航置顶
-    var s_top = 0;
-    $(window).scroll(function(){
+    /*$(window).scroll(function(){
         //分类滚动监听
         if($(window).scrollTop()>top){
-            //$(".notice-box").hide();
             $('.classify-list').addClass('fix-top2');
             $('.top-title').addClass('fix-top');
-            
-            //$(".wrap-goods-box").height($(window).height()-50);
         }else{
-            //$(".notice-box").show();
             $('.classify-list').removeClass('fix-top2');
             $('.top-title').removeClass('fix-top');
-            
-            //$(".wrap-goods-box").height($(window).height()-50-$(".wrap-notice-box").height());
         }
-        //s_top = $(".wrap-goods-box").scrollTop();
         if(link_search == null){
-         //分类滚动监听
+        //分类滚动监听
             var box=$('.classify-title');
             for(var i=0;i<box.length;i++){
                 var dist=box[i].offsetTop-40;
                 var classify=box[i].innerHTML;
                 if($(window).scrollTop()>=dist){$('#classify').text(classify);}
             }
-         }
-    });
+        }
+    });*/
     //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
     // var cart_ms=window.dataObj.cart_ms;
@@ -90,6 +87,40 @@ $(document).ready(function(){
         window.dataObj.fruits[cart_fs[key][0]]=cart_fs[key][1];
         fruits_num();
     }
+    /*初始化iscroll*/
+    myScroll = new IScroll('#scroller', {
+        scrollbars: true,
+        mouseWheel: true,
+        interactiveScrollbars: true,
+        shrinkScrollbars: 'scale',
+        fadeScrollbars: true,
+        probeType: 3
+    });
+    myScroll.on("scroll",function(){
+        var scrollTop = Math.abs(this.y);
+        //分类滚动监听
+        if(scrollTop>top){
+            $('.classify-list').css('top',scrollTop+"px");
+            $('.top-title').css('top',scrollTop+"px");
+        }else{
+            $('.classify-list').css('top',top+"px");
+            $('.top-title').css('top',top+"px");
+        }
+        if(scrollTop>height/2){
+            $('.little_pear').show();
+        }else{
+            $('.little_pear').hide();
+        }
+        if(link_search == null){
+            //分类滚动监听
+            var box=$('.classify-title');
+            for(var i=0;i<box.length;i++){
+                var dist=box[i].offsetTop-40;
+                var classify=box[i].innerHTML;
+                if(scrollTop>=dist){$('#classify').text(classify);}
+            }
+        }
+    });
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -170,20 +201,7 @@ $(document).ready(function(){
     if(group_id==-1){
         top=$('.goods-list--1').offset().top-40;
     }
-    $.scrollTo({endY:top,duration:500,callback:function(){}});
-    // $('.classify-title').addClass('hidden');
-    // $('.goods-list').empty();
-    // if(group_id!=-2){
-    //     window.dataObj.page=1;
-    //     window.dataObj.action=6;
-    //     _group_id = group_id;
-    //     goodsList(1,6);
-    // }
-    // else{
-    //     window.dataObj.page=1;
-    //     window.dataObj.action=5;
-    //     goodsList(1,5);
-    // }
+    myScroll.scrollBy(0, -top, 400, IScroll.utils.ease.circular);
 }).on('click','body',function(e){
     if($(e.target).closest('.to-hide').length == 0){
         $('.classify-list').hide();
@@ -472,6 +490,9 @@ var goodsList=function(page,action){
             window.dataObj.count++;
             window.dataObj.finished=true;
             $(".wrap-loading-box").remove();
+            setTimeout(function(){
+               myScroll.refresh();
+            },100);
         }
 };
 var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
@@ -761,5 +782,3 @@ function focus(){
         }
     );
 }
-
-function Swipe(b,g){var c=function(){};var r=function(A){setTimeout(A||c,0)};var z={addEventListener:!!window.addEventListener,touch:("ontouchstart" in window)||window.DocumentTouch&&document instanceof DocumentTouch,transitions:(function(A){var C=["transformProperty","WebkitTransform","MozTransform","OTransform","msTransform"];for(var B in C){if(A.style[C[B]]!==undefined){return true}}return false})(document.createElement("swipe"))};if(!b){return}var i=b.children[0];var v,h,o;g=g||{};var f=parseInt(g.startSlide,10)||0;var s=g.speed||300;g.continuous=g.continuous?g.continuous:true;function m(){v=i.children;h=new Array(v.length);o=b.getBoundingClientRect().width||b.offsetWidth;i.style.width=(v.length*o)+"px";var B=v.length;while(B--){var A=v[B];A.style.width=o+"px";A.setAttribute("data-index",B);if(z.transitions){A.style.left=(B*-o)+"px";p(B,f>B?-o:(f<B?o:0),0)}}if(!z.transitions){i.style.left=(f*-o)+"px"}b.style.visibility="visible"}function l(){if(f){a(f-1)}else{if(g.continuous){a(v.length-1)}}}function n(){if(f<v.length-1){a(f+1)}else{if(g.continuous){a(0)}}}function a(D,A){if(f==D){return}if(z.transitions){var B=Math.abs(f-D)-1;var C=Math.abs(f-D)/(f-D);while(B--){p((D>f?D:f)-B-1,o*C,0)}p(f,o*C,A||s);p(D,0,A||s)}else{e(f*-o,D*-o,A||s)}f=D;r(g.callback&&g.callback(f,v[f]))}function p(A,C,B){k(A,C,B);h[A]=C}function k(B,E,D){var A=v[B];var C=A&&A.style;if(!C){return}C.webkitTransitionDuration=C.MozTransitionDuration=C.msTransitionDuration=C.OTransitionDuration=C.transitionDuration=D+"ms";C.webkitTransform="translate("+E+"px,0)translateZ(0)";C.msTransform=C.MozTransform=C.OTransform="translateX("+E+"px)"}function e(E,D,A){if(!A){i.style.left=D+"px";return}var C=+new Date;var B=setInterval(function(){var F=+new Date-C;if(F>A){i.style.left=D+"px";if(y){u()}g.transitionEnd&&g.transitionEnd.call(event,f,v[f]);clearInterval(B);return}i.style.left=(((D-E)*(Math.floor((F/A)*100)/100))+E)+"px"},4)}var y=g.auto||0;var t;function u(){t=setTimeout(n,y)}function q(){y=g.auto>0?g.auto:0;clearTimeout(t)}var d={};var w={};var x;var j={handleEvent:function(A){switch(A.type){case"touchstart":this.start(A);break;case"touchmove":this.move(A);break;case"touchend":r(this.end(A));break;case"webkitTransitionEnd":case"msTransitionEnd":case"oTransitionEnd":case"otransitionend":case"transitionend":r(this.transitionEnd(A));break;case"resize":r(m.call());break}if(g.stopPropagation){A.stopPropagation()}},start:function(A){var B=A.touches[0];d={x:B.pageX,y:B.pageY,time:+new Date};x=undefined;w={};i.addEventListener("touchmove",this,false);i.addEventListener("touchend",this,false)},move:function(A){if(A.touches.length>1||A.scale&&A.scale!==1){return}if(g.disableScroll){A.preventDefault()}var B=A.touches[0];w={x:B.pageX-d.x,y:B.pageY-d.y};if(typeof x=="undefined"){x=!!(x||Math.abs(w.x)<Math.abs(w.y))}if(!x){A.preventDefault();q();w.x=w.x/((!f&&w.x>0||f==v.length-1&&w.x<0)?(Math.abs(w.x)/o+1):1);k(f-1,w.x+h[f-1],0);k(f,w.x+h[f],0);k(f+1,w.x+h[f+1],0)}},end:function(C){var E=+new Date-d.time;var A=Number(E)<250&&Math.abs(w.x)>20||Math.abs(w.x)>o/2;var B=!f&&w.x>0||f==v.length-1&&w.x<0;var D=w.x<0;if(!x){if(A&&!B){if(D){p(f-1,-o,0);p(f,h[f]-o,s);p(f+1,h[f+1]-o,s);f+=1}else{p(f+1,o,0);p(f,h[f]+o,s);p(f-1,h[f-1]+o,s);f+=-1}g.callback&&g.callback(f,v[f])}else{p(f-1,-o,s);p(f,0,s);p(f+1,o,s)}}i.removeEventListener("touchmove",j,false);i.removeEventListener("touchend",j,false)},transitionEnd:function(A){if(parseInt(A.target.getAttribute("data-index"),10)==f){if(y){u()}g.transitionEnd&&g.transitionEnd.call(A,f,v[f])}}};m();if(y){u()}if(z.addEventListener){if(z.touch){i.addEventListener("touchstart",j,false)}if(z.transitions){i.addEventListener("webkitTransitionEnd",j,false);i.addEventListener("msTransitionEnd",j,false);i.addEventListener("oTransitionEnd",j,false);i.addEventListener("otransitionend",j,false);i.addEventListener("transitionend",j,false)}window.addEventListener("resize",j,false)}else{window.onresize=function(){m()}}return{setup:function(){m()},slide:function(B,A){a(B,A)},prev:function(){q();l()},next:function(){q();n()},getPos:function(){return f},kill:function(){q();i.style.width="auto";i.style.left=0;var B=v.length;while(B--){var A=v[B];A.style.width="100%";A.style.left=0;if(z.transitions){k(B,0,0)}}if(z.addEventListener){i.removeEventListener("touchstart",j,false);i.removeEventListener("webkitTransitionEnd",j,false);i.removeEventListener("msTransitionEnd",j,false);i.removeEventListener("oTransitionEnd",j,false);i.removeEventListener("otransitionend",j,false);i.removeEventListener("transitionend",j,false);window.removeEventListener("resize",j,false)}else{window.onresize=null}}}}if(window.jQuery||window.Zepto){(function(a){a.fn.Swipe=function(b){return this.each(function(){a(this).data("Swipe",new Swipe(a(this)[0],b))})}})(window.jQuery||window.Zepto)};
