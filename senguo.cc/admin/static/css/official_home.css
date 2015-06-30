@@ -34,7 +34,7 @@
 .bg-text>p{font-size: 20px;line-height: 28px;text-align: center;}
 .bg-text>a{color: #fff;display: block;width: 140px;font-size: 16px;text-align: center;height: 40px;line-height: 40px;border: 1px solid #fff;border-radius: 2px;margin: 50px auto;-webkit-transition:all .2s ease-in-out;}
 .bg-text>a:hover{text-decoration: none;background-color: #fff;color: #333;}
-.swiper-container{width: 1200px;height: 500px;margin: 0 auto;}
+.swiper-container{width: 1000px;height: 500px;margin: 0 auto;}
 .swiper-slide{position: relative;}
 .pagination{position: absolute;z-index:10;left: 50%;-webkit-transform:translate(-50%,0);bottom: 10px;white-space: nowrap;line-height: 1;}
 .swiper-pagination-switch{width:14px;height: 14px;border-radius:50%;-webkit-box-sizing:border-box;display: inline-block;margin:0 5px;-webkit-transition:all .2s ease;background-color: #fff;cursor: pointer;}
