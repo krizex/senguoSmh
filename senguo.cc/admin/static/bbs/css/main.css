@@ -5,10 +5,10 @@
 .menu-list>li{cursor: pointer;height: 26px;line-height: 26px;text-align: center;color: #fff;margin: 5px 0;}
 .atical-list{background-color: #fff;}
 .atical-list>li{padding: 10px;position: relative;}
-.atical-list>li:after{content: '';display: block;position: absolute;width: 100%;left: 0;top: 0;height: 1px;background-color: #dadada;-webkit-transform: scaleY(0.5);transform: scaleY(0.5);}
+.atical-list>li:after{content: '';display: block;position: absolute;width: 100%;left: 0;bottom: 0;height: 1px;background-color: #dadada;-webkit-transform: scaleY(0.5);transform: scaleY(0.5);}
 .atical-list .title{color: #333;line-height: 24px;}
 .atical-mark{display: inline-block;height: 16px;line-height: 16px;font-size:12px;margin-right:5px;position:relative;top:-2px;padding: 0 10px;border: 1px solid #999;color: #999;border-radius: 9px;}
-.atical-attr{margin-top: 10px;color: #999;font-size: 13px;}
+.atical-attr{margin-top: 8px;color: #999;font-size: 13px;}
 .atical-attr>span{display: inline-block;}
 .wrap-icon{display: inline-block;color: #999;position: relative;padding-left: 24px;}
 .wrap-icon>i{position: absolute;left: 0;top: 2px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
