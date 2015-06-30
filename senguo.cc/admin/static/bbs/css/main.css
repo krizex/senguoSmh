@@ -10,7 +10,7 @@
 .atical-attr{margin-top: 10px;color: #999;font-size: 14px;}
 .atical-attr>span{display: inline-block;}
 .wrap-icon{display: inline-block;color: #999;position: relative;padding-left: 24px;}
-.wrap-icon>i{position: absolute;left: 0;top: 4px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
+.wrap-icon>i{position: absolute;left: 0;top: 2px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
 .wrap-icon .icon-dz{background-position: 0 -26px;left: 7px;}
 .wrap-icon .icon-dz-active{background-position: 0 -39px;}
 .wrap-icon .icon-com{background-position: 0 -13px;left: 5px;}
