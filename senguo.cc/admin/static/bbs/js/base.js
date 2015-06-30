@@ -5,7 +5,6 @@ $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height-40);
 	 //fastclick initialise
-    FastClick.attach(document.body);
     $(".pop-win").on("click",function(e){/*关闭模态框*/
         if($(e.target).closest(".pop-content").length==0){
             $(".pop-win").addClass("hide");

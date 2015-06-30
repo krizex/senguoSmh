@@ -29,7 +29,9 @@
         {% block content %}{% end %}
     </div>
     {% end %}
-<script type="text/javascript" src="/static/bbs/js/zepto.min.js"></script>
+{% block js %}
+    <script type="text/javascript" src="/static/bbs/js/zepto.min.js"></script>
+{% end %}
 <script type="text/javascript" src="/static/js/template.js"></script>
 <script type="text/javascript" src="/static/bbs/js/util.js"></script>
 <script type="text/javascript" src="/static/bbs/js/base.js"></script>

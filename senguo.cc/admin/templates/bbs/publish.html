@@ -17,7 +17,7 @@
         <input type="text" class="title-ipt" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="输入标题"/>
         <p class="c333 mt10">正文</p>
         <div class="wrap-sumary">
-            <script type="text/plain" id="ueditor" style="width:780px;height:240px;">
+            <script type="text/plain" id="ueditor" style="width:100%;height:400px;">
                 <p>{% if edit %}{% raw article_data['article'] %}{% end %}</p>
             </script>
         </div>
@@ -46,6 +46,9 @@
         </div>
     </div>
 </div>
+{% end %}
+{% block js %}
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
 {% end %}
 {% block bottom %}
 <script type="text/javascript" charset="utf-8" src="/static/js/ueditor/umeditor.min.js"></script>
