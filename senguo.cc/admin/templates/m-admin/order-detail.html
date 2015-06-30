@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}订单详情{% end %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="/static/css/fruit-color.css">
+<link rel="stylesheet" type="text/css" href="{{static_url('css/fruit-color.css')}}">
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="javascript:;" class="back goback">返回</a>
+    <a href="{{reverse_url('MadminOrder')}}" class="back">返回</a>
     <span>订单详情</span>
 </div>
 {% end %}
