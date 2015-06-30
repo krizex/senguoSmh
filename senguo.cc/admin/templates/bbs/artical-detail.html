@@ -61,7 +61,11 @@
             <span class="close close-btn">X</span>
             <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
             <div class="button-box mt10">
+                {% if handler.is_wexin_browser()%}
+                <a href="{{handler.get_weixin_login_url()}}" class="btn">登录</a>
+                {% else %}
                 <a href="{{reverse_url('customerLogin')}}?next=/bbs/detail/{{article['id']}}" class="btn">登录</a>
+                {% end %}
             </div>
         </div>
     </div>
