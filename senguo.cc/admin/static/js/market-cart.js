@@ -286,6 +286,7 @@ $(document).ready(function(){
         })
     }
     else{
+        console.log(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         $('.send_now').show();
         $('.intime-intro').hide();
         $('.now-intro').show();

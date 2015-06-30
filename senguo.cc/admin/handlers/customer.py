@@ -868,10 +868,11 @@ class Market(CustomerBaseHandler):
 		w_follow = True
 		# fruits=''
 		# page_size = 10
+		from sqlalchemy.orm.exc import NoResultFound
 		try:
-			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
-		except:
-			return self.send_error(404)
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		except NoResultFound:
+			return self.write('您访问的店铺不存在')
 		# self.current_shop = shop
 		# print(self,self.current_shop)
 		shop_name = shop.shop_name
