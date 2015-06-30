@@ -32,10 +32,9 @@
 .wrap-comment{background-color: #f3f3f3;padding: 15px;position: relative;}
 .wrap-comment:before{content: '';display: block;position: absolute;width: 100%;left: 0;top: 0;height: 1px;background-color: #e5e5e5;-webkit-transform: scaleY(0.5);transform: scaleY(0.5);}
 .comment-list>li{padding: 10px 0;}
-.comment-item{position: relative;padding-left: 40px;}
+.comment-item{position: relative;padding-left: 42px;}
 .comment-item>dd{position: absolute;left: 0;top: 0;width: 30px;}
-.img-border{display: inline-block;border: 2px solid #76ccc0;border-radius: 50%;line-height: 1;}
-.comment-item>dd img{width: 30px;height: 30px;border-radius: 50%;}
+.comment-item>dd img{width: 32px;height: 32px;border-radius: 2px;}
 .comment-item>dt{}
 .com-first a{color: #999;font-weight: 400;}
 .com-detail{margin-top: 6px;line-height: 18px;color: #333;}
