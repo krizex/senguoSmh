@@ -31,6 +31,12 @@
 .data-user{background-image: url('/static/m-admin/img/icon_user.png');}
 .data-msg{background-image: url('/static/m-admin/img/icon_msg.png');}
 .data-account{background-image: url('/static/m-admin/img/icon_account.png');}
+.bm-tab{background-color: #f9f9f9;bottom:0;color: #333;top:auto;}
+.tab-bm-list>li{width: 50%;float: left;}
+.tab-bm-list>li>a{display: block;height: 40px;color: #333;}
+.tab-bm-list>li i{height: 30px;vertical-align: middle;background-size:26px;}
+.ic-shop{background-image: url('/static/m-admin/img/icon_shop.png');}
+.ic-bbs{background-image: url('/static/m-admin/img/icon_bbs.png');}
 /*订单详情*/
 .order-detail-box{padding-bottom: 60px;}
 .wrap-bm-btn{height:50px;width: 100%;position: fixed;background-color: #f9f9f9;bottom:0;z-index:999;left: 0;}

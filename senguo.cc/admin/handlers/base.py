@@ -288,6 +288,10 @@ class GlobalBaseHandler(BaseHandler):
 		else:
 			name =''
 		return name
+
+	def article_type(self,_type):
+		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求']
+		return types[_type]
  
 	def getGoodsData(self,datalist,_type):
 		data = []
@@ -332,6 +336,32 @@ class GlobalBaseHandler(BaseHandler):
 		if _type and _type=="one":
 			data = data[0]
 		# print(data)
+		return data
+
+	def getArticle(self,article):
+		great_if = False
+		try:
+			article_great=self.session.query(models.ArticleGreat).filter_by(article_id=article[0].id,account_id=self.current_user.id).one()
+		except:
+			article_great=None
+		if article_great and article_great.great == 1:	
+			great_if=True
+		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
+			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
+			"comment_num":article[0].comment_num,"great_if":great_if}
+		return data
+
+	def getArticleComment(self,new_comment):
+		great_if = False
+		try:
+			comment_great=self.session.query(models.ArticleCommentGreat).filter_by(comment_id = new_comment[0].id,account_id = self.current_user.id).one()
+		except:
+			comment_great=None
+		if comment_great:
+			great_if=True
+		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
+				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],
+				"type":new_comment[0]._type,"great_if":great_if}
 		return data
 
 class FrontBaseHandler(GlobalBaseHandler):
@@ -588,6 +618,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return "%d分钟前" % (timedelta.seconds/60)
 		else:
 			return "刚刚"
+
+	def timeday(self,date):
+		return date.strftime("%m-%d")
+
+	def if_super(self):
+		if_super = False
+		try:
+			current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			current_user = None
+		if current_user:
+			if_super = True
+		return if_super
 
 	def write_error(self, status_code, **kwargs):
 		if status_code == 404:
@@ -1466,7 +1509,7 @@ class WxOauth2:
 		postdata = {
 			'touser' : touser,
 			'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
-			"url":order_url,
+			"url":"http://i.senguo.cc/madmin/orderDetail/"+order_id,
 			"topcolor":"#FF0000",
 			"data":{
 				"first":{"value":"管理员 {0} 您好，店铺『{1}』收到了新的订单！".format(admin_name,shop_name),"color": "#44b549"},

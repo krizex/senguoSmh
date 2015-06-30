@@ -60,13 +60,42 @@
                 {% set active=''%}
                 {% set unactive=''%}
                 {% if periods %}
-                {% set active='active'%}
-                {% set unactive=''%}
-                {% else %}
                 {% set active=''%}
+                {% set unactive='active'%}
+                {% else %}
+                {% set active='active'%}
                 {% set unactive='active'%}
                 {% end %}
                 <div id="sendType" class="send_type list-group">
+                    {% if config.now_on == True%}
+                    <button data-id="1" class="{{unactive}} send-now list-group-item item height50" data-config="{{config.now_on}}" >
+                        <a href="javascript:;" class="bg-white text-grey" id="sendNow" data-period="{{config.intime_period or 0}}">
+                            <span class="pull-left title set-inl-blo font14 line50">立即送</span>
+                            <p class="text-grey9 title-right">
+                                <span class="text-grey3">起送价：{{config.min_charge_now or 0}}元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
+                                <span class="mt3">{{config.intime_period or 0}}分钟内送到</span>
+                            </p>
+                        </a>
+                    </button>
+                    {% end %}
+                     {% if config.now_on == True%}
+                    <ul class="send_now list-group">
+                        <div class="arrow-top left82"></div>
+                        <!-- <li class="list-group-item clearfix bg-grey2">
+                             <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
+                             <ul class="tip-list font14">
+                                 <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
+                                 <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
+                                 <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
+                             </ul>
+                         </li>-->
+                        <li class="font14 clearfix line50 height50">
+                            送货时间：
+                            <span class="now_startime">{{config.start_time_now}}</span> ~
+                            <span class="now_endtime">{{config.end_time_now}}</span>
+                        </li>
+                    </ul>
+                    {% end %}
                     {% if config.ontime_on == True%}
                     <button data-id="2" class="{{active}} send-intime  list-group-item item height50" data-config="{{config.ontime_on}}">
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
@@ -80,7 +109,7 @@
                     {% end %}
                     {% if config.ontime_on == True%}
                     {% if periods %}
-                    <div id="sendPeriod" class="send_period list-group font14">
+                    <div id="sendPeriod" class="send_period list-group font14" style="display:none;">
                         <div class="arrow-top left70"></div>
                         <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10">
                             {% set day=config.day_on_time %}
@@ -106,36 +135,8 @@
                     <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
                     {% end %}
                     {% end %}
-                    {% if config.now_on == True%}
-                    <button data-id="1" class="{{unactive}} send-now list-group-item item height50" data-config="{{config.now_on}}" >
-                        <a href="javascript:;" class="bg-white text-grey" id="sendNow" data-period="{{config.intime_period or 0}}">
-                            <span class="pull-left title set-inl-blo font14 line50">立即送</span>
-                            <p class="text-grey9 title-right">
-                                <span class="text-grey3">起送价：{{config.min_charge_now or 0}}元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_now">{{config.freight_now or 0}}</span>元</span>
-                                <span class="mt3">{{config.intime_period or 0}}分钟内送到</span>
-                            </p>
-                        </a>
-                    </button>
-                    {% end %}
+                    
                 </div>
-                {% if config.now_on == True%}
-                <ul class="send_now list-group" style="display:none">
-                    <div class="arrow-top left82"></div>
-                    <!-- <li class="list-group-item clearfix bg-grey2">
-                         <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
-                         <ul class="tip-list font14">
-                             <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
-                             <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
-                             <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
-                         </ul>
-                     </li>-->
-                    <li class="font14 clearfix line50 height50">
-                        送货时间：
-                        <span class="now_startime">{{config.start_time_now}}</span> ~
-                        <span class="now_endtime">{{config.end_time_now}}</span>
-                    </li>
-                </ul>
-                {% end %}
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
