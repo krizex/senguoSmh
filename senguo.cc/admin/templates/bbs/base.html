@@ -24,11 +24,27 @@
     <header>
         {% block header %}{% end %}
     </header>
-    {% block setcontent %}
     <div class="container">
         {% block content %}{% end %}
     </div>
+    {% set if_login = '' %}
+    {% if handler.current_user %}
+    {% set if_login = True %}
+    {% else %}
+    {% set if_login = False %}
     {% end %}
+    <div class="pop-win pop-login hide" data-id="{{if_login}}">
+        <div class="pop-content">
+            <div class="login-box">
+                <!-- <p class="title">商家回复</p> -->
+                <span class="close close-btn">X</span>
+                <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
+                <div class="button-box mt10">
+                    <a href="{{reverse_url('BbsLogin')}}" class="btn">登录</a>
+                </div>
+            </div>
+        </div>
+    </div>
 <script type="text/javascript" src="/static/bbs/js/zepto.min.js"></script>
 <script type="text/javascript" src="/static/js/template.js"></script>
 <script type="text/javascript" src="/static/bbs/js/util.js"></script>

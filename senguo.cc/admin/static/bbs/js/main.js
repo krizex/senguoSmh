@@ -36,6 +36,10 @@ $(document).ready(function(){
     	window.location.href="/bbs/detail/"+id;
     } 
 }).on("click",".atical-attr .dianzan",function(){
+    if(if_login=='False'){
+       $('.pop-login').removeClass("hide");
+       return false; 
+    }
 	var $this=$(this);
 	var id=$this.parents("li").attr("data-id");
 	var url="/bbs/detail/"+id;
@@ -62,7 +66,7 @@ var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
                 '<span class="fr">'+
-                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz {{great_if}}"></i><span>{{great_num}}</span></a>'+
+                    '<a href="javascript:;" class="wrap-icon dianzan if-login"><i class="icon-dz {{great_if}}"></i><span>{{great_num}}</span></a>'+
                     '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>{{comment_num}}</a>'+
                 '</span>'+
                 '<span class="time mr10">{{time}}</span>'+

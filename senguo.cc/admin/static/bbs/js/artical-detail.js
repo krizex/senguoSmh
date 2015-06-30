@@ -1,16 +1,16 @@
 /**
  * Created by Administrator on 2015/6/12.
  */
- var if_login=$('.wrap-post').attr('data-id');
 $(document).ready(function(){
     var height = $(window).height();
     $(".wrap-post").css("minHeight",height-60);
     $(".com-atical").on("click",function(){//评论按钮
-        if(if_login=='False'){
-            Tip('请先登录');
-            return false;
+         if(if_login=='False'){
+           $('.pop-login').removeClass("hide");
+           return false; 
         }
         $(".wrap-post-attr").removeClass("bm10");
+        $(".reply-ipt").val("").attr("placeholder","");
         var id = $(this).attr("data-id");
         $(".wrap-reply-box").removeClass("hide");
         $('.reply-btn').attr("id","comment").attr("data-id",id);
@@ -18,8 +18,8 @@ $(document).ready(function(){
     });
 }).on("click","#store-atical",function(){//收藏
     if(if_login=='False'){
-        Tip('请先登录');
-        return false;
+       $('.pop-login').removeClass("hide");
+       return false; 
     }
     var id = $(this).attr("data-id");
     var $this=$(this);
@@ -35,8 +35,8 @@ $(document).ready(function(){
     });
 }).on("click",".comment-great",function(){//评论点赞
     if(if_login=='False'){
-        Tip('请先登录');
-        return false;
+       $('.pop-login').removeClass("hide");
+       return false; 
     }
     var id = $(this).attr("data-id");
     var $this=$(this);
@@ -58,17 +58,19 @@ $(document).ready(function(){
     });
 }).on("click",".comment-list .nickname",function(){//评论回复
     if(if_login=='False'){
-        Tip('请先登录');
-        return false;
+       $('.pop-login').removeClass("hide");
+       return false; 
     }
     var id = $(this).attr("data-id");
     $(".reply-ipt").attr("placeholder","@"+$(this).html());
     $('.reply-btn').attr("id","reply").attr("data-id",id);
     $(".wrap-reply-box").removeClass("hide");
+    $(".wrap-post-attr").removeClass("bm10");
+    $(".reply-ipt").val("");
 }).on("click",".add-great",function(){
     if(if_login=='False'){
-        Tip('请先登录');
-        return false;
+       $('.pop-login').removeClass("hide");
+       return false; 
     }
     var id=$('#admire-atical').attr("data-id");
     var url="";
@@ -88,22 +90,22 @@ $(document).ready(function(){
     });
 }).on("click","#reply",function(){//发表回复
     if(if_login=='False'){
-        Tip('请先登录');
-        return false;
+       $('.pop-login').removeClass("hide");
+       return false; 
     }
     var id = $(this).attr("data-id");
-    admireAtical(id,"reply");
+    admireAtical(id,"reply",$(this));
 }).on("click","#comment",function(){//发表评论
     if(if_login=='False'){
-        Tip('请先登录');
-        return false;
+       $('.pop-login').removeClass("hide");
+       return false; 
     }
     var id = $(this).attr("data-id");
-    admireAtical(id,"comment");
+    admireAtical(id,"comment",$(this));
 }).on("click","#del-atical",function(){//删除
     if(if_login=='False'){
-        Tip('请先登录');
-        return false;
+       $('.pop-login').removeClass("hide");
+       return false; 
     }
     if(confirm("确认删除？")){
         var id = $(this).attr("data-id");
@@ -145,12 +147,20 @@ function delAtical(id){
         }
     });
 }
-function admireAtical(id,action){
+function admireAtical(id,action,target){
+    if(target.attr("data-statu")=="1") {
+        return false;
+    }
+    target.attr("data-statu", "1");
     var url = "";
     var comment=$('.reply-ipt').val().trim();
     var data={comment:comment}
     if(action=="reply"){
         data.comment_id=id;
+    }
+    if(!comment){
+        target.attr("data-statu", "0");
+        return Tip("请输入评论内容!");
     }
     var args = {action:action,data:data};
     $.postJson(url,args,function(res){
@@ -183,7 +193,12 @@ function admireAtical(id,action){
                 imgurl:imgurl
             });
             $(".comment-list").prepend(list_item);
+            $(".wrap-reply-box").addClass("hide");
+            $(".reply-ipt").val("");
+            $(".wrap-post-attr").addClass("bm10");
+            target.attr("data-statu", "0");
         }else{
+            target.attr("data-statu", "0");
             Tip(res.error_text);
         }
     });

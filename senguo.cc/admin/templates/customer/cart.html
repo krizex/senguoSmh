@@ -78,6 +78,24 @@
                         </a>
                     </button>
                     {% end %}
+                     {% if config.now_on == True%}
+                    <ul class="send_now list-group">
+                        <div class="arrow-top left82"></div>
+                        <!-- <li class="list-group-item clearfix bg-grey2">
+                             <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
+                             <ul class="tip-list font14">
+                                 <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
+                                 <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
+                                 <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
+                             </ul>
+                         </li>-->
+                        <li class="font14 clearfix line50 height50">
+                            送货时间：
+                            <span class="now_startime">{{config.start_time_now}}</span> ~
+                            <span class="now_endtime">{{config.end_time_now}}</span>
+                        </li>
+                    </ul>
+                    {% end %}
                     {% if config.ontime_on == True%}
                     <button data-id="2" class="{{active}} send-intime  list-group-item item height50" data-config="{{config.ontime_on}}">
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
@@ -119,24 +137,6 @@
                     {% end %}
                     
                 </div>
-                {% if config.now_on == True%}
-                <ul class="send_now list-group">
-                    <div class="arrow-top left82"></div>
-                    <!-- <li class="list-group-item clearfix bg-grey2">
-                         <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
-                         <ul class="tip-list font14">
-                             <li class="btn text-green text-center bg-white pull-left" data-id="1">1元</li>
-                             <li class="btn text-green text-center bg-white pull-left" data-id="2">2元</li>
-                             <li class="btn text-green text-center bg-white pull-left" data-id="5">5元</li>
-                         </ul>
-                     </li>-->
-                    <li class="font14 clearfix line50 height50">
-                        送货时间：
-                        <span class="now_startime">{{config.start_time_now}}</span> ~
-                        <span class="now_endtime">{{config.end_time_now}}</span>
-                    </li>
-                </ul>
-                {% end %}
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">

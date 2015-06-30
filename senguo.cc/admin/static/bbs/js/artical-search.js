@@ -66,6 +66,10 @@ function articleList(page,search){
                 if(nomore==true){
                     $('.wrap-loading-box').addClass('hide');
                     $('.loading').html("~没有更多搜索结果了~").show();
+                    if(page==0&&datalist.length==0){
+                        $('.loading').html("无搜索结果").show();
+                    }
+                    
                 }
                 for(var i in datalist){
                         var render = template.compile(item);

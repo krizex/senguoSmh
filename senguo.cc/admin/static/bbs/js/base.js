@@ -1,6 +1,7 @@
 /**
  * Created by Administrator on 2015/6/15.
  */
+ var if_login=$('.pop-login').attr('data-id');
 $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height-40);

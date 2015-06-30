@@ -9,6 +9,14 @@ import random
 import base64
 import json
 
+class Access(FruitzoneBaseHandler):
+	def get(self):
+		next_url = self.get_argument('next', '')
+		if self.is_wexin_browser():
+			return self.redirect(self.get_weixin_login_url())
+		else:
+			return self.redirect(self.reverse_url("customerLogin"))
+
 class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
@@ -24,7 +32,7 @@ class Main(FruitzoneBaseHandler):
 				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname,models.ArticleGreat)\
 					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
 					.outerjoin(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
-					.filter(models.Article.status==1).distinct().order_by(models.Article.create_time.desc())
+					.filter(models.Article.status==1).distinct(models.Article.id).order_by(models.Article.create_time.desc())
 			except:
 				article_lsit = None
 
@@ -196,6 +204,7 @@ class Detail(FruitzoneBaseHandler):
 			self.session.commit()
 			new_comment = self.session.query(models.ArticleComment,models.Accountinfo.nickname,models.ArticleCommentGreat)\
 				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
+				.outerjoin(models.ArticleCommentGreat,models.ArticleComment.id==models.ArticleCommentGreat.comment_id)\
 				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==_type).order_by(models.ArticleComment.create_time.desc()).first()
 			data=self.getArticleComment(new_comment)
 			return self.send_success(data=data)
@@ -278,10 +287,11 @@ class Search(FruitzoneBaseHandler):
 		nomore = False
 		datalist = []
 		try:
-			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
+			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname,models.ArticleGreat)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
+				.outerjoin(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
 				.filter(models.Article.status==1,models.Article.title.like("%%%s%%" % data))\
-				.order_by(models.Article.create_time.desc())
+				.order_by(models.Article.create_time.desc()).distinct(models.Article.id)
 		except:
 			nomore = True
 		if article_lsit:
