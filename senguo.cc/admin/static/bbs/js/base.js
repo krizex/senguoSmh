@@ -11,7 +11,7 @@ $(document).ready(function(){
             $(".pop-win").addClass("hide");
         }
     });
-     $(".close").on("click",function(){/*关闭模态框*/
+    $(".close").on("click",function(){/*关闭模态框*/
          $(".pop-win").addClass("hide");
     });
     $(".goback").on("click",function(){

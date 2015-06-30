@@ -25,7 +25,7 @@ var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
                 '<span class="fr">'+
-                    '<a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz"></i>{{great_num}}</a>'+
+                    '<a href="javascript:;" class="wrap-icon dianzan mr10"><i class="icon-dz"></i>{{great_num}}</a>'+
                     '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>{{comment_num}}</a>'+
                 '</span>'+
                 '<span class="time mr10">{{time}}</span>'+
