@@ -39,7 +39,7 @@ $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
         copy: function(){
-            return "wwwww";
+            return $(this).prev("input").val();
         },
         afterCopy:function(){
             Tip("链接已经复制到剪切板");
