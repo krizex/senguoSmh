@@ -63,7 +63,7 @@
 .edui-combobox .edui-caret{position:relative;display:inline-block;vertical-align:top;*display:inline;*zoom:1;height:20px;width:12px;margin:0;padding:0;background:url(../images/icons.png) -741px 0;_background:url(../images/icons.gif) -741px 0}
 .edui-btn-toolbar .edui-combobox.edui-disabled{opacity:.2;filter:alpha(opacity=20)}
 .edui-btn-toolbar .edui-combobox.edui-disabled .edui-button-label,.edui-btn-toolbar .edui-combobox.edui-disabled .edui-caret{opacity:.2 \0;filter:alpha(opacity=20)\0}
-.edui-combobox-menu{position:absolute;top:100%;left:0;display:none;list-style:none;text-decoration:none;margin-left:2px;padding:5px;background-color:#fff;border:1px solid #ccc;font-size:12px;box-shadow:2px 2px 5px #d3d6da;min-width:100px;_width:160px}
+.edui-combobox-menu{position:absolute;top:100%;left:0;display:none;list-style:none;text-decoration:none;margin-left:2px;padding:5px;background-color:#fff;border:1px solid #ccc;font-size:12px;box-shadow:2px 2px 5px #d3d6da;min-width:160px;_width:160px}
 .edui-combobox-menu .edui-combobox-item{display:block;border:1px solid #fff}
 .edui-combobox-menu .edui-combobox-item-label{height:25px;line-height:25px;display:inline-block;_display:inline;_zoom:1;margin-left:10px}
 .edui-combobox-menu .edui-combobox-item:hover,.edui-combobox-menu .edui-combobox-stack-item:hover,.edui-combobox-menu .edui-combobox-item-hover{background-color:#d5e1f2;padding:0;border:1px solid #a3bde3}
