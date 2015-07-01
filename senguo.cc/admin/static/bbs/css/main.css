@@ -37,7 +37,7 @@
 .comment-item>dd img{width: 32px;height: 32px;border-radius: 2px;}
 .comment-item>dt{}
 .com-first a{color: #999;font-weight: 400;}
-.com-detail{margin-top: 6px;line-height: 1.5;color: #333;}
+.com-detail{margin-top: 3px;line-height: 1.5;color: #333;}
 .fix-center{position: fixed;bottom:50px;width: 100%;max-width: 800px;min-width: 320px;z-index:999;left: 50%;-webkit-transform:translate(-50%,0);transform:translate(-50%,0);text-align: right;-webkit-box-sizing: border-box;box-sizing: border-box;}
 .wrap-post-attr>a{display: inline-block;width: 44px;height: 26px;position: relative;margin-right: 10px;border-radius: 26px;border:1px solid #999;background-color: #fff;}
 .wrap-post-attr i{position: absolute;margin-left:1px;left: 50%;top:50%;width: 14px;height: 13px;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);background-image: url('/static/bbs/img/bbs_icon.png');background-size: 21px;}
