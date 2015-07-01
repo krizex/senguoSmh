@@ -1,4 +1,4 @@
-(function () {
+(function(){
 
     var widgetName = 'map';
 
@@ -183,8 +183,7 @@
                         } else {
                             me.map.centerAndZoom(points[0], 13);
                         }
-                        point = me.map.getCenter();
-                        me.marker.setPoint(point);
+                        me.marker.setPosition(me.map.getCenter());
                     } else {
                         alert(me.lang.errorMsg);
                     }
@@ -231,7 +230,7 @@
                         center = widget.map.getCenter(),
                         zoom = widget.map.getZoom(),
                         size = widget.map.getSize(),
-                        point = widget.marker.Q;
+                        point = widget.marker.getPosition();
 
                     if (widget.root().find(".edui-map-dynamic")[0].checked) {
                         var URL = editor.getOpt('UMEDITOR_HOME_URL'),
@@ -260,4 +259,3 @@
     });
 
 })();
-
