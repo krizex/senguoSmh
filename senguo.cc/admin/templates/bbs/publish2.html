@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}森果社区-发布帖子{% end %}
+{% block head %}
+<link rel="stylesheet" href="/static/js/editor/themes/default/default.css"/>
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>发布帖子</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-publish pm20">
+    <div class="publish-board">
+        <p class="c333 mt10">选择版块<a href="javascript:;" class="select-box ml5"><span class="type" data-id="{% if edit %}{{article_data['type_id']}}{% end %}">{% if edit %}{{article_data['type']}}{% else %}选择版块{% end %}</span><i class="select-right"></i></a></p>
+        <p class="c333 mt10">标题</p>
+        <input type="text" class="title-ipt" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="输入标题"/>
+        <p class="c333 mt10">正文</p>
+        <div class="wrap-sumary">
+            <textarea class="sumary-text" id="kindEditor">{% if edit %}{% raw article_data['article'] %}{% end %}</textarea>
+        </div>
+    </div>
+</div>
+<div class="fix-center publish-btns">
+    <a href="javascript:;" class="save-draft hide">保存草稿</a>
+    <a href="javascript:;" class="publish-tie">发布</a>
+</div>
+<div class="pop-win pop-reply hide">
+    <div class="pop-content plr0">
+        <div class="board-box">
+            <p class="title">选择版块</p>
+            <ul class="board-list">
+                <li class="active" data-id="0"><span class="tit c333">官方公告</span><span>森果官方公告和通知</span></li>
+                <li data-id="1"><span class="tit c333">产品更新</span><span>新功能发布和bug修复</span></li>
+                <li data-id="2"><span class="tit c333">运营干货</span><span>分享运营经验</span></li>
+                <li data-id="3"><span class="tit c333">水果百科</span><span>水果相关知识百科</span></li>
+                <li data-id="4"><span class="tit c333">使用教程</span><span>产品功能的使用说明</span></li>
+                <li data-id="5"><span class="tit c333">水果供求</span><span>水果采购与供货信息</span></li>
+            </ul>
+            <div class="wrap-btns board-btns">
+                <a href="javascript:;" class="ok-btn type-sure">确定</a>
+                <a href="javascript:;" class="cancel-btn">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/editor/kindeditor-min.js"></script>
+<script src="/static/js/editor/zh_CN.js"></script>
+<script src="{{static_url('bbs/js/publish.js')}}"></script>
+{% end %}

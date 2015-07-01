@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block title %}森果社区-发布帖子{% end %}
 {% block head %}
-<link rel="stylesheet" href="/static/js/editor/themes/default/default.css"/>
+<link href="/static/js/ueditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
 {% end %}
 {% block header %}
 <div class="header">
@@ -17,7 +17,9 @@
         <input type="text" class="title-ipt" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="输入标题"/>
         <p class="c333 mt10">正文</p>
         <div class="wrap-sumary">
-            <textarea class="sumary-text" id="kindEditor">{% if edit %}{% raw article_data['article'] %}{% end %}</textarea>
+            <script type="text/plain" id="ueditor" style="width:100%;height:400px;">
+                <p>{% if edit %}{% raw article_data['article'] %}{% end %}</p>
+            </script>
         </div>
     </div>
 </div>
@@ -45,8 +47,12 @@
     </div>
 </div>
 {% end %}
+{% block js %}
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+{% end %}
 {% block bottom %}
-<script src="/static/js/editor/kindeditor-min.js"></script>
-<script src="/static/js/editor/zh_CN.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/ueditor/umeditor.min.js"></script>
+<script type="text/javascript" charset="utf-8" src="/static/js/ueditor/umeditor.config.js"></script>
+<script type="text/javascript" src="/static/js/ueditor/lang/zh-cn/zh-cn.js"></script>
 <script src="{{static_url('bbs/js/publish.js')}}"></script>
 {% end %}

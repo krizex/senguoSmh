@@ -1,3 +1,4 @@
+var ueditor = null;
 $(document).ready(function(){
     $(".board-list li").on("click",function(){
         var index = $(this).index();
@@ -31,7 +32,7 @@ function publishAtical(target){
         target.attr("data-statu", "0");
         return Tip("标题不能为空且不能超过20个字");
     }
-    var article=$("#kindEditor").val();
+    var article= ueditor.getContent();
     if(!article){
         target.attr("data-statu", "0");
         return Tip("文章内容不能为空");
@@ -59,7 +60,8 @@ function publishAtical(target){
 }
 
 function initEditor(){
-    $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
+    ueditor = UM.getEditor('ueditor');
+   /* $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
         var token1 = data.token;
         var token = data.res;
         var editor = KindEditor.create('#kindEditor', {
@@ -90,5 +92,5 @@ function initEditor(){
                 Tip(message);
             }
         });
-    }});
+    }});*/
 }

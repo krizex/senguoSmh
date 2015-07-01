@@ -1,6 +1,9 @@
 {% extends 'base.html' %}
 {% block title %}{{article["title"]}}{% end %}
 {% block head %}
+<style>
+     img,section,fieldset{max-width: 100% !important;height: auto !important;}
+</style>
 {% end %}
 {% block header %}
 <div class="header">
@@ -16,14 +19,14 @@
         <div class="post-cont">
             {% raw article["article"] %}
         </div>
-        <div class="post-attr">
+        <div class="post-attr forbid_click">
             {% if if_admin == True %}
                 <a href="javascript:;" id="del-atical" class="del-atical fr c999" data-id='{{article["id"]}}'>删除</a>
                 <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 mr10">编辑</a>
             {% end %}
             <span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
             <span class="wrap-icon dianzan article-great add-great" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
-            <span class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></span>
+            <a href="javascript:;" class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></a>
         </div>
     </div>
     <div class="wrap-comment">
