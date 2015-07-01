@@ -1,11 +1,13 @@
 /**
  * Created by Administrator on 2015/6/15.
  */
- var if_login=$('.pop-login').attr('data-id');
+var if_login=$('.pop-login').attr('data-id');
 $(document).ready(function(){
     cookie.setCookie("next_url",window.location.href);
     var height = $(window).height();
     $(".container").css("minHeight",height-40);
+    //fastclick initialise
+    FastClick.attach(document.body);
     $(".pop-win").on("click",function(e){/*关闭模态框*/
         if($(e.target).closest(".pop-content").length==0){
             $(".pop-win").addClass("hide");
@@ -23,7 +25,6 @@ $(document).ready(function(){
             parent.location.href = location.href;
         }
     }
-   
 }).on("click",".cancel-btn",function(){
     $(".pop-win").addClass("hide");
 });
