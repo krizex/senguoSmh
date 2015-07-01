@@ -267,6 +267,7 @@ $(document).ready(function(){
     var sHtml = $(this).attr("data-text");
     if(isEditor=="true"){
         if(editor){
+            $("#ueditor").css("width","100%");
             editor.body.innerHTML=$(this).attr("data-text");
             $(".pop-editor").show();
         }else{
