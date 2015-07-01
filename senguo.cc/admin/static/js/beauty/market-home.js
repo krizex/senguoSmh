@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/17.
- */
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();

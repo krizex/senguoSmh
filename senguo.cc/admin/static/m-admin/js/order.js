@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/12.
- */
 var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
     $("html,body").addClass("h100");

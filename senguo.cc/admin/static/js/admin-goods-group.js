@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/2.
- */
 var curGroup = null,aLis=[],aPos=[],zIndex=1;
 $(document).ready(function(){
     $(document).on("click",function(e){

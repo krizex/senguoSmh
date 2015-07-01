@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/4/23.
- */
 var width = 0;
 $(document).ready(function(){
     width = parseInt($("#img-lst").width()/4)-15;

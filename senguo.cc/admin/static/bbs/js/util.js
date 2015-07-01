@@ -1,6 +1,3 @@
-/**
- * Created by zhoubing on 2014/12/22.
- */
 //表示全局唯一标识符 (GUID)。
 /*global tip*/
 var zb_timer = null;

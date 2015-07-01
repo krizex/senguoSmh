@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/15.
- */
 var if_login=$('.pop-login').attr('data-id');
 $(document).ready(function(){
     cookie.setCookie("next_url",window.location.href);

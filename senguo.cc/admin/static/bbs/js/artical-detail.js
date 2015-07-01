@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/12.
- */
 $(document).ready(function(){
     var height = $(window).height();
     $(".wrap-post").css("minHeight",height-60);
