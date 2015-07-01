@@ -27,7 +27,7 @@
                     <div class="swiper-wrapper">
                         {% for notice in notices%}
                         <div class="swiper-slide item notice-item">
-                            <img src="{{notice[2] or '/static/images/banner.png'}}?imageView2/1/w/800/h/500" alt=""/>
+                            <img src="{{notice[2] or '/static/images/banner.png'}}?imageView2/1/w/800/h/300" alt=""/>
                             <p class="notice-title">{{notice[0]}}</p>
                             <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
                         </div>
