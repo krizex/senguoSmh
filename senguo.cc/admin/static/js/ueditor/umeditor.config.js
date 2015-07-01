@@ -146,7 +146,7 @@
             'undo redo | bold italic underline strikethrough superscript subscript | forecolor backcolor | removeformat |',
             'insertorderedlist insertunorderedlist | paragraph fontfamily fontsize' ,
             '| justifyleft justifycenter justifyright justifyjustify |',
-            'link unlink | emotion image video | map',
+            'link unlink | emotion image video map',
             '| preview'
         ]
 
