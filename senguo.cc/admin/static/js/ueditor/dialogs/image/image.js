@@ -182,7 +182,7 @@
         if (state == "SUCCESS") {
           //显示图片计数+1
           Upload.showCount++;
-          var $img = $("<img src='" + url + "?imageView2/5/w/800' class='edui-image-pic' />"),
+          var $img = $("<img src='" + url + "?imageView2/1/w/800' class='edui-image-pic' />"),
             $item = $("<div class='edui-image-item edui-image-upload-item'><div class='edui-image-close'></div></div>").append($img);
 
           if ($(".edui-image-upload2", $w).length < 1) {
@@ -335,7 +335,7 @@
 
         if (url) {
 
-          $("<img src='" + url + "?imageView2/5/w/800' class='edui-image-pic' />").on("load", function() {
+          $("<img src='" + url + "?imageView2/1/w/800' class='edui-image-pic' />").on("load", function() {
 
 
 
