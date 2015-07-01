@@ -316,7 +316,7 @@ $(document).ready(function(){
         }
         if(stop_time<=end_time)
         {
-            pulse($('#sendNow').parents('.item'));
+            //pulse($('#sendNow').parents('.item'));
             $('#sendNow').parents('.item').addClass('active').siblings('.item').removeClass('active');
             $('.send_period').hide();
             $('.send_day').hide();
@@ -353,7 +353,7 @@ $(document).ready(function(){
             }
             else if(1<=n<=2){
                 period=period-60
-                 if(time.getMinutes()+period<60){
+                if(time.getMinutes()+period<60){
                     stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
                 }
                 else{

@@ -1485,7 +1485,7 @@ class WxOauth2:
 			"topcolor": "#FF0000",
 			"data": {
 				"first": {"value": "您好，%s" % name, "color": "#173177"},
-				"keyword1": {"value": "您被『%s』添加为管理员！" % shop_name, "color": "#173177"},
+				"keyword1": {"value": "您被店铺『%s』添加为管理员！" % shop_name, "color": "#173177"},
 				"keyword3": {"value": time, "color": "#173177"},
 				}
 		}
