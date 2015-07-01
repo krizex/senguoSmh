@@ -256,7 +256,9 @@ class Publish(FruitzoneBaseHandler):
 		)
 		self.session.add(new_article)
 		self.session.commit()
-		return self.send_success()
+		_id = self.session.query(models.Article).filter_by(title=title,article=article,account_id=self.current_user.id)\
+		.order_by(models.Article.create_time.desc()).first().id
+		return self.send_success(id=_id)
 
 class DetailEdit(FruitzoneBaseHandler):
 	@tornado.web.authenticated
@@ -282,7 +284,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		article.article=data["article"]
 		article.classify=data["classify"]
 		self.session.commit()
-		return self.send_success()
+		return self.send_success(id=_id)
 
 class Search(FruitzoneBaseHandler):
 	# @tornado.web.authenticated

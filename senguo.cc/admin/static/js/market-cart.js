@@ -179,7 +179,10 @@ $(document).ready(function(){
                 }
                 else if(noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this)){}
            });
-        });}
+        });
+    }else{
+        $('.send_period .list-group-item').first().addClass("active");
+    }
         $('.send_period .item').on('click',function(){
             var $this=$(this);
             if($this.hasClass('available')) {
