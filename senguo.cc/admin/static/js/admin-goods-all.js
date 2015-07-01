@@ -275,6 +275,7 @@ $(document).ready(function(){
     }else{
         if(sHtml){
             if(editor){
+                $("#ueditor").css("width","100%");
                 // editor.html($(this).attr("data-text"));
                 // editor.clickToolbar('preview');
                 $(".detail-preview").html($(this).attr("data-text"));
@@ -845,9 +846,6 @@ function initEditor($obj,type){
         $(".pop-editor").show();
     }
     editor = UM.getEditor('ueditor');
-    editor.addListener( 'ready', function( editor ) {
-        $("#ueditor").css("width","100%");
-    });
     QINIU_TOKEN=$("#token").val();
     QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/";
     if($obj.attr("data-text")){
