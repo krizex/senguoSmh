@@ -287,13 +287,56 @@ $(document).ready(function(){
         })
     }
     else{
-        console.log(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         $('.send_now').show();
         $('.intime-intro').hide();
         $('.now-intro').show();
         $('#freight_money').text(window.dataObj.freigh_now);
         $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         //立即送模式选择/立即送最低起送金额提示
+        var end_time=$('.now_endtime').text();
+        var period=Int($('#sendNow').attr('data-period'));
+        var n=period/60;
+        var stop_time;
+        if(n<1){
+            if(time.getMinutes()+period<60){
+                stop_time=checkTime(time.getHours())+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+            }
+            else{
+                stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+            }
+        }
+        else if(1<=n<=2){
+            period=period-60
+             if(time.getMinutes()+period<60){
+                stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+            }
+            else{
+                stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+            }
+        }
+        if(stop_time<=end_time)
+        {
+            pulse($('#sendNow').parents('.item'));
+            $('#sendNow').parents('.item').addClass('active').siblings('.item').removeClass('active');
+            $('.send_period').hide();
+            $('.send_day').hide();
+            $('.send_now').show();
+            $('.intime-intro').hide();
+            $('.now-intro').show();
+            window.dataObj.total_price=mathFloat($list_total_price.text());
+            $('#freight_money').text(window.dataObj.freigh_now);
+            $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+            if(window.dataObj.total_price<window.dataObj.mincharge_now){
+                $('.mincharge_now').show();
+                $('.mincharge_intime').hide();
+            }
+        }
+        else {
+            $('#sendNow').parents('.item').removeClass('active').siblings('.item').addClass('active');
+            $('.send_period').show();
+            $('.send_day').show();
+            $('.send_now').addClass('hidden');
+        }
         $('#sendNow').on('click',function(){  
             var $this=$(this);
             var end_time=$('.now_endtime').text();
