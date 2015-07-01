@@ -845,6 +845,9 @@ function initEditor($obj,type){
         $(".pop-editor").show();
     }
     editor = UM.getEditor('ueditor');
+    editor.addListener( 'ready', function( editor ) {
+        $("#ueditor").css("width","100%");
+    });
     QINIU_TOKEN=$("#token").val();
     QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/";
     if($obj.attr("data-text")){
