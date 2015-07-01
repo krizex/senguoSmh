@@ -267,6 +267,7 @@ $(document).ready(function(){
     var sHtml = $(this).attr("data-text");
     if(isEditor=="true"){
         if(editor){
+            $("#ueditor").css("width","100%");
             editor.body.innerHTML=$(this).attr("data-text");
             $(".pop-editor").show();
         }else{
@@ -275,6 +276,7 @@ $(document).ready(function(){
     }else{
         if(sHtml){
             if(editor){
+                $("#ueditor").css("width","100%");
                 // editor.html($(this).attr("data-text"));
                 // editor.clickToolbar('preview');
                 $(".detail-preview").html($(this).attr("data-text"));
