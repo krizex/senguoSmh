@@ -177,7 +177,7 @@ class Detail(FruitzoneBaseHandler):
 				_comment = self.session.query(models.ArticleComment).filter_by(id=comment_id).first()
 			except:
 				_comment = None
-			print(num_1,_comment)
+			# print(num_1,_comment)
 			if _comment:
 				_comment.great_num = _comment.great_num +num_1
 				_comment.if_scan = 0
@@ -189,7 +189,7 @@ class Detail(FruitzoneBaseHandler):
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 			except:
 				return self.send_fail("no such article")
-			print(article)
+			# print(article)
 			if action == "comment":
 				_type = 0
 				comment_author_id = 0

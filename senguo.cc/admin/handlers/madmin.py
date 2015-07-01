@@ -153,7 +153,7 @@ class Comment(AdminBaseHandler):
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
-				print(date_list)
+				# print(date_list)
 			return self.render("m-admin/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
 				shop_service = shop_service,commodity_quality=commodity_quality,shop_code=shop_code)
 		return self.send_success(date_list=date_list,nomore=nomore)
