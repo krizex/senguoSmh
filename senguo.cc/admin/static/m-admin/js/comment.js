@@ -37,6 +37,7 @@ $(document).ready(function(){
         commitReply(id,text);
     })
 });
+
 //提交评论
 function commitReply(id,text){
     var url = "/admin/comment";
