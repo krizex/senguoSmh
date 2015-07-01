@@ -1,12 +1,12 @@
 $(document).ready(function(){
-     FastClick.attach(document.body);
-     var _hmt = _hmt || [];
-        (function() {
-          var hm = document.createElement("script");
-          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-          var s = document.getElementsByTagName("script")[0]; 
-          s.parentNode.insertBefore(hm, s);
-        })();
+    FastClick.attach(document.body);
+    var _hmt = _hmt || [];
+    (function() {
+        var hm = document.createElement("script");
+        hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+        var s = document.getElementsByTagName("script")[0]; 
+        s.parentNode.insertBefore(hm, s);
+    })();
     $('.select-list li').each(function(){
         $(this).on('click',function(){
             $(this).addClass('active').siblings().removeClass('active');
@@ -55,7 +55,7 @@ function orderBy(i){
             error:errorCall
         });
         //req.always(alwaysCall);
-};
+    };
 })(Zepto);
 
 function getItem(url,success){$.get(url,success);}

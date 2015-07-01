@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/12.
- */
 var curStaff = null;
 $(document).ready(function(){
     $(".pop-win").on("click",function(e){

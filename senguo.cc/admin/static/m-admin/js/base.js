@@ -1,8 +1,5 @@
-/**
- * Created by Administrator on 2015/6/15.
- */
 $(document).ready(function(){
-	 //fastclick initialise
+	//fastclick initialise
     FastClick.attach(document.body);
     $(".pop-win").on("click",function(e){/*关闭模态框*/
         if($(e.target).closest(".pop-content").length==0){
@@ -21,7 +18,6 @@ $(document).ready(function(){
             parent.location.href = location.href;
         }
     }
-   
 }).on("click",".developing",function(){
     return Tip("该功能正在开发中，客官不要急～");
 }).on("click",".shop-balance",function(){

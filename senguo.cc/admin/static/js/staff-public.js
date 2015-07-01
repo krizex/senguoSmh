@@ -1,5 +1,5 @@
 $(document).ready(function(){
-     FastClick.attach(document.body);
+    FastClick.attach(document.body);
     $('.shop-list').find('li').on('click',function(){
         var id=$(this).data('id');
         shopChange(id);
@@ -8,7 +8,7 @@ $(document).ready(function(){
         var $box_status=$('#shopList').css('display');
         var shop_box=new Modal('shopList');
         shop_box.modal('show');
-   });
+    });
     //get order num
     window.dataObj.now_count=getCookie('orders_intime');
     window.dataObj.on_count=getCookie('orders_ontime');
@@ -26,8 +26,7 @@ function shopChange(id){
             window.location.reload();
         }
         else return alert(res.error_text)
-    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')}
-)
+    },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
 
 function job(target,n){
@@ -71,11 +70,10 @@ function SetCookie(name,value,days){
             error:errorCall
         });
         //req.always(alwaysCall);
-};
+    };
 })(Zepto);
 
 function getItem(url,success){$.get(url,success);}
-
 
 function Int(target){
     target=parseInt(target);
@@ -117,26 +115,26 @@ function is_weixin(){
 //confirmbox
 getItem('/static/items/confirmBox.html?v=20150613',function(data){window.dataObj.confirmBox=data});
 var confirmBox=function(text,index,type){
-        var $box=$(window.dataObj.confirmBox);
-        $box.find('.message').text(text);
-        if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
-        if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
-        var window_height=$(window).height();
-        var height=$('.container').height();
-        var $mask;
-        if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
-        else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
-        $('body').append($box,$mask);
-        $(document).on('click','.dismiss',function(){
+    var $box=$(window.dataObj.confirmBox);
+    $box.find('.message').text(text);
+    if(typeof(index)!='undefined') $box.find('.message').attr({'data-index':index});
+    if(typeof(type)!='undefined') $box.find('.message').attr({'data-type':type});
+    var window_height=$(window).height();
+    var height=$('.container').height();
+    var $mask;
+    if(height<window_height) $mask=$('<div class="modal_bg"></div>').css({'height':'100%'});
+    else $mask=$('<div class="modal_bg"></div>').css({'height':height+'px'});
+    $('body').append($box,$mask);
+    $(document).on('click','.dismiss',function(){
+        $('#confirmBox').remove();
+        $('.modal_bg').remove();
+    });
+    $(document).on('click','.modal',function(e){
+        if($(e.target).closest('.modal-content').length == 0){
+            $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
             $('#confirmBox').remove();
-            $('.modal_bg').remove();
-        });
-         $(document).on('click','.modal',function(e){
-             if($(e.target).closest('.modal-content').length == 0){
-                $('body').removeClass('modal_sty').attr({'onmousewheel':''}).css({'overflow':'auto'}).find('.modal_bg').remove();
-                $('#confirmBox').remove();
-            }
-        });
+        }
+    });
 }
 var confirmRemove=function(){
     $('#confirmBox').remove();
@@ -192,8 +190,7 @@ function Modal(target){
 }
 Modal.prototype.modal=function(type){
     var $target=$('#'+this.target+'');
-    if(type=='show')
-    {
+    if(type=='show'){
         var window_height=$(window).height();
         var height=$('.container').height();
         $target.removeClass('fade').addClass('in').css({'display':'block'});

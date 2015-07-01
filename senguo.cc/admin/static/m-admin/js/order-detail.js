@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/12.
- */
 var curStaff = null,width = 0;
 $(document).ready(function(){
     width = $(window).width(); 

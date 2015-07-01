@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/5/5.
- */
 var apply_list = "";
 var payPage = 0;
 $(document).ready(function(){

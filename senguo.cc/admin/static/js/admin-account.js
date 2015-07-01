@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/4/20.
- */
 $(document).ready(function(){
 	history('all_history',1);
 }).on("click",".tab-lst li",function(){

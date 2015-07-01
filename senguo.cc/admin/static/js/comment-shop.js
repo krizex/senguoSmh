@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/4/28.
- */
 var finished=true;
 var current_page=1;
 var nomore =false;

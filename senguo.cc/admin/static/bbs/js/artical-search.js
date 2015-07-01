@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/12.
- */
 $(document).ready(function(){
     $("#search-ipt").on("keyup",function(e){
         if($(this).val().trim()==""){
