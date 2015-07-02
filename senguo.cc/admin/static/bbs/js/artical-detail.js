@@ -194,7 +194,7 @@ function scrollLoading(){
 }
 function commentList(page){
     $.ajax({
-        url:window.location.href+'?page='+page+"&action=comment",
+        url:'/bbs/detail/'+$(".wrap-post").attr("data-id")+'?page='+page+"&action=comment",
         type:"get",
         success:function(res){
             if(res.success){

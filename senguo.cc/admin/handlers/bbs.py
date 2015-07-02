@@ -13,9 +13,16 @@ class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
 	def get(self):
+		print(self.get_secure_cookie("customer_id"))
 		if "page" in self.args and self.args["page"] !=[]:
-			_type = int(self.args["type"])
-			page = int(self.args["page"])
+			if self.args["page"]==[]:
+				page = 0
+			else:
+				page = int(self.args["page"])
+			if self.args["type"]==[]:
+				_type = 100
+			else:
+				_type = int(self.args["type"])
 			page_size = 20
 			nomore = False
 			datalist = []
@@ -50,7 +57,7 @@ class Detail(FruitzoneBaseHandler):
 				.filter(models.Article.id==_id,models.Article.status==1).first()
 		except:
 			return self.write("没有该文章的任何信息")
-
+		
 		# if not article[3]:
 		# 	article[0].scan_num = article[0].scan_num +1
 		# 	self.session.add(models.ArticleGreat(article_id = _id,
@@ -83,7 +90,10 @@ class Detail(FruitzoneBaseHandler):
 						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
 
 		if "action" in self.args and self.args["action"] == "comment":
-			page = int(self.args["page"])
+			if self.args["page"]==[]:
+				page = 0
+			else:
+				page = int(self.args["page"])
 			page_size = 20
 			nomore = False
 			comments_list = []

@@ -1666,11 +1666,11 @@ class Goods(AdminBaseHandler):
 							num = 0
 						relate = select_num/unit_num
 						try:
-							q = self.session.query(models.ChargeType).filter_by(id=charge_type['id'])
+							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).one()
 						except:
-							q = None
-						if q:
-							q.one().update(session=self.session,price=price,
+							q_charge = None
+						if q_charge:
+							q_charge.update(session=self.session,price=price,
 									 unit=charge_type["unit"],
 									 num=num,
 									 unit_num=unit_num,
@@ -2174,7 +2174,8 @@ class Config(AdminBaseHandler):
 		elif action == "notice":
 			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
 			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='market_set',shopSubPage='notice_set'))
-			
+		elif action == "wx":
+			return self.render('admin/shop-wx-set.html',context=dict(subpage='shop_set',shopSubPage='wx_set'))
 		else:
 			return self.send_error(404)
 
