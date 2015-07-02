@@ -169,7 +169,7 @@ var item=' <li class="forbid_click" data-id="{{id}}">'+
                         '</p>'+
                         '<p class="com-detail">{{ if type==1 }}@{{nick_name}}{{/if}} {{comment}}</p>'+
                         '<p class="f12 c999 mt2">{{time}}'+
-                            '{{ if author_if == "True" }}<a href="javascript:;" class="del-comment fr c999"  data-id="{{id}}">删除</a>{{/if }}'+
+                            '{{ if author_if == "True" || comment_author == "true" }}<a href="javascript:;" class="del-comment fr c999"  data-id="{{id}}">删除</a>{{/if }}'+
                         '</p>'+
                     '</dt>'+
                 '</dl>'+
@@ -194,7 +194,7 @@ function scrollLoading(){
 }
 function commentList(page){
     $.ajax({
-        url:window.location.href+'?page='+page+"&action=comment",
+        url:'/bbs/detail/'+$(".wrap-post").attr("data-id")+'?page='+page+"&action=comment",
         type:"get",
         success:function(res){
             if(res.success){
@@ -284,6 +284,7 @@ function commentItem(data,_type){
     var imgurl=data['imgurl'];
     var great_if=data['great_if'].toString();
     var author_if=$('#author_if').val().toString();
+    var comment_author=data['comment_author'].toString();
     var list_item =render({
         id:id,
         title:title,
@@ -295,7 +296,8 @@ function commentItem(data,_type){
         comment:comment,
         imgurl:imgurl,
         great_if:great_if,
-        author_if:author_if
+        author_if:author_if,
+        comment_author:comment_author
     });
     if(_type=="new"){
         $(".comment-list").prepend(list_item);
