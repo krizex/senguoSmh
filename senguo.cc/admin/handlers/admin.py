@@ -1691,11 +1691,11 @@ class Goods(AdminBaseHandler):
 							num = 0
 						relate = select_num/unit_num
 						try:
-							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).one()
+							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id'])
 						except:
 							q_charge = None
 						if q_charge:
-							q_charge.update(session=self.session,price=price,
+							q_charge.one().update(session=self.session,price=price,
 									 unit=charge_type["unit"],
 									 num=num,
 									 unit_num=unit_num,
