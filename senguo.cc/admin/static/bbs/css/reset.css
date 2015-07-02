@@ -149,4 +149,4 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pop-win .text{padding-bottom:15px;}
 .pop-win .btn-box button{background:#fff;border-radius:2px;padding:5px 12px;}
 
-.edui-container{min-height: 400px;}
+.edui-body-container{height: 400px;overflow: auto;}
