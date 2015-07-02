@@ -50,7 +50,7 @@ function publishAtical(target){
         if(res.success){
             Tip("发布成功");
             setTimeout(function(){
-                window.location.href="/bbs"
+                window.location.href="/bbs/detail/"+res.id;
             },2000);
         }else{
             target.attr("data-statu", "0");
@@ -61,36 +61,6 @@ function publishAtical(target){
 
 function initEditor(){
     ueditor = UM.getEditor('ueditor');
-   /* $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
-        var token1 = data.token;
-        var token = data.res;
-        var editor = KindEditor.create('#kindEditor', {
-            uploadJson : 'http://upload.qiniu.com/',
-            filePostName : 'file',
-            allowFileManager : true,
-            fileManagerJson : '/admin/editorFileManage',
-            extraFileUploadParams : {'token':token1},
-            token : token,
-            resizeType : 1,
-            filterMode : false,
-            items:[
-                'undo', 'redo', '|', 'justifyleft', 'justifycenter', 'justifyright',
-                'justifyfull', 'insertorderedlist', 'insertunorderedlist', 'indent', 'outdent',
-                'clearhtml', 'quickformat', '|', 
-                'formatblock', 'fontname', 'fontsize', '|', 'forecolor', 'hilitecolor', 'bold',
-                'italic', 'underline', 'strikethrough', 'lineheight', 'removeformat', '|', 'image', 'multiimage',
-                'emoticons', 'baidumap',
-                'link', 'unlink'
-            ],
-            afterCreate: function(){
-                this.sync();
-            },
-            afterBlur: function(){this.sync();},
-            afterUpload : function(url) {
-            },
-            uploadError:function(file, errorCode, message){
-                Tip(message);
-            }
-        });
-    }});*/
+    QINIU_TOKEN=$("#token").val();
+    QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/"
 }

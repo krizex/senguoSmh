@@ -267,7 +267,8 @@ $(document).ready(function(){
     var sHtml = $(this).attr("data-text");
     if(isEditor=="true"){
         if(editor){
-            editor.html($(this).attr("data-text"));
+            $("#ueditor").css("width","100%");
+            editor.body.innerHTML=$(this).attr("data-text");
             $(".pop-editor").show();
         }else{
             initEditor($(this));
@@ -275,10 +276,13 @@ $(document).ready(function(){
     }else{
         if(sHtml){
             if(editor){
-                editor.html($(this).attr("data-text"));
-                editor.clickToolbar('preview');
+                $("#ueditor").css("width","100%");
+                // editor.html($(this).attr("data-text"));
+                // editor.clickToolbar('preview');
+                $(".detail-preview").html($(this).attr("data-text"));
+                $(".pop-preview").show();
             }else{
-                initEditor($(this));
+                initEditor($(this),"preview");
             }
         }else{
             Tip("当前商品未添加商品详情，您可以点击“编辑”后添加商品详情");
@@ -349,7 +353,7 @@ $(document).ready(function(){
 }).on("click","#batch-down",function(){
     batchGoods("down");
 }).on("click",".ok-editor",function(){
-    curEditor.attr("data-text",editor.html());
+    curEditor.attr("data-text",editor.body.innerHTML);
     $(".pop-editor").hide();
 }).on("click",".pre-page",function(){//上页
     if(pn==0){
@@ -541,7 +545,7 @@ function dealGoods($item,type){
     //商品详情
     var detail_describe = "";
     if(editor){
-        detail_describe = editor.html();
+        detail_describe = editor.body.innerHTML;
     }
 
     //商品限购、排序优先级
@@ -834,41 +838,26 @@ function switchGoodsRack(id,$obj){
         }
     });
 }
-function initEditor($obj){
-    $(".pop-editor").show();
-    $.ajax({url: '/admin/editorTest?action=editor', async: false, success: function(data){
-        var token1 = data.token;
-        var token = data.res;
-        editor = KindEditor.create('#kindEditor', {
-            uploadJson : 'http://upload.qiniu.com/',
-            filePostName : 'file',
-            allowFileManager : true,
-            fileManagerJson : '/admin/editorFileManage',
-            extraFileUploadParams : {'token':token1},
-            token : token,
-            resizeType : 0,
-            filterMode : false,
-            items:[
-                 'preview', 'image'
-            ],
-            afterCreate: function(){
-                this.sync();
-            },
-            afterBlur: function(){this.sync();},
-            afterUpload : function(url) {
-            },
-            uploadError:function(file, errorCode, message){
-                Tip(message);
-            }
-        });
-        if($obj.attr("data-text")){
-            editor.html($obj.attr("data-text"));
-        }
-        if($obj.attr("data-flag")!="true"){
-            $(".pop-editor").hide();
-            editor.clickToolbar('preview');
-        }
-    }});
+function initEditor($obj,type){
+    if(type=="preview"){
+        $(".pop-editor").hide();
+        $(".detail-preview").html($obj.attr("data-text"));
+        $(".pop-preview").show();
+    }else{
+        $(".pop-editor").show();
+    }
+    editor = UM.getEditor('ueditor');
+    QINIU_TOKEN=$("#token").val();
+    QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/";
+    if($obj.attr("data-text")){
+        editor.body.innerHTML=$obj.attr("data-text");
+    }
+    if($obj.attr("data-flag")!="true"){
+        $(".pop-editor").hide();
+        // editor.clickToolbar('preview');
+        $(".detail-preview").html($obj.attr("data-text"));
+        $(".pop-preview").show();
+    }
 }
 
 function getGoodsItem(action,page,type_id,value){

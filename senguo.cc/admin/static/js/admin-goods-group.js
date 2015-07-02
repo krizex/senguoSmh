@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/2.
- */
 var curGroup = null,aLis=[],aPos=[],zIndex=1;
 $(document).ready(function(){
     $(document).on("click",function(e){
@@ -39,7 +36,7 @@ $(document).ready(function(){
     $(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
         copy: function(){
-            return "wwwww";
+            return $(this).prev("input").val();
         },
         afterCopy:function(){
             Tip("链接已经复制到剪切板");

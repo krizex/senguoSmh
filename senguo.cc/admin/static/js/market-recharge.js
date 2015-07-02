@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/4/20.
- */
 var m_type = 0;
 $(document).ready(function(){
 

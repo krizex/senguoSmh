@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/12.
- */
 $(document).ready(function(){
     var height = $(window).height();
     $(".wrap-post").css("minHeight",height-60);
@@ -20,6 +17,8 @@ $(document).ready(function(){
         $('.reply-btn').attr("id","comment").attr("data-id",id);
         $(".reply-ipt").focus();
     });
+    commentList(0);
+    scrollLoading();
 }).on("click",".del-comment",function(){  
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
@@ -153,7 +152,10 @@ $(document).ready(function(){
     }
 });
 var comment_item;
-var item=' <li data-id="{{id}}">'+
+var finished=true;
+var nomore =false;
+var page=0;
+var item=' <li class="forbid_click" data-id="{{id}}">'+
                 '<dl class="group comment-item">'+
                     '<dd>'+
                         '<span class="img-border"><img src="{{imgurl}}" alt="用户头像"/></span>'+
@@ -161,15 +163,57 @@ var item=' <li data-id="{{id}}">'+
                     '<dt>'+
                         '<p class="com-first">'+
                             '<a href="javascript:;" class="wrap-icon dianzan fr comment-great" data-id="{{id}}">'+
-                            '<i class="post-dz"></i><span class="num">{{great_num}}</span>'+
+                            '<i class="post-dz {{ if great_if=="true" }}post-dz-active{{ /if }}"></i><span class="num">{{great_num}}</span>'+
                             '</a>'+
                             '<a href="javascript:;" class="nickname"  data-id="{{id}}">{{nickname}}</a>'+
                         '</p>'+
                         '<p class="com-detail">{{ if type==1 }}@{{nick_name}}{{/if}} {{comment}}</p>'+
-                        '<p class="f12 c999 mt2">{{time}}</p>'+
+                        '<p class="f12 c999 mt2">{{time}}'+
+                            '{{ if author_if == "True" }}<a href="javascript:;" class="del-comment fr c999"  data-id="{{id}}">删除</a>{{/if }}'+
+                        '</p>'+
                     '</dt>'+
                 '</dl>'+
             '</li>';
+
+function scrollLoading(){  
+    $(window).scroll(function(){
+        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+        var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+        var totalheight = 0;
+         var main = $(".container"); 
+        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+        if(finished == true &&(main.height()-range) <= totalheight  &&nomore==false ) {
+            finished=false;
+            page++;
+            commentList(page);
+        }
+        else if(nomore==true){
+              $('.loading').html("~没有更多了~").show();
+        }
+    });
+}
+function commentList(page){
+    $.ajax({
+        url:window.location.href+'?page='+page+"&action=comment",
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data=res.data;
+                nomore=res.nomore;
+                if(page==0&&nomore==true&&data.length==0){
+                    $('.sofa').removeClass("hide");
+                }
+                for(var i in data){
+                       commentItem(data[i]);
+                    }
+                finished=true;
+            }
+            else {
+                return Tip(res.error_text);
+            }
+        }
+    })
+};
             
 function delAtical(id){
     var url = "";
@@ -210,38 +254,53 @@ function admireAtical(id,action,target){
             $(".reply-ipt").val("");
         }
         if(res.success){
+            $('.sofa').addClass("hide");
             $('.comment .num').text(parseInt($('.comment .num').text()));
             var data=res.data;
-            var render = template.compile(item);
-            var id=data['id'];
-            var title=data['title'];
-            var time=data['time'];
-            var type=data['type'];
-            var nickname=data['nickname'];
-            var great_num=data['great_num'];
-            var nick_name=data['nick_name'];
-            var comment=data['comment'];
-            var imgurl=data['imgurl'];
-            var list_item =render({
-                id:id,
-                title:title,
-                time:time,
-                type:type,
-                nickname:nickname,
-                great_num:great_num,
-                nick_name:nick_name,
-                comment:comment,
-                imgurl:imgurl
-            });
-            $(".comment-list").prepend(list_item);
+            commentItem(data,"new");
             $(".wrap-reply-box").addClass("hide");
             $(".reply-ipt").val("");
             $(".wrap-post-attr").addClass("bm10");
             $(".com-atical .num").text(parseInt($(".com-atical .num").text())+1);
             target.attr("data-statu", "0");
+            $('html,body').scrollTop($(".comment-list").offset().top);
         }else{
             target.attr("data-statu", "0");
             Tip(res.error_text);
         }
     });
+}
+
+function commentItem(data,_type){
+    var render = template.compile(item);
+    var id=data['id'];
+    var title=data['title'];
+    var time=data['time'];
+    var type=data['type'];
+    var nickname=data['nickname'];
+    var great_num=data['great_num'];
+    var nick_name=data['nick_name'];
+    var comment=data['comment'];
+    var imgurl=data['imgurl'];
+    var great_if=data['great_if'].toString();
+    var author_if=$('#author_if').val().toString();
+    var list_item =render({
+        id:id,
+        title:title,
+        time:time,
+        type:type,
+        nickname:nickname,
+        great_num:great_num,
+        nick_name:nick_name,
+        comment:comment,
+        imgurl:imgurl,
+        great_if:great_if,
+        author_if:author_if
+    });
+    if(_type=="new"){
+        $(".comment-list").prepend(list_item);
+    }else{
+       $(".comment-list").append(list_item); 
+    }
+    
 }

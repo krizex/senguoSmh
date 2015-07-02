@@ -7,7 +7,7 @@
 .atical-list>li{padding: 10px;position: relative;}
 .atical-list>li:after{content: '';display: block;position: absolute;width: 100%;left: 0;bottom: 0;height: 1px;background-color: #dadada;-webkit-transform: scaleY(0.5);transform: scaleY(0.5);}
 .atical-list .title{color: #333;line-height: 24px;}
-.atical-mark{display: inline-block;height: 16px;line-height: 16px;font-size:12px;margin-right:5px;position:relative;top:-2px;padding: 0 10px;border: 1px solid #999;color: #999;border-radius: 9px;}
+.atical-mark{display: inline-block;height: 16px;line-height: 16px;font-size:12px;margin-right:3px;position:relative;top:-2px;left:-3px;padding: 0 10px;border: 1px solid #999;color: #999;border-radius: 9px;transform: scale(0.9);-webkit-transform: scale(0.9);}
 .atical-attr{margin-top: 8px;color: #999;font-size: 13px;}
 .atical-attr>span{display: inline-block;}
 .wrap-icon{display: inline-block;color: #999;position: relative;padding-left: 24px;}
@@ -22,7 +22,6 @@
 .wrap-icon .post-dz-active{background-position: 0 -65px;}
 .wrap-post{}
 .post-box{background-color: #fff;padding: 10px 15px;}
-
 .post-title{line-height: 1.4;font-size: 23px;color: #333;font-weight: 400;}
 .post-2title{color: #999;white-space: nowrap;overflow: hidden;}
 .post-2title .author{color: #6ba4ef;margin-right: 10px;}
@@ -38,7 +37,7 @@
 .comment-item>dd img{width: 32px;height: 32px;border-radius: 2px;}
 .comment-item>dt{}
 .com-first a{color: #999;font-weight: 400;}
-.com-detail{margin-top: 6px;line-height: 18px;color: #333;}
+.com-detail{margin-top: 3px;line-height: 1.5;color: #333;}
 .fix-center{position: fixed;bottom:50px;width: 100%;max-width: 800px;min-width: 320px;z-index:999;left: 50%;-webkit-transform:translate(-50%,0);transform:translate(-50%,0);text-align: right;-webkit-box-sizing: border-box;box-sizing: border-box;}
 .wrap-post-attr>a{display: inline-block;width: 44px;height: 26px;position: relative;margin-right: 10px;border-radius: 26px;border:1px solid #999;background-color: #fff;}
 .wrap-post-attr i{position: absolute;margin-left:1px;left: 50%;top:50%;width: 14px;height: 13px;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);background-image: url('/static/bbs/img/bbs_icon.png');background-size: 21px;}
@@ -74,13 +73,4 @@
 .wrap-ipt{line-height: 1;height: 28px;}
 
 .fix-left{position:fixed;bottom:50px;}
-
-
-
-
-
-
-
-
-
-
+.sofa{padding-top:15px;}

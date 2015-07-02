@@ -91,6 +91,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 /*页面头部*/
 .header{position: fixed;top: 0;left: 0;z-index:999;width: 100%;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;}
 .back{display: inline-block;height: 40px;min-width:40px;line-height:40px;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 10px;top: 0;background-position: left center;}
+.header span{font-size: 16px;}
 .head-right{display: block;height: 40px;width:40px;background-size: 20px;position: absolute;right: 10px;top: 0;background-position: right center;}
 .search{background-image: url('/static/images/list_top.png');background-position: 14px -22px;top: 8px;background-size: 22px;}
 /*页面容器*/
@@ -141,5 +142,3 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 
 .pop-win .text{padding-bottom:15px;}
 .pop-win .btn-box button{background:#fff;border-radius:2px;padding:5px 12px;}
-
-

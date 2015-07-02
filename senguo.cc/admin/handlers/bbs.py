@@ -42,6 +42,7 @@ class Main(FruitzoneBaseHandler):
 
 class Detail(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("action:?","page?")
 	def get(self,_id):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
@@ -81,18 +82,27 @@ class Detail(FruitzoneBaseHandler):
 						"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
 						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
 
-		try:
-			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
-				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
-				.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1).order_by(models.ArticleComment.create_time.desc()).all()
-		except:
-			comments = None
-		comments_list=[]
-		if comments:
-			for comment in comments:
-				comments_list.append(self.getArticleComment(comment))
+		if "action" in self.args and self.args["action"] == "comment":
+			page = int(self.args["page"])
+			page_size = 20
+			nomore = False
+			comments_list = []
+			try:
+				comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
+					.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
+					.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1).order_by(models.ArticleComment.create_time.desc())
+			except:
+				comments = None
+			
+			if comments:
+				if page == comments.count()//page_size:
+					nomore = True
+				comments = comments.offset(page*page_size).limit(page_size).all()
+				for comment in comments:
+					comments_list.append(self.getArticleComment(comment))
+				return self.send_success(data=comments_list,nomore=nomore)
 		if_admin = self.if_super()
-		return self.render("bbs/artical-detail.html",article=article_data,author_if=author_if,comments_list=comments_list,if_admin=if_admin)
+		return self.render("bbs/artical-detail.html",article=article_data,author_if=author_if,if_admin=if_admin)
 	
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:str","data?")
@@ -167,7 +177,7 @@ class Detail(FruitzoneBaseHandler):
 				_comment = self.session.query(models.ArticleComment).filter_by(id=comment_id).first()
 			except:
 				_comment = None
-			print(num_1,_comment)
+			# print(num_1,_comment)
 			if _comment:
 				_comment.great_num = _comment.great_num +num_1
 				_comment.if_scan = 0
@@ -179,7 +189,7 @@ class Detail(FruitzoneBaseHandler):
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 			except:
 				return self.send_fail("no such article")
-			print(article)
+			# print(article)
 			if action == "comment":
 				_type = 0
 				comment_author_id = 0
@@ -256,7 +266,9 @@ class Publish(FruitzoneBaseHandler):
 		)
 		self.session.add(new_article)
 		self.session.commit()
-		return self.send_success()
+		_id = self.session.query(models.Article).filter_by(title=title,article=article,account_id=self.current_user.id)\
+		.order_by(models.Article.create_time.desc()).first().id
+		return self.send_success(id=_id)
 
 class DetailEdit(FruitzoneBaseHandler):
 	@tornado.web.authenticated
@@ -282,7 +294,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		article.article=data["article"]
 		article.classify=data["classify"]
 		self.session.commit()
-		return self.send_success()
+		return self.send_success(id=_id)
 
 class Search(FruitzoneBaseHandler):
 	# @tornado.web.authenticated

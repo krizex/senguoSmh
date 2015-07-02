@@ -35,6 +35,7 @@ handlers = [
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
+	
 
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),

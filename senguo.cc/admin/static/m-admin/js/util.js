@@ -1,6 +1,3 @@
-/**
- * Created by zhoubing on 2014/12/22.
- */
 //表示全局唯一标识符 (GUID)。
 function Guid(g){
     var arr = new Array(); //存放32位数值的数组
