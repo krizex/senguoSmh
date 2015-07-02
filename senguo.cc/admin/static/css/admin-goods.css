@@ -148,7 +148,6 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .wrap-big-img{position: fixed;background-color: rgba(0,0,0,.6);z-index:999;width: 100%;height:100%;top: 0;left: 0;cursor: pointer;display: none;}
 .wrap-big-img>img{position: absolute;left: 50%;top: 50%;width: auto;height: auto;-webkit-transform:translate(-50%,-50%);}
 .wrap-kindeditor{position: absolute;background: #fff;width: 800px;left: 50%;top: 50%;-webkit-transform:translate(-50%,-50%);z-index:990;}
-.edui-body-container{height: 400px;overflow: auto;}
 /*.ke-tabs-ul>li:first-child{display: none !important;}
 .ke-tabs-li{border-bottom: 1px solid #FFF !important;cursor: default !important;background-color: #fff !important;}
 .ke-dialog-body .tab1{display: none !important;}
