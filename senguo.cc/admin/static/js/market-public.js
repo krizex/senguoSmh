@@ -19,15 +19,6 @@ $(document).ready(function(){
     }
     //fastclick initialise
     FastClick.attach(document.body);
-    //客户端为Android系统替换图片路径
-    //AndroidImg('bg_change');
-    //AndroidImg('src_change');   
-    //图片延迟加载
-    //$('.lazy_img').each(function(){
-    // var $this=$(this);
-    // var src=$this.data('src');
-    // $this.attr({'src':src});
-    //});
     //商品单位转换
     $('.chargeUnit').each(function(){
         var $this=$(this);
@@ -35,8 +26,7 @@ $(document).ready(function(){
         unitText($this,id);
     });
     $(document).on('click','#backTop',function(){
-        $(window).scrollTop(0);
-        $('.little_pear').css("display","none");
+        $.scrollTo({endY:0,duration:500,callback:function() {}});
     });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
@@ -139,38 +129,7 @@ function isWeiXin(){
         }
         else{
     }
-} 
-
-/*
-function AndroidImg(target){
-    //判断客户端是否是iOS或者Android
-    var u = navigator.userAgent, app = navigator.appVersion;
-    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
-    //var isAndroid = u.indexOf('Android') > -1;
-    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/);
-    if(isAndroid){
-     	$(document).find('.'+target).each(function(){
-            var $this=$(this);
-            var dpi=window.devicePixelRatio;
-            if(target=='bg_change'){
-                var src=$this.css('background');
-                var src_android
-                if(dpi>1)  src_android=src.replace('.svg','@2x.png');
-                else    src_android=src.replace('.svg','.png');
-                $this.css({'background':src_android});
-            }
-            else {
-                var src=$this.attr('src');
-                var src_android
-                if(dpi>1)  src_android=src.replace('.svg','@2x.png');
-                else    src_android=src.replace('.svg','.png');
-                $this.attr({'src':src_android});
-            }   	
-        });
-    }
 }
-*/
-
 function getCookie(key){
     var aCookie = document.cookie.split(";");
     for (var i=0; i < aCookie.length; i++){
@@ -181,14 +140,12 @@ function getCookie(key){
     }
     return '';
 }
-
 function SetCookie(name,value,days){
     var days=arguments[2]?arguments[2]:30; //此 cookie 将被保存 30 天
     var exp=new Date();    //new Date("December 31, 9998");
     exp.setTime(exp.getTime() + days*86400000);
     document.cookie=name+"="+escape(value)+";path=/;expires="+exp.toGMTString();
 }
-
 function unitText(target,n){
     switch (n){
         case 1:target.text('个');break;
@@ -204,7 +161,6 @@ function unitText(target,n){
         case 11:target.text('包');break;
     }
 }
-
 function tagText(target,n){
     switch (n){
         case 1:target.hide();break;
@@ -213,7 +169,6 @@ function tagText(target,n){
         case 4:target.addClass('sale_tag').addClass('bg_change');break;
         case 5:target.addClass('new_tag').addClass('bg_change');break;
     }
-    //AndroidImg('bg_change');
 }
 //public
 (function ($) {
@@ -231,14 +186,11 @@ function tagText(target,n){
         //req.always(alwaysCall);
 };
 })(Zepto);
-
 function getItem(url,success){$.get(url,success);}
-
 function Int(target){
     target=parseInt(target);
     return target;
 }
-
 function checkTime(i)
 {
     if (i<10)
@@ -386,7 +338,6 @@ Modal.prototype.modal=function(type){
         $target.addClass('fade').removeClass('in').css({'display':'none'});
     }
 }
-
 //modal notice
 function modalNotice(notice){
     var item =  '<div class="modal in" id="notice-box" style="display:block">'+
@@ -426,3 +377,73 @@ function wobble(target){
         target.removeClass('anim-wobble');
     });
 }
+//Zepto ScollTo 屏幕滚动动画
+;(function($) {
+    var DEFAULTS = {
+        endY: $.os.android ? 1 : 0,
+        duration: 200,
+        updateRate: 15
+    };
+    var interpolate = function (source, target, shift) {
+        return (source + (target - source) * shift);
+    };
+    var easing = function (pos) {
+        return (-Math.cos(pos * Math.PI) / 2) + .5;
+    };
+    var scroll = function(settings) {
+        var options = $.extend({}, DEFAULTS, settings);
+        if (options.duration === 0) {
+            window.scrollTo(0, options.endY);
+            if (typeof options.callback === 'function') options.callback();
+            return;
+        }
+        var startY = window.pageYOffset,
+        startT = Date.now(),
+        finishT = startT + options.duration;
+        var animate = function() {
+            var now = Date.now(),
+            shift = (now > finishT) ? 1 : (now - startT) / options.duration;
+            window.scrollTo(0, interpolate(startY, options.endY, easing(shift)));
+            if (now < finishT) {
+                setTimeout(animate, options.updateRate);
+            }
+            else {
+                if (typeof options.callback === 'function') options.callback();
+            }
+        };
+        animate();
+    };
+    var scrollNode = function(settings) {
+        var options = $.extend({}, DEFAULTS, settings);
+        if (options.duration === 0) {
+            this.scrollTop = options.endY;
+            if (typeof options.callback === 'function') options.callback();
+            return;
+        }
+        var startY = this.scrollTop,
+        startT = Date.now(),
+        finishT = startT + options.duration,
+        _this = this;
+        var animate = function() {
+            var now = Date.now(),
+            shift = (now > finishT) ? 1 : (now - startT) / options.duration;
+            _this.scrollTop = interpolate(startY, options.endY, easing(shift));
+            if (now < finishT) {
+                setTimeout(animate, options.updateRate);
+            }
+            else {
+                if (typeof options.callback === 'function') options.callback();
+            }
+        };
+        animate();
+    };
+    $.scrollTo = scroll;
+    $.fn.scrollTo = function() {
+        if (this.length) {
+            var args = arguments;
+            this.forEach(function(elem, index) {
+                scrollNode.apply(elem, args);
+            });
+        }
+    };
+}(Zepto));

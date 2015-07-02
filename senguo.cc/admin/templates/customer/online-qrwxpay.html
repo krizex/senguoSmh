@@ -3,15 +3,11 @@
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
-<style type="text/css">
-.wrap-qrcode{width:100%;padding:10px 0; background:#fff;margin-top:10px;}
-.qrcode{margin: 0 auto;width:100%;margin-top:10px;}
-.qrcode canvas{width:40%;}
-</style>
 {% end %}
 {% block top %}订单详情{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
+<input type="hidden" value="{{qr_url}}" id="qr_url">
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -51,7 +47,6 @@
                 </dl>
             </li>
             {% end %}
-          
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
@@ -68,7 +63,7 @@
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
     <div class="wrap-qrcode text-center">
-        <p class="text-center font14">长按图片【识别二维码】</p><p class="text-center font14">或使用微信【扫一扫】付款</p>
+        <p class="text-center font14">请使用微信【扫一扫】二维码付款</p>
         <div class="qrcode" id="qrcode"></div>
     </div>
 </div>
@@ -84,9 +79,16 @@
 <input type="hidden" value="{{order.id}}" id="order-id"/>
 {% end %}
 {% block bottom %}
-<script type="text/javascript" src="{{static_url('js/zepto.qrcode.min.js')}}"></script> 
+<script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
-    $("#qrcode").qrcode({render: "canvas",width: 250,height:250,text: '{{qr_url}}' ,typeNumber  : -1});//需要生成的页面
+$(document).ready(function(){
+    new QRCode(document.getElementById('qrcode'), {
+        width : 280,//设置宽高
+        height : 280,
+        colorDark : "#433943"
+    }).makeCode($("#qr_url").val());
+    $.scrollTo({endY:$('.wrap-qrcode').offset().top,duration:500,callback:function(){}});
+});
 </script>
 {% end %}

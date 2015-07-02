@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/12.
- */
 var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
     $("html,body").addClass("h100");
@@ -59,14 +56,14 @@ $(document).ready(function(){
        window.location.href="/madmin/orderDetail/"+num; 
     }
 }).on("click",".order-grade .task-staff",function(e){
-     var $this=$(this);
-     var status=parseInt($this.parents('.m-order-item').attr('data-status'));
-     if(status==1||status==4){
+    var $this=$(this);
+    var status=parseInt($this.parents('.m-order-item').attr('data-status'));
+    if(status==1||status==4){
         e.stopPropagation();
         curStaff = $(this).closest(".order-grade");
         $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.m-order-item').attr('data-id'));
         $(".staff-list").empty().html($this.parents('.m-order-item').find('.order-staff-list').html());
-     } 
+    } 
 }).on("click",".staff-list>li",function(){
     var index = $(this).index();
     var src = $(this).find("img").attr("src");
@@ -154,18 +151,18 @@ var getOrder=function(page){
         type:"get",
         success:function(res){
             if(res.success){
-               var data=res.data;
-               nomore=res.nomore;
-               if(data.length==0){
+                var data=res.data;
+                nomore=res.nomore;
+                if(data.length==0){
                     $('.wrap-loading-box').addClass('hide');
                     $(".no-result").html("没有更多订单了");
                     return false;
-               }
-               if(nomore==true){
+                }
+                if(nomore==true){
                     $('.wrap-loading-box').addClass('hide');
                     $(".no-result").html("没有更多订单了");
-               }
-               for(var i in data){
+                }
+                for(var i in data){
                     var id=data[i]['id'];
                     var order_status=parseInt(data[i]['status']);
                     var order_num=data[i]['num'];
@@ -181,8 +178,8 @@ var getOrder=function(page){
                     var left;
                     var sender_name;
                     var del_status;
-                    var show='hidden';
-                    var hide='visible';
+                    var show='hide';
+                    var hide='show';
                     var tel_show='hide';
                     var color="c999";
 
@@ -210,14 +207,14 @@ var getOrder=function(page){
                             $("#status-txt").text('未支付');
                             width='order-w0';
                             left='order-l0';
-                            show='hidden';
-                            hide='visible';
+                            show='hide';
+                            hide='show';
                             break;
                         case 0:         
                             width='order-w0';
                             left='order-l0';
-                            hide='hidden';
-                            show='visible';
+                            hide='hide';
+                            show='show';
                             if(del_reason){
                                 if(del_reason=='timeout'){
                                     del_status='该订单15分钟未支付，已自动取消';
@@ -242,13 +239,13 @@ var getOrder=function(page){
                             width='order-w50';
                             left='order-l50';
                             sender_name=sender+'配送中';
-                            tel_show='visible';
+                            tel_show='show';
                             break;
                         case 5:
                             width='order-w100';
                             left='order-l100';
                             sender_name=sender+'已送达';
-                            tel_show='visible';
+                            tel_show='show';
                             break;
                         case 6:
                         case 7:
@@ -259,26 +256,26 @@ var getOrder=function(page){
                     }
                     var render=template.compile(order_item);
                     var html=render({
-                       id:id,
-                       order_status:order_status,
-                       order_num:order_num,
-                       create_date:create_date,
-                       totalPrice:totalPrice,
-                       pay_type:pay_type,
-                       send_time:send_time,
-                       send_address:send_address,
-                       message:message,
-                       staff_img:staff_img,
-                       staff_phone:staff_phone,
-                       SH2s:SH2s,
-                       left:left,
-                       width:width,
-                       sender_name:sender_name,
-                       hide:hide,
-                       del_status:del_status,
-                       show:show,
-                       tel_show:tel_show,
-                       color:color
+                        id:id,
+                        order_status:order_status,
+                        order_num:order_num,
+                        create_date:create_date,
+                        totalPrice:totalPrice,
+                        pay_type:pay_type,
+                        send_time:send_time,
+                        send_address:send_address,
+                        message:message,
+                        staff_img:staff_img,
+                        staff_phone:staff_phone,
+                        SH2s:SH2s,
+                        left:left,
+                        width:width,
+                        sender_name:sender_name,
+                        hide:hide,
+                        del_status:del_status,
+                        show:show,
+                        tel_show:tel_show,
+                        color:color
                     });
                     $('.order-lists').eq(index).append(html);
                 }
@@ -309,20 +306,20 @@ function orderEdit(target,action,content){
         data:data
     };
     $.postJson(url,args,function(res){
-            if(res.success){
-                if(action=='edit_SH2'){
-                    var tel = target.attr("data-tel");
-                    curStaff.find("img").attr("src",target.attr("data-src"));
-                    curStaff.find(".order-line-grade").css("width","50%");
-                    curStaff.find(".order-wawa").css("left","50%");
-                    curStaff.find(".order-wawa").children("a").removeClass("task-staff");
-                    curStaff.find(".order-status-txt").css("left","50%");
-                    curStaff.find(".order-status-txt").empty().append('<span class="c999">配送中</span><a href="tel:'+tel+'">拨号</a>');
-                   $(".pop-staff").addClass("hide");
-                }
+        if(res.success){
+            if(action=='edit_SH2'){
+                var tel = target.attr("data-tel");
+                curStaff.find("img").attr("src",target.attr("data-src"));
+                curStaff.find(".order-line-grade").css("width","50%");
+                curStaff.find(".order-wawa").css("left","50%");
+                curStaff.find(".order-wawa").children("a").removeClass("task-staff");
+                curStaff.find(".order-status-txt").css("left","50%");
+                curStaff.find(".order-status-txt").empty().append('<span class="c999">配送中</span><a href="tel:'+tel+'">拨号</a>');
+                $(".pop-staff").addClass("hide");
+            }
         }
         else {
-            return Tip(res.error_text);}
+            return Tip(res.error_text);
         }
-    )
+    })
 }

@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chorme=1">
-<meta name="keywords" content="森果,水果商城,水果O2O,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
-<meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
-<title>森果O2O平台</title>
+<meta name="keywords" content="森果,senguo.cc,专业水果O2O第三方平台">
+<meta name="description" content="森果为水果O2O、微信卖水果、水果零售提供免费的水果商城和水果后台管理系统。助力水果O2O，帮您把水果店搬到网上来。">
+<title>森果senguo.cc-专业水果O2O第三方平台 </title>
 <link href="{{static_url('css/official_base.css')}}" rel="stylesheet">
 <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
 <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
@@ -13,11 +13,11 @@
     <script>
         window.dataObj = {
             _xsrf: "{{handler.xsrf_token}}"};
-
     </script>
 </head>
 {% set home_active=''%}
 {% set shop_active=''%}
+{% set product_active=''%}
 {% set community_active=''%}
 {% set about_active=''%}
 {% if context['subpage'] == 'home'%}
@@ -28,20 +28,13 @@
 {% set community_active='active'%}
 {% elif context['subpage'] == 'shop'%}
 {% set shop_active='active'%}
+{% elif context['subpage'] == 'product'%}
+{% set product_active='active'%}
 {% end %}
-
 <body>
-	<header class="w1000 clearfix head">
-		<div class="login-box pull-right hidden-xs">
-			<ul class="" id="header-top">
-				<!--<li class="loggedout"><a href="#" id="headertop-signup">注册</a></li>
-				<li class="loggedout"><a href="#" id="headertop-signin" class="text-grey">登录</a></li>-->
-				<li><a href="{{reverse_url('switchshop')}}" class="text-grey">管理后台</a></li>
-				<li><a href="{{reverse_url('fruitzoneShopApply')}}" class="text-grey">申请接入</a></li>
-			</ul>
-		</div>	
-		<div class="nav-box box_sty">
-			<div class="senguo-header pull-left">				
+	<header class="clearfix head">
+		<div class="w1000 nav-box group">
+			<div class="senguo-header pull-left">
 				<div class="logo_box pull-left">
 					<!-- <h1 class="pull-left text-green logo">森果</h1>
 					<div class="pull-left ml5 text-center">
@@ -51,18 +44,29 @@
                     <a href="{{reverse_url('OfficialHome')}}"><img src="{{static_url('official_img/logo2.png')}}" class="logo"/></a>
 				</div>				
 			</div>
-			<div class="senguo-nav pull-right font16">
+			<div class="senguo-nav font16">
 				<ul>
 					<li class="{{home_active}}"><a href="{{reverse_url('OfficialHome')}}" >首页</a></li>
-					<li class="{{shop_active}}"><a href="{{reverse_url('OfficialShopList')}}">店铺列表</a></li>
-					<!--<li class="{{community_active}}"><a href="/coummnity">森果社区</a></li>-->
-					<li class="{{about_active}}"><a href="{{reverse_url('OfficialAbout')}}">关于</a></li>
+					<li class="{{product_active}}"><a href="{{reverse_url('OfficialProduct')}}">产品介绍</a></li>
+                    <li class="{{shop_active}}"><a href="{{reverse_url('OfficialShopList')}}">店铺列表</a></li>
+					<li class="{{about_active}}"><a href="{{reverse_url('OfficialAbout')}}">关于我们</a></li>
+                    <li class="{{community_active}}"><a href="{{reverse_url('BbsMain')}}" target="_blank">森果社区</a></li>
+                    <div class="admin-box">
+                        <div class="login-box hidden-xs">
+                            <ul class="text-grey header-top" id="header-top">
+                                <!--<li class="loggedout"><a href="#" id="headertop-signup">注册</a></li>
+                                <li class="loggedout"><a href="#" id="headertop-signin" class="text-grey  head-btn border-none  head-btn">登录</a></li>-->
+                                <li><a href="{{reverse_url('switchshop')}}" class="text-black">管理后台</a></li> |
+                                <li><a href="{{reverse_url('fruitzoneShopApply')}}" class="text-black">申请接入</a></li>
+                            </ul>
+                        </div>
+                    </div>
 				</ul>
 			</div>			
 		</div>
 	{%block header-extends%}{%end%}
 	</header>
-	<main class="container clearfix mt10">
+	<main class="container clearfix mt20">
 		{% block content%} {% end%}
 	</main>
 	<footer class="footer mt30">

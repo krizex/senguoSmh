@@ -1,7 +1,4 @@
-/**
- * Created by Administrator on 2015/5/27.
- */
- var num_list={};
+var num_list={};
 $(document).ready(function(){
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();

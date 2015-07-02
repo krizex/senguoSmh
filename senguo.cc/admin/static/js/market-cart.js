@@ -17,7 +17,8 @@ $(document).ready(function(){
     //价格
     getPrice();
     //按时达最低起送金额提示
-    if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
+    // if(window.dataObj.total_price<window.dataObj.mincharge_intime) $('.mincharge_intime').show();
+    if(window.dataObj.total_price<window.dataObj.mincharge_now) $('.mincharge_now').show();
     //商品数量操作
     $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);
@@ -178,7 +179,10 @@ $(document).ready(function(){
                 }
                 else if(noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this)){}
            });
-        });}
+        });
+    }else{
+        $('.send_period .list-group-item').first().addClass("active");
+    }
         $('.send_period .item').on('click',function(){
             var $this=$(this);
             if($this.hasClass('available')) {
@@ -292,6 +296,50 @@ $(document).ready(function(){
         $('#freight_money').text(window.dataObj.freigh_now);
         $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
         //立即送模式选择/立即送最低起送金额提示
+        var end_time=$('.now_endtime').text();
+        var period=Int($('#sendNow').attr('data-period'));
+        var n=period/60;
+        var stop_time;
+        if(n<1){
+            if(time.getMinutes()+period<60){
+                stop_time=checkTime(time.getHours())+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+            }
+            else{
+                stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+            }
+        }
+        else if(1<=n<=2){
+            period=period-60
+             if(time.getMinutes()+period<60){
+                stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+            }
+            else{
+                stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+            }
+        }
+        if(stop_time<=end_time)
+        {
+            //pulse($('#sendNow').parents('.item'));
+            $('#sendNow').parents('.item').addClass('active').siblings('.item').removeClass('active');
+            $('.send_period').hide();
+            $('.send_day').hide();
+            $('.send_now').show();
+            $('.intime-intro').hide();
+            $('.now-intro').show();
+            window.dataObj.total_price=mathFloat($list_total_price.text());
+            $('#freight_money').text(window.dataObj.freigh_now);
+            $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+            if(window.dataObj.total_price<window.dataObj.mincharge_now){
+                $('.mincharge_now').show();
+                $('.mincharge_intime').hide();
+            }
+        }
+        else {
+            $('#sendNow').parents('.item').removeClass('active').siblings('.item').addClass('active');
+            $('.send_period').show();
+            $('.send_day').show();
+            $('.send_now').addClass('hidden');
+        }
         $('#sendNow').on('click',function(){  
             var $this=$(this);
             var end_time=$('.now_endtime').text();
@@ -308,7 +356,7 @@ $(document).ready(function(){
             }
             else if(1<=n<=2){
                 period=period-60
-                 if(time.getMinutes()+period<60){
+                if(time.getMinutes()+period<60){
                     stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
                 }
                 else{
@@ -348,7 +396,7 @@ $(document).ready(function(){
         $('.now-intro').hide();
     }
     if(intime_on=='True'&&now_on=='True'){
-        $('.send_now').hide();
+        $('.send_now').show();
         $('.intime-intro').show();
         $('.now-intro').hide();
         $('#freight_money').text(window.dataObj.freigh_ontime);

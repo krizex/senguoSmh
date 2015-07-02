@@ -12,56 +12,20 @@ import requests
 import base64
 import decimal
 
-class Order(AdminBaseHandler):
-	# @tornado.web.authenticated
+class Home(AdminBaseHandler):
+	@tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/order.html")
-
-class OrderDetail(AdminBaseHandler):
-	# @tornado.web.authenticated
-	def get(self,order_num):
-		shop_id = self.current_shop.id
-		try:
-			order = self.session.query(models.Order).filter(models.Order.num==order_num, models.Order.shop_id==shop_id).first()
-		except:
-			return self.send_error(404)
-		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		
-		if order.pay_type == 1:
-			order.pay_type_con = "货到付款"
-		elif order.pay_type == 2:
-			order.pay_type_con = "余额支付"
-		else:
-			order.pay_type_con = "在线支付"
-
-		customer_id = order.customer_id
-		customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
-		if customer_info is not None:
-			order.customer_nickname=customer_info.nickname
-
-		SH2s=[]
-		staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-				models.HireLink.work == 3, models.HireLink.shop_id == shop_id,models.HireLink.active == 1)).all()
-		for staff in staffs:
-			staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
-			"headimgurl":staff.accountinfo.headimgurl_small}
-			SH2s.append(staff_data)
-			if staff.id == order.SH2_id:  # todo JH、SH1
-				order.SH2 = staff_data
-		order.SH2s = SH2s
-
-		return self.render("m-admin/order-detail.html",order=order,charge_types=charge_types)
-
-
-class ShopProfile(AdminBaseHandler):
-	# @tornado.web.authenticated
-	def get(self):
+		if self.is_pc_browser()==True:
+			return self.redirect(self.reverse_url("adminHome"))
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
-			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
-			self.current_shop = shop
-			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
+		else:
+			shop = self.current_user.shops[0]
+			shop_id = self.current_user.shops[0].id
+		self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+		self.current_shop = shop
+		self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
 
 		show_balance = False
 		shop_auth =  self.current_shop.shop_auth
@@ -97,19 +61,65 @@ class ShopProfile(AdminBaseHandler):
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,show_balance = show_balance,\
 						   shop=shop,total_money=total_money,intime_count=intime_count,ontime_count=ontime_count,\
 						   self_count=self_count,comment_count=comment_count,staff_count=staff_count,goods_count=goods_count)
+
+class Order(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/order.html")
+
+class OrderDetail(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self,order_num):
+		shop_id = self.current_shop.id
+		try:
+			order = self.session.query(models.Order).filter(models.Order.num==order_num, models.Order.shop_id==shop_id).first()
+		except:
+			return self.send_error(404)
+		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
+		
+		if order.pay_type == 1:
+			order.pay_type_con = "货到付款"
+		elif order.pay_type == 2:
+			order.pay_type_con = "余额支付"
+		else:
+			if order.online_type=="wx":
+				order.pay_type_con = "在线支付-微信支付"
+			elif order.online_type=="alipay":
+				order.pay_type_con = "在线支付-支付宝"
+
+		customer_id = order.customer_id
+		customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		if customer_info is not None:
+			order.customer_nickname=customer_info.nickname
+
+		SH2s=[]
+		order.SH2={}
+		staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+				models.HireLink.work == 3, models.HireLink.shop_id == shop_id,models.HireLink.active == 1)).all()
+		for staff in staffs:
+			staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
+			"headimgurl":staff.accountinfo.headimgurl_small}
+			SH2s.append(staff_data)
+			if staff.id == order.SH2_id:  # todo JH、SH1
+				order.SH2 = staff_data
+
+		order.SH2s = SH2s
+		shop_code = self.current_shop.shop_code
+		return self.render("m-admin/order-detail.html",order=order,charge_types=charge_types,shop_code=shop_code)
+
 		
 class OrderSearch(AdminBaseHandler):
-	# @tornado.web.authenticated
+	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/order-search.html")
 
 class Comment(AdminBaseHandler):
-	# @tornado.web.authenticated
+	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("page?:int")
 	def get(self):
 		customer_id = self.current_user.id
-		shop_id     = self.get_cookie("market_shop_id")
-		shop_code = self.get_cookie("market_shop_code")
+		shop_id     = self.get_secure_cookie("shop_id")
+		shop_code = self.session.query(models.Shop).filter_by(id=shop_id).one().shop_code
 		satisfy = 0
 		commodity_quality = 0
 		send_speed = 0
@@ -143,6 +153,7 @@ class Comment(AdminBaseHandler):
 		if page == 0:
 			if len(date_list)<page_size:
 				nomore = True
+				# print(date_list)
 			return self.render("m-admin/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
 				shop_service = shop_service,commodity_quality=commodity_quality,shop_code=shop_code)
 		return self.send_success(date_list=date_list,nomore=nomore)

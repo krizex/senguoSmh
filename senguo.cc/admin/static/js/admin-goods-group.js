@@ -1,24 +1,5 @@
-/**
- * Created by Administrator on 2015/6/2.
- */
 var curGroup = null,aLis=[],aPos=[],zIndex=1;
 $(document).ready(function(){
-    $(".sw-link-copy").zclip({
-        path: "/static/js/third/ZeroClipboard.swf",
-        copy: function(){
-            return $(this).prev("input").val();
-        },
-        afterCopy:function(){/* 复制成功后的操作 */
-            Tip("链接已经复制到剪切板");
-        }
-    });
-    $(".er-code-img").each(function(){
-        var _this = $(this);
-        new QRCode(this, {
-            width : 80,//设置宽高
-            height : 80
-        }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
-    });
     $(document).on("click",function(e){
         if($(e.target).closest(".sw-er-tip").size()==0){
             $(".sw-er-tip").addClass("invisible");
@@ -45,12 +26,29 @@ $(document).ready(function(){
         var index=$this.index();
         $this.attr({"data-index":index,"data-rel":index});
     });
+    $(".er-code-img").each(function(){
+        var _this = $(this);
+        new QRCode(this, {
+            width : 80,
+            height : 80
+        }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
+    });
+    $(".sw-link-copy").zclip({
+        path: "/static/js/third/ZeroClipboard.swf",
+        copy: function(){
+            return $(this).prev("input").val();
+        },
+        afterCopy:function(){
+            Tip("链接已经复制到剪切板");
+        }
+    });
 }).on("click",".spread-group",function(e){
     e.stopPropagation();
+    var $parent = $(this).closest(".self-group");
+    $parent.css("zIndex",parseInt($parent.css("zIndex"))+5);
     $(this).closest(".right-link").children(".sw-er-tip").toggleClass("invisible");
 }).on("mousedown mousemove",".sw-er-tip",function(e){
     e.stopPropagation();
-    return false;
 }).on("click",".del-group",function(){
     curGroup = $(this).closest("li");
     $("#del-win").modal('show');
@@ -194,56 +192,54 @@ $(document).ready(function(){
 //drag
 function drag(obj){
     obj.onmousedown=function(ev){
-        if($(ev.target).closest(".sw-er-tip").length>0){
-            return false;
+        if($(ev.target).closest(".right-link").length>0){
         }else{
             $(".sw-er-tip").addClass("invisible");
-        }
-        var $this = $(obj);
-        var oEvent = ev || event;
-        var disX = oEvent.clientX-$this.position().left;
-        var disY = oEvent.clientY-$this.position().top;
-        var oNear = null;
-        $this.css("zIndex",++zIndex);
-        document.onmousemove=function(ev){
+            var $this = $(obj);
             var oEvent = ev || event;
-            var left = oEvent.clientX-disX;
-            var top = oEvent.clientY-disY;
-            var cWidth = $(window).width();
-            var cHeight = $(window).height();
-            if(left<0){left=0;}
-            if(left>cWidth-$this.width()){left=cWidth-$this.width();}
-            if(top<0){top=0;}
-            if(top>cHeight-$this.height()){top=cHeight-$this.height();}
-            $this.css({left:left,top:top});
-            oNear = getNearst($this);
-            $(".group-lst>li").removeClass("hig");
-            oNear && oNear.addClass("hig");
-            return false;
-        };
-        document.onmouseup=function(){
-            document.onmousemove = null;
-            document.onmouseup = null;
-            if(oNear){
-                var tIndex = oNear[0].index;
-                oNear[0].index = $this[0].index;
-                $this[0].index = tIndex;
-                oNear.css("zIndex",++zIndex);
-                var iIndex = $this.attr("data-index");
-                $this.attr("data-index",oNear.attr("data-index"));
-                oNear.attr("data-index",iIndex);
-                move($this, aPos[$this[0].index]);
-                move(oNear, aPos[oNear[0].index]);
-                oNear.removeClass("hig");
-                priority();
-            }else{
-                move($this, aPos[$this[0].index]);
-            }
-            $this[0].releaseCapture && $this[0].releaseCapture();
-            return false;
-        };
-        $this[0].setCapture && $this[0].setCapture();
-        return false;
+            var disX = oEvent.clientX-$this.position().left;
+            var disY = oEvent.clientY-$this.position().top;
+            var oNear = null;
+            $this.css("zIndex",++zIndex);
+            document.onmousemove=function(ev){
+                var oEvent = ev || event;
+                var left = oEvent.clientX-disX;
+                var top = oEvent.clientY-disY;
+                var cWidth = $(window).width();
+                var cHeight = $(window).height();
+                if(left<0){left=0;}
+                if(left>cWidth-$this.width()){left=cWidth-$this.width();}
+                if(top<0){top=0;}
+                if(top>cHeight-$this.height()){top=cHeight-$this.height();}
+                $this.css({left:left,top:top});
+                oNear = getNearst($this);
+                $(".group-lst>li").removeClass("hig");
+                oNear && oNear.addClass("hig");
+                return false;
+            };
+            document.onmouseup=function(){
+                document.onmousemove = null;
+                document.onmouseup = null;
+                if(oNear){
+                    var tIndex = oNear[0].index;
+                    oNear[0].index = $this[0].index;
+                    $this[0].index = tIndex;
+                    oNear.css("zIndex",++zIndex);
+                    var iIndex = $this.attr("data-index");
+                    $this.attr("data-index",oNear.attr("data-index"));
+                    oNear.attr("data-index",iIndex);
+                    move($this, aPos[$this[0].index]);
+                    move(oNear, aPos[oNear[0].index]);
+                    oNear.removeClass("hig");
+                    priority();
+                }else{
+                    move($this, aPos[$this[0].index]);
+                }
+                $this[0].releaseCapture && $this[0].releaseCapture();
+                return false;
+            };
+            $this[0].setCapture && $this[0].setCapture();
+        }
     }
 }
 //获取元素位置

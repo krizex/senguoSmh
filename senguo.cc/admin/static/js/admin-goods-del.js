@@ -1,6 +1,3 @@
-/**
- * Created by Administrator on 2015/6/2.
- */
 var editor = null,goods_list=null,pn=0;
 $(document).ready(function(){
     getGoodsItem();

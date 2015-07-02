@@ -8,7 +8,7 @@
 .resting{border-top-color: #f1c864;border-left-color: #f1c864;}
 .closed{border-top-color: #999;border-left-color: #999;}
 .sw-tip-txt{position:absolute;top:10px;left:0px;display:inline-block;font-size: 12px;color: #fff;-webkit-transform:rotate(-45deg);z-index:100;}
-.shop-auth{display: inline-block;color: #52b43f;line-height:18px;border: 1px solid #52b43f;font-size: 14px;border-radius: 16px;width: 76px;height: 19px;text-align: center;margin-left: 2px;-webkit-transform: scale(0.8);}
+.shop-auth{display: inline-block;color: #52b43f;line-height:19px;border: 1px solid #52b43f;font-size: 14px;border-radius: 16px;width: 76px;height: 19px;text-align: center;margin-left: 2px;-webkit-transform: scale(0.75);}
 .dl{position: relative;}
 .dl>dt{position: absolute;width: 60px;height: 60px;left: 0;}
 .dl>dt img{width: 60px;height: 60px;}
@@ -31,6 +31,16 @@
 .data-user{background-image: url('/static/m-admin/img/icon_user.png');}
 .data-msg{background-image: url('/static/m-admin/img/icon_msg.png');}
 .data-account{background-image: url('/static/m-admin/img/icon_account.png');}
+.bm-tab{background-color: #f9f9f9;bottom:0;color: #333;top:auto;}
+.tab-bm-list>li{width: 50%;float: left;}
+.tab-bm-list>li>a{display: block;height: 40px;color: #333;}
+.tab-bm-list>li i{height: 22px;background-size:26px;background-position: center center;}
+.tab-bm-list>li span{display: block;font-size: 12px;text-align: center;position: relative;top: -14px;height: 14px;line-height: 14px;}
+.ic-shop{background-image: url('/static/m-admin/img/icon_shop.png');}
+.tab-bm-list .active .ic-shop{background-image: url('/static/m-admin/img/icon_shop_active.png');}
+.ic-bbs{background-image: url('/static/m-admin/img/icon_bbs.png');margin-left: 4px;}
+.tab-bm-list .active .ic-bbs{background-image: url('/static/m-admin/img/icon_bbs_active.png');}
+.tab-bm-list .active span{color: #48b6a4;}
 /*订单详情*/
 .order-detail-box{padding-bottom: 60px;}
 .wrap-bm-btn{height:50px;width: 100%;position: fixed;background-color: #f9f9f9;bottom:0;z-index:999;left: 0;}
@@ -72,6 +82,7 @@
 .staff-list .active .check{visibility:visible;}
 .staff-list>li img{width: 36px;height: 36px;border-radius: 50%;}
 .pop-staff-box .btn-box{height: 36px;line-height: 36px;text-align: center;color: #fff;background-color: #48b6a4;}
+.shop-manage{font-size: 14px;height: 30px;line-height: 30px;color:#fff;width: 88px;text-align: center;border-radius: 4px;;-webkit-box-sizing: content-box;margin-top: 6px;background-color: #48b6a4; font-weight: normal;}
 /*订单管理*/
 .wrap-order-tab{padding: 6px 70px;}
 .order-type-list{background-color: #318b7d;border-radius: 28px;position: relative;z-index:1;}

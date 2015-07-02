@@ -1,8 +1,8 @@
-  {% extends 'base.html' %}
+{% extends 'base.html' %}
 {% block title %}消息与评价{% end %}
 {% block head %}
-  <link rel="stylesheet" href="/static/css/baguetteBox.css"/>
-  <link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>{% end %}
+<link rel="stylesheet" href="/static/css/baguetteBox.css"/>
+<link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>{% end %}
 {% block content %}
     <span class="right-title">消息与评价</span>
     <div class="subnav-box">
@@ -140,5 +140,6 @@
     {% end %}
 {% end %}
 {% block bottom %}
-  <script src="/static/js/third/baguetteBox.min.js"></script>
-  <script src="{{static_url('js/admin-comment.js')}}"></script>{% end %}
+<script src="/static/js/third/baguetteBox.min.js"></script>
+<script src="{{static_url('js/admin-comment.js')}}"></script>
+{% end %}

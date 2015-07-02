@@ -6,7 +6,7 @@
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
     <div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
-    <div class="user-info box-style m-b5 clearfix font16 text-center mt42 p0">
+    <div class="user-info box-style m-b5 clearfix font16 text-center mt42">
         <a href="{{reverse_url('customerProfile')}}" class="user-img text-grey3">
             <div class="wrap-img"><img src="{{current_user.accountinfo.headimgurl or '/static/images/TDSG_l.png'}}" class="img img-circle"/></div>
             <div class="info">

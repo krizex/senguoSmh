@@ -32,7 +32,7 @@
                 <img src="/static/images/logo.png" class="height50"/>
             </a>
             <span class="title">后台管理系统</span>
-            <span class="beta">Beta2.0</span>
+            <span class="beta">beta 2.3</span>
         </div>
         <div class="header-nav height50 pull-right">
             <ul class="navbar">
@@ -85,7 +85,7 @@
                                     <a class="menu-icona sshop" href="{{reverse_url('switchshop')}}">切换店铺</a>
                                 </li>
                                 <li role="presentation">
-                                    <a class="menu-icona swoon" href="/customer/profile">个人中心</a>
+                                    <a class="menu-icona swoon" href="{{reverse_url('customerProfile')}}">个人中心</a>
                                 </li>
                                 <li role="presentation">
                                     <a class="menu-icona squit" href="{{reverse_url('adminLogout')}}">退出</a>
@@ -186,16 +186,16 @@
 <div class="foot" id="footer">
     <ul class="links ft">
         <li class="links_item no_extra">
-            <a href="/official" target="_blank">森果官网</a>
+            <a href="{{reverse_url('OfficialHome')}}" target="_blank">森果官网</a>
         </li>
         <li class="links_item">
-            <a href="/official/about" target="_blank">关于森果</a>
+            <a href="{{reverse_url('OfficialProduct')}}" target="_blank">产品介绍</a>
         </li>
         <li class="links_item">
             <a href="#">服务协议</a>
         </li>
         <li class="links_item">
-            <a href="/official/about" target="_blank">客服中心</a>
+            <a href="{{reverse_url('OfficialAbout')}}" target="_blank">关于森果</a>
         </li>
         <li class="links_item">
             <a href="mailto:wolf@senguo.cc">联系邮箱</a>

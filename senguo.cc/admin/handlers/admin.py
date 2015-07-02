@@ -72,6 +72,9 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		if self.is_pc_browser()==False:
+			return self.redirect(self.reverse_url("MadminHome"))
+
 		# if not self.current_user.shops:
 		#     return self.write("你还没有店铺，请先申请")
 		# if not self.current_shop: #设置默认店铺
@@ -95,6 +98,8 @@ class Home(AdminBaseHandler):
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 			not_(models.Order.status.in_([-1,0]))).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+		if new_order_sum < 0:
+			new_order_sum = 0
 		# self.current_shop.new_order_sum = order_sum
 
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
@@ -106,10 +111,21 @@ class Home(AdminBaseHandler):
 		sys_notices = self.session.query(models.SysNotice).\
 			filter((models.SysNotice.create_time < datetime.datetime.now()-datetime.timedelta(10))).all()
 		self.session.commit()
+
+		try:
+			articles = self.session.query(models.Article).filter_by(status=1)
+		except:
+			articles = None
+		if articles:
+			notice_articles = articles.filter_by(classify=0).order_by(models.Article.create_time.desc()).limit(3).all()
+			update_articles = articles.filter_by(classify=1).order_by(models.Article.create_time.desc()).limit(3).all()
+			dry_articles = articles.filter_by(classify=2).order_by(models.Article.create_time.desc()).limit(3).all()
+		article_list = {"notice":notice_articles,"update":update_articles,"dry":dry_articles}
+
 		return self.render("admin/home.html", new_order_sum=new_order_sum, order_sum=order_sum,
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,\
 						   show_balance = show_balance,new_sys_notices=new_sys_notices, \
-						   sys_notices=sys_notices, context=dict())
+						   sys_notices=sys_notices,article_list=article_list, context=dict())
 	# @tornado.web.authenticated
 	# @AdminBaseHandler.check_arguments("shop_id:int")
 	# def post(self):  # 商家多个店铺之间的切换
@@ -732,9 +748,14 @@ class Order(AdminBaseHandler):
 			orders = orders[page_area:page_area+10]
 			data = self.getOrder(orders)
 			delta = datetime.timedelta(1)
+			nomore = False
+			if page+1 == page_sum:
+				nomore = True
 			# print("[订单管理]当前店铺：",self.current_shop)
 			
-			return self.send_success(data = data,page_sum=page_sum,count=self._count())
+			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
+		if self.is_pc_browser()==False:
+			return self.redirect(self.reverse_url("MadminOrder"))
 		return self.render("admin/orders.html",order_type=order_type, context=dict(subpage='order'))
 
 
@@ -1882,6 +1903,8 @@ class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
 	def get(self):
+		# if self.is_pc_browser()==False:
+		# 	return self.redirect(self.reverse_url("MadminComment"))
 		action = self.args["action"]
 		order_by = self.args["order_by"]
 		page = self.args["page"]

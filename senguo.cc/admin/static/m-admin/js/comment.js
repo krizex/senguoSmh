@@ -1,9 +1,3 @@
-/**
- * Created by Administrator on 2015/6/18.
- */
-/**
- * Created by Administrator on 2015/4/28.
- */
 var finished=true;
 var current_page=1;
 var nomore =false;
@@ -37,6 +31,7 @@ $(document).ready(function(){
         commitReply(id,text);
     })
 });
+
 //提交评论
 function commitReply(id,text){
     var url = "/admin/comment";

@@ -1,11 +1,11 @@
 {% extends 'base.html' %}
 {% block title %}订单详情{% end %}
 {% block head %}
-<link rel="stylesheet" type="text/css" href="/static/css/fruit-color.css">
+<link rel="stylesheet" type="text/css" href="{{static_url('css/fruit-color.css')}}">
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="javascript:;" class="back">返回</a>
+    <a href="{{reverse_url('MadminOrder')}}" class="back">返回</a>
     <span>订单详情</span>
 </div>
 {% end %}
@@ -48,7 +48,7 @@
         <p class="del-reason hide">订单删除原因：<span class="text">{{order.del_reason}}</span></p>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><span class="black-txt">{{handler.current_shop.shop_name}}</span><span class="arr-right"></span></h4>
+        <h4 class="top-title"><a href="{{reverse_url('MadminHome')}}"><span class="black-txt">{{handler.current_shop.shop_name}}</span></a><span class="arr-right"></span><a href="{{reverse_url('MadminHome')}}" class="shop-manage fr">管理店铺</a></h4>
         <ul class="goods-lst">
             {% set fruits = eval(order.fruits) %}
             {% for charge_type in charge_types %}

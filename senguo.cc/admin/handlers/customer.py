@@ -21,6 +21,8 @@ import tornado.websocket
 
 from dal.db_configs import DBSession
 import urllib
+
+from sqlalchemy.orm.exc import NoResultFound
 # from wxpay import QRWXpay
 
 # 登录处理
@@ -50,6 +52,7 @@ class Access(CustomerBaseHandler):
 		elif self._action == 'qqoauth':
 			print('login qqoauth')
 			self.handle_qq_oauth(next_url)
+
 		else:
 			return self.send_error(404)
 
@@ -869,12 +872,10 @@ class Market(CustomerBaseHandler):
 		w_follow = True
 		# fruits=''
 		# page_size = 10
-		
 		try:
-			
-			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
-		except:
-			return self.send_error(404)
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		except NoResultFound:
+			return self.write('您访问的店铺不存在')
 
 		# self.current_shop = shop
 		# print(self,self.current_shop)
@@ -966,21 +967,30 @@ class Market(CustomerBaseHandler):
 		# 			group_list.append({'id':-1,'name':'店铺推荐'})
 		# 		if default_count !=0 :
 		# 			group_list.append({'id':0,'name':'默认分组'})
-		
-		goods = self.session.query(models.Fruit.group_id,models.GroupPriority.priority).outerjoin(models.GroupPriority,and_(models.Fruit.shop_id ==
-			models.GroupPriority.shop_id,models.GroupPriority.group_id == models.Fruit.group_id)).filter(
-		models.Fruit.shop_id == shop.id,models.Fruit.active == 1).order_by(models.GroupPriority.priority).distinct(models.Fruit.id)
-		for temp in goods:
-			# print(temp)
-			if temp.group_id == 0:
-				group_list.append({'id':0,'name':'默认分组'})
-			elif temp.group_id == -1:
-				group_list.append({'id':-1,'name':'店铺推荐'})
-			else:
-				_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
-				if _group:
-					group_list.append({'id':_group.id,'name':_group.name})
+		try:
+			goods = self.session.query(models.Fruit.group_id,models.GroupPriority.priority).outerjoin(models.GroupPriority,and_(models.Fruit.shop_id ==
+				models.GroupPriority.shop_id,models.GroupPriority.group_id == models.Fruit.group_id)).filter(
+			models.Fruit.shop_id == shop.id,models.Fruit.active == 1).order_by(models.GroupPriority.priority).distinct(models.Fruit.id)
+		except:
+			goods = None
 
+		if goods:
+			for temp in goods:
+				# print(temp)
+				if temp[0] == 0:
+					if temp[1]:
+						group_list.append({'id':0,'name':'默认分组'})
+					else:
+						group_list.insert(1,{'id':0,'name':'默认分组'})
+				elif temp[0] == -1:
+					if temp[1]:
+						group_list.append({'id':-1,'name':'店铺推荐'})
+					else:
+						group_list.insert(0,{'id':-1,'name':'店铺推荐'})
+				else:
+					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
+					if _group:
+						group_list.append({'id':_group.id,'name':_group.name})
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
@@ -2210,23 +2220,14 @@ class payTest(CustomerBaseHandler):
 		totalPrice = float(self.get_cookie('money'))
 		wxPrice    = int(totalPrice * 100)
 		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		qr_url=""
 		if not self.is_wexin_browser():
-			unifiedOrder =   UnifiedOrder_pub()
-			unifiedOrder.setParameter("body",'QrWxpay')
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
-			unifiedOrder.setParameter("out_trade_no",orderId)
-			unifiedOrder.setParameter('total_fee',wxPrice)
-			unifiedOrder.setParameter('trade_type',"NATIVE")
-			res = unifiedOrder.postXml().decode('utf-8')
-			res_dict = unifiedOrder.xmlToArray(res)
-			# print(res,type(res_dict))
-			if 'code_url' in res_dict:
-				# print(res_dict['code_url'])
-				# url = pyqrcode.create(res_dict['code_url'])
-				# url.png('really.png',scale = 8)
-				return self.render("customer/qrwxpay.html" , url = res_dict['code_url'])
-			else:
-				return self.send_fail('can not get code_url!')
+			qr_url=self._qr_pay()
+			# print(res_dict['code_url'])
+			# url = pyqrcode.create(res_dict['code_url'])
+			# url.png('really.png',scale = 8)
+			print(qr_url,'chargewxpay no in weixin')
+			return self.render("customer/qrwxpay.html" , qr_url =qr_url ,totalPrice=totalPrice)
 		else:
 			print(self.request.full_url())
 			path_url = self.request.full_url()
@@ -2268,16 +2269,33 @@ class payTest(CustomerBaseHandler):
 				wxappid = 'wx0ed17cdc9020a96e'
 				signature = self.signature(noncestr,timestamp,path_url)
 				# totalPrice = float(totalPrice/100)
-		
+				qr_url=self._qr_pay()
 			# return self.send_success(renderPayParams = renderPayParams)
-			return self.render("fruitzone/paytest.html",renderPayParams = renderPayParams,wxappid = wxappid,\
+			return self.render("fruitzone/paytest.html",qr_url=qr_url,renderPayParams = renderPayParams,wxappid = wxappid,\
 				noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		pass
 		return
-
+	def _qr_pay(self):
+		totalPrice = float(self.get_cookie('money'))
+		wxPrice    = int(totalPrice * 100)
+		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
+		unifiedOrder.setParameter("out_trade_no",orderId+"a")
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		# print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return qr_url
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
@@ -2356,6 +2374,26 @@ class payTest(CustomerBaseHandler):
 			return self.write('success')
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
+
+class wxChargeCallBack(CustomerBaseHandler):
+	def get(self):
+		totalPrice = float(self.get_cookie('money'))
+		wxPrice    = int(totalPrice * 100)
+		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		unifiedOrder =   UnifiedOrder_pub()
+		unifiedOrder.setParameter("body",'QrWxpay')
+		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
+		unifiedOrder.setParameter("out_trade_no",orderId+"a")
+		unifiedOrder.setParameter('total_fee',wxPrice)
+		unifiedOrder.setParameter('trade_type',"NATIVE")
+		res = unifiedOrder.postXml().decode('utf-8')
+		res_dict = unifiedOrder.xmlToArray(res)
+		# print(res,type(res_dict))
+		if 'code_url' in res_dict:
+				qr_url = res_dict['code_url']
+		else:
+			qr_url = ""
+		return self.send_success(qr_url=qr_url)
 
 class InsertData(CustomerBaseHandler):
 	# @tornado.web.authenticated

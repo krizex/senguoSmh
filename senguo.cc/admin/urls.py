@@ -8,6 +8,7 @@ import handlers.official
 import handlers.onlinePay
 import handlers.activity
 import handlers.madmin
+import handlers.bbs
 from dal import models
 #todo:handlers太大会不会影响性能？
 
@@ -18,7 +19,6 @@ from dal import models
 
 # ]
 
-
 handlers = [
 	
 	#告白墙
@@ -27,6 +27,15 @@ handlers = [
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
+
+	#bbs
+	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
+	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
+	(r"/bbs/detailEdit/(\w+)", handlers.bbs.DetailEdit, {}, "BbsDetailEdit"),
+	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
+	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
+	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
+	
 
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
@@ -63,14 +72,15 @@ handlers = [
 
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
-	# (r"/official", handlers.superadmin.Official),
+	#(r"/", handlers.superadmin.Official),
 
 	#official
 	(r"/",handlers.official.Home,{},"OfficialHome"),
 
-	(r"/official/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
-	(r"/official/about",handlers.official.About,{},"OfficialAbout"),
 
+	(r"/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
+	(r"/about",handlers.official.About,{},"OfficialAbout"),
+	(r"/product",handlers.official.Product,{},"OfficialProduct"),
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
 
@@ -102,6 +112,8 @@ handlers = [
 	(r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
 		"action":"customer"}, "customerPhoneVerify"),
 	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
+	(r"/customer/wxpayCallBack",handlers.onlinePay.wxpayCallBack,{},"wxpayCallBack"),
+	(r"/customer/wxChargeCallBack",handlers.customer.wxChargeCallBack,{},"wxChargeCallBack"),
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 	#店铺地图
 	(r"/shoparea/(\w+)",handlers.customer.ShopArea,{},"shoparea"),
@@ -222,9 +234,9 @@ handlers = [
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
 	##移动端后台
+	(r"/madmin", handlers.madmin.Home, {}, "MadminHome"),
 	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
 	(r"/madmin/orderDetail/(\w+)", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
-	(r"/madmin/shopProfile", handlers.madmin.ShopProfile, {}, "MadminCenter"),
 	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
 	(r"/madmin/comment", handlers.madmin.Comment, {}, "MadminComment"),
 	# (r"/staff/...")
