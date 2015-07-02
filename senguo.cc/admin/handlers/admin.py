@@ -16,6 +16,9 @@ import json
 import string
 import random
 
+import tornado.websocket
+from dal.db_configs import DBSession
+
 # 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -236,7 +239,29 @@ class Realtime(AdminBaseHandler):
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
-		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum, follower_sum=follower_sum,on_num=on_num)
+		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum, 
+			follower_sum=follower_sum,on_num=on_num)
+
+
+#websocket 版后台轮询
+class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
+	session = DBSession()
+	def open(self):
+		print('open')
+	def onclose(self):
+		print('onclose')
+	def on_message(self,message):
+		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
+		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+			not_(models.Order.status.in_([-1,0]))).count()
+		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+		data = dict(new_order_sum = new_order_sum , order_sum = order_sum , new_follower_sum = new_follower_sum,
+			follower_sum = follower_sum , on_num = on_num)
+		return self.write_message(json.dumps(data))
+
 
 # 订单统计
 class OrderStatic(AdminBaseHandler):
@@ -321,7 +346,7 @@ class OrderStatic(AdminBaseHandler):
 		elif type == 2:  # 昨天数据
 			now = datetime.datetime.now() - datetime.timedelta(1)
 			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
 			q = q.filter(models.Order.create_date >= start_date,
 					   models.Order.create_date <= end_date)
 		else:
@@ -345,7 +370,7 @@ class OrderStatic(AdminBaseHandler):
 		elif type == 2:
 			now = datetime.datetime.now() - datetime.timedelta(1)
 			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
 			orders = q.filter(models.Order.create_date >= start_date,
 							  models.Order.create_date <= end_date).all()
 		else:
@@ -1857,7 +1882,6 @@ class editorTest(AdminBaseHandler):
 
 class editorCallback(AdminBaseHandler):
 	def get(self):
-		import json
 		import base64
 		upload_ret = self.get_argument("upload_ret")
 		if upload_ret:
@@ -3139,3 +3163,50 @@ class Confession(AdminBaseHandler):
 			q.status = 0
 			self.session.commit()
 		return self.send_success()
+
+
+class MessageManage(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		pass
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('action?:str','mp_name?:str','mp_appid?:str','mp_appsecret?:str')
+	def post(self):
+		action = self.args['action']
+		if action == 'add_mp':
+			mp_name = self.args['mp_name']
+			mp_appid= self.args['mp_appid']
+			mp_appsecret = self.args['mp_appsecret']
+			self.current_user.Accountinfo.update(self.session,mp_name=mp_name,mp_appid=mp_appid,
+				mp_appsecret=mp_appsecret)
+
+	def get_other_accessToken(self,admin_id):
+		now = datetime.datetime.now.timestamp()
+		try:
+			admin_info = self.session.query(models.Accountinfo).filter_by(id = admin_id).first()
+		except:
+			return self.send_fail('admin_info not found')
+		if admin_info.access_token and now - admin_info.token_creatime < 3600:
+			return admin_info.access_token
+		else:
+			appid = admin_info.mp_appid
+			appsecret = admin_info.mp_appsecret
+			client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
+								  "&appid={appid}&secret={appsecret}".format(appid=appid, appsecret=appsecret)
+			data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
+			if "access_token" in data:
+				admin_info.access_token = data['access_token']
+				admin_info.token_creatime = now
+				self.session.commit()
+				return data['access_token']
+			else:
+				print("[微信授权]Token错误")
+				return None
+	
+
+				
+
+
+			
+

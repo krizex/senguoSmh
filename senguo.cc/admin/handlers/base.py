@@ -745,6 +745,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return self.send_fail('order_done: customer not found')
 		touser = customer_info.wx_openid
 		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
+
+	@classmethod
+	def shop_auth_msg(self,shop,success):
+		touser = shop.admin.accountinfo.wx_openid
+		shop_name = shop.shop_name
+		WxOauth2.shop_auth_msg(touser,shop_name,success)
+
+
+
+		
+
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
 	# 同时生成相应的积分记录 和 余额记录 
@@ -1499,7 +1510,9 @@ class WxOauth2:
 
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,goods,phone,address):
+		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
+
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1532,7 +1545,8 @@ class WxOauth2:
 
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,phone,address):
+		order_totalPrice,send_time,phone,address,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1590,7 +1604,8 @@ class WxOauth2:
 
 
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid):
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
 		postdata = {
 			'touser' : touser,
 			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
@@ -1616,8 +1631,10 @@ class WxOauth2:
 		return True
 
 	@classmethod
-	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id):
-		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
+
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
+		access_token = other_access_token if other_access_token else access_token
+		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
@@ -1637,6 +1654,40 @@ class WxOauth2:
 
 		if data["errcode"] != 0:
 			print("[模版消息]订单完成消息发送失败：",data)
+			return False
+		# print("[模版消息]发送给客户成功")
+		return True
+
+	@classmethod
+	def shop_auth_msg(cls,touser,shop_name,success):
+		if success == True:
+			remark = '\n认证成功'
+			value1 = '您申请的店铺{0}已通过认证'.format(shop_name) 
+			value2 = '认证成功'
+
+		else:
+			remark = '\n认证失败'
+			value1 = '您申请的店铺{0}未通过认证'.format(shop_name) 
+			value2 = '认证失败'
+
+		postdata = {
+			'touser':touser,
+			'template_id':'DOLv3DLoy9xJIfLKmfGnjVvNNgc2aKLMBM_v_yHqVwg',
+			'url':'',
+			'topcolor':'#FF0000',
+			"data":{
+				'first':{'value':'店铺认证。\n','color':'#44b549'},
+				'keyword1':{'value':value1,'color':'#173177'},
+				'keyword2':{'value':value2,'color':'#173177'},
+				'remark':{'value':remark},
+			}
+		}
+		access_token = cls.get_client_access_token()
+		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
+		data = json.loads(res.content.decode("utf-8"))
+
+		if data["errcode"] != 0:
+			print("[模版消息]发送给客户失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
