@@ -421,6 +421,12 @@ class Accountinfo(MapBase, _CommonApi):
 	# mp_openid = Column(String(64)) 
 
 	# mp_openid = Column(Integer(64))     #mobile
+	mp_name = Column(String(32))    #公众平台名称
+	mp_appid= Column(String(64))
+	mp_appsecret = Column(String(64))
+
+	access_token = Column(String(64))
+	token_creatime = Column(Integer)
 
 # 角色：超级管理员
 class SuperAdmin(MapBase, _AccountApi):
@@ -1420,6 +1426,7 @@ class GoodsLimit(MapBase, _CommonApi):
 	__tablename__ = "goods_limit"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	charge_type_id = Column(Integer, nullable=False)
+	fruit_id   = Column(Integer )
 	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
 	create_time = Column(DateTime, default=func.now())
 	limit_num = Column(Integer)

@@ -77,6 +77,7 @@ handlers = [
 	#official
 	(r"/",handlers.official.Home,{},"OfficialHome"),
 
+
 	(r"/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
 	(r"/about",handlers.official.About,{},"OfficialAbout"),
 	(r"/product",handlers.official.Product,{},"OfficialProduct"),
