@@ -24,6 +24,8 @@
 {% set shop_auth="个人认证" %}
 {% elif shop.shop_auth in[2,3] %}
 {% set shop_auth="企业认证" %}
+{% else %}
+{% set shop_auth="未认证" %}
 {% end %}
 <div class="shop-profile pb45">
     <div class="profile-top white-box">
@@ -34,7 +36,7 @@
                 <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}" alt="店铺logo"/>
             </dt>
             <dd>
-                <p class="title c333 mt4">{{shop.shop_name}}<span class="shop-auth" data-auth="{{shop_auth}}">个人认证</span></p>
+                <p class="title c333 mt4">{{shop.shop_name}}<span class="shop-auth" data-auth="{{shop_auth}}">{{shop_auth}}</span></p>
                 <p class="c333 mt15">{% if shop.shop_code %}店铺链接 : <a href="http://senguo.cc/{{shop.shop_code}}" class="shop-link">http://senguo.cc/{{shop.shop_code}}</a>{% else %}未设置店铺号 {% end %}</p>
             </dd>
         </dl>
