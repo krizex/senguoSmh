@@ -113,15 +113,23 @@ $(document).ready(function(){
     var price_unit = $(this).html();
     var $this = $(this);
     if($(this).closest("ul").hasClass("price-unit-list")){//售价方式切换
-        $(this).closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$(this).attr("data-id"));
-        $(this).closest(".wrap-add-price").find(".now-unit").html(price_unit);
         var $item = $(this).closest(".goods-all-item");
         curPrice = $(this).closest(".wrap-add-price");
+        curPrice.attr("data-unit",price_unit).attr("data-id",$(this).attr("data-id"));
         var cur_unit = $item.find(".current-unit").html();
         if(cur_unit!=price_unit){
-            $("#now-unit").html(price_unit);
-            $("#stock-unit").html(cur_unit);
-            $(".pop-unit").show();
+            var arr = ["斤","kg","克"];
+            if($.inArray(cur_unit,arr) !=-1 && $.inArray(price_unit,arr) !=-1){
+                simpleUnitSwitch(price_unit,cur_unit);
+            }else{
+                $("#now-unit").html(price_unit);
+                $("#stock-unit").html(cur_unit);
+                $(".pop-unit").show();
+            }
+        }else{
+            $this.closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$this.attr("data-id"));
+            curPrice.find(".first-num").html("1");
+            curPrice.find(".now-unit").html(price_unit);
         }
     }else if($(this).closest("ul").hasClass("condition-list")){//条件查询
         if(goodsEdit){
@@ -303,7 +311,6 @@ $(document).ready(function(){
     $item.find(".price-index").html(index+1);
     var current_unit = $(this).parents(".goods-all-item").find(".current-unit").html();
     var current_unit_id = $(this).parents(".goods-all-item").find(".current-unit").attr("data-id");
-    console.log(current_unit);
     $item.find(".now-unit").html(current_unit);
     $item.find(".stock-unit").html(current_unit);
     $item.find(".price-unit").html(current_unit).attr("data-id",current_unit_id);
@@ -343,6 +350,10 @@ $(document).ready(function(){
         Tip("单位换算两边的数字必须为正整数");
         return false;
     }else{
+        var unit = curPrice.attr("data-unit");
+        var id = curPrice.attr("data-id");
+        curPrice.find(".price-unit").html(unit).attr("data-id",id);
+        curPrice.find(".now-unit").html(unit);
         curPrice.attr("data-first",firstNum).attr("data-second",secondNum);
         curPrice.find(".first-num").html(firstNum);
         curPrice.find(".second-num").html(secondNum);
@@ -419,6 +430,35 @@ $(document).ready(function(){
     var $this=$(this);
     $this.addClass('active').siblings('.tag-item').removeClass('active');
 });
+//切换单位
+function simpleUnitSwitch(price_unit,cur_unit){
+    var unit = curPrice.attr("data-unit");
+    var id = curPrice.attr("data-id");
+    var first = 1,second = 1;
+    curPrice.find(".price-unit").html(unit).attr("data-id",id);
+    curPrice.find(".now-unit").html(unit);
+    if(price_unit == "kg" && cur_unit == "克"){
+        first = 1;
+        second = 1000;
+    }else if(price_unit == "kg" && cur_unit == "斤"){
+        first = 1;
+        second = 2;
+    }else if(price_unit == "斤" && cur_unit == "kg"){
+        first = 2;
+        second = 1;
+    }else if(price_unit == "斤" && cur_unit == "克"){
+        first = 1;
+        second = 500;
+    }else if(price_unit == "克" && cur_unit == "kg"){
+        first = 1000;
+        second = 1;
+    }else if(price_unit == "克" && cur_unit == "斤"){
+        first = 500;
+        second = 1;
+    }
+    curPrice.find(".first-num").html(first);
+    curPrice.find(".second-num").html(second);
+}
 //取消添加商品
 function cancelAddGoods(){
     $(".wrap-classify").prevAll("div").removeClass("hidden");
@@ -846,7 +886,10 @@ function initEditor($obj,type){
     }else{
         $(".pop-editor").show();
     }
-    editor = UM.getEditor('ueditor');
+    editor = UM.getEditor('ueditor',{toolbars: [
+        ['fullscreen', 'source', 'undo', 'redo'],
+        ['simpleupload', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc']
+    ]});
     QINIU_TOKEN=$("#token").val();
     QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/";
     if($obj.attr("data-text")){
