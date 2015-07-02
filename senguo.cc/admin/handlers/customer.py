@@ -865,10 +865,10 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 # 商城入口
 class Market(CustomerBaseHandler):
-	# @tornado.web.authenticated
-	# @get_unblock
+	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
-		print('login in ')
+		# print('login in ')
 		w_follow = True
 		# fruits=''
 		# page_size = 10
