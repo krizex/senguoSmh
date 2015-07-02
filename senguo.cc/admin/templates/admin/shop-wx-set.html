@@ -1,0 +1,60 @@
+{% extends 'shop-set-base.html' %}
+{% block title%}微信通知{% end %}
+
+{% block setcontent %}
+	{% if _shop_auth ==0 %}
+	 <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+	{% else %}
+	<div class="set-description">
+	    <p>如果您有已认证的微信服务号，则可开通订单微信通知。开通后的公众号具有订单模板消息通知功能。</p>
+	    <p>订单微信通知包括：管理员新订单通知、用户已下单通知、配送员新订单通知等。</p>
+	</div>
+	<ul class="info-set-list mt20 font14">
+	    <li class="item clearfix">
+	    	<a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=206223086&idx=1&sn=3dc739e817f210e91f478ac79e1b0ae6#rd">查看模板添加详细教程</a>
+	    	<div class="">
+	      		<p>第一步：进入微信公众平台后台，从模板库添加以下模板：</p>
+	      		<p>编号：OPENTM200746866 标题：订单提交成功通知</p>
+	      		<p>编号：TM00351 标题：订单提交成功通知</p>
+	      		<p>编号：OPENTM202521011 标题：订单完成通知</p>
+	      	</div>
+	    </li>
+	     <li class="item clearfix">
+	    	<a href="javascript:;">编辑</a>
+	    	<div class="">
+	      		<p>第二步：提交微信公众平台相关信息</p>
+	      		<p>微信公众号名称：森果</p>
+	      		<p>AppID:</p>
+	      		<p>AppSecret:</p>
+	      	</div>
+	    </li>
+	</ul>
+	<div class="modal bs-apply-com" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content del-com-cont">
+                <div class="modal-body font14">
+                   <ul>
+                   		<li>
+                   			<input type="text" class="pull-right"/>
+                   			公众号名称
+                   		</li>
+                   		<li>
+                   			<input type="text" class="pull-right"/>
+                   			AppID
+                   		</li>
+                   		<li>
+                   			<input type="text" class="pull-right"/>
+                   			公众号名称
+                   		</li>
+                   </ul>
+                </div>
+                <div class="modal-footer">
+                     <button class="btn bg-green reply-sure text-white pull-left">确定</button>
+                     <button class="btn btn-default pull-left" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	{% end %}
+{% end %}
+{% block setbottom %}<script src="{{static_url('js/admin-set.js')}}"></script>{% end %}

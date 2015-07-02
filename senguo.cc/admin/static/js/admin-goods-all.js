@@ -115,7 +115,7 @@ $(document).ready(function(){
     if($(this).closest("ul").hasClass("price-unit-list")){//售价方式切换
         var $item = $(this).closest(".goods-all-item");
         curPrice = $(this).closest(".wrap-add-price");
-        curPrice.attr("data-unit",price_unit).attr("data-id",$(this).attr("data-id"));
+        curPrice.attr("data-unit",price_unit).attr("data-unitid",$(this).attr("data-id"));
         var cur_unit = $item.find(".current-unit").html();
         if(cur_unit!=price_unit){
             var arr = ["斤","kg","克"];
@@ -351,7 +351,7 @@ $(document).ready(function(){
         return false;
     }else{
         var unit = curPrice.attr("data-unit");
-        var id = curPrice.attr("data-id");
+        var id = curPrice.attr("data-unitid");
         curPrice.find(".price-unit").html(unit).attr("data-id",id);
         curPrice.find(".now-unit").html(unit);
         curPrice.attr("data-first",firstNum).attr("data-second",secondNum);
@@ -433,7 +433,7 @@ $(document).ready(function(){
 //切换单位
 function simpleUnitSwitch(price_unit,cur_unit){
     var unit = curPrice.attr("data-unit");
-    var id = curPrice.attr("data-id");
+    var id = curPrice.attr("data-unitid");
     var first = 1,second = 1;
     curPrice.find(".price-unit").html(unit).attr("data-id",id);
     curPrice.find(".now-unit").html(unit);
