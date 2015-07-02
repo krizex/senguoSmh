@@ -20,9 +20,9 @@
 {% elif shop.status == 3 %}
 {% set shop_status="休息中" %}
 {% end %}
-{% if shop.status in[1,4] %}
+{% if shop.shop_auth in[1,4] %}
 {% set shop_auth="个人认证" %}
-{% elif shop.status in[2,3] %}
+{% elif shop.shop_auth in[2,3] %}
 {% set shop_auth="企业认证" %}
 {% end %}
 <div class="shop-profile pb45">
