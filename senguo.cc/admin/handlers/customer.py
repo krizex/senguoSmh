@@ -862,14 +862,16 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 # 商城入口
 class Market(CustomerBaseHandler):
-	@tornado.web.authenticated
-	@get_unblock
+	# @tornado.web.authenticated
+	# @get_unblock
 	def get(self, shop_code):
 		print('login in ')
 		w_follow = True
 		# fruits=''
 		# page_size = 10
+		
 		try:
+			
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
 			return self.send_error(404)
@@ -2367,12 +2369,13 @@ class InsertData(CustomerBaseHandler):
 		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
 		# print(short,type(short))
 		# print(UrlShorten.get_long_url(short))
-		try:
-			shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-		except:
-			return self.send_fail('shop not found')
-		self.shop_auth_msg(shop,False)
-		shop_auth_fail_msg('13163263783','woody','woody')
+		
+		# try:
+		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+		# except:
+		# 	return self.send_fail('shop not found')
+		# self.shop_auth_msg(shop,False)
+		# shop_auth_fail_msg('13163263783','woody','woody')
 		self.render('customer/storage-change.html')
 
 # 支付超时判断
