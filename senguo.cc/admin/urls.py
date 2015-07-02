@@ -63,10 +63,10 @@ handlers = [
 
 	# (r"/fruitzone/alipaynotify",handlers.customer.AlipayNotify,{},"alipayNotify"),
 	#微官网-----待删除
-	(r"/", handlers.superadmin.Official),
+	# (r"/official", handlers.superadmin.Official),
 
 	#official
-	(r"/official",handlers.official.Home,{},"OfficialHome"),
+	(r"/",handlers.official.Home,{},"OfficialHome"),
 
 	(r"/official/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
 	(r"/official/about",handlers.official.About,{},"OfficialAbout"),

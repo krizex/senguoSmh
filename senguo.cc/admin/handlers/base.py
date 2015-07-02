@@ -701,8 +701,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		except NoResultFound:
 			return self.send_fail('order_done: customer not found')
 		touser = customer_info.wx_openid
-<<<<<<< HEAD
-		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone)
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 
 	@classmethod
 	def shop_auth_msg(self,shop,success):
@@ -711,9 +710,9 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		WxOauth2.shop_auth_msg(touser,shop_name,success)
 
 
-=======
-		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
->>>>>>> leaf/senguo2.0
+
+		
+
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
 	# 同时生成相应的积分记录 和 余额记录 
@@ -1589,14 +1588,10 @@ class WxOauth2:
 		return True
 
 	@classmethod
-<<<<<<< HEAD
-	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,other_access_token = None):
+
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else access_token
 		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
-=======
-	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id):
-		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
->>>>>>> leaf/senguo2.0
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,

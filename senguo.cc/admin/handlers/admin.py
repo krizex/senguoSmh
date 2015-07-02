@@ -16,6 +16,9 @@ import json
 import string
 import random
 
+import tornado.websocket
+from dal.db_configs import DBSession
+
 # 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -220,7 +223,29 @@ class Realtime(AdminBaseHandler):
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
-		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum, follower_sum=follower_sum,on_num=on_num)
+		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum, 
+			follower_sum=follower_sum,on_num=on_num)
+
+
+#websocket 版后台轮询
+class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
+	session = DBSession()
+	def open(self):
+		print('open')
+	def onclose(self):
+		print('onclose')
+	def on_message(self,message):
+		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
+		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+			not_(models.Order.status.in_([-1,0]))).count()
+		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+		data = dict(new_order_sum = new_order_sum , order_sum = order_sum , new_follower_sum = new_follower_sum,
+			follower_sum = follower_sum , on_num = on_num)
+		return self.write_message(json.dumps(data))
+
 
 # 订单统计
 class OrderStatic(AdminBaseHandler):
@@ -305,7 +330,7 @@ class OrderStatic(AdminBaseHandler):
 		elif type == 2:  # 昨天数据
 			now = datetime.datetime.now() - datetime.timedelta(1)
 			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
 			q = q.filter(models.Order.create_date >= start_date,
 					   models.Order.create_date <= end_date)
 		else:
@@ -329,7 +354,7 @@ class OrderStatic(AdminBaseHandler):
 		elif type == 2:
 			now = datetime.datetime.now() - datetime.timedelta(1)
 			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23)
+			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
 			orders = q.filter(models.Order.create_date >= start_date,
 							  models.Order.create_date <= end_date).all()
 		else:
@@ -1836,7 +1861,6 @@ class editorTest(AdminBaseHandler):
 
 class editorCallback(AdminBaseHandler):
 	def get(self):
-		import json
 		import base64
 		upload_ret = self.get_argument("upload_ret")
 		if upload_ret:
