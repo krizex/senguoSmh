@@ -10,6 +10,7 @@
 {% set cert_active ='' %}
 {% set phone_active ='' %}
 {% set admin_active= ''%}
+{% set wx_active='' %}
 
 
 {% if shopSubPage == 'delivery_set'  %}
@@ -22,6 +23,8 @@
     {% set phone_active ='active' %}
 {% elif shopSubPage =='admin_set' %}
     {% set admin_active ='active' %}
+{% elif shopSubPage =='wx_set' %}
+    {% set wx_active ='active' %}
 {% else %}
     {% set receipt_active ='active' %}
 {% end %}
@@ -35,7 +38,7 @@
         <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">订单小票</a></li>
         <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone"  class="{{no_auth}}">首单短信验证</a></li>
         <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin"  class="{{no_auth}}">管理员设置</a></li>
-        <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">通知服务</a></li>-->
+        <li class="{{wx_active}}"><a href="{{reverse_url('adminMessageManage')}}">微信通知</a></li>
         <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">短信通知</a></li>-->
     </ul>
 </div>

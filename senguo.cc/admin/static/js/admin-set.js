@@ -343,5 +343,33 @@ $(document).ready(function(){
     $('.preview_box').modal('show');
     var src=$this.parents('li').find('.view-img').attr('src');
     $('#preview-img').attr('src',src);
+}).on('click','.wx-edit',function(){
+    $(".wx-edit-box").modal("show");
+}).on("click",".wx-sure",function(){
+     var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var name=$("#AppName").val().trim();
+    var id=$("#AppID").val().trim();
+    var secret=$("#AppSecret").val().trim();
+    var url='';
+    var action="add_mp";
+    var args={
+        action:action,mp_name:name,mp_appid:id,mp_appsecret:secret
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                $(".name").text(name);
+                $(".id").text(id);
+                $(".secret").text(secret);
+                $(".wx-edit-box").modal("hide");
+            }   
+            else{
+                $this.attr("data-flag","on");
+                return Tip(res.error_text);
+            }
+        });
 });
 var link='/admin/config';

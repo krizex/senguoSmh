@@ -420,13 +420,7 @@ class Accountinfo(MapBase, _CommonApi):
 	subscribe  = Column(Integer,default = 0) #0:not foucus,1:foucus#4.24 yy
 	# mp_openid = Column(String(64)) 
 
-	# mp_openid = Column(Integer(64))     #mobile
-	mp_name = Column(String(32))    #公众平台名称
-	mp_appid= Column(String(64))
-	mp_appsecret = Column(String(64))
-
-	access_token = Column(String(64))
-	token_creatime = Column(Integer)
+	
 
 # 角色：超级管理员
 class SuperAdmin(MapBase, _AccountApi):
@@ -435,6 +429,14 @@ class SuperAdmin(MapBase, _AccountApi):
 
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
+
+	# mp_openid = Column(Integer(64))     #mobile
+	mp_name = Column(String(32))    #公众平台名称
+	mp_appid= Column(String(64))
+	mp_appsecret = Column(String(64))
+
+	access_token = Column(String(64))
+	token_creatime = Column(Integer)
 
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)

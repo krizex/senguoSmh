@@ -13,9 +13,16 @@ class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
 	def get(self):
+		print(self.get_secure_cookie("customer_id"))
 		if "page" in self.args and self.args["page"] !=[]:
-			_type = int(self.args["type"])
-			page = int(self.args["page"])
+			if self.args["page"]==[]:
+				page = 0
+			else:
+				page = int(self.args["page"])
+			if self.args["type"]==[]:
+				_type = 100
+			else:
+				_type = int(self.args["type"])
 			page_size = 20
 			nomore = False
 			datalist = []
@@ -50,7 +57,7 @@ class Detail(FruitzoneBaseHandler):
 				.filter(models.Article.id==_id,models.Article.status==1).first()
 		except:
 			return self.write("没有该文章的任何信息")
-
+		
 		# if not article[3]:
 		# 	article[0].scan_num = article[0].scan_num +1
 		# 	self.session.add(models.ArticleGreat(article_id = _id,
@@ -83,7 +90,10 @@ class Detail(FruitzoneBaseHandler):
 						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
 
 		if "action" in self.args and self.args["action"] == "comment":
-			page = int(self.args["page"])
+			if self.args["page"]==[]:
+				page = 0
+			else:
+				page = int(self.args["page"])
 			page_size = 20
 			nomore = False
 			comments_list = []
@@ -222,11 +232,12 @@ class Detail(FruitzoneBaseHandler):
 				.filter(models.ArticleComment.id==int(data["id"])).one()
 			except:
 				comment = None
-			if comment and comment[1] and comment[1].account_id == self.current_user.id:
-				comment[0].status=0
-				comment[1].comment_num=comment[1].comment_num-1
-				self.session.commit()
-				return self.send_success()
+			if comment and comment[1] :
+				if comment[1].account_id == self.current_user.id or comment[0].account_id == self.current_user.id:
+					comment[0].status=0
+					comment[1].comment_num=comment[1].comment_num-1
+					self.session.commit()
+					return self.send_success()
 			else:
 				return self.send_fail("该评论不存在或您没有操作权限")
 

@@ -8,7 +8,7 @@ from  handlers  import superadmin,admin
 from tornado.options import options, define
 
 import tornado.wsgi
-import gevent.wsgi
+# import gevent.wsgi
 # import pure_tornado
 
 
