@@ -152,3 +152,6 @@
 .img_add_box .button{display:inline-block;width:150px;height:30px;line-height:30px;border-radius:2px;cursor:pointer;}
 .img_add_box{width:220px;height:140px;overflow:hidden;}
 .img_add_box img{width:100%;}
+
+.wx-edit-box li{padding:10px;}
+.wx-edit-box li input{border:1px solid #ddd;width:450px;overflow:hidden;text-overflow:ellipsis;height:30px;text-indent:10px;}

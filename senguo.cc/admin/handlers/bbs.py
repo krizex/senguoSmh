@@ -232,11 +232,12 @@ class Detail(FruitzoneBaseHandler):
 				.filter(models.ArticleComment.id==int(data["id"])).one()
 			except:
 				comment = None
-			if comment and comment[1] and comment[1].account_id == self.current_user.id:
-				comment[0].status=0
-				comment[1].comment_num=comment[1].comment_num-1
-				self.session.commit()
-				return self.send_success()
+			if comment and comment[1] :
+				if comment[1].account_id == self.current_user.id or comment[0].account_id == self.current_user.id:
+					comment[0].status=0
+					comment[1].comment_num=comment[1].comment_num-1
+					self.session.commit()
+					return self.send_success()
 			else:
 				return self.send_fail("该评论不存在或您没有操作权限")
 

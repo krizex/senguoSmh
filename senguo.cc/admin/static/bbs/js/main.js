@@ -1,5 +1,4 @@
 $(document).ready(function(){
-    alert(222)
     var height = $(window).height();
     $(".atical-list").css("minHeight",height-40);
     $("#bbs-menu").on("click",function(){
