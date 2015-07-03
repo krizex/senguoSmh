@@ -1664,10 +1664,9 @@ class WxOauth2:
 		return True
 
 	@classmethod
-
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
+		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
