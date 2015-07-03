@@ -200,7 +200,7 @@ function toggle(trigger,target){
         var $this=$(this);
         var forbid_click=$this.find('.forbid_click');
         if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
-            $this.siblings(target).toggle();
+            $this.siblings(target).toggle(100);
         }
         //return false;
     })
