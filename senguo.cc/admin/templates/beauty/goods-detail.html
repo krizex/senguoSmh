@@ -18,9 +18,15 @@
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
         <div class="swiper-container" id="swiper-container">
             <div class="swiper-wrapper">
+                {% if img_url %}
                 {% for img in img_url%}
                 <div class="swiper-slide item">
                     <img src="{{img}}?imageView2/1/w/800/h/480" alt=""/>
+                </div>
+                {% end %}
+                {% else %}
+                <div class="swiper-slide item">
+                    <img src="/static/images/holder_fruit.jpg" alt="森果"/>
                 </div>
                 {% end %}
             </div>

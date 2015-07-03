@@ -220,7 +220,17 @@ $(document).ready(function(){
             Tip('网络好像不给力呢~ ( >O< ) ~！');}
     );
 
+}).on("click","#edit-area",function(){
+    $(".pop-bmap").removeClass("hidden");
+}).on("click",".cancel-btn",function(){
+    $(".pop-bmap").addClass("hidden");
+}).on("click",".pop-bmap",function(e){
+    if($(e.target).closest(".pop-content").size()==0){
+        $(".pop-bmap").addClass("hidden");
+    }
 });
+var pPoint = null;
+
 //初始化百度地图
 function initBmap(){
     var address = $("#info_address").html();
@@ -228,6 +238,8 @@ function initBmap(){
     var lat = parseFloat($("#lat").val());
     var lon = parseFloat($("#lon").val());
     var marker = null;
+    var marker1 = null;
+    var map1 = null;
     var isHand = false;
     map.enableScrollWheelZoom();
     var myGeo = new BMap.Geocoder();
@@ -235,10 +247,46 @@ function initBmap(){
         // 将地址解析结果显示在地图上,并调整地图视野
         getPointByName(map, myGeo, address);
     }else{
-        var point = new BMap.Point(lat, lon);  // 创建点坐标
-        map.centerAndZoom(point, 19);
+        var point = new BMap.Point(lat, lon);  // 创建点坐标\
+        pPoint = point;
+        map.centerAndZoom(point, 17);
         initPoint(map,point,myGeo);
     }
+    /*配送区域地图*/
+    map1 = new BMap.Map("maparea");
+    map1.centerAndZoom(pPoint, 17);
+    map1.enableScrollWheelZoom();
+    marker1 = new BMap.Marker(pPoint);
+    map1.addOverlay(marker1);
+    //选择配送范围形状
+    var circle,polygon;
+    $(".map-sharp-list li").on("click",function(){
+        var lngs = pPoint.lng;
+        var lats = pPoint.lat;
+        map1.removeOverlay(circle);
+        map1.removeOverlay(polygon);
+        var index = $(this).index();
+        $(".map-sharp-list li").removeClass("active").eq(index).addClass("active");;
+        if(index == 0){//圆形
+            circle = new BMap.Circle(pPoint,500, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
+            map1.addOverlay(circle);
+            circle.enableEditing();
+        }else{//方形
+            polygon = new BMap.Polygon([
+                new BMap.Point(lngs-0.01,lats),
+                new BMap.Point(lngs,lats-0.01),
+                new BMap.Point(lngs+0.01,lats),
+                new BMap.Point(lngs,lats+0.01)
+            ], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+            map1.addOverlay(polygon);
+            polygon.enableEditing();
+        }
+    });
+    $("#ok-area").on("click",function(){//保存区域信息
+        //infoEdit($(this));
+        console.log(circle.getRadius());
+        console.log(polygon.getPath());
+    })
     $(document).on("keydown",function(ev){
         if(ev.keyCode==13){
             var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
@@ -260,9 +308,11 @@ function initBmap(){
             getPointByName(map, myGeo, address,true);
         }
     });
+
     function getPointByName(map, myGeo, address,flag){
         myGeo.getPoint(address, function(point){
             if (point) {
+                pPoint = point;
                 map.removeOverlay(marker);
                 map.centerAndZoom(point, 17);
                 initPoint(map,point,myGeo);
@@ -293,6 +343,11 @@ function initBmap(){
                 //Tip("地理位置已经获取，不要忘记点击保存哦！");
             });
             $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
+            pPoint = p;
+            map1.centerAndZoom(pPoint, 17);
+            map1.removeOverlay(marker1);
+            marker1 = new BMap.Marker(pPoint);
+            map1.addOverlay(marker1);
         }
     }
 }
@@ -398,7 +453,7 @@ function infoEdit(target,is_address){
     else if(action_name=='area')
     {
         action='edit_deliver_area';
-        var deliver_area=$('.deliver-area').val().trim();
+        var deliver_area=$('#shop-area-text').val().trim();
         data={
             deliver_area:deliver_area
         }
