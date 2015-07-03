@@ -15,17 +15,17 @@ $(document).ready(function(){
     });
     var link_action=$.getUrlParam("action");
     if(link_action=="official"){
-         page=0;
-         _type=0;
-         $('#bbs-menu').text('官方公告');
+        page=0;
+        _type=0;
+        $('#bbs-menu').text('官方公告');
     }else if(link_action=="update"){
-         page=0;
-         _type=1;
-         $('#bbs-menu').text('产品更新');
+        page=0;
+        _type=1;
+        $('#bbs-menu').text('产品更新');
     }else if(link_action=="dry"){
-         page=0;
-         _type=2;
-         $('#bbs-menu').text('运营干货');
+        page=0;
+        _type=2;
+        $('#bbs-menu').text('运营干货');
     }else{
         _type=100;
     }
@@ -38,8 +38,8 @@ $(document).ready(function(){
     } 
 }).on("click",".atical-attr .dianzan",function(){
     if(if_login=='False'){
-       $('.pop-login').removeClass("hide");
-       return false; 
+        $('.pop-login').removeClass("hide");
+        return false; 
     }
 	var $this=$(this);
 	var id=$this.parents("li").attr("data-id");
@@ -88,7 +88,7 @@ function scrollLoading(){
             articleList(page);
         }
         else if(nomore==true){
-              $('.loading').html("~没有更多了~").show();
+            $('.loading').html("~ 没有更多了 ~").show();
         }
     });
 }
@@ -103,7 +103,7 @@ function articleList(page){
                 nomore=res.nomore;
                 if(nomore==true){
                 	$('.wrap-loading-box').addClass('hide');
-                    $('.loading').html("~没有更多了~").show();
+                    $('.loading').html("~ 没有更多了 ~").show();
                 }
                 for(var i in datalist){
                         var render = template.compile(item);

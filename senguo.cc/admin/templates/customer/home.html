@@ -65,7 +65,7 @@
         <div class="goods-box">
              {% for group in context['group_list'] %}
              <p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>
-            <ul class="goods-list-{{group['id']}} fruit-list goods-list">
+            <ul class="goods-list-{{group['id']}} fruit-list goods-list"  data-page="1">
             </ul>
             {% end %}
         </div>

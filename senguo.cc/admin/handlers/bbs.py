@@ -13,7 +13,7 @@ class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
 	def get(self):
-		print(self.get_secure_cookie("customer_id"))
+		# print(self.get_secure_cookie("customer_id"))
 		if "page" in self.args and self.args["page"] !=[]:
 			if self.args["page"]==[]:
 				page = 0

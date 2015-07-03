@@ -36,14 +36,15 @@ $(document).ready(function(){
             var $this=$(this);
             var id = Number($this.attr('data-id'));
             _group_id = id;
-            goodsList(1,6);
+            goodsList(1,6,_group_id);
+            scrollLoading(_group_id);
          }); 
     }else{
         if($('.classify-list li').length==0){
             $(".wrap-loading-box").addClass("hidden");
         }
         _group_id = -1;
-        goodsList(1,6,'recommend');  
+        goodsList(1,6,_group_id,'recommend');  
     }
     //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
@@ -180,10 +181,36 @@ $(document).ready(function(){
     var link=$(this).attr('href');
     addCart(link);
 });
-var _group_id;
 var _search;
-var goodsList=function(page,action,type){
-    finished=false;
+var _action=6;
+var _finished=true;
+var _search;
+$('.loading').html("~努力加载中 ( > < )~").show();
+var scrollLoading=function(_group_id){
+    $(window).scroll(function(){
+        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+        var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+        var totalheight = 0;
+        var main = $(".container");              //主体元素
+        var nomore=$('.goods-list-'+_group_id).attr("data-nomore");
+        var page=parseInt($('.goods-list-'+_group_id).attr("data-page"));
+        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false') {
+            _finished=false;
+            page = page+1;
+            $('.goods-list-'+_group_id).attr("data-page",page);
+            goodsList(page,_action,_group_id);
+        }
+        else if(nomore==true){
+            if(_action==9){
+                $('.loading').html("~没有更多结果了 ( > < )~").show();
+            }else{
+                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
+            }
+        }
+    });
+}
+var goodsList=function(page,action,_group_id,type){
     $(".wrap-loading-box").removeClass("hidden");
     var url='';
     var action = action;
@@ -222,10 +249,9 @@ var goodsList=function(page,action,type){
                 if(type=='recommend'){
                     fruitItem($('.recommend-list'),data[key],type);
                 }else{
-                  fruitItem($('.goods-list-'+data[key]['group_id']),data[key]); 
-                }
-
-                
+                    $('.goods-list-'+data[key]['group_id']).attr("data-nomore",nomore);
+                    fruitItem($('.goods-list-'+data[key]['group_id']),data[key]); 
+                }   
             }
             var fruits=window.dataObj.fruits;
             var c_fs=[];
@@ -233,7 +259,7 @@ var goodsList=function(page,action,type){
                 c_fs.push([key,fruits[key]]);
             };
             cartNum(c_fs,'.fruit-list');
-            window.dataObj.count++;
+            _finished=true;
             $(".wrap-loading-box").remove();
         }
 };

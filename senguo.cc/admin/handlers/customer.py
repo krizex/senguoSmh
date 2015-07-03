@@ -865,10 +865,10 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 # 商城入口
 class Market(CustomerBaseHandler):
-	# @tornado.web.authenticated
-	# @get_unblock
+	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
-		print('login in ')
+		# print('login in ')
 		w_follow = True
 		# fruits=''
 		# page_size = 10
@@ -933,10 +933,10 @@ class Market(CustomerBaseHandler):
 		cart_count = len(cart_f) 
 		
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
-		print(cart_fs)
+		# print(cart_fs)
 		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
-		print(notices)
+		# print(notices)
 
 		group_list=[]
 
@@ -1079,7 +1079,7 @@ class Market(CustomerBaseHandler):
 		group_id = int(self.args['group_id'])
 		# print(group_id,'group_id')
 		page_size = 10
-		nomore = True
+		nomore = False
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
@@ -1092,16 +1092,17 @@ class Market(CustomerBaseHandler):
 
 		try:
 			fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1)\
-			.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc()).all()
+			.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 		except:
 			return self.send_fail("fruits not found")
-		# count_fruit = fruits.count()
-		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# if total_page <= page:
-		# 	nomore = True
-		# fruits = fruits.offset(offset).limit(page_size).all()
+		count_fruit = fruits.count()
+		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		if total_page <= page:
+			nomore = True
+		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
-		return self.send_success(data = fruit_list ,nomore = nomore)
+		print(total_page)
+		return self.send_success(data = fruit_list ,nomore = nomore,group_id=group_id)
 
 	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
 	def search_list(self):
