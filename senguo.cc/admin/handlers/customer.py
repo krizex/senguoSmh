@@ -1606,10 +1606,17 @@ class CartCallback(CustomerBaseHandler):
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
+			print(shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+		else:
+			access_token = None
 
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
-			self.send_admin_message(self.session,order)
+			print(access_token,'access_token')
+			self.send_admin_message(self.session,order,access_token)
+			
 		
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -2401,6 +2408,7 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	@tornado.web.asynchronous
 	def get(self):
+		import gevent
 		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session	
@@ -2408,14 +2416,23 @@ class InsertData(CustomerBaseHandler):
 		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
 		# print(short,type(short))
 		# print(UrlShorten.get_long_url(short))
-		
 		# try:
 		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
 		# except:
 		# 	return self.send_fail('shop not found')
-		# self.shop_auth_msg(shop,False)
-		# shop_auth_fail_msg('13163263783','woody','woody')
-		self.render('customer/storage-change.html')
+		# # self.shop_auth_msg(shop,False)
+		# # shop_auth_fail_msg('13163263783','woody','woody')
+		# self.render('customer/storage-change.html')
+		# def async_task():
+		#   try:
+		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+		# 	except:
+		# 		return self.send_fail('shop not found')
+		# 	# self.shop_auth_msg(shop,False)
+		# 	# shop_auth_fail_msg('13163263783','woody','woody')
+		# 	self.render('customer/storage-change.html')
+		# gevent.spawn(async_task)
+		return self.success
 
 # 支付超时判断
 # 返回：		
