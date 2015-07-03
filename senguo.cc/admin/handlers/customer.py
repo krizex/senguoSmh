@@ -873,7 +873,7 @@ class Market(CustomerBaseHandler):
 		# fruits=''
 		# page_size = 10
 		try:
-			shop = self.session.query(models.Shop).filter_by(shop_code='woody').one()
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 
@@ -2423,15 +2423,16 @@ class InsertData(CustomerBaseHandler):
 		# # self.shop_auth_msg(shop,False)
 		# # shop_auth_fail_msg('13163263783','woody','woody')
 		# self.render('customer/storage-change.html')
-		def async_task():
-			try:
-				shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-			except:
-				return self.send_fail('shop not found')
-			# self.shop_auth_msg(shop,False)
-			# shop_auth_fail_msg('13163263783','woody','woody')
-			self.render('customer/storage-change.html')
-		gevent.spawn(async_task)
+		# def async_task():
+		#   try:
+		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+		# 	except:
+		# 		return self.send_fail('shop not found')
+		# 	# self.shop_auth_msg(shop,False)
+		# 	# shop_auth_fail_msg('13163263783','woody','woody')
+		# 	self.render('customer/storage-change.html')
+		# gevent.spawn(async_task)
+		return self.success
 
 # 支付超时判断
 # 返回：		
