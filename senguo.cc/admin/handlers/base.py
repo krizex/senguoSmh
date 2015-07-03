@@ -687,7 +687,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# print('SUCCESS')
 
 	@classmethod
-	def send_admin_message(self,session,order):
+	def send_admin_message(self,session,order,other_access_token = None):
+		access_token = other_access_token if other_access_token else None
 		admin_name = order.shop.admin.accountinfo.nickname
 		touser     = order.shop.admin.accountinfo.wx_openid
 		shop_id    = order.shop.id
@@ -718,7 +719,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_realid = order.id
 		if order.shop.super_temp_active != 0:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
-				phone,address)
+				phone,address,access_token)
 		try:
 			other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
 		except NoResultFound:
@@ -729,8 +730,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			other_name = info.nickname
 			other_touser = info.wx_openid
 			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
-				send_time,goods,phone,address)
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+				send_time,goods,phone,address,access_token)
+		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
 
 	@classmethod
 	def order_done_msg(self,session,order):
@@ -754,6 +755,36 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		touser = shop.admin.accountinfo.wx_openid
 		shop_name = shop.shop_name
 		WxOauth2.shop_auth_msg(touser,shop_name,success)
+
+	@classmethod
+	def get_other_accessToken(self,session,admin_id):
+		now = datetime.datetime.now().timestamp()
+		try:
+			admin_info = session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+		except:
+			return None
+		if admin_info.mp_name and admin_info.mp_appid and admin_info.mp_appsecret:
+			if admin_info.access_token and now - admin_info.token_creatime < 3600:
+				print(admin_info.access_token , admin_info.token_creatime , 'hahahahah')
+				return admin_info.access_token
+			else:
+				appid = admin_info.mp_appid
+				appsecret = admin_info.mp_appsecret
+				client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
+									  "&appid={appid}&secret={appsecret}".format(appid=appid, appsecret=appsecret)
+				data = json.loads(urllib.request.urlopen(client_access_token_url).read().decode("utf-8"))
+				if "access_token" in data:
+					admin_info.access_token = data['access_token']
+					admin_info.token_creatime = now
+					session.commit()
+					print(admin_info.access_token,'heheheheheh')
+					return data['access_token']
+				else:
+					print("[微信授权]Token错误")
+					return None
+		else:
+			return None
+	
 
 
 
@@ -1514,7 +1545,8 @@ class WxOauth2:
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
+	
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
 			   + "送达时间：" + send_time + '\n'\
@@ -1537,7 +1569,7 @@ class WxOauth2:
 				"remark":{"value":remark,"color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
+		
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
@@ -1549,7 +1581,8 @@ class WxOauth2:
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
+		
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1571,7 +1604,6 @@ class WxOauth2:
 				"remark":{"value":remark,"color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
@@ -1607,8 +1639,9 @@ class WxOauth2:
 
 
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,other_access_token = None):
+		
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		postdata = {
 			'touser' : touser,
 			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
@@ -1623,7 +1656,6 @@ class WxOauth2:
 				"remark"   : {"value":"\n您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 
@@ -1636,12 +1668,13 @@ class WxOauth2:
 	@classmethod
 
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
+		
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
-			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
+			'template_id':'eBgm4SY9KRljBEWsfIWYWWmdJ5txlzte8a5DsF4NYfk',
 			'url':'http://i.senguo.cc/customer/orders/detail/' + str(order_id),
 			'topcolor':'#FF0000',
 			"data":{
@@ -1651,7 +1684,7 @@ class WxOauth2:
 				"remark"  :{"value":describe+"\n您可以点击“详情”查看订单，并对订单进行评价拿积分哦！","color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
+		
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 

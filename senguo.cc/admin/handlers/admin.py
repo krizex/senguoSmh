@@ -3177,32 +3177,16 @@ class MessageManage(AdminBaseHandler):
 			mp_name = self.args['mp_name']
 			mp_appid= self.args['mp_appid']
 			mp_appsecret = self.args['mp_appsecret']
-			self.current_user.accountinfo.update(self.session,mp_name=mp_name,mp_appid=mp_appid,
-				mp_appsecret=mp_appsecret)
+			try:
+				shop_admin = self.session.query(models.ShopAdmin).filter_by(id = self.current_user.id).one()
+			except:
+				return self.send_fail('shop_admin not found')
+			shop_admin.mp_name = mp_name
+			shop_admin.mp_appid = mp_appid
+			shop_admin.mp_appsecret = mp_appsecret
+			self.session.commit()
 			return self.send_success()
 
-	def get_other_accessToken(self,admin_id):
-		now = datetime.datetime.now.timestamp()
-		try:
-			admin_info = self.session.query(models.Accountinfo).filter_by(id = admin_id).first()
-		except:
-			return self.send_fail('admin_info not found')
-		if admin_info.access_token and now - admin_info.token_creatime < 3600:
-			return admin_info.access_token
-		else:
-			appid = admin_info.mp_appid
-			appsecret = admin_info.mp_appsecret
-			client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
-								  "&appid={appid}&secret={appsecret}".format(appid=appid, appsecret=appsecret)
-			data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
-			if "access_token" in data:
-				admin_info.access_token = data['access_token']
-				admin_info.token_creatime = now
-				self.session.commit()
-				return data['access_token']
-			else:
-				print("[微信授权]Token错误")
-				return None
 	
 
 				

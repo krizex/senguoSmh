@@ -430,13 +430,7 @@ class SuperAdmin(MapBase, _AccountApi):
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
 
-	# mp_openid = Column(Integer(64))     #mobile
-	mp_name = Column(String(32))    #公众平台名称
-	mp_appid= Column(String(64))
-	mp_appsecret = Column(String(64))
-
-	access_token = Column(String(64))
-	token_creatime = Column(Integer)
+	
 
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
@@ -676,6 +670,16 @@ class ShopAdmin(MapBase, _AccountApi):
 	info_collect = relationship("Info", secondary="info_collect")
 	comment = relationship("Comment")
 	temp_active  = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive #5.25 drop
+
+	# mp_openid = Column(Integer(64))     #mobile
+	mp_name = Column(String(32))    #公众平台名称
+	mp_appid= Column(String(64))
+	mp_appsecret = Column(String(64))
+
+	access_token = Column(String(64))
+	token_creatime = Column(Integer)
+
+
 
 	def success_orders(self, session):
 		if not hasattr(self, "_success_orders"):
