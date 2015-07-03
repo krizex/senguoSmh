@@ -1101,7 +1101,8 @@ class Market(CustomerBaseHandler):
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
-		return self.send_success(data = fruit_list ,nomore = nomore)
+		print(total_page)
+		return self.send_success(data = fruit_list ,nomore = nomore,group_id=group_id)
 
 	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
 	def search_list(self):
