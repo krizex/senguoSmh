@@ -13,7 +13,7 @@ class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
 	def get(self):
-		print(self.get_secure_cookie("customer_id"))
+		# print(self.get_secure_cookie("customer_id"))
 		if "page" in self.args and self.args["page"] !=[]:
 			if self.args["page"]==[]:
 				page = 0
@@ -232,11 +232,12 @@ class Detail(FruitzoneBaseHandler):
 				.filter(models.ArticleComment.id==int(data["id"])).one()
 			except:
 				comment = None
-			if comment and comment[1] and comment[1].account_id == self.current_user.id:
-				comment[0].status=0
-				comment[1].comment_num=comment[1].comment_num-1
-				self.session.commit()
-				return self.send_success()
+			if comment and comment[1] :
+				if comment[1].account_id == self.current_user.id or comment[0].account_id == self.current_user.id:
+					comment[0].status=0
+					comment[1].comment_num=comment[1].comment_num-1
+					self.session.commit()
+					return self.send_success()
 			else:
 				return self.send_fail("该评论不存在或您没有操作权限")
 

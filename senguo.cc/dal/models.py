@@ -420,13 +420,7 @@ class Accountinfo(MapBase, _CommonApi):
 	subscribe  = Column(Integer,default = 0) #0:not foucus,1:foucus#4.24 yy
 	# mp_openid = Column(String(64)) 
 
-	# mp_openid = Column(Integer(64))     #mobile
-	mp_name = Column(String(32))    #公众平台名称
-	mp_appid= Column(String(64))
-	mp_appsecret = Column(String(64))
-
-	access_token = Column(String(64))
-	token_creatime = Column(Integer)
+	
 
 # 角色：超级管理员
 class SuperAdmin(MapBase, _AccountApi):
@@ -435,6 +429,8 @@ class SuperAdmin(MapBase, _AccountApi):
 
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
+
+	
 
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
@@ -524,6 +520,13 @@ class Shop(MapBase, _CommonApi):
 	shop_sales_range = Column(String(128))
 	lat              = Column(MyReal)  #纬度
 	lon              = Column(MyReal)  #经度
+	area_type = Column(Integer,default=0) #区域类型
+	roundness_lat = Column(MyReal,default=0) #圆心纬度
+	roundness_lon = Column(MyReal,default=0) #圆心经度
+	area_radius = Column(Integer,default=0) #半径
+	area_list = Column(String(1000)) #区域数组
+
+
 
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
@@ -674,6 +677,16 @@ class ShopAdmin(MapBase, _AccountApi):
 	info_collect = relationship("Info", secondary="info_collect")
 	comment = relationship("Comment")
 	temp_active  = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive #5.25 drop
+
+	# mp_openid = Column(Integer(64))     #mobile
+	mp_name = Column(String(32))    #公众平台名称
+	mp_appid= Column(String(64))
+	mp_appsecret = Column(String(64))
+
+	access_token = Column(String(64))
+	token_creatime = Column(Integer)
+
+
 
 	def success_orders(self, session):
 		if not hasattr(self, "_success_orders"):

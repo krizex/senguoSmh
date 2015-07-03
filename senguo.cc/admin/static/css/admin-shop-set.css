@@ -169,3 +169,6 @@
 .img_add_box img{width:100%;}
 
 .anchorBL{display: none;}
+.wx-edit-box li{padding:10px;}
+.wx-edit-box li input{border:1px solid #ddd;width:450px;overflow:hidden;text-overflow:ellipsis;height:30px;text-indent:10px;}
+

@@ -318,7 +318,6 @@ class GlobalBaseHandler(BaseHandler):
 					group_name = None
 				# print(group_name)
 
-
 			charge_types = []
 			for charge in d.charge_types:
 				market_price ="" if charge.market_price == None else charge.market_price
@@ -353,20 +352,22 @@ class GlobalBaseHandler(BaseHandler):
 
 	def getArticleComment(self,new_comment):
 		great_if = False
+		comment_author = False
 		try:
 			comment_great=self.session.query(models.ArticleCommentGreat).filter_by(comment_id = new_comment[0].id,account_id = self.current_user.id).one()
 		except:
 			comment_great=None
 		if comment_great:
 			great_if=True
+		if self.current_user and new_comment[0].account_id == self.current_user.id:
+			comment_author = True
 		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
 				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],
-				"type":new_comment[0]._type,"great_if":great_if}
+				"type":new_comment[0]._type,"great_if":great_if,"comment_author":comment_author}
 		return data
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
-
 
 
 class _AccountBaseHandler(GlobalBaseHandler):
@@ -684,7 +685,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# print('SUCCESS')
 
 	@classmethod
-	def send_admin_message(self,session,order):
+	def send_admin_message(self,session,order,other_access_token = None):
+		access_token = other_access_token if other_access_token else None
 		admin_name = order.shop.admin.accountinfo.nickname
 		touser     = order.shop.admin.accountinfo.wx_openid
 		shop_id    = order.shop.id
@@ -715,7 +717,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_realid = order.id
 		if order.shop.super_temp_active != 0:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
-				phone,address)
+				phone,address,access_token)
 		try:
 			other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
 		except NoResultFound:
@@ -726,8 +728,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			other_name = info.nickname
 			other_touser = info.wx_openid
 			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
-				send_time,goods,phone,address)
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid)
+				send_time,goods,phone,address,access_token)
+		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
 
 	@classmethod
 	def order_done_msg(self,session,order):
@@ -752,9 +754,35 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_name = shop.shop_name
 		WxOauth2.shop_auth_msg(touser,shop_name,success)
 
-
-
-		
+	@classmethod
+	def get_other_accessToken(self,session,admin_id):
+		now = datetime.datetime.now().timestamp()
+		try:
+			admin_info = session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+		except:
+			return None
+		if admin_info.mp_name and admin_info.mp_appid and admin_info.mp_appsecret:
+			if admin_info.access_token and now - admin_info.token_creatime < 3600:
+				print(admin_info.access_token , admin_info.token_creatime , 'hahahahah')
+				return admin_info.access_token
+			else:
+				appid = admin_info.mp_appid
+				appsecret = admin_info.mp_appsecret
+				client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
+									  "&appid={appid}&secret={appsecret}".format(appid=appid, appsecret=appsecret)
+				data = json.loads(urllib.request.urlopen(client_access_token_url).read().decode("utf-8"))
+				if "access_token" in data:
+					admin_info.access_token = data['access_token']
+					admin_info.token_creatime = now
+					session.commit()
+					print(admin_info.access_token,'heheheheheh')
+					return data['access_token']
+				else:
+					print("[微信授权]Token错误")
+					return None
+		else:
+			return None
+	
 
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
@@ -1086,7 +1114,6 @@ class StaffBaseHandler(_AccountBaseHandler):
 		# return self.reverse_url('customerLogin')
 
 
-
 class CustomerBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.Customer
 	# __account_cookie_name__ = "customer_id"
@@ -1258,7 +1285,6 @@ class QqOauth:
 	redirect_uri = tornado.escape.url_escape('http://i.senguo.cc')
 	print(type(redirect_uri))
 	
-
 	@classmethod
 	def get_qqinfo(self,code):
 		print(code,'codecodecode')
@@ -1313,7 +1339,6 @@ class WxOauth2:
 	jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
 	template_msg_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}"
 
-
 	@classmethod
 	def get_userinfo(cls, code, mode):
 		data = cls.get_access_token_openid(code, mode)
@@ -1347,7 +1372,6 @@ class WxOauth2:
 			return None
 
 		return userinfo_data
-
 
 	@classmethod
 	def get_access_token_openid(cls, code, mode):  # access_token接口调用有次数上限，最好全局变量缓存
@@ -1430,7 +1454,6 @@ class WxOauth2:
 			print("[微信授权]Token错误")
 			return None
 
-
 	@classmethod
 	def post_template_msg(cls, touser, shop_name, name, phone):
 		#print('####################')
@@ -1511,7 +1534,8 @@ class WxOauth2:
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
+	
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
 			   + "送达时间：" + send_time + '\n'\
@@ -1534,7 +1558,7 @@ class WxOauth2:
 				"remark":{"value":remark,"color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
+		
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
@@ -1546,7 +1570,8 @@ class WxOauth2:
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
+		
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1568,7 +1593,6 @@ class WxOauth2:
 				"remark":{"value":remark,"color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
@@ -1604,8 +1628,8 @@ class WxOauth2:
 
 
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,other_access_token = None):
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		postdata = {
 			'touser' : touser,
 			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
@@ -1620,10 +1644,8 @@ class WxOauth2:
 				"remark"   : {"value":"\n您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
-
 		if data["errcode"] != 0:
 			print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
@@ -1631,10 +1653,9 @@ class WxOauth2:
 		return True
 
 	@classmethod
-
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
-		access_token = other_access_token if other_access_token else access_token
-		describe = '\n如有任何疑问，请拨打店家电话:%s' % shop_phone   if shop_phone  else '\n如有任何疑问,请及时联系店家'
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
@@ -1648,10 +1669,8 @@ class WxOauth2:
 				"remark"  :{"value":describe+"\n您可以点击“详情”查看订单，并对订单进行评价拿积分哦！","color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
-
 		if data["errcode"] != 0:
 			print("[模版消息]订单完成消息发送失败：",data)
 			return False
@@ -1662,21 +1681,19 @@ class WxOauth2:
 	def shop_auth_msg(cls,touser,shop_name,success):
 		if success == True:
 			remark = '\n认证成功'
-			value1 = '您申请的店铺{0}已通过认证'.format(shop_name) 
+			value1 = '您的店铺『{0}』已通过认证'.format(shop_name) 
 			value2 = '认证成功'
-
 		else:
 			remark = '\n认证失败'
-			value1 = '您申请的店铺{0}未通过认证'.format(shop_name) 
+			value1 = '您的店铺『{0}』未通过认证'.format(shop_name) 
 			value2 = '认证失败'
-
 		postdata = {
 			'touser':touser,
 			'template_id':'DOLv3DLoy9xJIfLKmfGnjVvNNgc2aKLMBM_v_yHqVwg',
 			'url':'',
 			'topcolor':'#FF0000',
 			"data":{
-				'first':{'value':'店铺认证。\n','color':'#44b549'},
+				'first':{'value':'店铺认证状态更新\n','color':'#44b549'},
 				'keyword1':{'value':value1,'color':'#173177'},
 				'keyword2':{'value':value2,'color':'#173177'},
 				'remark':{'value':remark},
@@ -1685,11 +1702,10 @@ class WxOauth2:
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
-
 		if data["errcode"] != 0:
-			print("[模版消息]发送给客户失败：",data)
+			print("[模版消息]店铺认证消息发送失败：",data)
 			return False
-		# print("[模版消息]发送给客户成功")
+		# print("[模版消息]店铺认证消息发送成功")
 		return True
 
 	@classmethod
@@ -1720,7 +1736,7 @@ class WxOauth2:
 		wechat_redirect'.format(appid,redirect_url,scope,state)
 		return url
 
-
+# 域名缩短
 class UrlShorten:
 	session = models.DBSession()
 	code_map = (

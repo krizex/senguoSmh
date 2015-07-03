@@ -179,8 +179,8 @@ function otherShop(){
                 var data=res.data;
                 for (var i in data){
                      var item='<li role="presentation" data-id="{{id}}">'+
-                                        '<a role="menuitem" tabindex="-1" href="javascript:;">{{shop_name}}</a>'+
-                                    '</li>';
+                                  '<a role="menuitem" tabindex="-1" href="javascript:;">{{shop_name}}</a>'+
+                              '</li>';
                     var render=template.compile(item);
                     var id =data[i]['id'];
                     var shop_name =data[i]['shop_name'];
@@ -200,7 +200,7 @@ function toggle(trigger,target){
         var $this=$(this);
         var forbid_click=$this.find('.forbid_click');
         if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
-            $this.siblings(target).toggle();
+            $this.siblings(target).slideToggle(100);
         }
         //return false;
     })

@@ -865,10 +865,10 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 # 商城入口
 class Market(CustomerBaseHandler):
-	# @tornado.web.authenticated
-	# @get_unblock
+	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
-		print('login in ')
+		# print('login in ')
 		w_follow = True
 		# fruits=''
 		# page_size = 10
@@ -933,10 +933,10 @@ class Market(CustomerBaseHandler):
 		cart_count = len(cart_f) 
 		
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
-		print(cart_fs)
+		# print(cart_fs)
 		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
-		print(notices)
+		# print(notices)
 
 		group_list=[]
 
@@ -1079,7 +1079,7 @@ class Market(CustomerBaseHandler):
 		group_id = int(self.args['group_id'])
 		# print(group_id,'group_id')
 		page_size = 10
-		nomore = True
+		nomore = False
 		offset = (page-1) * page_size
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
@@ -1092,16 +1092,17 @@ class Market(CustomerBaseHandler):
 
 		try:
 			fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,group_id = group_id,active=1)\
-			.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc()).all()
+			.order_by(models.Fruit.priority.desc(),models.Fruit.add_time.desc())
 		except:
 			return self.send_fail("fruits not found")
-		# count_fruit = fruits.count()
-		# total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
-		# if total_page <= page:
-		# 	nomore = True
-		# fruits = fruits.offset(offset).limit(page_size).all()
+		count_fruit = fruits.count()
+		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
+		if total_page <= page:
+			nomore = True
+		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
-		return self.send_success(data = fruit_list ,nomore = nomore)
+		print(total_page)
+		return self.send_success(data = fruit_list ,nomore = nomore,group_id=group_id)
 
 	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
 	def search_list(self):
@@ -1605,10 +1606,17 @@ class CartCallback(CustomerBaseHandler):
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
+			print(shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+		else:
+			access_token = None
 
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
-			self.send_admin_message(self.session,order)
+			print(access_token,'access_token')
+			self.send_admin_message(self.session,order,access_token)
+			
 		
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -2400,6 +2408,7 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	@tornado.web.asynchronous
 	def get(self):
+		import gevent
 		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session	
@@ -2407,14 +2416,23 @@ class InsertData(CustomerBaseHandler):
 		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
 		# print(short,type(short))
 		# print(UrlShorten.get_long_url(short))
-		
 		# try:
 		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
 		# except:
 		# 	return self.send_fail('shop not found')
-		# self.shop_auth_msg(shop,False)
-		# shop_auth_fail_msg('13163263783','woody','woody')
-		self.render('customer/storage-change.html')
+		# # self.shop_auth_msg(shop,False)
+		# # shop_auth_fail_msg('13163263783','woody','woody')
+		# self.render('customer/storage-change.html')
+		# def async_task():
+		#   try:
+		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+		# 	except:
+		# 		return self.send_fail('shop not found')
+		# 	# self.shop_auth_msg(shop,False)
+		# 	# shop_auth_fail_msg('13163263783','woody','woody')
+		# 	self.render('customer/storage-change.html')
+		# gevent.spawn(async_task)
+		return self.success
 
 # 支付超时判断
 # 返回：		

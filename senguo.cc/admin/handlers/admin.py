@@ -2198,8 +2198,6 @@ class Config(AdminBaseHandler):
 		elif action == "notice":
 			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
 			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='market_set',shopSubPage='notice_set'))
-		elif action == "wx":
-			return self.render('admin/shop-wx-set.html',context=dict(subpage='shop_set',shopSubPage='wx_set'))
 		else:
 			return self.send_error(404)
 
@@ -2772,6 +2770,11 @@ class ShopConfig(AdminBaseHandler):
 			shop_city = int(data["shop_city"])
 			lat       = float(data["lat"])
 			lon       = float(data['lon'])
+			area_type = int(data["area_type"])
+			roundness_lat   = float(data["roundness_lat"])
+			roundness_lon   = float(data["roundness_lon"])
+			area_radius = int(data["area_radius"])
+			area_list = data["area_list"]
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
@@ -2780,6 +2783,11 @@ class ShopConfig(AdminBaseHandler):
 			shop.lat       = lat
 			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
+			shop.area_type       = area_type
+			shop.roundness_lat   = roundness_lat
+			shop.roundness_lon   = roundness_lon
+			shop.area_radius     = area_radius
+			shop.area_list       = area_list
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
 		elif action == "edit_have_offline_entity":
@@ -3169,7 +3177,7 @@ class Confession(AdminBaseHandler):
 class MessageManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		pass
+		return self.render('admin/shop-wx-set.html',context=dict(subpage='shop_set',shopSubPage='wx_set'))
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action?:str','mp_name?:str','mp_appid?:str','mp_appsecret?:str')
@@ -3179,31 +3187,16 @@ class MessageManage(AdminBaseHandler):
 			mp_name = self.args['mp_name']
 			mp_appid= self.args['mp_appid']
 			mp_appsecret = self.args['mp_appsecret']
-			self.current_user.Accountinfo.update(self.session,mp_name=mp_name,mp_appid=mp_appid,
-				mp_appsecret=mp_appsecret)
+			try:
+				shop_admin = self.session.query(models.ShopAdmin).filter_by(id = self.current_user.id).one()
+			except:
+				return self.send_fail('shop_admin not found')
+			shop_admin.mp_name = mp_name
+			shop_admin.mp_appid = mp_appid
+			shop_admin.mp_appsecret = mp_appsecret
+			self.session.commit()
+			return self.send_success()
 
-	def get_other_accessToken(self,admin_id):
-		now = datetime.datetime.now.timestamp()
-		try:
-			admin_info = self.session.query(models.Accountinfo).filter_by(id = admin_id).first()
-		except:
-			return self.send_fail('admin_info not found')
-		if admin_info.access_token and now - admin_info.token_creatime < 3600:
-			return admin_info.access_token
-		else:
-			appid = admin_info.mp_appid
-			appsecret = admin_info.mp_appsecret
-			client_access_token_url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential" \
-								  "&appid={appid}&secret={appsecret}".format(appid=appid, appsecret=appsecret)
-			data = json.loads(urllib.request.urlopen(cls.client_access_token_url).read().decode("utf-8"))
-			if "access_token" in data:
-				admin_info.access_token = data['access_token']
-				admin_info.token_creatime = now
-				self.session.commit()
-				return data['access_token']
-			else:
-				print("[微信授权]Token错误")
-				return None
 	
 
 				
