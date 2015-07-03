@@ -521,8 +521,7 @@ class Shop(MapBase, _CommonApi):
 	lat              = Column(MyReal)  #纬度
 	lon              = Column(MyReal)  #经度
 	area_type = Column(Integer,default=0) #区域类型
-	roundness_lat = Column(MyReal,default=0) #圆心纬度
-	roundness_lon = Column(MyReal,default=0) #圆心经度
+	roundness = Column(String(50)) #圆心
 	area_radius = Column(Integer,default=0) #半径
 	area_list = Column(String(1000)) #区域数组
 
