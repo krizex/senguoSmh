@@ -1671,7 +1671,7 @@ class WxOauth2:
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
-			'template_id':'eBgm4SY9KRljBEWsfIWYWWmdJ5txlzte8a5DsF4NYfk',
+			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
 			'url':'http://i.senguo.cc/customer/orders/detail/' + str(order_id),
 			'topcolor':'#FF0000',
 			"data":{
@@ -1681,7 +1681,6 @@ class WxOauth2:
 				"remark"  :{"value":describe+"\n您可以点击“详情”查看订单，并对订单进行评价拿积分哦！","color":"#173177"},
 			}
 		}
-		
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
