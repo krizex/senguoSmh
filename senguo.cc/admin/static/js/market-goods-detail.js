@@ -10,14 +10,16 @@ $(document).ready(function(){
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
-    new Swiper('#swiper-container',{
-        mode: 'horizontal',
-        loop:true,
-        grabCursor: true,
-        pagination: '.pagination',
-        autoplay:"3000",
-        autoplayDisableOnInteraction:false
-    });
+    if($(".swiper-slide").size()>1){
+        new Swiper('#swiper-container',{
+            mode: 'horizontal',
+            loop:true,
+            grabCursor: true,
+            pagination: '.pagination',
+            autoplay:"3000",
+            autoplayDisableOnInteraction:false
+        });
+    }
     //初始化购物车数量
     if(getCookie("cart_count")!=''){
         $("#cart-now-num").html(getCookie("cart_count")).removeClass("move-cart");
