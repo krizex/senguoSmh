@@ -318,7 +318,6 @@ class GlobalBaseHandler(BaseHandler):
 					group_name = None
 				# print(group_name)
 
-
 			charge_types = []
 			for charge in d.charge_types:
 				market_price ="" if charge.market_price == None else charge.market_price
@@ -369,7 +368,6 @@ class GlobalBaseHandler(BaseHandler):
 
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
-
 
 
 class _AccountBaseHandler(GlobalBaseHandler):
@@ -786,10 +784,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return None
 	
 
-
-
-		
-
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
 	# 同时生成相应的积分记录 和 余额记录 
@@ -1120,7 +1114,6 @@ class StaffBaseHandler(_AccountBaseHandler):
 		# return self.reverse_url('customerLogin')
 
 
-
 class CustomerBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.Customer
 	# __account_cookie_name__ = "customer_id"
@@ -1292,7 +1285,6 @@ class QqOauth:
 	redirect_uri = tornado.escape.url_escape('http://i.senguo.cc')
 	print(type(redirect_uri))
 	
-
 	@classmethod
 	def get_qqinfo(self,code):
 		print(code,'codecodecode')
@@ -1347,7 +1339,6 @@ class WxOauth2:
 	jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
 	template_msg_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}"
 
-
 	@classmethod
 	def get_userinfo(cls, code, mode):
 		data = cls.get_access_token_openid(code, mode)
@@ -1381,7 +1372,6 @@ class WxOauth2:
 			return None
 
 		return userinfo_data
-
 
 	@classmethod
 	def get_access_token_openid(cls, code, mode):  # access_token接口调用有次数上限，最好全局变量缓存
@@ -1463,7 +1453,6 @@ class WxOauth2:
 		else:
 			print("[微信授权]Token错误")
 			return None
-
 
 	@classmethod
 	def post_template_msg(cls, touser, shop_name, name, phone):
@@ -1747,7 +1736,7 @@ class WxOauth2:
 		wechat_redirect'.format(appid,redirect_url,scope,state)
 		return url
 
-
+# 域名缩短
 class UrlShorten:
 	session = models.DBSession()
 	code_map = (
