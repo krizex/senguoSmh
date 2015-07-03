@@ -2,12 +2,12 @@ $(document).ready(function(){
     var height = $(window).height();
     $(".atical-list").css("minHeight",height-40);
     $("#bbs-menu").on("click",function(){
-        $(".wrap-menu-list").toggle(200);
+        $(".wrap-menu-list .menu-list").toggleClass("h0");
     });
     $(".menu-list li").on("click",function(){
         var id = parseInt($(this).attr("data-id"));
         $('#bbs-menu').text($(this).text());
-        $(".wrap-menu-list").addClass("h0");
+        $(".wrap-menu-list .menu-list").addClass("h0");
         page=0;
         _type=id;
         $('.atical-list').empty();
