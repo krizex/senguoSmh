@@ -46,7 +46,7 @@ $(document).ready(function(){
             }
          });    
     }
-    // scrollLoading();
+    scrollLoading();
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
         modalNotice("店铺休息中，暂不接收新订单");
@@ -378,7 +378,7 @@ $(document).ready(function(){
 });
 window.dataObj.page=1;
 window.dataObj.count=1;
-window.dataObj.action=5;
+window.dataObj.action=6;
 window.dataObj.finished=true;
 var nomore=false;
 var _group_id;
