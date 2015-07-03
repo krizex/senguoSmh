@@ -524,6 +524,13 @@ class Shop(MapBase, _CommonApi):
 	shop_sales_range = Column(String(128))
 	lat              = Column(MyReal)  #纬度
 	lon              = Column(MyReal)  #经度
+	area_type = Column(Integer,default=0) #区域类型
+	roundness_lat = Column(MyReal,default=0) #圆心纬度
+	roundness_lon = Column(MyReal,default=0) #圆心经度
+	area_radius = Column(Integer,default=0) #半径
+	area_list = Column(String(1000)) #区域数组
+
+
 
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)

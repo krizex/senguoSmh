@@ -2770,6 +2770,11 @@ class ShopConfig(AdminBaseHandler):
 			shop_city = int(data["shop_city"])
 			lat       = float(data["lat"])
 			lon       = float(data['lon'])
+			area_type = int(data["area_type"])
+			roundness_lat   = float(data["roundness_lat"])
+			roundness_lon   = float(data["roundness_lon"])
+			area_radius = int(data["area_radius"])
+			area_list = data["area_list"]
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
@@ -2778,6 +2783,11 @@ class ShopConfig(AdminBaseHandler):
 			shop.lat       = lat
 			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
+			shop.area_type       = area_type
+			shop.roundness_lat   = roundness_lat
+			shop.roundness_lon   = roundness_lon
+			shop.area_radius     = area_radius
+			shop.area_list       = area_list
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
 		elif action == "edit_have_offline_entity":
