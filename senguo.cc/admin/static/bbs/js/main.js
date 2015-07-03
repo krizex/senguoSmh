@@ -2,7 +2,7 @@ $(document).ready(function(){
     var height = $(window).height();
     $(".atical-list").css("minHeight",height-40);
     $("#bbs-menu").on("click",function(){
-        $(".wrap-menu-list").toggleClass("h0");
+        $(".wrap-menu-list").toggle(200);
     });
     $(".menu-list li").on("click",function(){
         var id = parseInt($(this).attr("data-id"));
