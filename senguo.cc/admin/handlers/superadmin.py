@@ -1218,6 +1218,40 @@ class Balance(SuperBaseHandler):
 				total=q[0][0]
 			total = format(total,'.2f')	
 			times = count
+
+		# add by jyj 2015-7-4:
+		elif action == 'balance_list':
+			balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
+					filter(models.BalanceHistory.shop_totalPrice > 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+			history_list = balance_list.all()
+
+			exist_id_list = []
+			history = []
+			
+			for tmp in history_list:
+				item = {}
+				if tmp[0] not in exist_id_list:
+					exist_id_list.append(tmp[0])
+					shop_name = self.session.query(models.Shop.shop_name).filter(models.Shop.id == tmp[0]).all()
+					shop_code = self.session.query(models.Shop.shop_code).filter(models.Shop.id == tmp[0]).all()
+					item["shop_name"] = shop_name[0][0]
+					item["latest_time"] = tmp[1].strftime("%Y-%m-%d %H:%M:%S")
+					item["total_price"] =  tmp[2]
+					item["shop_code"] = shop_code[0][0]
+					history.append(item)
+				else:
+					pass
+
+			import operator 
+			history.sort(key=operator.itemgetter("total_price"),reverse=True)
+			if len(history)//page_size < len(history)/page_size:
+				page_sum = len(history)//page_size + 1
+			else:
+				page_sum = len(history)//page_size
+			history = history[page*page_size:page*page_size+page_size:1]
+			
+			return self.send_success(page_sum=page_sum,history = history)  
+		##
 		else:
 			return self.send_error(404)
 		if not history_list:

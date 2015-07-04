@@ -107,6 +107,12 @@ $(document).ready(function(){
 }).on('click','.online-list',function(){
     num=1;
     history('online',1);
+
+    // add by jyj 2015-7-4
+}).on('click','.ballance-list',function(){
+    num=1;
+    history('balance_list',1);
+    // 
 }).on('click','.pre-page',function(){
     if(num==1){
         return alert('没有上一页啦！');
@@ -203,99 +209,172 @@ function history(action,page){
             if(res.success){
                var history=res.history;
                page_sum=Math.ceil(res.page_sum);
-                if(action == 'cash_history'){
-                    $('.wrap-acc-num').addClass('hidden');
-                    $('.cash-count').removeClass('hidden');
-                    $('.cash').text(res.total);
-               }
-               else if(action == 'recharge'){
-                    $('.wrap-acc-num').addClass('hidden');
-                    $('.charge-count').removeClass('hidden');
-                    $('.charge-total').text(res.total);
-                    $('.charge-use').text(res.pay);
-                    $('.charge-left').text(res.left);
-               }
-               else if(action == 'online'){
-                    $('.wrap-acc-num').addClass('hidden');
-                    $('.online-count').removeClass('hidden');
-                    $('.online-total').text(res.total);
-                    $('.online-times').text(res.times);
-                    $('.online-person').text(res.persons);
-               }
-               else if(action=='all_history'){
-                $('.wrap-acc-num').addClass('hidden');
-               }
-               if(num == 1){
-                $('.pre-page').addClass('hide');
-               }
-               else{
-                $('.pre-page').removeClass('hide');
-               }
-               if(page_sum>1){
-                $('.list-pagination').removeClass('hide');
-                $('.page-total').text(page_sum);
-               }
-               else{
-                $('.list-pagination').addClass('hide');
-               }
-               if(page==page_sum){
-                $('.next-page').addClass('hide');
-                $('.pre-page').removeClass('hide');
-               }
-               else{
-                $('.next-page').removeClass('hide');
-               }
-               if(page_sum==0){
-                $('.no-list').removeClass('hide');
-               }
-               else{
-                $('.no-list').addClass('hide');
-               }
-               for(var i in history){
-                var item= '<tr class="con">'
-                //chang by jyj 2015-6-16
-// +                                       '<td class="pl20">店铺名：<a href="/{{shop_code}}" target="_blank">{{shop_name}}</a> {{title}} {{record}}</td>'
-+                                       '<td class="pl20">店铺名：<a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a> {{title}} {{record}}</td>'
-            // 
-+                                       '<td class="c999">{{time}}</td>'
-+                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
-+                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
-+                                       '<td class="txt-ar pr20">{{admin_id}}</td>'
-                                '</tr>'
-        var render=template.compile(item);
-        var shop_name=history[i]['shop_name'];
-        var time=history[i]['time'];
-        var value=history[i]['balance_value'];
-        var balance=history[i]['balance'];
-        var type=history[i]['type'];
-        var shop_code=history[i]['shop_code'];
-        var title;
-        var admin_id=history[i]['admin_id'];
-        var record=history[i]['record'];
-        if(type==0){
-            title='充值';
-            value='+'+value;
-        }
-        else if(type==2){
-            title='提现';
-            value='-'+value;
-        }
-        else if(type==3){
-            title='在线支付';
-            value='+'+value;
-        }
-        var list_item =render({
-            shop_code:shop_code,
-            shop_name:shop_name,
-            time:time,
-            balance_value:value,
-            balance:balance,
-            admin_id:admin_id,
-            record:record
-        });
-        $('.tb-account').append(list_item);
 
+               // add by jyj 2015-7-4
+               if(action == 'balance_list'){
+                        $('.wrap-acc-num').addClass('hidden');
+                        $('.tb-account').addClass('hidden');
+                        $('.shop-list-item').empty();
+                        $('.list-head').empty();
+                        $('.tb-account-shoplist').removeClass('hidden');
+
+                         if(num == 1){
+                            $('.pre-page').addClass('hide');
+                         }
+                        else{
+                            $('.pre-page').removeClass('hide');
+                        }
+                        if(page_sum>1){
+                            $('.list-pagination').removeClass('hide');
+                            $('.page-total').text(page_sum);
+                        }
+                        else{
+                            $('.list-pagination').addClass('hide');
+                        }
+                        if(page==page_sum){
+                            $('.next-page').addClass('hide');
+                            $('.pre-page').removeClass('hide');
+                        }
+                        else{
+                            $('.next-page').removeClass('hide');
+                        }
+                        if(page_sum==0){
+                            $('.no-list').removeClass('hide');
+                        }
+                        else{
+                            $('.no-list').addClass('hide');
+                        }
+
+                        var head = '<tr class="list-head">'
+                                             +'<th class="pl20">店铺名称</th>'
+                                             +'<th>最近变更时间</th>'
+                                             +'<th class="txt-ar">店铺余额</th>'
+                                             +'<th></th>'
+                                             '</tr>'
+                        $('.tb-account-shoplist').append(head);
+
+                        for(var i in history){
+                            var his = history[i];
+                            
+                            var item= '<tr class="con shop-list-item">'
+                                            +'<td class="pl20"><a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a></td>'
+                                            +'<td class="c999">{{latest_time}}</td>'
+                                            +'<td class="green-txt txt-ar"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
+                                            +'<td></td>'
+                                            '</tr>'
+                            var render=template.compile(item);
+
+                            var shop_code=his['shop_code'];
+                            var shop_name=his['shop_name'];
+                            var latest_time=his['latest_time'];
+                            var balance=his['total_price'].toFixed(2);
+                            
+                            var list_item =render({
+                                shop_code:shop_code,
+                                shop_name:shop_name,
+                                latest_time:latest_time,
+                                balance:balance,
+                            });
+                            $('.tb-account-shoplist').append(list_item);
+                        }
                }
+               //
+               else{
+                        $('.tb-account-shoplist').addClass('hidden');
+                        $('.tb-account').removeClass('hidden');
+                        if(action == 'cash_history'){
+                            $('.wrap-acc-num').addClass('hidden');
+                            $('.cash-count').removeClass('hidden');
+                            $('.cash').text(res.total);
+                       }
+                       else if(action == 'recharge'){
+                            $('.wrap-acc-num').addClass('hidden');
+                            $('.charge-count').removeClass('hidden');
+                            $('.charge-total').text(res.total);
+                            $('.charge-use').text(res.pay);
+                            $('.charge-left').text(res.left);
+                       }
+                       else if(action == 'online'){
+                            $('.wrap-acc-num').addClass('hidden');
+                            $('.online-count').removeClass('hidden');
+                            $('.online-total').text(res.total);
+                            $('.online-times').text(res.times);
+                            $('.online-person').text(res.persons);
+                       }
+                       else if(action=='all_history'){
+                        $('.wrap-acc-num').addClass('hidden');
+                       }
+                       if(num == 1){
+                        $('.pre-page').addClass('hide');
+                       }
+                       else{
+                        $('.pre-page').removeClass('hide');
+                       }
+                       if(page_sum>1){
+                        $('.list-pagination').removeClass('hide');
+                        $('.page-total').text(page_sum);
+                       }
+                       else{
+                        $('.list-pagination').addClass('hide');
+                       }
+                       if(page==page_sum){
+                        $('.next-page').addClass('hide');
+                        $('.pre-page').removeClass('hide');
+                       }
+                       else{
+                        $('.next-page').removeClass('hide');
+                       }
+                       if(page_sum==0){
+                        $('.no-list').removeClass('hide');
+                       }
+                       else{
+                        $('.no-list').addClass('hide');
+                       }
+                       for(var i in history){
+                        var item= '<tr class="con">'
+                        //chang by jyj 2015-6-16
+        +                                       '<td class="pl20">店铺名：<a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a> {{title}} {{record}}</td>'
+                       // 
+        +                                       '<td class="c999">{{time}}</td>'
+        +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
+        +                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
+        +                                       '<td class="txt-ar pr20">{{admin_id}}</td>'
+                                        '</tr>'
+                        var render=template.compile(item);
+                        var shop_name=history[i]['shop_name'];
+                        var time=history[i]['time'];
+                        var value=history[i]['balance_value'];
+                        var balance=history[i]['balance'];
+                        var type=history[i]['type'];
+                        var shop_code=history[i]['shop_code'];
+                        var title;
+                        var admin_id=history[i]['admin_id'];
+                        var record=history[i]['record'];
+                        if(type==0){
+                            title='充值';
+                            value='+'+value;
+                        }
+                        else if(type==2){
+                            title='提现';
+                            value='-'+value;
+                        }
+                        else if(type==3){
+                            title='在线支付';
+                            value='+'+value;
+                        }
+                        var list_item =render({
+                            shop_code:shop_code,
+                            shop_name:shop_name,
+                            time:time,
+                            balance_value:value,
+                            balance:balance,
+                            admin_id:admin_id,
+                            record:record
+                        });
+                        $('.tb-account').append(list_item);
+
+                        }
+                }
             }
             else{
                     alert(res.error_text);
@@ -305,3 +384,4 @@ function history(action,page){
         // function(){alert('网络好像不给力呢~ ( >O< ) ~');}
         );
 };
+
