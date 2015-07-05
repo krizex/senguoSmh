@@ -9,6 +9,7 @@ from libs.msgverify import check_msg_token,get_access_token,user_subscribe,shop_
 
 #add by jyj 2015-6-15
 from sqlalchemy import func, desc, and_, or_, exists,not_
+import operator 
 ##
 
 ############################
@@ -1062,6 +1063,17 @@ class Comment(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 
+# add by jyj 2015-7-5
+class CommentInfo(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},subpage="delete",data=data))
+
+	# @tornado.web.authenticated
+	# @SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
+	# def post(self):
+## 
+
 # 店铺 - 店铺认证申请
 class ShopAuthenticate(SuperBaseHandler):
 	@tornado.web.authenticated
@@ -1222,27 +1234,26 @@ class Balance(SuperBaseHandler):
 		# add by jyj 2015-7-4:
 		elif action == 'balance_list':
 			balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
-					filter(models.BalanceHistory.shop_totalPrice > 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+					filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
 			history_list = balance_list.all()
 
 			exist_id_list = []
 			history = []
-			
 			for tmp in history_list:
 				item = {}
 				if tmp[0] not in exist_id_list:
 					exist_id_list.append(tmp[0])
-					shop_name = self.session.query(models.Shop.shop_name).filter(models.Shop.id == tmp[0]).all()
-					shop_code = self.session.query(models.Shop.shop_code).filter(models.Shop.id == tmp[0]).all()
-					item["shop_name"] = shop_name[0][0]
-					item["latest_time"] = tmp[1].strftime("%Y-%m-%d %H:%M:%S")
-					item["total_price"] =  tmp[2]
-					item["shop_code"] = shop_code[0][0]
-					history.append(item)
+					if tmp[2] != 0:
+						shop_name = self.session.query(models.Shop.shop_name).filter(models.Shop.id == tmp[0]).all()
+						shop_code = self.session.query(models.Shop.shop_code).filter(models.Shop.id == tmp[0]).all()
+						item["shop_name"] = shop_name[0][0]
+						item["latest_time"] = tmp[1].strftime("%Y-%m-%d %H:%M:%S")
+						item["total_price"] =  tmp[2]
+						item["shop_code"] = shop_code[0][0]
+
+						history.append(item)
 				else:
 					pass
-
-			import operator 
 			history.sort(key=operator.itemgetter("total_price"),reverse=True)
 			if len(history)//page_size < len(history)/page_size:
 				page_sum = len(history)//page_size + 1
@@ -1597,7 +1608,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 		shop_id = self.session.query(models.Shop.id).filter(models.Shop.shop_code == shop_code).first()
 		shop_id = shop_id[0]
 
-		cash_applying = self.session.query(models.ApplyCashHistory.value).filter(models.ApplyCashHistory.has_done == 0).first()
+		cash_applying = self.session.query(models.ApplyCashHistory.value).filter(models.ApplyCashHistory.has_done == 0,models.ApplyCashHistory.shop_id == shop_id).first()
 		if(cash_applying == None):
 			cash_applying = 0
 			cash_applying = format(cash_applying,'.2f')

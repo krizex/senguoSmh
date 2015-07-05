@@ -19,18 +19,6 @@ $(document).ready(function(){
            }
            else  return Tip("当前已经是第一页");
         }
-        /*if(page>1){
-            page--;
-             if(inputinfo==""){
-            insertShop(page);
-        }
-        else{
-                searchshop(page_search);
-            }
-        }
-        else{
-            return Tip("当前已经是第一页");
-            }*/
     });
     $(document).on('click','#NextPage',function(){
         if(inputinfo==""){
@@ -120,7 +108,13 @@ $(document).ready(function(){
 }).on("change","#ifreverse",function(){
     page_shop=1;
     insertShop(page_shop);
+
+    // add by jyj 2015-7-5
+}).on("click",".head-choose li",function(){
+    var index = $(this).index();
+    $(".head-choose li").removeClass("active").eq(index).addClass("active");
 });
+// 
 
 function insertShop(page){
     var action= $.getUrlParam('action');

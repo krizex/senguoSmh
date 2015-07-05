@@ -97,20 +97,25 @@ $(document).ready(function(){
 
 }).on('click','.all-list',function(){
     num=1;
+    $('.page-now').text(num);
     history('all_history',1);
 }).on('click','.cash-list',function(){
     num=1;
+    $('.page-now').text(num);
     history('cash_history',1);
 }).on('click','.charge-list',function(){
     num=1;
+    $('.page-now').text(num);
     history('recharge',1);
 }).on('click','.online-list',function(){
     num=1;
+    $('.page-now').text(num);
     history('online',1);
 
     // add by jyj 2015-7-4
 }).on('click','.ballance-list',function(){
     num=1;
+    $('.page-now').text(num);
     history('balance_list',1);
     // 
 }).on('click','.pre-page',function(){
@@ -251,7 +256,9 @@ function history(action,page){
                                              +'<th class="txt-ar">店铺余额</th>'
                                              +'<th></th>'
                                              '</tr>'
-                        $('.tb-account-shoplist').append(head);
+                        var render = template.compile(head);
+                        var list_head = render();
+                        $('.tb-account-shoplist').append(list_head);
 
                         for(var i in history){
                             var his = history[i];
@@ -262,7 +269,7 @@ function history(action,page){
                                             +'<td class="green-txt txt-ar"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
                                             +'<td></td>'
                                             '</tr>'
-                            var render=template.compile(item);
+                            render=template.compile(item);
 
                             var shop_code=his['shop_code'];
                             var shop_name=his['shop_name'];
