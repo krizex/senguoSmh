@@ -157,7 +157,7 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .tag-item{display:inline-block;width:70px;text-align:center;border:1px solid #ddd;}
 .tag-item.active{border-color:#44b549;color:#44b549;}
 .tag-item:hover{cursor:pointer;}
-.pop-preview .detail-preview{width: 800px;height: 420px;overflow-y: scroll;background: #fff;padding: 10px;}
+.pop-preview .detail-preview{width: 800px;height: 420px;overflow-y: auto;background: #fff;padding: 10px;}
 .pop-preview .title{width: 800px;height:30px;}
 /*分类*/
 .wrap-fruit-select{position: relative;height: 30px;margin: 10px 0;}
