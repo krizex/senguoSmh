@@ -237,7 +237,7 @@ handlers = [
 	##移动端后台
 	#(r"/madmin", handlers.madmin.Home, {}, "MadminHome"),
 	#(r"/madmin/shop", handlers.madmin.Shop, {}, "MadminShop"),
-	(r"/madmin", handlers.madmin.Shop, {}, "MadminShop"),
+	(r"/madmin", handlers.madmin.Shop, {}, "MadminHome"),
 	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
 	(r"/madmin/orderDetail/(\w+)", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
 	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
