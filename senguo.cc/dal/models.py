@@ -1387,13 +1387,11 @@ class Fruit(MapBase, _CommonApi):
 	group_id =  Column(Integer, default=0) #0:default_group -1:record_group GoodsGroup.id #5.27
 	classify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
-	detail_describe = Column(String(2000)) #goods detail
-
+	detail_describe = Column(String(8000)) #goods detail
 
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
-
 
 #水果单品的计价类型
 class ChargeType(MapBase, _CommonApi):

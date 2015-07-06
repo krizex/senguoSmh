@@ -1040,7 +1040,7 @@ class Shelf(AdminBaseHandler):
 			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
 				return self.send_fail("请至少添加一种计价方式")
 			if len(data["intro"]) > 100:
-				return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+				return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 			args={}
 			args["name"] = data["name"]
 			args["saled"] = data["saled"]

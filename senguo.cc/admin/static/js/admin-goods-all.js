@@ -585,7 +585,12 @@ function dealGoods($item,type){
     //商品详情
     var detail_describe = "";
     if(editor){
-        detail_describe = editor.body.innerHTML;
+        if(editor.body.innerHTML.length>8000){
+            $('.ok-edit-goods').attr("data-flag","on");
+            return Tip("商品图文详情过长，请精简一下");
+        }else{
+            detail_describe = editor.body.innerHTML;
+        }
     }
 
     //商品限购、排序优先级

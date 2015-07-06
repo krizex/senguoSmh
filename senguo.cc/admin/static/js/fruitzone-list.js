@@ -15,7 +15,7 @@ $(document).ready(function(){
         if(q && q!="null"){
             Search(q);
         }else{
-            //initLocation();
+            initLocation();
             var city_id = $("#city_id").val();
             if(city_id){
                 window.dataObj.action='filter';
@@ -499,4 +499,3 @@ function filter(data){
         function(){$(".wrap-loading-box").addClass("hidden"); return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
-
