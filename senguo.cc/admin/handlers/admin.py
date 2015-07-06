@@ -243,7 +243,7 @@ class Realtime(AdminBaseHandler):
 			follower_sum=follower_sum,on_num=on_num)
 
 
-#websocket 版后台轮询
+# websocket 版后台轮询
 class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 	session = DBSession()
 	def open(self):
@@ -2772,11 +2772,6 @@ class ShopConfig(AdminBaseHandler):
 			shop_city = int(data["shop_city"])
 			lat       = float(data["lat"])
 			lon       = float(data['lon'])
-			area_type = int(data["area_type"])
-			roundness_lat   = float(data["roundness_lat"])
-			roundness_lon   = float(data["roundness_lon"])
-			area_radius = int(data["area_radius"])
-			area_list = data["area_list"]
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
@@ -2785,13 +2780,17 @@ class ShopConfig(AdminBaseHandler):
 			shop.lat       = lat
 			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
-			shop.area_type       = area_type
-			shop.roundness_lat   = roundness_lat
-			shop.roundness_lon   = roundness_lon
-			shop.area_radius     = area_radius
-			shop.area_list       = area_list
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
+			if "area_type" in data and data["area_type"] !="":
+				shop.area_type  = int(data["area_type"])
+			if "roundness" in data and data["roundness"] !="":
+				shop.roundness =  data["roundness"]
+			if "area_radius" in data and data["area_radius"] !="":
+				shop.area_radius  = int(data["area_radius"])
+			if "area_list" in data and data["area_list"] !="":
+				shop.area_list = data["area_list"]
+			
 		elif action == "edit_have_offline_entity":
 			shop.have_offline_entity = data["have_offline_entity"]
 		elif action =="shop_status":

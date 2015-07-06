@@ -480,6 +480,8 @@ class ShopTemp(MapBase, _CommonApi):
 	# 店铺介绍
 	shop_intro = Column(String(568))
 	shop_phone=Column(String(32))
+	lat              = Column(MyReal)  #纬度
+	lon              = Column(MyReal)  #经度
 
 	admin = relationship("ShopAdmin")
 
