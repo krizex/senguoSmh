@@ -12,7 +12,14 @@ import requests
 import base64
 import decimal
 
+# 移动后台 - 首页
 class Home(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+
+		return self.render("m-admin/shop-list.html")
+		
+class Shop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		if self.is_pc_browser()==True:
@@ -62,11 +69,13 @@ class Home(AdminBaseHandler):
 						   shop=shop,total_money=total_money,intime_count=intime_count,ontime_count=ontime_count,\
 						   self_count=self_count,comment_count=comment_count,staff_count=staff_count,goods_count=goods_count)
 
+# 移动后台 - 订单
 class Order(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/order.html")
 
+# 移动后台 - 订单详情
 class OrderDetail(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,order_num):
@@ -107,12 +116,13 @@ class OrderDetail(AdminBaseHandler):
 		shop_code = self.current_shop.shop_code
 		return self.render("m-admin/order-detail.html",order=order,charge_types=charge_types,shop_code=shop_code)
 
-		
+# 移动后台 - 订单搜索
 class OrderSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/order-search.html")
 
+# 移动后台 - 评论
 class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("page?:int")

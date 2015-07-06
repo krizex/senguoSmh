@@ -243,7 +243,7 @@ class Realtime(AdminBaseHandler):
 			follower_sum=follower_sum,on_num=on_num)
 
 
-#websocket 版后台轮询
+# websocket 版后台轮询
 class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 	session = DBSession()
 	def open(self):

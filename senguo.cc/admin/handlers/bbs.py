@@ -47,6 +47,7 @@ class Main(FruitzoneBaseHandler):
 		if_admin = self.if_super()
 		return self.render("bbs/main.html",if_admin=if_admin)
 
+# 社区 - 文章详情
 class Detail(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:?","page?")
@@ -254,6 +255,7 @@ class Detail(FruitzoneBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
+# 社区 - 发表文章
 class Publish(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -281,6 +283,7 @@ class Publish(FruitzoneBaseHandler):
 		.order_by(models.Article.create_time.desc()).first().id
 		return self.send_success(id=_id)
 
+# 社区 - 编辑文章
 class DetailEdit(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self,_id):
@@ -307,6 +310,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		self.session.commit()
 		return self.send_success(id=_id)
 
+# 社区 - 搜索
 class Search(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	def get(self):
@@ -335,6 +339,7 @@ class Search(FruitzoneBaseHandler):
 				datalist.append(self.getArticle(article))
 		return self.send_success(datalist=datalist,nomore=nomore)
 
+# 社区 - 个人中心
 class Profile(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("bbs/profile.html") 

@@ -930,7 +930,7 @@ class Market(CustomerBaseHandler):
 			  # 添加关注
 			self.session.commit()
 
-		print('login in second ')
+		# print('login in second ')
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -1107,7 +1107,7 @@ class Market(CustomerBaseHandler):
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
-		print(total_page)
+		# print(total_page)
 		return self.send_success(data = fruit_list ,nomore = nomore,group_id=group_id)
 
 	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
@@ -1139,7 +1139,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		offset = (page -1) * page_size
 		nomore = False
-		print('login in commodity_list')
+		# print('login in commodity_list')
 
 		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))

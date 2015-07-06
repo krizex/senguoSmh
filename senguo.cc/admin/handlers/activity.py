@@ -14,6 +14,7 @@ import tornado.gen
 from tornado.concurrent import run_on_executor
 from concurrent.futures import ThreadPoolExecutor
 
+# 发现 - 告白墙 - 首页
 class ConfessionHome(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?","page?:int")
@@ -169,6 +170,7 @@ class ConfessionHome(CustomerBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
+# 发现 - 告白墙 - 评论详情
 class ConfessionComment(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("num:int")
@@ -285,6 +287,7 @@ class ConfessionComment(CustomerBaseHandler):
 			self.set_cookie('confess_shop_id',str(shop_id))
 			return self.send_success(data=data)
 
+# 发现 - 告白墙 - 发布
 class ConfessionPublic(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
@@ -305,7 +308,6 @@ class ConfessionPublic(CustomerBaseHandler):
 	def post(self,shop_code):
 		self.handle_public(shop_code)
 		# self.finish()
-
 
 	# @run_on_executor
 	@CustomerBaseHandler.check_arguments("data")
@@ -359,6 +361,7 @@ class ConfessionPublic(CustomerBaseHandler):
 		self.set_cookie('confess_shop_id',str(shop_id))
 		return self.send_success()	
 
+# 发现 - 告白墙 - 个人中心
 class ConfessionCenter(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
@@ -379,6 +382,7 @@ class ConfessionCenter(CustomerBaseHandler):
 		join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1,models.ConfessionWall.shop_id == shop_id,models.ConfessionComment.customer_id==customer_id).distinct().count()
 		return self.render('confession/center.html',shop_name=shop_name,pub_count=pub_count,receive_count=receive_count,comment_count=comment_count,shop_code=shop_code)
 
+# 发现 - 告白墙 - 告白列表
 class ConfessionList(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action","page:int")
@@ -431,6 +435,7 @@ class ConfessionList(CustomerBaseHandler):
 		else :
 			return self.send_success(datalist = datalist,nomore=nomore)
 
+# 发现 - 优惠券
 class Coupon(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?:str")
@@ -444,6 +449,8 @@ class Coupon(CustomerBaseHandler):
 		#	data.append(x_coupon)
 		#return self.render("coupon/coupon.html",output_data=data)
 		return self.render("coupon/coupon.html")
+
+# 发现 - 优惠券 - 详情
 class CouponDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_key:str")
@@ -473,8 +480,3 @@ class CouponDetail(CustomerBaseHandler):
 			return self.render("coupon/detail.html",output_data=data)
 		elif action=="grab":
 			pass
-
-		
-		
-
-			
