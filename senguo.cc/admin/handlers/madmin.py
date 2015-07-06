@@ -15,6 +15,12 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+
+		return self.render("m-admin/shop-list.html")
+		
+class Shop(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
 		if self.is_pc_browser()==True:
 			return self.redirect(self.reverse_url("adminHome"))
 		if self.get_secure_cookie("shop_id"):
