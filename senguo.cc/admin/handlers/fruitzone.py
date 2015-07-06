@@ -397,7 +397,7 @@ class ShopApply(FruitzoneBaseHandler):
 		"shop_name", "shop_id?:int",
 		"shop_province:int", "shop_city:int", "shop_address_detail",
 		"have_offline_entity:bool", "shop_service_area:int","shop_phone",
-		"shop_intro", "realname:str", "wx_username:str", "code:int")
+		"shop_intro", "realname:str", "wx_username:str", "code:int","lat","lon")
 	def post(self):
 		#* todo 检查合法性
 
@@ -447,7 +447,10 @@ class ShopApply(FruitzoneBaseHandler):
 			  shop_phone =self.args["shop_phone"],
 			  have_offline_entity=self.args["have_offline_entity"],
 			  shop_service_area=self.args["shop_service_area"],
-			  shop_intro=self.args["shop_intro"]))
+			  shop_intro=self.args["shop_intro"],
+			  lat=self.args["lat"],
+			  lon=self.args["lon"]),
+			)
 
 			self.current_user.accountinfo.realname = self.args["realname"]
 			self.current_user.accountinfo.wx_username = self.args["wx_username"]

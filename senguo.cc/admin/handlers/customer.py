@@ -398,8 +398,12 @@ class ShopArea(CustomerBaseHandler):
 		lon = shop.lon
 		shop_name = shop.shop_name
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
-
-		return self.render('customer/shop-area.html',context=dict(subpage=''),address = address,lat = lat ,lon = lon,shop_name=shop_name)
+		area_type = shop.area_type
+		roundness = shop.roundness
+		area_radius = shop.area_radius
+		area_list = shop.area_list
+		return self.render('customer/shop-area.html',context=dict(subpage=''),\
+			address = address,lat = lat ,lon = lon,shop_name=shop_name,area_type=area_type,roundness=roundness,area_radius=area_radius,area_list=area_list)
 
 # 个人中心
 class CustomerProfile(CustomerBaseHandler):
