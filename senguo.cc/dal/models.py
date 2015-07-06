@@ -1440,7 +1440,7 @@ class GoodsLimit(MapBase, _CommonApi):
 	__tablename__ = "goods_limit"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	charge_type_id = Column(Integer, nullable=False)
-	fruit_id   = Column(Integer )
+	fruit_id   = Column(Integer)
 	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
 	create_time = Column(DateTime, default=func.now())
 	limit_num = Column(Integer)
