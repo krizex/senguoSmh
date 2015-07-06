@@ -499,4 +499,3 @@ function filter(data){
         function(){$(".wrap-loading-box").addClass("hidden"); return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
-
