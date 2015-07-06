@@ -1682,23 +1682,23 @@ class WxOauth2:
 	@classmethod
 	def shop_auth_msg(cls,touser,shop_name,success):
 		if success == True:
-			remark = '\n认证成功'
+			remark = '\n您的店铺已获得余额支付、在线支付、店铺营销、模版设置等高级功能。'
 			value1 = '您的店铺『{0}』已通过认证'.format(shop_name) 
 			value2 = '认证成功'
 		else:
-			remark = '\n认证失败'
+			remark = '\n请使用电脑登录店铺认证页面查看失败原因，并重新提交认证申请。'
 			value1 = '您的店铺『{0}』未通过认证'.format(shop_name) 
 			value2 = '认证失败'
 		postdata = {
 			'touser':touser,
 			'template_id':'DOLv3DLoy9xJIfLKmfGnjVvNNgc2aKLMBM_v_yHqVwg',
-			'url':'',
+			'url':order_url,
 			'topcolor':'#FF0000',
 			"data":{
 				'first':{'value':'店铺认证状态更新\n','color':'#44b549'},
 				'keyword1':{'value':value1,'color':'#173177'},
 				'keyword2':{'value':value2,'color':'#173177'},
-				'remark':{'value':remark},
+				'remark':{'value':remark,'color':'#173177'},
 			}
 		}
 		access_token = cls.get_client_access_token()
