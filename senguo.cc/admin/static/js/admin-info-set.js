@@ -252,29 +252,6 @@ function initBmap(){
         map.centerAndZoom(point, 17);
         initPoint(map,point,myGeo);
     }
-    /*配送区域地图*/
-    map1 = new BMap.Map("maparea");
-    var tempPoint = new BMap.Point(pPoint.lng,pPoint.lat);
-    map1.centerAndZoom(pPoint, 17);
-    map1.panTo(tempPoint);
-    map1.enableScrollWheelZoom();
-    marker1 = new BMap.Marker(pPoint);
-    map1.addOverlay(marker1);
-    //选择配送范围形状
-    var circle,polygon;
-    var areatype = parseInt($(".pop-bmap").attr("data-type"));
-    $(".map-sharp-list li").removeClass("active").eq(areatype-1).addClass("active");
-    if(areatype == 1){
-        var spoint =  JSON.parse($(".pop-bmap").attr("data-roundness"));
-        var radius = parseInt($(".pop-bmap").attr("data-radius"));
-        circle = new BMap.Circle(spoint,radius, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
-        map1.addOverlay(circle);
-        circle.enableEditing();
-    }else if(areatype == 2){
-        polygon = new BMap.Polygon(JSON.parse($(".pop-bmap").attr("data-arealist")), {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
-        map1.addOverlay(polygon);
-        polygon.enableEditing();
-    }
     $(".map-sharp-list li").on("click",function(){
         var lngs = pPoint.lng;
         var lats = pPoint.lat;
@@ -367,6 +344,27 @@ function initBmap(){
             map1.removeOverlay(marker1);
             marker1 = new BMap.Marker(pPoint);
             map1.addOverlay(marker1);
+        }
+        /*配送区域地图*/
+        map1 = new BMap.Map("maparea");
+        map1.centerAndZoom(pPoint, 17);
+        map1.enableScrollWheelZoom();
+        marker1 = new BMap.Marker(pPoint);
+        map1.addOverlay(marker1);
+        //选择配送范围形状
+        var circle,polygon;
+        var areatype = parseInt($(".pop-bmap").attr("data-type"));
+        $(".map-sharp-list li").removeClass("active").eq(areatype-1).addClass("active");
+        if(areatype == 1){
+            var spoint =  JSON.parse($(".pop-bmap").attr("data-roundness"));
+            var radius = parseInt($(".pop-bmap").attr("data-radius"));
+            circle = new BMap.Circle(spoint,radius, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
+            map1.addOverlay(circle);
+            circle.enableEditing();
+        }else if(areatype == 2){
+            polygon = new BMap.Polygon(JSON.parse($(".pop-bmap").attr("data-arealist")), {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+            map1.addOverlay(polygon);
+            polygon.enableEditing();
         }
     }
 }
