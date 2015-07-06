@@ -21,7 +21,7 @@
 <div class="filter_search bg-white text-grey9 font14">
     <input type="hidden" id="city_id" value="{{context['city_id']}}"/>
     <a href="javascript:;" class="choose-item city_choose pull-left dismiss">
-        <span class="c-item city_name text-center" id="city-name">{{context['city'] or '城市'}}</span><em class="arrow"></em>
+        <span class="c-item city_name text-center" id="city-name" data-id="{{context['city_id']}}">{{context['city'] or '城市'}}</span><em class="arrow"></em>
     </a>
     <a href="javascript:;" class="choose-item pull-left school" id="school">
         <span class="c-item school_name text-center" id="school_name" data-key="0">全部</span><em class="arrow"></em>

@@ -15,7 +15,7 @@ $(document).ready(function(){
         if(q && q!="null"){
             Search(q);
         }else{
-            initLocation();
+            //initLocation();
             var city_id = $("#city_id").val();
             if(city_id){
                 window.dataObj.action='filter';
