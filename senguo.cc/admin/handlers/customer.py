@@ -2414,7 +2414,11 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	@tornado.web.asynchronous
 	def get(self):
-		import gevent
+		# import gevent
+		import requests
+		import json
+		import multiprocessing
+		from multiprocessing import Process
 		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session	
@@ -2438,7 +2442,7 @@ class InsertData(CustomerBaseHandler):
 		# 	# shop_auth_fail_msg('13163263783','woody','woody')
 		# 	self.render('customer/storage-change.html')
 		# gevent.spawn(async_task)
-		return self.success
+
 
 # 支付超时判断
 # 返回：		

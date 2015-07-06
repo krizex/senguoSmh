@@ -153,9 +153,10 @@ class GlobalBaseHandler(BaseHandler):
 			if "city" in dis_dict[int(code/10000)*10000].keys():
 				text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
 			return text
+
 		elif column_name == "city":
 			if "city" in dis_dict[int(code/10000)*10000].keys():
-				text = " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
+				text = dis_dict[int(code/10000)*10000]["city"][code]["name"]
 			return text
 
 		elif column_name == "province":

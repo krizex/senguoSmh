@@ -252,6 +252,7 @@ function initBmap(){
         map.centerAndZoom(point, 17);
         initPoint(map,point,myGeo);
     }
+    var circle,polygon;
     $(".map-sharp-list li").on("click",function(){
         var lngs = pPoint.lng;
         var lats = pPoint.lat;
@@ -263,7 +264,7 @@ function initBmap(){
             circle = new BMap.Circle(pPoint,200, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
             map1.addOverlay(circle);
             circle.enableEditing();
-        }else{//方形
+        }else if(index==1){//方形
             polygon = new BMap.Polygon([
                 new BMap.Point(lngs-0.002,lats),
                 new BMap.Point(lngs,lats-0.002),
@@ -352,9 +353,10 @@ function initBmap(){
         marker1 = new BMap.Marker(pPoint);
         map1.addOverlay(marker1);
         //选择配送范围形状
-        var circle,polygon;
         var areatype = parseInt($(".pop-bmap").attr("data-type"));
-        $(".map-sharp-list li").removeClass("active").eq(areatype-1).addClass("active");
+        if(areatype>0){
+            $(".map-sharp-list li").removeClass("active").eq(areatype-1).addClass("active");
+        }
         if(areatype == 1){
             var spoint =  JSON.parse($(".pop-bmap").attr("data-roundness"));
             var radius = parseInt($(".pop-bmap").attr("data-radius"));
