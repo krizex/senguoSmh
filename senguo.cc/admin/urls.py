@@ -242,6 +242,8 @@ handlers = [
 	(r"/madmin/comment", handlers.madmin.Comment, {}, "MadminComment"),
 	# (r"/staff/...")
 
+
+	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
 	# 水果圈子
 
 	

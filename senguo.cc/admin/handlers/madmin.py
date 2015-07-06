@@ -76,7 +76,7 @@ class OrderDetail(AdminBaseHandler):
 		except:
 			return self.send_error(404)
 		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		
+		print(charge_types)
 		if order.pay_type == 1:
 			order.pay_type_con = "货到付款"
 		elif order.pay_type == 2:

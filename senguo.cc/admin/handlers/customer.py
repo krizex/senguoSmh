@@ -146,26 +146,27 @@ class customerGoods(CustomerBaseHandler):
 
 		charge_types= []
 		for charge_type in good.charge_types:
-			unit  = charge_type.unit
-			unit =self.getUnit(unit)
-			limit_today = False
-			allow_num = ''
-			try:
-				limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
-				.order_by(models.GoodsLimit.create_time.desc()).first()
-			except:
-				limit_if = None
-			if limit_if and good.limit_num !=0:
-				time_now = datetime.datetime.now().strftime('%Y-%m-%d')
-				create_time = limit_if.create_time.strftime('%Y-%m-%d')
-				if time_now == create_time:
-					limit_today = True
-					if limit_if.limit_num == good.limit_num:
-						allow_num = limit_if.allow_num
-					else:
-						allow_num = good.limit_num - limit_if.buy_num
-			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-				'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+			if charge_type.active != 0:
+				unit  = charge_type.unit
+				unit =self.getUnit(unit)
+				limit_today = False
+				allow_num = ''
+				try:
+					limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
+					.order_by(models.GoodsLimit.create_time.desc()).first()
+				except:
+					limit_if = None
+				if limit_if and good.limit_num !=0:
+					time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+					create_time = limit_if.create_time.strftime('%Y-%m-%d')
+					if time_now == create_time:
+						limit_today = True
+						if limit_if.limit_num == good.limit_num:
+							allow_num = limit_if.allow_num
+						else:
+							allow_num = good.limit_num - limit_if.buy_num
+				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -1038,27 +1039,28 @@ class Market(CustomerBaseHandler):
 					
 				charge_types= []
 				for charge_type in fruit.charge_types:
-					unit  = charge_type.unit
-					unit =self.getUnit(unit)
-					
-					limit_today = False
-					allow_num = ''
-					try:
-						limit_if = session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
-						.order_by(models.GoodsLimit.create_time.desc()).first()
-					except:
-						limit_if = None
-					if limit_if and fruit.limit_num !=0:
-						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
-						create_time = limit_if.create_time.strftime('%Y-%m-%d')
-						if time_now == create_time:
-							limit_today = True
-							if limit_if.limit_num == fruit.limit_num:
-								allow_num = limit_if.allow_num
-							else:
-								allow_num = fruit.limit_num - limit_if.buy_num
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
+					if charge_type.active !=0:
+						unit  = charge_type.unit
+						unit =self.getUnit(unit)
+						
+						limit_today = False
+						allow_num = ''
+						try:
+							limit_if = session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
+							.order_by(models.GoodsLimit.create_time.desc()).first()
+						except:
+							limit_if = None
+						if limit_if and fruit.limit_num !=0:
+							time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+							create_time = limit_if.create_time.strftime('%Y-%m-%d')
+							if time_now == create_time:
+								limit_today = True
+								if limit_if.limit_num == fruit.limit_num:
+									allow_num = limit_if.allow_num
+								else:
+									allow_num = fruit.limit_num - limit_if.buy_num
+						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
