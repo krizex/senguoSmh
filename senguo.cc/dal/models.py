@@ -1394,7 +1394,6 @@ class Fruit(MapBase, _CommonApi):
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
 
-
 #水果单品的计价类型
 class ChargeType(MapBase, _CommonApi):
 	__tablename__ = "charge_type"
