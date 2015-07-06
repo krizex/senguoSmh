@@ -66,7 +66,7 @@ def get_unblock(f):
 
 	return wrapper
 
-# 4.14 woody
+# 定时器
 class Pysettimer(threading.Thread):
 	def __init__(self,function,args = None ,timeout = 1 ,is_loop = False):
 		threading.Thread.__init__(self)
@@ -85,12 +85,12 @@ class Pysettimer(threading.Thread):
 	def stop(self):
 		self.event.set()
 
-#woody
+# 模版消息URL
 order_url = 'http://i.senguo.cc/admin'
 staff_order_url = 'http://i.senguo.cc/staff'
 
+# 全局基类方法
 class GlobalBaseHandler(BaseHandler):
-
 	@property
 	def session(self):
 		if hasattr(self, "_session"):
@@ -121,11 +121,11 @@ class GlobalBaseHandler(BaseHandler):
 		s*= 1000
 		return s;
 
-
+	# 数字代号转换为文字描述
 	def code_to_text(self, column_name, code):
 		text = ""
 
-		#将服务区域的编码转换为文字显示
+		# 将服务区域的编码转换为文字显示
 		if column_name == "service_area":
 			if code & models.SHOP_SERVICE_AREA.HIGH_SCHOOL:
 				text += "高校"
@@ -137,7 +137,7 @@ class GlobalBaseHandler(BaseHandler):
 				text += "其他"
 			return text
 
-		#将商店审核状态编码转换为文字显示
+		# 将商店审核状态编码转换为文字显示
 		elif column_name == "shop_status":
 			if code == models.SHOP_STATUS.APPLYING:
 				text = "审核中"
@@ -147,21 +147,22 @@ class GlobalBaseHandler(BaseHandler):
 				text = "拒绝申请"
 			return text
 
-		#将城市编码转换为文字显示（可以由城市编码算出城市所在省份的编码）
+		# 将城市编码转换为文字显示（可以由城市编码算出城市所在省份的编码）
 		elif column_name == "shop_city":
 			text += dis_dict[int(code/10000)*10000]["name"]
 			if "city" in dis_dict[int(code/10000)*10000].keys():
 				text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
 			return text
+
 		elif column_name == "city":
 			if "city" in dis_dict[int(code/10000)*10000].keys():
-				text = " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
+				text = dis_dict[int(code/10000)*10000]["city"][code]["name"]
 			return text
-
 		elif column_name == "province":
 			text = dis_dict[int(code)]["name"]
 			return text
 
+		# 将订单状态编码转换为文字显示
 		elif column_name == "order_status":
 			text = ""
 			if code == models.SYS_ORDER_STATUS.TEMP:
@@ -173,7 +174,9 @@ class GlobalBaseHandler(BaseHandler):
 			else:
 				text = "SYS_ORDER_STATUS: 此编码不存在"
 			return text
-		#add 6.10pm by jyj
+
+		# add 6.10pm by jyj
+		# 将时间戳转换为时间字符串
 		elif column_name == "create_date_timestamp":
 			text = ""
 			import datetime
@@ -183,7 +186,8 @@ class GlobalBaseHandler(BaseHandler):
 			text = timeStr
 			return text
 		##
-		#add by jyj 2015-6-15
+		# add by jyj 2015-6-15
+		# 将实体店状态编码转换为文字显示
 		elif column_name == "have_offline_entity":
 			text = ""
 			if code == 0:
@@ -195,7 +199,7 @@ class GlobalBaseHandler(BaseHandler):
 			return text
 		##
 
-	#获取订单详情
+	# 获取订单详情
 	def get_order_detail(self,session,order_id):
 		data = {}
 		try:
@@ -242,7 +246,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		return data
 
-	#获取店铺信息
+	# 获取店铺信息
 	def get_shopInfo(self,shop):
 		data = {}
 		data['shop_name']     = shop.shop_name
@@ -261,7 +265,7 @@ class GlobalBaseHandler(BaseHandler):
 
 		return data
 
-
+	# 将商品计价方式编码转换为计价方式文字显示
 	def getUnit(self,unit):
 		if unit == 1:
 			name ='个' 
@@ -289,10 +293,12 @@ class GlobalBaseHandler(BaseHandler):
 			name =''
 		return name
 
+	# 将森果社区文章类型编码转换为文字
 	def article_type(self,_type):
 		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求']
 		return types[_type]
- 
+
+	# 获取商品信息
 	def getGoodsData(self,datalist,_type):
 		data = []
 		shop_id = self.current_shop.id
@@ -338,6 +344,7 @@ class GlobalBaseHandler(BaseHandler):
 		# print(data)
 		return data
 
+	# 获取森果社区文章
 	def getArticle(self,article):
 		great_if = False
 		try:
@@ -351,6 +358,7 @@ class GlobalBaseHandler(BaseHandler):
 			"comment_num":article[0].comment_num,"great_if":great_if}
 		return data
 
+	# 获取森果社区文章评论
 	def getArticleComment(self,new_comment):
 		great_if = False
 		comment_author = False
@@ -370,7 +378,7 @@ class GlobalBaseHandler(BaseHandler):
 class FrontBaseHandler(GlobalBaseHandler):
 	pass
 
-
+# 登录、账户等基类方法
 class _AccountBaseHandler(GlobalBaseHandler):
 	# overwrite this to specify which account is used
 	__account_model__ = None
@@ -382,12 +390,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	_wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
 	_wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
 
+	# 判断是否为微信浏览器
 	def is_wexin_browser(self):
 		if "User-Agent" in self.request.headers:
 			ua = self.request.headers["User-Agent"]
 		else:
 			ua = ""
 		return  "MicroMessenger" in ua
+	# 判断是否为PC浏览器
 	def is_pc_browser(self):
 		if "User-Agent" in self.request.headers:
 			ua = self.request.headers["User-Agent"]
@@ -493,6 +503,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			next_url = self.reverse_url('customerProfile')
 		return self.get_wexin_oauth_link(next_url = next_url)
 
+	# 获取当前用户
 	def get_current_user(self):
 		# print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
@@ -546,23 +557,22 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
-
+	# 编辑器获取七牛Token
 	def get_editor_token(self, action, id):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-
-
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 							  policy={"returnUrl": "http://i.senguo.cc/admin/editorCallback",
 									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
-
+	# 获取七牛Token
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
-		token = q.upload_token(BUCKET_SHOP_IMG,expires = 60*30*100)
+		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100)
 		print("[七牛授权]获得Token：",token)
 		return token
 
+	# 获取评论
 	def get_comments(self, shop_id, page=0, page_size=5):
 		comments_new = {}
 		comments_result = []
@@ -604,6 +614,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# return comments_result
 		return comments_array
 
+	# 根据当前时间返回经过的时间
 	def timedelta(self, date):
 		if not date:
 			return "1年前"
@@ -660,7 +671,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		h = hashlib.sha1(string.encode())
 		return h.hexdigest()
 
-	# send message to staff  , woody,6.17
+	# 发送新订单模版消息给配送员, woody,6.17
 	@classmethod
 	def send_staff_message(self,session,order):
 		# print('login in send_staff_message')
@@ -685,6 +696,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			order_totalPrice,send_time,phone,address,)
 		# print('SUCCESS')
 
+	# 发送新订单模版消息给管理员
 	@classmethod
 	def send_admin_message(self,session,order,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
@@ -732,6 +744,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				send_time,goods,phone,address,access_token)
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
 
+	# 发送订单完成模版消息给用户
 	@classmethod
 	def order_done_msg(self,session,order):
 		# print('login in order_done_msg')
@@ -749,12 +762,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		touser = customer_info.wx_openid
 		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 
+	# 发送店铺认证状态更新模版消息给管理员
 	@classmethod
 	def shop_auth_msg(self,shop,success):
 		touser = shop.admin.accountinfo.wx_openid
 		shop_name = shop.shop_name
 		WxOauth2.shop_auth_msg(touser,shop_name,success)
 
+	# 获取绑定的微信第三方服务号AccessToken
 	@classmethod
 	def get_other_accessToken(self,session,admin_id):
 		now = datetime.datetime.now().timestamp()
@@ -878,7 +893,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		#增 与订单总额相等的积分
 		if shop_follow.shop_point == None:
-			shop_follow.shop_point =0
+			shop_follow.shop_point = 0
 			shop_follow.shop_point += totalprice
 			session.commit()
 			try:
@@ -891,11 +906,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				session.add(point_history)
 		session.commit()			
 
+# 超级管理员基类方法
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
 	__account_cookie_name__ = "super_id"
 	__wexin_oauth_url_name__ = "superOauth"
 
+	# 关闭店铺
 	def shop_close(self):
 		# print(self)
 		print("[定时任务]关闭店铺")
@@ -930,13 +947,14 @@ class SuperBaseHandler(_AccountBaseHandler):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
 
+# Fruitzone基类方法
 class FruitzoneBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
 	# __account_cookie_name__ = "admin_id"
 	__wexin_oauth_url_name__ = "adminOauth"
 
-	# get the total,privince,city count of shop
 	# woody 4.4
+	# 获取店铺总数
 	def get_shop_count(self):
 		try:
 			shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
@@ -944,12 +962,14 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		except:
 			return self.send_fail("shop count error")
 		return shop_count
+	# 获取某个省的店铺总数
 	def get_province_shop_count(self,shop_province):
 		try:
 			shop_count = self.session.query(models.Shop).filter(shop_province == shop_province,shop_code !='not set' ).count()
 		except:
 			return self.send_fail('shop_province error')
 		return shop_count
+	# 获取某个城市的店铺总数
 	def get_city_shop_count(self,shop_city):
 		try:
 			shop_count = self.session.query(models.Shop).filter(shop_city == shop_city,shop_code !='not set' ).count()
@@ -991,7 +1011,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
 		return self._shop_id
 
-
+# 店铺管理后台基类方法
 class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin
 	# __account_cookie_name__ = "admin_id"
@@ -1041,12 +1061,12 @@ class AdminBaseHandler(_AccountBaseHandler):
 				return
 			else:
 				self.current_shop = shop
-	
 		
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
 
+	# 获取订单
 	def getOrder(self,orders):
 		data = []
 		for order in orders:
@@ -1085,7 +1105,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 			data.append(d)
 		return data
 
-
+# 配送员端基类方法
 class StaffBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopStaff
 	# __account_cookie_name__ = "staff_id"
@@ -1114,13 +1134,14 @@ class StaffBaseHandler(_AccountBaseHandler):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
 
-
+# 商城基类方法
 class CustomerBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.Customer
 	# __account_cookie_name__ = "customer_id"
 	__wexin_oauth_url_name__ = "customerOauth"
 	__wexin_check_url_name__ = "customerwxBind"
 	@tornado.web.authenticated
+	# 存储购物车数据
 	def save_cart(self, charge_type_id, shop_id, inc):
 		"""
 		用户购物车操作函数，对购物车进行修改或者删除商品：
@@ -1166,7 +1187,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				d={charge_type_id:1}
 				setattr(cart, menu, str(d))
 		self.session.commit()
-
+	# 读取购物车数据
 	def read_cart(self, shop_id):
 		"""
 		读购物车函数，把数据库里的str转换为dict，同时删除购物车里已经过时的商品
@@ -1330,7 +1351,7 @@ class QqOauth:
 jsapi_ticket = {"jsapi_ticket": '', "create_timestamp": 0}  # 用全局变量存好，避免每次都要申请
 access_token = {"access_token": '', "create_timestamp": 0}
 
-
+# 所有需要微信授权调用的东西，模版消息等
 class WxOauth2:
 	token_url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid={appid}" \
 				"&secret={appsecret}&code={code}&grant_type=authorization_code"
@@ -1681,23 +1702,23 @@ class WxOauth2:
 	@classmethod
 	def shop_auth_msg(cls,touser,shop_name,success):
 		if success == True:
-			remark = '\n认证成功'
+			remark = '\n您的店铺已获得余额支付、在线支付、店铺营销、模版设置等高级功能。'
 			value1 = '您的店铺『{0}』已通过认证'.format(shop_name) 
 			value2 = '认证成功'
 		else:
-			remark = '\n认证失败'
+			remark = '\n请使用电脑登录店铺认证页面查看失败原因，并重新提交认证申请。'
 			value1 = '您的店铺『{0}』未通过认证'.format(shop_name) 
 			value2 = '认证失败'
 		postdata = {
 			'touser':touser,
 			'template_id':'DOLv3DLoy9xJIfLKmfGnjVvNNgc2aKLMBM_v_yHqVwg',
-			'url':'',
+			'url':order_url,
 			'topcolor':'#FF0000',
 			"data":{
 				'first':{'value':'店铺认证状态更新\n','color':'#44b549'},
 				'keyword1':{'value':value1,'color':'#173177'},
 				'keyword2':{'value':value2,'color':'#173177'},
-				'remark':{'value':remark},
+				'remark':{'value':remark,'color':'#173177'},
 			}
 		}
 		access_token = cls.get_client_access_token()
