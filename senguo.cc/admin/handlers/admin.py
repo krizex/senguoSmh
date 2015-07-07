@@ -1892,7 +1892,7 @@ class editorCallback(AdminBaseHandler):
 			for value in info.split("&"):
 				data.append(value.split("="))
 			key = data[0][1].replace('"','').strip()
-			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)+'?imageView2/1/w/800'
+			imgurl = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+str(key)+'?imageView2/2/w/800'
 		return self.write('{"error":0, "url": "'+imgurl+'"}')
 
 class editorFileManage(AdminBaseHandler):
