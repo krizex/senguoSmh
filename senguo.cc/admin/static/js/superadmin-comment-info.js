@@ -89,10 +89,11 @@ function showList(page){
                                         				$item.find(".comment-image-list").removeClass("hidden");
                                         				for(var j = 0;j < data["comment_image_list"].length;j++){
                                         					var imgi = data["comment_image_list"][j];
-                                        					str = '<img src='+imgi+' class="comment-image pull-left w80">';
+                                        					str = '<a href='+imgi+' target="_blank" title="点击查看大图" class="comment-img-big"><img src='+imgi+' class="comment-image pull-left w80"></a>';
+                                        					
                                         					$item.find(".comment-image-list").append(str);
+
                                         				}
-                                        				$item.find(".comment-image-list").append('<br><br><br><br>');
                                         			}
                                         			else{
                                         				$item.find(".comment-img-txt").addClass("hidden");
@@ -100,14 +101,16 @@ function showList(page){
                                         			}
 
                                         			$item.find(".comment-reply").html(data["comment_reply"]);
-                                        			$item.find(".shop-link").attr("href",data["shop_code"]);
+                                        			$item.find(".shop-link").attr("href",'/'+data["shop_code"]);
                                         			$item.find(".shop-name").html(data["shop_name"]);
                                         			$item.find(".order-num").html(data["order_num"]);
                                         			$item.find(".commodity-quality").html(data["commodity_quality"]);
                                         			$item.find(".send-speed").html(data["send_speed"]);
                                         			$item.find(".shop-service").html(data["shop_service"]);
 
+                                        			// $(".comment-img-big").click(function(){
 
+                                        			// });
                                         			$(".info-ul").append($item);
 				}
 			}

@@ -266,7 +266,7 @@ class ShopManage(SuperBaseHandler):
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
-		comment_del = self.session.query(models.CommentApply).filter(models.CommentApply.has_done ==0).count()
+		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
@@ -280,7 +280,7 @@ class ShopManage(SuperBaseHandler):
 			"all": self.session.query(models.Shop).count(),
 			##
 
-			"del_apply":comment_del,
+			"comment":comment,
 			"auth_apply":auth_apply
 			}
 		if action == "all_temp":
@@ -383,10 +383,12 @@ class ShopManage(SuperBaseHandler):
 				output_data.append(data)
 				
 			if flag==1:
-				#print(flag)
+				print("@@@@@@@@@")
 				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
 			else :
+				print("###########")
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
+				
 
 		else:
 			return self.send_error(404)
@@ -1036,8 +1038,20 @@ class Comment(SuperBaseHandler):
 				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
 				comment = comment)
 			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
+
+		q_temp = self.session.query(models.ShopTemp).count()
+		all_shop = self.session.query(models.Shop).count()
+		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+
+		count = {
+			"all_temp": q_temp,
+			"all": all_shop,
+			"comment":comment,
+			"auth_apply":auth_apply
+			}
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},subpage="apply",data=data))
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = count,subpage="apply",subpage2="",data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -1156,8 +1170,22 @@ class CommentInfo(SuperBaseHandler):
 			page_sum = all_count//page_size + 1
 		else:
 			page_sum = all_count//page_size
+
+
+		q_temp = self.session.query(models.ShopTemp).count()
+		all_shop = self.session.query(models.Shop).count()
+		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+
+		count = {
+			"all_temp": q_temp,
+			"all": all_shop,
+			"comment":comment,
+			"auth_apply":auth_apply
+			}
+
 		if ajaxFlag != '1':
-			self.render('superAdmin/shop-comment-info.html',output_data = output_data,page_sum = page_sum,context=dict(count = {'del_apply':'','all_temp':'','all':'','auth_apply':''},subpage="info"))
+			self.render('superAdmin/shop-comment-info.html',output_data = output_data,page_sum = page_sum,context=dict(count = count,subpage="comment",subpage2="info"))
 		else:
 			return self.send_success(page_sum = page_sum)
 	@tornado.web.authenticated
@@ -1419,10 +1447,21 @@ class ShopAuthenticate(SuperBaseHandler):
 		page=int(self.args["page"])
 		page_size = 10
 		page_area =page*page_size
-		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
-		#apply_list=self.session.query(models.ShopAuthenticate).all()[page_area:page_area+10]
+		
 		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
-		count = {'all':'','all_temp':'','del_apply':'','auth_apply':auth_apply}
+
+		q_temp = self.session.query(models.ShopTemp).count()
+		all_shop = self.session.query(models.Shop).count()
+		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+
+		count = {
+			"all_temp": q_temp,
+			"all": all_shop,
+			"comment":comment,
+			"auth_apply":auth_apply
+			}
+
 		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,subpage="auth",auth_apply_list=apply_list))
 
 	@tornado.web.authenticated

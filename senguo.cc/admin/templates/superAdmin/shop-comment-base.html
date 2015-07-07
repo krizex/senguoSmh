@@ -1,14 +1,18 @@
 <!-- add by jyj 2015-7-6 -->
 {% extends 'shop-base.html'%}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/superadmin-shop.css')}}"/>{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/superadmin-shop.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/superadmin-main.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-main.css')}}"/>
+{% end %}
 
 {% block shop %}
 {% set count=context["count"]%}
-{% set subpage = context["subpage"] %}
+{% set subpage2 = context["subpage2"] %}
 {% set info_active = "" %}
 {% set apply_active = "" %}
 
-{% if subpage == "info" %}
+{% if subpage2 == "info" %}
     {% set info_active = "active" %}
 {% else %}
     {% set apply_active = "active" %}

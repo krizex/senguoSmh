@@ -44,7 +44,7 @@
                 </p>
                 <p class="mt5">
                     {% for imgi in data["comment_image_list"] %}
-                    <img src="{{imgi}}" class="pull-left w80">
+                        <a href="{{imgi}}" target="_blank" class="comment-img-big"><img src="{{imgi}}" class="pull-left w80 comment-img-big"></a>
                     {% end %}
                    <br><br><br><br>
                 </p>

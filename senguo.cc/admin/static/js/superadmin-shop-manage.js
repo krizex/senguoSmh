@@ -30,12 +30,12 @@ $(document).ready(function(){
             searchshop(page_shop);
         }
     });
-    if(localStorage.getItem("itemIndex")){
+    /*if(localStorage.getItem("itemIndex")){
         $(".shop-manage-nav li").removeClass("active").eq(localStorage.getItem("itemIndex")).addClass("active");
     }else{
         localStorage.setItem("itemIndex",0);
         $(".shop-manage-nav li").removeClass("active").eq(0).addClass("active");
-    }
+    }*/
 }).on('click',"#authPrePage",function(){
     var page=Int($.getUrlParam('page'));
     if(page>0) {
