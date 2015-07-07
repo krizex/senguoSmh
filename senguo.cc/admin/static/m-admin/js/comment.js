@@ -112,7 +112,7 @@ function commentList(page){
                         '<p class="com-txt"><a href="javascript:;" class="fr mr10 ml5 reply-btn">回复</a>{{comment}}</p>'+
                         '{{ if imgurls }}<ul class="group com-goods-lst">'+
                         '{{ each imgurls as img index }}'+
-                        '<li><a href="{{img}}" title=""><img style="width:'+width+'px;height:'+width+'px;" src="{{img}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a></li>'+
+                        '<li><a href="{{img}}" title=""><img style="width:'+width+'px;height:'+width+'px;" src="{{img}}?imageView2/1/w/200/h/200" alt="晒单图片"/></a></li>'+
                         '{{/each}}'+
                         '</ul>{{ /if }}'+
                         '{{ if reply }}'+

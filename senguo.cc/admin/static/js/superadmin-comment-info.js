@@ -89,7 +89,7 @@ function showList(page){
                                         				$item.find(".comment-image-list").removeClass("hidden");
                                         				for(var j = 0;j < data["comment_image_list"].length;j++){
                                         					var imgi = data["comment_image_list"][j];
-                                        					str = '<a href='+imgi+' target="_blank" title="点击查看大图" class="comment-img-big"><img src='+imgi+' class="comment-image pull-left w80"></a>';
+                                        					str = '<a href='+imgi+' target="_blank" title="点击查看大图" class="comment-img-big"><img src='+imgi+'?imageView2/1/w/80/h/80 class="comment-image pull-left w80"></a>';
                                         					
                                         					$item.find(".comment-image-list").append(str);
 

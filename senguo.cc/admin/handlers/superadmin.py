@@ -1119,7 +1119,7 @@ class CommentInfo(SuperBaseHandler):
 			data["shop_name"] = self.session.query(models.Shop.shop_name).\
 						filter(models.Shop.id == order.shop_id).first()[0]
 			if len(data["shop_name"]) > 6:
-				data["shop_name"] = data["shop_name"][0:6] + '...'
+				data["shop_name"] = data["shop_name"][0:5] + '...'
 
 			data["shop_code"] = self.session.query(models.Shop.shop_code).\
 						filter(models.Shop.id == order.shop_id).first()[0]
@@ -1214,7 +1214,7 @@ class CommentInfo(SuperBaseHandler):
 				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
-					data["nickname"] = data["nickname"][0:6] + '...'
+					data["nickname"] = data["nickname"][0:5] + '...'
 				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
 				if order.comment_create_date == None:
 					data["comment_create_date"] = ''
@@ -1224,7 +1224,7 @@ class CommentInfo(SuperBaseHandler):
 				data["shop_name"] = self.session.query(models.Shop.shop_name).\
 							filter(models.Shop.id == order.shop_id).first()[0]
 				if len(data["shop_name"]) > 6:
-					data["shop_name"] = data["shop_name"][0:6] + '...'
+					data["shop_name"] = data["shop_name"][0:5] + '...'
 
 				data["shop_code"] = self.session.query(models.Shop.shop_code).\
 							filter(models.Shop.id == order.shop_id).first()[0]
@@ -1302,7 +1302,7 @@ class CommentInfo(SuperBaseHandler):
 				data["shop_name"] = self.session.query(models.Shop.shop_name).\
 							filter(models.Shop.id == order.shop_id).first()[0]
 				if len(data["shop_name"]) > 6:
-					data["shop_name"] = data["shop_name"][0:6] + '...'
+					data["shop_name"] = data["shop_name"][0:5] + '...'
 
 				data["shop_code"] = self.session.query(models.Shop.shop_code).\
 							filter(models.Shop.id == order.shop_id).first()[0]
@@ -1381,7 +1381,7 @@ class CommentInfo(SuperBaseHandler):
 				data["shop_name"] = self.session.query(models.Shop.shop_name).\
 							filter(models.Shop.id == order.shop_id).first()[0]
 				if len(data["shop_name"]) > 6:
-					data["shop_name"] = data["shop_name"][0:6] + '...'
+					data["shop_name"] = data["shop_name"][0:5] + '...'
 
 				data["shop_code"] = self.session.query(models.Shop.shop_code).\
 							filter(models.Shop.id == order.shop_id).first()[0]
