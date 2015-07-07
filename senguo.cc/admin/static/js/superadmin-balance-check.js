@@ -2,9 +2,12 @@
 var page = 1;
 var page_sum = 1;
 var check_date;  //将check_date定义成全局变量，以方便动态生成的button的click事件与后台对账数据交互的方便。
-var check_stop_flag = 0;
+var check_stop_flag = new Array();
 $(document).ready(function(){
 	showCheckHistory(1,'history');
+	for(var i = 0;i < 5;i++){
+		check_stop_flag[i] = 0;
+	}
 
 }).on("click","#btn-cancel",function(){
 	onBtnCancelClick();
@@ -30,9 +33,21 @@ $(document).ready(function(){
 function onBtnCancelClick(){
 	$("#div-input").hide();
 	$("#checkinput_bg").hide();
+	$("#wx-income").val("");
+	$("#wx-income-count").val("");
+	$("#alipay-income").val("");
+	$("#alipay-income-count").val("");
+	$("#widt-cash").val("");
+	$("#widt-cash-count").val("");
 }
 
 function showCheckHistory(page,action){
+	$("#wx-income").val("");
+	$("#wx-income-count").val("");
+	$("#alipay-income").val("");
+	$("#alipay-income-count").val("");
+	$("#widt-cash").val("");
+	$("#widt-cash-count").val("");
 
 	var url = "";
 	var args = {
@@ -144,77 +159,81 @@ function showCheckHistory(page,action){
 							}
 						});
 
-						$("#btn-ok").click(function(i){
-							return function(){
-								//获得输入值
-								var wx = parseFloat($("#wx-income").val());
-								wx = wx.toFixed(2);
-								var wx_count = parseInt($("#wx-income-count").val());
-								var alipay = parseFloat($("#alipay-income").val());
-								alipay = alipay.toFixed(2);
-								var alipay_count = parseInt($("#alipay-income-count").val());
-								var widt = parseFloat($("#widt-cash").val());
-								widt = widt.toFixed(2);
-								var widt_count = parseInt($("#widt-cash-count").val());
+						// if(check_stop_flag[i] == 0){
 
-								var total = parseFloat(wx) + parseFloat(alipay);
-								// total = total.toFixed(2);
-								var total_count = wx_count + alipay_count;
+							$("#btn-ok").click(function(i){
+								// check_stop_flag[i = 1];
+								return function(){
+									//获得输入值
+									var wx = parseFloat($("#wx-income").val());
+									wx = wx.toFixed(2);
+									var wx_count = parseInt($("#wx-income-count").val());
+									var alipay = parseFloat($("#alipay-income").val());
+									alipay = alipay.toFixed(2);
+									var alipay_count = parseInt($("#alipay-income-count").val());
+									var widt = parseFloat($("#widt-cash").val());
+									widt = widt.toFixed(2);
+									var widt_count = parseInt($("#widt-cash-count").val());
 
-								if(wx == "NaN" || wx_count == "NaN" || alipay == "NaN"
-								  || alipay_count == "NaN" || widt == "NaN" || widt_count == "NaN"){
-									alert("数据输入不完整！");
-									return false;
-								}
+									var total = parseFloat(wx) + parseFloat(alipay);
+									// total = total.toFixed(2);
+									var total_count = wx_count + alipay_count;
 
-								//向后台发post请求,核对输入的数据与后台查询的数据是否一致,
-								//若都一致则data["is_checked"]返回1,否则返回0
-								var url = "";
-								var data={};
-								data["check_date"] = check_date;
-								data["wx"] = wx;
-								data["wx_count"] = wx_count;
-								data["alipay"] = alipay;
-								data["alipay_count"] = alipay_count;
-								data["widt"] = widt;
-								data["widt_count"] = widt_count;
-								data["is_checked"] = 0;  //0:fail  1:success
+									if(wx == "NaN" || wx_count == "NaN" || alipay == "NaN"
+									  || alipay_count == "NaN" || widt == "NaN" || widt_count == "NaN"){
+										alert("数据输入不完整！");
+										return false;
+									}
 
-								var args={
-									data:data,
-									action:'check'
-								};
-								$.postJson(url,args,function(res){
+									//向后台发post请求,核对输入的数据与后台查询的数据是否一致,
+									//若都一致则data["is_checked"]返回1,否则返回0
+									var url = "";
+									var data={};
+									data["check_date"] = check_date;
+									data["wx"] = wx;
+									data["wx_count"] = wx_count;
+									data["alipay"] = alipay;
+									data["alipay_count"] = alipay_count;
+									data["widt"] = widt;
+									data["widt_count"] = widt_count;
+									data["is_checked"] = 0;  //0:fail  1:success
 
-									if(res.success){
-										data = res.output_data;
-										if(data["is_checked"] == 1){
-											$('#'+tr_now_id).find("#total_true").text(total+'元');
-											$('#'+tr_now_id).find("#total_count_true").text(total_count+'笔');
-											$('#'+tr_now_id).find("#wx_true").text(wx+'元');
-											$('#'+tr_now_id).find("#wx_count_true").text(wx_count+'笔');
-											$('#'+tr_now_id).find("#alipay_true").text(alipay+'元');
-											$('#'+tr_now_id).find("#alipay_count_true").text(alipay_count+'笔');
-											$('#'+tr_now_id).find("#widt_true").text(widt+'元');
-											$('#'+tr_now_id).find("#widt_count_true").text(widt_count+'笔');
-											
-											$("#div-input").hide();
-											$("#checkinput_bg").hide();
-											$('#'+btn_now_id).removeClass('btn-check').addClass('btn-checked').text('已对账');
+									var args={
+										data:data,
+										action:'check'
+									};
+									$.postJson(url,args,function(res){
+
+										if(res.success){
+											data = res.output_data;
+											if(data["is_checked"] == 1){
+												$('#'+tr_now_id).find("#total_true").text(total+'元');
+												$('#'+tr_now_id).find("#total_count_true").text(total_count+'笔');
+												$('#'+tr_now_id).find("#wx_true").text(wx+'元');
+												$('#'+tr_now_id).find("#wx_count_true").text(wx_count+'笔');
+												$('#'+tr_now_id).find("#alipay_true").text(alipay+'元');
+												$('#'+tr_now_id).find("#alipay_count_true").text(alipay_count+'笔');
+												$('#'+tr_now_id).find("#widt_true").text(widt+'元');
+												$('#'+tr_now_id).find("#widt_count_true").text(widt_count+'笔');
+												
+												$("#div-input").hide();
+												$("#checkinput_bg").hide();
+												$('#'+btn_now_id).removeClass('btn-check').addClass('btn-checked').text('已对账');
+											}
+											else{
+												alert("对账数据有误,请重新核查!");
+												return false;
+											}
 										}
 										else{
-											alert("对账数据有误,请重新核查!");
-											return false;
-										}
-									}
-									else{
-							                    		alert(res.error_text);
-							                    	}
-									},
-									function(){alert('网络好像不给力呢~ ( >O< ) ~');}	
-								);
-							}
-						}(i));
+								                    		alert(res.error_text);
+								                    	}
+										},
+										function(){alert('网络好像不给力呢~ ( >O< ) ~');}	
+									);
+								}
+							}(i));
+						// }
 					};
 				}(i));
 
