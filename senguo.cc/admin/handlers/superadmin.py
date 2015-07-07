@@ -1011,7 +1011,7 @@ class Comment(SuperBaseHandler):
 		data = []
 		order_info = {}
 		#apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
-		apply_list = self.session.query(models.CommentApply).all()
+		apply_list = self.session.query(models.CommentApply).order_by(desc(models.CommentApply.create_date)).all()
 		apply_count = self.session.query(models.CommentApply).filter(models.CommentApply.has_done==0).count()
 		for comment_apply in apply_list:
 			apply_id =comment_apply.id
@@ -1037,7 +1037,7 @@ class Comment(SuperBaseHandler):
 				comment = comment)
 			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},subpage="delete",data=data))
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},subpage="apply",data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -1066,12 +1066,349 @@ class Comment(SuperBaseHandler):
 # add by jyj 2015-7-5
 class CommentInfo(SuperBaseHandler):
 	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments("ajaxFlag")
 	def get(self):
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'del_apply':apply_count,'all_temp':'','all':'','auth_apply':''},subpage="delete",data=data))
+		output_data = []
+		output_data_tmp = []
+		page_size=15
+		page = 0
+		ajaxFlag = self.args["ajaxFlag"]
 
-	# @tornado.web.authenticated
-	# @SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
-	# def post(self):
+		order_list =  self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		
+		all_comment_order = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
+		all_count = all_comment_order.count()
+		full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
+		img_count = all_comment_order.filter(models.Order.comment_imgUrl.like('http:%')).count()
+
+		for order in order_list:
+			data = {}
+			comment_image_list = []
+
+			data["all_count"] = all_count
+			data["full_count"] = full_count
+			data["img_count"] = img_count
+
+			data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
+			data["nickname"] = self.session.query(models.Accountinfo.nickname).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
+			if len(data["nickname"]) > 6:
+				data["nickname"] = data["nickname"][0:6] + '...'
+			data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
+			if order.comment_create_date == None:
+				data["comment_create_date"] = ''
+			else:
+				data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
+			data["shop_name"] = self.session.query(models.Shop.shop_name).\
+						filter(models.Shop.id == order.shop_id).first()[0]
+			if len(data["shop_name"]) > 6:
+				data["shop_name"] = data["shop_name"][0:6] + '...'
+
+			data["shop_code"] = self.session.query(models.Shop.shop_code).\
+						filter(models.Shop.id == order.shop_id).first()[0]
+			data["order_num"] = order.num
+
+			if order.comment == None:
+				data["comment"] = "未评价"
+			else:
+				if len(order.comment) == 0:
+					data["comment"] = "未评价"
+				else:
+					data["comment"] = order.comment
+
+			if order.comment_imgUrl == None:
+				data["has_comment_img"] = 0
+			else:
+				if len(order.comment_imgUrl) == 0:
+					data["has_comment_img"] = 0
+				else:
+					data["has_comment_img"] = 1
+
+			if data["has_comment_img"] == 1:
+				comment_image_list = order.comment_imgUrl.split(';')
+				data["comment_image_list"] = comment_image_list
+
+			if order.commodity_quality == None:
+				data["commodity_quality"] = '未评价'
+			else:
+				data["commodity_quality"] = order.commodity_quality
+
+			if order.send_speed == None:
+				data["send_speed"] = '未评价'
+			else:
+				data["send_speed"] = order.send_speed
+
+			if order.shop_service == None:
+				data["shop_service"] = '未评价'
+			else:
+				data["shop_service"] = order.shop_service
+
+			if order.comment_reply == None:
+				data["comment_reply"] = "无回复"
+			else:
+				data["comment_reply"] = order.comment_reply
+			output_data_tmp.append(data)
+
+		output_data = output_data_tmp
+
+		if all_count//page_size < all_count/page_size:
+			page_sum = all_count//page_size + 1
+		else:
+			page_sum = all_count//page_size
+		if ajaxFlag != '1':
+			self.render('superAdmin/shop-comment-info.html',output_data = output_data,page_sum = page_sum,context=dict(count = {'del_apply':'','all_temp':'','all':'','auth_apply':''},subpage="info"))
+		else:
+			return self.send_success(page_sum = page_sum)
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('page:int','action:str')
+	def post(self):
+		page = self.args['page']
+		action = self.args['action']
+		page_size = 15
+
+		output_data_tmp = []
+		output_data = []
+
+		order_list_data = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
+		
+
+		if action == 'all':
+			order_list = order_list_data.offset(page*page_size).limit(page_size).all()
+			for order in order_list:
+				data = {}
+				comment_image_list = []
+
+				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
+							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
+							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				if len(data["nickname"]) > 6:
+					data["nickname"] = data["nickname"][0:6] + '...'
+				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
+				if order.comment_create_date == None:
+					data["comment_create_date"] = ''
+				else:
+					data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
+
+				data["shop_name"] = self.session.query(models.Shop.shop_name).\
+							filter(models.Shop.id == order.shop_id).first()[0]
+				if len(data["shop_name"]) > 6:
+					data["shop_name"] = data["shop_name"][0:6] + '...'
+
+				data["shop_code"] = self.session.query(models.Shop.shop_code).\
+							filter(models.Shop.id == order.shop_id).first()[0]
+				data["order_num"] = order.num
+
+				if order.comment == None:
+					data["comment"] = "未评价"
+				else:
+					if len(order.comment) == 0:
+						data["comment"] = "未评价"
+					else:
+						data["comment"] = order.comment
+
+				if order.comment_imgUrl == None:
+					data["has_comment_img"] = 0
+				else:
+					if len(order.comment_imgUrl) == 0:
+						data["has_comment_img"] = 0
+					else:
+						data["has_comment_img"] = 1
+
+				if data["has_comment_img"] == 1:
+					comment_image_list = order.comment_imgUrl.split(';')
+					data["comment_image_list"] = comment_image_list
+
+				if order.commodity_quality == None:
+					data["commodity_quality"] = '未评价'
+				else:
+					data["commodity_quality"] = order.commodity_quality
+
+				if order.send_speed == None:
+					data["send_speed"] = '未评价'
+				else:
+					data["send_speed"] = order.send_speed
+
+				if order.shop_service == None:
+					data["shop_service"] = '未评价'
+				else:
+					data["shop_service"] = order.shop_service
+
+				if order.comment_reply == None:
+					data["comment_reply"] = "无回复"
+				else:
+					data["comment_reply"] = order.comment_reply
+
+				output_data_tmp.append(data)
+
+			output_data = output_data_tmp
+			all_count = order_list_data.count()
+			if all_count//page_size < all_count/page_size:
+				page_sum = all_count//page_size + 1
+			else:
+				page_sum = all_count//page_size
+
+		elif action == 'full':
+			order_list = order_list_data.filter(models.Order.commodity_quality == 100,\
+							 models.Order.send_speed ==100,models.Order.shop_service == 100).offset(page*page_size).limit(page_size).all()
+			for order in order_list:
+				data = {}
+				comment_image_list = []
+
+				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
+							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
+							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				if len(data["nickname"]) > 6:
+					data["nickname"] = data["nickname"][0:6] + '...'
+
+				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
+				if order.comment_create_date == None:
+					data["comment_create_date"] = ''
+				else:
+					data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
+
+				data["shop_name"] = self.session.query(models.Shop.shop_name).\
+							filter(models.Shop.id == order.shop_id).first()[0]
+				if len(data["shop_name"]) > 6:
+					data["shop_name"] = data["shop_name"][0:6] + '...'
+
+				data["shop_code"] = self.session.query(models.Shop.shop_code).\
+							filter(models.Shop.id == order.shop_id).first()[0]
+				data["order_num"] = order.num
+
+				if order.comment == None:
+					data["comment"] = "未评价"
+				else:
+					if len(order.comment) == 0:
+						data["comment"] = "未评价"
+					else:
+						data["comment"] = order.comment
+
+				if order.comment_imgUrl == None:
+					data["has_comment_img"] = 0
+				else:
+					if len(order.comment_imgUrl) == 0:
+						data["has_comment_img"] = 0
+					else:
+						data["has_comment_img"] = 1
+
+				if data["has_comment_img"] == 1:
+					comment_image_list = order.comment_imgUrl.split(';')
+					data["comment_image_list"] = comment_image_list
+
+				if order.commodity_quality == None:
+					data["commodity_quality"] = '未评价'
+				else:
+					data["commodity_quality"] = order.commodity_quality
+
+				if order.send_speed == None:
+					data["send_speed"] = '未评价'
+				else:
+					data["send_speed"] = order.send_speed
+
+				if order.shop_service == None:
+					data["shop_service"] = '未评价'
+				else:
+					data["shop_service"] = order.shop_service
+
+				if order.comment_reply == None:
+					data["comment_reply"] = "无回复"
+				else:
+					data["comment_reply"] = order.comment_reply
+
+				output_data_tmp.append(data)
+
+			output_data = output_data_tmp
+			
+			full_count = order_list_data.filter(models.Order.commodity_quality == 100,\
+							 models.Order.send_speed ==100,models.Order.shop_service == 100).count()
+			if full_count//page_size < full_count/page_size:
+				page_sum = full_count//page_size + 1
+			else:
+				page_sum = full_count//page_size
+
+		elif action == 'img':
+			order_list = order_list_data.filter(models.Order.comment_imgUrl.like('http:%')).offset(page*page_size).limit(page_size).all()
+			for order in order_list:
+				data = {}
+				comment_image_list = []
+
+				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
+							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
+							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				if len(data["nickname"]) > 6:
+					data["nickname"] = data["nickname"][0:6] + '...'
+				
+				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
+				if order.comment_create_date == None:
+					data["comment_create_date"] = ''
+				else:
+					data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
+
+				data["shop_name"] = self.session.query(models.Shop.shop_name).\
+							filter(models.Shop.id == order.shop_id).first()[0]
+				if len(data["shop_name"]) > 6:
+					data["shop_name"] = data["shop_name"][0:6] + '...'
+
+				data["shop_code"] = self.session.query(models.Shop.shop_code).\
+							filter(models.Shop.id == order.shop_id).first()[0]
+				data["order_num"] = order.num
+
+				if order.comment == None:
+					data["comment"] = "未评价"
+				else:
+					if len(order.comment) == 0:
+						data["comment"] = "未评价"
+					else:
+						data["comment"] = order.comment
+
+				if order.comment_imgUrl == None:
+					data["has_comment_img"] = 0
+				else:
+					if len(order.comment_imgUrl) == 0:
+						data["has_comment_img"] = 0
+					else:
+						data["has_comment_img"] = 1
+
+				if data["has_comment_img"] == 1:
+					comment_image_list = order.comment_imgUrl.split(',')
+					data["comment_image_list"] = comment_image_list
+
+				if order.commodity_quality == None:
+					data["commodity_quality"] = '未评价'
+				else:
+					data["commodity_quality"] = order.commodity_quality
+
+				if order.send_speed == None:
+					data["send_speed"] = '未评价'
+				else:
+					data["send_speed"] = order.send_speed
+
+				if order.shop_service == None:
+					data["shop_service"] = '未评价'
+				else:
+					data["shop_service"] = order.shop_service
+
+				if order.comment_reply == None:
+					data["comment_reply"] = "无回复"
+				else:
+					data["comment_reply"] = order.comment_reply
+
+				output_data_tmp.append(data)
+			output_data = output_data_tmp
+
+			img_count = order_list_data.filter(models.Order.comment_imgUrl.like('http:%')).count()
+			if img_count//page_size < img_count/page_size:
+				page_sum = img_count//page_size + 1
+			else:
+				page_sum = img_count//page_size
+
+		else:
+			return self.send_error(404)
+		return self.send_success(output_data = output_data,page_sum = page_sum)
 ## 
 
 # 店铺 - 店铺认证申请

@@ -110,11 +110,17 @@ $(document).ready(function(){
     insertShop(page_shop);
 
     // add by jyj 2015-7-5
-}).on("click",".head-choose li",function(){
-    var index = $(this).index();
-    $(".head-choose li").removeClass("active").eq(index).addClass("active");
-});
+}).on("click",".info-list",function(){
+    $(".head-choose li").removeClass("active");
+    $(".info-list").addClass("active");
+    window.location = "/super/comment_info";
+    // add by jyj 2015-7-6
+}).on("click",".apply-list",function(){
+    $(".head-choose li").removeClass("active");
+    $(".apply-list").addClass("active");
+    window.location = "/super/comment_apply";
 // 
+});
 
 function insertShop(page){
     var action= $.getUrlParam('action');

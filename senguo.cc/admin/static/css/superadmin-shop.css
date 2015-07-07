@@ -93,8 +93,11 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .head-div{margin-bottom: 20px;}
 .w60{width:60px;height:60px;}
 .tit4{display:inline-block;width:150px;}
+.tit5{display:inline-block;width:80px;}
+.tit6{display:inline-block;width:170px;}
+.tit7{display:inline-block;width:130px;}
 /*分页样式*/
-.list-pagination{width:100%;margin-top:20px;margin-bottom:60px;}
+.list-pagination{width:100%;margin-top:5px;margin-bottom:40px;}
 .list-pagination ul{float:right;margin-right:0px;}
 .list-pagination li{float:left;margin-left:5px;line-height:28px;}
 .list-pagination .page-btn{display:inline-block;width:26px;height:26px;border:1px solid #ccc;border-radius:1px;background:url("../images/container-icon.gif") no-repeat;}
@@ -107,6 +110,14 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .list-pagination .input-page{width:84px;height:26px;border:1px solid #ccc;border-radius:1px;color:#999;text-align:center;}
 .list-pagination .jump-to{display:inline-block;width:60px;height:26px;border:1px solid #ccc;border-radius:1px;text-align:center;color:#666;line-height:26px;}
 
+/**/
+
+/*add by jyj 2015-7-6*/
+.w80{width:80px;height:80px;}
+.mt5{margin-top: 5px;}
+.mb5{margin-bottom: 30px !important;}
+.grey-txt{color:#999!important;}
+.talc{text-align: center;}
 /**/
 
 

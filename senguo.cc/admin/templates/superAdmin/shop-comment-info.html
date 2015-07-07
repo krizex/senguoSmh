@@ -1,0 +1,128 @@
+{% extends 'shop-comment-base.html'%}
+<!-- add by jyj 2015-7-6 -->
+{% block info %}
+    
+<div class="wrap-comment2">
+        <div class="users-pagination list-pagination">
+           <span>评价筛选:</span>
+            <select id="select-item"  style="width:200px"  >
+                <option class="all-select" value="0">所有评价 (<span>{{output_data[0]["all_count"]}}</span>)</option>
+                <option class="full-select" value="1">满分评价 (<span>{{output_data[0]["full_count"]}}</span>)</option>
+                <option class="img-select" value="2">有图评价 (<span>{{output_data[0]["img_count"]}}</span>)</option>
+            </select>
+
+             <ul>
+                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">{{page_sum}}</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+                <li><a href="javascript:;" class="jump-to">跳转</a></li>
+             </ul>
+      </div>
+
+    <div class="admin-right  pull-right" >
+      <ul class="info-ul">
+       {% for data in output_data %}
+        <li class="list-group-item  clearfix">
+            <div class="col-lg-1 col-md-1 boder-rd">
+                <img src="{{data["headimgurl"] or '/static/images/test-img.jpg'}}" class="pull-left w60">
+            </div>
+            <div class="col-lg-7 col-md-7">
+                <p> 
+                    <a href="/super/user" target="_blank"> <span class="text-blue tit7">{{data["nickname"]}}</span></a>
+                    <span class="tit6 grey-txt">下单:<span class="create-date">{{data["create_date"]}}</span></span>
+                    <span class="grey-txt">评价:<span class="comment-create-date">{{data["comment_create_date"]}}</span></span>
+                </p>
+                <p class="mt5">
+                     <span>订单评价:{{data["comment"]}}</span>
+                </p>
+                {% if data["has_comment_img"] == 1%}
+                <p class="mt5">
+                    <span class="pull-left">评论照片:</span><br>
+                </p>
+                <p class="mt5">
+                    {% for imgi in data["comment_image_list"] %}
+                    <img src="{{imgi}}" class="pull-left w80">
+                    {% end %}
+                   <br><br><br><br>
+                </p>
+                {% end %}
+                <p class="mt5">
+                     <span class="pull-left">商家回复:{{data["comment_reply"]}}</span>
+                </p>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <p>   
+                            <span class="tit7">店铺:<a href="/{{data["shop_code"]}}" target="_blank"> <span class="text-blue">{{data["shop_name"]}}</span></a></span>
+                            <span>订单号:<span class="text-blue">{{data["order_num"]}}</span></span>
+                </p>
+                <p class="mt5">
+                            <span class="tit5">质量:{{data["commodity_quality"]}}</span>
+                            <span class="tit5">速度:{{data["send_speed"]}}</span>
+                            <span class="tit5">服务:{{data["shop_service"]}}</span>
+                </p>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+</div>
+
+<ul class="info-ul-tmp hidden">
+        <li class="list-group-item  clearfix">
+            <div class="col-lg-1 col-md-1 boder-rd">
+                <img src="{{data["headimgurl"] or '/static/images/test-img.jpg'}}" class="headimgurl pull-left w60">
+            </div>
+            <div class="col-lg-7 col-md-7">
+                <p>
+                    <a href="/super/user" target="_blank"> <span class="nickname text-blue tit7">{{data["nickname"]}}</span></a>
+                    <span class="tit6 grey-txt">下单:<span class="create-date">{{data["create_date"]}}</span></span>
+                    <span class="grey-txt">评价:<span class="comment-create-date">{{data["comment_create_date"]}}</span></span>
+                </p>
+                <p class="mt5">
+                     <span>订单评价:<span class="comment">{{data["comment"]}}</span></span>
+                </p>
+                <p class="comment-img-txt mt5 hidden">
+                    <span class="pull-left">评论照片:</span><br>
+                </p>
+                <p class="comment-image-list mt5 hidden">
+                   
+                </p>
+                <p class="mt5">
+                     <span class="pull-left">商家回复:<span class="comment-reply">{{data["comment_reply"]}}</span></span>
+                </p>
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <p>   
+                            <span class="tit7">店铺:<a class="shop-link" href="/{{data["shop_code"]}}" target="_blank"> <span class="shop-name text-blue">{{data["shop_name"]}}</span></a></span>
+                            <span>订单号:<span class="order-num text-blue">{{data["order_num"]}}</span></span>
+                </p>
+                <p class="mt5">
+                            <span class="tit5">质量:<span class="commodity-quality">{{data["commodity_quality"]}}</span></span>
+                            <span class="tit5">速度:<span class="send-speed">{{data["send_speed"]}}</span></span>
+                            <span class="tit5">服务:<span class="shop-service">{{data["shop_service"]}}</span></span>
+                </p>
+            </div>
+        </li>
+    </ul>
+
+    <div class="users-pagination list-pagination">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now">1</span>/<span class="page-total">{{page_sum}}</span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+</div>
+{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
+<script src="{{static_url('js/superadmin-comment-info.js')}}"></script>
+
+{% end %}

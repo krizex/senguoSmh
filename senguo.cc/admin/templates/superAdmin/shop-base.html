@@ -23,10 +23,9 @@
 <div class="admin-left text-right pull-left">
     <ul class="nav nav-stacked shop-manage-nav" role="tablist">
         <!--  修改时间：2015.6.8 by cm -->
-        <!-- <li class="active"><a href="{{reverse_url('superShopManage')}}?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1">入驻申请({{count['all_temp']}})</a></li> -->
-         <li class="{{apply_active}}}"><a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1">入驻申请({{count['all_temp']}})</a></li>
+         <li class="{{apply_active}}"><a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1">入驻申请({{count['all_temp']}})</a></li>
         <li class="{{all_active}}"><a href="{{reverse_url('superShopManage')}}?action=all&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1">所有店铺({{count['all']}})</a></li>
-        <li class="{{delete_active}}"><a href="{{reverse_url('supercomment')}}">删除评论申请({{count['del_apply']}})</a></li>
+        <li class="{{delete_active}}"><a href="{{reverse_url('supercommentInfo')}}">店铺评论({{count['del_apply']}})</a></li>
         <li class="{{auth_active}}"><a href="{{reverse_url('superShopAuth')}}?page=0">店铺认证申请({{count['auth_apply']}})</a></li>
     </ul>
 </div>
