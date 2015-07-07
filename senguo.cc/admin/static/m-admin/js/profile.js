@@ -3,5 +3,5 @@
  */
 $(document).ready(function(){
     var height = $(window).height();
-    $(".container").height(height-40);
+    $(".container").css("minHeight",height-40);
 });
