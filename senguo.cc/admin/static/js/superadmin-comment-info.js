@@ -2,6 +2,7 @@ var page = 0;
 var page_sum = 1;
 var value = 0;
 $(document).ready(function(){
+	$('#select-item').val(0);
 	initPagesum();
 }).on('change','#select-item',function(){
 	page = 0;
