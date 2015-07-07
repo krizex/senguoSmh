@@ -1986,7 +1986,7 @@ class CheckCash(SuperBaseHandler):
 						offset += 1
 				else:
 					pass
-					
+			print(output_data)	
 			return self.send_success(output_data=output_data,page_sum = page_sum)
 
 #add by jyj 2015-6-16

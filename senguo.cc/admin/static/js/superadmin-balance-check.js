@@ -86,9 +86,9 @@ function showCheckHistory(page,action){
 					var item = '<tr>'
 					+  '<td width="51px" class="mlf10 txt-al">{{create_time}}</td>'
 					+  '<td width="65px" class="txt-ar">{{total}}元<br>{{total_count}}笔<br><span class="green-txt">{{total}}元<br>{{total_count}}笔</span></td>'
-					+  '<td width="80px" class="txt-ar">{{wx}}元<br>{{wx_count}}笔<br><span class="green-txt">{{total}}元<br>{{total_count}}笔</span></td>'
-					+  '<td width="80px" class="txt-ar">{{alipay}}元<br>{{alipay_count}}笔<br><span class="green-txt">{{total}}元<br>{{total_count}}笔</span></td>'
-					+  '<td width="80px" class="txt-ar">{{widt}}元<br>{{widt_count}}笔<br><span class="green-txt">{{total}}元<br>{{total_count}}笔</span></td>'
+					+  '<td width="80px" class="txt-ar">{{wx}}元<br>{{wx_count}}笔<br><span class="green-txt">{{wx}}元<br>{{wx_count}}笔</span></td>'
+					+  '<td width="80px" class="txt-ar">{{alipay}}元<br>{{alipay_count}}笔<br><span class="green-txt">{{alipay}}元<br>{{alipay_count}}笔</span></td>'
+					+  '<td width="80px" class="txt-ar">{{widt}}元<br>{{widt_count}}笔<br><span class="green-txt">{{widt}}元<br>{{widt_count}}笔</span></td>'
 					+  '<td width="50px" class="txt-ar"><button id="btn-check1" type="button" class="btn-checked">已对账</button></td>'
 					    '</tr>'
 				}
