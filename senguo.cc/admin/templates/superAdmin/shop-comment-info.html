@@ -17,12 +17,12 @@
                 <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
                 <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
                 <li><a href="javascript:;" class="jump-to">跳转</a></li>
-             </ul>
-      </div>
+            </ul>
+        </div>
 
     <div class="admin-right  pull-right" >
-      <ul class="info-ul">
-       {% for data in output_data %}
+        <ul class="info-ul">
+        {% for data in output_data %}
         <li class="list-group-item  clearfix">
             <div class="col-lg-1 col-md-1 boder-rd">
                 <img src="{{data["headimgurl"] or '/static/images/test-img.jpg'}}" class="pull-left w60">
@@ -44,11 +44,11 @@
                     {% for imgi in data["comment_image_list"] %}
                         <a href="{{imgi}}" target="_blank" class="comment-img-big"><img src="{{imgi}}" class="pull-left w80 comment-img-big"></a>
                     {% end %}
-                   <br><br><br><br>
+                    <br><br><br><br>
                 </p>
                 {% end %}
                 <p class="mt5">
-                     <span class="pull-left"><span class="grey-txt">商家回复：</span>{{data["comment_reply"]}}</span>
+                    <span class="pull-left"><span class="grey-txt">商家回复：</span>{{data["comment_reply"]}}</span>
                 </p>
             </div>
             <div class="col-lg-4 col-md-4">
@@ -93,7 +93,7 @@
             </div>
             <div class="col-lg-4 col-md-4">
                 <p>   
-                            <span class="tit7"><span class="grey-txt">店铺：</span><a class="shop-link" href="/{{data["shop_code"]}}" target="_blank"> <span class="shop-name text-blue">{{data["shop_name"]}}</span></a></span>
+                            <span class="tit7"><span class="grey-txt">店铺：</span><a class="shop-link" href="/{{data["shop_code"]}}" target="_blank"><span class="shop-name text-blue">{{data["shop_name"]}}</span></a></span>
                             <span><span class="grey-txt">订单号：</span><span class="order-num text-blue">{{data["order_num"]}}</span></span>
                 </p>
                 <p class="mt5">
