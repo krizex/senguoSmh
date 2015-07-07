@@ -1,6 +1,19 @@
-{% extends 'shop-base.html'%}
-{% block shop %}
-    <div class="wrap-comment">
+{% extends 'shop-comment-base.html'%}
+<!-- change and add by jyj 2015-7-5 -->
+{% block apply %}
+    
+<div class="wrap-comment2">
+        <div class="users-pagination list-pagination">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">1</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+                <li><a href="javascript:;" class="jump-to">跳转</a></li>
+            </ul>
+        </div>
         <ul class="com-list">
         {% for  data in context['data']%}
             <li data-id="{{data[7]}}" class="item">
@@ -47,9 +60,10 @@
                      <span class="super-opinion red-txt ">拒绝删除：<span class="super-reason">{{data[4]}}</span></span>
                  </div>
             </li>
-            {% end %}
+         {% end %}
         </ul>
     </div>
+
     <div class="wrap-com-pop hide">
         <div class="com-pop ov-center">
             <div class="pop-title">拒绝删除理由：</div>
@@ -61,7 +75,20 @@
                 <a href="javascript:;" class="grey-btn cancel-pop">取消</a>
             </div>
         </div>
-    </div>
+    </div> 
+    <div class="users-pagination list-pagination mb5">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">1</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+                <li><a href="javascript:;" class="jump-to">跳转</a></li>
+            </ul>
+        </div>
+    
+</div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>

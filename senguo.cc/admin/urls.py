@@ -150,8 +150,11 @@ handlers = [
 	(r"/super/shopProfile/(\d+)", handlers.superadmin.ShopProfile, {}, "superShopProfile"),
 	#(r"/super/shopclose",handlers.superadmin.ShopClose,{},"shopclose"),
 	#test url
-	(r"/super/comment",handlers.superadmin.Comment,{},"supercomment"),
 
+	# add and change by jyj 2015-7-6
+	(r"/super/comment_apply",handlers.superadmin.Comment,{},"supercommentApply"),
+	(r"/super/comment_info",handlers.superadmin.CommentInfo,{},"supercommentInfo"),
+	##
 
 	## 店铺申请接入管理
 	# 所有店铺
