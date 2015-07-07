@@ -1053,7 +1053,7 @@ class Comment(SuperBaseHandler):
 			"auth_apply":auth_apply
 			}
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = count,subpage="apply",subpage2="",data=data))
+		self.render('superAdmin/shop-comment-apply.html',context=dict(count = count,subpage="comment",subpage2="",data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
