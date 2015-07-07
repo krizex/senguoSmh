@@ -35,7 +35,7 @@ function initBmap() {
         });
         var areatype = parseInt($("#bmap").attr("data-type"));
         if(areatype == 1){
-            var spoint =  JSON.parse($("#bmap").attr("data-roundness"));
+            var spoint = JSON.parse($("#bmap").attr("data-roundness"));
             var radius = parseInt($("#bmap").attr("data-radius"));
             var circle = new BMap.Circle(spoint,radius, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
             map.addOverlay(circle);
@@ -61,8 +61,11 @@ function initBmap() {
     }
 }
 
-var int=self.setTimeout("clock()",100);
-var int=self.setInterval("clock()",1000);
+//var int=self.setTimeout("clock()",100);
+var timer=self.setInterval("clock()",100);
+setTimeout(function(){
+    clearInterval(timer);
+},2000);
 function clock() {
     $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
     $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
