@@ -146,26 +146,27 @@ class customerGoods(CustomerBaseHandler):
 
 		charge_types= []
 		for charge_type in good.charge_types:
-			unit  = charge_type.unit
-			unit =self.getUnit(unit)
-			limit_today = False
-			allow_num = ''
-			try:
-				limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
-				.order_by(models.GoodsLimit.create_time.desc()).first()
-			except:
-				limit_if = None
-			if limit_if and good.limit_num !=0:
-				time_now = datetime.datetime.now().strftime('%Y-%m-%d')
-				create_time = limit_if.create_time.strftime('%Y-%m-%d')
-				if time_now == create_time:
-					limit_today = True
-					if limit_if.limit_num == good.limit_num:
-						allow_num = limit_if.allow_num
-					else:
-						allow_num = good.limit_num - limit_if.buy_num
-			charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-				'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+			if charge_type.active != 0:
+				unit  = charge_type.unit
+				unit =self.getUnit(unit)
+				limit_today = False
+				allow_num = ''
+				try:
+					limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
+					.order_by(models.GoodsLimit.create_time.desc()).first()
+				except:
+					limit_if = None
+				if limit_if and good.limit_num !=0:
+					time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+					create_time = limit_if.create_time.strftime('%Y-%m-%d')
+					if time_now == create_time:
+						limit_today = True
+						if limit_if.limit_num == good.limit_num:
+							allow_num = limit_if.allow_num
+						else:
+							allow_num = good.limit_num - limit_if.buy_num
+				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -398,8 +399,12 @@ class ShopArea(CustomerBaseHandler):
 		lon = shop.lon
 		shop_name = shop.shop_name
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
-
-		return self.render('customer/shop-area.html',context=dict(subpage=''),address = address,lat = lat ,lon = lon,shop_name=shop_name)
+		area_type = shop.area_type
+		roundness = shop.roundness
+		area_radius = shop.area_radius
+		area_list = shop.area_list
+		return self.render('customer/shop-area.html',context=dict(subpage=''),\
+			address = address,lat = lat ,lon = lon,shop_name=shop_name,area_type=area_type,roundness=roundness,area_radius=area_radius,area_list=area_list)
 
 # 个人中心
 class CustomerProfile(CustomerBaseHandler):
@@ -925,7 +930,7 @@ class Market(CustomerBaseHandler):
 			  # 添加关注
 			self.session.commit()
 
-		print('login in second ')
+		# print('login in second ')
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -1038,27 +1043,28 @@ class Market(CustomerBaseHandler):
 					
 				charge_types= []
 				for charge_type in fruit.charge_types:
-					unit  = charge_type.unit
-					unit =self.getUnit(unit)
-					
-					limit_today = False
-					allow_num = ''
-					try:
-						limit_if = session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
-						.order_by(models.GoodsLimit.create_time.desc()).first()
-					except:
-						limit_if = None
-					if limit_if and fruit.limit_num !=0:
-						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
-						create_time = limit_if.create_time.strftime('%Y-%m-%d')
-						if time_now == create_time:
-							limit_today = True
-							if limit_if.limit_num == fruit.limit_num:
-								allow_num = limit_if.allow_num
-							else:
-								allow_num = fruit.limit_num - limit_if.buy_num
-					charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-						'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
+					if charge_type.active !=0:
+						unit  = charge_type.unit
+						unit =self.getUnit(unit)
+						
+						limit_today = False
+						allow_num = ''
+						try:
+							limit_if = session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
+							.order_by(models.GoodsLimit.create_time.desc()).first()
+						except:
+							limit_if = None
+						if limit_if and fruit.limit_num !=0:
+							time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+							create_time = limit_if.create_time.strftime('%Y-%m-%d')
+							if time_now == create_time:
+								limit_today = True
+								if limit_if.limit_num == fruit.limit_num:
+									allow_num = limit_if.allow_num
+								else:
+									allow_num = fruit.limit_num - limit_if.buy_num
+						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
@@ -1101,7 +1107,7 @@ class Market(CustomerBaseHandler):
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
-		print(total_page)
+		# print(total_page)
 		return self.send_success(data = fruit_list ,nomore = nomore,group_id=group_id)
 
 	@CustomerBaseHandler.check_arguments("page?:int","search?:str")
@@ -1133,7 +1139,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		offset = (page -1) * page_size
 		nomore = False
-		print('login in commodity_list')
+		# print('login in commodity_list')
 
 		customer_id = self.current_user.id
 		shop_id = int(self.get_cookie('market_shop_id'))
@@ -2408,7 +2414,11 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	@tornado.web.asynchronous
 	def get(self):
-		import gevent
+		# import gevent
+		import requests
+		import json
+		import multiprocessing
+		from multiprocessing import Process
 		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session	
@@ -2432,7 +2442,7 @@ class InsertData(CustomerBaseHandler):
 		# 	# shop_auth_fail_msg('13163263783','woody','woody')
 		# 	self.render('customer/storage-change.html')
 		# gevent.spawn(async_task)
-		return self.success
+
 
 # 支付超时判断
 # 返回：		

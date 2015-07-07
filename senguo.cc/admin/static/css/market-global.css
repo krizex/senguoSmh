@@ -129,7 +129,7 @@ button:focus{outline:0;}
 .padding-right-none{padding-right:0;}
 .phone-box{width:100%;min-width:320px;max-width:800px;margin:0 auto;padding-bottom:100px;background-color: #F0F4F0;min-height: 100%;overflow-x: hidden;}
 
-.bottom-nav{max-width:800px;margin:0 auto;height:50px;overflow:hidden;border-top:1px solid #e7e7eb;background:rgba(252,252,252,0.9);}
+.bottom-nav{max-width:800px;margin:0 auto;height:50px;overflow:hidden;border-top:1px solid #e7e7eb;background:rgba(252,252,252,0.9);opacity:0.95;}
 .bottom-nav ul{margin-bottom:0;}
 .bottom-nav li{text-align:center;position:relative;height:46px;}
 .bottom-nav li a{display:block;background-size:2em !important;padding-top:7px;}

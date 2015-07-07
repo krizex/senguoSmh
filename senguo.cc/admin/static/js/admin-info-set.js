@@ -221,16 +221,16 @@ $(document).ready(function(){
     );
 
 }).on("click","#edit-area",function(){
-    $(".pop-bmap").removeClass("hidden");
+    $(".pop-bmap").removeClass("invisible");
 }).on("click",".cancel-btn",function(){
-    $(".pop-bmap").addClass("hidden");
+    $(".pop-bmap").addClass("invisible");
 }).on("click",".pop-bmap",function(e){
     if($(e.target).closest(".pop-content").size()==0){
-        $(".pop-bmap").addClass("hidden");
+        $(".pop-bmap").addClass("invisible");
     }
 });
 var pPoint = null;
-
+var area_data=null;
 //初始化百度地图
 function initBmap(){
     var address = $("#info_address").html();
@@ -252,13 +252,6 @@ function initBmap(){
         map.centerAndZoom(point, 17);
         initPoint(map,point,myGeo);
     }
-    /*配送区域地图*/
-    map1 = new BMap.Map("maparea");
-    map1.centerAndZoom(pPoint, 17);
-    map1.enableScrollWheelZoom();
-    marker1 = new BMap.Marker(pPoint);
-    map1.addOverlay(marker1);
-    //选择配送范围形状
     var circle,polygon;
     $(".map-sharp-list li").on("click",function(){
         var lngs = pPoint.lng;
@@ -266,26 +259,31 @@ function initBmap(){
         map1.removeOverlay(circle);
         map1.removeOverlay(polygon);
         var index = $(this).index();
-        $(".map-sharp-list li").removeClass("active").eq(index).addClass("active");;
+        $(".map-sharp-list li").removeClass("active").eq(index).addClass("active");
         if(index == 0){//圆形
-            circle = new BMap.Circle(pPoint,500, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
+            circle = new BMap.Circle(pPoint,200, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
             map1.addOverlay(circle);
             circle.enableEditing();
-        }else{//方形
+        }else if(index==1){//方形
             polygon = new BMap.Polygon([
-                new BMap.Point(lngs-0.01,lats),
-                new BMap.Point(lngs,lats-0.01),
-                new BMap.Point(lngs+0.01,lats),
-                new BMap.Point(lngs,lats+0.01)
+                new BMap.Point(lngs-0.002,lats),
+                new BMap.Point(lngs,lats-0.002),
+                new BMap.Point(lngs+0.002,lats),
+                new BMap.Point(lngs,lats+0.002)
             ], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
             map1.addOverlay(polygon);
             polygon.enableEditing();
         }
     });
     $("#ok-area").on("click",function(){//保存区域信息
-        //infoEdit($(this));
-        console.log(circle.getRadius());
-        console.log(polygon.getPath());
+        area_data={
+            deliver_area:$("#shop-area-text").val().trim(),
+            area_type:parseInt($(".map-sharp-list").children(".active").index())+1,
+            roundness:circle?JSON.stringify(circle.getCenter()):"",
+            area_radius:circle?circle.getRadius():"",
+            area_list:polygon?JSON.stringify(polygon.getPath()):""
+        }
+        infoEdit($(this));
     })
     $(document).on("keydown",function(ev){
         if(ev.keyCode==13){
@@ -340,7 +338,6 @@ function initBmap(){
                 initProviceAndCityCode(addComp.province,addComp.city);
                 $("#hand-search").html("手动标注位置");
                 infoEdit($("#save-lbs"),true);//保存坐标
-                //Tip("地理位置已经获取，不要忘记点击保存哦！");
             });
             $("#info_address").attr("data-lng",p.lng).attr("data-lat", p.lat);
             pPoint = p;
@@ -348,6 +345,28 @@ function initBmap(){
             map1.removeOverlay(marker1);
             marker1 = new BMap.Marker(pPoint);
             map1.addOverlay(marker1);
+        }
+        /*配送区域地图*/
+        map1 = new BMap.Map("maparea");
+        map1.centerAndZoom(pPoint, 17);
+        map1.enableScrollWheelZoom();
+        marker1 = new BMap.Marker(pPoint);
+        map1.addOverlay(marker1);
+        //选择配送范围形状
+        var areatype = parseInt($(".pop-bmap").attr("data-type"));
+        if(areatype>0){
+            $(".map-sharp-list li").removeClass("active").eq(areatype-1).addClass("active");
+        }
+        if(areatype == 1){
+            var spoint =  JSON.parse($(".pop-bmap").attr("data-roundness"));
+            var radius = parseInt($(".pop-bmap").attr("data-radius"));
+            circle = new BMap.Circle(spoint,radius, {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
+            map1.addOverlay(circle);
+            circle.enableEditing();
+        }else if(areatype == 2){
+            polygon = new BMap.Polygon(JSON.parse($(".pop-bmap").attr("data-arealist")), {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+            map1.addOverlay(polygon);
+            polygon.enableEditing();
         }
     }
 }
@@ -453,10 +472,7 @@ function infoEdit(target,is_address){
     else if(action_name=='area')
     {
         action='edit_deliver_area';
-        var deliver_area=$('#shop-area-text').val().trim();
-        data={
-            deliver_area:deliver_area
-        }
+        data=area_data;
     }
     else if(action_name=='entity')
     {
@@ -521,7 +537,9 @@ function infoEdit(target,is_address){
                 }
                 else if(action_name=='area')
                 {
-                    $('.deliver_area').text(deliver_area);
+                    $('.deliver_area').text(area_data.deliver_area);
+                    $(".pop-bmap").addClass("invisible");
+                    Tip("店铺配送区域设置成功");
                 }
                 else if(action_name=='entity')
                 {
@@ -530,7 +548,7 @@ function infoEdit(target,is_address){
                  else if(action_name=='status'){
                     $('.shop-status').text(status_text);
                  }
-                if(action_name!='address'){
+                if(action_name!='address' || action_name!='area'){
                     target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
                 }
             }

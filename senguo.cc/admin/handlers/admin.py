@@ -243,7 +243,7 @@ class Realtime(AdminBaseHandler):
 			follower_sum=follower_sum,on_num=on_num)
 
 
-#websocket 版后台轮询
+# websocket 版后台轮询
 class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 	session = DBSession()
 	def open(self):
@@ -1040,7 +1040,7 @@ class Shelf(AdminBaseHandler):
 			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
 				return self.send_fail("请至少添加一种计价方式")
 			if len(data["intro"]) > 100:
-				return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+				return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 			args={}
 			args["name"] = data["name"]
 			args["saled"] = data["saled"]
@@ -1721,7 +1721,9 @@ class Goods(AdminBaseHandler):
 					except:
 						return self.send_fail('del_charge_types error')
 					# print(q)
-					q.delete(synchronize_session=False)
+					# q.delete(synchronize_session=False)
+					for charge in q:
+						charge.update(session=self.session,active=0)
 
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
 				if (not detail_describe) or detail_describe == "":
@@ -2770,11 +2772,6 @@ class ShopConfig(AdminBaseHandler):
 			shop_city = int(data["shop_city"])
 			lat       = float(data["lat"])
 			lon       = float(data['lon'])
-			area_type = int(data["area_type"])
-			roundness_lat   = float(data["roundness_lat"])
-			roundness_lon   = float(data["roundness_lon"])
-			area_radius = int(data["area_radius"])
-			area_list = data["area_list"]
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
@@ -2783,13 +2780,17 @@ class ShopConfig(AdminBaseHandler):
 			shop.lat       = lat
 			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
-			shop.area_type       = area_type
-			shop.roundness_lat   = roundness_lat
-			shop.roundness_lon   = roundness_lon
-			shop.area_radius     = area_radius
-			shop.area_list       = area_list
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
+			if "area_type" in data and data["area_type"] !="":
+				shop.area_type  = int(data["area_type"])
+			if "roundness" in data and data["roundness"] !="":
+				shop.roundness =  data["roundness"]
+			if "area_radius" in data and data["area_radius"] !="":
+				shop.area_radius  = int(data["area_radius"])
+			if "area_list" in data and data["area_list"] !="":
+				shop.area_list = data["area_list"]
+			
 		elif action == "edit_have_offline_entity":
 			shop.have_offline_entity = data["have_offline_entity"]
 		elif action =="shop_status":
@@ -3199,8 +3200,43 @@ class MessageManage(AdminBaseHandler):
 
 	
 
-				
 
 
-			
+class printTest(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('action?:str')
+	def get(self):
+		import hashlib
+		import time
+		import requests
+		partner=1693 #用户ID
+		apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
+		# partner=6 #用户 ID
+		# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
+		machine_code='613' #打印机终端号
+		mkey='123456' #打印机密钥
+		msign='123456'
+		username='senguo' #用户名
+		mobilephone='15982424080' #打印机内的手机号
+		printname='天府广场店' #打印机名称
+		time=int(time.time()) #当前时间戳
+		content= "测试打印" #打印内容
+		if self.args["action"] == "order":
+			sign=apikey+'machine_code'+machine_code+'partner'+str(partner)+'time'+str(time)+mkey #生成的签名加密
+			sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
+			res1={"partner":partner,"machine_code":machine_code,"content":content,"time":time,"sign":sign}
+			final= 'partner='+str(partner)+'&machine_code='+machine_code+'&time='+str(time)+'&sign='+sign+'&content='+content
+			r=requests.post("http://open.10ss.net:8888",data=json.dumps(final))
+			print(r.url)
+			print(r.status_code)
+			print(r.text)
+		elif self.args["action"] == "add":
+			sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
+			sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
+			res1={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
+			final= 'partner='+str(partner)+'&machine_code='+machine_code+'&username='+username+'&printname='+printname+'&mobilephone='+mobilephone+'&msign='+msign+'&sign='+sign
+			r=requests.post("http://open.10ss.net:8888",data=json.dumps(final))
+			print(r.url)
+			print(r.status_code)
+			print(r.text)
 

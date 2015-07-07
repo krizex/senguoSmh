@@ -108,53 +108,6 @@ $(document).ready(function(){
     $(document).on('click','#submitReapply',function(){
         reApply();
     });
-    /*var key='';
-    var token='';
-    $('#file_upload').uploadifive(
-        {
-            buttonText    : '',
-            width: '150px',
-            uploadScript  : 'http://upload.qiniu.com/',
-            uploadLimit     : 10,
-            multi    :     false,
-            fileSizeLimit   : '10MB',
-            'fileObjName' : 'file',
-            'removeCompleted' : true,
-            'fileType':'*.gif;*.png;*.jpg;*,jpeg',
-            'formData':{
-                'key':'',
-                'token':''
-            },
-            'onUpload' :function(){
-                $.ajaxSetup({
-                    async : false
-                });
-                var action="add_img";
-                var url="/fruitzone/shop/apply/addImg";
-                var args={action: action};
-                $.postJson(url,args,
-                    function (res) {
-                        key=res.key;
-                        token=res.token;
-                    },
-                    function(){
-                        alert('网络错误！');}
-                );
-                $('#file_upload').data('uploadifive').settings.formData = {
-                    'key':key,
-                    'token':token
-                };
-            },
-            'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/200/h/200','data-key':key});
-                $('.apply-box').find('.filename').hide();
-                $('.apply-box').find('.fileinfo').hide();
-                $('.apply-box').find('.close').hide();
-                alert('图像上传成功，存在由于网络问题图像无法预览的情况，请谅解！');
-            }
-
-        });
-*/
 });
 var wait=60;
 function time(target) {
@@ -265,6 +218,9 @@ function Apply(target){
         $('#submitApply').removeAttr('disabled').addClass('bg-green');
         return noticeBox('请输入您的手机号！',target);
     }
+    var address = $("#provinceAddress").html()+$("#cityAddress").html()+shop_address_detail;
+    var myGeo = new BMap.Geocoder();
+    var shop_point = null;
     var args={
         shop_name:shop_name,
         shop_province:shop_province,
@@ -278,21 +234,30 @@ function Apply(target){
         code:code,
         shop_phone:phone
     };
-    var url="";
-    $.postJson(url,args,
-        function(res){
-            if(res.success)
-            {
-                window.location.href="/apply/success";
-                $('#submitApply').removeAttr('disabled').addClass('bg-green');
-            }
-            else {
-                $('#submitApply').removeAttr('disabled').addClass('bg-green');
-                return noticeBox(res.error_text);
-                
-            }
+    console.log(address);
+    myGeo.getPoint(address, function (point) {
+        console.log(point);
+        if (point) {
+            shop_point = point;
+            args.lat=shop_point.lat;
+            args.lon=shop_point.lng;
+            var url="";
+            $.postJson(url,args,
+                function(res){
+                    if(res.success)
+                    {
+                        window.location.href="/apply/success";
+                        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+                    }
+                    else {
+                        $('#submitApply').removeAttr('disabled').addClass('bg-green');
+                        return noticeBox(res.error_text);
+                    }
+                });
+        }else{
+            return noticeBox("您的地址填写有误，请重新填写");
         }
-    );
+    },$("#cityAddress").html());
 }
 
 function reApply(evt){

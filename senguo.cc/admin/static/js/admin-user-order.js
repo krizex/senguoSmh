@@ -525,7 +525,7 @@ function orderPrint(target,action){
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
 
-            $.getItem('/static/items/admin/order-print-page.html?v=20150618',function(data){
+            $.getItem('/static/items/admin/order-print-page.html?v=20150706',function(data){
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);

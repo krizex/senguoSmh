@@ -480,6 +480,8 @@ class ShopTemp(MapBase, _CommonApi):
 	# 店铺介绍
 	shop_intro = Column(String(568))
 	shop_phone=Column(String(32))
+	lat              = Column(MyReal)  #纬度
+	lon              = Column(MyReal)  #经度
 
 	admin = relationship("ShopAdmin")
 
@@ -1385,13 +1387,11 @@ class Fruit(MapBase, _CommonApi):
 	group_id =  Column(Integer, default=0) #0:default_group -1:record_group GoodsGroup.id #5.27
 	classify  = Column(Integer, default=0)  #:0:fruit 1:dry_fruit 3:other
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
-	detail_describe = Column(String(2000)) #goods detail
-
+	detail_describe = Column(String(8000)) #goods detail
 
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
-
 
 #水果单品的计价类型
 class ChargeType(MapBase, _CommonApi):
@@ -1438,7 +1438,7 @@ class GoodsLimit(MapBase, _CommonApi):
 	__tablename__ = "goods_limit"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	charge_type_id = Column(Integer, nullable=False)
-	fruit_id   = Column(Integer )
+	fruit_id   = Column(Integer)
 	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
 	create_time = Column(DateTime, default=func.now())
 	limit_num = Column(Integer)

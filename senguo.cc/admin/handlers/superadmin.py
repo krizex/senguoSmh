@@ -502,7 +502,9 @@ class ShopManage(SuperBaseHandler):
 										 shop_city=shop_temp.shop_city,
 										 shop_address_detail=shop_temp.shop_address_detail,
 										 have_offline_entity=shop_temp.have_offline_entity,
-										 shop_intro=shop_temp.shop_intro)
+										 shop_intro=shop_temp.shop_intro,
+										 lat=shop_temp.lat,
+										 lon=shop_temp.lon)
 			shop.config = config
 			shop.marketing = marketing
 			# shop.create_date_timestamp = time.time()

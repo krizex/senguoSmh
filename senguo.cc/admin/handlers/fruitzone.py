@@ -28,11 +28,13 @@ class Home(FruitzoneBaseHandler):
 	   shop_count = self.get_shop_count()
 	   return self.render("fruitzone/index.html",context=dict(shop_count = shop_count,subpage=""))
 
-#店铺搜索
+# 店铺搜索
 class SearchList(FruitzoneBaseHandler):
 	def get(self):
 
 	   return self.render("fruitzone/search-list.html")
+
+# 店铺列表
 class ShopList(FruitzoneBaseHandler):
 	def initialize(self):
 		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
@@ -118,8 +120,6 @@ class ShopList(FruitzoneBaseHandler):
 					shops.append(shop.safe_props())
 		# print(shops,'shops')
 		return shops
-
-
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
 	def handle_shop(self):
@@ -265,7 +265,6 @@ class ShopList(FruitzoneBaseHandler):
 		# 	shops.append({'name':i[0],'count':count})
 		return self.send_success(q=q)
 
-
 class Community(FruitzoneBaseHandler):
 	def get(self):
 	   return self.render("fruitzone/community.html",context=dict(subpage="cummunity"))
@@ -334,13 +333,17 @@ class AdminProfile(FruitzoneBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
+# 店铺申请引导到微信的扫码界面
 class ToWeixin(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("fruitzone/toweixin.html")
 
+# 店铺申请提交成功
 class ApplySuccess(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("fruitzone/apply-success.html")
+
+# 店铺申请
 class ShopApply(FruitzoneBaseHandler):
 	MAX_APPLY_COUNT = 150
 
@@ -397,7 +400,7 @@ class ShopApply(FruitzoneBaseHandler):
 		"shop_name", "shop_id?:int",
 		"shop_province:int", "shop_city:int", "shop_address_detail",
 		"have_offline_entity:bool", "shop_service_area:int","shop_phone",
-		"shop_intro", "realname:str", "wx_username:str", "code:int")
+		"shop_intro", "realname:str", "wx_username:str", "code:int","lat","lon")
 	def post(self):
 		#* todo 检查合法性
 
@@ -447,7 +450,10 @@ class ShopApply(FruitzoneBaseHandler):
 			  shop_phone =self.args["shop_phone"],
 			  have_offline_entity=self.args["have_offline_entity"],
 			  shop_service_area=self.args["shop_service_area"],
-			  shop_intro=self.args["shop_intro"]))
+			  shop_intro=self.args["shop_intro"],
+			  lat=self.args["lat"],
+			  lon=self.args["lon"]),
+			)
 
 			self.current_user.accountinfo.realname = self.args["realname"]
 			self.current_user.accountinfo.wx_username = self.args["wx_username"]
@@ -677,6 +683,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 		pass
 		return
 
+# 短信验证
 class PhoneVerify(_AccountBaseHandler):
 	executor = ThreadPoolExecutor(2)
 
@@ -1082,5 +1089,3 @@ class SystemPurchase(FruitzoneBaseHandler):
 		self.session.commit()
 		# return self.send_success(text = 'success')
 		return self.redirect(self.reverse_url("customerBalance"))
-
-

@@ -9,6 +9,7 @@ import random
 import base64
 import json
 
+# 官网 - 首页
 class Home(FruitzoneBaseHandler):
 	def get(self):
 		# print(self)
@@ -24,14 +25,17 @@ class Home(FruitzoneBaseHandler):
 		article_list = {"notice":notice_articles,"update":update_articles,"dry":dry_articles}
 		return self.render("official/home.html",context=dict(shop_count = shop_count,subpage="home"),article_list=article_list)
 
+# 官网 - 关于我们
 class About(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("official/about.html",context=dict(subpage="about"))
 
+# 官网 - 产品介绍
 class Product(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("official/product.html",context=dict(subpage="product"))		
 
+# 官网 - 店铺列表
 class ShopList(FruitzoneBaseHandler):
 	def get(self):
 		# print(self)
@@ -136,5 +140,3 @@ class ShopList(FruitzoneBaseHandler):
 				shop_intro = shop.shop_intro ,shop_trademark_url=shop.shop_trademark_url,\
 				shop_admin_name = shop.admin.accountinfo.nickname))
 		return self.send_success(shoplist=shoplist ,page_total = page_total)
-
-

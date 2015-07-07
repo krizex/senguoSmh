@@ -168,11 +168,11 @@
         </div>
     </li>
 </ul>
-<div class="pop-bmap hidden">
+<div class="pop-bmap invisible" data-type="{{current_shop.area_type}}" data-roundness="{{current_shop.roundness}}" data-radius="{{current_shop.area_radius}}" data-arealist="{{current_shop.area_list}}">
     <div class="pop-content">
         <div class="title">店铺配送区域</div>
-        <div class="name"><span>文字描述:</span> <input class="shop-area-text" id="shop-area-text" type="text" placeholder="输入配送范围"/></div>
-        <div class="name group"><span>区域显示形状: </span><ul class="map-sharp-list group"><li class="active">圆形(易操作，推荐)</li><li>多边形（不易操作）</li></ul></div>
+        <div class="name"><span>文字描述:</span> <input class="shop-area-text" id="shop-area-text" type="text" placeholder="输入配送范围" value="{{current_shop.deliver_area or '未设置'}}"/></div>
+        <div class="name group"><span>区域显示形状: </span><ul class="map-sharp-list group"><li class="">圆形(易操作，推荐)</li><li>多边形（不易操作）</li></ul></div>
         <div class="name group">地图区域显示:
             <div class="wrap-map" id="maparea"></div>
         </div>

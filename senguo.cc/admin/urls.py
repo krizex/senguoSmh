@@ -238,13 +238,18 @@ handlers = [
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
 	##移动端后台
-	(r"/madmin", handlers.madmin.Home, {}, "MadminHome"),
+	#(r"/madmin", handlers.madmin.Home, {}, "MadminHome"),
+	#(r"/madmin/shop", handlers.madmin.Shop, {}, "MadminShop"),
+	(r"/madmin", handlers.madmin.Shop, {}, "MadminHome"),
 	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
 	(r"/madmin/orderDetail/(\w+)", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
 	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
 	(r"/madmin/comment", handlers.madmin.Comment, {}, "MadminComment"),
+	(r"/madmin/shopset", handlers.madmin.Set, {}, "MadminSet"),
 	# (r"/staff/...")
 
+
+	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
 	# 水果圈子
 
 	
