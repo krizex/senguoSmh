@@ -235,8 +235,8 @@ var area_data=null;
 function initBmap(){
     var address = $("#info_address").html();
     var map = new BMap.Map("bmap");          // 创建地图实例
-    var scale_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)}); // 比例尺
-    map.addControl(scale_control);  // 显示比例尺
+    var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)}); // 比例尺
+    map.addControl(scaleControl);  // 显示比例尺
     var lat = parseFloat($("#lat").val());
     var lon = parseFloat($("#lon").val());
     var marker = null;
@@ -350,7 +350,7 @@ function initBmap(){
         }
         /*配送区域地图*/
         map1 = new BMap.Map("maparea");
-        map1.addControl(scale_control);
+        map1.addControl(scaleControl);
         map1.centerAndZoom(pPoint, 17);
         map1.enableScrollWheelZoom();
         marker1 = new BMap.Marker(pPoint);
