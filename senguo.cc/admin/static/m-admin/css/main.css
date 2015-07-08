@@ -31,7 +31,7 @@
 .data-user{background-image: url('/static/m-admin/img/icon_user.png');}
 .data-msg{background-image: url('/static/m-admin/img/icon_msg.png');}
 .data-account{background-image: url('/static/m-admin/img/icon_account.png');}
-.bm-tab{background-color: rgba(252,252,252,.9);bottom:0;color: #666;top:auto;height: 48px;}
+.bm-tab{background-color: rgba(252,252,252,.95);bottom: 0;color: #666;top:auto;height: 48px;}
 .tab-bm-list>li{width: 50%;float: left;border-top: 1px solid #e7e7eb;}
 .tab-bm-list>li>a{display: block;height: 48px;color: #666;}
 .tab-bm-list>li i{height: 22px;background-size:26px;background-position: center center;margin-top: 6px;}
