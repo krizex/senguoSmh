@@ -14,13 +14,15 @@ function initBmap() {
     var lat = parseFloat($("#bmap").attr("data-lat"));
     var name = $("#bmap").attr("data-name");
     var map = new BMap.Map("bmap");          // 创建地图实例
+    map.addEventListener("tilesloaded",function(){clock();}); // 地图加载完成后调用clock()
     var marker = null,oPoint = null;
+    var scale_control = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)}); // 比例尺
+    map.addControl(scale_control);  // 显示比例尺
     var opts = {
         width : 180,     // 信息窗口宽度
         height: 60,     // 信息窗口高度
-        title : name , // 信息窗口标题
-        opacity:0.6,
-        enableMessage:false//设置允许信息窗发送短息
+        title : name, // 信息窗口标题
+        enableMessage:false//设置是否允许信息窗发送短息
     };
     if (lon != 0) {
         oPoint = new BMap.Point(lon, lat);  // 创建点坐标
@@ -33,7 +35,7 @@ function initBmap() {
         marker.addEventListener("click", function(){
             map.openInfoWindow(infoWindow,oPoint); //开启信息窗口
         });
-        var areatype = parseInt($("#bmap").attr("data-type"));
+        var areatype = parseInt($("#bmap").attr("data-type")); //
         if(areatype == 1){
             var spoint = JSON.parse($("#bmap").attr("data-roundness"));
             var radius = parseInt($("#bmap").attr("data-radius"));
@@ -53,6 +55,7 @@ function initBmap() {
                 map.addOverlay(marker);
                 var infoWindow = new BMap.InfoWindow("地址："+address, opts);  // 创建信息窗口对象
                 map.openInfoWindow(infoWindow,oPoint);
+                map.addControl(scale_control);  // 显示比例尺
                 marker.addEventListener("click", function(){
                     map.openInfoWindow(infoWindow,point); //开启信息窗口
                 });
@@ -61,11 +64,11 @@ function initBmap() {
     }
 }
 
-//var int=self.setTimeout("clock()",100);
+//百度地图信息窗样式修改
 var timer=self.setInterval("clock()",100);
 setTimeout(function(){
     clearInterval(timer);
-},2000);
+},1000);
 function clock() {
     $(".BMap_pop").children("div").eq(0).children("div").css({"background":"#333","border-top-left-radius":"10px"});
     $(".BMap_pop").children("div").eq(2).children("div").css({"background":"#333","border-top-right-radius":"10px"});
