@@ -43,7 +43,7 @@ $(document).ready(function(){
         if(text==1) $this.text('有');
         else $this.text('没有');
     });
-     $('.shop-status').each(function(){
+    $('.shop-status').each(function(){
         var $this=$(this);
         var status=Int($this.attr('data-id'));
         if(status==0) {
@@ -59,13 +59,11 @@ $(document).ready(function(){
             $this.text('休息中');
         }
     });
-
     $('.offline_entity-list li').on('click',function(){
         var $this=$(this);
         var val=$this.data('id');
         var text=$this.text();
         $('#offline_entity').text(text).attr({'data-id':val});
-
     });
     //店铺logo上传
     var key='';
@@ -114,7 +112,8 @@ $(document).ready(function(){
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
             }
-        });
+        }
+    );
 
     //城市编码转换
     // var proc=$('.reProvince').data('code');
