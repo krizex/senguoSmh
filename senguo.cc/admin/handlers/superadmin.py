@@ -1816,7 +1816,17 @@ class CheckCash(SuperBaseHandler):
 			else:
 				data["is_checked"] = 0
 
-			if data["is_checked"] == 1:
+			inserted_query = self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time==check_time,models.CheckProfit.is_checked==1).all()
+			if inserted_query == None:
+				is_inserted = 0
+				data["is_checked"] = 1
+			elif len(inserted_query) == 0:
+				is_inserted = 0
+				data["is_checked"] = 1
+			else:
+				is_inserted = 1
+
+			if data["is_checked"] == 1 and is_inserted == 0:
 				check_history = models.CheckProfit(create_time = check_time,is_checked =\
 					1,wx_record = wx,wx_count_record = wx_count,alipay_record = \
 					alipay,alipay_count_record = alipay_count,widt_record = widt,widt_count_record = \
@@ -1830,161 +1840,132 @@ class CheckCash(SuperBaseHandler):
 			return self.send_success(output_data=output_data)
 		elif action == 'history':
 			page = self.args["page"]
-			check_profit_len = self.session.query(models.CheckProfit).count()
-
+			check_profit = self.session.query(models.CheckProfit).order_by(desc(models.CheckProfit.create_time))
+			check_profit_len = check_profit.count()
+			
+			if check_profit_len == 0:
+				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first().create_time
+				check_update_start  = check_update_start - datetime.timedelta(1)
+				check_update_start = datetime.datetime(check_update_start.year, check_update_start.month, check_update_start.day, 23,59,59)
+			else:
+				check_profit_last  = check_profit.first().create_time
+				check_update_start = datetime.datetime(check_profit_last.year, check_profit_last.month, check_profit_last.day, 23,59,59)
 			# add by jyj 2015-7-7
 			now_time = time.localtime(time.time())
 			now_time = datetime.datetime(*now_time[:6])
 			now_time = datetime.datetime(now_time.year, now_time.month, now_time.day, 0,0,0)
-			page_start_time = now_time - datetime.timedelta(page * page_size)
-			page_end_time = now_time - datetime.timedelta((page-1) * page_size)
 			##
 
-			if check_profit_len == 0:
-				balance_history = self.session.query(models.BalanceHistory).\
-					   filter(models.BalanceHistory.balance_type.in_([0,3])).\
-					   filter(models.BalanceHistory.create_time < page_end_time).order_by(models.BalanceHistory.create_time)
-				history_list = balance_history.all()
-				for his in history_list:
-					create_time = his.create_time
-					create_time = datetime.datetime(create_time.year, create_time.month, create_time.day, 23,59,59)
-					is_created_query = self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == create_time).count();
+			balance_history_time = self.session.query(models.BalanceHistory).\
+				   filter(models.BalanceHistory.balance_type.in_([0,3])).\
+				   filter(models.BalanceHistory.create_time > check_update_start,models.BalanceHistory.create_time < now_time).\
+				   group_by(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d")).\
+				   order_by(models.BalanceHistory.create_time)
+			history_list_time = balance_history_time.all()
+			for his in history_list_time:
+				create_time = his.create_time
+				create_time = datetime.datetime(create_time.year, create_time.month, create_time.day, 23,59,59)
+				wx = 0.0
+				wx_count = 0
+				alipay = 0.0
+				alipay_count = 0
 
-					if is_created_query != 0:
-						is_created = 1
-					else:
-						is_created = 0
-					if is_created == 0:
-						wx = 0.0
-						wx_count = 0
-						alipay = 0.0
-						alipay_count = 0
+				start_time = datetime.datetime(create_time.year, create_time.month, create_time.day, 0,0,0)
+				tomorrow = create_time + datetime.timedelta(1)
+				end_time = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 0,0,0)
 
-						start_time = datetime.datetime(create_time.year, create_time.month, create_time.day, 0,0,0)
-						tomorrow = create_time + datetime.timedelta(1)
-						end_time = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 0,0,0)
+				balance_his = self.session.query(models.BalanceHistory).\
+						   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.create_time >= start_time,\
+						   	models.BalanceHistory.create_time < end_time);
+				his_list = balance_his.all()
 
-						balance_his = self.session.query(models.BalanceHistory).\
-								   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.create_time >= start_time,\
-								   	models.BalanceHistory.create_time < end_time);
-						his_list = balance_his.all()
+				for temp in his_list:
+					#微信收入和笔数：
+					#支付宝收入和笔数：
+					if temp.balance_type == 3:
+						if temp.balance_record[5:7] == '支付':
+							alipay += temp.balance_value
+							alipay_count += 1
+						elif temp.balance_record[5:7] == '微信':
+							wx += temp.balance_value
+							wx_count += 1
+					#用户充值：
+					elif temp.balance_type == 0:
+						if temp.balance_record[5:7] == '支付':
+							alipay += temp.balance_value
+							alipay_count += 1
+						elif temp.balance_record[5:7] == '微信':
+							wx += temp.balance_value
+							wx_count += 1
+				
+				#总收入和笔数：
+				total = wx + alipay
+				total_count = wx_count + alipay_count
 
-						for temp in his_list:
-							#微信收入和笔数：
-							#支付宝收入和笔数：
-							if temp.balance_type == 3:
-								if temp.balance_record[5:7] == '支付':
-									alipay += temp.balance_value
-									alipay_count += 1
-								elif temp.balance_record[5:7] == '微信':
-									wx += temp.balance_value
-									wx_count += 1
-							#用户充值：
-							elif temp.balance_type == 0:
-								if temp.balance_record[5:7] == '支付':
-									alipay += temp.balance_value
-									alipay_count += 1
-								elif temp.balance_record[5:7] == '微信':
-									wx += temp.balance_value
-									wx_count += 1
-						
-						#总收入和笔数：
-						total = wx + alipay
-						total_count = wx_count + alipay_count
+				# 提现金额和提现笔数：
+				widt = self.session.query(func.sum(models.ApplyCashHistory.value)).filter(models.ApplyCashHistory.has_done==1,\
+							models.ApplyCashHistory.create_time >= start_time,models.ApplyCashHistory.create_time < end_time).all()
+				widt = widt[0][0]
+				if widt == None:
+					widt = 0
 
-						# 提现金额和提现笔数：
-						widt = self.session.query(func.sum(models.ApplyCashHistory.value)).filter(models.ApplyCashHistory.has_done==1,\
-									models.ApplyCashHistory.create_time >= start_time,models.ApplyCashHistory.create_time < end_time).all()
-						widt = widt[0][0]
-						if widt == None:
-							widt = 0
+				widt_count = self.session.query(models.ApplyCashHistory).filter(models.ApplyCashHistory.has_done==1,\
+							models.ApplyCashHistory.create_time >= start_time,models.ApplyCashHistory.create_time < end_time).count()
+				data = {}
+				data["create_time"] = create_time
+				data["total"] = format(total,".2f")
+				data["total_count"] = total_count
+				data["wx"] = format(wx,".2f")
+				data["wx_count"] = wx_count
+				data["alipay"] = format(alipay,".2f")
+				data["alipay_count"] = alipay_count
+				data["widt"] = format(widt,".2f")
+				data["widt_count"] = widt_count
 
-						widt_count = self.session.query(models.ApplyCashHistory).filter(models.ApplyCashHistory.has_done==1,\
-									models.ApplyCashHistory.create_time >= start_time,models.ApplyCashHistory.create_time < end_time).count()
-						data = {}
-						data["create_time"] = create_time
-						data["total"] = format(total,".2f")
-						data["total_count"] = total_count
-						data["wx"] = format(wx,".2f")
-						data["wx_count"] = wx_count
-						data["alipay"] = format(alipay,".2f")
-						data["alipay_count"] = alipay_count
-						data["widt"] = format(widt,".2f")
-						data["widt_count"] = widt_count
-
-						self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == create_time,models.CheckProfit.is_checked==0).delete()
-						check_history = models.CheckProfit(create_time = data["create_time"],is_checked =\
-							0,wx_record = data["wx"],wx_count_record = data["wx_count"],alipay_record = \
-							data["alipay"] ,alipay_count_record = data["alipay_count"] ,widt_record = data["widt"] ,widt_count_record = \
-							data["widt_count"] ,total_record = data["total"] ,total_count_record=data["total_count"],wx=0,wx_count= \
-							0,alipay=0,alipay_count=0,widt=0,widt_count=0,total=0,total_count=0)
-						self.session.add(check_history)
-						self.session.commit()
-
-			#检查昨天的对账单是否创建，如果没有创建，说明balance_history的昨天的在线支付、用户余额充值的记录为空，说明昨天的对账单的记录值为0，
-			#这还是要创建check_profit表的昨天的数据的，只不过收入数据和提现数据每一项都为0.
-			lastday = datetime.datetime.now() - datetime.timedelta(1)
-			
-			lastday_end_date = datetime.datetime(lastday.year, lastday.month, lastday.day, 23,59,59)
-
-
-			# 检查昨天的对账单是否创建
-			is_created_query = self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == lastday_end_date).count();
-			if is_created_query != 0:
-				is_created = 1
-			else:
-				is_created = 0
-			if is_created == 0:
-				check_history = models.CheckProfit(create_time = lastday_end_date,is_checked =\
-						0,wx_record = 0,wx_count_record = 0,alipay_record = \
-						0,alipay_count_record = 0 ,widt_record = 0 ,widt_count_record = \
-						0 ,total_record = 0 ,total_count_record=0,wx=0,wx_count= \
-						0,alipay=0,alipay_count=0,widt=0,widt_count=0,total=0,total_count=0)
+				self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == create_time,models.CheckProfit.is_checked==0).delete()
+				check_history = models.CheckProfit(create_time = data["create_time"],is_checked =\
+					0,wx_record = data["wx"],wx_count_record = data["wx_count"],alipay_record = \
+					data["alipay"] ,alipay_count_record = data["alipay_count"] ,widt_record = data["widt"] ,widt_count_record = \
+					data["widt_count"] ,total_record = data["total"] ,total_count_record=data["total_count"],wx=0,wx_count= \
+					0,alipay=0,alipay_count=0,widt=0,widt_count=0,total=0,total_count=0)
 				self.session.add(check_history)
 				self.session.commit()
 
-			page_item_sum = self.session.query(models.CheckProfit).count();
-			page_sum = page_item_sum/page_size
+			# #检查昨天的对账单是否创建，如果没有创建，说明balance_history的昨天的在线支付、用户余额充值的记录为空，说明昨天的对账单的记录值为0，
+			# #这还是要创建check_profit表的昨天的数据的，只不过收入数据和提现数据每一项都为0.
+
+			page_sum = self.session.query(models.CheckProfit).count();
+			if page_sum//page_size < page_sum/page_size:
+				page_sum = page_sum//page_size + 1
+			else:
+				page_sum = page_sum//page_size
 			
-			check_history = self.session.query(models.CheckProfit).order_by(desc(models.CheckProfit.create_time)).all()
+			check_history = self.session.query(models.CheckProfit).order_by(desc(models.CheckProfit.create_time)).offset((page-1)*page_size).limit(page_size).all()
 			output_data = []
-			exist_time_list = []
-			offset = 0
-			group_num = 0
 			for check_his in check_history:
 				#其实如果对账成功，那么CheckProfit表中的记录值和实际值肯定是一样的；
 				#如果还没有对账，那么CheckProfit表中只会有记录值。
 				#所以向前台返回数据的时候没有必要把所有数据都返回，而只需要把记录的数据返回即可。
-				data = {}  #data={}要放在循环里，否则会有诡异的错误
-				create_time_str = check_his.create_time.strftime("%Y-%m-%d")
-				if create_time_str not in exist_time_list:
-					group_num += 1
-					exist_time_list.append(create_time_str)
-
-					if group_num >= (page-1)*page_size+1 and offset < page_size:
-						data["create_time"] = create_time_str
-						data["is_checked"] = check_his.is_checked
-						data["wx_record"] = check_his.wx_record
-						data["wx_count_record"] = check_his.wx_count_record
-						data["alipay_record"] = check_his.alipay_record
-						data["alipay_count_record"] = check_his.alipay_count_record
-						data["widt_record"] = check_his.widt_record
-						data["widt_count_record"] = check_his.widt_count_record
-						data["total_record"] = check_his.total_record
-						data["total_count_record"] = check_his.total_count_record
-						data["wx"] = check_his.wx
-						data["wx_count"] = check_his.wx_count
-						data["alipay"] = check_his.alipay
-						data["alipay_count"] = check_his.alipay_count
-						data["widt"] = check_his.widt
-						data["widt_count"] = check_his.widt_count
-						data["total"] = check_his.total
-						data["total_count"] = check_his.total_count
-						output_data.append(data)
-
-						offset += 1
-				else:
-					pass
+				data = {}
+				data["create_time"] = check_his.create_time.strftime("%Y-%m-%d")
+				data["is_checked"] = check_his.is_checked
+				data["wx_record"] = check_his.wx_record
+				data["wx_count_record"] = check_his.wx_count_record
+				data["alipay_record"] = check_his.alipay_record
+				data["alipay_count_record"] = check_his.alipay_count_record
+				data["widt_record"] = check_his.widt_record
+				data["widt_count_record"] = check_his.widt_count_record
+				data["total_record"] = check_his.total_record
+				data["total_count_record"] = check_his.total_count_record
+				data["wx"] = check_his.wx
+				data["wx_count"] = check_his.wx_count
+				data["alipay"] = check_his.alipay
+				data["alipay_count"] = check_his.alipay_count
+				data["widt"] = check_his.widt
+				data["widt_count"] = check_his.widt_count
+				data["total"] = check_his.total
+				data["total_count"] = check_his.total_count
+				output_data.append(data)
 
 			return self.send_success(output_data=output_data,page_sum = page_sum)
 
