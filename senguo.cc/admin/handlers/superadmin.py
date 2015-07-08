@@ -1791,7 +1791,6 @@ class CheckCash(SuperBaseHandler):
 			date_tmp = time.strptime(data["check_date"],"%Y-%m-%d")
 			y,m,d = date_tmp[:3]
 			check_time = datetime.datetime(y,m,d,23,59,59)
-			print("#####",check_time)
 			record = self.session.query(models.CheckProfit).filter(models.CheckProfit.create_time == check_time).first();
 
 			wx = record.wx_record
@@ -1986,7 +1985,7 @@ class CheckCash(SuperBaseHandler):
 						offset += 1
 				else:
 					pass
-			print(output_data)	
+
 			return self.send_success(output_data=output_data,page_sum = page_sum)
 
 #add by jyj 2015-6-16

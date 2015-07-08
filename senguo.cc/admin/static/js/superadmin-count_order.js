@@ -48,10 +48,10 @@ $(document).ready(function(){
 
                 },
                 calculable : true,
-                legend: {
-                    data:['下单时间']
+                // legend: {
+                //     data:['下单时间']
 
-                },
+                // },
                 xAxis : [
                     {
                         type : 'category',
@@ -117,10 +117,10 @@ $(document).ready(function(){
 
                 },
                 calculable : true,
-                legend: {
-                    data:['送达时间']
+                // legend: {
+                //     data:['送达时间']
 
-                },
+                // },
                 xAxis : [
                     {
                         type : 'category',
