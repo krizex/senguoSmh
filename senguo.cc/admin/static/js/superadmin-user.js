@@ -67,6 +67,7 @@ function classify(target,act){
 function getContent(action,page){
     var url="";
     var args={action: action,page:page};
+    $("#inputinfo").val("");
     $.postJson(url,args,
         function (res) {
            if(res.success){

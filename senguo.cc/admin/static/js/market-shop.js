@@ -28,6 +28,8 @@ $(document).ready(function(){
     window.location.href=$(this).find("a").attr("href");
 }).on("click","#go-shop-area",function(){
     window.location.href="/shoparea/"+$("#shop_code").text();
+}).on("click","#go-send-area",function(){
+    window.location.href="/shoparea/"+$("#shop_code").text();
 });
 function focus(){
     var url='';
@@ -41,7 +43,7 @@ function focus(){
         }
         else return noticeBox(res.error_text);
     }, function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-             function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')})
+    function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')})
 }
 function signin(target){
     var url='';

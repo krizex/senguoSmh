@@ -870,17 +870,50 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 # 商城入口
 class Market(CustomerBaseHandler):
-	@tornado.web.authenticated
-	@get_unblock
+	# @tornado.web.authenticated
+	# @get_unblock
 	def get(self, shop_code):
 		# print('login in ')
 		w_follow = True
 		# fruits=''
 		# page_size = 10
+		# return self.send_success()
+
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
-			return self.write('您访问的店铺不存在')
+			# return self.write('您访问的店铺不存在')
+			pass
+		print(shop.admin.id)
+
+		if shop.admin.has_mp:
+			print('haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+			appid = shop.admin.mp_appid
+			appsecret = shop.admin.mp_appsecret
+			customer_id = self.current_user.id
+			admin_id    = shop.admin.id
+			wx_openid   = self.session.query(models.Mp_customer_link).first()
+			if wx_openid:
+				print('whatttttttttttttttt')
+			else:
+				#生成wx_openid
+				if self.is_wexin_browser():
+					print('weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+					wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
+					print(wx_openid,appid,appsecret)
+					if wx_openid:
+						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
+						self.session.add(admin_customer_openid)
+						self.session.commit()
+					else:
+						print('获取openid失败')
+				else:
+					print('haahahahah')
+		else:
+			pass
+		print('success??????????????????????????????????')
+
+
 
 		# self.current_shop = shop
 		# print(self,self.current_shop)
@@ -999,6 +1032,27 @@ class Market(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+
+	
+
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("code?")
+	def get_customer_openid(self,appid,appsecret,shop_code):
+		print('login in get_customer_openid')
+		code = self.args.get('code',None)
+		print('code',code)
+		if len(code) == 0:
+			print('get code')
+			appid = 'wx0ed17cdc9020a96e'
+			redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
+			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
+			print(url)
+			return self.redirect(url)
+		else:
+			print('has code')
+			wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
+			print(wx_openid)
+			return wx_openid
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:int","page?:int","menu_id?:int")

@@ -6,34 +6,38 @@
 <div class="header">
     <a href="{{reverse_url('MadminOrder')}}" class="back goback">返回</a>
     <span>店铺列表</span>
-    <a href="javascrpt:;" class="head-right spread-list">推广店铺列表</a>
+    <a href="javascrpt:;" class="head-right spread-list hide">推广店铺列表</a>
 </div>
 {% end %}
 {% block content %}
-<div class="wrap-shop-list">
+<div class="wrap-shop-list pb45">
     <ul class="shop-list">
-        <li>
-            <a href="javascript:;">
-                <dl class="shop-dl">
-                    <dd>
-                        <img src="/static/images/TDSG.png" alt="店铺logo"/>
-                    </dd>
-                    <dt>
-                        <i class="arr-item"></i>
-                        <p class="name">森果体验店 <span class="shop-cert">个人认证</span></p>
-                        <p class="addre mt6">武汉市华中科技大学</p>
-                        <ul class="shop-prop group mt10">
-                            <li>商品<span>10</span>件</li>
-                            <li>评价<span>10</span>条</li>
-                            <li>满意度<span>10</span>%</li>
-                            <li>粉丝<span>10</span>个</li>
-                            <li>订单<span>10000</span>个</li>
-                            <li>营业额<span>10222</span>元</li>
-                        </ul>
-                    </dt>
-                </dl>
-            </a>
-        </li>
+        {% if context['shop_list'] %}
+        {% for shop in  context['shop_list']%}
+            <li data-id="{{shop['id']}}" data-code="{{shop['shop_code']}}">
+                <a href="/madmin/shop">
+                    <dl class="shop-dl">
+                        <dd>
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
+                        </dd>
+                        <dt>
+                            <i class="arr-item"></i>
+                            <p class="name">{{shop['shop_name']}} <span class="shop-cert auths hide" data-auth="{{shop['shop_auth']}}"></span></p>
+                            <p class="addre mt6">{{shop['address']}}</p>
+                            <ul class="shop-prop group mt10">
+                                <li>商品<span>{{shop['goods_count']}}</span>件</li>
+                                <li>评价<span>{{shop['comment_count']}}</span>条</li>
+                                <li>满意度<span>{{shop['satisfy']}}</span></li>
+                                <li>粉丝<span>{{shop['fans_sum']}}</span>个</li>
+                                <li>订单<span>{{shop['order_sum']}}</span>个</li>
+                                <li>营业额<span>{{shop['total_money'] or 0}}</span>元</li>
+                            </ul>
+                        </dt>
+                    </dl>
+                </a>
+            </li>
+        {% end %}
+        {% end %}
     </ul>
     <a href="/apply" class="create-shop">+创建店铺</a>
 </div>
@@ -50,7 +54,7 @@
             <span class="roll-left"></span>不论是您创建的店铺还是受其他店铺创建者邀请加入成 为管理员的店铺都会显示在这个列表中
         </li>
     </ul>
-    <a href="javascript:;" class="close-pop" id="close-pop">X</a>
+    <a href="javascript:;" class="close-pop" id="close-pop"></a>
 </div>
 {% end %}
 {% block bottom %}

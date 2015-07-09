@@ -16,8 +16,63 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-
-		return self.render("m-admin/shop-list.html")
+		shop_list = []
+		try:
+			shops = self.current_user.shops
+		except:
+			shops = None
+		try:
+			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
+		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+		except:
+			other_shops = None
+		if shops:
+			shop_list += self.getshop(shops)
+		if other_shops:
+			shop_list += self.getshop(other_shops)
+		return self.render("m-admin/shop-list.html", context=dict(shop_list=shop_list))
+	def getshop(self,shops):
+		shop_list = []
+		for shop in shops:
+			satisfy = 0
+			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id',  'wx_accountname','auth_change',
+										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
+										'alipay_account','alipay_account_name','available_balance',\
+										'new_follower_sum','new_order_sum']
+			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
+			if orders:
+				commodity_quality = 0
+				send_speed = 0
+				shop_service = 0
+				q = self.session.query(func.avg(models.Order.commodity_quality),\
+					func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop.id).all()
+				if q[0][0]:
+					commodity_quality = int(q[0][0])
+				if q[0][1]:
+					send_speed = int(q[0][1])
+				if q[0][2]:
+					shop_service = int(q[0][2])
+				if commodity_quality and send_speed and shop_service:
+					satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
+			fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
+			mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
+			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
+			shop.satisfy = satisfy
+			shop.comment_count = comment_count
+			shop.goods_count = fruit_count
+			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
+			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
+			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
+			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
+			if total_money:		
+				shop.total_money = format(total_money,'.2f')
+			else:		
+				shop.total_money=0
+			shop.address = self.code_to_text("shop_city",shop.shop_city) +" " + shop.shop_address_detail
+			shop_list.append(shop.safe_props())
+		return shop_list
 		
 class Shop(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -68,6 +123,12 @@ class Shop(AdminBaseHandler):
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,show_balance = show_balance,\
 						   shop=shop,total_money=total_money,intime_count=intime_count,ontime_count=ontime_count,\
 						   self_count=self_count,comment_count=comment_count,staff_count=staff_count,goods_count=goods_count)
+
+# 移动后台 - 设置
+class Set(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/shop-set.html")
 
 # 移动后台 - 订单
 class Order(AdminBaseHandler):
