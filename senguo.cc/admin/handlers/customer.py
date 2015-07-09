@@ -23,6 +23,8 @@ from dal.db_configs import DBSession
 import urllib
 
 from sqlalchemy.orm.exc import NoResultFound
+
+import datetime
 # from wxpay import QRWXpay
 
 # 登录处理
@@ -1904,6 +1906,11 @@ class Order(CustomerBaseHandler):
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
 			self.session.commit()
+			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+			if order.shop.admin.has_mp:
+				self.order_cancel_msg(order,cancel_time)
+			else:
+				self.order_cancel_msg(order,cancel_time,None)
 			return self.send_success()
 		elif action == "comment_point":
 			data = self.args["data"]
