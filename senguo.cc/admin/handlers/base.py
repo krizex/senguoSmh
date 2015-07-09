@@ -788,6 +788,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_name = shop.shop_name
 		WxOauth2.shop_auth_msg(touser,shop_name,success)
 
+	@classmethod
+	def order_cancel_msg(self,order,cancel_time,other_access_token = None):
+		access_token = other_access_token if other_access_token else None
+		touser = order.shop.admin.accountinfo.wx_openid
+		order_num = order.num
+		shop_name = order.shop.shop_name
+		cancel_time = cancel_time
+		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,access_token)
+
+
 	# 获取绑定的微信第三方服务号AccessToken
 	@classmethod
 	def get_other_accessToken(self,session,admin_id):
@@ -1731,6 +1741,30 @@ class WxOauth2:
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
+
+	@classmethod
+	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,other_access_token = None):
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		postdata = {
+			'touser':touser,
+			'template_id':'EcqyvbnALGmeG8O-SJw_XCIlMvBOH5mB8YM_qCsgSwE',
+			'url':'i.senguo.cc/admin',
+			'topcolor':'#FF0000',
+			'data':{
+				'first':{'value':'您好，您的店铺『{0}』有一笔订单取消'.format(shop_name),'color':'#44b549'},
+				'keyword1':{'value':order_num,'color':'#173177'},
+				'keyword2':{'value':cancel_time,'color':'#173177'},
+				'remark':{'value':'\n请登入后台查看详情！','color':'#173177'},
+			}
+		}
+		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
+		data = json.loads(res.content.decode("utf-8"))
+		if data['errcode'] != 0:
+			print("[模版消息]订单提交成功消息发送失败：",data)
+			return False
+		else:
+			return True
+
 
 	@classmethod
 	def shop_auth_msg(cls,touser,shop_name,success):
