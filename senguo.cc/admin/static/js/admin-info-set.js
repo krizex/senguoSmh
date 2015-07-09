@@ -234,7 +234,7 @@ var area_data=null;
 function initBmap(){
     var address = $("#info_address").html();
     var map = new BMap.Map("bmap");          // 创建地图实例
-    var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)}); // 比例尺
+    var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)});  // 创建比例尺
     map.addControl(scaleControl);  // 显示比例尺
     var lat = parseFloat($("#lat").val());
     var lon = parseFloat($("#lon").val());
@@ -248,7 +248,7 @@ function initBmap(){
         // 将地址解析结果显示在地图上,并调整地图视野
         getPointByName(map, myGeo, address);
     }else{
-        var point = new BMap.Point(lat, lon);  // 创建点坐标\
+        var point = new BMap.Point(lat, lon);  // 创建点坐标
         pPoint = point;
         map.centerAndZoom(point, 17);
         initPoint(map,point,myGeo);
@@ -420,12 +420,12 @@ function infoEdit(target,is_address){
     var regPhone=/\d{3}-\d{8}|\d{4}-\d{7}/;
     var regPhone2=/^(1)\d{10}$/;
     if(action_name=='name')
-        {
-            action='edit_shop_name';
-            shop_name=$('.shop_name').val().trim();
-            if(shop_name.length>15){return Tip('店铺名称请不要超过15个字符！')}
-            data={shop_name:shop_name};
-        }
+    {
+        action='edit_shop_name';
+        shop_name=$('.shop_name').val().trim();
+        if(shop_name.length>15){return Tip('店铺名称请不要超过15个字符！')}
+        data={shop_name:shop_name};
+    }
     else if(action_name=='code')
     {
         var reg=/^\w+$/;
