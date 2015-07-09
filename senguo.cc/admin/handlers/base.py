@@ -701,7 +701,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def send_admin_message(self,session,order,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
 		admin_name = order.shop.admin.accountinfo.nickname
-		touser     = order.shop.admin.accountinfo.wx_openid
+		customer_id = order.customer_id
+		admin_id    = order.shop.admin.id
+		if order.shop.admin.has_mp:
+			mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
+			if mp_customer:
+				touser = mp_customer.wx_openid
+			else:
+				touser = order.shop.admin.accountinfo.wx_openid
+
+		else:	
+			touser = order.shop.admin.accountinfo.wx_openid
 		shop_id    = order.shop.id
 		shop_name  = order.shop.shop_name
 		order_id   = order.num
@@ -713,7 +723,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_type = '立即送' if order_type == 1 else '按时达'
 		create_date= order.create_date
 		customer_name=order.receiver
-		customer_id = order.customer_id
+		
 		try:
 			customer = session.query(models.Customer).filter_by(id = customer_id).first()
 		except NoResultFound:
@@ -739,7 +749,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
 				== other_admin.staff_id).first()
 			other_name = info.nickname
-			other_touser = info.wx_openid
+			other_customer_id = info.id
+			if order.shop.admin.has_mp:
+				mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id = other_customer_id).first()
+				if mp_customer:
+					other_touser = mp_customer.wx_openid
+				else:
+					print("店铺管理员对应公众平台的用户id没有找到")
+					other_touser = info.wx_openid
+			else:
+				other_touser = info.wx_openid
 			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
 				send_time,goods,phone,address,access_token)
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
@@ -1416,6 +1435,20 @@ class WxOauth2:
 		if "access_token" not in data:
 			return None
 		return (data["access_token"], data["openid"])
+
+	@classmethod
+	def get_access_token_openid_other(cls,code,appid,appsecret):
+		token_url = cls.token_url.format(code = code,appid = appid ,appsecret = appsecret)
+		#:
+		try:
+			data = json.loads(urllib.request.urlopen(token_url).read().decode('utf-8'))
+		except Exception as e:
+			return None
+		if "access_token" not in data:
+			return None
+		else:
+			return data['openid']
+
 
 	@classmethod
 	def get_jsapi_ticket(cls):
