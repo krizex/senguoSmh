@@ -10,26 +10,26 @@ $(document).ready(function(){
         //店铺二维码
         var shop_link=$('.shop_link').text();
         var shop_code=$('.shop_link').find('.code').text();
-        $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: shop_link ,typeNumber  : -1});
-	//从canvas导出图片
-	var type = 'png';
-	var canvas=$('#shop_link_img canvas')[0];
-              $('#shop_link_img').append(convertCanvasToImage(canvas));
-              $('#shop_link_img canvas').remove();
-              window.dataObj.imgData= $('#shop_link_img img').attr('src');
-               //imgData=canvas.toDataURL(type);
-	//imgData = imgData.replace(_fixType(type),'image/octet-stream');
+        $('#shop_link_img').qrcode({render: "canvas",width: 100,height: 100,text: shop_link,typeNumber: -1});
+        //从canvas导出图片
+        var type = 'png';
+        var canvas=$('#shop_link_img canvas')[0];
+        $('#shop_link_img').append(convertCanvasToImage(canvas));
+        $('#shop_link_img canvas').remove();
+        window.dataObj.imgData= $('#shop_link_img img').attr('src');
+        //imgData=canvas.toDataURL(type);
+        //imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
 
     //二维码下载
     $(document).on('click','.download_img',function(){
-             var type = 'png';
-             var code=$('#shop_code').val();
-             var shop_name=$('#shop_name').text();
-             var filename = shop_name+'_' +code+ '.' + type;
-             saveFile(window.dataObj.imgData,filename);
+        var type = 'png';
+        var code=$('#shop_code').val();
+        var shop_name=$('#shop_name').text();
+        var filename = shop_name+'_' +code+ '.' + type;
+        saveFile(window.dataObj.imgData,filename);
     });
-   //信息转换显示
+    //信息转换显示
     $('.area-choose-list li').each(function(){
         $(this).on('click',function(){
             if($(this).hasClass('active'))
@@ -43,7 +43,7 @@ $(document).ready(function(){
         if(text==1) $this.text('有');
         else $this.text('没有');
     });
-     $('.shop-status').each(function(){
+    $('.shop-status').each(function(){
         var $this=$(this);
         var status=Int($this.attr('data-id'));
         if(status==0) {
@@ -59,13 +59,11 @@ $(document).ready(function(){
             $this.text('休息中');
         }
     });
-
     $('.offline_entity-list li').on('click',function(){
         var $this=$(this);
         var val=$this.data('id');
         var text=$this.text();
         $('#offline_entity').text(text).attr({'data-id':val});
-
     });
     //店铺logo上传
     var key='';
@@ -114,7 +112,8 @@ $(document).ready(function(){
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
             }
-        });
+        }
+    );
 
     //城市编码转换
     // var proc=$('.reProvince').data('code');
@@ -151,8 +150,8 @@ $(document).ready(function(){
             $('#cityAddress').attr('data-code',code).text('');
         }
         else {
-             $('.cityList').empty();
-              for(var key in area){
+            $('.cityList').empty();
+            for(var key in area){
                 var city=area[key]['city'];
                 if(code==key){
                     for(var k in city){
@@ -175,11 +174,11 @@ $(document).ready(function(){
     });
     //店铺信息编辑
     $('.info_edit').each(function(){
-     var $this=$(this);
-     $this.on('click',function(){
-     $this.hide().siblings('.info_sure').show().parents('li').find('.info_show').hide().siblings('.info_hide').show();
-     });
-     });
+        var $this=$(this);
+        $this.on('click',function(){
+            $this.hide().siblings('.info_sure').show().parents('li').find('.info_show').hide().siblings('.info_hide').show();
+        });
+    });
     $('.info_sure').each(function(){
         var $this=$(this);
         $this.on('click',function(){
@@ -235,6 +234,8 @@ var area_data=null;
 function initBmap(){
     var address = $("#info_address").html();
     var map = new BMap.Map("bmap");          // 创建地图实例
+    var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)}); // 比例尺
+    map.addControl(scaleControl);  // 显示比例尺
     var lat = parseFloat($("#lat").val());
     var lon = parseFloat($("#lon").val());
     var marker = null;
@@ -348,6 +349,7 @@ function initBmap(){
         }
         /*配送区域地图*/
         map1 = new BMap.Map("maparea");
+        map1.addControl(scaleControl);
         map1.centerAndZoom(pPoint, 17);
         map1.enableScrollWheelZoom();
         marker1 = new BMap.Marker(pPoint);
@@ -393,11 +395,11 @@ var _fixType = function(type) {
     var r = type.match(/png|jpeg|bmp|gif/)[0];
     return 'image/' + r;
 };
- function convertCanvasToImage(canvas) {
-        var image = new Image();
-        image.src = canvas.toDataURL("image/png");
-        return image;
-    }
+function convertCanvasToImage(canvas) {
+    var image = new Image();
+    image.src = canvas.toDataURL("image/png");
+    return image;
+}
 //在本地进行文件保存
 var saveFile = function(data, filename){
     var save_link = document.createElementNS('http://www.w3.org/1999/xhtml', 'a');
@@ -461,7 +463,7 @@ function infoEdit(target,is_address){
             shop_address_detail:shop_address_detail
         };
     }
-   else if(action_name=='phone')
+    else if(action_name=='phone')
     {
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
@@ -510,11 +512,11 @@ function infoEdit(target,is_address){
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();
-		    //从canvas导出图片
-		    var type = 'png';
-		    var canvas=$('#shop_link_img canvas')[0];
-		    window.dataObj.imgData=canvas.toDataURL(type);
-		    window.dataObj.imgData = window.dataObj.imgData.replace(_fixType(type),'image/octet-stream');
+		            //从canvas导出图片
+                    var type = 'png';
+                    var canvas=$('#shop_link_img canvas')[0];
+                    window.dataObj.imgData=canvas.toDataURL(type);
+                    window.dataObj.imgData = window.dataObj.imgData.replace(_fixType(type),'image/octet-stream');
                 }
                 else if(action_name=='intro')
                 {
@@ -545,16 +547,17 @@ function infoEdit(target,is_address){
                 {
                     $('.offline_entity').text(entity_text);
                 }
-                 else if(action_name=='status'){
+                else if(action_name=='status'){
                     $('.shop-status').text(status_text);
-                 }
+                }
                 if(action_name!='address' || action_name!='area'){
                     target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
                 }
             }
-            else  Tip(res.error_text);
+            else Tip(res.error_text);
         },
         function(){
-            Tip('网络好像不给力呢~ ( >O< ) ~！');}
+            Tip('网络好像不给力呢~ ( >O< ) ~！');
+        }
     );
 }
