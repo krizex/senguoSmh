@@ -55,7 +55,7 @@ def gen_msg_token(phone):
 	h.close()
 	root = ElementTree.fromstring(res.body.decode())
 	if not root[0].text == '2':
-		print("[验证短信]发送错误：",root[0].text,root[1].text)
+		# print("[验证短信]发送错误：",root[0].text,root[1].text)
 		return root[1].text
 	else:
 		try:
@@ -260,8 +260,3 @@ def shop_auth_fail_msg(mobile,admin_name,shop_name):
 		content = message_content)
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
-
-
-
-
-

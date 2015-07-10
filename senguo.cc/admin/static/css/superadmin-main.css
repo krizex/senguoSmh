@@ -100,6 +100,13 @@
 .mlf10{margin-left: 10px;}
 /**/
 
+/*add by jyj 2015-7-4*/
+.tb-account-shoplist{width: 100%;table-layout: fixed;border:1px solid #f6f6f6;}
+.tb-account-shoplist td{height: 30px;line-height: 30px;color: #666;font-size: 14px;}
+.tb-account-shoplist tr:nth-child(2n+1){background-color: #f1f1f1;}
+.tb-account-shoplist tr:hover{background-color:#f6f6f6;}
+/*.list-head{height: 30px;}*/
+/**/
 
 
 

@@ -701,7 +701,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def send_admin_message(self,session,order,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
 		admin_name = order.shop.admin.accountinfo.nickname
-		touser     = order.shop.admin.accountinfo.wx_openid
+		customer_id = order.customer_id
+		admin_id    = order.shop.admin.id
+		if order.shop.admin.has_mp:
+			mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
+			if mp_customer:
+				touser = mp_customer.wx_openid
+			else:
+				touser = order.shop.admin.accountinfo.wx_openid
+
+		else:	
+			touser = order.shop.admin.accountinfo.wx_openid
 		shop_id    = order.shop.id
 		shop_name  = order.shop.shop_name
 		order_id   = order.num
@@ -713,7 +723,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_type = '立即送' if order_type == 1 else '按时达'
 		create_date= order.create_date
 		customer_name=order.receiver
-		customer_id = order.customer_id
+		
 		try:
 			customer = session.query(models.Customer).filter_by(id = customer_id).first()
 		except NoResultFound:
@@ -739,7 +749,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			info = session.query(models.Accountinfo).join(models.ShopStaff,models.Accountinfo.id == models.ShopStaff.id).filter(models.ShopStaff.id
 				== other_admin.staff_id).first()
 			other_name = info.nickname
-			other_touser = info.wx_openid
+			other_customer_id = info.id
+			if order.shop.admin.has_mp:
+				mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id = other_customer_id).first()
+				if mp_customer:
+					other_touser = mp_customer.wx_openid
+				else:
+					print("店铺管理员对应公众平台的用户id没有找到")
+					other_touser = info.wx_openid
+			else:
+				other_touser = info.wx_openid
 			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
 				send_time,goods,phone,address,access_token)
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
@@ -768,6 +787,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		touser = shop.admin.accountinfo.wx_openid
 		shop_name = shop.shop_name
 		WxOauth2.shop_auth_msg(touser,shop_name,success)
+
+	@classmethod
+	def order_cancel_msg(self,order,cancel_time,other_access_token = None):
+		access_token = other_access_token if other_access_token else None
+		touser = order.shop.admin.accountinfo.wx_openid
+		order_num = order.num
+		shop_name = order.shop.shop_name
+		cancel_time = cancel_time
+		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,access_token)
+
 
 	# 获取绑定的微信第三方服务号AccessToken
 	@classmethod
@@ -1418,6 +1447,20 @@ class WxOauth2:
 		return (data["access_token"], data["openid"])
 
 	@classmethod
+	def get_access_token_openid_other(cls,code,appid,appsecret):
+		token_url = cls.token_url.format(code = code,appid = appid ,appsecret = appsecret)
+		#:
+		try:
+			data = json.loads(urllib.request.urlopen(token_url).read().decode('utf-8'))
+		except Exception as e:
+			return None
+		if "access_token" not in data:
+			return None
+		else:
+			return data['openid']
+
+
+	@classmethod
 	def get_jsapi_ticket(cls):
 		global jsapi_ticket
 		if datetime.datetime.now().timestamp() - jsapi_ticket["create_timestamp"]\
@@ -1698,6 +1741,30 @@ class WxOauth2:
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
+
+	@classmethod
+	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,other_access_token = None):
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		postdata = {
+			'touser':touser,
+			'template_id':'EcqyvbnALGmeG8O-SJw_XCIlMvBOH5mB8YM_qCsgSwE',
+			'url':'i.senguo.cc/admin',
+			'topcolor':'#FF0000',
+			'data':{
+				'first':{'value':'您好，您的店铺『{0}』有一笔订单取消'.format(shop_name),'color':'#44b549'},
+				'keyword1':{'value':order_num,'color':'#173177'},
+				'keyword2':{'value':cancel_time,'color':'#173177'},
+				'remark':{'value':'\n请登入后台查看详情！','color':'#173177'},
+			}
+		}
+		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
+		data = json.loads(res.content.decode("utf-8"))
+		if data['errcode'] != 0:
+			print("[模版消息]订单提交成功消息发送失败：",data)
+			return False
+		else:
+			return True
+
 
 	@classmethod
 	def shop_auth_msg(cls,touser,shop_name,success):

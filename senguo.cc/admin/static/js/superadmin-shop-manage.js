@@ -19,18 +19,6 @@ $(document).ready(function(){
            }
            else  return Tip("当前已经是第一页");
         }
-        /*if(page>1){
-            page--;
-             if(inputinfo==""){
-            insertShop(page);
-        }
-        else{
-                searchshop(page_search);
-            }
-        }
-        else{
-            return Tip("当前已经是第一页");
-            }*/
     });
     $(document).on('click','#NextPage',function(){
         if(inputinfo==""){
@@ -42,12 +30,12 @@ $(document).ready(function(){
             searchshop(page_shop);
         }
     });
-    if(localStorage.getItem("itemIndex")){
+    /*if(localStorage.getItem("itemIndex")){
         $(".shop-manage-nav li").removeClass("active").eq(localStorage.getItem("itemIndex")).addClass("active");
     }else{
         localStorage.setItem("itemIndex",0);
         $(".shop-manage-nav li").removeClass("active").eq(0).addClass("active");
-    }
+    }*/
 }).on('click',"#authPrePage",function(){
     var page=Int($.getUrlParam('page'));
     if(page>0) {
@@ -120,6 +108,18 @@ $(document).ready(function(){
 }).on("change","#ifreverse",function(){
     page_shop=1;
     insertShop(page_shop);
+
+    // add by jyj 2015-7-5
+}).on("click",".info-list",function(){
+    $(".head-choose li").removeClass("active");
+    $(".info-list").addClass("active");
+    window.location = "/super/comment_info";
+    // add by jyj 2015-7-6
+}).on("click",".apply-list",function(){
+    $(".head-choose li").removeClass("active");
+    $(".apply-list").addClass("active");
+    window.location = "/super/comment_apply";
+// 
 });
 
 function insertShop(page){

@@ -680,6 +680,7 @@ class ShopAdmin(MapBase, _AccountApi):
 	temp_active  = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive #5.25 drop
 
 	# mp_openid = Column(Integer(64))     #mobile
+	has_mp  = Column(Integer , default = 0)   # 0:admin has no his mp , 1:shop admin has his mp
 	mp_name = Column(String(32))    #公众平台名称
 	mp_appid= Column(String(64))
 	mp_appsecret = Column(String(64))
@@ -1741,6 +1742,14 @@ class CheckProfit(MapBase, _CommonApi):
 	widt_count = Column(Integer,default=0)
 	total = Column(Float,default = 0)
 	total_count = Column(Integer,default=0)
+
+class Mp_customer_link(MapBase,_CommonApi):
+	__tablename__ = 'mp_customer_link'
+	id = Column(Integer,primary_key = True,nullable = False , autoincrement = True)
+	admin_id   = Column(Integer)
+	customer_id = Column(Integer)
+	wx_openid   = Column(String(64))
+
 
 '''
 # add by cm 2015.6.15

@@ -46,7 +46,7 @@
             </a>
             <a href="javascript:;" class="pull-left classify-icon text-white to-hide"> <span>分组</span><em class="set-inl-blo pull-right"></em></a>
         </div>
-       <!--  <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
+        <!--  <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
             <li class="text-grey6 bg-white pull-left text-center" data-id="-2">全部商品</li>
             {% for group in context['group_list'] %}
             <li class="text-grey6 bg-white pull-left text-center" data-id="{{group['id']}}">{{group['name']}}</li>
@@ -61,8 +61,8 @@
 </ul>
 <div class="wrap-goods-box" id="wrap-goods-box">
     <div class="goods-box">
-         {% for group in context['group_list'] %}
-         <p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>
+        {% for group in context['group_list'] %}
+        <p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>
         <ul class="goods-list-{{group['id']}} fruit-list goods-list" >
         </ul> 
         {% end %}
@@ -91,7 +91,6 @@
             <div class="modal-body set-width-float text-center">
                 <img src="" id="largeImg" class="mt42"/>
                 <p class="intro font14 text-center">哈哈哈哈哈哈<a href="javascript:;" class="pull-right mr10 mt10 text-grey3">商品详情>></a></p>
-
             </div>
             <div class="modal-footer bg-white set-width-float">
                 <a href="javascript:;" class="click-great text-center font16 text-grey3 able_click"><em class="bg_change"></em>赞一个</a>
@@ -135,4 +134,3 @@
 <script src="/static/js/third/idangerous.swiper.min.js"></script>
 <script src="{{static_url('js/market-home.js')}}"></script>
 {% end %}
-
