@@ -103,9 +103,11 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .zb-tip{width: 70%;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
 /*页面头部*/
 .header{position: fixed;top: 0;left: 0;z-index:999;width: 100%;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;}
-.back{display: inline-block;height: 40px;min-width:40px;line-height:40px;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 10px;top: 0;background-position: left center;}
+.back{display: inline-block;height: 40px;min-width:40px;line-height:2.9em;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 10px;top: 0;background-position: left center;}
+.back:link,.back:visited,.back:hover,.back:active{color: #fff;}
 .header span{font-size: 16px;}
 .head-right{display: inline-block;height: 40px;min-width: 60px;background-size: 20px;position: absolute;right: 0;top: 0;background-position: 28px center;}
+.head-right:link,.head-right:visited,.head-right:hover,.head-right:active{color: #fff;}
 .search{background-image: url('/static/images/list_top.png');background-position: 14px -22px;top: 8px;background-size: 22px;}
 /*页面容器*/
 .container{position: relative;z-index: 1;padding-top: 40px;}
