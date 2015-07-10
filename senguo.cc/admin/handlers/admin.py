@@ -2210,7 +2210,7 @@ class Config(AdminBaseHandler):
 		action = self.args["action"]
 		data = self.args["data"]
 
-		if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire"]:
+		if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire","edit_receipt_img"]:
 			if action == "add_addr1":
 				addr1 = models.Address1(name=data)
 				self.current_shop.config.addresses.append(addr1)
@@ -2229,7 +2229,9 @@ class Config(AdminBaseHandler):
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
 				self.current_shop.config.update(session=self.session,
-												receipt_msg=data["receipt_msg"])				
+												receipt_msg=data["receipt_msg"])
+			elif action =="edit_receipt_img":
+				self.current_shop.config.update(session=self.session,receipt_img=data["receipt_img"])			
 		elif action in ["add_addr2", "edit_addr1_active"]:
 			addr1 = next((x for x in self.current_shop.config.addresses if x.id==data["addr1_id"]), None)
 			if action == "add_addr2":
@@ -2243,7 +2245,7 @@ class Config(AdminBaseHandler):
 			except:return self.send_error(404)
 			addr2.update(session=self.session, active=not addr2.active)
 		elif action in ("edit_notice_active", "edit_notice"):  # notice_id
-			notice = next((x for x in self.current_shop.config.notices if x.id == data["notice_id"]), None)
+			notice = next((x for x in self.current_shop.config.notices if x.id == int(data["notice_id"])), None)
 			if not notice:
 				return self.send_error(404)
 			if action == "edit_notice_active":
@@ -2467,10 +2469,15 @@ class AdminAuth(AdminBaseHandler):
 			r = requests.post(url,data = postdata , headers = headers)
 			# print(r.text)
 			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)
-			return self.redirect('/admin/config?action=admin')
-
+			if self.is_pc_browser():
+				return self.redirect('/admin/config?action=admin')
+			else:
+				return self.redirect('/madmin/shopattr?action=admin')
 		else:
-			return self.redirect('/admin/config?action=admin&status=fail')
+			if self.is_pc_browser():
+				return self.redirect('/admin/config?action=admin&status=fail')
+			else:
+				return self.redirect('/madmin/shopattr?action=admin&status=fail')
 
 # 账户余额
 class ShopBalance(AdminBaseHandler):
@@ -2753,6 +2760,8 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_name = data["shop_name"]
 		elif action == "edit_shop_img":
 			return self.send_qiniu_token("shop", shop.id)
+		elif action == "edit_shop_logo":
+			shop.shop_trademark_url=data["img_url"]
 		elif action == "edit_shop_code":
 			if len(data["shop_code"]) < 6:
 				return self.send_fail("店铺号至少要6位")
@@ -2770,15 +2779,17 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
 			shop_city = int(data["shop_city"])
-			lat       = float(data["lat"])
-			lon       = float(data['lon'])
+			if "lat" in data:
+				lat       = float(data["lat"])
+				shop.lat       = lat
+			if "lon" in data:
+				lon       = float(data['lon'])
+				shop.lon       = lon
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
 			shop.shop_province = shop_city//10000*10000
 			shop.shop_city = shop_city
-			shop.lat       = lat
-			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]

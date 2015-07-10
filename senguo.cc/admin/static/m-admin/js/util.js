@@ -184,10 +184,10 @@ $.postJson = function(url, args,successCall){
     });
 };
 
-// var _hmt = _hmt || [];
-// (function() {
-//     var hm = document.createElement("script");
-//     hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-//     var s = document.getElementsByTagName("script")[0]; 
-//     s.parentNode.insertBefore(hm, s);
-// })();
+(function ($) {
+    $.getUrlParam = function (name, default_value) {
+        var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if (r != null) return decodeURI(r[2]); return '';
+    }
+})($);

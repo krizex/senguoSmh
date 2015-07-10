@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}小票设置{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>小票设置</span>
+</div>
+{% end %}
+{% block content %}
+<input type="hidden" class="receipt-token" id="token" value="{{token}}"/>
+<div class="wrap-shop-set">
+    <ul class="data-list mt15">
+        <li class="info-li">
+            <a href="javascript:;" class="group" id="receipt_msg">
+                <span class="fr c333 text-clip">{{receipt_msg or '无'}}</span>
+                <span class="text-left info-left c333">附加消息</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="data-list mt10">
+        <li class="">
+            <a href="javascript:;" id="receipt_switch">
+                <span class="fr"><span class="switch-btn {% if current_shop.config.receipt_img_active ==1 %}switch-abtn{% end %}"><i></i><span>{% if current_shop.config.receipt_img_active ==1 %}已启用{% else %}未启用{% end %}</span></span></span>
+                <span class="text-left c333">启用附加图</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="data-list mt10 wrap-receipt-img {% if current_shop.config.receipt_img_active ==0 %}hide{% end %}">
+        <li class="receipt-li" id="receipt_aimg_box">
+            <a href="javascript:;" id="receipt_aimg">
+                <span class="fr"><img class="receipt_aimg" id="receipt_img" url="{{current_shop.config.receipt_img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" src="{{current_shop.config.receipt_img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="小票附加图"/></span>
+                <span class="text-left c333">小票附加图</span>
+            </a>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 id="b_title">附加消息</h3>
+        <div class="wp-ipt mt44">
+            <input class="shop_text" type="text" val="{{receipt_msg or ''}}"/>
+        </div>
+        <div class="wrap-bbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/exif.min.js"></script>
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set.js')}}"></script>
+{% end %}

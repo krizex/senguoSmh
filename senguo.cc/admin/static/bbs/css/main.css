@@ -20,7 +20,7 @@
 .wrap-icon .icon-see{background-position: 0 0;width: 21px;}
 .wrap-icon .post-dz{background-position: 0 -52px;left: 2px;}
 .wrap-icon .post-dz-active{background-position: 0 -65px;}
-.wrap-post{}
+/*发布*/
 .post-box{background-color: #fff;padding: 10px 15px;}
 .post-title{line-height: 1.4;font-size: 23px;color: #333;font-weight: 400;}
 .post-2title{color: #999;white-space: nowrap;overflow: hidden;}

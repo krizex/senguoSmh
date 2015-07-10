@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block title %}添加管理员{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span><input type="tel" class="search-admin" placeholder="请输入用户的ID..." autofocus="true"/></span>
+    <a href="javascript:;" class="head-right finish-btn" id="finish_btn">完成</a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-set">
+    <ul class="data-list mt15 hide">
+        <li class="admin-item">
+            <a href="javascript:;">
+                <span class="fr mt16"><span class="add-btn add-admin-btn" data-id="">添加</span></span>
+                <span class="text-left">
+                    <span class="img-border fl"><img id="admin_img" src="" alt="管理员头像"/></span>
+                    <span class="fl ml10 mt16">
+                        <p class="c333" id="admin_name"></p>
+                    </span>
+                </span>
+            </a>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set-admin.js')}}"></script>
+{% end %}

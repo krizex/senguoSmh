@@ -3,10 +3,25 @@
 {% block head %}
 {% end %}
 {% block header %}
-<div class="header">
-    <a href="javascript:;" class="back shop-set hide"></a>
+<div class="header head_tab">
+    <a href="/madmin/shopset" class="back shop-set"></a>
     <span>{{shop.shop_name}}</span>
     <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"></a>
+</div>
+<div class="header head_tab hide">
+    <a href="javascript:;" class="back bbs-menu" id="bbs-menu">所有版块</a>
+    <span>森果社区</span>
+    <a href="{{reverse_url('BbsSearch')}}" class="head-right search"><em></em></a>
+    <div class="wrap-menu-list h0">
+        <ul class="menu-list">
+            <li data-id="0">官方公告</li>
+            <li data-id="1">产品更新</li>
+            <li data-id="2">运营干货</li>
+            <li data-id="3">水果百科</li>
+            <li data-id="4">使用教程</li>
+            <li data-id="5">水果供求</li>
+        </ul>
+    </div>
 </div>
 {% end %}
 {% block content %}
@@ -28,9 +43,9 @@
 {% else %}
 {% set shop_auth="未认证" %}
 {% end %}
-<div class="shop-profile pb45">
-    <div class="profile-top white-box">
-        <div class="sw-tip shopping" data-status="1"></div>
+<div class="shop-profile pb45 main_tab">
+    <div class="profile-top white-box" id="shop_info">
+        <div class="sw-tip" id="shop_status" data-status="{{shop.status}}"></div>
         <span class="sw-tip-txt">{{shop_status}}</span>
         <dl class="dl ptm6">
             <dt>
@@ -129,13 +144,21 @@
         </a>
     </div>
 </div>
+<div class="wrap-main pm80 main_tab hide">
+    <ul class="atical-list">
+
+    </ul>
+    <p class="loading txt-center c999 mt10"></p>
+</div>
 <div class="bm-tab header">
     <ul class="tab-bm-list group">
-        <li class="active"><a href="/madmin"><i class="box-icon ic-shop ic-shop-active"></i><span>店铺</span></a></li>
-        <li class=""><a href="/bbs"><i class="box-icon ic-bbs"></i><span>社区</span></a></li>
+        <li class="active"><a href="javascript:;"><i class="box-icon ic-shop ic-shop-active"></i><span>店铺</span></a></li>
+        <li class=""><a href="javascript:;"><i class="box-icon ic-bbs"></i><span>社区</span></a></li>
     </ul>
 </div>
 {% end %}
 {% block bottom %}
+<script type="text/javascript" src="/static/js/template.js"></script>
 <script type="text/javascript" src="{{static_url('m-admin/js/profile.js')}}"></script>
+<script type="text/javascript" src="{{static_url('bbs/js/main.js')}}"></script>
 {% end %}
