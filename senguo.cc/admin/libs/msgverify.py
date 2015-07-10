@@ -55,12 +55,12 @@ def gen_msg_token(phone):
 	h.close()
 	root = ElementTree.fromstring(res.body.decode())
 	if not root[0].text == '2':
-		# print("[VerifyMsg]SendError：",root[0].text,root[1].text)
+		# print("[验证短信]发送错误：",root[0].text,root[1].text)
 		return root[1].text
 	else:
 		try:
-			# print("[VerifyMsg]VerifyCode",code,"has send to phone：",phone)
-			# print("[VerifyMsg]wx_id：",wx_id)
+			# print("[验证短信]验证码",code,"已发送到手机：",phone)
+			# print("[验证短信]wx_id：",wx_id)
 			q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
 		except:
 			q = None
@@ -152,6 +152,10 @@ def gen_msg_token(phone):
 #         #24小时内多于10次，不响应
 #         else:
 #             return False
+
+
+
+
 
 def check_msg_token(phone, code):
 	s = DBSession()
