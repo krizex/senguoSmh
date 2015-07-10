@@ -177,7 +177,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
 		return self.render(self.tpl_path(shop.shop_tpl)+'/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
-		
+
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
 	def get(self):
@@ -333,11 +333,11 @@ class Home(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
-	
+
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
 	def post(self,shop_code):
-		action = self.args["action"] 
+		action = self.args["action"]
 		data = self.args["data"]
 		if action == "add_address":
 			address = models.Address(customer_id=self.current_user.id,
@@ -386,7 +386,7 @@ class Discover(CustomerBaseHandler):
 		try:
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
-			confess_count = 0 
+			confess_count = 0
 		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
 
 # 店铺 - 店铺地图
@@ -444,7 +444,7 @@ class CustomerProfile(CustomerBaseHandler):
 			third.append({'weixin':True})
 		self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info,wxnotice=wxnotice))
 
-	
+
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
 	def post(self):
@@ -872,8 +872,8 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 
 # 商城入口
 class Market(CustomerBaseHandler):
-	# @tornado.web.authenticated
-	# @get_unblock
+	@tornado.web.authenticated
+	@get_unblock
 	def get(self, shop_code):
 		# print('login in ')
 		w_follow = True
@@ -970,8 +970,8 @@ class Market(CustomerBaseHandler):
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
-		cart_count = len(cart_f) 
-		
+		cart_count = len(cart_f)
+
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
 		# print(cart_fs)
 		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
@@ -1035,7 +1035,7 @@ class Market(CustomerBaseHandler):
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
-	
+
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1095,14 +1095,14 @@ class Market(CustomerBaseHandler):
 					favour_today = False
 				else:
 					favour_today = favour.create_date == datetime.date.today()
-				# print('favour_today',favour_today)				
-					
+				# print('favour_today',favour_today)
+
 				charge_types= []
 				for charge_type in fruit.charge_types:
 					if charge_type.active !=0:
 						unit  = charge_type.unit
 						unit =self.getUnit(unit)
-						
+
 						limit_today = False
 						allow_num = ''
 						try:
@@ -1146,7 +1146,7 @@ class Market(CustomerBaseHandler):
 		shop_id = int(self.get_cookie("market_shop_id"))
 		customer_id = self.current_user.id
 
-		# fruits_test = self.session.query(models.Fruit,models.FruitFavour,models.FruitFavour.create_date).join(models.FruitFavour,models.FruitFavour.f_m_id == 
+		# fruits_test = self.session.query(models.Fruit,models.FruitFavour,models.FruitFavour.create_date).join(models.FruitFavour,models.FruitFavour.f_m_id ==
 		# 	models.Fruit.id).filter(models.Fruit.shop_id == shop_id,models.FruitFavour.customer_id == customer_id)
 
 		# for temp in fruits_test:
@@ -1274,12 +1274,12 @@ class Market(CustomerBaseHandler):
 			else:
 				print('Market: customer_shop_follow not fount')
 		# 商品赞+1
-	
+
 		try:
 			f = self.session.query(models.Fruit).filter_by(id=fruit_id).one()
 		except:
 			return self.send_error(404)
-		
+
 		f.favour += 1
 		self.session.commit()
 		return self.send_success(notice='点赞成功，积分+1')
@@ -1334,7 +1334,7 @@ class GoodsSearch(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-		
+
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 
@@ -1435,7 +1435,7 @@ class Cart(CustomerBaseHandler):
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
-				
+
 				try:
 					limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = customer_id)\
 					.order_by(models.GoodsLimit.create_time.desc()).first()
@@ -1465,7 +1465,7 @@ class Cart(CustomerBaseHandler):
 					else:
 						goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 						self.session.add(goods_limit)
-					self.session.commit()					
+					self.session.commit()
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
@@ -1548,7 +1548,7 @@ class Cart(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
 			if shop_follow.shop_balance < totalPrice:
-				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")  
+				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
 			self.session.commit()
 
 
@@ -1623,7 +1623,7 @@ class Cart(CustomerBaseHandler):
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print("Cart: online_type error")
-			
+
 			return self.send_success(success_url=success_url,order_id = order.id)
 		return self.send_success(order_id = order.id)
 
@@ -1678,8 +1678,8 @@ class CartCallback(CustomerBaseHandler):
 		if order.pay_type != 3:
 			print(access_token,'access_token')
 			self.send_admin_message(self.session,order,access_token)
-			
-		
+
+
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
@@ -2016,7 +2016,7 @@ class Order(CustomerBaseHandler):
 			#need to rocord this poist history?
 		else:
 			return self.send_error(404)
-		
+
 # 我的 - 我的订单 - 订单详情
 class OrderDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -2321,9 +2321,9 @@ class payTest(CustomerBaseHandler):
 				openid = jsApi.getOpenid()
 				print(openid,code,'hope is not []')
 				if not openid:
-					print('openid not exit')	
+					print('openid not exit')
 				unifiedOrder =   UnifiedOrder_pub()
-				# totalPrice = self.args['totalPrice'] 
+				# totalPrice = self.args['totalPrice']
 				#totalPrice =float( self.get_cookie('money'))
 				print(totalPrice,'long time no see!')
 				unifiedOrder.setParameter("body",'charge')
@@ -2397,21 +2397,21 @@ class payTest(CustomerBaseHandler):
 		#	shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 		#	if not shop:
 		#		return self.send_fail('shop not found')
-			
+
 			#shop_id = self.get_cookie('market_shop_id')
 			#customer_id = self.current_user.id
-			
+
 
 		#	code = self.args['code']
 		#	path_url = self.request.full_url()
 
-			
-			
+
+
 			#totalPrice =float( self.get_cookie('money'))
 			#print(customer_id,shop_id,totalPrice)
 			#########################################################
-			# 用户余额增加 
-			# 同时店铺余额相应增加 
+			# 用户余额增加
+			# 同时店铺余额相应增加
 			# 应放在 支付成功的回调里
 			#########################################################
 			# 支付成功后，用户对应店铺 余额 增加
@@ -2482,7 +2482,7 @@ class InsertData(CustomerBaseHandler):
 		from multiprocessing import Process
 		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
-		# session = self.session	
+		# session = self.session
 		# from handlers.base import UrlShorten
 		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
 		# print(short,type(short))
@@ -2506,8 +2506,8 @@ class InsertData(CustomerBaseHandler):
 
 
 # 支付超时判断
-# 返回：		
-# 		0 - 不超时		
+# 返回：
+# 		0 - 不超时
 # 		1 - 超时
 class Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated
