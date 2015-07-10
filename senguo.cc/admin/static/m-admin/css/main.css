@@ -35,7 +35,7 @@
 .bm-tab{background-color: rgba(252,252,252,.95);bottom: 0;color: #666;top:auto;height: 48px;}
 .tab-bm-list>li{width: 50%;float: left;border-top: 1px solid #e7e7eb;}
 .tab-bm-list>li>a{display: block;height: 48px;color: #666;}
-.tab-bm-list>li i{height: 22px;background-size:26px;background-position: center center;margin-top: 6px;}
+.tab-bm-list>li i{height: 22px;background-size:24px;background-position: center center;margin-top: 6px;}
 .tab-bm-list>li span{display: block;font-size: 12px;text-align: center;position: relative;top: -16px;line-height: 14px;margin-top: 2px;}
 .ic-shop{background-image: url('/static/m-admin/img/icon_shop.png');}
 .tab-bm-list .active .ic-shop{background-image: url('/static/m-admin/img/icon_shop_active.png');}
@@ -233,13 +233,13 @@
 /*店铺地址*/
 .address-item{background-color: #fff;height: 40px;line-height: 40px;color: #333;padding: 0 10px;}
 .address-item .more{height: 40px;display: inline-block;}
-.address-ipt{width: 100%;height: 40px;background-color: #fff;border: none;color: #333;}
+.address-ipt{width: 100%;height: 36px;background-color: #fff;border: none;color: #333;}
 .finish-btn{color: #fff;background-color: #ffc107;height: 24px;line-height: 24px;min-width:44px;right: 10px;top: 8px;border-radius: 2px;font-size: 12px !important;}
 .wrap-address-list{width:100%;-webkit-box-sizing:border-box;position: absolute;bottom:0;left:0;background-color: #fff;padding: 10px;height: 70%;overflow: auto;font-size: 12px !important;}
 .address-list>li{height: 36px;line-height: 36px;color: #666;font-size: 14px;border-bottom: 1px solid #e7e7e7;}
 /*店铺设置-小票*/
-.switch-btn{width: 80px;height: 20px;text-align:center;position:relative;border-radius: 20px;display: inline-block;line-height: 20px;font-size: 14px;color: #fff;background-color: #9f9f9f;}
-.switch-btn>i{position: absolute;width: 18px;height: 18px;border-radius: 18px;left: 1px;top: 1px;background-color: #fff;}
+.switch-btn{width: 80px;height: 24px;text-align:center;position:relative;border-radius: 24px;display: inline-block;line-height: 24px;font-size: 14px;color: #fff;background-color: #9f9f9f;}
+.switch-btn>i{position: absolute;width: 22px;height: 22px;border-radius: 22px;left: 1px;top: 1px;background-color: #fff;}
 .switch-btn>span{margin-left: 10px;}
 .switch-abtn{background-color: #48B6A4;}
 .switch-abtn>i{left: auto;right: 1px;}
@@ -286,6 +286,7 @@
 .add-notice-img{padding: 10px 6px;}
 .notice-list{padding: 0 10px;background-color: #fff;}
 .notice-list>li{border-bottom: 1px solid #e7e7e7;padding: 8px 10px;position: relative;}
+.notice-list .fr{margin-top: -3px;}
 .notice-list>li:last-child{border-bottom: none;}
 .notice-list .notice-title{padding: 10px 0;}
 .notice-left{position: absolute;color: #333;}

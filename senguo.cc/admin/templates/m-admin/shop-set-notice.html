@@ -24,13 +24,13 @@
         <li class="group">
             <span class="notice-left">摘要</span>
             <div class="notice-text fr">
-                {{notice.summary}}
+                {{notice.summary or '未设置'}}
             </div>
         </li>
         <li class="group">
             <span class="notice-left">详情</span>
             <div class="notice-text fr">
-                {{notice.detail}}
+                {{notice.detail or '未设置'}}
             </div>
         </li>
         <li class="group">

@@ -57,6 +57,8 @@ $(document).ready(function(){
     }
 }).on("click",".un_edit",function(){
     Tip("该项当前不能被编辑");
+}).on("click",".pc_edit",function(){
+    Tip("请在电脑上进行此项编辑");
 }).on("click","#shop_status",function(){
     $("#b_title").html("店铺状态");
     $(".ok-bbtn").attr("data-action","status");

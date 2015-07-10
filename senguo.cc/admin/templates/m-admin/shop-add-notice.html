@@ -25,7 +25,7 @@
     <div class="notive-temp-img {% if notice %}{% else %}hidden{% end %}" id="notice-temp-img">
         <a href="javascript:;" class="del-img {% if notice %}{% else %}hide{% end %}"></a>
         <div class="img-cover wrap-img-cover hide"><span class="loader loader-quart"></span></div>
-        <img id="notice_img" src="{% if notice %}{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100{% end %}" url="{% if notice %}{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100{% end %}" alt="公告图片"/>
+        <img id="notice_img" src="{% if notice %}{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100{% end %}" url="{% if notice %}{{notice.img_url or '/static/images/holder_fruit.jpg'}}{% end %}" alt="公告图片"/>
     </div>
 </div>
 {% end %}

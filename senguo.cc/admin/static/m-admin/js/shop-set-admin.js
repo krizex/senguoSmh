@@ -77,8 +77,12 @@ function addAdmin(id){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                if(confirm('是否添加该用户为店铺管理员？点击确定后请使用超级管理员微信进行二维码扫描')){
+                if(isWeiXin()){
                     window.location.href="/admin/wxauth";
+                }else{
+                    if(confirm('是否添加该用户为店铺管理员？点击确定后请使用超级管理员微信进行二维码扫描')){
+                        window.location.href="/admin/wxauth";
+                    }
                 }
             }else{
                 return Tip(res.error_text);

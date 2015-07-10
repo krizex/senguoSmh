@@ -166,6 +166,15 @@ function isIos(){
         return false;
     }
 }
+//判断微信浏览器
+function isWeiXin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+        return true;
+    }else{
+        return false;
+    }
+}
 /*post*/
 $.postJson = function(url, args,successCall){
     args._xsrf = window.dataObj._xsrf;
