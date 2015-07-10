@@ -196,8 +196,8 @@
 /*店铺设置*/
 .list-title{padding-left: 10px;color: #666;font-size: 14px;line-height: 28px;}
 .data-list{background-color: #fff;padding-left: 10px;}
-.data-list>li{border-bottom:1px solid #e7e7e7;padding-right: 10px;height: 38px;line-height: 38px;font-size: 14px;color: #333;}
-.data-list>li>a{display: block;height: 38px;color: #333;}
+.data-list>li{border-bottom:1px solid #e7e7e7;padding-right: 10px;height: 40px;line-height: 40px;font-size: 14px;color: #333;}
+.data-list>li>a{display: block;height: 40px;color: #333;}
 .data-list>li:last-child{border-bottom: none;}
 .item-left{display: inline-block;padding-left: 26px;background-repeat: no-repeat;background-size: 20px;background-position: left center;}
 .i-cert{background-image: url(/static/m-admin/img/1.png);}
@@ -219,7 +219,7 @@
 .data-list .info-li a{height: 100%;}
 .code2{width: 20px;height: 20px;}
 .data-list .text-clip{line-height:18px;padding:8px 0 8px 100px;}
-.data-list .info-left{position: absolute;min-height:38px;top: 50%;left: 0;-webkit-transform:translate(0,-50%);}
+.data-list .info-left{position: absolute;min-height:40px;top: 50%;left: 0;-webkit-transform:translate(0,-50%);}
 .big-code2{width: 150px;height: 150px;margin:30px auto 0 auto;}
 .wp-ipt>input{width: 100%;border: none;border-bottom: 2px solid #48B6A4;font-size: 14px;color: #333;padding-bottom: 5px;height: 20px;}
 .wp-ipt>textarea{width: 100%;border: none;border-bottom: 2px solid #48B6A4;font-size: 14px;line-height: 18px;height: 56px;overflow: auto;}
@@ -231,9 +231,9 @@
 .code2-logo{width: 40px;position: absolute;top: 50%;left: 50%;-webkit-transform:translate(-50%,-50%);border-radius: 4px;margin-top: 5px;}
 .b-close{width: 40px;height: 40px;background: url('/static/m-admin/img/close_2.png') no-repeat center center;position: absolute;right: 10px;top: 10px;}
 /*店铺地址*/
-.address-item{background-color: #fff;height: 38px;line-height: 38px;color: #333;padding: 0 10px;}
-.address-item .more{height: 38px;display: inline-block;}
-.address-ipt{width: 100%;height: 38px;background-color: #fff;border: none;color: #333;}
+.address-item{background-color: #fff;height: 40px;line-height: 40px;color: #333;padding: 0 10px;}
+.address-item .more{height: 40px;display: inline-block;}
+.address-ipt{width: 100%;height: 40px;background-color: #fff;border: none;color: #333;}
 .finish-btn{color: #fff;background-color: #ffc107;height: 24px;line-height: 24px;min-width:44px;right: 10px;top: 8px;border-radius: 2px;font-size: 12px !important;}
 .wrap-address-list{width:100%;-webkit-box-sizing:border-box;position: absolute;bottom:0;left:0;background-color: #fff;padding: 10px;height: 70%;overflow: auto;font-size: 12px !important;}
 .address-list>li{height: 36px;line-height: 36px;color: #666;font-size: 14px;border-bottom: 1px solid #e7e7e7;}
