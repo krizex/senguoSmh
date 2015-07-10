@@ -59,7 +59,7 @@ def gen_msg_token(phone):
 		return root[1].text
 	else:
 		try:
-			# print("[验证短信]验证码",code,"已发送到手机：",phone)
+			print("[验证短信]验证码",code,"已发送到手机：",phone)
 			# print("[验证短信]wx_id：",wx_id)
 			q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
 		except:
