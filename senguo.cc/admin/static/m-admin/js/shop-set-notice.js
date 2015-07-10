@@ -80,7 +80,7 @@ function noticeEdit(id){
             else return Tip(res.error_text);
         });
 }
-
+var isOri = "";
 $(document).ready(function(){
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
@@ -106,7 +106,6 @@ $(document).ready(function(){
                 var file = files[0];
                 $(".img-cover").removeClass("hide");
                 $(".del-img").addClass("hide");
-                var isOri = "";
                 EXIF.getData(file.getNative(), function() {
                     var orientation = file.getNative().exifdata.Orientation;
                     if(orientation && orientation>1){//ios 横拍为3，竖排为6
@@ -119,7 +118,7 @@ $(document).ready(function(){
                 });
                 !function(){
                     previewImage(file,function(imgsrc){
-                        $("#notice_img").attr("src",imgsrc).addClass("isOri");
+                        $("#notice_img").attr("src",imgsrc).addClass(isOri);
                         $("#add-notice-img").addClass("hidden");
                         $("#notice-temp-img").removeClass("hidden");
                     })
@@ -144,7 +143,7 @@ $(document).ready(function(){
                     Tip(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
-                $("#notice_img").attr("src",$("#notice_img").attr("url")).removeClass("isOri");
+                $("#notice_img").attr("src",$("#notice_img").attr("url")).removeClass(isOri);
                 $("#add-notice-img").removeClass("hidden");
                 $("#notice-temp-img").addClass("hidden");
                 $(".img-cover").removeClass("hide");

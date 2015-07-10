@@ -102,6 +102,7 @@ function chooseAuth(){
         $status.html('未认证');
     }
 }
+var isOri = "";
 $(document).ready(function(){
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
@@ -125,7 +126,6 @@ $(document).ready(function(){
         init: {
             'FilesAdded': function (up, files) {
                 var file = files[0];
-                var isOri = "";
                 EXIF.getData(file.getNative(), function() {
                     var orientation = file.getNative().exifdata.Orientation;
                     if(orientation && orientation>1){//ios 横拍为3，竖排为6
@@ -138,7 +138,7 @@ $(document).ready(function(){
                 });
                 !function(){
                     previewImage(file,function(imgsrc){
-                        $("#shop_logo").attr("src",imgsrc).addClass("isOri");
+                        $("#shop_logo").attr("src",imgsrc).addClass(isOri);
                     })
                 }();
             },
@@ -159,7 +159,7 @@ $(document).ready(function(){
                     Tip(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
-                $("#shop_logo").attr("src",$("#shop_logo").attr("url")).removeClass("isOri");
+                $("#shop_logo").attr("src",$("#shop_logo").attr("url")).removeClass(isOri);
             },
             'Key': function (up, file) {
                 var key = file.id;

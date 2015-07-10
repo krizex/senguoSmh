@@ -227,6 +227,7 @@ function receiptImg(){
             }
         });
 }
+var isOri = "";
 $(document).ready(function(){
     if($(".receipt-token").size()==0){
         return false;
@@ -253,7 +254,6 @@ $(document).ready(function(){
         init: {
             'FilesAdded': function (up, files) {
                 var file = files[0];
-                var isOri = "";
                 EXIF.getData(file.getNative(), function() {
                     var orientation = file.getNative().exifdata.Orientation;
                     if(orientation && orientation>1){//ios 横拍为3，竖排为6
@@ -266,7 +266,7 @@ $(document).ready(function(){
                 });
                 !function(){
                     previewImage(file,function(imgsrc){
-                        $("#receipt_img").attr("src",imgsrc).addClass("isOri");
+                        $("#receipt_img").attr("src",imgsrc).addClass(isOri);
                     })
                 }();
             },
@@ -287,7 +287,7 @@ $(document).ready(function(){
                     Tip(err.code + ": " + err.message);
                 }
                 up.removeFile(err.file.id);
-                $("#receipt_img").attr("src",$("#receipt_img").attr("url")).removeClass("isOri");
+                $("#receipt_img").attr("src",$("#receipt_img").attr("url")).removeClass(isOri);
             },
             'Key': function (up, file) {
                 var key = file.id;
