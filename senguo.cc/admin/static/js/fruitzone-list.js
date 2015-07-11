@@ -179,6 +179,7 @@ function initLocation(){
                 var addComp = rs.addressComponents;
                 initProviceAndCityCode(addComp.province, addComp.city);
                 $(".city_name").text(addComp.city);
+                window.dataObj.type='city';
                 filter($("#city_id").val());
             });
         },function(error){
@@ -473,7 +474,6 @@ function filter(data){
             if(res.success)
             {
                 remove_bg();
-                $('.shoplist').empty();
                  var shops=res.shops;
                  nomore = res.nomore;
                  $('.list_item').addClass('hidden');
@@ -491,6 +491,7 @@ function filter(data){
                     }
                       window.dataObj.action='filter';
                       window.dataObj.data=Int(data);
+                      $('.shoplist').empty();
                      shopItem(shops);
                 }
                 $(".wrap-loading-box").addClass("hidden");
