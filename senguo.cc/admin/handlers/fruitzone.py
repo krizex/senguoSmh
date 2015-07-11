@@ -216,6 +216,7 @@ class ShopList(FruitzoneBaseHandler):
 			else:
 				return self.send_fail(error_text = 'key_word error')
 		shops = shops[_page_count*page:_page_count*page+_page_count]
+		print(shops+"*******店铺数据**********")
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)

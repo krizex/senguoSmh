@@ -9,8 +9,7 @@ $(document).ready(function(){
             var id=$.getUrlParam('id');
             shopsList(0,id,'admin_shop');
         }
-    }
-    else{
+    }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
         if(q && q!="null"){
             Search(q);
@@ -335,7 +334,6 @@ window.dataObj.action='shop';
 window.dataObj.type='city';
 var nomore = false;
 var shopsList=function(page,data,action){
-    $(".wrap-loading-box").removeClass("hidden");
     var url='';
     var action =action;
     var args={
@@ -361,19 +359,15 @@ var shopsList=function(page,data,action){
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                $(".wrap-loading-box").addClass("hidden");
                 initData(res);
                 nomore = res.nomore;
             }
         else {
-            $(".wrap-loading-box").addClass("hidden");
             return noticeBox(res.error_text);
         }
         },function(){
-            $(".wrap-loading-box").addClass("hidden");
             return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){
-            $(".wrap-loading-box").addClass("hidden");
             return noticeBox('服务器貌似出错了~ ( >O< ) ~');
         }
         );
@@ -382,15 +376,20 @@ var shopsList=function(page,data,action){
             window.dataObj.maxnum=res.page_total;
             shopItem(shops);
             $('.loading').hide();
+            $('.no_more').hide();
             window.dataObj.finished=true;
     }
 };
-
 var scrollLoading=function(){
     var range = 60;             //距下边界长度/单位px          //插入元素高度/单位px  
     var totalheight = 0;   
     var main = $(".container");                  //主体元素   
     $(window).scroll(function(){
+        if(nomore){
+            $('.no_more').show();
+            $('.loading').hide();
+            return false;
+        }
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
         if(window.dataObj.finished&&(main.height()-range) <= totalheight  && nomore==false) { 
@@ -441,8 +440,10 @@ function Search(q){
         function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}    
     );
 }
-
+var index =0;
 function filter(data){
+index++;
+$(".container").append("第"+index+"加载");
    $(".wrap-loading-box").removeClass("hidden");
    var type = window.dataObj.type;
     window.dataObj.action="filter";
@@ -483,7 +484,7 @@ function filter(data){
                  if(shops.length==0){
                     $('.shoplist').empty();
                     window.dataObj.maxnum=1;
-                    $('.shoplist').append('<h4 class="text-center mt10 text-grey">无搜索结果！</h4>');
+                    $('.shoplist').append('<h4 class="text-center mt10 text-grey">无任何结果！</h4>');
                  }
                 else {
                       window.dataObj.action='filter';

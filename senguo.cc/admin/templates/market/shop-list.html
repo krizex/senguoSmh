@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block title %}森果市场推广系统{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>森果市场推广系统</span>
+    <a href="javascrpt:;" class="head-right spread-user"><span class="img-border"><img src="/static/images/TDSG.png" alt="陈逸林"/></span></a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-list pb45">
+    <ul class="shop-list">
+        <li data-id="" data-code="">
+            <dl class="shop-dl">
+                <dd>
+                    <span class="img-border"><img src="/static/images/TDSG.png" alt=""/></span>
+                </dd>
+                <dt>
+                    <p class="name c333"><span class="c999 f12">1.2km</span>水果太太(光谷店)</p>
+                    <p class="addre mt10">武汉市洪山区珞瑜路华中科技大学</p>
+                </dt>
+            </dl>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-spread hidden">
+    <div class="pop-bcontent">
+        <div class="b-close"></div>
+        <img class="code2-logo" src="/static/images/admin_logo1.png" alt="森果logo"/>
+        <p class="c666 mt15">列表链接(长按链接复制到剪切板)</p>
+        <p class="dgreen mt10" id="shop_list_link">http://senguo.cc/list?action=shop&id={{handler.current_shop.admin_id}}</p>
+        <p class="c666 mt10">列表二维码(长按二维码复制到剪切板)</p>
+        <div class="big-code2 mt10" id="big-code2">
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-list.js')}}"></script>
+{% end %}

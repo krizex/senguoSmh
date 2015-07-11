@@ -1,8 +1,19 @@
 .img-border{display: inline-block;border: 2px solid #76ccc0;border-radius: 50%;line-height: 1;}
+.img-border>img{width: 100%;height: 100%;border-radius: 50%;}
 /*店铺中心*/
 .more{color: #999;padding-right: 12px;background: url('/static/images/arr-right.png') no-repeat;background-size:8px 12px;background-position: right center;}
 .developing .more{color:#ccc;background: url('/static/images/arr-right2.png') no-repeat;background-size:8px 12px;background-position: right center;}
-
+/*首页*/
+.spread-user .img-border{width: 30px;height: 30px;}
+.shop-dl{position: relative;min-height: 86px;}
+.shop-dl>dd{position: absolute;top: 6px;}
+.shop-dl .img-border{display: inline-block;width: 72px;height: 72px;}
+.shop-dl>dd img{width: 72px;height: 72px;border-radius: 50%;}
+.shop-dl>dt{padding-left: 85px;position: relative;}
+.shop-dl .arr-item{position: absolute;right: 0px;top: 38px;width: 8px;height: 13px;background-image: url(/static/m-admin/img/shop_arr.png);}
+.shop-dl .name{font-size: 16px;color: #48B6A4;}
+.shop-dl .shop-cert{font-size: 12px;display: inline-block;position:relative;top:-2px;height: 16px;line-height: 16px;border: 1px solid #48B6A4;border-radius: 8px;width: 70px;text-align: center;margin-left:5px;}
+.shop-dl .addre{color: #848484;font-size: 12px;padding-left: 14px;background-image: url(/static/m-admin/img/loc.png);background-size: 10px auto;background-position: left center;background-repeat: no-repeat;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
 /*店铺设置*/
 .list-title{padding-left: 10px;color: #666;font-size: 14px;line-height: 28px;}
 .data-list{background-color: #fff;padding-left: 10px;}
@@ -13,12 +24,10 @@
 /*店铺信息*/
 .data-list .text-left{color: #333;}
 .data-list .img-border{width: 40px;height: 40px;}
-.data-list .img-border>img{width: 40px;height: 40px;border-radius: 50%;}
 .data-list .logo-li{height: 58px;line-height: 58px;}
 .data-list .logo-li a{height: 58px;}
 .data-list .info-li{height: auto;position: relative;vertical-align: middle;}
 .data-list .info-li a{height: 100%;}
-.code2{width: 20px;height: 20px;}
 .data-list .text-clip{line-height:18px;padding:8px 10px 8px 100px;}
 .data-list .info-left{position: absolute;min-height:40px;top: 50%;left: 0;-webkit-transform:translate(0,-50%);}
 .big-code2{width: 150px;height: 150px;margin:30px auto 0 auto;}
@@ -30,7 +39,6 @@
 .status-list>li{height: 28px;color: #333;line-height: 28px;text-align: center;}
 .status-list .active{color: #48B6A4;}
 .code2-logo{width: 40px;position: absolute;top: 50%;left: 50%;-webkit-transform:translate(-50%,-50%);border-radius: 4px;margin-top: 5px;}
-.b-close{width: 40px;height: 40px;background: url('/static/m-admin/img/close_2.png') no-repeat center center;position: absolute;right: 10px;top: 10px;}
 
 
 
