@@ -2243,9 +2243,9 @@ class Config(AdminBaseHandler):
 			except:return self.send_error(404)
 			addr2.update(session=self.session, active=not addr2.active)
 		elif action in ("edit_notice_active", "edit_notice"):  # notice_id
-			notice = next((x for x in self.current_shop.config.notices if x.id == data["notice_id"]), None)
+			notice = next((x for x in self.current_shop.config.notices if x.id == int(data["notice_id"])), None)
 			if not notice:
-				return self.send_error(404)
+				return self.send_error('没有该公告的任何消息')
 			if action == "edit_notice_active":
 				notice.active = 1 if notice.active == 2 else 2
 			elif action == "edit_notice":
