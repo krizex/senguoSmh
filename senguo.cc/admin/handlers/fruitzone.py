@@ -156,7 +156,7 @@ class ShopList(FruitzoneBaseHandler):
 			if service_area > 0:
 				q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 			# q = q.filter_by(shop_service_area = service_area)
-
+		print(self.args)
 		if "city" in self.args:
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
@@ -194,6 +194,7 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		shops = self.get_data(q)
+		#print()
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
 			if key_word == 1: #商品最多
@@ -216,7 +217,6 @@ class ShopList(FruitzoneBaseHandler):
 			else:
 				return self.send_fail(error_text = 'key_word error')
 		shops = shops[_page_count*page:_page_count*page+_page_count]
-		print(shops+"*******店铺数据**********")
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
