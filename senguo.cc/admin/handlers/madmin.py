@@ -175,7 +175,7 @@ class SetAttr(AdminBaseHandler):
 						break
 			return self.render('m-admin/shop-add-notice.html',notice=notice,token=token,context=dict())
 		if action=="pay":
-			return self.render('m-admin/shop-set-pay.html',current_shop=self.current_shop,context=dict())
+			return self.render('m-admin/shop-set-pay.html',context=dict())
 		# 移动后台 - 设置
 class Address(AdminBaseHandler):
 	@tornado.web.authenticated

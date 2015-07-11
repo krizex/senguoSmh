@@ -8,6 +8,7 @@ import handlers.official
 import handlers.onlinePay
 import handlers.activity
 import handlers.madmin
+import handlers.market
 import handlers.bbs
 from dal import models
 #todo:handlers太大会不会影响性能？
@@ -248,13 +249,12 @@ handlers = [
 	(r"/madmin/shopinfo", handlers.madmin.Info, {}, "MadminInfo"),
 	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
 	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
-	# (r"/staff/...")
-
+	#市场推广
+	(r"/market", handlers.market.Home, {}, "MarketHome"),
+	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
 
 	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
 	# 水果圈子
-
-	
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
