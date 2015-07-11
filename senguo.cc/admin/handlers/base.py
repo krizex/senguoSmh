@@ -902,7 +902,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.each_point = 2
 				session.add(point_history)
 
-
 			# 订单完成后，将相应店铺可提现 余额相应增加
 			order.shop.available_balance += totalprice
 			# print(order.shop.available_balance,'order.shop.available_balance')
@@ -912,13 +911,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				available_balance=order.shop.available_balance,balance_type = 6)
 			session.add(balance_history)
 
-		if order.pay_type == 3:
+		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
 				available_balance=order.shop.available_balance,balance_type = 7)
 			session.add(balance_history)
-
 
 		#增 与订单总额相等的积分
 		if shop_follow.shop_point == None:
