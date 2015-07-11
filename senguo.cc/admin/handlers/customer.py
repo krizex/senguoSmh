@@ -1431,7 +1431,7 @@ class Cart(CustomerBaseHandler):
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 
-				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num
+				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -1446,25 +1446,27 @@ class Cart(CustomerBaseHandler):
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
 						return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
-					if limit_if:
-						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
-						create_time = limit_if.create_time.strftime('%Y-%m-%d')
-						if time_now == create_time:
-							buy_num = limit_if.buy_num+buy_num
-							if limit_if.limit_num == limit_num:
-								allow_num = limit_if.limit_num-buy_num
-							else:
-								allow_num = limit_num-buy_num
-								if allow_num <=0:
-									return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+					else:  #购买数量未超过限购数量
+						if limit_if:  #有限购记录
+							time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+							create_time = limit_if.create_time.strftime('%Y-%m-%d')
+							if time_now == create_time:  #有今天的限购记录，表示今天已经购买，故禁止再次购买
+								return self.send_fail('今天已经购买过该限购商品')
+								# buy_num = limit_if.buy_num+buy_num
+								# if limit_if.limit_num == limit_num:
+								# 	allow_num = limit_if.limit_num-buy_num
+								# else:
+								# 	allow_num = limit_num-buy_num
+								# 	if allow_num <=0:
+								# 		return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+								# goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+								# self.session.add(goods_limit)
+							else:     #没有今天的限购记录，表示今天可以购买，并产生一条限购记录
+								goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+								self.session.add(goods_limit)
+						else:    #之前没有限购记录
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
-						else:
-							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
-							self.session.add(goods_limit)
-					else:
-						goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
-						self.session.add(goods_limit)
 					self.session.commit()					
 
 				charge_type.fruit.storage -= num  # 更新库存
