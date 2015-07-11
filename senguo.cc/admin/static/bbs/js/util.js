@@ -106,7 +106,6 @@ $.postJson = function(url, args,successCall){
 //     var s = document.getElementsByTagName("script")[0]; 
 //     s.parentNode.insertBefore(hm, s);
 // })();
-
 (function ($) {
     $.getUrlParam = function (name, default_value) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

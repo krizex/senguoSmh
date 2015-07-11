@@ -268,7 +268,7 @@ class GlobalBaseHandler(BaseHandler):
 	# 将商品计价方式编码转换为计价方式文字显示
 	def getUnit(self,unit):
 		if unit == 1:
-			name ='个' 
+			name ='个'
 		elif unit == 2 :
 			name ='斤'
 		elif unit == 3 :
@@ -295,7 +295,7 @@ class GlobalBaseHandler(BaseHandler):
 
 	# 将森果社区文章类型编码转换为文字
 	def article_type(self,_type):
-		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求']
+		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求','森果前沿']
 		return types[_type]
 
 	# 获取商品信息
@@ -351,7 +351,7 @@ class GlobalBaseHandler(BaseHandler):
 			article_great=self.session.query(models.ArticleGreat).filter_by(article_id=article[0].id,account_id=self.current_user.id).one()
 		except:
 			article_great=None
-		if article_great and article_great.great == 1:	
+		if article_great and article_great.great == 1:
 			great_if=True
 		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
@@ -458,7 +458,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print("[微信授权]授权链接：",link)
+		# print("[微信授权]授权链接：",link)
 		return link
 
 	def get_wexin_oauth_link2(self, next_url=""):
@@ -488,7 +488,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_check_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print("[微信授权]授权链接：",link)
+		# print("[微信授权]授权链接：",link)
 		return link
 
 	def get_login_url(self):
@@ -496,7 +496,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		print("[微信登录]登录URL：",self.request.full_url())
+		# print("[微信登录]登录URL：",self.request.full_url())
 		# next_url =  self.reverse_url("fruitzoneShopList")
 		next_url = self.get_cookie('next_url')
 		if next_url is None:
@@ -554,7 +554,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		# token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
-		print("[七牛授权]发送Token：",token)
+		# print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
 	# 编辑器获取七牛Token
@@ -563,13 +563,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 							  policy={"returnUrl": "http://i.senguo.cc/admin/editorCallback",
 									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
-		print("[七牛授权]发送Token：",token)
+		# print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 	# 获取七牛Token
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100)
-		print("[七牛授权]获得Token：",token)
+		# print("[七牛授权]获得Token：",token)
 		return token
 
 	# 获取评论
@@ -710,7 +710,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			else:
 				touser = order.shop.admin.accountinfo.wx_openid
 
-		else:	
+		else:
 			touser = order.shop.admin.accountinfo.wx_openid
 		shop_id    = order.shop.id
 		shop_name  = order.shop.shop_name
@@ -723,7 +723,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_type = '立即送' if order_type == 1 else '按时达'
 		create_date= order.create_date
 		customer_name=order.receiver
-		
+
 		try:
 			customer = session.query(models.Customer).filter_by(id = customer_id).first()
 		except NoResultFound:
@@ -755,7 +755,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				if mp_customer:
 					other_touser = mp_customer.wx_openid
 				else:
-					print("店铺管理员对应公众平台的用户id没有找到")
+					# print("店铺管理员对应公众平台的用户id没有找到")
 					other_touser = info.wx_openid
 			else:
 				other_touser = info.wx_openid
@@ -768,7 +768,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def order_done_msg(self,session,order):
 		# print('login in order_done_msg')
 		order_num = order.num
-		order_sendtime = order.arrival_day  + " " + order.arrival_time 
+		order_sendtime = order.arrival_day  + " " + order.arrival_time
 		shop_phone = order.shop.shop_phone
 		customer_id= order.customer_id
 		shop_name = order.shop.shop_name
@@ -823,15 +823,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					print(admin_info.access_token,'heheheheheh')
 					return data['access_token']
 				else:
-					print("[微信授权]Token错误")
+					# print("[微信授权]Token错误")
 					return None
 		else:
 			return None
-	
+
 
 	##############################################################################################
-	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加 
-	# 同时生成相应的积分记录 和 余额记录 
+	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加
+	# 同时生成相应的积分记录 和 余额记录
 	# 若是余额 支付 会产生 额外的2分积分
 	# 客户 对 平台 和 该店铺来说都变成 老客户
 	##############################################################################################
@@ -861,7 +861,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return self.send_fail('order_done: customer not found')
 		customer_info.is_new = 1
 		name = customer_info.nickname
-		
+
 		try:
 			shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,shop_id = shop_id).first()
 		except NoResultFound:
@@ -901,7 +901,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.point_type = models.POINT_TYPE.PREPARE_PAY
 				point_history.each_point = 2
 				session.add(point_history)
-				
 
 			# 订单完成后，将相应店铺可提现 余额相应增加
 			order.shop.available_balance += totalprice
@@ -912,13 +911,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				available_balance=order.shop.available_balance,balance_type = 6)
 			session.add(balance_history)
 
-		if order.pay_type == 3:
+		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
 				available_balance=order.shop.available_balance,balance_type = 7)
 			session.add(balance_history)
-		
 
 		#增 与订单总额相等的积分
 		if shop_follow.shop_point == None:
@@ -933,7 +931,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.point_type = models.POINT_TYPE.TOTALPRICE
 				point_history.each_point = totalprice
 				session.add(point_history)
-		session.commit()			
+		session.commit()
 
 # 超级管理员基类方法
 class SuperBaseHandler(_AccountBaseHandler):
@@ -944,13 +942,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 	# 关闭店铺
 	def shop_close(self):
 		# print(self)
-		print("[定时任务]关闭店铺")
+		# print("[定时任务]关闭店铺")
 		session = models.DBSession()
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
 			shops = None
-			print("[定时任务]关闭店铺错误")
+			# print("[定时任务]关闭店铺错误")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -967,11 +965,11 @@ class SuperBaseHandler(_AccountBaseHandler):
 				if days > 14:
 					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						print("[定时任务]店铺关闭成功：",shop_id)
+						# print("[定时任务]店铺关闭成功：",shop_id)
 			session.commit()
-			print("[定时任务]关闭店铺完成")
+			# print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
-			
+
 	def get_login_url(self):
 		return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		# return self.reverse_url('customerLogin')
@@ -1090,7 +1088,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 				return
 			else:
 				self.current_shop = shop
-		
+
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
@@ -1183,7 +1181,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
 
 		self._f(cart, "fruits", charge_type_id, inc)
-		
+
 		if not eval(cart.fruits):#购物车空了
 			return True
 		return False
@@ -1305,7 +1303,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	def get_city_shop_count(self,shop_city):
 		try:
 			shop_count = self.session.query(models.Shop).filter_by(shop_city = shop_city).count()
-		except:		
+		except:
 			return self.send_fail('shop_city error')
 		return shop_count
 
@@ -1335,7 +1333,7 @@ class QqOauth:
 	client_secret = QQ_APPKEY
 	redirect_uri = tornado.escape.url_escape('http://i.senguo.cc')
 	print(type(redirect_uri))
-	
+
 	@classmethod
 	def get_qqinfo(self,code):
 		print(code,'codecodecode')
@@ -1503,7 +1501,7 @@ class WxOauth2:
 			access_token = None
 		if access_token is not None:
 			if datetime.datetime.now().timestamp()- (access_token.create_timestamp) <3600  and access_token.access_token:
-				print("[微信授权]当前Token：",access_token.access_token)
+				# print("[微信授权]当前Token：",access_token.access_token)
 				return access_token.access_token
 			else:
 				session.query(models.AccessToken).delete()
@@ -1516,7 +1514,7 @@ class WxOauth2:
 			session.commit()
 			return access_token.access_token
 		else:
-			print("[微信授权]Token错误")
+			# print("[微信授权]Token错误")
 			return None
 
 	@classmethod
@@ -1542,7 +1540,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]店铺审核消息发送失败：", data)
+			# print("[模版消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
@@ -1566,7 +1564,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模板消息]店铺审核消息发送失败：", data)
+			# print("[模板消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
@@ -1592,14 +1590,14 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]添加店铺管理员消息发送失败：", data)
+			# print("[模版消息]添加店铺管理员消息发送失败：", data)
 			return False
 		return True
 
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
-	
+
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
@@ -1623,11 +1621,11 @@ class WxOauth2:
 				"remark":{"value":remark,"color":"#173177"},
 			}
 		}
-		
+
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]管理员订单消息发送失败：",data)
+			# print("[模版消息]管理员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给管理员成功")
 		return True
@@ -1635,7 +1633,7 @@ class WxOauth2:
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address,other_access_token = None):
-		
+
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
@@ -1659,9 +1657,12 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		#import chardet
+		#bianma= chardet.detect(res.content)["encoding"]
+		#print(bianma)
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[模版消息]配送员订单消息发送失败：",data)
+			# print("[模版消息]配送员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1686,7 +1687,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]配送员批量订单消息发送失败：",data)
+			# print("[模版消息]配送员批量订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1712,7 +1713,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]订单提交成功消息发送失败：",data)
+			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1737,7 +1738,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]订单完成消息发送失败：",data)
+			# print("[模版消息]订单完成消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1760,7 +1761,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
 		data = json.loads(res.content.decode("utf-8"))
 		if data['errcode'] != 0:
-			print("[模版消息]订单提交成功消息发送失败：",data)
+			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
 		else:
 			return True
@@ -1770,11 +1771,11 @@ class WxOauth2:
 	def shop_auth_msg(cls,touser,shop_name,success):
 		if success == True:
 			remark = '\n您的店铺已获得余额支付、在线支付、店铺营销、模版设置等高级功能。'
-			value1 = '您的店铺『{0}』已通过认证'.format(shop_name) 
+			value1 = '您的店铺『{0}』已通过认证'.format(shop_name)
 			value2 = '认证成功'
 		else:
 			remark = '\n请使用电脑登录店铺认证页面查看失败原因，并重新提交认证申请。'
-			value1 = '您的店铺『{0}』未通过认证'.format(shop_name) 
+			value1 = '您的店铺『{0}』未通过认证'.format(shop_name)
 			value2 = '认证失败'
 		postdata = {
 			'touser':touser,
@@ -1792,7 +1793,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]店铺认证消息发送失败：",data)
+			# print("[模版消息]店铺认证消息发送失败：",data)
 			return False
 		# print("[模版消息]店铺认证消息发送成功")
 		return True
@@ -1829,14 +1830,14 @@ class WxOauth2:
 class UrlShorten:
 	session = models.DBSession()
 	code_map = (
-	  'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,  
-	   'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' ,  
-	   'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,  
-	   'y' , 'z' , '0' , '1' , '2' , '3' , '4' , '5' ,  
-	   '6' , '7' , '8' , '9' , 'A' , 'B' , 'C' , 'D' ,  
-	   'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' ,  
-	   'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,  
-	   'U' , 'V' , 'W' , 'X' , 'Y' , 'Z')
+		'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
+		'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' ,
+		'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,
+		'y' , 'z' , '0' , '1' , '2' , '3' , '4' , '5' ,
+		'6' , '7' , '8' , '9' , 'A' , 'B' , 'C' , 'D' ,
+		'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' ,
+		'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,
+		'U' , 'V' , 'W' , 'X' , 'Y' , 'Z')
 
 	@classmethod
 	def get_md5(self,longurl):
@@ -1861,7 +1862,7 @@ class UrlShorten:
 				e = 0
 				for j in range(0,8):
 					x = 0x0000003D & n
-					e |= ((0x00000002 & n ) >> 1) << j  
+					e |= ((0x00000002 & n ) >> 1) << j
 					v.insert(0,self.code_map[x])
 					n = n >> 6
 				e |= n << 5

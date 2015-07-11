@@ -15,7 +15,7 @@ $(document).ready(function(){
          $(".pop-win").addClass("hide");
     });
     $(".goback").on("click",function(){
-        history.go(-1);
+        history.back();
     });
     
     if($("#order-success").size()>0){

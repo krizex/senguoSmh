@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}添加公告{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<input type="hidden" id="token" value="{{token}}"/>
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>添加公告</span>
+    <a href="javascript:;" class="head-right finish-btn" id="finish_btn" data-action="{% if notice %}edit{% else %}add{% end %}" data-id="{% if notice %}{{notice.id}}{% end %}">完成</a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-address" id="wrap-shop-address">
+    <p class="list-title pt10">摘要</p>
+    <div class="address-item">
+        <input type="text" class="address-ipt new-notice-title" placeholder="请输入公告摘要" autofocus="true" value="{% if notice %}{{notice.summary}}{% end %}"/>
+    </div>
+    <p class="list-title pt10">详情</p>
+    <div class="notice-item">
+        <textarea class="notice-area new-notice-detail" placeholder="请输入公告详情"/>{% if notice %}{{notice.detail}}{% end %}</textarea>
+    </div>
+    <p class="list-title pt10">图片</p>
+    <a href="javascript:;" class="create-btn add-notice-img {% if notice %}hidden{% end %}" id="add-notice-img">+添加图片</a>
+    <div class="notive-temp-img {% if notice %}{% else %}hidden{% end %}" id="notice-temp-img">
+        <a href="javascript:;" class="del-img {% if notice %}{% else %}hide{% end %}"></a>
+        <div class="img-cover wrap-img-cover hide"><span class="loader loader-quart"></span></div>
+        <img id="notice_img" src="{% if notice %}{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100{% end %}" url="{% if notice %}{{notice.img_url or '/static/images/holder_fruit.jpg'}}{% end %}" alt="公告图片"/>
+    </div>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script src="/static/js/exif.min.js"></script>
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set-notice.js')}}"></script>
+{% end %}

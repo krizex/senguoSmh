@@ -9,7 +9,7 @@ from libs.msgverify import check_msg_token,get_access_token,user_subscribe,shop_
 
 #add by jyj 2015-6-15
 from sqlalchemy import func, desc, and_, or_, exists,not_
-import operator 
+import operator
 ##
 
 ############################
@@ -18,10 +18,10 @@ import requests
 
 # 登录处理
 class Access(SuperBaseHandler):
-	
+
 	def initialize(self, action):
 		self._action = action
-	
+
 	def get(self):
 		if self._action == "oauth":
 			self.handle_oauth()
@@ -144,7 +144,7 @@ class ShopManage(SuperBaseHandler):
 	def get(self):
 		action = self.args["action"]
 		flag=self.args["flag"]
-		
+
 
 		#add by jyj 2015-6-16
 		output_data_count = {}
@@ -157,15 +157,15 @@ class ShopManage(SuperBaseHandler):
 
 		output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
 		output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
-		
+
 		output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4])).count()
 		output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
-		output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()	
+		output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
 		##
 
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
 		if 'search' in self.args:
-			from sqlalchemy.sql import or_ 
+			from sqlalchemy.sql import or_
 			search = self.args["search"]
 			if search == '':
 				q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
@@ -188,7 +188,7 @@ class ShopManage(SuperBaseHandler):
 		page_num = self.args["page"]
 		if_reverse_val = [False,True]
 		##
-		
+
 		offset = (self.args.get("page", 1) - 1) * self._page_count
 		#print("**************offset = %d"%(offset))
 
@@ -235,7 +235,7 @@ class ShopManage(SuperBaseHandler):
 		elif shop_sort_key == 2:
 			shops.sort(key = lambda shop : shop.available_balance,reverse = if_reverse_val[if_reverse])
 		elif shop_sort_key == 3:
-			shops.sort(key = lambda shop : shop.fans_count,reverse = if_reverse_val[if_reverse])	
+			shops.sort(key = lambda shop : shop.fans_count,reverse = if_reverse_val[if_reverse])
 		elif shop_sort_key == 4:
 			shops.sort(key = lambda shop : shop.order_count,reverse = if_reverse_val[if_reverse])
 		elif shop_sort_key == 5:
@@ -256,12 +256,12 @@ class ShopManage(SuperBaseHandler):
 		else:
 			pass
 		##
-		
+
 
 		#add 6.6pm by jyj,search_count:
 		search_count = len(shops)
 		##
-			
+
 		q_temp = self.session.query(models.ShopTemp)
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
@@ -306,13 +306,13 @@ class ShopManage(SuperBaseHandler):
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 				wx_openid = account_info.wx_openid
 				#subscribe = user_subscribe(wx_openid)
-				data["subscribe"] = account_info.subscribe  
-				
+				data["subscribe"] = account_info.subscribe
+
 				data["shop_trademark_url"] = shop.shop_trademark_url
 				data["shop_name"] = shop.shop_name
 				data["city"] = self.code_to_text('shop_city', shop.shop_city)
 				data["staff_count"] = len(shop.staffs)
-				data["follower_count"] = shop.fans_count  
+				data["follower_count"] = shop.fans_count
 				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
@@ -381,14 +381,14 @@ class ShopManage(SuperBaseHandler):
 				data["available_balance"] = shop.available_balance
 				data["fans_count"] = shop.fans_count
 				output_data.append(data)
-				
+
 			if flag==1:
 				print("@@@@@@@@@")
 				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
 			else :
 				print("###########")
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
-				
+
 
 		else:
 			return self.send_error(404)
@@ -398,7 +398,7 @@ class ShopManage(SuperBaseHandler):
 
 		shops = q.all()
 		# shops 是models.Shop实例的列表
-		
+
 		return self.render("superAdmin/apply-manage.html", context=dict(
 				shops = shops,subpage='apply', action=action,
 				count=count))
@@ -546,7 +546,7 @@ class ShopManage(SuperBaseHandler):
 			message_shop_name = shop_temp.shop_name
 			# mobile = account_info.phone
 			# print(mobile)
-		   
+
 			message_content ='尊敬的{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
 
 			postdata = dict(account='cf_senguocc',
@@ -583,10 +583,10 @@ class Feedback(SuperBaseHandler):
 			return self.send_error(404)
 		q = q.order_by(models.Feedback.create_date_timestamp.desc()).\
 			offset(offset).limit(self._page_count)
-		
+
 		return self.render("superAdmin/feedback.html", context=dict(
 			feedbacks = q.all()))
-		
+
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action", "feedback_id:int")
 	def post(self):
@@ -601,7 +601,7 @@ class Feedback(SuperBaseHandler):
 
 class OrderManage(SuperBaseHandler):
 	_page_count = 20
-	
+
 	def initialize(self, action):
 		self._action = action
 
@@ -621,7 +621,7 @@ class OrderManage(SuperBaseHandler):
 			"processed":q_processed.count(),
 			"aborted":q_aborted.count()
 		}
-		
+
 		offset = self._page_count * (self.args.get("page", 1) - 1)
 
 		if self._action == "all":
@@ -634,12 +634,12 @@ class OrderManage(SuperBaseHandler):
 			q = q_aborted
 		else:
 			return self.send_error(404)
-		
+
 		q = q.order_by(models.SystemOrder.create_date_timestamp.desc()).\
 			offset(offset).limit(self._page_count)
 		orders = q.all()
 		subpage = self._action
-		
+
 		return self.render("superAdmin/order-manage.html", context=dict(
 			orders = orders,subpage = subpage,count=count))
 
@@ -655,10 +655,10 @@ class OrderManage(SuperBaseHandler):
 				return self.send_fail(error_text="订单不存在")
 			o.set_read(self.session)
 			u = models.ShopAdmin.set_system_info(
-				self.session, 
+				self.session,
 				admin_id = o.admin_id,
 				system_username=self.args["system_username"],
-				system_password=self.args["system_password"], 
+				system_password=self.args["system_password"],
 				system_code=self.args["system_code"])
 			if not u:
 				return self.send_fail(error_text="该用户不存在")
@@ -674,7 +674,7 @@ class User(SuperBaseHandler):
 		sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
 		sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
 		sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
-		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))      
+		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str","inputinfo?:str","page:int")
@@ -789,7 +789,7 @@ class IncStatic(SuperBaseHandler):
 					fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
 		return self.send_success(data=l[::-1], page_sum=page_sum)
 
-# 统计 - 用户属性分布 
+# 统计 - 用户属性分布
 class DistributStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -889,7 +889,7 @@ class ShopStatic(SuperBaseHandler):
 		page_sum = (datetime.datetime.now() - first_order.create_date).days//30 + 1
 		return self.send_success(page_sum=page_sum, data=data)
 
-# 统计 - 订单统计 
+# 统计 - 订单统计
 # add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
 	def get(self):
@@ -925,14 +925,14 @@ class OrderStatic(SuperBaseHandler):
 		for key in range(0, 24):
 			data[key] = 0
 		for e in q.all():
-			if e[1] < 30: 
+			if e[1] < 30:
 				data[e[0]] += 1
 			else:
 				if e[0]+1 == 24:
 					data[0] += 1
 				else:
 					data[e[0]] += 1
-			
+
 		return self.send_success(data=data)
 
 	@SuperBaseHandler.check_arguments("type:int")
@@ -993,7 +993,7 @@ class Official(SuperBaseHandler):
 # 					if shop_code =='not set':
 # 						shop.status = 0
 # 					if len(fruits) == 0 and len(menus) == 0:
-# 						shop.status = 0 
+# 						shop.status = 0
 # 					try:
 # 						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
 # 					except:
@@ -1091,7 +1091,7 @@ class CommentInfo(SuperBaseHandler):
 		ajaxFlag = self.args["ajaxFlag"]
 
 		order_list =  self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-		
+
 		all_comment_order = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
 		all_count = all_comment_order.count()
 		full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
@@ -1201,7 +1201,7 @@ class CommentInfo(SuperBaseHandler):
 		output_data = []
 
 		order_list_data = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
-		
+
 
 		if action == 'all':
 			order_list = order_list_data.offset(page*page_size).limit(page_size).all()
@@ -1351,7 +1351,7 @@ class CommentInfo(SuperBaseHandler):
 				output_data_tmp.append(data)
 
 			output_data = output_data_tmp
-			
+
 			full_count = order_list_data.filter(models.Order.commodity_quality == 100,\
 							 models.Order.send_speed ==100,models.Order.shop_service == 100).count()
 			if full_count//page_size < full_count/page_size:
@@ -1371,7 +1371,7 @@ class CommentInfo(SuperBaseHandler):
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
 					data["nickname"] = data["nickname"][0:6] + '...'
-				
+
 				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
 				if order.comment_create_date == None:
 					data["comment_create_date"] = ''
@@ -1439,7 +1439,7 @@ class CommentInfo(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		return self.send_success(output_data = output_data,page_sum = page_sum)
-## 
+##
 
 # 店铺 - 店铺认证申请
 class ShopAuthenticate(SuperBaseHandler):
@@ -1449,7 +1449,7 @@ class ShopAuthenticate(SuperBaseHandler):
 		page=int(self.args["page"])
 		page_size = 10
 		page_area =page*page_size
-		
+
 		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 
 		q_temp = self.session.query(models.ShopTemp).count()
@@ -1505,7 +1505,8 @@ class ShopAuthenticate(SuperBaseHandler):
 			if shop.shop_phone:
 				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
 			else:
-				print("店铺没有预留电话！")
+				# print("店铺没有预留电话！")
+				print("no phone")
 			#发送模板消息
 			self.shop_auth_msg(shop,True)
 		elif action == 'decline':
@@ -1519,7 +1520,8 @@ class ShopAuthenticate(SuperBaseHandler):
 			if shop.shop_phone:
 				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
 			else:
-				print("店铺没有预留电话！")
+				# print("店铺没有预留电话！")
+				print("no phone")
 			#发送模板消息
 			self.shop_auth_msg(shop,False)
 		else:
@@ -1585,7 +1587,7 @@ class Balance(SuperBaseHandler):
 			count = q[0][1]
 			if q1[0][0]:
 				pay = q1[0][0]
-			total = format(total,'.2f')	
+			total = format(total,'.2f')
 			pay = format(pay,'.2f')
 			left = float(total)-float(pay)
 			left = format(left,'.2f')
@@ -1606,7 +1608,7 @@ class Balance(SuperBaseHandler):
 			count =q[0][1]
 			if q[0][0]:
 				total=q[0][0]
-			total = format(total,'.2f')	
+			total = format(total,'.2f')
 			times = count
 
 		# add by jyj 2015-7-4:
@@ -1638,8 +1640,8 @@ class Balance(SuperBaseHandler):
 			else:
 				page_sum = len(history)//page_size
 			history = history[page*page_size:page*page_size+page_size:1]
-			
-			return self.send_success(page_sum=page_sum,history = history)  
+
+			return self.send_success(page_sum=page_sum,history = history)
 		##
 		else:
 			return self.send_error(404)
@@ -1666,7 +1668,7 @@ class Balance(SuperBaseHandler):
 
 # 余额 - 提现申请
 class ApplyCash(SuperBaseHandler):
-	
+
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action:?str','page?:int')
 	def get(self):
@@ -1704,7 +1706,7 @@ class ApplyCash(SuperBaseHandler):
 			if companys[0][0]:
 				company_num = companys[0][1]
 				company_cash = companys[0][0]
-			
+
 		all_cash=format(all_cash,'.2f')
 		person_cash=format(person_cash,'.2f')
 		company_cash=format(company_cash,'.2f')
@@ -1732,7 +1734,7 @@ class ApplyCash(SuperBaseHandler):
 			return self.send_success(history=history,page_sum=page_sum)
 		else:
 			return self.render('superAdmin/balance-apply.html',history=history,page_sum=page_sum,all_cash=all_cash,person_cash=person_cash,\
-				company_cash=company_cash,all_num=all_num,person_num=person_num,company_num=company_num,context=dict(page='cash'))	
+				company_cash=company_cash,all_num=all_num,person_num=person_num,company_num=company_num,context=dict(page='cash'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
@@ -1749,7 +1751,7 @@ class ApplyCash(SuperBaseHandler):
 			apply_cash.has_done = 2
 			apply_cash.decline_reason = self.args['decline_reason']
 			self.session.commit()
-			
+
 		elif action == 'commit':
 			apply_id = self.args['apply_id']
 			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
@@ -1772,14 +1774,14 @@ class ApplyCash(SuperBaseHandler):
 			self.session.commit()
 		return self.send_success(history = history)
 
-		
+
 
 #add by jyj 2015-6-17
 class CheckCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
-	
+
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','data','page?:int')
 	def post(self):
@@ -1787,7 +1789,7 @@ class CheckCash(SuperBaseHandler):
 		action = self.args["action"]
 		if action == 'check':
 			data = self.args["data"]
-			
+
 			date_tmp = time.strptime(data["check_date"],"%Y-%m-%d")
 			y,m,d = date_tmp[:3]
 			check_time = datetime.datetime(y,m,d,23,59,59)
@@ -1842,7 +1844,7 @@ class CheckCash(SuperBaseHandler):
 			page = self.args["page"]
 			check_profit = self.session.query(models.CheckProfit).order_by(desc(models.CheckProfit.create_time))
 			check_profit_len = check_profit.count()
-			
+
 			if check_profit_len == 0:
 				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first().create_time
 				check_update_start  = check_update_start - datetime.timedelta(1)
@@ -1897,7 +1899,7 @@ class CheckCash(SuperBaseHandler):
 						elif temp.balance_record[5:7] == '微信':
 							wx += temp.balance_value
 							wx_count += 1
-				
+
 				#总收入和笔数：
 				total = wx + alipay
 				total_count = wx_count + alipay_count
@@ -1939,7 +1941,7 @@ class CheckCash(SuperBaseHandler):
 				page_sum = page_sum//page_size + 1
 			else:
 				page_sum = page_sum//page_size
-			
+
 			check_history = self.session.query(models.CheckProfit).order_by(desc(models.CheckProfit.create_time)).offset((page-1)*page_size).limit(page_size).all()
 			output_data = []
 			for check_his in check_history:
@@ -1975,7 +1977,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self,shop_code):
 		if shop_code != "not set":
-			pass	
+			pass
 		else:
 			return self.send_error(404)
 		history_list = []
@@ -2015,7 +2017,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 		page_size = 20
 		page = int(self.args["page"])
 		if shop_code != "not set":
-			pass	
+			pass
 		else:
 			return self.send_error(404)
 		history_list = []
@@ -2037,7 +2039,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 		else:
 			cash_applying = cash_applying[0]
 			cash_applying = format(cash_applying,'.2f')
-	
+
 		balance_history = self.session.query(models.BalanceHistory).\
 				   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,2,3])).order_by(desc(models.BalanceHistory.create_time)).offset((page-1)*page_size).limit(page_size)
 
@@ -2058,7 +2060,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 			order_num = ''
 			order_num_txt = ''
 			if temp.balance_type == 3:
-				record = temp.balance_record[0:4] + ':' 
+				record = temp.balance_record[0:4] + ':'
 				if temp.balance_record[5:7] == '支付':
 					order_num = temp.balance_record[12:32]
 				else:

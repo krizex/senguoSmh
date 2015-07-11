@@ -33,7 +33,7 @@ class About(FruitzoneBaseHandler):
 # 官网 - 产品介绍
 class Product(FruitzoneBaseHandler):
 	def get(self):
-		return self.render("official/product.html",context=dict(subpage="product"))		
+		return self.render("official/product.html",context=dict(subpage="product"))
 
 # 官网 - 店铺列表
 class ShopList(FruitzoneBaseHandler):
@@ -43,8 +43,8 @@ class ShopList(FruitzoneBaseHandler):
 		shop_province = self.get_shop_group()
 		return self.render("official/shoplist.html",context=dict(shop_count = shop_count, shop_province = shop_province,\
 		 subpage="shop"))
-	 
-	@FruitzoneBaseHandler.check_arguments("action")	   
+
+	@FruitzoneBaseHandler.check_arguments("action")
 	def post(self):
 		action = self.args['action']
 		if action == 'filter':
@@ -102,7 +102,7 @@ class ShopList(FruitzoneBaseHandler):
 		#     page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
 		#     #print('page_total',page_total)
 		#     q = q.offset(page * _page_count).limit(_page_count).all()
-			
+
 		if "province" in self.args:
 			# print('province')
 			q = q.filter_by(shop_province=self.args["province"])
@@ -110,7 +110,8 @@ class ShopList(FruitzoneBaseHandler):
 			page_total = int(shop_count /8) if shop_count % 8 == 0 else int(shop_count/8) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			print("[官网店铺列表]省份不存在")
+			# print("[官网店铺列表]省份不存在")
+			print("[Official]Province not found")
 
 		shoplist = []
 		for shop in q:
@@ -132,7 +133,7 @@ class ShopList(FruitzoneBaseHandler):
 		shop_count = q.count()
 		page_total = int(shop_count /8) if shop_count % 8 == 0 else int(shop_count/8) +1
 		q = q.offset(page * _page_count).limit(_page_count).all()
-		
+
 		for shop in q:
 			shoplist.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\

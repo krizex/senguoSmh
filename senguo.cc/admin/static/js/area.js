@@ -5,7 +5,6 @@ function provinceArea(procode){
             var pro=area[procode]['name'];
             return pro;
         }
-
 }
 
 function cityArea(procode,citcode){

@@ -8,6 +8,7 @@ import handlers.official
 import handlers.onlinePay
 import handlers.activity
 import handlers.madmin
+import handlers.market
 import handlers.bbs
 from dal import models
 #todo:handlers太大会不会影响性能？
@@ -238,21 +239,22 @@ handlers = [
 	# (r"/admin/settings/profile", handlers.admin.Settings,
 	#  {"action":"profile"}, "adminSettingsProfile")
 	##移动端后台
-	#(r"/madmin", handlers.madmin.Home, {}, "MadminHome"),
-	#(r"/madmin/shop", handlers.madmin.Shop, {}, "MadminShop"),
-	(r"/madmin", handlers.madmin.Shop, {}, "MadminHome"),
+	(r"/madmin", handlers.madmin.Home, {}, "MadminHome"),
+	(r"/madmin/shop", handlers.madmin.Shop, {}, "MadminShop"),
 	(r"/madmin/order", handlers.madmin.Order, {}, "MadminOrder"),
 	(r"/madmin/orderDetail/(\w+)", handlers.madmin.OrderDetail, {}, "MadminOrderDetail"),
 	(r"/madmin/orderSearch", handlers.madmin.OrderSearch, {}, "MadminSearch"),
 	(r"/madmin/comment", handlers.madmin.Comment, {}, "MadminComment"),
 	(r"/madmin/shopset", handlers.madmin.Set, {}, "MadminSet"),
-	# (r"/staff/...")
-
+	(r"/madmin/shopinfo", handlers.madmin.Info, {}, "MadminInfo"),
+	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
+	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
+	#市场推广
+	(r"/market", handlers.market.Home, {}, "MarketHome"),
+	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
 
 	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
 	# 水果圈子
-
-	
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次

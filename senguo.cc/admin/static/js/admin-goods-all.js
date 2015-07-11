@@ -1078,7 +1078,7 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
     },500);
-})
+});
 //获取cookie
 function getCookie(key){
     var aCookie = document.cookie.split(";");
