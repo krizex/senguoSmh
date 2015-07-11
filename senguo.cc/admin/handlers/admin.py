@@ -2231,7 +2231,7 @@ class Config(AdminBaseHandler):
 				self.current_shop.config.update(session=self.session,
 												receipt_msg=data["receipt_msg"])
 			elif action =="edit_receipt_img":
-				self.current_shop.config.update(session=self.session,receipt_img=data["receipt_img"])			
+				self.current_shop.config.update(session=self.session,receipt_img=data["receipt_img"])
 		elif action in ["add_addr2", "edit_addr1_active"]:
 			addr1 = next((x for x in self.current_shop.config.addresses if x.id==data["addr1_id"]), None)
 			if action == "add_addr2":
@@ -3267,7 +3267,7 @@ class printTest(AdminBaseHandler):
 		print("========================")
 
 		if self.args["action"] == "ylyprint":
-			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+time+mkey #生成的签名加密
+			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
 			print("sign str    :",sign)
 			sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
 			print("sign str md5:",sign)
