@@ -25,8 +25,10 @@ $(document).ready(function(){
     }
 }).on("click",".tpl-list li",function(e){
     if($(e.target).closest(".preview-btn").size()==0){
-        var index = $(this).index();
-        switchTpl(index);
+        if(confirm("切换后店铺界面将会被改变，确定切换？")){
+            var index = $(this).index();
+            switchTpl(index);
+        }
     }
 }).on("click",".preview-btn",function(){//预览
     $(".tpl-big-img").attr("src",$(this).closest("li").find("img").attr("src"));

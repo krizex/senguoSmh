@@ -15,7 +15,7 @@
 .dl>dt img{width: 60px;height: 60px;}
 .dl>dd{padding-left: 70px;min-height: 60px;}
 .more{color: #999;padding-right: 12px;background: url('/static/images/arr-right.png') no-repeat;background-size:8px 12px;background-position: right center;}
-.developing .more{color:#ddd;background: url('/static/images/arr-right2.png') no-repeat;background-size:8px 12px;background-position: right center;}
+.developing .more{color:#ccc;background: url('/static/images/arr-right2.png') no-repeat;background-size:8px 12px;background-position: right center;}
 .box-title{height: 40px;line-height: 40px;}
 .box-icon{padding-left: 30px;background-size: 20px 20px;background-position: left center;color: #333;display: inline-block;background-repeat: no-repeat;}
 .stat-list>li{float: left;width: 25%;}
@@ -208,7 +208,7 @@
 .i-report{background-image: url(/static/m-admin/img/6.png);}
 .i-pay{background-image: url(/static/m-admin/img/7.png);}
 .i-info{background-image: url(/static/m-admin/img/i_info.png);}
-.data-list .more{display: inline-block;height: 38px;}
+.data-list .more{display: inline-block;height: 100%;}
 /*店铺信息*/
 .data-list .text-left{color: #48B6A4;}
 .data-list .img-border{width: 40px;height: 40px;}
@@ -218,7 +218,7 @@
 .data-list .info-li{height: auto;position: relative;vertical-align: middle;}
 .data-list .info-li a{height: 100%;}
 .code2{width: 20px;height: 20px;}
-.data-list .text-clip{line-height:18px;padding:8px 0 8px 100px;}
+.data-list .text-clip{line-height:18px;padding:8px 10px 8px 100px;}
 .data-list .info-left{position: absolute;min-height:40px;top: 50%;left: 0;-webkit-transform:translate(0,-50%);}
 .big-code2{width: 150px;height: 150px;margin:30px auto 0 auto;}
 .wp-ipt>input{width: 100%;border: none;border-bottom: 2px solid #48B6A4;font-size: 14px;color: #333;padding-bottom: 5px;height: 20px;}
@@ -262,6 +262,7 @@
 .del-admin{color: #666;text-align: right;margin-top: 6px;}
 .wrap-delbtns>a{margin: 0 10px;}
 .add-btn{display: inline-block;width: 44px;height: 24px;font-size:12px;background-color: #48B6A4;color: #fff;line-height: 24px;text-align: center;border-radius: 2px;}
+.add-btn:link,.add-btn:visited,.add-btn:hover,.add-btn:active{color: #fff;}
 .search-admin{color: #fff;font-size: 14px;display: inline-block;height:24px;background-color: #318b7d;width: 150px;border-radius: 12px;padding: 0 10px;}
 /*设置模版*/
 .tpl-list{padding: 10px;}

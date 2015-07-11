@@ -14,7 +14,7 @@
     <ul class="data-list mt15">
         <li class="info-li">
             <a href="javascript:;" class="group" id="receipt_msg">
-                <span class="fr c333 text-clip">{{receipt_msg or '无'}}</span>
+                <span class="fr c333 text-clip more">{{receipt_msg or '无'}}</span>
                 <span class="text-left info-left c333">附加消息</span>
             </a>
         </li>
@@ -30,7 +30,7 @@
     <ul class="data-list mt10 wrap-receipt-img {% if current_shop.config.receipt_img_active ==0 %}hide{% end %}">
         <li class="receipt-li" id="receipt_aimg_box">
             <a href="javascript:;" id="receipt_aimg">
-                <span class="fr"><img class="receipt_aimg" id="receipt_img" url="{{current_shop.config.receipt_img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" src="{{current_shop.config.receipt_img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="小票附加图"/></span>
+                <span class="fr more"><img class="receipt_aimg" id="receipt_img" url="{{current_shop.config.receipt_img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" src="{{current_shop.config.receipt_img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="小票附加图"/></span>
                 <span class="text-left c333">小票附加图</span>
             </a>
         </li>
