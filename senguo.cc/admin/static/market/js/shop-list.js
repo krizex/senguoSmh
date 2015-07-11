@@ -16,4 +16,9 @@ $(document).ready(function(){
             }
         });
     }
+}).on("click",".tab-list li",function(){
+    var index = $(this).index();
+    $(".tab-list li").removeClass("active").eq(index).addClass("active");
+}).on("click","#cur_address",function(){//刷新列表
+
 });

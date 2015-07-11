@@ -17,11 +17,22 @@ class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		
-		return self.render('market/market.html')
+		return self.render('market/shop-list.html')
 #店铺信息
 class Info(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		
 		return self.render("market/shop-info.html")
+#店铺录入
+class Insert(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
 		
+		return self.render("market/shop-manager.html")
+#店铺入驻成功
+class Success(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		
+		return self.render("market/success.html")

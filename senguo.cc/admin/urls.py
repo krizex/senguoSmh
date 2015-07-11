@@ -252,6 +252,8 @@ handlers = [
 	#市场推广
 	(r"/market", handlers.market.Home, {}, "MarketHome"),
 	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
+	(r"/market/shopinsert", handlers.market.Insert, {}, "MarketInsert"),
+	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
 
 	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
 	# 水果圈子
