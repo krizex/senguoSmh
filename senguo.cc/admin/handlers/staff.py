@@ -40,7 +40,7 @@ class Access(StaffBaseHandler):
 		# todo: handle state
 		code =self.args["code"]
 		mode = self.args["mode"]
-		print("[送货员端]微信授权，模式: ", mode , "，返回码：", code)
+		# print("[送货员端]微信授权，模式: ", mode , "，返回码：", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 
@@ -60,7 +60,7 @@ class Home(StaffBaseHandler):
 
 	@tornado.web.authenticated
 	def get(self):
-		print("[送货员端]当前店铺ID：",self.shop_id)
+		# print("[送货员端]当前店铺ID：",self.shop_id)
 
 		try:
 			hirelink = self.session.query(models.HireLink).\
@@ -71,7 +71,7 @@ class Home(StaffBaseHandler):
 		self.current_user.work = work #增加work属性
 		orders = []
 		page = ''
-	   
+
 		if work == 1: #JH
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
@@ -97,7 +97,7 @@ class Home(StaffBaseHandler):
 
 		orders_intime   = len(orders_intime)
 		orders_ontime  = len(orders_ontime)
-	  
+
 		# print("[送货员端]立即送订单：",orders_intime)
 		# print("[送货员端]按时达订单：",orders_ontime)
 		self.set_cookie("orders_intime",str(orders_intime))
@@ -126,7 +126,7 @@ class Order(StaffBaseHandler):
 		self.current_user.work = work #增加work属性
 		orders = []
 		page = ''
-	   
+
 		if work == 1: #JH
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
@@ -163,12 +163,12 @@ class Order(StaffBaseHandler):
 
 
 		if order_type == "now":
-			orders = orders.filter_by(type=1).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.id.desc()).all()       
+			orders = orders.filter_by(type=1).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.id.desc()).all()
 			page = 'now'
 		elif order_type == "on_time":
-			orders = orders.filter_by(type=2).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.send_time).all()     
+			orders = orders.filter_by(type=2).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.send_time).all()
 			# orders = [x for x in orders if (x.today == 1 and x.create_date.day == day) or
-			#           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单  
+			#           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
 			page = 'on_time'
 		elif order_type == "history":
 			orders = history_orders
@@ -223,11 +223,11 @@ class Order(StaffBaseHandler):
 						num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 						s[0].current_saled -= num
 
-			
+
 				#yy
 				if status == 5:
 					self.order_done(self.session,order)
-				
+
 					# now = datetime.datetime.now()
 					# order.arrival_day = now.strftime("%Y-%m-%d")
 					# order.arrival_time= now.strftime("%H:%M")
@@ -242,8 +242,8 @@ class Order(StaffBaseHandler):
 					# shop.is_balance = 1
 					# shop.order_count += 1  #店铺订单数加1
 
-					
-					
+
+
 					# ##
 					# #
 					# customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -332,7 +332,7 @@ class Order(StaffBaseHandler):
 					# 	self.session.add(balance_history)
 					# 	self.session.commit()
 
-					# if shop_follow: 
+					# if shop_follow:
 					# 	if shop_follow.shop_point == None:
 					# 		shop_follow.shop_point =0
 					# 	shop_follow.shop_point += totalprice
@@ -350,7 +350,7 @@ class Order(StaffBaseHandler):
 				return self.send.fail("你还没分配工作，请联系商家")
 			order.status = status
 
-			# 
+			#
 		elif action == "remark":
 			order.staff_remark = self.args["data"]
 		self.session.commit()

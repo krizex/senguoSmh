@@ -34,7 +34,7 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
-		print("[用户登录]跳转URL：",next_url)
+		# print("[用户登录]跳转URL：",next_url)
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			if self.current_user:
@@ -66,8 +66,8 @@ class Access(CustomerBaseHandler):
 		password = self.args['password']
 
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		#print("[手机登录]用户ID：",u.id)
-		print("[手机登录]手机号码：",phone,"，密码：",password)
+		# print("[手机登录]用户ID：",u.id)
+		# print("[手机登录]手机号码：",phone,"，密码：",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
@@ -200,7 +200,7 @@ class RegistByPhone(CustomerBaseHandler):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
-		print("[手机注册]发送验证码到手机：",self.args["phone"])
+		# print("[手机注册]发送验证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
 			# print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
@@ -229,7 +229,7 @@ class RegistByPhone(CustomerBaseHandler):
 			# 	self.session.add(u)
 			# 	self.session.commit()
 			self.set_current_user(u, domain=ROOT_HOST_NAME)
-			print("[手机注册]手机号",phone,"注册成功，用户ID为：",u.id)
+			# print("[手机注册]手机号",phone,"注册成功，用户ID为：",u.id)
 			return self.send_success()
 
 # 重置密码
@@ -298,7 +298,7 @@ class Home(CustomerBaseHandler):
 				show_balance = True
 			# print(shop,shop.shop_auth)
 		else:
-			print("[个人中心]店铺不存在：",shop_code)
+			# print("[个人中心]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -432,7 +432,8 @@ class CustomerProfile(CustomerBaseHandler):
 		try:
 			follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
 		except:
-			print('[个人中心]该用户未关注任何店铺')
+			# print('[个人中心]该用户未关注任何店铺')
+			print('[PersonalCenter]Current_user have not followed any shop')
 		for shopfollow in follow:
 			shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
 			shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
@@ -529,12 +530,13 @@ class WxBind(CustomerBaseHandler):
 		try:
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 		except:
-			print("[微信绑定]微信不存在")
+			# print("[微信绑定]微信不存在")
+			print("[WeixinBind]Weixin unionid not found")
 		if user:
 			return self.redirect('/customer/profile?action=wxbinded')
 			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
 		if u:
-			print("[微信绑定]更新用户资料")
+			# print("[微信绑定]更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -552,7 +554,8 @@ class WxBind(CustomerBaseHandler):
 			self.session.commit()
 			return self.redirect('/customer/profile?action=wxsuccess')
 		else:
-			print('[微信绑定]微信绑定错误')
+			# print('[微信绑定]微信绑定错误')
+			print("[WeixinBind]Bind Error")
 
 # 店铺
 class ShopProfile(CustomerBaseHandler):
@@ -563,7 +566,7 @@ class ShopProfile(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop not found')
 		if not shop:
-			print("[访问店铺]店铺不存在：",shop_code)
+			# print("[访问店铺]店铺不存在：",shop_code)
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name

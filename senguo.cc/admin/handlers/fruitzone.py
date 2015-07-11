@@ -952,7 +952,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后，用户对应店铺 余额 增1加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
-		print(customer_id, shop_id,'没充到别家店铺去吧')
+		# print(customer_id, shop_id,'没充到别家店铺去吧')
 		if not shop_follow:
 			return self.send_fail('shop_follow not found')
 		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
@@ -963,7 +963,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
-		print(shop.shop_balance ,'充值后 商店 总额')
+		# print(shop.shop_balance ,'充值后 商店 总额')
 		customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		if not customer:
 			return self.send_fail("customer not found")
@@ -974,7 +974,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
-		print(balance_history , '钱没有白充吧？！')
+		# print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
 		print("return success?")
 		return self.write("success")
@@ -1066,7 +1066,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后，用户对应店铺 余额 增1加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
-		print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+		# print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
 		if not shop_follow:
 			return self.send_fail('shop_follow not found')
 		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
@@ -1077,7 +1077,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
-		print(shop.shop_balance ,'充值后 商店 总额')
+		# print(shop.shop_balance ,'充值后 商店 总额')
 
 		# 支付成功后  生成一条余额支付记录
 		name = self.current_user.accountinfo.nickname
@@ -1085,7 +1085,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
-		print(balance_history , '钱没有白充吧？！')
+		# print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
 		# return self.send_success(text = 'success')
 		return self.redirect(self.reverse_url("customerBalance"))

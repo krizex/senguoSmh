@@ -36,7 +36,7 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		# print("[微信支付]full_url：",self.request.full_url())
 		path_url = self.request.full_url()
-		
+
 		shop_id   = order.shop_id
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
@@ -78,7 +78,7 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		qr_url=""
 		if not self.is_wexin_browser():
-			qr_url = self._qrwxpay()		
+			qr_url = self._qrwxpay()
 			print(qr_url,'onlinewxpay not in weixin')
 			return self.render('customer/online-qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
@@ -97,9 +97,10 @@ class OnlineWxPay(CustomerBaseHandler):
 			openid = jsApi.getOpenid()
 			# print("[微信支付]当前code：",code)
 			if not openid:
-				print("[微信支付]OpenID未获取到")	
+				# print("[微信支付]OpenID未获取到")
+				print("[WeixinPay]OpenID not found")
 			unifiedOrder =   UnifiedOrder_pub()
-			# totalPrice = self.args['totalPrice'] 
+			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[微信支付]totalPrice：",totalPrice)
 			unifiedOrder.setParameter("body",'charge')
@@ -202,7 +203,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				shop_id = shop_id).first()
 			if not shop_follow:
 				return self.send_fail('shop_follow not found')
-			
+
 			# 修改店铺总余额
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
@@ -235,8 +236,8 @@ class OnlineWxPay(CustomerBaseHandler):
 			# create_date= order.create_date
 			# customer_name = order.receiver
 			# c_tourse      = customer.accountinfo.wx_openid
-			# # print("[提交订单]用户OpenID：",c_tourse)	
-			# #goods 
+			# # print("[提交订单]用户OpenID：",c_tourse)
+			# #goods
 			# goods = []
 			# f_d = eval(order.fruits)
 			# # m_d = eval(order.mgoods)
@@ -267,7 +268,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			# 	other_name = info.nickname
 			# 	WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,\
 			# 	customer_name,order_totalPrice,send_time,goods,phone,address)
-			
+
 			# # send message to customer
 			# WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order.id)
 			return self.write('success')
@@ -480,7 +481,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			shop_id = shop_id).first()
 		if not shop_follow:
 			return self.send_fail('shop_follow not found')
-		
+
 		# 修改店铺总余额
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
@@ -515,7 +516,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# c_tourse      = customer.accountinfo.wx_openid
 		# # print("[提交订单]用户OpenID：",c_tourse)
 
-		# #goods 
+		# #goods
 		# goods = []
 		# f_d = eval(order.fruits)
 		# # m_d = eval(order.mgoods)
@@ -568,7 +569,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			shop_id = shop_id).first()
 		if not shop_follow:
 			return self.send_fail('shop_follow not found')
-		
+
 		# 修改店铺总余额
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
@@ -603,7 +604,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# c_tourse      = customer.accountinfo.wx_openid
 		# # print("[提交订单]用户OpenID：",c_tourse)
 
-		# #goods 
+		# #goods
 		# goods = []
 		# f_d = eval(order.fruits)
 		# # m_d = eval(order.mgoods)

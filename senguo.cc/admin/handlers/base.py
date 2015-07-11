@@ -458,7 +458,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print("[微信授权]授权链接：",link)
+		# print("[微信授权]授权链接：",link)
 		return link
 
 	def get_wexin_oauth_link2(self, next_url=""):
@@ -488,7 +488,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_check_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		print("[微信授权]授权链接：",link)
+		# print("[微信授权]授权链接：",link)
 		return link
 
 	def get_login_url(self):
@@ -496,7 +496,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		print("[微信登录]登录URL：",self.request.full_url())
+		# print("[微信登录]登录URL：",self.request.full_url())
 		# next_url =  self.reverse_url("fruitzoneShopList")
 		next_url = self.get_cookie('next_url')
 		if next_url is None:
@@ -554,7 +554,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		# token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
-		print("[七牛授权]发送Token：",token)
+		# print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
 	# 编辑器获取七牛Token
@@ -563,13 +563,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 							  policy={"returnUrl": "http://i.senguo.cc/admin/editorCallback",
 									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
-		print("[七牛授权]发送Token：",token)
+		# print("[七牛授权]发送Token：",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 	# 获取七牛Token
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100)
-		print("[七牛授权]获得Token：",token)
+		# print("[七牛授权]获得Token：",token)
 		return token
 
 	# 获取评论
@@ -755,7 +755,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				if mp_customer:
 					other_touser = mp_customer.wx_openid
 				else:
-					print("店铺管理员对应公众平台的用户id没有找到")
+					# print("店铺管理员对应公众平台的用户id没有找到")
 					other_touser = info.wx_openid
 			else:
 				other_touser = info.wx_openid
@@ -823,7 +823,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					print(admin_info.access_token,'heheheheheh')
 					return data['access_token']
 				else:
-					print("[微信授权]Token错误")
+					# print("[微信授权]Token错误")
 					return None
 		else:
 			return None
@@ -944,13 +944,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 	# 关闭店铺
 	def shop_close(self):
 		# print(self)
-		print("[定时任务]关闭店铺")
+		# print("[定时任务]关闭店铺")
 		session = models.DBSession()
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
 			shops = None
-			print("[定时任务]关闭店铺错误")
+			# print("[定时任务]关闭店铺错误")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -967,9 +967,9 @@ class SuperBaseHandler(_AccountBaseHandler):
 				if days > 14:
 					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						print("[定时任务]店铺关闭成功：",shop_id)
+						# print("[定时任务]店铺关闭成功：",shop_id)
 			session.commit()
-			print("[定时任务]关闭店铺完成")
+			# print("[定时任务]关闭店铺完成")
 			# return self.send_success(close_shop_list = close_shop_list)
 
 	def get_login_url(self):
@@ -1503,7 +1503,7 @@ class WxOauth2:
 			access_token = None
 		if access_token is not None:
 			if datetime.datetime.now().timestamp()- (access_token.create_timestamp) <3600  and access_token.access_token:
-				print("[微信授权]当前Token：",access_token.access_token)
+				# print("[微信授权]当前Token：",access_token.access_token)
 				return access_token.access_token
 			else:
 				session.query(models.AccessToken).delete()
@@ -1516,7 +1516,7 @@ class WxOauth2:
 			session.commit()
 			return access_token.access_token
 		else:
-			print("[微信授权]Token错误")
+			# print("[微信授权]Token错误")
 			return None
 
 	@classmethod
@@ -1542,7 +1542,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]店铺审核消息发送失败：", data)
+			# print("[模版消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
@@ -1566,7 +1566,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模板消息]店铺审核消息发送失败：", data)
+			# print("[模板消息]店铺审核消息发送失败：", data)
 			return False
 		return True
 
@@ -1592,7 +1592,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]添加店铺管理员消息发送失败：", data)
+			# print("[模版消息]添加店铺管理员消息发送失败：", data)
 			return False
 		return True
 
@@ -1627,7 +1627,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]管理员订单消息发送失败：",data)
+			# print("[模版消息]管理员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给管理员成功")
 		return True
@@ -1664,7 +1664,7 @@ class WxOauth2:
 		#print(bianma)
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[模版消息]配送员订单消息发送失败：",data)
+			# print("[模版消息]配送员订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1689,7 +1689,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]配送员批量订单消息发送失败：",data)
+			# print("[模版消息]配送员批量订单消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1715,7 +1715,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]订单提交成功消息发送失败：",data)
+			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1740,7 +1740,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]订单完成消息发送失败：",data)
+			# print("[模版消息]订单完成消息发送失败：",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1763,7 +1763,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
 		data = json.loads(res.content.decode("utf-8"))
 		if data['errcode'] != 0:
-			print("[模版消息]订单提交成功消息发送失败：",data)
+			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
 		else:
 			return True
@@ -1795,7 +1795,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("utf-8"))
 		if data["errcode"] != 0:
-			print("[模版消息]店铺认证消息发送失败：",data)
+			# print("[模版消息]店铺认证消息发送失败：",data)
 			return False
 		# print("[模版消息]店铺认证消息发送成功")
 		return True
@@ -1832,14 +1832,14 @@ class WxOauth2:
 class UrlShorten:
 	session = models.DBSession()
 	code_map = (
-	  'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
-	   'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' ,
-	   'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,
-	   'y' , 'z' , '0' , '1' , '2' , '3' , '4' , '5' ,
-	   '6' , '7' , '8' , '9' , 'A' , 'B' , 'C' , 'D' ,
-	   'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' ,
-	   'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,
-	   'U' , 'V' , 'W' , 'X' , 'Y' , 'Z')
+		'a' , 'b' , 'c' , 'd' , 'e' , 'f' , 'g' , 'h' ,
+		'i' , 'j' , 'k' , 'l' , 'm' , 'n' , 'o' , 'p' ,
+		'q' , 'r' , 's' , 't' , 'u' , 'v' , 'w' , 'x' ,
+		'y' , 'z' , '0' , '1' , '2' , '3' , '4' , '5' ,
+		'6' , '7' , '8' , '9' , 'A' , 'B' , 'C' , 'D' ,
+		'E' , 'F' , 'G' , 'H' , 'I' , 'J' , 'K' , 'L' ,
+		'M' , 'N' , 'O' , 'P' , 'Q' , 'R' , 'S' , 'T' ,
+		'U' , 'V' , 'W' , 'X' , 'Y' , 'Z')
 
 	@classmethod
 	def get_md5(self,longurl):

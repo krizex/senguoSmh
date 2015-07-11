@@ -58,7 +58,7 @@ class Detail(FruitzoneBaseHandler):
 				.filter(models.Article.id==_id,models.Article.status==1).first()
 		except:
 			return self.write("没有该文章的任何信息")
-		
+
 		# if not article[3]:
 		# 	article[0].scan_num = article[0].scan_num +1
 		# 	self.session.add(models.ArticleGreat(article_id = _id,
@@ -66,9 +66,12 @@ class Detail(FruitzoneBaseHandler):
 		# 			scan=1))
 		# else:
 		# 	if article[3].scan==0 :
-		# 		article[3].scan = 1 
+		# 		article[3].scan = 1
 		# 		article[0].scan_num = article[0].scan_num +1
-		article[0].scan_num = article[0].scan_num +1
+		if article:
+			article[0].scan_num = article[0].scan_num +1
+		else:
+			return self.write("您访问的地址错误或该文章已被删除")
 		self.session.commit()
 
 		great_if = False
@@ -104,7 +107,7 @@ class Detail(FruitzoneBaseHandler):
 					.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1).order_by(models.ArticleComment.create_time.desc())
 			except:
 				comments = None
-			
+
 			if comments:
 				if page == comments.count()//page_size:
 					nomore = True
@@ -114,7 +117,7 @@ class Detail(FruitzoneBaseHandler):
 				return self.send_success(data=comments_list,nomore=nomore)
 		if_admin = self.if_super()
 		return self.render("bbs/artical-detail.html",article=article_data,author_if=author_if,if_admin=if_admin)
-	
+
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:str","data?")
 	def post(self,_id):
@@ -133,7 +136,7 @@ class Detail(FruitzoneBaseHandler):
 			if record:
 				if action == "article_great":
 					if record.great == 0:
-						record.great = 1 
+						record.great = 1
 					else:
 						num_1 = -1
 						record.great = 0
@@ -264,7 +267,7 @@ class Publish(FruitzoneBaseHandler):
 		return self.render("bbs/publish.html",token=qiniuToken,edit=False)
 
 	@tornado.web.authenticated
-	@FruitzoneBaseHandler.check_arguments("data")	
+	@FruitzoneBaseHandler.check_arguments("data")
 	def post(self):
 		data=self.args["data"]
 		classify=int(data["classify"])
@@ -279,8 +282,7 @@ class Publish(FruitzoneBaseHandler):
 		)
 		self.session.add(new_article)
 		self.session.commit()
-		_id = self.session.query(models.Article).filter_by(title=title,article=article,account_id=self.current_user.id)\
-		.order_by(models.Article.create_time.desc()).first().id
+		_id = new_article.id
 		return self.send_success(id=_id)
 
 # 社区 - 编辑文章
@@ -300,7 +302,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data)
 
 	@tornado.web.authenticated
-	@FruitzoneBaseHandler.check_arguments("data")	
+	@FruitzoneBaseHandler.check_arguments("data")
 	def post(self,_id):
 		data=self.args["data"]
 		article = self.session.query(models.Article).filter_by(id=_id).first()
@@ -317,7 +319,7 @@ class Search(FruitzoneBaseHandler):
 		return self.render("bbs/search.html")
 
 	# @tornado.web.authenticated
-	@FruitzoneBaseHandler.check_arguments("page","data")	
+	@FruitzoneBaseHandler.check_arguments("page","data")
 	def post(self):
 		page = int(self.args["page"])
 		data = self.args["data"]
@@ -342,4 +344,4 @@ class Search(FruitzoneBaseHandler):
 # 社区 - 个人中心
 class Profile(FruitzoneBaseHandler):
 	def get(self):
-		return self.render("bbs/profile.html") 
+		return self.render("bbs/profile.html")
