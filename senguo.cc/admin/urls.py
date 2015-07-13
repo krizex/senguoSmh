@@ -239,6 +239,8 @@ handlers = [
 	(r"/admin/editorFileManage", handlers.admin.editorFileManage, {}, "admineditorFileManage"),
 	(r"/admin/editorCallback", handlers.admin.editorCallback, {}, "admineditorCallback"),
 	(r"/admin/MessageManage", handlers.admin.MessageManage, {}, "adminMessageManage"),
+	(r"/admin/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
+	
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
 	# (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
@@ -256,7 +258,7 @@ handlers = [
 	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
 	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
 
-	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
+	
 	# 水果圈子
 
 	# 主页

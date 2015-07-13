@@ -8,4 +8,26 @@ $(document).ready(function(){
     }).makeCode($("#link").val());
 }).on("click","#save_manager",function(){
 
+
 });
+function saveAdmin(){
+    var name = $(".admin-name").val();
+    var tel = $(".admin-tel").val();
+    if(name=="" || tel==""){
+        return Tip("姓名和电话都不能为空");
+    }
+    var args = {
+        action:"",
+        data:{
+            admin_name:name,
+            admin_phone:tel
+        }
+    }
+    $.postJson(url,args,function(res){
+        if(res.success){
+            window.location.href="/market/shopinfo";
+        }else{
+            Tip(res.error_text);
+        }
+    });
+}

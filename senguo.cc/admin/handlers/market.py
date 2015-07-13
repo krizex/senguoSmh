@@ -17,33 +17,56 @@ from random import Random
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.send_success()
+		#return self.send_success()
 
-		# return self.render('market/market.html')
+		return self.render('market/shop-list.html')
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action')
+	@AdminBaseHandler.check_arguments('action',"page?:int","lat","lon")
 	def post(self):
+		action = self.args['action']
+		page_size = 20
+		nomore = False
+		_shop = self.session.query(models.Spider_Shop)
+		lat1 = float(self.args['lat'])
+		lon1 = float(self.args['lon'])
+		if "page" in self.args:
+			page = int(self.args["page"])
+		else:
+			page = 0
 		if action == 'to_do':
-			shop_list = self.session.query(models.Spider_Shop).filter_by(has_done = 0).all()
+			shop_list = _shop.filter_by(has_done = 0).all()
+			shop_count = _shop.filter_by(has_done = 0).count()
 		elif action == 'has_done':
-			shop_list = self.session.query(models.Spider_Shop).filter_by(has_done = 1).all()
+			shop_list = _shop.filter_by(has_done = 1).all()
+			shop_count = _shop.filter_by(has_done = 1).count()
 		else:
 			return self.send_fail("action error")
 		shops  = self.get_shop_data(shop_list)
-		return self.send_success(shops = shops)
+		for shop in shops:
+			url = "http://api.map.baidu.com/geocoder/v2/?address="+shop["shop_address"]+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+			r = requests.get(url)
+			result = json.loads(r.text)
+			if result["status"] == 0:
+				lat2 = float(result["result"]["location"]["lat"])
+				lon2 = float(result["result"]["location"]["lng"])
+			if lat1 and lon1 and lat2 and lon2:
+				shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+			else:
+				shop['distance'] = 9999999
+		shops.sort(key = lambda shop:shop['distance'])
+		total_page = int(shop_count/page_size) if shop_count % page_size == 0 else int(shop_count/page_size)+1
+		if total_page <= page:
+			nomore = True
+		return self.send_success(shops = shops,nomore=nomore)
 
 	@classmethod
 	def get_shop_data(self,shop_list):
-		data = []
+		shop_data = []
 		for shop in shop_list:
-			shop_data['id'] = shop.id
-			shop_data['shop_name']  = shop.shop_name
-			shop_data['lat']  = shop.lat
-			shop_data['lon']  = shop.lon
-			shop_data['shop_address'] = shop.shop_address
-			data.append(shop_data)
-		return data
-
+			for shop in shops:
+				shop_data.append({"id":shop.id,"shop_name":shop.shop_name,"shop_address":shop.shop_address\
+				,"curator":shop.curator,"done_time":shop.done_time,"shop_logo":shop.shop_logo,"distance":distance})
+		return shop_data
 
 #店铺信息
 class Info(AdminBaseHandler):
@@ -51,8 +74,7 @@ class Info(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('id')
 
 	def get(self):
-		# id = int(self.args['id'])
-		id = 1
+		id = int(self.args['id'])
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
@@ -74,7 +96,6 @@ class Info(AdminBaseHandler):
 		return self.render("market/shop-info.html",shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
 			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
-
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
 		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str')
@@ -101,7 +122,7 @@ class Info(AdminBaseHandler):
 		elif action == 'staff_info':
 			pass
 		elif action == 'shop_auth':
-			pass
+			shop.shop_auth = self.args['shop_auth']
 		else:
 			return self.send_fail('action error')
 
@@ -117,7 +138,20 @@ class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id?','action?:str')
 	def get(self):
+
+		id = self.args.get('id',None)
+
+		if id:
+			try:
+				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
+			except:
+				return self.send_fail('shop not found')
+			admin_info = shop.admin_info
+			if admin_info:
+				admin_name,admin_phone,wx_nickname = admin_info.split('-')
+
 		action = self.args.get('action',None)
+
 		id = self.args.get('id',None)
 		id = 1
 		if id:
@@ -143,7 +177,8 @@ class ShopAdminInfo(AdminBaseHandler):
 			return self.send_fail('id error')
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
-	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','action')
+	
+	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
 	def post(self):
 		action = self.args.get('action',None)
 		if action == 'save':
@@ -174,7 +209,6 @@ class ShopAdminInfo(AdminBaseHandler):
 			print(self.get_wexin_oauth_link2(next_url = next_url))
 			return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
 		else:
-		
 			code = self.args['code']
 			mode = self.args['mode']
 			if mode not in ['mp','kf']:
@@ -281,27 +315,17 @@ class ShopAdminInfo(AdminBaseHandler):
 
 		
 
-			
-
-
-
-
-
-
-
-
-
 
 #店铺录入
 # class Insert(AdminBaseHandler):
 # 	@tornado.web.authenticated
 # 	def get(self):
-		
-		
+
+
 #店铺入驻成功
 class Success(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		
+
 		return self.render("market/success.html")
 
