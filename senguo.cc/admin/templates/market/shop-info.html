@@ -10,7 +10,7 @@
 </div>
 {% end %}
 {% block content %}
-<input type="hidden" id="token"/>
+<input type="hidden" id="token" value="{{token}}"/>
 <div class="wrap-shop-info pb45">
     <ul class="data-list mt15">
         <li class="logo-li" id="shop_img_box">
@@ -48,18 +48,18 @@
     <ul class="data-list mt10">
         <li id="add-licence-box">
             <a href="javascript:;" class="" id="add-licence" data-action="licence" data-url="">
-                <span class="fr c333 shop_status more" id="shop_licence">未录入</span>
+                <span class="fr c333 shop_status more" id="shop_licence"><span>未录入</span><img src="/static/images/load.gif" alt="loading" class="loading"/></span>
                 <span class="text-left">营业执照</span>
             </a>
         </li>
         <li>
-            <a href="javascript:;" class="" data-action="shoper">
+            <a href="javascript:;" class="" data-flag="0" id="shoper">
                 <span class="fr c333 shop_auth more" id="shop_shoper">周兵-15000202210-微信已绑</span>
                 <span class="text-left">店长信息</span>
             </a>
         </li>
         <li class="info-li">
-            <a href="javascript:;" class="group" data-action="staff">
+            <a href="javascript:;" class="group" data-action="staff" id="staffer">
                 <span class="fr c333 text-clip more" id="shop_staff">未录入</span>
                 <span class="text-left info-left">配送员信息</span>
             </a>

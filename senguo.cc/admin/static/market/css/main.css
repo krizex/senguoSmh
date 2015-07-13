@@ -49,5 +49,5 @@
 .success-box{margin-top: 100px;}
 .success-box>p{color: #333;margin-bottom: 15px;text-align: center;}
 .test-shop{display: block;margin:40px auto 0 auto;width: 120px;height: 40px;line-height: 40px;border-radius: 40px;background-color: #48b6a4;color: #fff;text-align: center;}
-
+.loading{width: 16px;height: 16px;display: none;}
 

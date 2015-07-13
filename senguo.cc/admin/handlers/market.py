@@ -16,9 +16,9 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.send_success()
+		#return self.send_success()
 
-		# return self.render('market/market.html')
+		return self.render('market/shop-list.html')
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action')
 	def post(self):
@@ -52,6 +52,7 @@ class Info(AdminBaseHandler):
 	def get(self):
 		# id = int(self.args['id'])
 		id = 1
+		'''
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
@@ -70,10 +71,13 @@ class Info(AdminBaseHandler):
 		staff_info = shop.staff_info  if shop.staff_info else '为录入'
 		description = shop.description if shop.description else '无备注'
 
+
 		return self.render("market/shop-info.html",shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
 			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
-
+		'''
+		token = self.get_qiniu_token("Market_cookie","token")
+		return self.render("market/shop-info.html",token=token)
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
 		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str')
@@ -117,6 +121,7 @@ class ShopAdminInfo(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('id?')
 	def get(self):
 		id = self.args.get('id',None)
+		'''
 		if id:
 			try:
 				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
@@ -129,6 +134,7 @@ class ShopAdminInfo(AdminBaseHandler):
 				admin_name = admin_phone = wx_nickname = None
 		else:
 			return self.send_fail('id error')
+			'''
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')

@@ -42,7 +42,15 @@ $(document).ready(function(){
         $(".shop_text").focus();
     }
 }).on("click","#save_info",function(){//保存信息
-
+    window.location.href="/market/success";
+}).on("click","#shoper",function(){//编辑店长信息
+    window.location.href="/market/shopinsert";
+}).on("click","#staffer",function(){//编辑配送员信息
+    if(parseInt($("#shoper").attr("data-flag"))==1){
+        window.location.href="/market/shopinsert";
+    }else{
+        return Tip("请先编辑店长信息");
+    }
 });
 /*保存信息*/
 function saveInfo(){
@@ -54,31 +62,41 @@ function saveInfo(){
     var address = $("shop_address").html();
     var licence = $("shop_licence").attr("data-url");
     var shoper = $("#shop_shoper").html();
-    var staff = $("#shop_staff").html();
-    var remark = $("#shop")
+    var staff = $("#staffer").html();
+    var remark = $("#shop_remark").html();
+    var data = {
+        shop_logo:logo,
+        shop_name:name,
+        shop_phone:tel,
+        delivery_area:area,
+        shop_address:address,
+        shop_auth:licence,
+        admin_info:shoper,
+        staff_info:staff,
+        description:remark
+    };
+    var args = {
+        action:"",
+        data:data
+    }
+    $.postJson(url,args,function(res){
+        if(res.success){
+
+        }else{
+            Tip(res.error_text);
+        }
+    });
 }
 function infoEdit(action_name){
-    var url="/admin/config/shop";
+    var url="";
     var action_name=action_name;
     var data={};
-    var action,shop_name,shop_intro,shop_city,shop_address_detail,have_offline_entity,address,entity_text,shop_code,shop_phone;
+    var action,shop_name,shop_address,shop_phone,shop_area,shop_licence,shop_remark;
     if(action_name=='name'){
         action='edit_shop_name';
         shop_name= $.trim($('.shop_text').val());
         if(shop_name.length>15){return Tip('店铺名称请不要超过15个字符！')}
         data={shop_name:shop_name};
-    }else if(action_name=='code'){
-        var reg=/^\w+$/;
-        action='edit_shop_code';
-        shop_code=$.trim($('.shop_text').val());
-        if(!reg.test(shop_code)){return Tip('店铺号只能为字母、数字以及下划线组成！')}
-        if(shop_code.length<6){return Tip('店铺号至少为6位数！')}
-        data={shop_code:shop_code};
-    }else if(action_name=='intro'){
-        action='edit_shop_intro';
-        shop_intro=$('.shop_area').val();
-        if(shop_intro.length>300){return Tip('店铺简介请不要超过300个字符！')}
-        data={shop_intro:shop_intro};
     }else if(action_name=='phone'){
         action='edit_phone';
         shop_phone=$('.shop_text').val();
@@ -86,23 +104,19 @@ function infoEdit(action_name){
         data={shop_phone:shop_phone};
     }else if(action_name=='area'){
         action='edit_deliver_area';
-        //data=area_data;
-    }else if(action_name=='entity'){
-        action='edit_have_offline_entity';
-        var entity=$('#offline_entity').attr('data-id');
-        if(entity==1) have_offline_entity=1;
-        else have_offline_entity=0;
-        entity_text=$('#offline_entity').text();
-        data={have_offline_entity:have_offline_entity};
-    }else if(action_name=='status'){
-        action='shop_status';
-        var status_item = $(".status-list").children(".active");
-        var shop_status=status_item.attr('data-id');
-        var status_text=status_item.html();
-        data={shop_status:shop_status};
-    }else if(action_name=='edit_shop_logo'){
+        shop_area = $('.shop_text').val();
+    }else if(action_name=='address'){
         action = "edit_shop_logo";
-        data={img_url:$("#shop_logo").attr("url")};
+        shop_address = $('.shop_text').val();
+        data={};
+    }else if(action_name=='licence'){
+        action = "";
+        shop_licence = $('.shop_text').val();
+        data={};
+    }else if(action_name=='remark'){
+        action = "edit_shop_logo";
+        shop_remark = $('.shop_text').val();
+        data={};
     }
     var args={
         action:action,
@@ -115,25 +129,6 @@ function infoEdit(action_name){
                 $(".pop-name").addClass("hide");
                 Tip("店铺名称编辑成功");
             }
-            else if(action_name=='code')
-            {
-                cur_item.children(".fr").html(shop_code);
-                cur_item.removeClass("edit_item").addClass("un_edit");
-                $("#shop_link").html("http://senguo.cc/"+shop_code);
-                $(".pop-code2").addClass("hidden");
-                Tip("店铺号编辑成功");
-                $("#big-code2").empty();
-                new QRCode($("#big-code2")[0],{
-                    width : 150,
-                    height : 150
-                }).makeCode($("#shop_link").html());
-            }
-            else if(action_name=='intro')
-            {
-                cur_item.children(".fr").html(shop_intro);
-                $(".pop-name").addClass("hide");
-                Tip("店铺简介编辑成功");
-            }
             else if(action_name=='phone')
             {
                 cur_item.children(".fr").html(shop_phone);
@@ -142,17 +137,23 @@ function infoEdit(action_name){
             }
             else if(action_name=='area')
             {
-
+                cur_item.children(".fr").html(shop_area);
+                $(".pop-name").addClass("hide");
+                Tip("配送范围编辑成功");
             }
-            else if(action_name=='entity'){
-
+            else if(action_name=='address'){
+                cur_item.children(".fr").html(shop_address);
+                $(".pop-name").addClass("hide");
+                Tip("店铺地址编辑成功");
             }
-            else if(action_name=='status'){
-                $(".shop_status").html(status_text);
-                $(".pop-status").addClass("hide");
-                Tip("店铺状态切换成功")
-            }else if(action_name=='edit_shop_logo'){
-                Tip("店铺logo编辑成功");
+            else if(action_name=='licence'){
+                $("#shop_licence").children("span").html("已录入");
+                Tip("营业执照录入成功");
+            }
+            else if(action_name=='remark'){
+                cur_item.children(".fr").html(shop_remark);
+                $(".pop-name").addClass("hide");
+                Tip("备注成功");
             }
         }else{
             Tip(res.error_text);
@@ -181,12 +182,16 @@ $(document).ready(function(){
         auto_start: true,
         init: {
             'FilesAdded': function (up, files) {
+                $(".loading").prev("span").hide();
+                $(".loading").show();
                 var file = files[0];
             },
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
                 $("#add-licence").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $(".loading").hide();
+                $(".loading").prev("span").html("已录入").show();
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
