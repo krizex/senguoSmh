@@ -21,22 +21,17 @@ $(document).ready(function(){
             $("#b_title").html("店铺名称");
         }else if(action=="phone"){
             $("#b_title").html("联系电话");
-        }else if(action=="code"){
-            if($(this).children(".fr").html()=="未设置"){
-                $("#b_title").html("店铺号");
-            }else{
-                Tip("该项当前不能被编辑");
-                return false;
-            }
+        }else if(action=="range"){
+            $("#b_title").html("配送范围");
+        }else if(action=="address"){
+            $("#b_title").html("配送地址");
+        }else if(action=="remark"){
+            $("#b_title").html("备注");
         }
-        if(action=="code"){
-            $(".shop_text").val("").attr("placeholder","店铺号设置后不能再被编辑").removeClass("hide");
-        }else{
-            if(action=="phone"){
-                $(".shop_text").attr("type","tel");
-            }
-            $(".shop_text").val($(this).children(".fr").html()).removeClass("hide");
+        if(action=="phone"){
+            $(".shop_text").attr("type","tel");
         }
+        $(".shop_text").val($(this).children(".fr").html()).removeClass("hide");
         $(".shop_area").addClass("hide");
     }
     $(".ok-bbtn").attr("data-action",action);

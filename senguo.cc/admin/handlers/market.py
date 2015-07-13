@@ -16,7 +16,9 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render('market/market.html')
+		return self.send_success()
+
+		# return self.render('market/market.html')
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action')
 	def post(self):
@@ -48,7 +50,8 @@ class Info(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('id')
 
 	def get(self):
-		id = int(self.args['id'])
+		# id = int(self.args['id'])
+		id = 1
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
@@ -60,7 +63,7 @@ class Info(AdminBaseHandler):
 		shop_name = shop.shop_name
 		shop_phone = shop.shop_phone
 		shop_address = shop.shop_address
-		deliver_area = shop.deliver_area
+		delivery_area = shop.delivery_area
 
 		shop_auth   = shop.shop_auth  if shop.shop_auth else '未录入'
 		admin_info = shop.admin_info  if shop.admin_info else '未录入'
@@ -68,7 +71,7 @@ class Info(AdminBaseHandler):
 		description = shop.description if shop.description else '无备注'
 
 		return self.render("market/shop-info.html",shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
-			shop_address = shop_address,deliver_area = deliver_area,shop_auth = shop_auth ,
+			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
 
 	@tornado.web.authenticated
@@ -126,7 +129,8 @@ class ShopAdminInfo(AdminBaseHandler):
 				admin_name = admin_phone = wx_nickname = None
 		else:
 			return self.send_fail('id error')
-		return self.send_success()
+		# return self.send_success()
+		return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
 	def post(self):
 		id = self.args.get('id',None)
@@ -138,14 +142,17 @@ class ShopAdminInfo(AdminBaseHandler):
 			admin_name = self.args['admin_name']
 			admin_phone= self.args['admin_phone']
 
-	
-
-
-
-
-
-
-
-
+		return self.render("market/shop-info.html")
+#店铺录入
+# class Insert(AdminBaseHandler):
+# 	@tornado.web.authenticated
+# 	def get(self):
 		
 		
+#店铺入驻成功
+class Success(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		
+		return self.render("market/success.html")
+

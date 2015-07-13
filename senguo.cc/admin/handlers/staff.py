@@ -132,12 +132,12 @@ class Order(StaffBaseHandler):
 				JH_id=self.current_user.id, status=models.ORDER_STATUS.JH)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 											 models.Order.JH_id==self.current_user.id, models.Order.status.in_([3,4,5,6,7])).order_by(models.Order.id.desc())
-		elif work ==2: #SH1
+		elif work == 2: #SH1
 			orders = self.session.query(models.Order).filter_by(shop_id=self.shop_id,
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).order_by(models.Order.id.desc())
-		elif work ==3: #SH2
+		elif work == 3: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5]))
 			orders_len = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
@@ -208,9 +208,10 @@ class Order(StaffBaseHandler):
 					return self.send_fail("已完成操作，请勿重复")
 				status = 4
 			elif self.current_user.work == 3:#SH2
-				if order.status == 5:
+				if order.status not in [1,2,3,4]:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 5
+				self.order_done(self.session,order)
 				if order.pay_type == 1:  # 货到付款订单，员工需收款
 					self.hirelink.money += order.totalPrice
 
@@ -223,134 +224,10 @@ class Order(StaffBaseHandler):
 						num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 						s[0].current_saled -= num
 
-
-				#yy
-				if status == 5:
-					self.order_done(self.session,order)
-
-					# now = datetime.datetime.now()
-					# order.arrival_day = now.strftime("%Y-%m-%d")
-					# order.arrival_time= now.strftime("%H:%M")
-					# self.session.commit()
-					# customer_id = order.customer_id
-					# shop_id = order.shop_id
-					# totalprice = order.totalPrice
-
-					# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-					# if not shop:
-					# 	return self.send_fail("shop not found!")
-					# shop.is_balance = 1
-					# shop.order_count += 1  #店铺订单数加1
-
-
-
-					# ##
-					# #
-					# customer_info = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
-					# if not customer_info:
-					# 	return self.send_fail('customer not found')
-					# customer_info.is_new = 1
-					# name = customer_info.nickname
-					# self.session.commit()
-
-					# #
-					# customer = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-					# 	shop_id = shop_id).first()
-					# if not customer:
-					# 	return self.send_fail('customer error')
-					# if customer.shop_new == 0:
-					# 	customer.shop_new = 1
-					# 	# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
-					# self.session.commit()
-
-					# try:
-					# 	shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
-					# 		customer_id,shop_id = shop_id).first()
-					# except:
-					# 	self.send_fail("shop_point error")
-					# try:
-					# 	order_count = self.session.query(models.Order).filter_by(customer_id = customer_id,\
-					# 		shop_id = shop_id).count()
-					# except:
-					# 	self.send_fail("find order by customer_id and shop_id error")
-					# # the first order , shop_point add by 5
-					# if order_count==1:
-					# 	if shop_follow:
-					# 		if shop_follow.shop_point == None:
-					# 			shop_follow.shop_point =0
-					# 		shop_follow.shop_point += 5
-					# 		self.session.commit()
-					# 		try:
-					# 			point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-					# 		except:
-					# 			self.send_fail("point_history error:First_order")
-					# 		if point_history:
-					# 			point_history.point_type = models.POINT_TYPE.FIRST_ORDER
-					# 			point_history.each_point = 5
-					# 			# print(point_history.each_point)
-					# 			self.session.add(point_history)
-					# 			self.session.commit()
-
-					# if order.pay_type == 2:    #余额 支付
-					# 	if shop_follow:
-					# 		if shop_follow.shop_point == None:
-					# 			shop_follow.shop_point =0
-					# 		shop_follow.shop_point += 2
-					# 		self.session.commit()
-					# 		try:
-					# 			point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-					# 		except:
-					# 			self.send_fail("point_history error:PREPARE_PAY")
-					# 		if point_history:
-					# 			point_history.point_type = models.POINT_TYPE.PREPARE_PAY
-					# 			point_history.each_point = 2
-					# 			self.session.add(point_history)
-					# 			self.session.commit()
-
-					# 	# 订单完成后，将相应店铺可提现 余额相应增加
-					# 	shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-					# 	if not shop:
-					# 		return self.send_fail('shop not found')
-					# 	# shop.shop_balance += order.totalprice * 100
-					# 	shop.available_balance += totalprice
-					# 	print(shop.available_balance,'店铺可提现余额')
-					# 	# available history
-
-					# 	balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-					# 		balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
-					# 		shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
-					# 		shop.available_balance,balance_type = 6)
-					# 	self.session.add(balance_history)
-					# 	self.session.commit()
-
-					# if order.pay_type == 3:
-					# 	shop.available_balance += totalprice
-					# 	balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,\
-					# 		balance_record = "可提现额度入账：订单"+order.num+"完成",name = name,balance_value = totalprice,shop_totalPrice=\
-					# 		shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,available_balance=\
-					# 		shop.available_balance,balance_type = 7)
-					# 	self.session.add(balance_history)
-					# 	self.session.commit()
-
-					# if shop_follow:
-					# 	if shop_follow.shop_point == None:
-					# 		shop_follow.shop_point =0
-					# 	shop_follow.shop_point += totalprice
-					# 	self.session.commit()
-					# 	try:
-					# 		point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
-					# 	except:
-					# 		self.send_fail("point_history error:totalprice")
-					# 	if point_history:
-					# 		point_history.point_type = models.POINT_TYPE.TOTALPRICE
-					# 		point_history.each_point = totalprice
-					# 		self.session.add(point_history)
-					# 		self.session.commit()
 			else:
 				return self.send.fail("你还没分配工作，请联系商家")
 			order.status = status
 
-			#
 		elif action == "remark":
 			order.staff_remark = self.args["data"]
 		self.session.commit()

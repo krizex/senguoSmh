@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block title %}森果市场推广系统{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back market-city">武汉<i class="icert"></i></a>
+    <span>森果市场推广系统</span>
+    <a href="javascrpt:;" class="head-right spread-user"><span class="img-border"><img src="/static/images/TDSG.png" alt="陈逸林"/></span></a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-list pb45">
+    <div class="wrap-market-tab">
+        <ul class="tab-list group">
+            <li class="active">待开发</li>
+            <li>已完成</li>
+        </ul>
+    </div>
+    <div class="cur-address" id="cur_address">
+        <span class="fr">更新</span>
+        当前位置:<span>武汉市华中科技大学</span>
+    </div>
+    <ul class="shop-list">
+        <li data-id="" data-code="">
+            <dl class="shop-dl">
+                <dd>
+                    <span class="img-border"><img src="/static/images/TDSG.png" alt=""/></span>
+                </dd>
+                <dt>
+                    <p class="name"><span class="c999 f12 fr">1.2km</span>水果太太(光谷店)</p>
+                    <p class="addre mt15">武汉市洪山区珞瑜路华中科技大学</p>
+                </dt>
+            </dl>
+        </li>
+        <li data-id="" data-code="">
+            <dl class="shop-dl">
+                <dd>
+                    <span class="img-border"><img src="/static/images/TDSG.png" alt=""/></span>
+                </dd>
+                <dt>
+                <p class="name"><span class="c999 f12 fr">1.2km</span>水果太太(光谷店)</p>
+                <p class="addre mt15">武汉市洪山区珞瑜路华中科技大学愠苑2栋303</p>
+                </dt>
+            </dl>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('market/js/shop-list.js')}}"></script>
+{% end %}
