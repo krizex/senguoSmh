@@ -2519,8 +2519,8 @@ class InsertData(CustomerBaseHandler):
 
 		shop_list = []
 		good_list = []
-
-		f = open('/home/monk/www/senguo.cc/senguo.cc/admin/handlers/shopData.txt',encoding = 'utf-8')
+		import os
+		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
 		c = f.read()
 		s = eval(c)
 		print(type(s))

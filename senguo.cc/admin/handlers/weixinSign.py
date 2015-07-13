@@ -9,7 +9,6 @@ import requests
 import settings
 import json
 
-
 # 生成微信签名
 class logPrint:
     def __init__(self):
@@ -34,7 +33,7 @@ class Sign:
     # 随机字符串
     def __create_nonce_str(self):
         return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(15))
-    
+
     # 时间戳
     def __create_timestamp(self):
         return int(time.time())

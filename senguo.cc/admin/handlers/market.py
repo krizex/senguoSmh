@@ -67,7 +67,6 @@ class Home(AdminBaseHandler):
 				,"curator":shop.curator,"done_time":shop.done_time,"shop_logo":shop.shop_logo,"distance":distance})
 		return shop_data
 
-
 #店铺信息
 class Info(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -140,7 +139,7 @@ class ShopAdminInfo(AdminBaseHandler):
 	def get(self):
 
 		id = self.args.get('id',None)
-		
+
 		if id:
 			try:
 				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
@@ -160,7 +159,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		else:
 
 			return self.send_fail('id error')
-		
+
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
@@ -180,7 +179,6 @@ class ShopAdminInfo(AdminBaseHandler):
 				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_nickname)
 				self.session.commit()
 			return self.render("market/shop-info.html")
-		
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('code','mode')
@@ -192,7 +190,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			print(self.get_wexin_oauth_link2(next_url = next_url))
 			return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
 		else:
-		
+
 			code = self.args['code']
 			mode = self.args['mode']
 			if mode not in ['mp','kf']:
@@ -237,12 +235,12 @@ class ShopAdminInfo(AdminBaseHandler):
 # class Insert(AdminBaseHandler):
 # 	@tornado.web.authenticated
 # 	def get(self):
-		
-		
+
+
 #店铺入驻成功
 class Success(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		
+
 		return self.render("market/success.html")
 

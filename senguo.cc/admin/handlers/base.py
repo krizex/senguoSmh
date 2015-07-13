@@ -473,7 +473,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = ""
 		print('login in get_weixin_oauth_link2',self,next_url)
 
-
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
 			else: para_str = "?"
@@ -1458,7 +1457,6 @@ class WxOauth2:
 			return None
 		else:
 			return data['openid']
-
 
 	@classmethod
 	def get_jsapi_ticket(cls):
