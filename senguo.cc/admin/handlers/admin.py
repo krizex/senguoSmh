@@ -2247,7 +2247,7 @@ class Config(AdminBaseHandler):
 		elif action in ("edit_notice_active", "edit_notice"):  # notice_id
 			notice = next((x for x in self.current_shop.config.notices if x.id == int(data["notice_id"])), None)
 			if not notice:
-				return self.send_error(404)
+				return self.send_error('没有该公告的任何消息')
 			if action == "edit_notice_active":
 				notice.active = 1 if notice.active == 2 else 2
 			elif action == "edit_notice":
@@ -2316,16 +2316,16 @@ class Config(AdminBaseHandler):
 			data = []
 			info  = self.session.query(models.Accountinfo).filter_by(id = _id).first()
 			if not info:
-				return self.send_fail('该用户不存在')
-			customer = self.session.query(models.Customer).filter_by(id = info.id).first()
-			if not customer:
-				return self.send_fail('该用户还没有关注您的店铺')
-			customer_shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id= customer.id,shop_id=self.current_shop.id).first()
-			if not customer_shop_follow:
-				return self.send_fail('该用户还没有关注您的店铺')
-			if info and customer and customer_shop_follow:
-				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
-				return self.send_success(data=data)
+				return self.send_fail('该用户还不是森果的用户，无法添加其为管理员')
+			# customer = self.session.query(models.Customer).filter_by(id = info.id).first()
+			# if not customer:
+			# 	return self.send_fail('该用户还没有关注您的店铺')
+			# customer_shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id= customer.id,shop_id=self.current_shop.id).first()
+			# if not customer_shop_follow:
+			# 	return self.send_fail('该用户还没有关注您的店铺')
+			# if info and customer and customer_shop_follow:
+			data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
+			return self.send_success(data=data)
 		elif action =="add_admin":
 			if self.current_shop.shop_auth ==0:
 				return self.send_fail('您的店铺还未认证，不能使用该功能')
