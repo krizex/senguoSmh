@@ -54,10 +54,8 @@ class Access(CustomerBaseHandler):
 		elif self._action == 'qqoauth':
 			print('login qqoauth')
 			self.handle_qq_oauth(next_url)
-
 		else:
 			return self.send_error(404)
-
 
 	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
@@ -85,7 +83,6 @@ class Access(CustomerBaseHandler):
 		u = models.Customer.register_with_qq(self.session,userinfo)
 		self.set_current_user(u,domain = ROOT_HOST_NAME)
 		return self.redirect(next_url)
-
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
@@ -653,7 +650,6 @@ class ShopProfile(CustomerBaseHandler):
 			#     self.session.add(point)
 			#     self.session.commit()
 
-
 			signin = self.session.query(models.ShopSignIn).filter_by(
 				customer_id=self.current_user.id, shop_id=shop_id).first()
 
@@ -918,8 +914,6 @@ class Market(CustomerBaseHandler):
 			pass
 		print('success??????????????????????????????????')
 
-
-
 		# self.current_shop = shop
 		# print(self,self.current_shop)
 		shop_name = shop.shop_name
@@ -1037,8 +1031,6 @@ class Market(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
-
-
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1220,7 +1212,6 @@ class Market(CustomerBaseHandler):
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
-
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
