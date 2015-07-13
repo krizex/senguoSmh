@@ -10,17 +10,14 @@ $(document).ready(function(){
         //店铺二维码
         var shop_link=$('.shop_link').text();
         var shop_code=$('.shop_link').find('.code').text();
-        $('#shop_link_img').qrcode({render: "canvas",width: 100,height: 100,text: shop_link,typeNumber: -1});
+        $('#shop_link_img').qrcode({render: "canvas",width: 100,height:100,text: shop_link ,typeNumber  : -1});
         //从canvas导出图片
         var type = 'png';
         var canvas=$('#shop_link_img canvas')[0];
         $('#shop_link_img').append(convertCanvasToImage(canvas));
         $('#shop_link_img canvas').remove();
         window.dataObj.imgData= $('#shop_link_img img').attr('src');
-        //imgData=canvas.toDataURL(type);
-        //imgData = imgData.replace(_fixType(type),'image/octet-stream');
     }
-
     //二维码下载
     $(document).on('click','.download_img',function(){
         var type = 'png';
@@ -112,17 +109,7 @@ $(document).ready(function(){
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
             }
-        }
-    );
-
-    //城市编码转换
-    // var proc=$('.reProvince').data('code');
-    // var citc=$('.reCity').data('code');
-    // $('.reProvince').text(provinceArea(proc));
-    // if(citc!=proc&&citc)
-    // {
-    //     $('.reCity').text(cityArea(proc,citc));
-    // }
+        });
     var area=window.dataObj.area;
     $(document).on('click','.province_select',function(){
         $('.provinceList').empty();
@@ -146,12 +133,12 @@ $(document).ready(function(){
         var if_city=$this.attr('data-city');
         $('#provinceAddress').attr({'data-code':code}).text(text);
         if(if_city=='false') {
-            $('.city_select').hide(); 
+            $('.city_select').hide();
             $('#cityAddress').attr('data-code',code).text('');
         }
         else {
-            $('.cityList').empty();
-            for(var key in area){
+             $('.cityList').empty();
+              for(var key in area){
                 var city=area[key]['city'];
                 if(code==key){
                     for(var k in city){
@@ -191,9 +178,9 @@ $(document).ready(function(){
     });
     //修改地理位置
     $("#edit-address").on("click",function(){
-        $(".address-start").toggleClass("hidden");
-        $(".wrap-shop-address").toggleClass("hidden");
-        $(".hand-search").toggleClass("hidden");
+        $(".address-start").addClass("hidden");
+        $(".wrap-shop-address").removeClass("hidden");
+        $(".hand-search").removeClass("hidden");
         $("#hand-search").html("手动标注位置");
     });
 }).on('click','.shop_status-list li',function(){
@@ -463,11 +450,10 @@ function infoEdit(target,is_address){
             shop_address_detail:shop_address_detail
         };
     }
-    else if(action_name=='phone')
+   else if(action_name=='phone')
     {
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
-        console.log(shop_phone.length);
         if(shop_phone.length=0){return Tip('"电话不能为空o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }
@@ -501,8 +487,8 @@ function infoEdit(target,is_address){
             {
                 if(action_name=='name')
                 {
-                   $('.name').text(shop_name);
-                   $('#shop_name').text(shop_name).attr({'title':shop_name});
+                    $('.name').text(shop_name);
+                    $('#shop_name').text(shop_name).attr({'title':shop_name});
                 }
                 else if(action_name=='code')
                 {
@@ -512,7 +498,7 @@ function infoEdit(target,is_address){
                     $('.link_notice').show();
                     $('.notice_word').hide();
                     $('.code_set').hide();
-		            //从canvas导出图片
+                    //从canvas导出图片
                     var type = 'png';
                     var canvas=$('#shop_link_img canvas')[0];
                     window.dataObj.imgData=canvas.toDataURL(type);
@@ -531,9 +517,9 @@ function infoEdit(target,is_address){
                         Tip("店铺地图设置成功");
                     }else{
                         $("#info_address").html($("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val());
-                        $(".address-start").toggleClass("hidden");
-                        $(".wrap-shop-address").toggleClass("hidden");
-                        $(".hand-search").toggleClass("hidden");
+                        $(".address-start").removeClass("hidden");
+                        $(".wrap-shop-address").addClass("hidden");
+                        $(".hand-search").addClass("hidden");
                         Tip("店铺地址设置成功");
                     }
                 }
@@ -550,14 +536,13 @@ function infoEdit(target,is_address){
                 else if(action_name=='status'){
                     $('.shop-status').text(status_text);
                 }
-                if(action_name!='address' || action_name!='area'){
+                if(action_name!='address' && action_name!='area'){
                     target.hide().siblings('.info_edit').show().parents('li').find('.info_show').show().siblings('.info_hide').hide();
                 }
             }
             else Tip(res.error_text);
         },
         function(){
-            Tip('网络好像不给力呢~ ( >O< ) ~！');
-        }
+            Tip('网络好像不给力呢~ ( >O< ) ~！');}
     );
 }

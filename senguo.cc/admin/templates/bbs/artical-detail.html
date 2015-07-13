@@ -1,13 +1,13 @@
 {% extends 'base.html' %}
 {% block title %}{{article["title"]}}{% end %}
 {% block head %}
-<style>
+<style type="text/css">
     img,section,fieldset{max-width: 100% !important;height: auto !important;}
 </style>
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="{{reverse_url('BbsMain')}}" class="back">返回</a>
+    <a href="javascript:;" class="back goback">返回</a>
     <span>文章详情</span>
 </div>
 {% end %}

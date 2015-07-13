@@ -10,9 +10,8 @@ $(document).ready(function(){
          $(".pop-win").addClass("hide");
     });
     $(".goback").on("click",function(){
-        history.go(-1);
+        history.back();
     });
-    
     if($("#order-success").size()>0){
         if(location.href!=parent.location.href){
             parent.location.href = location.href;
