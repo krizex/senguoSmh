@@ -73,6 +73,7 @@ class Info(AdminBaseHandler):
 		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str')
 	def post(self):
 		id = int(self.args['id'])
+		action = self.args['action']
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
@@ -110,7 +111,6 @@ class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id?','action?:str')
 	def get(self):
-
 		id = self.args.get('id',None)
 		
 		if id:

@@ -8,7 +8,7 @@ $(document).ready(function(){
     $(this).closest(".pop-bwin").addClass("hide");
 }).on("click",".ok-bbtn",function(){
     var action = $(this).attr("data-action");
-    //infoEdit(action);
+    infoEdit(action);
 }).on("click",".edit_item",function(){
     var action = $(this).attr("data-action");
     cur_item = $(this);
@@ -47,76 +47,41 @@ $(document).ready(function(){
     window.location.href="/market/shopinsert";
 }).on("click","#staffer",function(){//编辑配送员信息
     if(parseInt($("#shoper").attr("data-flag"))==1){
-        window.location.href="/market/shopinsert";
+        window.location.href="/market/shopinsert?staff=1";
     }else{
         return Tip("请先编辑店长信息");
     }
 });
 /*保存信息*/
-function saveInfo(){
-    var url = "";
-    var logo = $("#shop_logo").attr("src");
-    var name = $("#shop_name").html();
-    var tel = $("#shop_tel").html();
-    var area = $("shop_area").html();
-    var address = $("shop_address").html();
-    var licence = $("shop_licence").attr("data-url");
-    var shoper = $("#shop_shoper").html();
-    var staff = $("#staffer").html();
-    var remark = $("#shop_remark").html();
-    var data = {
-        shop_logo:logo,
-        shop_name:name,
-        shop_phone:tel,
-        delivery_area:area,
-        shop_address:address,
-        shop_auth:licence,
-        admin_info:shoper,
-        staff_info:staff,
-        description:remark
-    };
-    var args = {
-        action:"",
-        data:data
-    }
-    $.postJson(url,args,function(res){
-        if(res.success){
-
-        }else{
-            Tip(res.error_text);
-        }
-    });
-}
 function infoEdit(action_name){
     var url="";
     var action_name=action_name;
     var data={};
     var action,shop_name,shop_address,shop_phone,shop_area,shop_licence,shop_remark;
     if(action_name=='name'){
-        action='edit_shop_name';
+        action='name';
         shop_name= $.trim($('.shop_text').val());
-        if(shop_name.length>15){return Tip('店铺名称请不要超过15个字符！')}
         data={shop_name:shop_name};
     }else if(action_name=='phone'){
-        action='edit_phone';
+        action='phone';
         shop_phone=$('.shop_text').val();
-        if(shop_phone.length=0){return Tip('"电话不能为空o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }else if(action_name=='area'){
-        action='edit_deliver_area';
+        action='deliver_area';
         shop_area = $('.shop_text').val();
+        data={deliver_area:shop_area};
     }else if(action_name=='address'){
-        action = "edit_shop_logo";
+        action = "shop_address";
         shop_address = $('.shop_text').val();
-        data={};
+        data={shop_address:shop_address};
     }else if(action_name=='licence'){
-        action = "";
+        action = "shop_auth";
         shop_licence = $('.shop_text').val();
-        data={};
+        data={shop_auth:shop_licence};
     }else if(action_name=='remark'){
-        action = "edit_shop_logo";
+        action = "description";
         shop_remark = $('.shop_text').val();
-        data={};
+        data={description:shop_remark};
     }
     var args={
         action:action,

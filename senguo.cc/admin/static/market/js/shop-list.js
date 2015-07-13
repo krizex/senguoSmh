@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2015/7/6.
  */
-var isLoad = true, pn = 1, cur_action="";
+var isLoad = true, pn = 1, cur_action="", ulng= 0, ulat=0;
 $(document).ready(function(){
     loadData("to_do");
 }).on("click",".shop-list li",function(){
@@ -20,7 +20,7 @@ $(document).ready(function(){
         loadData("has_done");
     }
 }).on("click","#cur_address",function(){//刷新列表
-
+    $(window).scrollTop(0);
 });
 /*根据经纬度获取地址*/
 function getAddress(lng,lat){
@@ -36,8 +36,8 @@ function getAddress(lng,lat){
 function initLocation(){
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
-            var ulat = position.coords.latitude;
-            var ulng = position.coords.longitude;//经度
+            ulat = position.coords.latitude;
+            ulng = position.coords.longitude;//经度
             getAddress(ulng,ulat);
         },function(error){
             return Tip("请用手机浏览器，并开启定位功能");
