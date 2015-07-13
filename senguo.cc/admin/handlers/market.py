@@ -114,35 +114,109 @@ class Info(AdminBaseHandler):
 #店长信息
 class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id?')
+	@AdminBaseHandler.check_arguments('id?','action?:str')
 	def get(self):
-		id = self.args.get('id',None)
-		if id:
-			try:
-				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
-			except:
-				return self.send_fail('shop not found')
-			admin_info = shop.admin_info
-			if admin_info:
-				admin_name,admin_phone,wx_nickname = admin_info.split('-')
+		if action == 'bind':
+			if not self.is_wei_browser():
+				return self.send_fail("请在微信中执行此从操作!")
 			else:
-				admin_name = admin_phone = wx_nickname = None
+				wx_bind  =  self.wx_bind()
 		else:
-			return self.send_fail('id error')
-		# return self.send_success()
-		return self.render("market/shop-manager.html")
-	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
-	def post(self):
-		id = self.args.get('id',None)
-		if id:
-			try:
-				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
-			except:
-				return self.send_fail('shop not found')
-			admin_name = self.args['admin_name']
-			admin_phone= self.args['admin_phone']
 
-		return self.render("market/shop-info.html")
+			id = self.args.get('id',None)
+			id = 1
+			
+			if id:
+				try:
+					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
+				except:
+					return self.send_fail('shop not found')
+				admin_info = shop.admin_info
+				if admin_info:
+					admin_name,admin_phone,wx_nickname = admin_info.split('-')
+				else:
+					admin_name = admin_phone = wx_nickname = None
+
+			else:
+				return self.send_fail('id error')
+			# return self.send_success()
+			return self.render("market/shop-manager.html")
+	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','action')
+	def post(self):
+		if action == 'save':
+			id = self.args.get('id',None)
+			id = 1
+			if id:
+				try:
+					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
+				except:
+					return self.send_fail('shop not found')
+				admin_name = self.args['admin_name']
+				admin_phone= self.args['admin_phone']
+				wx_nickname = wx_nickname
+				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_nickname)
+				self.session.commit()
+			return self.render("market/shop-info.html")
+		
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('code?:str','mode?:str')
+	def wx_bind(self):
+		code = self.args.get('code',None)
+		next_url = self.get_argument('next', '')
+		if not code:
+			return self.redirect(self.get_weixin_oauth_link2(next_url = next_url))
+		else:
+			code = self.args['code']
+			mode = self.args['mode']
+			if mode not in ['mp','kf']:
+				return self.send_fail('mode error')
+			wx_userinfo = self.get_wx_userinfo(code,mode)
+			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
+			if user:
+				return True
+			else:
+				print("[微信登录]用户不存在，注册为新用户")
+				if wx_userinfo["headimgurl"] not in [None,'']:
+					headimgurl = wx_userinfo["headimgurl"]
+					headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+				else:
+					headimgurl = None
+					headimgurl_small = None
+				account_info = Accountinfo(
+					wx_unionid=wx_userinfo["unionid"],
+					wx_openid=wx_userinfo["openid"],
+					wx_country=wx_userinfo["country"],
+					wx_province=wx_userinfo["province"],
+					wx_city=wx_userinfo["city"],
+					headimgurl=headimgurl,
+					headimgurl_small = headimgurl_small,
+					nickname=wx_userinfo["nickname"],
+					sex = wx_userinfo["sex"])
+				try:
+					self.session.add(account_info)
+					u = mode.ShopAdmin()
+					u.accountinfo = account_info
+					self.session.commit()
+				except:
+					return False
+				return True
+
+	@tornado.web.authenticated
+	def add_shop(self):
+		pass
+
+			
+
+
+
+
+
+
+
+
+
+
 #店铺录入
 # class Insert(AdminBaseHandler):
 # 	@tornado.web.authenticated
