@@ -36,7 +36,13 @@ handlers = [
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
-	
+
+	#市场推广
+	(r"/market/home", handlers.market.Home, {}, "MarketHome"),
+	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
+	(r"/market/shopinsert", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
+	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
+
 
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
@@ -249,11 +255,6 @@ handlers = [
 	(r"/madmin/shopinfo", handlers.madmin.Info, {}, "MadminInfo"),
 	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
 	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
-	#市场推广
-	(r"/market", handlers.market.Home, {}, "MarketHome"),
-	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
-	(r"/market/shopinsert", handlers.market.Insert, {}, "MarketInsert"),
-	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
 
 	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
 	# 水果圈子
