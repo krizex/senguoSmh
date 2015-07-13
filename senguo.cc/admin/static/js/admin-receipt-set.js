@@ -128,12 +128,14 @@ $(document).ready(function () {
     var $this = $(this);
     var active = $this.attr('data-active');
     receiptImgActive(active);
-}).on('click', '.edit-console-num', function () {
+}).on("click",".edit-console",function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
     $this.attr("data-flag","off");
     var url='';
-    var action="console_num";
+    var action="console_set";
+    var type=parseInt($(".console-type .active").attr("data-id"));
+    var key=$(".key-input").val().trim();
     var num=$(".num-input").val().trim();
     if(!num){
         $this.attr("data-flag","on");
@@ -143,32 +145,6 @@ $(document).ready(function () {
         $this.attr("data-flag","on");
         return Tip("请不要超过20字");
     }
-    var args={
-        action:action,
-        data:{num:num}
-    };
-    $.postJson(url,args,
-        function(res){
-            if(res.success){
-                $this.attr("data-flag","on").hide().siblings(".info-edit").show();
-                $(".console-num").text(num);
-                $this.parents('.set-list-item').find('.address-show').show();
-                $this.parents('.set-list-item').find('.address-edit').hide();
-            }
-            else{
-                $this.attr("data-flag","on");
-                Tip(res.error_text);
-            }
-        },
-        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
-        );
-}).on('click', '.edit-console-key', function () {
-    var $this=$(this);
-    if($this.attr("data-flag")=="off") return false;
-    $this.attr("data-flag","off");
-    var url='';
-    var action="console_key";
-    var key=$(".key-input").val().trim();
     if(!key){
         $this.attr("data-flag","on");
         return Tip("请输入无线打印机终端号");
@@ -179,38 +155,33 @@ $(document).ready(function () {
     }
     var args={
         action:action,
-        data:{key:key}
+        data:{type:type,key:key,num:num}
     };
     $.postJson(url,args,
         function(res){
             if(res.success){
-                $this.attr("data-flag","on").hide().siblings(".info-edit").show();
-                $(".console-key").text(num);
-                $this.parents('.set-list-item').find('.address-show').show();
-                $this.parents('.set-list-item').find('.address-edit').hide();
-            }
-            else{
+                var url;
+                var text;
                 $this.attr("data-flag","on");
-                Tip(res.error_text);
-            }
-        },
-        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
-        );
-}).on("click",".console-type li",function(){
-    var $this=$(this);
-    if($this.attr("data-flag")=="off") return false;
-    $this.attr("data-flag","off");
-    var url='';
-    var action="console_type";
-    var type=parseInt($this.attr("data-id"));
-    var args={
-        action:action,
-        data:{type:type}
-    };
-    $.postJson(url,args,
-        function(res){
-            if(res.success){
-                $this.attr("data-flag","on").addClass("active").siblings("li").removeClass("active");
+                if(type == 0){
+                    url = "/admin/WirelessPrint";
+                    text="易连云";
+                }else if(type==1){
+                    text="飞印";
+                }
+                 var _args={
+                    action:"ylyadd",
+                    data:{key:key,num:num}
+                };
+                $.postJson(url,_args,
+                    function(res){
+                        $(".wireless-type").text(text);
+                        $(".console-num").text(num);
+                        $(".console-key").text(key);
+                        $this.parents('.set-list-item').find('.address-show').show();
+                        $this.parents('.set-list-item').find('.address-edit').hide();
+                    }
+                );
             }
             else{
                 $this.attr("data-flag","on");

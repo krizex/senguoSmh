@@ -38,8 +38,17 @@ $(document).ready(function(){
     if($(".type-choose")){
         var type=parseInt($('.type-choose').attr('data-id'));
         $(".type-choose li").eq(type).addClass('active');
+        if($(".wireless-type")){
+            var text;
+            if(type==0){
+                text="易连云";
+            }else if(type==1){
+                text="飞印";
+            }
+            $(".wireless-type").text(text);
+        }
     }
-}).on(".type-choose li",function(){
+}).on("click",".type-choose li",function(){
     $(this).addClass("active").siblings("li").removeClass("active");
 }).on('click','.cash_active',function(){
     var $this=$(this);
