@@ -20,23 +20,36 @@ class Home(AdminBaseHandler):
 
 		return self.render('market/shop-list.html')
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action')
+	@AdminBaseHandler.check_arguments('action',"page?:int")
 	def post(self):
 		action = self.args['action']
+		page_size = 20
+		nomore = False
+		_shop = self.session.query(models.Spider_Shop)
+		if "page" in self.args:
+			page = int(self.args["page"])
+		else:
+			page = 0
 		if action == 'to_do':
-			shop_list = self.session.query(models.Spider_Shop).filter_by(has_done = 0).all()
+			shop_list = _shop.filter_by(has_done = 0).offset(page*page_size).limit(page_size).all()
+			shop_count = _shop.filter_by(has_done = 0).offset(page*page_size).count()
 		elif action == 'has_done':
-			shop_list = self.session.query(models.Spider_Shop).filter_by(has_done = 1).all()
+			shop_list = _shop.filter_by(has_done = 1).offset(page*page_size).limit(page_size).all()
+			shop_count = _shop.filter_by(has_done = 1).offset(page*page_size).count()
 		else:
 			return self.send_fail("action error")
 		shops  = self.get_shop_data(shop_list)
-		return self.send_success(shops = shops)
+		total_page = int(shop_count/page_size) if shop_count % page_size == 0 else int(shop_count/page_size)+1
+		if total_page <= page:
+			nomore = True
+		return self.send_success(shops = shops,nomore=nomore)
 
 	@classmethod
 	def get_shop_data(self,shop_list):
 		shop_data = []
 		for shop in shop_list:
-			shop_data.append({"id":shop.id,"shop_name":shop.shop_name,"shop_address":shop.shop_address,"curator":shop.curator,"done_time":shop.done_time})
+			shop_data.append({"id":shop.id,"shop_name":shop.shop_name,"shop_address":shop.shop_address\
+				,"curator":shop.curator,"done_time":shop.done_time,"shop_logo":shop.shop_logo})
 		return shop_data
 
 
