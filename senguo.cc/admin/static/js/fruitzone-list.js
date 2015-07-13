@@ -382,7 +382,6 @@ var shopsList=function(page,data,action){
             }else{
                 window.dataObj.finished=true;
             }
-
     }
 };
 window.dataObj.finished=true;

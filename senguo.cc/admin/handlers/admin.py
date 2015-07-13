@@ -3211,9 +3211,6 @@ class MessageManage(AdminBaseHandler):
 			return self.send_success()
 
 
-
-
-
 class printTest(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action?:str')
@@ -3221,12 +3218,8 @@ class printTest(AdminBaseHandler):
 		import hashlib
 		import time
 		import requests
-		import http.client,urllib
-		import urllib.parse
-		import urllib.request
-		from datetime import datetime
-		partner='626' #用户ID
-		apikey='8c61ff8e4d1b6ed9930f6cb21029f67df630f92a' #API密钥
+		partner='1693' #用户ID
+		apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
 		# partner=6 #用户 ID
 		# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
 		machine_code='520' #打印机终端号
@@ -3236,7 +3229,7 @@ class printTest(AdminBaseHandler):
 		mobilephone='15982424080' #打印机内的手机号
 		printname='天府广场店' #打印机名称
 		timenow=str(int(time.time())) #当前时间戳
-		content="@@2            订单信息\r\n"+\
+		content="@@2             订单信息\r\n"+\
 		        "------------------------------------------------\r\n"+\
 		        "订单编号：272000270\r\n"+\
 		        "下单时间：2015-07-10 14:32:42\r\n"+\
@@ -3246,7 +3239,7 @@ class printTest(AdminBaseHandler):
 		        "配送地址：华中科技大学西一区35栋402室\r\n"+\
 		        "买家留言：尽快配送！\r\n"+\
 		        "------------------------------------------------\r\n"+\
-		        "@@2            商品清单\r\n"+\
+		        "@@2             商品清单\r\n"+\
 		        "------------------------------------------------\r\n"+\
 		        "1: 美国进口红提 20.50元/2.00kg * 1\r\n"+\
 		        "2: 精品红富士 4.00元/1.00斤 * 2\r\n"+\
@@ -3257,14 +3250,6 @@ class printTest(AdminBaseHandler):
 		        "欢迎扫描二维码关注～\r\n"+\
 		        "<q>http://senguo.cc/qqtest</q>"
 		        #打印内容
-
-		print("======sign生成参数======")
-		print("apikey      :",apikey)
-		print("machine_code:",machine_code)
-		print("partner     :",partner)
-		print("time        :",timenow)
-		print("mkey:        ",mkey)
-		print("========================")
 
 		if self.args["action"] == "ylyprint":
 			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
@@ -3285,39 +3270,43 @@ class printTest(AdminBaseHandler):
 			sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
 			sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 			data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
-			r=requests.post("http://open.10ss.net:8888",data=data)
+			r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
+
+			print("======返回信息======")
+			print("res url        :",r.url)
+			print("res status_code:",r.status_code)
+			print("res text       :",r.text)
+			print("====================")
+
+		elif self.args["action"] == "fyprint":
+			reqTime = int(time.time()*1000)
+			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
+			API_KEY = '47519b0f'
+			deviceNo = '9602292847397158'
+			mode = 2
+			msgDetail = "  <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+		        		"-------------------------\n"+\
+		        		"订单编号：272000270\n"+\
+		        		"下单时间：2015-07-10 14:32:42\n"+\
+		        		"顾客姓名：森小果\n"+\
+		        		"顾客电话：400-0270-1355\n"+\
+		        		"下单时间：2015-07-10 16:30~17:30\n"+\
+		        		"配送地址：华中科技大学西一区35栋402室\n"+\
+		        		"买家留言：尽快配送！\n"+\
+		        		"-------------------------\n"+\
+		        		"  <Font# Bold=1 Width=2 Height=2>商品详情</Font#>\n"+\
+		        		"-------------------------\n"+\
+		        		"1: 美国进口红提 20.50元/2.00kg * 1\n"+\
+		        		"2: 精品红富士 4.00元/1.00斤 * 2\n"+\
+		        		"\n"+\
+		        		"总价：28.05元\n"+\
+		        		"支付方式：货到付款\n"+\
+		        		"-------------------------\n"
+		        		#打印内容
+			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
+			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
+			data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
+			r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
 			print(r.url)
 			print(r.status_code)
 			print(r.text)
-
-		elif self.args["action"] == "fyprint":
-			reqTime = int(1000*time.time())
-			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
-			deviceNo = '9602292847397158'
-			mode = 2
-			FEYIN_KEY = '47519b0f'
-			FEYIN_HOST = 'my.feyin.net'
-			FEYIN_PORT = 80
-			FEYIN_KEEP_ALIVE = False
-			#定义消息的详细数据，注意，凡是有中文的地方，需要转成utf8编码
-			msgInfo = {
-				'memberCode':MEMBER_CODE,
-				'msgDetail': u'\n “飞印是短消息云打印服务，通过移动网络把您需要的网络信息发送打印到世界的任何角落。” \n \n "Feyin is a short message cloud printing solution that enables remote printing of Internet info to anywhere in the world." \n'.encode('utf-8'),
-				'deviceNo':'9602292847397158',
-			}
-			md5 = hashlib.md5()
-			content = '%s%s%s%s%s'%(msgInfo['memberCode'],msgInfo['msgDetail'],msgInfo['deviceNo'],reqTime,FEYIN_KEY)
-			md5.update(content.encode("utf-8"))
-			msgInfo['reqTime'] = reqTime
-			msgInfo['securityCode'] = md5.hexdigest()
-			msgInfo['mode'] = 1
-			sendContent = urllib.parse.urlencode(msgInfo)
-			print("sendContent:",sendContent)
-			headers = {"Content-Type":"application/x-www-form-urlencoded"}
-			if FEYIN_KEEP_ALIVE:
-				headers["Connection"] = "Keep-Alive"
-			conn = http.client.HTTPConnection(FEYIN_HOST,FEYIN_PORT)
-			conn.request(method="POST",url="/api/sendMsg",body=sendContent,headers=headers)
-			response = conn.getresponse()
-			print(response.read())
-
