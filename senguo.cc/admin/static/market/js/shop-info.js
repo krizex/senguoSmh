@@ -145,3 +145,54 @@ function infoEdit(action_name){
         }
     });
 }
+$(document).ready(function(){
+    var uploader = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'add-licence',
+        container: 'add-licence-box',
+        max_file_size: '4mb',
+        filters : {
+            max_file_size : '4mb',//限制图片大小
+            mime_types: [
+                {title : "image type", extensions : "jpg,jpeg,png"}
+            ]
+        },
+        flash_swf_url: 'static/js/plupload/Moxie.swf',
+        dragdrop: false,
+        chunk_size: '4mb',
+        domain: "http://shopimg.qiniudn.com/",
+        uptoken: $("#token").val(),
+        unique_names: false,
+        save_key: false,
+        auto_start: true,
+        init: {
+            'FilesAdded': function (up, files) {
+                var file = files[0];
+            },
+            'UploadProgress': function (up, file) {
+            },
+            'FileUploaded': function (up, file, info) {
+                $("#add-licence").attr("url","http://shopimg.qiniudn.com/"+file.id);
+            },
+            'Error': function (up, err, errTip) {
+                if (err.code == -600) {
+                    Tip("上传图片大小请不要超过4M");
+                } else if (err.code == -601) {
+                    Tip("上传图片格式只能为png、jpg图片");
+                } else if (err.code == -200) {
+                    Tip("当前页面过期，请刷新页面后再上传");
+                } else {
+                    Tip(err.code + ": " + err.message);
+                }
+                up.removeFile(err.file.id);
+            },
+            'Key': function (up, file) {
+                var key = file.id;
+                return key;
+            }
+        }
+    });
+    setTimeout(function(){
+        $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
+    },500);
+});

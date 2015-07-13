@@ -10,12 +10,13 @@
 </div>
 {% end %}
 {% block content %}
+<input type="hidden" id="token"/>
 <div class="wrap-shop-info pb45">
     <ul class="data-list mt15">
         <li class="logo-li" id="shop_img_box">
             <a href="javascript:;">
                 <span class="fr"><span class="img-border"><img id="shop_logo" src="/static/images/TDSG.png" alt="店铺logo"/></span></span>
-                <span class="text-left">店铺logo</span>
+                <span class="text-left ">店铺logo</span>
             </a>
         </li>
         <li>
@@ -45,8 +46,8 @@
     </ul>
     <p class="c666 mt10 txt-center">信息录入</p>
     <ul class="data-list mt10">
-        <li>
-            <a href="javascript:;" class="" data-action="licence">
+        <li id="add-licence-box">
+            <a href="javascript:;" class="" id="add-licence" data-action="licence">
                 <span class="fr c333 shop_status more">未录入</span>
                 <span class="text-left">营业执照</span>
             </a>
@@ -90,5 +91,8 @@
 </div>
 {% end %}
 {% block bottom %}
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
 <script src="{{static_url('market/js/shop-info.js')}}"></script>
 {% end %}
