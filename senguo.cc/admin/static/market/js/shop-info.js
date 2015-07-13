@@ -41,8 +41,22 @@ $(document).ready(function(){
     }else{
         $(".shop_text").focus();
     }
-});
+}).on("click","#save_info",function(){//保存信息
 
+});
+/*保存信息*/
+function saveInfo(){
+    var url = "";
+    var logo = $("#shop_logo").attr("src");
+    var name = $("#shop_name").html();
+    var tel = $("#shop_tel").html();
+    var area = $("shop_area").html();
+    var address = $("shop_address").html();
+    var licence = $("shop_licence").attr("data-url");
+    var shoper = $("#shop_shoper").html();
+    var staff = $("#shop_staff").html();
+    var remark = $("#shop")
+}
 function infoEdit(action_name){
     var url="/admin/config/shop";
     var action_name=action_name;
