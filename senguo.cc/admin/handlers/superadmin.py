@@ -257,7 +257,6 @@ class ShopManage(SuperBaseHandler):
 			pass
 		##
 
-
 		#add 6.6pm by jyj,search_count:
 		search_count = len(shops)
 		##
@@ -389,7 +388,6 @@ class ShopManage(SuperBaseHandler):
 				print("###########")
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
 
-
 		else:
 			return self.send_error(404)
 
@@ -421,7 +419,6 @@ class ShopManage(SuperBaseHandler):
 		shop.status = 0
 		self.session.commit()
 		return self.send_success()
-
 
 	@SuperBaseHandler.check_arguments("shop_id:int", "new_status:int", "declined_reason?")
 	def handle_updateStatus(self):
@@ -1202,7 +1199,6 @@ class CommentInfo(SuperBaseHandler):
 
 		order_list_data = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
 
-
 		if action == 'all':
 			order_list = order_list_data.offset(page*page_size).limit(page_size).all()
 			for order in order_list:
@@ -1556,7 +1552,6 @@ class Balance(SuperBaseHandler):
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
 			total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
 
-
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','page:int')
 	def post(self):
@@ -1773,8 +1768,6 @@ class ApplyCash(SuperBaseHandler):
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success(history = history)
-
-
 
 #add by jyj 2015-6-17
 class CheckCash(SuperBaseHandler):
