@@ -24,6 +24,8 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
+import chardet
+
 
 # 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
@@ -471,7 +473,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = ""
 		print('login in get_weixin_oauth_link2',self,next_url)
 
-
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
 			else: para_str = "?"
@@ -704,7 +705,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		customer_id = order.customer_id
 		admin_id    = order.shop.admin.id
 		if order.shop.admin.has_mp:
-			mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
+			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
 			if mp_customer:
 				touser = mp_customer.wx_openid
 			else:
@@ -751,7 +752,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			other_name = info.nickname
 			other_customer_id = info.id
 			if order.shop.admin.has_mp:
-				mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id = other_customer_id).first()
+				mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id = other_customer_id).first()
 				if mp_customer:
 					other_touser = mp_customer.wx_openid
 				else:
@@ -902,7 +903,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.each_point = 2
 				session.add(point_history)
 
-
 			# 订单完成后，将相应店铺可提现 余额相应增加
 			order.shop.available_balance += totalprice
 			# print(order.shop.available_balance,'order.shop.available_balance')
@@ -912,13 +912,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				available_balance=order.shop.available_balance,balance_type = 6)
 			session.add(balance_history)
 
-		if order.pay_type == 3:
+		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
 				available_balance=order.shop.available_balance,balance_type = 7)
 			session.add(balance_history)
-
 
 		#增 与订单总额相等的积分
 		if shop_follow.shop_point == None:
@@ -1459,7 +1458,6 @@ class WxOauth2:
 		else:
 			return data['openid']
 
-
 	@classmethod
 	def get_jsapi_ticket(cls):
 		global jsapi_ticket
@@ -1521,9 +1519,6 @@ class WxOauth2:
 
 	@classmethod
 	def post_template_msg(cls, touser, shop_name, name, phone):
-		#print('####################')
-		#print(cls)
-		#print(touser)
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
@@ -1540,7 +1535,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]店铺审核消息发送失败：", data)
 			return False
@@ -1564,7 +1559,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模板消息]店铺审核消息发送失败：", data)
 			return False
@@ -1572,9 +1567,6 @@ class WxOauth2:
 
 	@classmethod
 	def post_add_msg(cls, touser, shop_name, name):
-		#print('####################')
-		#print(cls)
-		#print(touser)
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
@@ -1590,7 +1582,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]添加店铺管理员消息发送失败：", data)
 			return False
@@ -1623,9 +1615,8 @@ class WxOauth2:
 				"remark":{"value":remark,"color":"#173177"},
 			}
 		}
-
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]管理员订单消息发送失败：",data)
 			return False
@@ -1659,9 +1650,6 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		#import chardet
-		#bianma= chardet.detect(res.content)["encoding"]
-		#print(bianma)
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]配送员订单消息发送失败：",data)
@@ -1687,7 +1675,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]配送员批量订单消息发送失败：",data)
 			return False
@@ -1713,7 +1701,7 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
@@ -1738,7 +1726,7 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]订单完成消息发送失败：",data)
 			return False
@@ -1761,7 +1749,7 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data['errcode'] != 0:
 			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
@@ -1793,7 +1781,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]店铺认证消息发送失败：",data)
 			return False
@@ -1807,9 +1795,9 @@ class WxOauth2:
 		user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
 		res = requests.get(user_subcribe_url,headers = {"connection":"close"})
 		if type(res.content)== bytes:
-			s = str(res.content,'utf-8')
+			s = str(res.content,'ascii')
 		else:
-			s = res.content.decode('utf-8')
+			s = res.content.decode('ascii')
 		data = json.loads(s)
 		json_data = json.dumps(data)
 		#print(data)

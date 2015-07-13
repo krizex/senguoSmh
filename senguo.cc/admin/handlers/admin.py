@@ -2247,7 +2247,7 @@ class Config(AdminBaseHandler):
 		elif action in ("edit_notice_active", "edit_notice"):  # notice_id
 			notice = next((x for x in self.current_shop.config.notices if x.id == int(data["notice_id"])), None)
 			if not notice:
-				return self.send_error(404)
+				return self.send_error('没有该公告的任何消息')
 			if action == "edit_notice_active":
 				notice.active = 1 if notice.active == 2 else 2
 			elif action == "edit_notice":
@@ -2316,16 +2316,16 @@ class Config(AdminBaseHandler):
 			data = []
 			info  = self.session.query(models.Accountinfo).filter_by(id = _id).first()
 			if not info:
-				return self.send_fail('该用户不存在')
-			customer = self.session.query(models.Customer).filter_by(id = info.id).first()
-			if not customer:
-				return self.send_fail('该用户还没有关注您的店铺')
-			customer_shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id= customer.id,shop_id=self.current_shop.id).first()
-			if not customer_shop_follow:
-				return self.send_fail('该用户还没有关注您的店铺')
-			if info and customer and customer_shop_follow:
-				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
-				return self.send_success(data=data)
+				return self.send_fail('该用户还不是森果的用户，无法添加其为管理员')
+			# customer = self.session.query(models.Customer).filter_by(id = info.id).first()
+			# if not customer:
+			# 	return self.send_fail('该用户还没有关注您的店铺')
+			# customer_shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id= customer.id,shop_id=self.current_shop.id).first()
+			# if not customer_shop_follow:
+			# 	return self.send_fail('该用户还没有关注您的店铺')
+			# if info and customer and customer_shop_follow:
+			data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
+			return self.send_success(data=data)
 		elif action =="add_admin":
 			if self.current_shop.shop_auth ==0:
 				return self.send_fail('您的店铺还未认证，不能使用该功能')
@@ -2407,6 +2407,24 @@ class Config(AdminBaseHandler):
 			self.current_shop.shop_tpl=tpl_id
 			self.session.commit()
 			return self.send_success()
+		elif action=="receipt_type_set":
+			self.current_shop.config.receipt_type = 0 if self.current_shop.config.receipt_type == 1 else 1
+			self.session.commit()
+		elif action=="auto_print_set":
+			self.current_shop.config.auto_print = 0 if self.current_shop.config.auto_print == 1 else 1
+			self.session.commit()
+		elif action=="console_set":
+			_type = int(self.args["data"]["type"])
+			num = self.args["data"]["num"]
+			key = self.args["data"]["key"]
+			if len(num) > 20:
+				return self.send_fail("console num is too long")
+			if len(key) > 20:
+				return self.send_fail("console key is too long")
+			self.current_shop.config.wireless_print_num = num
+			self.current_shop.config.wireless_print_key = key
+			self.current_shop.config.wireless_type = _type
+			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -2419,7 +2437,11 @@ class AdminAuth(AdminBaseHandler):
 	def get(self):
 		next_url = self.get_argument('next', '')
 		if self._action == 'wxauth':
-			return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
+			if self.is_pc_browser():
+				link = self.get_wexin_oauth_link2(next_url=next_url)
+				return self.render("admin/wx-auth.html",link=link)
+			else:
+				return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
 		elif self._action == 'wxcheck':
 			return self.check_admin(next_url)
 
@@ -3111,7 +3133,6 @@ class Marketing(AdminBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
-
 # 营销和玩法 - 告白墙管理
 class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -3211,113 +3232,109 @@ class MessageManage(AdminBaseHandler):
 			return self.send_success()
 
 
-
-
-
-class printTest(AdminBaseHandler):
+class WirelessPrint(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action?:str')
-	def get(self):
+	@AdminBaseHandler.check_arguments('action?:str',"data?")
+	def post(self):
 		import hashlib
 		import time
 		import requests
-		import http.client,urllib
-		import urllib.parse
-		import urllib.request
-		from datetime import datetime
-		partner='626' #用户ID
-		apikey='8c61ff8e4d1b6ed9930f6cb21029f67df630f92a' #API密钥
-		# partner=6 #用户 ID
-		# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
-		machine_code='520' #打印机终端号
-		mkey='110110' #打印机密钥
-		msign='110110'
-		username='senguo' #用户名
-		mobilephone='15982424080' #打印机内的手机号
-		printname='天府广场店' #打印机名称
-		timenow=str(int(time.time())) #当前时间戳
-		content="@@2            订单信息\r\n"+\
-		        "------------------------------------------------\r\n"+\
-		        "订单编号：272000270\r\n"+\
-		        "下单时间：2015-07-10 14:32:42\r\n"+\
-		        "顾客姓名：森小果\r\n"+\
-		        "顾客电话：400-0270-1355\r\n"+\
-		        "下单时间：2015-07-10 16:30~17:30\r\n"+\
-		        "配送地址：华中科技大学西一区35栋402室\r\n"+\
-		        "买家留言：尽快配送！\r\n"+\
-		        "------------------------------------------------\r\n"+\
-		        "@@2            商品清单\r\n"+\
-		        "------------------------------------------------\r\n"+\
-		        "1: 美国进口红提 20.50元/2.00kg * 1\r\n"+\
-		        "2: 精品红富士 4.00元/1.00斤 * 2\r\n"+\
-		        "\r\n"+\
-		        "总价：28.05元\r\n"+\
-		        "支付方式：货到付款\r\n"+\
-		        "------------------------------------------------\r\n"+\
-		        "欢迎扫描二维码关注～\r\n"+\
-		        "<q>http://senguo.cc/qqtest</q>"
-		        #打印内容
+		if self.args["action"] in ["ylyprint","ylyadd"]:
+			partner='1693' #用户ID
+			apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
+			# partner=6 #用户 ID
+			# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
+			username='senguo' #用户名
+			mobilephone='15982424080' #打印机内的手机号
+			printname='senguo' #打印机名称
+			timenow=str(int(time.time())) #当前时间戳
+			content="@@2             订单信息\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"订单编号：272000270\r\n"+\
+					"下单时间：2015-07-10 14:32:42\r\n"+\
+					"顾客姓名：森小果\r\n"+\
+					"顾客电话：400-0270-1355\r\n"+\
+					"下单时间：2015-07-10 16:30~17:30\r\n"+\
+					"配送地址：华中科技大学西一区35栋402室\r\n"+\
+					"买家留言：尽快配送！\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"@@2             商品清单\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"1: 美国进口红提 20.50元/2.00kg * 1\r\n"+\
+					"2: 精品红富士 4.00元/1.00斤 * 2\r\n"+\
+					"\r\n"+\
+					"总价：28.05元\r\n"+\
+					"支付方式：货到付款\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"欢迎扫描二维码关注～\r\n"+\
+					"<q>http://senguo.cc/qqtest</q>"
+					#打印内容
 
-		print("======sign生成参数======")
-		print("apikey      :",apikey)
-		print("machine_code:",machine_code)
-		print("partner     :",partner)
-		print("time        :",timenow)
-		print("mkey:        ",mkey)
-		print("========================")
+			if self.args["action"] == "ylyprint":
+				machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
+				mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
+				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
+				print("sign str    :",sign)
+				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+				print("sign str md5:",sign)
+				data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
+				print("post        :",data)
+				r=requests.post("http://open.10ss.net:8888",data=data)
 
-		if self.args["action"] == "ylyprint":
-			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
-			print("sign str    :",sign)
-			sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
-			print("sign str md5:",sign)
-			data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
-			print("post        :",data)
-			r=requests.post("http://open.10ss.net:8888",data=data)
+				print("======返回信息======")
+				print("res url        :",r.url)
+				print("res status_code:",r.status_code)
+				print("res text       :",r.text)
+				print("====================")
 
-			print("======返回信息======")
-			print("res url        :",r.url)
-			print("res status_code:",r.status_code)
-			print("res text       :",r.text)
-			print("====================")
+			elif self.args["action"] == "ylyadd":
+				print(self.args)
+				machine_code = self.args["data"]["num"] #打印机终端号
+				msign = self.args["data"]["key"]#打印机密钥
+				sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
+				sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
+				data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
+				r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
 
-		elif self.args["action"] == "ylyadd":
-			sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
-			sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
-			data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
-			r=requests.post("http://open.10ss.net:8888",data=data)
+				print("======返回信息======")
+				print("res url        :",r.url)
+				print("res status_code:",r.status_code)
+				print("res text       :",r.text)
+				print("====================")
+				if int(r.text)==1:
+					return self.send_success()
+				elif int(r.text)==2:
+					return self.send_fail("重复添加")
+
+		elif self.args["action"] == "fyprint":
+			reqTime = int(time.time()*1000)
+			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
+			API_KEY = '47519b0f'
+			deviceNo = '9602292847397158'
+			mode = 2
+			msgDetail = "  <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+						"-------------------------\n"+\
+						"订单编号：272000270\n"+\
+						"下单时间：2015-07-10 14:32:42\n"+\
+						"顾客姓名：森小果\n"+\
+						"顾客电话：400-0270-1355\n"+\
+						"下单时间：2015-07-10 16:30~17:30\n"+\
+						"配送地址：华中科技大学西一区35栋402室\n"+\
+						"买家留言：尽快配送！\n"+\
+						"-------------------------\n"+\
+						"  <Font# Bold=1 Width=2 Height=2>商品详情</Font#>\n"+\
+						"-------------------------\n"+\
+						"1: 美国进口红提 20.50元/2.00kg * 1\n"+\
+						"2: 精品红富士 4.00元/1.00斤 * 2\n"+\
+						"\n"+\
+						"总价：28.05元\n"+\
+						"支付方式：货到付款\n"+\
+						"-------------------------\n"
+						#打印内容
+			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
+			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
+			data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
+			r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
 			print(r.url)
 			print(r.status_code)
 			print(r.text)
-
-		elif self.args["action"] == "fyprint":
-			reqTime = int(1000*time.time())
-			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
-			deviceNo = '9602292847397158'
-			mode = 2
-			FEYIN_KEY = '47519b0f'
-			FEYIN_HOST = 'my.feyin.net'
-			FEYIN_PORT = 80
-			FEYIN_KEEP_ALIVE = False
-			#定义消息的详细数据，注意，凡是有中文的地方，需要转成utf8编码
-			msgInfo = {
-				'memberCode':MEMBER_CODE,
-				'msgDetail': u'\n “飞印是短消息云打印服务，通过移动网络把您需要的网络信息发送打印到世界的任何角落。” \n \n "Feyin is a short message cloud printing solution that enables remote printing of Internet info to anywhere in the world." \n'.encode('utf-8'),
-				'deviceNo':'9602292847397158',
-			}
-			md5 = hashlib.md5()
-			content = '%s%s%s%s%s'%(msgInfo['memberCode'],msgInfo['msgDetail'],msgInfo['deviceNo'],reqTime,FEYIN_KEY)
-			md5.update(content.encode("utf-8"))
-			msgInfo['reqTime'] = reqTime
-			msgInfo['securityCode'] = md5.hexdigest()
-			msgInfo['mode'] = 1
-			sendContent = urllib.parse.urlencode(msgInfo)
-			print("sendContent:",sendContent)
-			headers = {"Content-Type":"application/x-www-form-urlencoded"}
-			if FEYIN_KEEP_ALIVE:
-				headers["Connection"] = "Keep-Alive"
-			conn = http.client.HTTPConnection(FEYIN_HOST,FEYIN_PORT)
-			conn.request(method="POST",url="/api/sendMsg",body=sendContent,headers=headers)
-			response = conn.getresponse()
-			print(response.read())
-

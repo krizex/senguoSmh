@@ -159,6 +159,14 @@
 .tpl-list .view-box img{width:100%;}
 .tpl-list .choose-btn{display:inline-block;width:20px;height:20px;border:1px solid #ddd;background:#fff;border-radius:50%;}
 .tpl-list .choose-btn.active{background:#44b549}
+
+.type-list{border:1px solid #eee;clear:both;}
+.type-list>li{border-bottom:1px solid #eee;clear:both;padding:10px;height:50px;}
+.type-list>li:last-child{border-bottom:none;}
+.type-list>li>img{width:100%;}
+.type-list .circle-btn{display:inline-block;width:20px;height:20px;border:1px solid #ddd;background:#fff;border-radius:50%;}
+.type-list .circle-btn.active{background:#44b549}
+
 .mr10{margin-right:10px;}
 .mr20{margin-right:20px;}
 
@@ -173,3 +181,8 @@
 .wx-edit-box li{padding:10px;}
 .wx-edit-box li input{border:1px solid #ddd;width:450px;overflow:hidden;text-overflow:ellipsis;height:30px;text-indent:10px;}
 
+.wireless-receipt{background:#fff !important;}
+.type-choose li{float:left;line-height:18px;margin-right:20px;}
+.type-choose .active .circle{background:#44b549;}
+.type-choose .circle{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid #ddd;margin-right:5px;float:left;}
+.iti{width:600px;float:left;margin-bottom:10px;}

@@ -4,16 +4,28 @@
 {% block setcontent %}
 <div class="set-description">
     <a href="http://senguo.cc/bbs/detail/8" target="_blank" class="pull-right">查看详细打印机教程</a>
-    <p>修改小票附加信息</p>
+    <p>小票打印设置</p>
 </div>
-<table class="set-list table table-bordered">
+<!-- <ul class="type-list font14 mt20" data-id="{{current_shop.config.receipt_type}}">
+    <li>
+        <a href="javascript:;" class="pull-left circle-btn mr10" data-id="0"></a>
+        <span class="pull-left mr20">有线打印</span>
+        <span class="pull-left text-grey2">除订单信息外还可上传图片进行打印。</span>
+    </li>
+    <li>
+        <a href="javascript:;" class="pull-left circle-btn mr10"  data-id="1"></a>
+        <span class="pull-left mr20">无线打印</span>
+        <span class="pull-left text-grey2">不可上传图片，可开启订单自动打印，支持易连云、飞印两种品牌的无线打印机。</span>
+    </li>
+</ul> -->
+<table class="set-list table table-bordered _box line-receipt">
     <tr class="bg-grey2">
         <td colspan="2">小票附加图片</td>
         <td colspan="2">小票附加消息</td>
     </tr>
     <tr class="set-list-item">
         <td>
-            <div class="mode action-mode" data-active="{{current_shop.config.receipt_img_active}}">
+            <div class="mode action-mode img-set" data-active="{{current_shop.config.receipt_img_active}}">
                 <a class="work-mode hidden" href="javascript:;">已启用</a>
                 <a class="stop-mode hidden" href="javascript:;">未启用</a>
             </div>
@@ -38,6 +50,57 @@
         </td>
     </tr>
 </table>
+<!-- <ul class="info-set-list mt20 font14 edit-box p0 wireless-receipt hidden _box">
+    <li class="item clearfix set-list-item">
+        <span class="w1 pull-left set-inl-blo">小票附加信息</span>
+        <div class="w2 pull-left">
+            <span class="address-show receipt-msg-con">{{receipt_msg or '无'}}</span>
+            <input class="address-edit receipt-msg"  type="text" value="{{receipt_msg or '无'}}" style="display:none"/>
+        </div>
+        <div class="pull-right">
+            <a class="info-edit address-show" href="javascript:;">修改</a>
+            <a class="info-sure address-edit edit-receipt-notice" href="javascript:;" data-id="name" style="display:none">确定</a>
+        </div>
+    </li>
+     <li class="item clearfix set-list-item">
+        <div class="pull-right">
+            <a class="info-edit address-show" href="javascript:;">修改</a>
+            <a class="info-sure address-edit edit-console" href="javascript:;" data-id="name" style="display:none">确定</a>
+        </div>
+        <div class="pull-left">
+             <div class="iti">
+                <span class="w1 pull-left set-inl-blo mr20">无线打印机品牌</span>
+                <span class="address-show wireless-type"></span>
+                <ul class="type-choose console-type address-edit" data-id="{{current_shop.config.wireless_type}}" style="display:none">
+                    <li data-id="0"><span class="circle"></span>易连云</li>
+                    <li data-id="1"><span class="circle"></span>飞印</li>
+                </ul>
+            </div>
+            <div class="iti">
+                <span class="w1 pull-left set-inl-blo mr20">无线打印机终端号</span>
+                <div class="w2 pull-left">
+                    <span class="address-show console-num">{{current_shop.config.wireless_print_num or '请设置'}}</span>
+                    <input class="address-edit num-input"  type="text" value="{{current_shop.config.wireless_print_num or '请设置'}}" style="display:none"/>
+                </div>
+            </div>
+            <div class="iti">
+                 <span class="w1 pull-left set-inl-blo mr20">无线打印机密钥</span>
+                 <div class="w2 pull-left">
+                    <span class="address-show console-key">{{current_shop.config.wireless_print_key or '请设置'}}</span>
+                    <input class="address-edit key-input"  type="text" value="{{current_shop.config.wireless_print_key or '请设置'}}" style="display:none"/>
+                </div>
+            </div>
+       </div>
+    </li>
+    <li class="item clearfix">
+        <span class="w1 pull-left set-inl-blo">订单自动打印</span>
+        <div class="mode action-mode auto-set pull-right" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.auto_print}}">
+            <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+            <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+        </div>
+    </li>
+</ul>
+ -->
 <!--<a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建小票内容</a>-->
 </div>
 {% end %}

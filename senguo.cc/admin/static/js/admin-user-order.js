@@ -14,7 +14,12 @@ $(document).ready(function(){
         $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
 }).on('click','.print-order',function(){
-    orderPrint($(this),'print'); //订单打印
+    var type=parseInt($("#receipt-type").val());
+    if(type==0){
+        orderPrint($(this),'print'); //有线打印
+    }else{
+        orderPrint($(this),'wirelessPrint');
+    }
 }).on('click','.delete-order',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
@@ -90,7 +95,12 @@ $(document).ready(function(){
 //    orderEdit($this,'batch_edit_status',5); 
 //    }
 }).on('click','#batch-print',function(){
-    orderPrint($(this),'batch_print'); //订单打印
+    var type=parseInt($("#receipt-type").val());
+    if(type==0){
+        orderPrint($(this),'batch_print'); //有线打印
+    }else{
+        orderPrint($(this),'batch_wirelessPrint');
+    } 
 }).on('click','.subnav li',function(){
     var $this=$(this);
     $this.addClass('active').siblings('li').removeClass('active');
@@ -472,6 +482,15 @@ function orderPrint(target,action){
             return Tip('您还未选择任何订单');
         }
         data.order_list_id=list;
+    }
+    else if(action=="wirelessPrint"){
+         var console_type=parseInt($("#console-type").val());
+         if(console_type==0){
+           $.ajax({"url":"/admin/WirelessPrint?action=ylyprint&data=123","type":"get","success":function(){
+                return Tip("233333")
+            }}) 
+         }
+        
     }
         //var OpenWindow = window.open("","","width=500,height=600");
         //OpenWindow.document.body.style.margin = "0";

@@ -54,10 +54,8 @@ class Access(CustomerBaseHandler):
 		elif self._action == 'qqoauth':
 			print('login qqoauth')
 			self.handle_qq_oauth(next_url)
-
 		else:
 			return self.send_error(404)
-
 
 	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
@@ -85,7 +83,6 @@ class Access(CustomerBaseHandler):
 		u = models.Customer.register_with_qq(self.session,userinfo)
 		self.set_current_user(u,domain = ROOT_HOST_NAME)
 		return self.redirect(next_url)
-
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
@@ -653,7 +650,6 @@ class ShopProfile(CustomerBaseHandler):
 			#     self.session.add(point)
 			#     self.session.commit()
 
-
 			signin = self.session.query(models.ShopSignIn).filter_by(
 				customer_id=self.current_user.id, shop_id=shop_id).first()
 
@@ -918,8 +914,6 @@ class Market(CustomerBaseHandler):
 			pass
 		print('success??????????????????????????????????')
 
-
-
 		# self.current_shop = shop
 		# print(self,self.current_shop)
 		shop_name = shop.shop_name
@@ -1036,9 +1030,7 @@ class Market(CustomerBaseHandler):
 						group_list.append({'id':_group.id,'name':_group.name})
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
-						   	w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
-
-
+							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1220,7 +1212,6 @@ class Market(CustomerBaseHandler):
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
-
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
@@ -1415,10 +1406,9 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('该店铺正在筹备中，暂不能下单(っ´▽`)っ')
 		elif shop_status == 3:
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
-
 		if not fruits:
 			return self.send_fail('请至少选择一种商品')
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"框",11:"包",12:""}
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
 		if len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种物品")
 		f_d={}
@@ -1434,7 +1424,7 @@ class Cart(CustomerBaseHandler):
 					continue
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 
-				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num
+				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -1449,25 +1439,27 @@ class Cart(CustomerBaseHandler):
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
 						return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
-					if limit_if:
-						time_now = datetime.datetime.now().strftime('%Y-%m-%d')
-						create_time = limit_if.create_time.strftime('%Y-%m-%d')
-						if time_now == create_time:
-							buy_num = limit_if.buy_num+buy_num
-							if limit_if.limit_num == limit_num:
-								allow_num = limit_if.limit_num-buy_num
-							else:
-								allow_num = limit_num-buy_num
-								if allow_num <=0:
-									return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+					else:  #购买数量未超过限购数量
+						if limit_if:  #有限购记录
+							time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+							create_time = limit_if.create_time.strftime('%Y-%m-%d')
+							if time_now == create_time:  #有今天的限购记录，表示今天已经购买，故禁止再次购买
+								return self.send_fail('今天已经购买过该限购商品')
+								# buy_num = limit_if.buy_num+buy_num
+								# if limit_if.limit_num == limit_num:
+								# 	allow_num = limit_if.limit_num-buy_num
+								# else:
+								# 	allow_num = limit_num-buy_num
+								# 	if allow_num <=0:
+								# 		return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+								# goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+								# self.session.add(goods_limit)
+							else:     #没有今天的限购记录，表示今天可以购买，并产生一条限购记录
+								goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
+								self.session.add(goods_limit)
+						else:    #之前没有限购记录
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
-						else:
-							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
-							self.session.add(goods_limit)
-					else:
-						goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
-						self.session.add(goods_limit)
 					self.session.commit()
 
 				charge_type.fruit.storage -= num  # 更新库存
@@ -1990,7 +1982,6 @@ class Order(CustomerBaseHandler):
 					shop_follow = None
 					self.send_fail("shop_point error")
 
-
 				if shop_follow:
 					if shop_follow.shop_point:
 						shop_follow.shop_point += 2
@@ -2476,13 +2467,30 @@ class wxChargeCallBack(CustomerBaseHandler):
 class InsertData(CustomerBaseHandler):
 	# @tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")
-	@tornado.web.asynchronous
+	# @tornado.web.asynchronous
 	def get(self):
 		# import gevent
-		import requests
+		# import requests
 		import json
-		import multiprocessing
-		from multiprocessing import Process
+		shop_list , good_list = self.get_data()
+		# print(shop_list)
+		for shop in shop_list:
+			temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
+				shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
+				delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
+				delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'])
+			self.session.add(temp_shop)
+		self.session.commit()
+
+		for good in good_list:
+			temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
+				sales = good['sales'],goods_name = good['goods_name'])
+			self.session.add(temp_good)
+		self.session.commit()
+
+		return self.send_success()
+		# import multiprocessing
+		# from multiprocessing import Process
 		# import datetime
 		# from sqlalchemy import create_engine, func, ForeignKey, Column
 		# session = self.session
@@ -2506,6 +2514,51 @@ class InsertData(CustomerBaseHandler):
 		# 	# shop_auth_fail_msg('13163263783','woody','woody')
 		# 	self.render('customer/storage-change.html')
 		# gevent.spawn(async_task)
+
+	def get_data(self):
+
+		shop_list = []
+		good_list = []
+		import os
+		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
+		c = f.read()
+		s = eval(c)
+		print(type(s))
+		i = 0
+		for key in s:
+				temp = s.get(key,None)
+				if temp:
+						shop = {}
+						shop['shop_id']            = i
+						shop['shop_address']       = temp.get('shop_address',None)
+						shop['shop_logo']          = temp.get('shop_logo',None)
+						shop['delivery_freight']   = temp.get('delivery_freight',None)
+						shop['shop_link']          = temp.get('shop_link',None)
+						shop['delivery_time']      = temp.get('delivery_time',None)
+						shop['shop_phone']         = temp.get('shop',None)
+						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
+						shop['delivery_area']      = temp.get('delivery_area',None)
+						shop['shop_name']          = temp.get('shop_name',None)
+						shop['shop_notice']        = temp.get('shop_notice',None)
+						shop_list.append(shop)
+						temp_goods                 = temp.get('goods_list',None)
+						for temp_good in temp_goods:
+								good = {}
+								good['goods_price']  = temp_good.get('goods_price',None)
+								good['good_img_url'] = temp_good.get('good_img_url',None)
+								good['shop_id']      = i
+								good['sales']       = temp_good.get('sales',None)
+								good['goods_name']  = temp_good.get('goods_name',None)
+								good_list.append(good)
+				i += 1
+		print(shop_list)
+		print(i)
+		return shop_list,good_list
+
+
+
+
+
 
 
 # 支付超时判断

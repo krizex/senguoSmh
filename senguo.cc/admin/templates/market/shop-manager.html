@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title %}店铺信息{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header head_tab">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>店长信息</span>
+    <a href="javascript:;" class="head-right" id="save_manager">保存</a>
+</div>
+{% end %}
+{% block content %}
+<input type="hidden" id="link" value="http://senguo.cc"/>
+<div class="wrap-shop-info pb45">
+    <div class="wrap-code2 mt15">
+        <img class="code2-logo" src="/static/images/admin_logo1.png" alt="森果logo"/>
+        <div class="big-code2" id="big-code2">
+
+        </div>
+        <p class="c333 mt10 txt-center">微信扫二维码绑定店铺</p>
+    </div>
+    <ul class="data-list mt20">
+        <li class="bm0">
+            <a href="javascript:;" class="" data-action="licence">
+                <span class="fr"><input type="text" class="manager-ipt admin-name" placeholder="这里输入姓名"/></span>
+                <span class="text-left">姓名:</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="" data-action="shoper">
+                <span class="fr"><input type="tel" class="manager-ipt admin-tel"  placeholder="这里输入手机号"/></span>
+                <span class="text-left">手机号:</span>
+            </a>
+        </li>
+        <li class="info-li">
+            <a href="javascript:;" class="group" data-action="staff">
+                <span class="fr c666">已绑定</span>
+                <span class="text-left info-left">微信号绑定:</span>
+            </a>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/qrcode.min.js"></script>
+<script src="{{static_url('market/js/shop-manager.js')}}"></script>
+{% end %}

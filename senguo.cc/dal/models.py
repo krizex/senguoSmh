@@ -1535,6 +1535,11 @@ class Config(MapBase, _CommonApi):
 	text_message_active = Column(Integer,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
 	day_on_time = Column(Integer,default = 0) #按时达 0:all 1:今天 2:明天
+	receipt_type = Column(Integer,default = 0) #0:有线打印 1:无线打印 7.13
+	auto_print =  Column(Integer,default = 0) #0:按需打印  1:自动打印 7.13
+	wireless_type = Column(Integer,default = 0) #打印机品牌 0:易连云  1:飞印 7.13
+	wireless_print_num = Column(String(20)) #无线打印机终端号 7.13
+	wireless_print_key = Column(String(20)) #无线打印机密钥 7.13
 
 #店铺营销
 class Marketing(MapBase, _CommonApi):
@@ -1746,13 +1751,53 @@ class CheckProfit(MapBase, _CommonApi):
 	total = Column(Float,default = 0)
 	total_count = Column(Integer,default=0)
 
+
+# added by woody 7.11
 class Mp_customer_link(MapBase,_CommonApi):
 	__tablename__ = 'mp_customer_link'
 	id = Column(Integer,primary_key = True,nullable = False , autoincrement = True)
 	admin_id   = Column(Integer)
 	customer_id = Column(Integer)
 	wx_openid   = Column(String(64))
+#added by woody 7.11
+class Spider_Shop(MapBase , _CommonApi):
+	__tablename__ = 'spider_shop'
+	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
+	shop_id = Column(Integer,nullable = False)  #  抓取下来的商品的字段 shop_id 是该字段,不是上面那个id....     
+	shop_name = Column(String(64))
+	shop_address = Column(String(128))
+	shop_logo   = Column(String(200))
+	delivery_freight = Column(String(64))
+	shop_link  = Column(String(128))
+	delivery_time = Column(String(16))
+	shop_phone  = Column(String(16))
+	delivery_mincharge = Column(String(32))
+	delivery_area   = Column(String(128))
+	shop_notice    = Column(String(200))
+	has_done      = Column(Integer,default = 0)
 
+	lat    = Column(MyReal,default = 0)  #纬度
+	lon    = Column(MyReal,default = 0)  #经度
+
+	curator = Column(String(16))          #负责人
+	done_time = Column(String(32))        #搞定该店铺时间
+
+	admin_info = Column(String(64))
+	staff_info = Column(String(64))
+	shop_auth  = Column(String(128))
+	
+	description = Column(String(128))
+
+
+#added by woody 7.11
+class Spider_Good(MapBase,_CommonApi):
+	__tablename__ = 'spider_good'
+	id = Column(Integer , primary_key = True , nullable = False , autoincrement = True)
+	goods_name = Column(String(64))
+	good_img_url = Column(String(200))
+	goods_price = Column(Float)
+	shop_id  =Column(Integer,nullable = False)
+	sales = Column(Integer)
 
 '''
 # add by cm 2015.6.15

@@ -8,6 +8,7 @@ import handlers.official
 import handlers.onlinePay
 import handlers.activity
 import handlers.madmin
+import handlers.market
 import handlers.bbs
 from dal import models
 #todo:handlers太大会不会影响性能？
@@ -35,7 +36,13 @@ handlers = [
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
-	
+
+	#市场推广
+	(r"/market/home", handlers.market.Home, {}, "MarketHome"),
+	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
+	(r"/market/shopinsert", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
+	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
+
 
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
@@ -232,6 +239,8 @@ handlers = [
 	(r"/admin/editorFileManage", handlers.admin.editorFileManage, {}, "admineditorFileManage"),
 	(r"/admin/editorCallback", handlers.admin.editorCallback, {}, "admineditorCallback"),
 	(r"/admin/MessageManage", handlers.admin.MessageManage, {}, "adminMessageManage"),
+	(r"/admin/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
+	
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
 	# (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
@@ -248,13 +257,9 @@ handlers = [
 	(r"/madmin/shopinfo", handlers.madmin.Info, {}, "MadminInfo"),
 	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
 	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
-	# (r"/staff/...")
-
-
-	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
-	# 水果圈子
 
 	
+	# 水果圈子
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次

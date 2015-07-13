@@ -52,23 +52,150 @@ $(document).ready(function () {
                 $('.logo-box').find('.close').hide();
             }
         });
-    var active = $('.action-mode').attr('data-active');
+    var active = $('.img-set').attr('data-active');
     if (active == 1) {
-        $('.action-mode').find('.stop-mode').addClass('hidden').siblings('.work-mode').removeClass('hidden');
+        $('.line-receipt').find('.stop-mode').addClass('hidden').siblings('.work-mode').removeClass('hidden');
     }
     else {
-        $('.action-mode').find('.stop-mode').removeClass('hidden').siblings('.work-mode').addClass('hidden');
+        $('.line-receipt').find('.stop-mode').removeClass('hidden').siblings('.work-mode').addClass('hidden');
     }
-}).on('click', '.action-mode', function () {
+    if($('.type-list')){
+        var _id=parseInt($('.type-list').attr('data-id'));
+        $('.circle-btn').eq(_id).addClass('active');
+        $("._box").eq(_id).removeClass("hidden");
+    }
+}).on("click",".type-list li",function(){
+    var $this=$(this);
+    var index=$this.index();
+     $("._box").eq(index).removeClass("hidden").siblings("._box").addClass("hidden");
+    $this.find(".circle-btn").addClass("active")
+    $this.siblings("li").find(".circle-btn").removeClass("active");
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var status=Int($this.attr('data-status'));
+    var url='';
+    var action="receipt_type_set";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                }
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                }
+            }
+            else{
+                Tip(res.error_text);
+            }
+        },
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
+}).on('click', '.auto-set', function () {
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var status=Int($this.attr('data-status'));
+    var url='';
+    var action="auto_print_set";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                }
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                }
+            }
+            else{
+                Tip(res.error_text);
+            }
+        },
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
+}).on('click', '.img-set', function () {
     var $this = $(this);
     var active = $this.attr('data-active');
     receiptImgActive(active);
+}).on("click",".edit-console",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var url='';
+    var action="console_set";
+    var type=parseInt($(".console-type .active").attr("data-id"));
+    var key=$(".key-input").val().trim();
+    var num=$(".num-input").val().trim();
+    if(!num){
+        $this.attr("data-flag","on");
+        return Tip("请输入无线打印机终端号");
+    }
+    if(num.length>20){
+        $this.attr("data-flag","on");
+        return Tip("请不要超过20字");
+    }
+    if(!key){
+        $this.attr("data-flag","on");
+        return Tip("请输入无线打印机终端号");
+    }
+    if(key.length>20){
+        $this.attr("data-flag","on");
+        return Tip("请不要超过20字");
+    }
+    var args={
+        action:action,
+        data:{type:type,key:key,num:num}
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                var url;
+                var text;
+                $this.attr("data-flag","on");
+                if(type == 0){
+                    url = "/admin/WirelessPrint";
+                    text="易连云";
+                }else if(type==1){
+                    text="飞印";
+                }
+                 var _args={
+                    action:"ylyadd",
+                    data:{key:key,num:num}
+                };
+                $.postJson(url,_args,
+                    function(res){
+                        $(".wireless-type").text(text);
+                        $(".console-num").text(num);
+                        $(".console-key").text(key);
+                        $this.parents('.set-list-item').find('.address-show').show();
+                        $this.parents('.set-list-item').find('.address-edit').hide();
+                    }
+                );
+            }
+            else{
+                $this.attr("data-flag","on");
+                Tip(res.error_text);
+            }
+        },
+        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
 });
 
 function receiptEdit(target) {
     var url = '';
     var action = "edit_receipt";
-    var receipt_msg = $('.receipt-msg').val();
+    var receipt_msg =target.parents(".set-list-item").find('.receipt-msg').val();
     if (!receipt_msg) {
         receipt_msg = ''
     }
