@@ -246,10 +246,10 @@ class _AccountApi(_CommonApi):
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		print("[微信登录]用户登录，昵称：",wx_userinfo["nickname"])
+		#print("[微信登录]用户登录，昵称：",wx_userinfo["nickname"])
 		if u:
 			# 已存在用户，则更新微信信息
-			print("[微信登录]用户存在，更新用户资料")
+			#print("[微信登录]用户存在，更新用户资料")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -264,16 +264,16 @@ class _AccountApi(_CommonApi):
 			#####################################################################################
 			# update wx_openid
 			#####################################################################################
-			print("[微信登录]用户老OpenID：",u.accountinfo.wx_openid)
+			#print("[微信登录]用户老OpenID：",u.accountinfo.wx_openid)
 			old = u.accountinfo.wx_openid
 			old_start = old[0:2]
 			if old_start == "o7":
 				start = wx_userinfo['openid'][0:2]
-				print("[微信登录]用户新OpenID为",start,"开头")
+				#print("[微信登录]用户新OpenID为",start,"开头")
 				if start == "o5":
 					u.accountinfo.wx_openid = wx_userinfo["openid"]
-					print("[微信登录]更新用户OpenID")
-			print("[微信登录]用户新OpenID：",wx_userinfo["openid"])
+					#print("[微信登录]更新用户OpenID")
+			#print("[微信登录]用户新OpenID：",wx_userinfo["openid"])
 			session.commit()
 
 			return u
@@ -292,7 +292,7 @@ class _AccountApi(_CommonApi):
 			return u
 
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
-		print("[微信登录]用户不存在，注册为新用户")
+		#print("[微信登录]用户不存在，注册为新用户")
 		if wx_userinfo["headimgurl"] not in [None,'']:
 			headimgurl = wx_userinfo["headimgurl"]
 			headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
