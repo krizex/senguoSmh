@@ -140,34 +140,29 @@ class ShopAdminInfo(AdminBaseHandler):
 	def get(self):
 
 		id = self.args.get('id',None)
-
+		id = 1
+		action = self.args.get('action',None)
+		print(action)
 		if id:
 			try:
 				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
 			except:
 				return self.send_fail('shop not found')
-			admin_info = shop.admin_info
-			if admin_info:
-				admin_name,admin_phone,wx_nickname = admin_info.split('-')
 
-		action = self.args.get('action',None)
-
-		id = self.args.get('id',None)
-		id = 1
-		if id:
+			action = self.args.get('action',None)
+			print(action,'action',self.args)
 			if action == 'bind':
 				if not self.is_wexin_browser():
 					return self.send_fail("请在微信中执行此从操作!")
 				else:
 					admin_id  =  self.wx_bind()
 					shop_id   =  int(id)
-					real_shop_id =  self.add_shop(admin_id,shop_id)
-					return self.send_success(real_shop_id = real_shop_id) 
+					shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+					shop.curator = self.current_user.accountinfo.nickname					
+					shop_code =  self.add_shop(admin_id,shop_id)
+					self.session.commit()
+					return self.send_success(shop_code = shop_code,curator = shop.curator , done_time = shop.done_time) 
 			else:
-				try:
-					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
-				except:
-					return self.send_fail('shop not found')
 				admin_info = shop.admin_info
 				if admin_info:
 					admin_name,admin_phone,wx_nickname = admin_info.split('-')
@@ -200,22 +195,25 @@ class ShopAdminInfo(AdminBaseHandler):
 		
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('code','mode')
+	@AdminBaseHandler.check_arguments('code')
 	def wx_bind(self):
 		code = self.args.get('code',None)
 		next_url = self.get_argument('next', '')
 		#next_url = 'http://test123.senguo.cc/market/shopinsert?action=bind'
 		if not code:
-			print(self.get_wexin_oauth_link2(next_url = next_url))
-			return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
+			#print(self.get_wexin_oauth_link2(next_url = next_url))
+			#return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
+			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'.format(MP_APPID,'http://auth.senguo.cc/market/shopinsert?action=bind')
+			print(url)
+			return self.redirect(url)
 		else:
 			code = self.args['code']
-			mode = self.args['mode']
-			if mode not in ['mp','kf']:
-				return self.send_fail('mode error')
+			print(code)
+			mode = 'mp'
 			wx_userinfo = self.get_wx_userinfo(code,mode)
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 			if user:
+				print('存在且id为',user.id)
 				return user.id
 			else:
 				print("[微信登录]用户不存在，注册为新用户")
@@ -249,10 +247,10 @@ class ShopAdminInfo(AdminBaseHandler):
 		try:
 			shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).one()
 		except:
+		
 			return self.send_fail('shop_admin not found')
-		try:
-			temp_shop = self.session.query(mode.Spider_Shop).filter_by(id = shop_id).one()
-		except:
+		temp_shop = self.session.query(models.Spider_Shop).filter_by(id = 1).first()
+		if not temp_shop:
 			return self.send_fail('temp_shop not found')
 
 		# 添加系统默认的时间段
@@ -265,8 +263,8 @@ class ShopAdminInfo(AdminBaseHandler):
 		marketing = models.Marketing()
 		shop_code = self.make_shop_code()
 		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
-			create_data_timestamp = time.time(),shop_trademark_url = shop.shop_logo,shop_province = 420000,
-			shop_city = 420100 , shop_address_detail= shop.shop_address,shop_intro = shop.description,shop_code = shop_code)
+			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,
+			shop_city = 420100 , shop_address_detail= temp_shop.shop_address,shop_intro = temp_shop.description,shop_code = shop_code)
 		shop.config = config
 		shop.marketing = marketing
 		shop.shop_start_timestamp = time.time()
@@ -294,7 +292,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
 			self.session.commit()
 
-		return shop.id
+		return shop.shop_code
 	
 	def make_shop_code(self):
 		chars = 'abcdefghijklmnopqrstuvwsyz'
@@ -306,7 +304,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code = str).first()
 			if not shop:
 				break
-		return str
+		return 'wh'+ str
 
 
 
