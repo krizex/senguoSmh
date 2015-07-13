@@ -1521,9 +1521,6 @@ class WxOauth2:
 
 	@classmethod
 	def post_template_msg(cls, touser, shop_name, name, phone):
-		#print('####################')
-		#print(cls)
-		#print(touser)
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
@@ -1540,7 +1537,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]店铺审核消息发送失败：", data)
 			return False
@@ -1564,7 +1561,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模板消息]店铺审核消息发送失败：", data)
 			return False
@@ -1572,9 +1569,6 @@ class WxOauth2:
 
 	@classmethod
 	def post_add_msg(cls, touser, shop_name, name):
-		#print('####################')
-		#print(cls)
-		#print(touser)
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
@@ -1590,7 +1584,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]添加店铺管理员消息发送失败：", data)
 			return False
@@ -1623,17 +1617,8 @@ class WxOauth2:
 				"remark":{"value":remark,"color":"#173177"},
 			}
 		}
-
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		if isinstance(res.content,str):
-			print('res is str')
-		if isinstance(res.content,bytes):
-			bianma = chardet.detect(res.content)
-		else:
-			bianma = 'utf-8'
-		print(bianma)
-
-		data = json.loads(res.content.decode(bianma))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]管理员订单消息发送失败：",data)
 			return False
@@ -1667,9 +1652,6 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		#import chardet
-		#bianma= chardet.detect(res.content)["encoding"]
-		#print(bianma)
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]配送员订单消息发送失败：",data)
@@ -1695,7 +1677,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]配送员批量订单消息发送失败：",data)
 			return False
@@ -1721,7 +1703,7 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
@@ -1746,7 +1728,7 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]订单完成消息发送失败：",data)
 			return False
@@ -1769,7 +1751,7 @@ class WxOauth2:
 			}
 		}
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data['errcode'] != 0:
 			# print("[模版消息]订单提交成功消息发送失败：",data)
 			return False
@@ -1801,7 +1783,7 @@ class WxOauth2:
 		}
 		access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]店铺认证消息发送失败：",data)
 			return False
@@ -1815,9 +1797,9 @@ class WxOauth2:
 		user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
 		res = requests.get(user_subcribe_url,headers = {"connection":"close"})
 		if type(res.content)== bytes:
-			s = str(res.content,'utf-8')
+			s = str(res.content,'ascii')
 		else:
-			s = res.content.decode('utf-8')
+			s = res.content.decode('ascii')
 		data = json.loads(s)
 		json_data = json.dumps(data)
 		#print(data)
