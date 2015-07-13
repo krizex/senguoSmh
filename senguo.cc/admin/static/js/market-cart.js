@@ -781,22 +781,22 @@ function orderSubmit(target){
             }
             SetCookie('cart_count',0);
             window.location.href= '/notice/success'
-            // var url='/customer/cartback';
-            // var args={order_id:res.order_id};
-            // $.postJson(url,args,function(data) {
-            //     if (data.success) {
-            //         if(pay_type==3){
-            //             window.location.href=res.success_url;
-            //             //window.location.href="/customer/orders/detail/"+res.order_id;
-            //         }else{
-            //             window.location.href=window.dataObj.success_href; 
-            //         }
-            //      }
-            //      else{
-            //         $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled'); 
-            //         return noticeBox(res.error_text);
-            //      }
-            // });
+            var url='/customer/cartback';
+            var args={order_id:res.order_id};
+            $.postJson(url,args,function(data) {
+                if (data.success) {
+                    if(pay_type==3){
+                        window.location.href=res.success_url;
+                        //window.location.href="/customer/orders/detail/"+res.order_id;
+                    }else{
+                        window.location.href=window.dataObj.success_href; 
+                    }
+                 }
+                 else{
+                    $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled'); 
+                    return noticeBox(res.error_text);
+                 }
+            });
         }
         else {
             noticeBox(res.error_text,target);

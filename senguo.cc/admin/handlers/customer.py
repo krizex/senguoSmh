@@ -872,7 +872,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 # 商城入口
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@get_unblock
+	# @get_unblock
 	def get(self, shop_code):
 		# print('login in ')
 		w_follow = True
@@ -1623,6 +1623,39 @@ class Cart(CustomerBaseHandler):
 
 
 		# 执行后续的记录修改
+
+		return self.send_success(order_id = order.id)
+
+	def order_cancel_auto(self,session,order_id):
+		# print("[定时任务]订单取消：",order_id,self)
+		order = session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			return self.send_fail('order_cancel_auto: order not found!')
+		if order.status == -1:
+			order.status = 0
+			order.del_reason = "timeout"
+			order.get_num(session,order.id)
+			# print("[定时任务]订单取消成功：",order.num)
+		#else:
+		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
+
+# 购物篮 - 订单提交回调
+class CartCallback(CustomerBaseHandler):
+
+	@CustomerBaseHandler.check_arguments('order_id')
+	@tornado.web.authenticated
+	def post(self):
+		pass
+		try:
+			order_id = int(self.args['order_id'])
+			# print(order_id)
+		except:
+			Logger.error("CartCallback: get order_id error")
+			return self.send_fail("CartCallback: get order_id error")
+		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		if not order:
+			Logger.warn("CartCallback: order not found")
+			return self.send_fail("CartCallback: order not found")
 		totalPrice = order.totalPrice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
@@ -1669,40 +1702,7 @@ class Cart(CustomerBaseHandler):
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
-		# return self.send_success()
-
-		return self.send_success(order_id = order.id)
-
-	def order_cancel_auto(self,session,order_id):
-		# print("[定时任务]订单取消：",order_id,self)
-		order = session.query(models.Order).filter_by(id = order_id).first()
-		if not order:
-			return self.send_fail('order_cancel_auto: order not found!')
-		if order.status == -1:
-			order.status = 0
-			order.del_reason = "timeout"
-			order.get_num(session,order.id)
-			# print("[定时任务]订单取消成功：",order.num)
-		#else:
-		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
-
-# 购物篮 - 订单提交回调
-class CartCallback(CustomerBaseHandler):
-
-	@CustomerBaseHandler.check_arguments('order_id')
-	@tornado.web.authenticated
-	def post(self):
-		pass
-	# 	try:
-	# 		order_id = int(self.args['order_id'])
-	# 		# print(order_id)
-	# 	except:
-	# 		Logger.error("CartCallback: get order_id error")
-	# 		return self.send_fail("CartCallback: get order_id error")
-	# 	order = self.session.query(models.Order).filter_by(id = order_id).first()
-	# 	if not order:
-	# 		Logger.warn("CartCallback: order not found")
-	# 		return self.send_fail("CartCallback: order not found")
+		return self.send_success()
 		
 
 
