@@ -3,7 +3,7 @@
  */
 var isLoad = true, pn = 1, cur_action="";
 $(document).ready(function(){
-
+    loadData("to_do");
 }).on("click",".shop-list li",function(){
     var shop_id=$(this).data('id');
     var shop_code = $(this).attr("data-code");
@@ -52,7 +52,7 @@ function loadData(action){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-            var goods_list = res.data;
+            var goods_list = res.shops;
             $("#shop_list").empty();
             var lis = "";
             for(var i=0; i<goods_list.length;i++){
@@ -75,7 +75,7 @@ function loadData(action){
                     isLoad=false;
                     $.postJson(url,args,function(res) {
                         if (res.success) {
-                            var goods_list = res.data;
+                            var goods_list = res.shops;
                             pn++;
                             isLoad=true;
                             if(goods_list.length==0){
@@ -84,13 +84,14 @@ function loadData(action){
                             }else{
                                 var lis = "";
                                 for(var i=0; i<goods_list.length;i++){
+                                    var shop = goods_list[i];
                                     if(cur_action==0){
                                         lis += '<li data-id="'+shop.id+'" data-code="'+shop.shop_code+'"><dl class="shop-dl"><dd><img src="/static/images/TDSG.png?imageView2/5/w/100/h/100" alt="'+shop.shop_name+'"/></dd>'+
                                             '<dt><p class="name"><span class="c999 f12 fr">1.2km</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl></li>';
                                     }else{
                                         lis += '<li data-id="'+shop.id+'" data-code="'+shop.shop_code+'"><dl class="shop-dl"><dd><img src="/static/images/TDSG.png?imageView2/5/w/100/h/100" alt="'+shop.shop_name+'"/></dd>'+
                                             '<dt><p class="name"><span class="c999 f12 fr">1.2km</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl>'+
-                                            '<div class="admin-text"><span class="fr c333">完成时间:'+shop.market_time+'</span><span class="c333">负责人:'+shop.market_user+'</span></div></li>';
+                                            '<div class="admin-text"><span class="fr c333">完成时间:'+shop.done_time+'</span><span class="c333">负责人:'+shop.curator+'</span></div></li>';
                                     }
                                 }
                                 $("#shop_list").append($(lis));

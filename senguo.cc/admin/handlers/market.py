@@ -22,6 +22,7 @@ class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action')
 	def post(self):
+		action = self.args['action']
 		if action == 'to_do':
 			shop_list = self.session.query(models.Spider_Shop).filter_by(has_done = 0).all()
 		elif action == 'has_done':
@@ -33,17 +34,10 @@ class Home(AdminBaseHandler):
 
 	@classmethod
 	def get_shop_data(self,shop_list):
-		data = []
+		shop_data = []
 		for shop in shop_list:
-			shop_data['id'] = shop.id
-			shop_data['shop_name']  = shop.shop_name
-			shop_data['lat']  = shop.lat
-			shop_data['lon']  = shop.lon
-			shop_data['shop_address'] = shop.shop_address
-			shop_data['curator'] = shop.curator
-			shop_data['done_time'] = shop.done_time
-			data.append(shop_data)
-		return data
+			shop_data.append({"id":shop.id,"shop_name":shop.shop_name,"shop_address":shop.shop_address,"curator":shop.curator,"done_time":shop.done_time})
+		return shop_data
 
 
 #店铺信息
@@ -209,16 +203,6 @@ class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
 	def add_shop(self):
 		pass
-
-			
-
-
-
-
-
-
-
-
 
 
 #店铺录入
