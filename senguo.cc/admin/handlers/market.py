@@ -142,28 +142,6 @@ class ShopAdminInfo(AdminBaseHandler):
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
-=======
-
-			id = self.args.get('id',None)
-			id = 1
-			
-			if id:
-				try:
-					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
-				except:
-					return self.send_fail('shop not found')
-				admin_info = shop.admin_info
-				if admin_info:
-					admin_name,admin_phone,wx_nickname = admin_info.split('-')
-				else:
-					admin_name = admin_phone = wx_nickname = None
-
-			else:
-				return self.send_fail('id error')
-			# return self.send_success()
-			return self.render("market/shop-manager.html")
-	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','action')
->>>>>>> b66771f189eb79c6e65421e6d7be57076611fb36
 	def post(self):
 		action = self.args.get('action',None)
 		if action == 'save':
