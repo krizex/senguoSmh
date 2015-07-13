@@ -16,8 +16,7 @@ class Access(StaffBaseHandler):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("staff/login.html",
-								 context=dict(next_url=next_url))
+			return self.render("staff/login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("staffHome"))
@@ -57,7 +56,6 @@ class Home(StaffBaseHandler):
 	#def prepare(self):
 	#    pass
 
-
 	@tornado.web.authenticated
 	def get(self):
 		# print("[送货员端]当前店铺ID：",self.shop_id)
@@ -95,8 +93,8 @@ class Home(StaffBaseHandler):
 		# orders_ontime = [x for x in orders_ontime if (x.today == 1 and x.create_date.day == day) or
 		#           (x.today == 2 and x.create_date.day+1 == day)]#过滤掉明天的订单
 
-		orders_intime   = len(orders_intime)
-		orders_ontime  = len(orders_ontime)
+		orders_intime = len(orders_intime)
+		orders_ontime = len(orders_ontime)
 
 		# print("[送货员端]立即送订单：",orders_intime)
 		# print("[送货员端]按时达订单：",orders_ontime)

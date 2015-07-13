@@ -16,9 +16,9 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.send_success()
+		#return self.send_success()
 
-		# return self.render('market/market.html')
+		return self.render('market/shop-list.html')
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action')
 	def post(self):
@@ -40,6 +40,8 @@ class Home(AdminBaseHandler):
 			shop_data['lat']  = shop.lat
 			shop_data['lon']  = shop.lon
 			shop_data['shop_address'] = shop.shop_address
+			shop_data['curator'] = shop.curator
+			shop_data['done_time'] = shop.done_time
 			data.append(shop_data)
 		return data
 
@@ -50,8 +52,7 @@ class Info(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('id')
 
 	def get(self):
-		# id = int(self.args['id'])
-		id = 1
+		id = int(self.args['id'])
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
@@ -73,7 +74,6 @@ class Info(AdminBaseHandler):
 		return self.render("market/shop-info.html",shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
 			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
-
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
 		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str')
@@ -100,7 +100,7 @@ class Info(AdminBaseHandler):
 		elif action == 'staff_info':
 			pass
 		elif action == 'shop_auth':
-			pass
+			shop.shop_auth = self.args['shop_auth']
 		else:
 			return self.send_fail('action error')
 
@@ -114,9 +114,11 @@ class Info(AdminBaseHandler):
 #店长信息
 class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id?')
+	@AdminBaseHandler.check_arguments('id?','action?:str')
 	def get(self):
+
 		id = self.args.get('id',None)
+		
 		if id:
 			try:
 				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
@@ -125,24 +127,122 @@ class ShopAdminInfo(AdminBaseHandler):
 			admin_info = shop.admin_info
 			if admin_info:
 				admin_name,admin_phone,wx_nickname = admin_info.split('-')
+
+		action = self.args.get('action',None)
+		if action == 'bind':
+			if not self.is_wexin_browser():
+				return self.send_fail("请在微信中执行此从操作!")
+
 			else:
-				admin_name = admin_phone = wx_nickname = None
+				wx_bind  =  self.wx_bind()
 		else:
+
 			return self.send_fail('id error')
+		
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
-	def post(self):
-		id = self.args.get('id',None)
-		if id:
-			try:
-				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
-			except:
-				return self.send_fail('shop not found')
-			admin_name = self.args['admin_name']
-			admin_phone= self.args['admin_phone']
+=======
 
-		return self.render("market/shop-info.html")
+			id = self.args.get('id',None)
+			id = 1
+			
+			if id:
+				try:
+					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
+				except:
+					return self.send_fail('shop not found')
+				admin_info = shop.admin_info
+				if admin_info:
+					admin_name,admin_phone,wx_nickname = admin_info.split('-')
+				else:
+					admin_name = admin_phone = wx_nickname = None
+
+			else:
+				return self.send_fail('id error')
+			# return self.send_success()
+			return self.render("market/shop-manager.html")
+	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','action')
+>>>>>>> b66771f189eb79c6e65421e6d7be57076611fb36
+	def post(self):
+		action = self.args.get('action',None)
+		if action == 'save':
+			id = self.args.get('id',None)
+			id = 1
+			if id:
+				try:
+					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
+				except:
+					return self.send_fail('shop not found')
+				admin_name = self.args['admin_name']
+				admin_phone= self.args['admin_phone']
+				wx_nickname = wx_nickname
+				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_nickname)
+				self.session.commit()
+			return self.render("market/shop-info.html")
+		
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('code','mode')
+	def wx_bind(self):
+		code = self.args.get('code',None)
+		next_url = self.get_argument('next', '')
+		#next_url = 'http://test123.senguo.cc/market/shopinsert?action=bind'
+		if not code:
+			print(self.get_wexin_oauth_link2(next_url = next_url))
+			return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
+		else:
+		
+			code = self.args['code']
+			mode = self.args['mode']
+			if mode not in ['mp','kf']:
+				return self.send_fail('mode error')
+			wx_userinfo = self.get_wx_userinfo(code,mode)
+			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
+			if user:
+				return True
+			else:
+				print("[微信登录]用户不存在，注册为新用户")
+				if wx_userinfo["headimgurl"] not in [None,'']:
+					headimgurl = wx_userinfo["headimgurl"]
+					headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
+				else:
+					headimgurl = None
+					headimgurl_small = None
+				account_info = Accountinfo(
+					wx_unionid=wx_userinfo["unionid"],
+					wx_openid=wx_userinfo["openid"],
+					wx_country=wx_userinfo["country"],
+					wx_province=wx_userinfo["province"],
+					wx_city=wx_userinfo["city"],
+					headimgurl=headimgurl,
+					headimgurl_small = headimgurl_small,
+					nickname=wx_userinfo["nickname"],
+					sex = wx_userinfo["sex"])
+				try:
+					self.session.add(account_info)
+					u = mode.ShopAdmin()
+					u.accountinfo = account_info
+					self.session.commit()
+				except:
+					return False
+				return True
+
+	@tornado.web.authenticated
+	def add_shop(self):
+		pass
+
+			
+
+
+
+
+
+
+
+
+
+
 #店铺录入
 # class Insert(AdminBaseHandler):
 # 	@tornado.web.authenticated
