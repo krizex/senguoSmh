@@ -22,6 +22,7 @@ class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action')
 	def post(self):
+		action = self.args['action']
 		if action == 'to_do':
 			shop_list = self.session.query(models.Spider_Shop).filter_by(has_done = 0).all()
 		elif action == 'has_done':
@@ -33,17 +34,10 @@ class Home(AdminBaseHandler):
 
 	@classmethod
 	def get_shop_data(self,shop_list):
-		data = []
+		shop_data = []
 		for shop in shop_list:
-			shop_data['id'] = shop.id
-			shop_data['shop_name']  = shop.shop_name
-			shop_data['lat']  = shop.lat
-			shop_data['lon']  = shop.lon
-			shop_data['shop_address'] = shop.shop_address
-			shop_data['curator'] = shop.curator
-			shop_data['done_time'] = shop.done_time
-			data.append(shop_data)
-		return data
+			shop_data.append({"id":shop.id,"shop_name":shop.shop_name,"shop_address":shop.shop_address,"curator":shop.curator,"done_time":shop.done_time})
+		return shop_data
 
 
 #店铺信息
@@ -142,28 +136,6 @@ class ShopAdminInfo(AdminBaseHandler):
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
-=======
-
-			id = self.args.get('id',None)
-			id = 1
-			
-			if id:
-				try:
-					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
-				except:
-					return self.send_fail('shop not found')
-				admin_info = shop.admin_info
-				if admin_info:
-					admin_name,admin_phone,wx_nickname = admin_info.split('-')
-				else:
-					admin_name = admin_phone = wx_nickname = None
-
-			else:
-				return self.send_fail('id error')
-			# return self.send_success()
-			return self.render("market/shop-manager.html")
-	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','action')
->>>>>>> b66771f189eb79c6e65421e6d7be57076611fb36
 	def post(self):
 		action = self.args.get('action',None)
 		if action == 'save':
@@ -231,16 +203,6 @@ class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
 	def add_shop(self):
 		pass
-
-			
-
-
-
-
-
-
-
-
 
 
 #店铺录入
