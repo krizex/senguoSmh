@@ -24,6 +24,8 @@ import threading
 from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
+import chardet
+
 
 # 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
@@ -704,7 +706,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		customer_id = order.customer_id
 		admin_id    = order.shop.admin.id
 		if order.shop.admin.has_mp:
-			mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
+			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
 			if mp_customer:
 				touser = mp_customer.wx_openid
 			else:
@@ -751,7 +753,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			other_name = info.nickname
 			other_customer_id = info.id
 			if order.shop.admin.has_mp:
-				mp_customer = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id = other_customer_id).first()
+				mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id = other_customer_id).first()
 				if mp_customer:
 					other_touser = mp_customer.wx_openid
 				else:
@@ -1623,7 +1625,15 @@ class WxOauth2:
 		}
 
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
-		data = json.loads(res.content.decode("utf-8"))
+		if isinstance(res.content,str):
+			print('res is str')
+		if isinstance(res.content,bytes):
+			bianma = chardet.detect(res.content)
+		else:
+			bianma = 'utf-8'
+		print(bianma)
+
+		data = json.loads(res.content.decode(bianma))
 		if data["errcode"] != 0:
 			# print("[模版消息]管理员订单消息发送失败：",data)
 			return False

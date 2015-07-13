@@ -1746,13 +1746,53 @@ class CheckProfit(MapBase, _CommonApi):
 	total = Column(Float,default = 0)
 	total_count = Column(Integer,default=0)
 
+
+# added by woody 7.11
 class Mp_customer_link(MapBase,_CommonApi):
 	__tablename__ = 'mp_customer_link'
 	id = Column(Integer,primary_key = True,nullable = False , autoincrement = True)
 	admin_id   = Column(Integer)
 	customer_id = Column(Integer)
 	wx_openid   = Column(String(64))
+#added by woody 7.11
+class Spider_Shop(MapBase , _CommonApi):
+	__tablename__ = 'spider_shop'
+	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
+	shop_id = Column(Integer,nullable = False)  #  抓取下来的商品的字段 shop_id 是该字段,不是上面那个id....     
+	shop_name = Column(String(64))
+	shop_address = Column(String(128))
+	shop_logo   = Column(String(200))
+	delivery_freight = Column(String(64))
+	shop_link  = Column(String(128))
+	delivery_time = Column(String(16))
+	shop_phone  = Column(String(16))
+	delivery_mincharge = Column(String(32))
+	delivery_area   = Column(String(128))
+	shop_notice    = Column(String(200))
+	has_done      = Column(Integer,default = 0)
 
+	lat    = Column(MyReal,default = 0)  #纬度
+	lon    = Column(MyReal,default = 0)  #经度
+
+	curator = Column(String(16))          #负责人
+	done_time = Column(String(32))        #搞定该店铺时间
+
+	admin_info = Column(String(64))
+	staff_info = Column(String(64))
+	shop_auth  = Column(String(128))
+	
+	description = Column(String(128))
+
+
+#added by woody 7.11
+class Spider_Good(MapBase,_CommonApi):
+	__tablename__ = 'spider_good'
+	id = Column(Integer , primary_key = True , nullable = False , autoincrement = True)
+	goods_name = Column(String(64))
+	good_img_url = Column(String(200))
+	goods_price = Column(Float)
+	shop_id  =Column(Integer,nullable = False)
+	sales = Column(Integer)
 
 '''
 # add by cm 2015.6.15
