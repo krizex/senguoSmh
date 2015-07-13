@@ -14,8 +14,10 @@ $(document).ready(function(){
     $(window).scrollTop(0);
     if(index==0){
         cur_action=0;
+        loadData("to_do");
     }else{
         cur_action=1;
+        loadData("has_done");
     }
 }).on("click","#cur_address",function(){//刷新列表
 
@@ -43,9 +45,11 @@ function initLocation(){
     }
 }
 //加载
-function loadData(){
+function loadData(action){
     var url = "";
-    var args={};
+    var args={
+        action:action
+    };
     $.postJson(url,args,function(res){
         if(res.success){
             var goods_list = res.data;
@@ -59,7 +63,7 @@ function loadData(){
                 }else{
                     lis += '<li data-id="'+shop.id+'" data-code="'+shop.shop_code+'"><dl class="shop-dl"><dd><img src="/static/images/TDSG.png?imageView2/5/w/100/h/100" alt="'+shop.shop_name+'"/></dd>'+
                         '<dt><p class="name"><span class="c999 f12 fr">1.2km</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl>'+
-                        '<div class="admin-text"><span class="fr c333">完成时间:'+shop.market_time+'</span><span class="c333">负责人:'+shop.market_user+'</span></div></li>';
+                        '<div class="admin-text"><span class="fr c333">完成时间:'+shop.done_time+'</span><span class="c333">负责人:'+shop.curator+'</span></div></li>';
                 }
             }
             $("#shop_list").append($(lis));

@@ -54,10 +54,8 @@ class Access(CustomerBaseHandler):
 		elif self._action == 'qqoauth':
 			print('login qqoauth')
 			self.handle_qq_oauth(next_url)
-
 		else:
 			return self.send_error(404)
-
 
 	#@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
@@ -85,7 +83,6 @@ class Access(CustomerBaseHandler):
 		u = models.Customer.register_with_qq(self.session,userinfo)
 		self.set_current_user(u,domain = ROOT_HOST_NAME)
 		return self.redirect(next_url)
-
 
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
@@ -653,7 +650,6 @@ class ShopProfile(CustomerBaseHandler):
 			#     self.session.add(point)
 			#     self.session.commit()
 
-
 			signin = self.session.query(models.ShopSignIn).filter_by(
 				customer_id=self.current_user.id, shop_id=shop_id).first()
 
@@ -918,8 +914,6 @@ class Market(CustomerBaseHandler):
 			pass
 		print('success??????????????????????????????????')
 
-
-
 		# self.current_shop = shop
 		# print(self,self.current_shop)
 		shop_name = shop.shop_name
@@ -1037,8 +1031,6 @@ class Market(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
-
-
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1220,7 +1212,6 @@ class Market(CustomerBaseHandler):
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
 		fruits_data = self.w_getdata(self.session,fruits,customer_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
-
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
@@ -1415,10 +1406,9 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('该店铺正在筹备中，暂不能下单(っ´▽`)っ')
 		elif shop_status == 3:
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
-
 		if not fruits:
 			return self.send_fail('请至少选择一种商品')
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"框",11:"包",12:""}
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
 		if len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种物品")
 		f_d={}
@@ -1470,7 +1460,7 @@ class Cart(CustomerBaseHandler):
 						else:    #之前没有限购记录
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
-					self.session.commit()					
+					self.session.commit()
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
@@ -1991,7 +1981,6 @@ class Order(CustomerBaseHandler):
 				except :
 					shop_follow = None
 					self.send_fail("shop_point error")
-
 
 				if shop_follow:
 					if shop_follow.shop_point:
@@ -2531,7 +2520,7 @@ class InsertData(CustomerBaseHandler):
 		shop_list = []
 		good_list = []
 
-		f = open('D:\github\senguo.cc\senguo.cc\\admin\handlers\shopData.txt',encoding = 'utf-8')
+		f = open('/home/monk/www/senguo.cc/senguo.cc/admin/handlers/shopData.txt',encoding = 'utf-8')
 		c = f.read()
 		s = eval(c)
 		print(type(s))
