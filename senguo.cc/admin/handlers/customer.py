@@ -1991,7 +1991,6 @@ class Order(CustomerBaseHandler):
 					shop_follow = None
 					self.send_fail("shop_point error")
 
-
 				if shop_follow:
 					if shop_follow.shop_point:
 						shop_follow.shop_point += 2
