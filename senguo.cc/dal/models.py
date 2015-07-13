@@ -1535,6 +1535,11 @@ class Config(MapBase, _CommonApi):
 	text_message_active = Column(Integer,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
 	day_on_time = Column(Integer,default = 0) #按时达 0:all 1:今天 2:明天
+	receipt_type = Column(Integer,default = 0) #0:有线打印 1:无线打印 7.13
+	auto_print =  Column(Integer,default = 0) #0:按需打印  1:自动打印 7.13
+	wireless_type = Column(Integer,default = 0) #打印机品牌 0:易连云  1:飞印 7.13
+	wireless_print_num = Column(String(20)) #无线打印机终端号 7.13
+	wireless_print_key = Column(String(20)) #无线打印机密钥 7.13
 
 #店铺营销
 class Marketing(MapBase, _CommonApi):

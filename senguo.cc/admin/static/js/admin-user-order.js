@@ -14,7 +14,17 @@ $(document).ready(function(){
         $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
 }).on('click','.print-order',function(){
-    orderPrint($(this),'print'); //订单打印
+    var type=parseInt($("#receipt-type").val());
+    if(type==0){
+        orderPrint($(this),'print'); //有线打印
+    }else{
+        var console_type=parseInt($("#console-type").val());
+        var console_num=$("#console-num").val();
+        var console_key=$("#console-key").val();
+        if(console_num == "None" || console_key == "None"){
+            return Tip("请设置好无线打印的相关信息");
+        }
+    }
 }).on('click','.delete-order',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
@@ -90,7 +100,19 @@ $(document).ready(function(){
     // orderEdit($this,'batch_edit_status',5); 
     // }
 }).on('click','#batch-print',function(){
-    orderPrint($(this),'batch_print'); //订单打印
+    var type=parseInt($("#receipt-type").val());
+    console.log(type);
+    if(type==0){
+        orderPrint($(this),'batch_print'); //有线打印
+    }else{
+        var console_type=parseInt($("#console-type").val());
+        var console_num=$("#console-num").val();
+        var console_key=$("#console-key").val();
+        if(console_num == "None" || console_key == "None"){
+            return Tip("请设置好无线打印的相关信息");
+        }
+    }
+    
 }).on('click','.subnav li',function(){
     var $this=$(this);
     $this.addClass('active').siblings('li').removeClass('active');
