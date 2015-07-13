@@ -57,7 +57,6 @@ class Home(StaffBaseHandler):
 	#def prepare(self):
 	#    pass
 
-
 	@tornado.web.authenticated
 	def get(self):
 		# print("[送货员端]当前店铺ID：",self.shop_id)
