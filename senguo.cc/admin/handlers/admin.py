@@ -2407,6 +2407,28 @@ class Config(AdminBaseHandler):
 			self.current_shop.shop_tpl=tpl_id
 			self.session.commit()
 			return self.send_success()
+		elif action=="receipt_type_set":
+			self.current_shop.config.receipt_type = 0 if self.current_shop.config.receipt_type == 1 else 1
+			self.session.commit()
+		elif action=="auto_print_set":
+			self.current_shop.config.auto_print = 0 if self.current_shop.config.auto_print == 1 else 1
+			self.session.commit()
+		elif action=="console_num":
+			num = self.args["data"]["num"]
+			if len(num) > 20:
+				return self.send_fail("console num is too long")
+			self.current_shop.config.wireless_print_num = num
+			self.session.commit()
+		elif action=="console_key":
+			key = self.args["data"]["key"]
+			if len(key) > 20:
+				return self.send_fail("console key is too long")
+			self.current_shop.config.wireless_print_key = key
+			self.session.commit()
+		elif action=="console_type":
+			_type = int(self.args["data"]["type"])
+			self.current_shop.config.wireless_type = _type
+			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -3214,7 +3236,7 @@ class MessageManage(AdminBaseHandler):
 			return self.send_success()
 
 
-class printTest(AdminBaseHandler):
+class WirelessPrint(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action?:str')
 	def get(self):

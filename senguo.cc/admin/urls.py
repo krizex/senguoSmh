@@ -256,7 +256,7 @@ handlers = [
 	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
 	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
 
-	(r"/ptinterTest", handlers.admin.printTest, {}, "ptinterTest"),
+	(r"/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
 	# 水果圈子
 
 	# 主页

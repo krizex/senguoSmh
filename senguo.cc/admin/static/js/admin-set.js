@@ -1,5 +1,6 @@
 $(document).ready(function(){
     $('.info-edit').on('click',function(){
+        console.log(2333);
         var $this=$(this);
         $this.parents('.set-list-item').find('.address-show').hide();
         $this.parents('.set-list-item').find('.address-edit').show();
@@ -34,6 +35,12 @@ $(document).ready(function(){
         var tpl_id=parseInt($('.tpl-list').attr('data-id'));
         $('.choose-btn').eq(tpl_id).addClass('active');
     }
+    if($(".type-choose")){
+        var type=parseInt($('.type-choose').attr('data-id'));
+        $(".type-choose li").eq(type).addClass('active');
+    }
+}).on(".type-choose li",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
 }).on('click','.cash_active',function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;

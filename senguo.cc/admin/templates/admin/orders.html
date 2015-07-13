@@ -26,7 +26,10 @@
     {% set notice='停用'%}
     {% set notice2='启用'%}
 {% end %}
-
+<input type="hidden" id="receipt-type" value="{{current_shop.config.receipt_type}}" />
+<input type="hidden" id="console-type" value="{{current_shop.config.wireless_type}}" />
+<input type="hidden" id="console-num" value="{{current_shop.config.wireless_print_num}}" />
+<input type="hidden" id="console-key" value="{{current_shop.config.wireless_print_key}}" />
 <span class="right-title" id="order-title-manage">订单管理</span>
 <div class="subnav-box clearfix">
     <ul class="subnav pull-left order-type">
