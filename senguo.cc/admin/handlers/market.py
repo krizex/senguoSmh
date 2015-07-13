@@ -11,6 +11,7 @@ from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
 import decimal
+from random import Random
 
 #市场推广 - 首页
 class Home(AdminBaseHandler):
@@ -117,17 +118,18 @@ class ShopAdminInfo(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('id?','action?:str')
 	def get(self):
 		action = self.args.get('action',None)
-		if action == 'bind':
-			if not self.is_wexin_browser():
-				return self.send_fail("请在微信中执行此从操作!")
+		id = self.args.get('id',None)
+		id = 1
+		if id:
+			if action == 'bind':
+				if not self.is_wexin_browser():
+					return self.send_fail("请在微信中执行此从操作!")
+				else:
+					admin_id  =  self.wx_bind()
+					shop_id   =  int(id)
+					real_shop_id =  self.add_shop(admin_id,shop_id)
+					return self.send_success(real_shop_id = real_shop_id) 
 			else:
-				wx_bind  =  self.wx_bind()
-		else:
-
-			id = self.args.get('id',None)
-			id = 1
-			
-			if id:
 				try:
 					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
 				except:
@@ -137,11 +139,10 @@ class ShopAdminInfo(AdminBaseHandler):
 					admin_name,admin_phone,wx_nickname = admin_info.split('-')
 				else:
 					admin_name = admin_phone = wx_nickname = None
-
-			else:
-				return self.send_fail('id error')
-			# return self.send_success()
-			return self.render("market/shop-manager.html")
+		else:
+			return self.send_fail('id error')
+		# return self.send_success()
+		return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','action')
 	def post(self):
 		action = self.args.get('action',None)
@@ -159,6 +160,8 @@ class ShopAdminInfo(AdminBaseHandler):
 				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_nickname)
 				self.session.commit()
 			return self.render("market/shop-info.html")
+
+	
 		
 
 	@tornado.web.authenticated
@@ -179,7 +182,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			wx_userinfo = self.get_wx_userinfo(code,mode)
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 			if user:
-				return True
+				return user.id
 			else:
 				print("[微信登录]用户不存在，注册为新用户")
 				if wx_userinfo["headimgurl"] not in [None,'']:
@@ -205,11 +208,78 @@ class ShopAdminInfo(AdminBaseHandler):
 					self.session.commit()
 				except:
 					return False
-				return True
+				return user.id
 
 	@tornado.web.authenticated
-	def add_shop(self):
-		pass
+	def add_shop(self,shop_id,admin_id):
+		try:
+			shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).one()
+		except:
+			return self.send_fail('shop_admin not found')
+		try:
+			temp_shop = self.session.query(mode.Spider_Shop).filter_by(id = shop_id).one()
+		except:
+			return self.send_fail('temp_shop not found')
+
+		# 添加系统默认的时间段
+		period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
+		period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
+		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
+
+		config = models.Config()
+		config.periods.extend([period1, period2, period3])
+		marketing = models.Marketing()
+		shop_code = self.make_shop_code()
+		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
+			create_data_timestamp = time.time(),shop_trademark_url = shop.shop_logo,shop_province = 420000,
+			shop_city = 420100 , shop_address_detail= shop.shop_address,shop_intro = shop.description,shop_code = shop_code)
+		shop.config = config
+		shop.marketing = marketing
+		shop.shop_start_timestamp = time.time()
+		self.session.add(shop)
+		self.session.commit()
+
+		######################################################################################
+		# inspect whether staff exited
+		######################################################################################
+		temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
+		# print('temp_staff')
+		# print(shop.admin_id)
+		# print(temp_staff)
+		if temp_staff is None:
+			# print('passssssssssssssssssssssssssssssssssssssssss')
+			self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
+			self.session.commit()
+
+		self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
+		self.session.commit()
+
+		#把管理员同时设为顾客的身份
+		customer_first = self.session.query(models.Customer).get(shop.admin_id)
+		if customer_first is None:
+			self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
+			self.session.commit()
+
+		return shop.id
+	
+	def make_shop_code(self):
+		chars = 'abcdefghijklmnopqrstuvwsyz'
+		str = ''
+		random = Random()
+		for i in range(8):
+			str += chars[random.randint(0,len(chars)-1)]
+		while True:
+			shop = self.session.query(models.Shop).filter_by(shop_code = str).first()
+			if not shop:
+				break
+		return str
+
+
+
+
+
+
+		
 
 			
 
