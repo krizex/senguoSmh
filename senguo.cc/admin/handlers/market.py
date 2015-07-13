@@ -190,7 +190,6 @@ class ShopAdminInfo(AdminBaseHandler):
 			print(self.get_wexin_oauth_link2(next_url = next_url))
 			return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
 		else:
-
 			code = self.args['code']
 			mode = self.args['mode']
 			if mode not in ['mp','kf']:
