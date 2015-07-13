@@ -116,8 +116,9 @@ class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id?','action?:str')
 	def get(self):
+		action = self.args.get('action',None)
 		if action == 'bind':
-			if not self.is_wei_browser():
+			if not self.is_wexin_browser():
 				return self.send_fail("请在微信中执行此从操作!")
 			else:
 				wx_bind  =  self.wx_bind()
@@ -143,6 +144,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			return self.render("market/shop-manager.html")
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','action')
 	def post(self):
+		action = self.args.get('action',None)
 		if action == 'save':
 			id = self.args.get('id',None)
 			id = 1
@@ -160,13 +162,16 @@ class ShopAdminInfo(AdminBaseHandler):
 		
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('code?:str','mode?:str')
+	@AdminBaseHandler.check_arguments('code','mode')
 	def wx_bind(self):
 		code = self.args.get('code',None)
 		next_url = self.get_argument('next', '')
+		#next_url = 'http://test123.senguo.cc/market/shopinsert?action=bind'
 		if not code:
-			return self.redirect(self.get_weixin_oauth_link2(next_url = next_url))
+			print(self.get_wexin_oauth_link2(next_url = next_url))
+			return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
 		else:
+		
 			code = self.args['code']
 			mode = self.args['mode']
 			if mode not in ['mp','kf']:
