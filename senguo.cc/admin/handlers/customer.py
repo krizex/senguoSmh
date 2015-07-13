@@ -1415,7 +1415,6 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('该店铺正在筹备中，暂不能下单(っ´▽`)っ')
 		elif shop_status == 3:
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
-
 		if not fruits:
 			return self.send_fail('请至少选择一种商品')
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"框",11:"包",12:""}
@@ -1470,7 +1469,7 @@ class Cart(CustomerBaseHandler):
 						else:    #之前没有限购记录
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
-					self.session.commit()					
+					self.session.commit()
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
