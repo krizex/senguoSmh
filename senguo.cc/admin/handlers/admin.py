@@ -2419,7 +2419,11 @@ class AdminAuth(AdminBaseHandler):
 	def get(self):
 		next_url = self.get_argument('next', '')
 		if self._action == 'wxauth':
-			return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
+			if self.is_pc_browser():
+				link = self.get_wexin_oauth_link2(next_url=next_url)
+				return self.render("admin/wx-auth.html",link=link)
+			else:
+				return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
 		elif self._action == 'wxcheck':
 			return self.check_admin(next_url)
 

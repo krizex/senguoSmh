@@ -244,9 +244,7 @@ $(document).ready(function(){
         function(res){
             if(res.success){
                 $this.attr("data-flag","on");
-                if(confirm('是否添加该用户为店铺管理员？点击确定后请使用超级管理员微信进行二维码扫描')){
-                    window.location.href="/admin/wxauth";
-                }
+                window.location.href="/admin/wxauth";
             }else{
                     $this.attr("data-flag","on");
                     return Tip(res.error_text);
