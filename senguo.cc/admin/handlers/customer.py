@@ -1703,7 +1703,7 @@ class CartCallback(CustomerBaseHandler):
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success()
-		
+
 
 
 class Notice(CustomerBaseHandler):
