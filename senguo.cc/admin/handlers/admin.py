@@ -3206,7 +3206,7 @@ class Confession(AdminBaseHandler):
 			self.session.commit()
 		return self.send_success()
 
-
+# 店铺设置 - 微信消息
 class MessageManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -3231,7 +3231,7 @@ class MessageManage(AdminBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
-
+# 无线打印
 class WirelessPrint(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action?:str',"data?")
@@ -3267,15 +3267,25 @@ class WirelessPrint(AdminBaseHandler):
 					data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
 					r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
 
-					print("======返回信息======")
+					print("======WirelessPrint Back======")
 					print("res url        :",r.url)
 					print("res status_code:",r.status_code)
 					print("res text       :",r.text)
-					print("====================")
+					print("==============================")
 					if int(r.text)==1:
 						return self.send_success()
 					elif int(r.text)==2:
-						return self.send_fail("重复添加")
+						return self.send_fail("打印机重复，请确保此打印机没有添加到其他账号")
+					elif int(r.text)==3:
+						return self.send_fail("打印机添加失败")
+					elif int(r.text)==4:
+						return self.send_fail("签名错误")
+					elif int(r.text)==5:
+						return self.send_fail("用户验证失败")
+					elif int(r.text)==6:
+						return self.send_fail("打印机终端号错误")
+					else:
+						return self.send_fail("未知错误")
 			else:
 				return self.send_fail("请设置为易联云无线打印")
 
@@ -3356,7 +3366,7 @@ class WirelessPrint(AdminBaseHandler):
 				print("post        :",data)
 				r=requests.post("http://open.10ss.net:8888",data=data)
 
-				print("======返回信息======")
+				print("======WirelessPrint======")
 				print("res url        :",r.url)
 				print("res status_code:",r.status_code)
 				print("res text       :",r.text)

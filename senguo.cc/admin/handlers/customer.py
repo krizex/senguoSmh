@@ -288,21 +288,23 @@ class Home(CustomerBaseHandler):
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
 			balance_on = shop.config.balance_on_active
+			shop_auth = shop.shop_auth
 			if shop.marketing:
 				shop_marketing = shop.marketing.confess_active
 			else:
 				shop_marketing = 0
-			if shop.shop_auth in [1,2,3,4]:
+			if shop_auth in [1,2,3,4]:
 				show_balance = True
 			# print(shop,shop.shop_auth)
 		else:
 			# print("[个人中心]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
-		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self.set_cookie("market_shop_id",str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
-		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_marketing",str(shop_marketing))
+		self.set_cookie("shop_auth",str(shop_auth))
 		shop_point = 0
 		shop_balance = 0
 		try:
@@ -378,6 +380,7 @@ class Discover(CustomerBaseHandler):
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
 			self.set_cookie("shop_marketing", str(shop_marketing))
+			self.set_cookie("shop_auth", str(shop_auth))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -569,6 +572,7 @@ class ShopProfile(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
+		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
 		else:
@@ -578,6 +582,7 @@ class ShopProfile(CustomerBaseHandler):
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_auth", str(shop_auth))
 		satisfy = 0
 		commodity_quality = 0
 		send_speed        = 0
@@ -920,6 +925,7 @@ class Market(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
 		else:
@@ -930,6 +936,7 @@ class Market(CustomerBaseHandler):
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_auth", str(shop_auth))
 
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
@@ -1362,6 +1369,7 @@ class Cart(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
 		else:
@@ -1378,6 +1386,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render(self.tpl_path(shop.shop_tpl)+"/cart-empty.html",context=dict(subpage='cart'))
@@ -1719,7 +1728,7 @@ class Cart(CustomerBaseHandler):
 			print("post        :",data)
 			r=requests.post("http://open.10ss.net:8888",data=data)
 
-			print("======返回信息======")
+			print("======WirelessPrint======")
 			print("res url        :",r.url)
 			print("res status_code:",r.status_code)
 			print("res text       :",r.text)
