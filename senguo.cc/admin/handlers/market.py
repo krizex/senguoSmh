@@ -19,7 +19,7 @@ class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		#return self.send_success()
-		logo_img = self.current_user.accountinfo['headimgurl_small']
+		logo_img = self.current_user.accountinfo.headimgurl_small
 		return self.render('market/shop-list.html',logo_img=logo_img)
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action',"page?:int","lat","lon")
@@ -323,7 +323,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code = str).first()
 			if not shop:
 				break
-		return 'wh-'+ str
+		return 'wh'+ str
 
 
 

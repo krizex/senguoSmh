@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2015/7/6.
  */
-var isLoad = true, pn = 0, cur_action="", ulng= 114.4121185, ulat=30.5086864, action="to_do";
+var isLoad = true, pn = 0, cur_action="", ulng= 0, ulat=0, action="to_do";
 $(document).ready(function(){
     /*getAddress(ulng,ulat);
     loadData("to_do");*/
@@ -25,6 +25,7 @@ $(document).ready(function(){
     }
 }).on("click","#cur_address",function(){//刷新列表
     $(window).scrollTop(0);
+    pn=0;
     initLocation();
 });
 /*根据经纬度获取地址*/
@@ -41,10 +42,15 @@ function getAddress(lng,lat){
 function initLocation(){
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
-            ulat = position.coords.latitude;
-            ulng = position.coords.longitude;//经度
-            loadData(action);
-            getAddress(ulng,ulat);
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;//经度
+            var gpsPoint = new BMap.Point(lng,lat);
+            BMap.Convertor.translate(gpsPoint,0,function(point){
+                ulng = point.lng;
+                ulat = point.lat;
+                loadData(action);
+                getAddress(ulng,ulat);
+            });
         },function(error){
             return Tip("请用手机浏览器，并开启定位功能");
         });
