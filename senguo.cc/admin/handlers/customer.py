@@ -1629,8 +1629,10 @@ class Cart(CustomerBaseHandler):
 			return self.send_success(success_url=success_url,order_id = order.id)
 
 		auto_print = config.auto_print
-		if auto_print == 1:
-			self.autoPrint(order.id,current_shop)
+		print_type = config.receipt_type
+		wireless_type = config.wireless_type
+		if auto_print == 1 and print_type ==1 and wireless_type == 0:
+			self.autoYlyPrint(order.id,current_shop)
 		# 执行后续的记录修改
 
 		return self.send_success(order_id = order.id)
@@ -1648,7 +1650,7 @@ class Cart(CustomerBaseHandler):
 		#else:
 		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 
-	def autoPrint(self,order_id,current_shop):
+	def autoYlyPrint(self,order_id,current_shop):
 		import hashlib
 		import time
 		import requests
@@ -1680,8 +1682,9 @@ class Cart(CustomerBaseHandler):
 			_type = "在线支付"
 		i=1
 		fruit_list = []
+		fruits = sorted(fruits.items(), key=lambda d:d[0])
 		for key in fruits:
-			fruit_list.append(str(i)+":"+fruits[key]["fruit_name"]+""+fruits[key]["charge"]+" * "+str(fruits[key]["num"])+"\r\n")
+			fruit_list.append(str(i)+":"+key[1]["fruit_name"]+"  "+key[1]["charge"]+" * "+str(key[1]["num"])+"\r\n")
 			i = i +1				
 		content="@@2              订单信息\r\n"+\
 				"------------------------------------------------\r\n"+\
