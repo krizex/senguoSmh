@@ -465,6 +465,7 @@ function orderPrint(target,action){
     var html=document.createElement("div"); 
     var _action;
     _action = action;
+    var console_type=parseInt($("#console-type").val());
     if(action =='print'){
         getData(target);
         var parent=target.parents('.order-list-item');
@@ -485,7 +486,6 @@ function orderPrint(target,action){
         data.order_list_id=list;
     }else if(action=="wirelessPrint"){
         _action = "print"
-        var console_type=parseInt($("#console-type").val());
         var order_id=parseInt(target.parents('.order-list-item').attr('data-id'));
         data.order_id=order_id;
         if(console_type==0){
@@ -497,6 +497,31 @@ function orderPrint(target,action){
             $.postJson(_url,_args,function(res){
                 if(res.success){
 
+                }
+            });
+         }
+    }else if(action =='batch_wirelessPrint'){
+        var list=[];
+         _action = "batch_print";
+        $('.order-checked').each(function(){
+            var $this=$(this);
+            var target=$this.parents('.order-list-item').find('.print-order');
+            var order_id=$this.parents('.order-list-item').attr('data-id');
+            list.push(order_id);
+        });
+        if(list.length==0){
+            return Tip('您还未选择任何订单');
+        }
+        data.order_list_id=list;
+        if(console_type==0){
+            var _url="/admin/WirelessPrint";
+            var _args={
+                action:"ylyprint",
+                data:{order_list_id:list}
+            };
+            $.postJson(_url,_args,function(res){
+                if(res.success){
+                    
                 }
             });
          }

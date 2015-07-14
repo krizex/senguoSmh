@@ -25,6 +25,7 @@ import urllib
 from sqlalchemy.orm.exc import NoResultFound
 
 import datetime
+import requests
 # from wxpay import QRWXpay
 
 # 登录处理
@@ -1702,6 +1703,13 @@ class CartCallback(CustomerBaseHandler):
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
+
+		auto_print = shop.config.auto_print
+		if auto_print == 1:
+			print(23333)
+			data={"action":"ylyprint","data":{"id":order.id}}
+			r=requests.post("http://zone.senguo.cc/admin/WirelessPrint",data=data)
+			print(r.text)
 		return self.send_success()
 		
 
