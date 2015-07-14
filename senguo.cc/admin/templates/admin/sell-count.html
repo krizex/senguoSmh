@@ -6,7 +6,7 @@
 {% block content %}
 <span class="right-title">销售统计</span>　
 <div class="box">
-    <p class="tit font16">销量排行-按商品类目</p>
+    <p class="tit font16">销量排行-按商品类目排序</p>
     <div class="choose-change center-block font18 txt-center">
         <a href="javascript:;" class="pre-item text-grey2"> < </a>
         <span class="choose-time">
@@ -27,7 +27,8 @@
     </div>
     <div id="order_trend" style="height:400px" class="clearfix"></div>
     <hr class="clearfix"/>
-    <p class="tit font16">销量排行-按商品名称</p>
+
+    <p class="tit font16">销量排行-按商品名称排序</p>
     <div class="change-box">
         <ul id="order_time_change" class="change-list pull-left">
             <li data-id="1"><a href="javascript:;" class="text-grey3">累计数据/个</a></li>
@@ -35,7 +36,7 @@
         </ul>
     </div>
     <div id="order_time" style="height:400px"  class="clearfix"></div>
-    <hr/>
+    <hr class="clearfix"/>
     <p class="tit font16">收货时间统计</p>
     <div class="change-box">
         <ul id="receive_time_change" class="change-list pull-left">
@@ -69,6 +70,7 @@
             <td>累计回头率</td>
         </tr>
     </table>
+</div>
 {% end %}
 
 {% block bottom %}

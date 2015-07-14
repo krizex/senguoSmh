@@ -46,6 +46,7 @@ $(document).ready(function(){
 	$(".week-date1").text(week_first_date.getDate());
 	$(".week-month2").text(week_last_date.getMonth()+1);
 	$(".week-date2").text(week_last_date.getDate());
+	$(".week").text(WeekNumOfYear(ChooseDate));
 	$(".month-span").hide();
 	$(".date-span").hide();
 	$(".year-span").show();
@@ -111,15 +112,9 @@ $(document).ready(function(){
 			choose_month=ChooseDate.getMonth()+1;
 			choose_date = ChooseDate.getDate();
 
-			// console.log(ChooseDate.toString());
-
 			$(".year").text(choose_year);
 			$(".month").text(choose_month);
 			$(".date").text(choose_date);
-
-			// console.log(choose_year);
-			// console.log(choose_month);
-			// console.log(choose_date);	
 			break;
 		case 2:
 			ChooseDate = GetDateN(ChooseDate,7);
@@ -151,14 +146,13 @@ $(document).ready(function(){
 	}
 });
 
-function WeekNumOfYear(date) {   
-	var date2=new Date(date.getFullYear(), 0, 1); 
-	var day1=date.getDay(); 
-	if(day1==0) day1=7; 
-	var day2=date2.getDay(); 
-	if(day2==0) day2=7; 
-	d = Math.round((date.getTime() - date2.getTime()+(day2-day1)*(24*60*60*1000)) / 86400000);   
-	return Math.ceil(d /7) ;   
+// 实时更新函数
+function liveInit(){
+	CurrentDate=new Date();
+	current_year=CurrentDate.getFullYear();
+	current_month=CurrentDate.getMonth()+1;
+	current_date = CurrentDate.getDate();
+	current_week = WeekNumOfYear(CurrentDate);
 }
 
 function initCharts(){
@@ -172,25 +166,136 @@ function initCharts(){
 		var $this = $(this);
 		$this.find("li").eq(0).addClass("active");
 	});
-	// console.log(current_year);
-	// console.log(current_month);
-	// console.log(current_date);
-	// console.log(current_week);
-	// alert(choose_week);
-	var str ='2015-06-30 23:13:15';
-	str = str.replace(/-/g,"/");
-	var date = new Date(str );
 
-	console.log(GetDateN(date,1).toString());
+	// var date1 = new Date(2015,0,4);
+	// var date2 = new Date(2015,6,14,23,59,59);
+	// console.log(date2.toString());
 
-
+	// console.log(CurrentDate.getFullYear(),CurrentDate.getMonth()+1,CurrentDate.getDate());
+	// console.log(WeekNumOfYear(CurrentDate));
+	// console.log(WeekNumOfYear(date1));
+	// console.log(date1.toString());
 }
 
-// 获取当前日期的前后N天日期(日期格式):
+// 获取当前日期的前后N天日期(返回值为Date类型)(N<=28):
 function GetDateN(date,AddDayCount) 
 { 
-	var dd = new Date();
-	dd.setDate(date.getDate()+AddDayCount);//获取AddDayCount天后的日期 
+	var dd = new Date(2015,1,1);
+
+	// add by jyj 2015-7-14
+	var date_year = date.getFullYear();
+	var date_month = date.getMonth()+1;
+	var date_date = date.getDate();
+
+	dd.setDate(date_date);
+	dd.setMonth(date_month - 1);
+	dd.setFullYear(date_year);
+
+	var n_flag;
+	var is_leap;
+
+	if(AddDayCount >= 0){
+		n_flag = 1;
+	}
+	else{
+		n_flag = 0;
+	}
+
+	if((date_year % 4 == 0 && date_year % 100 != 0) || (date_year % 400 == 0)){
+		is_leap = 1;
+	}
+	else{
+		is_leap = 0;
+	}
+
+	switch(n_flag){
+		case 1:
+			if (date_month == 2){
+				switch(is_leap){
+					case 1:
+						if(date_date + AddDayCount > 29){
+							dd.setMonth(date_month);
+							dd.setDate(date_date+AddDayCount - 29);
+						}
+						else{
+							dd.setDate(date_date + AddDayCount);
+						}
+					break;
+
+					case 0:
+						if(date_date + AddDayCount > 28){
+							dd.setMonth(date_month);
+							dd.setDate(date_date+AddDayCount - 28);
+						}
+						else{
+							dd.setDate(date_date + AddDayCount);
+						}
+
+					break;
+				}
+			}
+			else if ((date_month == 1 || date_month == 3 || date_month == 5 || date_month == 7 || date_month == 8 || date_month == 10 ) && date_date + AddDayCount > 31){
+				dd.setMonth(date_month);
+				dd.setDate(date_date+AddDayCount - 31);	
+			}
+			else if(date_month == 12 && date_date + AddDayCount > 31){
+				dd.setDate(date_date+AddDayCount - 31);
+				dd.setMonth(0);
+				dd.setFullYear(date_year + 1);
+			}
+			else if ((date_month == 4|| date_month == 6 || date_month == 9 || date_month == 11) && date_date + AddDayCount > 30){
+				dd.setMonth(date_month);
+				dd.setDate(date_date+AddDayCount - 30);	
+			}
+			else{
+				dd.setDate(date_date + AddDayCount);
+			}
+		break;
+		case 0:
+			if ((date_month == 3) && date_date + AddDayCount <= 0){
+				switch(is_leap){
+					case 1:
+						if(date_date + AddDayCount <= 0){
+							dd.setMonth(date_month - 2);
+							dd.setDate(date_date + 29 + AddDayCount);
+						}
+						else{
+							dd.setDate(date_date + AddDayCount);
+						}
+					break;
+
+					case 0:
+						if(date_date + AddDayCount <= 0){
+							dd.setMonth(date_month - 2);
+							dd.setDate(date_date + 28 + AddDayCount);
+						}
+						else{
+							dd.setDate(date_date + AddDayCount);
+						}
+
+					break;
+				}
+			}
+			else if ((date_month == 2 || date_month == 4 || date_month == 6 || date_month == 8 || date_month == 9 || date_month == 11 ) && date_date + AddDayCount <= 0){
+				dd.setMonth(date_month - 2);
+				dd.setDate(date_date + 31 + AddDayCount);
+			}
+			else if(date_month == 1 && date_date + AddDayCount <= 0){
+				dd.setFullYear(date_year - 1);
+				dd.setMonth(11);
+				dd.setDate(date_date + 31 + AddDayCount);
+			}
+			else if ((date_month == 5|| date_month == 7 || date_month == 10 || date_month == 12) && date_date + AddDayCount <= 0){
+				dd.setMonth(date_month - 2);
+				dd.setDate(date_date + 30 + AddDayCount);
+			}
+			else{
+				dd.setDate(date_date + AddDayCount);
+			}
+		break;
+	}
+	
+	// 
 	var y = dd.getFullYear(); 
 	var m = (dd.getMonth()+1)<10?"0"+(dd.getMonth()+1):(dd.getMonth()+1);//获取当前月份的日期，不足10补0
 	var d = dd.getDate()<10?"0"+dd.getDate():dd.getDate(); //获取当前几号，不足10补0
@@ -198,15 +303,6 @@ function GetDateN(date,AddDayCount)
 	str = str.replace(/-/g,"/");
 	var new_date = new Date(str);
 	return new_date;
-}
-
-// 实时更新函数
-function liveInit(){
-	CurrentDate=new Date();
-	current_year=CurrentDate.getFullYear();
-	current_month=CurrentDate.getMonth()+1;
-	current_date = CurrentDate.getDate();
-	current_week = WeekNumOfYear(CurrentDate);
 }
 
 //获取当前指定日期所在周数的周的第一天的日期
@@ -228,3 +324,37 @@ function getWeekLastDate(date){
 	}
 	return next_date;
 }
+
+function WeekNumOfYear(date) {   
+	var yy = date.getFullYear();
+	var day = date.getDay();
+
+	var date0 = new Date(yy,0,1);
+	var date_diff = DateDiff(date,date0);
+	if(date_diff < 7-day){
+		week_num = 1;
+	}
+	else{
+		var week_num = Math.ceil((date_diff-(7-day))/7)+1;
+	}
+
+	return week_num + 1;
+}
+
+ //计算天数差的函数，通用  
+function  DateDiff(sDate1,  sDate2){    
+	   var  oDate1,  oDate2,  iDays ;
+	   var dd1,dd2,mm1,mm2,yy1,yy2;
+	   dd1 = sDate1.getDate();
+	   mm1 = sDate1.getMonth();
+	   yy1 = sDate1.getFullYear();
+	   dd2 = sDate2.getDate();
+	   mm2 = sDate2.getMonth();
+	   yy2 = sDate2.getFullYear();
+
+	   oDate1  =  new  Date(yy1,mm1,dd1) ;   
+	   oDate2  =  new  Date(yy2,mm2,dd2) ; 
+	   iDays  =  parseInt(Math.abs(oDate1  -  oDate2)/1000/60/60/24);    //把相差的毫秒数转换为天数  
+	   return  iDays;  
+}    
+
