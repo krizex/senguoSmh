@@ -47,7 +47,7 @@
 .wrap-bbtns{text-align: right;margin-top: 30px;}
 .wrap-bbtns>a{margin-left: 20px;width: 50px;height: 24px;font-size: 14px;text-align: center;line-height: 24px;display: inline-block;}
 .code2-logo{width: 40px;position: absolute;top: 50%;left: 50%;-webkit-transform:translate(-50%,-50%);border-radius: 4px;margin-top: -16px;}
-.manager-ipt{color: #333;height: 36px;text-align: right;width: 170px;}
+.manager-ipt{color: #333;height: 32px;text-align: right;width: 170px;}
 .success-box{margin-top: 100px;}
 .success-box>p{color: #333;margin-bottom: 15px;text-align: center;}
 .test-shop{display: block;margin:40px auto 0 auto;width: 120px;height: 40px;line-height: 40px;border-radius: 40px;background-color: #48b6a4;color: #fff;text-align: center;}
