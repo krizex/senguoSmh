@@ -262,6 +262,18 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 			follower_sum = follower_sum , on_num = on_num)
 		return self.write_message(json.dumps(data))
 
+# 销售统计 add by jyj 2015-7-8
+class SellStatic(AdminBaseHandler):
+	def get(self):
+		return self.render("admin/sell-count.html",context=dict(subpage='sellstatic'))
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str")
+	def post(self):
+
+		output_data = []
+		return send_success(output_data=output_data)
+##
 
 # 订单统计
 class OrderStatic(AdminBaseHandler):
