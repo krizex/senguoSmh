@@ -1,0 +1,44 @@
+{% extends 'count-base.html' %}
+{% block title%}用户增长{% end %}
+{% block count %}
+<div class="box admin-right pull-right">
+    <div class="month-change center-block font18">
+        <a href="javascript:;" class="pre_month text-grey2"> < </a>
+        <span class="">
+            <span class="year"></span>年
+            <span class="month"></span>月
+        </span>
+        <a href="javascript:;" class="next_month text-grey2"> > </a>
+    </div>
+    <div id="user_trend" style="height:400px"></div>
+    <p class="text-center">新增用户数</p>
+    <hr/>
+    <p class="tit font16">详细数据</p>
+    <table class="detail-count text-center table-count">
+        <tr class="bg-grey2 title">
+            <td>时间</td>
+            <td>商城用户</td>
+            <td>卖家数</td>
+            <td>已绑定手机</td>
+            <td>总用户</td>
+            <td>用户累计</td>
+        </tr>
+    </table>
+    <div class="users-pagination list-pagination clearfix">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now"></span>/<span class="page-total"></span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/echarts.js"></script>
+<script src="{{static_url('js/superadmin-count_user.js')}}"></script>
+{% end %}
+

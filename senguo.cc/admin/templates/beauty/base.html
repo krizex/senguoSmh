@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content ="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1,initial-scale=1,user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8"/>
+    <meta name="keywords" content="森果,水果商城,水果O2O,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
+    <meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
+    <title>{% block title%}森果O2O商城{% end %}</title>
+    <link rel="stylesheet" href="{{static_url('css/beauty/global.min.css')}}"/>
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+    {% block head %}{% end %}
+</head>
+<body>
+{% set subpage = context.get("subpage", "home")%}
+
+{% set shop_active = ""%}
+{% set home_active = ""%}
+{% set cart_active = ""%}
+{% set center_active = ""%}
+{% set dis_active ="" %}
+
+{% if subpage == "shop" %}
+{% set shop_active = "active"%}
+{% elif subpage == "home"%}
+{% set home_active = "active"%}
+{% elif subpage == "cart"%}
+{% set cart_active = "active"%}
+{% elif subpage == "center"%}
+{% set center_active = "active"%}
+{% elif subpage == "discover"%}
+{% set dis_active = "active"%}
+{% end %}
+    <div class="bottom-nav navbar-fixed-bottom font12 bg-grey9" id="nav">
+        <ul class="row select-list">
+            <li class="w20 pull-left {{shop_active}}">
+                <a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="text-grey shop_href home">
+                    <em class="bg_change"></em>
+                    <p class="text-center">店铺</p>
+                </a>
+            </li>
+            <li class="w20 pull-left {{home_active}}">
+                <a href="{{reverse_url('Market',handler.shop_code)}}" class="text-grey goods" >
+                    <em class="bg_change"></em>
+                    <p class="text-center">商品</p>
+                </a>
+            </li>
+             <li class="w20 pull-left {{dis_active}} discover-tab">
+                <a href="{{reverse_url('customerDiscover',handler.shop_code)}}" class="text-grey discover" >
+                    <em class="bg_change"></em>
+                     <span class="discover-new circle bg-pink hidden"></span>
+                    <p class="text-center">发现</p>
+                </a>
+            </li>
+            <li class="w20 pull-left {{cart_active}} cart_item">
+                <a href="{{reverse_url('customerCart',handler.shop_code)}}" class="text-grey cart" >
+                    <em class="bg_change"></em>
+                    <span class="cart_num bg-pink text-white hidden">0</span>
+                    <p class="text-center">购物篮</p>
+                </a>
+            </li>
+            <li class="w20 pull-left {{center_active}}">
+                <a href="{{reverse_url('customerHome',handler.shop_code)}}" class="text-grey my">
+                    <em class="bg_change"></em>
+                    <p class="text-center">我的</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="body-container" id="container">
+        <div class="container phone-box">
+            {% block content %}{% end %}
+        </div>
+    </div>
+    {% block other %}{% end %}
+    <script src="/static/js/zepto&fastclick&lazyload&template&wx.min.js"></script>
+    <script src="{{static_url('js/market-public.js')}}"></script>
+    {% block bottom %}{% end %}
+    <a id="backTop" class="little_pear anim-slideInRight"><img src="/static/svg/half@2x.png" class="src_change"/></a>
+</body>
+</html>
+

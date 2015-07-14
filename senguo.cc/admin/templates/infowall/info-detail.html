@@ -1,0 +1,99 @@
+{% extends 'base.html'%}
+{% block title%}信息详情{% end %}
+{% block head%}<link rel="stylesheet" href="{{static_url('css/infowall-detail.css')}}"/>{% end %}
+
+{% block content %}
+{% set info =context['info']%}
+<header class="title-box2">
+    <a href="javascript:history.back(-1);" class="return-btn"></a>
+    <span class="title">信息详情</span>
+</header>
+<div class="info-content bg-white">
+    <div class="info-detail" data-id="{{info.id}}">
+        <div class="row info-box">
+            <span class="col-xs-2">
+                <img src="{{info.admin.accountinfo.headimgurl}}" class="head-img" id="headImg"/>
+            </span>
+            <span class="nickname">{{info.admin.accountinfo.nickname}}</span>
+             <span class="row address">
+                <span class="col-xs-6">{{info.address}}</span>
+                <span class="col-xs-4 col-sm-6 text-right text-grey3 time">{{info.create_date}}</span>
+            </span>
+        </div>
+        <div class="info-text" id="infoText">
+            {{info.text}}
+        </div>
+        <div class="home-fruit-list">
+            {% for fruittype in info.fruit_type%}
+            <span>{{fruittype.name}}</span>
+            {% end %}
+        </div>
+        <div class="img-list">
+            {% for fruitimg in info.fruit_img%}
+            <img src="{{fruitimg.img_url}}"/>
+            {% end %}
+        </div>
+        <ul class="funciont-btn-box pull-right">
+            {% if current_user in info.collected_admins %}
+            <li class="collection-notice">
+                <a href="javascript:;">
+                    收藏
+                    <span class="number">{{len(info.collected_admins)}}</span>
+                </a>
+            </li>
+            {% else %}
+            <li class="collection-btn">
+                <a href="javascript:;">
+                    收藏
+                    <span class="number">{{len(info.collected_admins)}}</span>
+                </a>
+            </li>
+            {% end %}
+            <li><a href="javascript:;" id="shareTimeLine" class="shareTo">分享</a></li>
+            {% if current_user %}
+            <li><a href="javascript:;" data-toggle="modal" data-target="#commnetBox">评论<span class="number" id="commentNumber">{{len(info.comment)}}</span></a></li>
+            {% else %}
+            <li><a href="{{reverse_url('fruitzoneAdminHome')}}">评论<span class="number">{{len(info.comment)}}</span></a></li>
+            {% end %}
+        </ul>
+    </div>
+    <p>全部回复：</p>
+    <div class="comment-list">
+        <ul>
+            {% for comment in info.comment%}
+            <li class="row">
+                <span class="col-xs-2 col-sm-1">
+                    <img src="{{comment.admin.accountinfo.headimgurl}}" class="head-img"/>
+                </span>
+                <span class="col-xs-10 col-sm-11">
+                    <span class="nickname pull-left">
+                        <span class="name">{{comment.admin.accountinfo.nickname}}</span>:
+                    </span>
+                    <div class="comment pull-left">{{comment.text}}</div>
+                </span>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+</div>
+<div class="modal fade comment-box" id="commnetBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h5>填写您的评论</h5>
+            </div>
+            <div class="modal-body">
+                <textarea id="commntEdit" class="well"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
+                <button type="button" class="btn pull-right sure-btn green-color" id="commentPublic">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/infowall-detail.js')}}"></script>
+{% end %}

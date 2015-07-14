@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>{% end %}
+
+{% block content %}
+{% set shop_code = current_shop.shop_code %}
+<div class="row">
+    <a href="/admin/marketing?action=coupon"><button class="button clearfix">返回</button></a>
+   <span class="mytitle">优惠券/编辑优惠券</span>
+   <p class="tit7"> 当前正在编辑的优惠券编号为[{{output_data["coupon_id"]}}]</p>
+</div>
+<div class="row"> 
+      <div class="col-lg-8">
+           <div class="row div1">
+                <p class="col-lg-2">优惠金额</p>
+                <div class="in col-lg-5">
+                    <input  value="{{output_data["coupon_money"]}}" id="in1">
+                    <p class="tit4">只能是大于0.01的数字，可以为整数</p>
+                </div>
+                 <p class="col-lg-2">元</p>
+            </div>
+            <div class="row div1">
+                <div class="col-lg-2">
+                    <p>消费条件</p>
+                    <p>(选填)</p>
+                </div>
+                 <div class="in col-lg-5">
+                    <input value="{{output_data["use_rule"]}}"id="in2">
+                    <p class="tit5">订单满多少元可用。如不填，则默认:订单满任意金额可用</p>
+                </div>
+                 <p class="col-lg-2">元</p>
+             </div>
+            <div class="row div1">
+                <p class="col-lg-2">库存</p> 
+                <div class="in col-lg-5">
+                    <input value="{{output_data["coupon_totalnum"]}}"id="in3">
+                    <p class="tit4">只能是大于0的数字</p>
+                </div>
+                <p class="col-lg-2">张</p>
+            </div>
+            <div class="row div1">
+                <div class="col-lg-2">
+                <p>领取限制</p>
+                <p>(选填)</p>
+                </div> 
+                <div class="in col-lg-5">
+                    <input value="{{output_data["get_limitnum"]}}"id="in4">
+                    <p class="tit5">每个用户领取上限。如不填，则默认为1</p>
+                </div>
+                <p class="col-lg-2">张</p>
+            </div>
+            <div class="row div1">
+                <p class="col-lg-2">有效期</p> 
+                <div class="in col-lg-2">
+                    <form action="" method="get"> 
+                        <label class="tit5"><input name="valid_way" type="radio" value="{{output_data["uneffective_time"]}}" checked="checked"/>固定日期 </label></br>
+                        <label class="tit5"><input name="valid_way" type="radio" value="" />领取后</label> 
+                    </form> 
+            </div>
+            <div class="col-lg-7">
+                <!-- <div class="">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="all">所有</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="on">已上架</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="off">已下架</a>
+                    </li>
+                </ul>
+            </div> -->
+                <div><input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in7"></div>
+                <div class="row">
+                    <input class="col-lg-2" id="in5">
+                    <div class="col-lg-3 tit5">生效</div>
+                    <div class="col-lg-4 tit5">有效天数</div>
+                    <!-- <span class="col-lg-5 tit5 ">生效<span class="tit5" type="margin-left">   有效天数</span></span> -->
+                    <input class="col-lg-2" id="in6">
+                </div> 
+            </div>
+        </div>
+</div>
+      <div class="col-lg-4 div1"> hhhh</div>
+</div>
+<div class="row">
+    <button class="edit editconfigbtn">确认</button>
+    <a href="/admin/marketing?action=coupon"> <button class="configcancel">取消</button></a>
+</div>
+<!-- <div class="row div2 div0">
+    <div class="col-lg-2">
+       优惠码
+    </div>
+    <div class="col-lg-2">
+     优惠金额
+    </div>
+    <div class="col-lg-2">
+       用户
+    </div>
+    <div class="col-lg-2">
+    领取时间
+    </div>
+    <div class="col-lg-2">
+    使用时间
+    </div>
+    <div class="col-lg-2">
+      消费记录
+    </div>
+</div> -->
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/datepicker/WdatePicker.js"></script>
+<script src="{{static_url('js/admin-marketing.js')}}"></script>
+{% end %}

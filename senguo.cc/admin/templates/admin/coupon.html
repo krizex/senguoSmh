@@ -1,0 +1,71 @@
+{% extends 'market-base.html' %}
+{% block title%}营销设置{% end %}
+{% block setcontent %}
+    {% if _shop_auth ==0 %}
+     <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+    {% else %}
+    <div class="clearfix top-box">
+        <p>用户可使用优惠券在下单支付时抵扣现金。 </p>
+        <p>商家可以通过发放优惠券的形式吸引用户，活动形式有：充值送优惠券、购买某种商品送优惠券、参与活动送优惠券等。</p>
+        <a href="/admin/marketing?action=newpage">
+            <button class="newbtn btn">新建优惠券</button>
+        </a>
+    </div>
+    <div class="row div0 top-box">
+        <div class="col-lg-2">
+        优惠金额
+        </div>
+        <div class="col-lg-2">
+         发放日期
+        </div>
+        <div class="col-lg-2">
+        领取限制
+        </div>
+        <div class="col-lg-2">
+        可消费商品
+        </div>
+        <div class="col-lg-2">
+        使用/领取/库存
+        </div>
+        <div class="col-lg-2">
+          操作
+        </div>
+    </div>
+
+    <div class="div1">
+        <ul>
+        {% for data in output_data %}
+            <li class="top-box row details">
+            <a href="/admin/marketing?action=details&select_rule=0&coupon_id={{data['coupon_id']}}">
+                 <div>
+                    <p class="tit1">{{data["coupon_money"]}}元</p>
+                </div>
+                <div>
+                    <div class="col-lg-2">
+                    
+                    <p class="tit2">订单满{{data["use_rule"]}}元才能消费</p>
+                </div>
+                <div class="col-lg-2">
+                    {{data["uneffective_time"]}}
+                </div>
+                <div class="col-lg-2">
+                    每人限领{{data["get_limitnum"]}}张
+                </div>
+                <div class="col-lg-2">
+                    限商品分组：{{data["use_for"]}}
+                </div>
+                <div class="col-lg-2 tit3">
+                    {{data["coupon_usenum"]}}  /{{data["coupon_remainnum"]}}/ {{data["coupon_totalnum"]}}</div>
+                     </a> 
+                <div class="col-lg-2 row ">
+                     <a href="#" class="col-lg 4 tit6">推广</a>
+                     <a href="/admin/marketing?action=editcoupon&coupon_id={{data['coupon_id']}}" class="col-lg 4 tit6">编辑</a>
+                     <a href="/admin/marketing?action=close&select_rule=0&coupon_id={{data['coupon_id']}}" class="col-lg 4 tit6">关闭</a>
+                </div>
+                </div> 
+            </li>
+            {% end %}
+        </ul>
+    </div>
+    {% end %}
+{% end %}

@@ -1,0 +1,177 @@
+{% extends 'shop-base.html'%}
+{% block shop %}
+ <div class="search-input input-group pull-right" >
+         <input type="text" id="inputinfo" placeholder="输入店铺名或者店铺号进行搜索" class="search-con form-control"/>
+         <input type="submit"  id="search" value="店铺搜索" class="search-btn form-control order-search"/>
+    </div>
+<div class="admin-right top-margin1 pull-right "  >
+<form action="#" method="get" >
+            <div class="dropDownList">
+                <div id="dropDownList1" class="dropdown">
+                <span style="margin-bottom:60px">店铺状态：</span>
+
+                    <select id="shopstatus"  style="width:100px"  >
+                        <option value="5">所有 (<span>{{output_data_count["status_5_count"]}}</span>)</option>
+                        <option value="4">未激活 (<span>{{output_data_count["status_4_count"]}}</span>)</option>
+                        <option value="2">筹备中 (<span>{{output_data_count["status_2_count"]}}</span>)</option>
+                        <option value="1">营业中 (<span>{{output_data_count["status_1_count"]}}</span>)</option>
+                        <option value="3">休息中 (<span>{{output_data_count["status_3_count"]}}</span>)</option>
+                        <option value="0">已停业 (<span>{{output_data_count["status_0_count"]}}</span>)</option>>
+                    </select>                
+                <span id="dropDownList2" class="dropdown">
+                <span style="margin-left:60px;margin-bottom:50px">排序规则：</span>
+                    <select id="sortrule"  style="width:100px">
+                        <option value="0">按注册时间</option>
+                        <option value="1">按评价数</option>
+                        <option value="2">按账户余额</option>
+                        <option value="3">按粉丝数</option>
+
+                        <option value="4"  selected="selected">按订单数</option>
+                        <option value="5">按营业额数</option>
+                        <option value="6">按客单价</option>
+                    </select>
+                </span>
+
+                <span style="margin-left:60px;">是否降序：</span>
+                 <select id="ifreverse"  style="width:100px">
+                        <option value="1">是</option>
+                        <option value="0">否</option>
+                    </select>
+
+                <span  id="dropDownList3" class="dropdown">
+                <span style="margin-left:60px;margin-bottom:50px">认证状态：</span>
+                    <select id="renzheng" style="width:100px">
+                        <option value="4">所有 (<span>{{output_data_count["auth_4_count"]}}</span>)</option>
+                        <option value="3">已认证 (<span>{{output_data_count["auth_3_count"]}}</span>)</option>
+                        <option value="2">个人认证 (<span>{{output_data_count["auth_2_count"]}}</span>)</option>
+                        <option value="1">企业认证 (<span>{{output_data_count["auth_1_count"]}}</span>)</option>
+                        <option value="0">未认证 (<span>{{output_data_count["auth_0_count"]}}</span>)</option>
+                    </select>
+                </span>
+            </div>
+            </div>
+        </form>
+</div>
+<div class="admin-right top-margin1 pull-right" >
+    <ul class="list-group " id="list-group">
+        {% for data in output_data %}
+        <li class="list-group-item  clearfix">
+            <img src="{{data['shop_trademark_url'] or '/static/images/TDSG.png'}}" class="pull-left w80">
+            <div class="col-lg-5 col-md-5 boder-rd">
+                <!-- change 6.8am by jyj -->
+                <p>
+                    <a href="/{{data["shop_code"]}}" target="_blank"> <span class="text-blue tit2 shop_name">{{data['shop_name']}}</span></a>
+                    <span class="auth_type">{{data["auth_type"]}}</span>
+                   <a href="/super/shopauth?page=0" target="_blank"> <span class="text-blue">认证信息</span></a>
+                </p>
+                <p>
+                    <span class="tit2">店铺管理员：<a href="/super/user"  target="_blank"><span class="text-blue admin_nickname">{{data["admin_nickname"]}}</span></a></span>
+                </p>
+                <p>
+                    <span  class="shop_address">店铺地址：{{data["shop_address_detail"]}}</span></span>
+                </p>
+            </div>
+
+            <div class="col-lg-5 col-md-5">
+                <p>
+                    <span class="tit2 shop_code">店铺号：{{data["shop_code"] }}</span>
+                    <span class="shop_status">店铺状态：{{data["shop_shop_status"]}}</span>
+                </p>
+                <p>
+                    <span class="tit1 create_date">注册时间：{{data["create_date"]}}</span>
+                    <a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1"  target="_blank"><span class="text-blue">申请信息</span></a>
+                </p>
+            </div>
+            <div class="col-lg-12 col-md-12" style="background-color:#F8F8F8">
+                <div class="col-lg-1 col-md-1" ></div>
+                <div class="col-lg-5 col-md-5 ml-6">
+                        <p>  
+                            <span class="tit2 old_msg">评价数：{{data["old_msg"]}}条</span>
+                            <span class="satisfy">满意度：{{data["satisfy"]}}</span>
+                        </p>
+                        <p>
+                            <span class="tit2 order_count">订单数：{{data["order_count"]}}个</span>
+                            <span class="goods_count">商品种类：{{data["goods_count"]}}种</span>
+                        </p>
+                        <p>
+                            <span class="tit2 old_user">老用户：{{data["old_user"]}}</span>
+                        </p> 
+                </div>
+                <div class="col-lg-5 col-md-5 ml13">   
+                        <p>
+                            <span class="tit2 shop_property">营业额：{{data["shop_property"]}}元</span>
+                            <span class="single_price">客单价：{{data["single_price"]}}元</span>
+                        </p>
+                        <p>
+                            <span class="tit2 available_balance">账户：{{data["available_balance"]}}元</span>
+                            <span class="fans_count">粉丝数：{{data["fans_count"]}}</span>
+                        </p> 
+                    </div>
+                </div>
+        </li>
+        {% end %}
+    </ul>
+</div>
+<nav>
+    <ul class="pager">
+        <li><a href="javascript:;" id="PrePage">&larr; 上一页</a></li>
+        <li><a href="javascript:;" id="NextPage">下一页&rarr;</a></li>
+    </ul>
+</nav>
+ <ul id="temp-ul" class="hidden">
+        <li class="list-group-item  clearfix">
+            <img src=""  class="shop-img pull-left w80">
+            <div class="col-lg-5 col-md-5 boder-rd">
+                <!-- change 6.8am by jyj -->
+                <p>
+                    <a href="" target="_blank" class="ushop_code_link text-blue tit2"></a>
+                    <span class="uauth_type"></span>
+                    <a href="/super/shopauth?page=0" target="_blank"><span class="text-blue">认证信息</span></a>
+                </p>
+                <p>
+                    <span class="tit2">店铺管理员：<a href="/super/user"  target="_blank"><span class="text-blue uadmin_nickname"></span></a></span>
+                </p>
+                <p>
+                    <span  class="ushop_address">店铺地址：<span class="ushop_address_name"></span></span></span>
+                </p>
+            </div>
+
+            <div class="col-lg-5 col-md-5">
+                <p>
+                    <span class="tit2">店铺号：<span class="ushop_code"></span></span>
+                    <span class="">店铺状态：<span class="ushop_status"></span></span>
+                </p>
+                <p>
+                    <span class="tit1">注册时间：<span class="ucreate_date"></span></span>
+                      <a href="/super/shopManage?action=all_temp&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1"  target="_blank"><span class="text-blue">申请信息</span></a>
+                </p>
+            </div>
+            <div class="col-lg-12 col-md-12" style="background-color:#F8F8F8">
+                <div class="col-lg-1 col-md-1" ></div>
+                <div class="col-lg-5 col-md-5 ml-6">
+                        <p>  
+                            <span class="tit2 ">评价数：<span class="uold_msg"></span>条</span>
+                            <span class="">满意度：<span class="usatisfy"></span></span>
+                        </p>
+                        <p>
+                            <span class="tit2 ">订单数：<span class="uorder_count"></span>个</span>
+                            <span class="">商品种类：<span class="ugoods_count"></span>种</span>
+                        </p> 
+                        <p>
+                            <span class="tit2 ">老用户：<span class="uold_user"></span></span>
+                        </p> 
+                </div>
+                <div class="col-lg-5 col-md-5 ml13">   
+                         <p>
+                            <span class="tit2 ">营业额：<span class="ushop_property"></span>元</span>
+                            <span class="">客单价：<span class="usingle_price"></span>元</span>
+                        </p>
+                        <p>
+                            <span class="tit2 ">账户：<span class="uavailable_balance"></span>元</span>
+                            <span class="">粉丝数：<span class="ufans_count"></span></span>
+                        </p> 
+                    </div>
+                </div>
+        </li>
+    </ul>
+{% end %}

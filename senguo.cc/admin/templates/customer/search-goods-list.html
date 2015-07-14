@@ -1,0 +1,28 @@
+{% extends 'base.html'%}
+{% block title %}商品搜索列表{% end %}
+
+{% block head%}
+<link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+{% end %}
+{% block header%}
+
+{% end%}
+
+{% block content%}
+<input type="hidden" id="shop_code" value="{{handler.shop_code}}"/>
+<header class="herder bg-green text-white text-center">
+        <a href="{{reverse_url('Market',handler.shop_code)}}" class="back" id="back"><em></em></a>
+        <input type="text" placeholder="请输入商品名" class="search-linput pull-left" id="searchKey"/>
+        <a href="javascript:;" class="search-btn" id="searchSubmit"><em></em></a>
+</header>
+<div class="shoplist_box mt40">
+    <ul class="searchlist">
+
+    </ul>
+</div>
+
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market-search.js')}}"></script>
+{% end %}

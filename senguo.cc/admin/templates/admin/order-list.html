@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}订单管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-order.css')}}"/>{% end %}
+{% block content %}
+<span class="right-title"></span>
+<ul class="order-list-content set-width-float">
+</ul>
+<input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-info" data-img="{{current_shop.config.receipt_img}}"  data-active="{{current_shop.config.receipt_img_active}}"/>
+<input type="hidden" id="receipt-type" value="{{current_shop.config.receipt_type}}" />
+<input type="hidden" id="console-type" value="{{current_shop.config.wireless_type}}" />
+<div class="order_set_box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header set-width-float">
+                <span class="title pull-left" id="myModalLabel">
+                   
+                </span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body set-width-float">
+		<input type="text" id="order_ser_val"/>
+	    </div>
+             <div class="modal-footer">
+                <div class="btn-box">
+                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;">确认</button>
+                </div>
+            </div>
+       </div>
+    </div>
+</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script>
+var action=$.getUrlParam('action');
+if(action=='order') $('.right-title').text('订单搜索结果');
+else if(action=='customer_order') $('.right-title').text('用户订单'); 
+else if(action=='SH2_order') $('.right-title').text('员工订单');  
+</script>
+<script src="{{static_url('js/admin-user-order.js')}}"></script>
+{% end %}

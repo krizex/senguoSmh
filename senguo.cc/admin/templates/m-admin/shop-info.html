@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+{% block title %}店铺信息{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="/madmin/shopset" class="back">返回</a>
+    <span>店铺信息</span>
+    <a href="/madmin" class="head-right spread-list">切换店铺</a>
+</div>
+{% end %}
+{% block content %}
+<input type="hidden" id="token" value="{{token}}"/>
+<div class="wrap-shop-info pb45">
+    <ul class="data-list mt10">
+        <li class="logo-li" id="shop_img_box">
+            <a href="javascript:;" id="shop_img">
+                <span class="fr more"><span class="img-border"><img id="shop_logo" url="{{current_shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" src="{{current_shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="店铺logo"/></span></span>
+                <span class="text-left">店铺logo</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="edit_item" data-action="name">
+                <span class="fr c333 more">{{current_shop.shop_name}}</span>
+                <span class="text-left">店铺名称</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="{% if current_shop.shop_code == 'not set' %}edit_item{% else %}un_edit{% end %}" data-action="code">
+                <span class="fr c333 more">{% if current_shop.shop_code == 'not set' %}未设置{% else %}{{current_shop.shop_code or '请设置'}}{% end %}</span>
+                <span class="text-left">店铺号</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="un_edit">
+                <span class="fr c333 more" id="shop_link">{% if current_shop.shop_code == 'not set' %}无{% else %}http://senguo.cc/{{current_shop.shop_code}}{% end %}</span>
+                <span class="text-left">店铺链接</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" id="shop_code2">
+                <span class="fr c333 more"><img class="code2" src="/static/m-admin/img/code2.png" alt="二维码"/></span>
+                <span class="text-left">二维码</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="data-list mt10">
+        <li>
+            <a href="javascript:;" id="shop_status" data-id="{{current_shop.status}}">
+                <span class="fr c333 shop_status more"></span>
+                <span class="text-left">店铺状态</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="un_edit" id="shop_auth" data-id="{{current_shop.shop_auth}}">
+                <span class="fr c333 shop_auth more"></span>
+                <span class="text-left">认证状态</span>
+            </a>
+        </li>
+        <li class="info-li">
+            <a href="javascript:;" class="group edit_item" data-action="intro">
+                <span class="fr c333 text-clip more">{{current_shop.shop_intro}}</span>
+                <span class="text-left info-left">店铺简介</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="data-list mt10">
+        <li>
+            <a href="javascript:;" class="edit_item" data-action="phone">
+                <span class="fr c333 more">{{current_shop.shop_phone or '未设置' }}</span>
+                <span class="text-left">联系电话</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="pc_edit">
+                <span class="fr c333 more">{{current_shop.deliver_area or '未设置'}}</span>
+                <span class="text-left">配送区域</span>
+            </a>
+        </li>
+        <li>
+            <a href="/madmin/shopaddress?province={{province}}&city={{city}}&detail={{current_shop.shop_address_detail or ''}}&code={{current_shop.shop_city or ''}}" class="">
+                <span class="fr c333 more">{{address}}</span>
+                <span class="text-left">店铺地址</span>
+            </a>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-code2 hidden">
+    <div class="pop-bcontent">
+        <div class="b-close"></div>
+        <img class="code2-logo" src="/static/images/admin_logo1.png" alt="森果logo"/>
+        <div class="big-code2" id="big-code2">
+
+        </div>
+        <p class="c666 mt10 txt-center">扫一扫二维码，进入店铺</p>
+    </div>
+</div>
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 id="b_title">店铺名称</h3>
+        <div class="wp-ipt mt44">
+            <input class="shop_text hide" type="text"/>
+            <textarea class="shop_area hide"></textarea>
+        </div>
+        <div class="wrap-bbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-status hide">
+    <div class="pop-bcontent">
+        <h3>店铺状态</h3>
+        <ul class="status-list">
+            <li data-id="3" class="">休息中</li>
+            <li data-id="2" class="">筹备中</li>
+            <li data-id="1" class="">营业中</li>
+            <li data-id="0" class="">店铺关闭</li>
+        </ul>
+        <div class="wrap-bbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/exif.min.js"></script>
+<script src="/static/js/third/qrcode.min.js"></script>
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script src="{{static_url('m-admin/js/shop-info.js')}}"></script>
+{% end %}

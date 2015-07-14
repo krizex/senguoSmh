@@ -1,0 +1,48 @@
+{% extends 'market-set-base.html' %}
+{% block title%}支付设置{% end %}
+
+{% block setcontent %}
+    {% if _shop_auth ==0 %}
+     <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+    {% else %}
+    <div class="edit-box bg-greya group">
+        <div class="mode action-mode online_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.online_on_active}}">
+            <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+            <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+        </div>
+        <div>
+            <p class="pay-type-txt">在线支付</p>
+            <p class="grey-txt mt10 f12">用户下单时使用支付宝支付或者微信支付，下单的同时完成付款。<span class="green-txt">推荐开启</span></p>
+        </div>
+    </div>
+    <div class="wrap-pay-type">
+        <p class="f12 red-txt">注意：网页版微信支付只能在微信聊天窗口、微信群、朋友圈进行，订阅号下不能使用微信支付。订阅号卖家请提示用户复制店铺链接到浏览器或非订阅号区域进行充值。</p>
+        <p class="mt10 f12">微信支付、支付宝支付、银联支付以及商家提现所产生的、由平台收取的2%手续费，森果平台全额补贴，卖家不用支付一分钱！</p>
+    </div>
+    <div class="edit-box bg-greya group">
+        <div class="mode action-mode balance_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.balance_on_active}}">
+            <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+            <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+        </div>
+        <div>
+            <p class="pay-type-txt">余额支付</p>
+            <p class="grey-txt mt10 f12">用户提前在店铺充值，急速下单。极大程度提高用户粘度。<span class="green-txt">推荐开启</span></p>
+        </div>
+    </div>
+    <div class="wrap-pay-type">
+        <p class="f12">店铺认证后默认开启，只有当账户余额为0且当所有余额支付的订单完成，余额支付才能关闭。</p>
+        <p class="mt10 f12 red-txt">注意：网页版微信支付只能在微信聊天窗口、微信群、朋友圈进行，订阅号下不能使用微信支付。订阅号卖家请提示用户复制店铺链接到浏览器或非订阅号区域进行充值。</p>
+        <p class="mt10 f12">微信支付、支付宝支付、银联支付以及商家提现所产生的、由平台收取的2%手续费，森果平台全额补贴，卖家不用支付一分钱！</p>
+    </div>
+    <div class="edit-box bg-greya group">
+        <div class="mode action-mode cash_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.cash_on_active}}">
+            <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+            <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+        </div>
+        <div class="wrap-pay-txt">
+            <p class="pay-type-txt">货到付款</p>
+            <p class="grey-txt mt10 f12">用户先下单，收到商品付款，由送货员收取现金，耗费人力。<span class="green-txt">推荐关闭</span></p>
+        </div>
+    </div>
+    {% end %}
+{% end %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block head-css %}
+<link href="{{static_url('css/official_shop.css')}}" rel="stylesheet">
+{% end %}
+{% block content %}
+{% import json %}
+<script type="text/javascript">
+    window.dataObj.province_count={% raw json.dumps(context['shop_province'])%}
+</script>
+<div class="map_box">
+    <a href="/list" class="more-list" target="_blank">查看所有店铺</a>
+	<div class="text-white number_box font36">
+		<span class="pull-left mr20">全国已有</span>
+		<div class="num pull-left text-center"><span class="n num1">0</span><span class="line"></span></div>
+		<div class="num pull-left text-center"><span class="n num2">0</span><span class="line"></span></div>
+		<div class="num pull-left text-center"><span class="n num3">0</span><span class="line"></span></div>
+		<div class="num pull-left text-center"><span class="n num4">0</span><span class="line"></span></div>
+		<span class="pull-left ml20">家同行</span>
+		<input type="hidden" value="{{context['shop_count']}}" id="total_count">
+	</div>
+	<div class="box"><div class="map text-center" id="map"><img src="/static/images/loading.gif" class="loading"/></div></div>
+</div>
+<div class="shop_list w1000 clearfix">
+	<p class="font16 province_name clearfix"></p>
+	<div class="list_box clearfix mt20">
+		<ul class="shoplist">
+			<div class="text-center loading2">
+				<img src="/static/images/loading.gif" class=""/>
+				<p class="text-center text-grey6">~努力加载中~</p>
+			</div>
+		</ul>
+	</div>
+	<div class="page_box hidden text-grey6">
+		<a href="javascript:;" class="next_page  pull-right next_pre text-center" style="display:none" data-id="2">下一页</a>
+		<ul class="pagenation pull-right"></ul>
+		<a href="javascript:;" class="pre_page  pull-right next_pre text-center" style="display:none">上一页</a>
+	</div>
+</div>
+{% end%}
+ {% block bottom-js%} 
+ <script src="/static/js/echarts.js"></script>
+  <script src="{{static_url('js/area.js')}}"></script>
+ <script src="{{static_url('js/official_shop.js')}}"></script>
+ {% end %}

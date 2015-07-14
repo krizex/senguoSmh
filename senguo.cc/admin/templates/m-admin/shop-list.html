@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}店铺列表{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>店铺列表</span>
+    {% if handler.current_shop.admin_id == current_user.id %}<a href="javascrpt:;" class="head-right spread-list">推广店铺列表</a>{% end %}
+
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-list pb45">
+    <ul class="shop-list">
+        {% if context['shop_list'] %}
+        {% for shop in  context['shop_list']%}
+            <li data-id="{{shop['id']}}" data-code="{{shop['shop_code']}}">
+                <div class="sw-tip shop_status" data-status="{{shop['status']}}"><div class="sw-tip-filler"></div></div>
+                <span class="sw-tip-txt"></span>
+                <dl class="shop-dl">
+                    <dd>
+                        <span class="img-border"><img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{shop['shop_name']}}"/></span>
+                    </dd>
+                    <dt>
+                        <i class="arr-item"></i>
+                        <p class="name">{{shop['shop_name']}} <span class="shop-cert auths hide" data-auth="{{shop['shop_auth']}}"></span></p>
+                        <p class="addre mt6">{{shop['address']}}</p>
+                        <ul class="shop-prop group mt6">
+                            <li>商品<span>{{shop['goods_count']}}</span>件</li>
+                            <li>评价<span>{{shop['comment_count']}}</span>条</li>
+                            <li>满意度<span>{{shop['satisfy']}}</span></li>
+                            <li>粉丝<span>{{shop['fans_sum']}}</span>个</li>
+                            <li>订单<span>{{shop['order_sum']}}</span>个</li>
+                            <li>营业额<span>{{shop['total_money'] or 0}}</span>元</li>
+                        </ul>
+                    </dt>
+                </dl>
+            </li>
+        {% end %}
+        {% end %}
+    </ul>
+    <a href="/apply" class="create-btn create-shop">+创建店铺</a>
+</div>
+{% end %}
+{% block fix %}
+<div class="qa-btn" id="qa">?</div>
+<div class="pop-bwin pop-spread hidden">
+    <div class="pop-bcontent">
+        <div class="b-close"></div>
+        <img class="code2-logo" src="/static/images/admin_logo1.png" alt="森果logo"/>
+        <p class="c666 mt15">列表链接(长按链接复制到剪切板)</p>
+        <p class="dgreen mt10" id="shop_list_link">http://senguo.cc/list?action=shop&id={{handler.current_shop.admin_id}}</p>
+        <p class="c666 mt10">列表二维码(长按二维码复制到剪切板)</p>
+        <div class="big-code2 mt10" id="big-code2">
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-qa hide">
+    <ul class="shop-qalist">
+        <li class="title">说明</li>
+        <li>
+            <span class="roll-left"></span>每个管理员拥有一个唯一的属于自己的店铺列表和店铺列表链接
+        </li>
+        <li>
+            <span class="roll-left"></span>不论是您创建的店铺还是受其他店铺创建者邀请加入成 为管理员的店铺都会显示在这个列表中
+        </li>
+    </ul>
+    <a href="javascript:;" class="close-pop" id="close-pop"></a>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/qrcode.min.js"></script>
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-list.js')}}"></script>
+{% end %}

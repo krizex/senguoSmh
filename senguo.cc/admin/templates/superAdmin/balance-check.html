@@ -1,0 +1,63 @@
+{% extends 'count-balance.html' %}
+{% block title%}每日对账{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/superadmin-main.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-main.css')}}"/>
+{% end %}
+
+{% block count %}
+<div class="wrap-balance col-sm-12 col-md-12 gray-divbk">
+	<div class="col-sm-1 col-md-1  align-center">
+		<span>日期</span>
+	</div>
+	<div class="col-sm-2 col-md-2 align-center mlf15">
+		<span>&nbsp;每日总收入<br></span>
+ 		<span>{%for i in range(5)%}&nbsp;{%end%}记录值{%for i in range(7)%}&nbsp;{%end%}</span>
+ 		<span class="green-txt">实际值</span>
+	</div>
+	<div class="col-sm-2 col-md-2 align-center mlf15">
+		<span>&nbsp;微信收入<br></span>
+ 		<span>{%for i in range(5)%}&nbsp;{%end%}记录值{%for i in range(8)%}&nbsp;{%end%}</span>
+ 		<span class="green-txt">实际值</span>
+	</div>
+	<div class="col-sm-2 col-md-2 align-center mlf15">
+		<span>&nbsp;支付宝收入<br></span>
+ 		<span>{%for i in range(5)%}&nbsp;{%end%}记录值{%for i in range(8)%}&nbsp;{%end%}</span>
+ 		<span class="green-txt">实际值</span>
+	</div>
+	<div class="col-sm-2 col-md-2 align-center mlf15">
+		<span>&nbsp;每日提现<br></span>
+ 		<span>{%for i in range(5)%}&nbsp;{%end%}记录值{%for i in range(8)%}&nbsp;{%end%}</span>
+ 		<span class="green-txt">实际值</span>
+	</div>
+</div>
+
+<div class="admin-right pull-right">
+     	<table class="tb-history">
+
+     	</table>
+ </div>
+<nav class="mlf200">
+      <ul class="pager">
+        <li><a href="javascript:;" id="PrePage">&larr; 上一页</a></li>
+         <li class="PageNow green-txt"></li>
+        <li><a href="javascript:;" id="NextPage">下一页&rarr;</a></li>
+      </ul>
+  </nav>
+
+<div id="checkinput_bg"></div>
+<div id="div-input">
+	<div class="col-sm-12 col-md-12 div-solid"> 
+		<span id="input-date"></span>&nbsp;&nbsp;对账<br><br>
+		<label>微信收入:</label><input id="wx-income" type="text" class="ipt-with100 mlf15"/>元<input id="wx-income-count" type="text" class="mlf15 ipt-with100" />笔<span class="mlf15">记录值：<span id="input-total-record"></span></span><br><br>
+  		<label>支付宝收入:</label><input id="alipay-income" type="text" class="ipt-with100 mlf15-2"/>元<input id="alipay-income-count" type="text" class="mlf15 ipt-with100" />笔<span class="mlf15">记录值：<span id="input-wx-record"></span></span><br><br>
+  		<label>提现支出:</label><input id="widt-cash" type="text" class="ipt-with100 mlf15"/>元<input id="widt-cash-count" type="text" class="mlf15 ipt-with100" />笔<span class="mlf15">记录值：<span id="input-alipay-record"></span></span><br><br>
+		<button id="btn-ok" type="button" class="btn-green mlf170">确定</button> 
+		<button id="btn-cancel" type="button" class="btn-white mlf70">取消</button> 
+	</div>
+</div>
+
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/superadmin-balance-check.js')}}"></script>
+{% end %}

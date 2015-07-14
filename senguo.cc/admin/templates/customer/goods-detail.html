@@ -1,0 +1,105 @@
+{% extends 'detail-base.html' %}
+{% block title %}{{good.name}}-商品详情{% end %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/idangerous.swiper.css"/>
+<link rel="stylesheet" href="{{static_url('css/market-goods.css')}}"/>
+{% end %}
+{% block header %}{% end %}
+{% block content %}
+{% import json%}
+<script>
+    window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
+</script>
+{% if good %}
+<input type="hidden" value="{{handler.shop_code}}" id="shop_code"/>
+<div class="wrap-goods-detail" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}">
+    <div class="img-list">
+        <a href="{{reverse_url('Market',handler.shop_code)}}" class="roll-bg back add-cart" id="back-bg"><i></i></a>
+        <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
+        <div class="swiper-container" id="swiper-container">
+            <div class="swiper-wrapper">
+                {% for img in img_url%}
+                <div class="swiper-slide item">
+                    <img src="{{img}}?imageView2/2/w/800" alt=""/>
+                </div>
+                {% end %}
+            </div>
+        </div>
+        <div class="pagination"></div>
+    </div>
+    <div class="wrap-goods-info">
+        <p class="goods-title">{{good.name or ''}}</p>
+        <p class="goods-info">{{good.intro or ''}}</p>
+        <p class="goods-num">
+            <span id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}"><span class="zan {% if good.favour_today %}zaned{% end %}"></span><span class="num">{{good.favour or 0}}</span></span>
+            <span>&nbsp;销量 {{good.saled or 0}}</span>
+        </p>
+    </div>
+    <ul class="wrap-choose-goods">
+        {% for charge in charge_types %}
+        <li data-buy="{{charge['limit_today']}}" data-allow="{{charge['allow_num']}}">
+            <span class="now-price">{{charge['price']}}元</span>
+            <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
+            <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
+                <span class="minus minus-num">-</span>
+                <input type="text" pattern="\d*" novalidate autocorrect="off" value="1" readonly="readonly" />
+                <span class="add add-num">+</span>
+            </div>
+            <div class="now-buy" data-storage="{{good.storage}}">立即购买</div>
+        </li>
+        {% end %}
+    </ul>
+    {% if good.detail_describe %}
+    <ul class="goods-choose-lst group">
+        <li class="active">图文详情</li>
+        <!-- <li>商品评价(20)</li> -->
+    </ul>
+    <ul class="goods-info-lst">
+        <li class="goods-intro active">
+            {% raw good.detail_describe%}
+        </li>
+        <li class="goods-comment">
+            <ul class="comment-lst">
+                <li>
+                    <div class="com-top">
+                        <span class="time fr">2015-05-15 15:22:22</span>
+                        <img src="/static/images/alipay.png" alt=""/>
+                        <span class="name">马大灰</span>
+                    </div>
+                    <p class="com-txt">
+                    </p>
+                </li>
+                <li>
+                    <div class="com-top">
+                        <span class="time fr">2015-05-15 15:22:22</span>
+                        <img src="/static/images/alipay.png" alt=""/>
+                        <span class="name">马大灰</span>
+                    </div>
+                    <p class="com-txt">
+                    </p>
+                </li>
+            </ul>
+        </li>
+    </ul>
+    {% end %}
+    <a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="shop-area add-cart" id="shop-area">
+        <span class="roll-bg shop-in">
+            <i></i>
+        </span>
+        <span>店铺：{{shop_name}}</span>
+    </a>
+    <a href="{{reverse_url('customerCart',handler.shop_code)}}" class="roll-bg cart-bg add-cart" id="cart-bg">
+        <i></i>
+        <span class="move-cart" id="cart-now-num">0</span>
+    </a>
+</div>
+{% else %}
+<p class="txt-ac mt20">当前商品不存在！</p>
+{% end %}
+{% end %}
+{% block other %}
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/idangerous.swiper.min.js"></script>
+<script src="{{static_url('js/market-goods-detail.js')}}"></script>
+{% end %}

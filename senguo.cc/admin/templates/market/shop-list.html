@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}森果市场推广系统{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back market-city">武汉<i class="icert"></i></a>
+    <span>森果市场推广系统</span>
+    <a href="javascrpt:;" class="head-right spread-user"><span class="img-border"><img src="{{ logo_img or '/static/images/TDSG.png'}}" alt="头像"/></span></a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-list pb45">
+    <div class="wrap-market-tab">
+        <ul class="tab-list group">
+            <li class="active">待开发</li>
+            <li>已完成</li>
+        </ul>
+    </div>
+    <div class="cur-address" id="cur_address">
+        <span class="fr">更新</span>
+        当前位置:<span class="address" id="address"></span>
+    </div>
+    <ul class="shop-list" id="shop_list">
+    </ul>
+    <p class="mt20 no-result">当前没有任何数据！</p>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
+<script src="http://developer.baidu.com/map/jsdemo/demo/convertor.js"></script>
+<script src="{{static_url('market/js/shop-list.js')}}"></script>
+{% end %}
