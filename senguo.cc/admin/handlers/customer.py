@@ -1628,7 +1628,11 @@ class Cart(CustomerBaseHandler):
 
 			return self.send_success(success_url=success_url,order_id = order.id)
 
-
+		auto_print = shop.config.auto_print
+		if auto_print == 1:
+			data={"action":"ylyprint","data":{"id":order.id}}
+			r=requests.post("http://test123.senguo.cc/admin/WirelessPrint",data=data)
+			print(r.text,"i am auto_print")
 		# 执行后续的记录修改
 
 		return self.send_success(order_id = order.id)
@@ -1710,11 +1714,6 @@ class CartCallback(CustomerBaseHandler):
 			self.session.add(balance_history)
 			self.session.commit()
 
-		auto_print = shop.config.auto_print
-		if auto_print == 1:
-			data={"action":"ylyprint","data":{"id":order.id}}
-			r=requests.post("http://test123.senguo.cc/admin/WirelessPrint",data=data)
-			print(r.text,"i am auto_print")
 		return self.send_success()
 
 
