@@ -3363,7 +3363,7 @@ class WirelessPrint(AdminBaseHandler):
 				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
 				print("sign str md5:",sign)
 				data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
-				print("post        :",data)
+				# print("post        :",data)
 				r=requests.post("http://open.10ss.net:8888",data=data)
 
 				print("======WirelessPrint======")
