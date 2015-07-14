@@ -17,7 +17,7 @@ var current_sort_way = 1;  //当前的排列方式  1:按日排,2:按周排,3:�
 $(document).ready(function(){
 	initCharts();
 }).on("click",".sell-change-list li",function(){
-	liveInit();
+	
 	$(".year").text(current_year);
 	$(".month").text(current_month);
 	$(".date").text(current_date);
@@ -27,12 +27,9 @@ $(document).ready(function(){
 	$this.addClass("active").siblings("li").removeClass("active");
 }).on("click",".sort-date",function(){
 	current_sort_way = 1;
+	liveInit();
 	ChooseDate = CurrentDate;
 	$(".week-span").hide();
-
-	$(".year").text(current_year);
-	$(".month").text(current_month);
-	$(".date").text(current_date);
 
 	$(".year-span").show();
 	$(".month-span").show();
@@ -40,6 +37,7 @@ $(document).ready(function(){
 
 }).on("click",".sort-week",function(){
 	current_sort_way = 2;
+	liveInit();
 	ChooseDate = CurrentDate;
 	var week_first_date = getWeekFirstDate(CurrentDate);
 	var week_last_date = getWeekLastDate(CurrentDate);
@@ -50,21 +48,16 @@ $(document).ready(function(){
 	$(".week-date2").text(week_last_date.getDate());
 	$(".month-span").hide();
 	$(".date-span").hide();
-	
-	$(".year").text(current_year);
-	$(".week").text(current_week);
 	$(".year-span").show();
 	$(".week-span").removeClass("hidden").show();
 
 }).on("click",".sort-month",function(){
 	current_sort_way = 3;
+	liveInit();
 	ChooseDate = CurrentDate;
 
 	$(".date-span").hide();
 	$(".week-span").hide();
-
-	$(".year").text(current_year);
-	$(".month").text(current_month);
 
 	$(".year-span").show();
 	$(".month-span").show();
@@ -118,9 +111,15 @@ $(document).ready(function(){
 			choose_month=ChooseDate.getMonth()+1;
 			choose_date = ChooseDate.getDate();
 
+			// console.log(ChooseDate.toString());
+
 			$(".year").text(choose_year);
 			$(".month").text(choose_month);
 			$(".date").text(choose_date);
+
+			// console.log(choose_year);
+			// console.log(choose_month);
+			// console.log(choose_date);	
 			break;
 		case 2:
 			ChooseDate = GetDateN(ChooseDate,7);
@@ -159,7 +158,7 @@ function WeekNumOfYear(date) {
 	var day2=date2.getDay(); 
 	if(day2==0) day2=7; 
 	d = Math.round((date.getTime() - date2.getTime()+(day2-day1)*(24*60*60*1000)) / 86400000);   
-	return Math.ceil(d /7);   
+	return Math.ceil(d /7) ;   
 }
 
 function initCharts(){
@@ -173,6 +172,17 @@ function initCharts(){
 		var $this = $(this);
 		$this.find("li").eq(0).addClass("active");
 	});
+	// console.log(current_year);
+	// console.log(current_month);
+	// console.log(current_date);
+	// console.log(current_week);
+	// alert(choose_week);
+	var str ='2015-06-30 23:13:15';
+	str = str.replace(/-/g,"/");
+	var date = new Date(str );
+
+	console.log(GetDateN(date,1).toString());
+
 
 }
 
