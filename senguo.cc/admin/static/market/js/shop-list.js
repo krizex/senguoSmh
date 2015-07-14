@@ -138,6 +138,7 @@ function loadData(){
                 }
             });
         }else{
+            $(".loading").hide().attr("data-flag","0");
             Tip(res.error_text);
         }
     });
