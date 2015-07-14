@@ -2538,7 +2538,7 @@ class ShopBalance(AdminBaseHandler):
 		except:
 			print("ShopBalance: no apply_cash found")
 
-		if shop_auth in [1,2,3,4]:
+		if shop_auth !=0:
 			show_balance = True
 			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
 				show_balance = show_balance,has_done=has_done,decline_reason=decline_reason,\

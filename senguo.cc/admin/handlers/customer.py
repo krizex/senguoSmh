@@ -293,7 +293,7 @@ class Home(CustomerBaseHandler):
 				shop_marketing = shop.marketing.confess_active
 			else:
 				shop_marketing = 0
-			if shop_auth in [1,2,3,4]:
+			if shop_auth !=0:
 				show_balance = True
 			# print(shop,shop.shop_auth)
 		else:
@@ -1361,7 +1361,7 @@ class Cart(CustomerBaseHandler):
 			print("Cart: present market_shop_code doesn't exist in cookie" )
 
 		# print("[购物篮]当前店铺：",shop)
-		if shop.shop_auth in [1,2,3,4]:
+		if shop.shop_auth !=0 :
 			show_balance = True
 
 		shop_code = shop.shop_code
