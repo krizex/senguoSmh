@@ -86,12 +86,12 @@ class Info(AdminBaseHandler):
 		shop_phone = shop.shop_phone
 		shop_address = shop.shop_address
 		delivery_area = shop.delivery_area
-
+		shop.curator = self.current_user.accountinfo.nickname
 		shop_auth   = "已录入"  if shop.shop_auth else '未录入'
 		admin_info = shop.admin_info  if shop.admin_info else '未录入'
 		staff_info = shop.staff_info  if shop.staff_info else '未录入'
 		description = shop.description if shop.description else '无备注'
-
+		self.session.commit()
 		return self.render("market/shop-info.html",id =id,shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
 			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
@@ -160,7 +160,7 @@ class ShopAdminInfo(AdminBaseHandler):
 				admin_id  =  self.wx_bind(shop_id)
 				print(admin_id)
 				shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-				shop.curator = self.current_user.accountinfo.nickname
+				#shop.curator = self.current_user.accountinfo.nickname
 				self.session.commit()
 				shop_code =  self.add_shop(admin_id,shop_id)
 				return self.render('market/shop-success.html')
@@ -175,7 +175,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			return self.send_fail('id error')
 		url = "http://i.senguo.cc/market/shopinsert/%s?action=bind" % (str(shop_id))
 		print(url)
-		return self.render("market/shop-manager.html",url=url)
+		return self.render("market/shop-manager.html",url=url,shop_id = shop_id)
 	
 	@AdminBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
 	def post(self,id):
@@ -358,6 +358,7 @@ class Success(AdminBaseHandler):
 		curator = shop.curator
 		done_time = shop.done_time
 		shop_code = shop.shop_code
+		print(self.current_user.accountinfo.nickname)
 		print(shop_code,curator,shop_name)
 		return self.render("market/success.html",curator = curator , done_time = done_time , shop_code = shop_code, shop_name=shop_name)
 
