@@ -1499,7 +1499,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			self.session.commit()
 			#发送短消息提醒
 			if shop.shop_phone:
-				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				# print("店铺没有预留电话！")
 				print("no phone")
@@ -1514,7 +1514,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			self.session.commit()
 			#发送短消息提醒
 			if shop.shop_phone:
-				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				# print("店铺没有预留电话！")
 				print("no phone")

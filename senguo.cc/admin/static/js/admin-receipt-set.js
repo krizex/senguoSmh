@@ -169,7 +169,7 @@ $(document).ready(function () {
                 }else if(type==1){
                     text="飞印";
                 }
-                 var _args={
+                var _args={
                     action:"ylyadd",
                     data:{key:key,num:num}
                 };
