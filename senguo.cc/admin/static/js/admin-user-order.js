@@ -14,12 +14,8 @@ $(document).ready(function(){
         $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
 }).on('click','.print-order',function(){
-    var type=parseInt($("#receipt-type").val());
-    if(type==0){
-        orderPrint($(this),'print'); //有线打印
-    }else{
-        orderPrint($(this),'wirelessPrint');
-    }
+    orderPrint($(this),'print'); //有线打印
+
 }).on('click','.delete-order',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
@@ -96,11 +92,7 @@ $(document).ready(function(){
 //    }
 }).on('click','#batch-print',function(){
     var type=parseInt($("#receipt-type").val());
-    if(type==0){
-        orderPrint($(this),'batch_print'); //有线打印
-    }else{
-        orderPrint($(this),'batch_wirelessPrint');
-    } 
+    orderPrint($(this),'batch_print'); //有线打印
 }).on('click','.subnav li',function(){
     var $this=$(this);
     $this.addClass('active').siblings('li').removeClass('active');
@@ -463,35 +455,24 @@ function orderPrint(target,action){
     var action=action;
     var data={};
     var html=document.createElement("div"); 
-    var _action;
-    _action = action;
+    var type=parseInt($("#receipt-type").val());
     var console_type=parseInt($("#console-type").val());
     if(action =='print'){
-        getData(target);
         var parent=target.parents('.order-list-item');
         var order_id=parent.attr('data-id');
         data.order_id=order_id;
-    }else if(action =='batch_print'){
-        var list=[];
-        $('.order-checked').each(function(){
-            var $this=$(this);
-            var target=$this.parents('.order-list-item').find('.print-order');
-            var order_id=$this.parents('.order-list-item').attr('data-id');
+        if(type==0){
             getData(target);
-            list.push(order_id);
-        });
-        if(list.length==0){
-            return Tip('您还未选择任何订单');
-        }
-        data.order_list_id=list;
-    }else if(action=="wirelessPrint"){
-        _action = "print"
-        var order_id=parseInt(target.parents('.order-list-item').attr('data-id'));
-        data.order_id=order_id;
-        if(console_type==0){
+        }else{
+            var _action;
+            if(console_type==0){
+                _action="ylyprint";
+            }else if(console_type==1){
+                _action="fyprint";
+            }
             var _url="/admin/WirelessPrint";
             var _args={
-                action:"ylyprint",
+                action:_action,
                 data:{id:order_id}
             };
             $.postJson(_url,_args,function(res){
@@ -499,32 +480,39 @@ function orderPrint(target,action){
 
                 }
             });
-         }
-    }else if(action =='batch_wirelessPrint'){
+        }
+    }else if(action =='batch_print'){
         var list=[];
-         _action = "batch_print";
         $('.order-checked').each(function(){
             var $this=$(this);
             var target=$this.parents('.order-list-item').find('.print-order');
             var order_id=$this.parents('.order-list-item').attr('data-id');
             list.push(order_id);
+            if(type==0){
+                getData(target);
+            }else{
+                var _action;
+                if(console_type==0){
+                     _action="ylyprint";
+                }else if(console_type==1){
+                    _action="fyprint";
+                }
+                var _url="/admin/WirelessPrint";
+                var _args={
+                    action:"ylyprint",
+                    data:{order_list_id:list}
+                };
+                $.postJson(_url,_args,function(res){
+                    if(res.success){
+                        
+                    }
+                });
+            }
         });
         if(list.length==0){
             return Tip('您还未选择任何订单');
         }
         data.order_list_id=list;
-        if(console_type==0){
-            var _url="/admin/WirelessPrint";
-            var _args={
-                action:"ylyprint",
-                data:{order_list_id:list}
-            };
-            $.postJson(_url,_args,function(res){
-                if(res.success){
-                    
-                }
-            });
-         }
     }
 
         //var OpenWindow = window.open("","","width=500,height=600");
@@ -534,13 +522,13 @@ function orderPrint(target,action){
         //OpenWindow.document.body.appendChild(box);
         //OpenWindow.document.close();
         var args={
-            action:_action,
+            action:action,
             data:data
         };
         $.postJson(url,args,function(res){
                 if(res.success){
                     target.addClass('text-grey9');
-                    if(action=="print"||action=="batch_print"){
+                    if(type==0){
                         var inner=window.document.body.innerHTML;
                         window.document.body.innerHTML=html.innerHTML;
                         var img = $("#img");
