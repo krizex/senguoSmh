@@ -26,6 +26,7 @@
 .list-title{padding-left: 10px;color: #666;font-size: 14px;line-height: 28px;}
 .data-list{background-color: #fff;padding-left: 10px;}
 .data-list>li{border-bottom:1px solid #e7e7e7;padding-right: 10px;height: 40px;line-height: 40px;font-size: 14px;color: #333;}
+.data-list .fr{max-width: 250px;overflow: hidden;}
 .data-list>li>a{display: block;height: 40px;color: #333;}
 .data-list>li:last-child{border-bottom: none;}
 .item-left{display: inline-block;padding-left: 26px;background-repeat: no-repeat;background-size: 20px;background-position: left center;}
@@ -37,7 +38,7 @@
 .data-list .logo-li a{height: 58px;}
 .data-list .info-li{height: auto;position: relative;vertical-align: middle;}
 .data-list .info-li a{height: 100%;}
-.data-list .text-clip{line-height:18px;padding:8px 10px 8px 100px;}
+.data-list .text-clip{line-height:18px;padding:12px 10px 12px 100px;}
 .data-list .info-left{position: absolute;min-height:40px;top: 50%;left: 0;-webkit-transform:translate(0,-50%);}
 .wrap-code2{position: relative;}
 .big-code2{width: 150px;height: 150px;margin:30px auto 0 auto;}

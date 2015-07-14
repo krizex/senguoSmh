@@ -71,7 +71,7 @@
 .pop-btns{text-align: center;background-color: #f5f5f5;padding: 10px 0;}
 .pop-btns>a{display: inline-block;width: 80px;margin: 0 10px;border: 1px solid #eee;border-radius: 2px;text-align: center;height: 28px;line-height: 28px;}
 .pop-btns .ok-btn{background-color: #33CC66;color: #fff;display: inline-block !important;}
-.pop-btns .cancel-btn{color: #999;}
+.pop-btns .cancel-btn{color: #999;background: #fff;}
 /*店铺认证*/
 .invisible{visibility: hidden;}
 .hide{display: none!important;}

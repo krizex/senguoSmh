@@ -1711,7 +1711,7 @@ class CartCallback(CustomerBaseHandler):
 			r=requests.post("http://zone.senguo.cc/admin/WirelessPrint",data=data)
 			print(r.text)
 		return self.send_success()
-		
+
 
 
 class Notice(CustomerBaseHandler):
