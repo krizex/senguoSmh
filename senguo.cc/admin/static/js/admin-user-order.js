@@ -463,13 +463,14 @@ function orderPrint(target,action){
     var action=action;
     var data={};
     var html=document.createElement("div"); 
+    var _action;
+    _action = action;
     if(action =='print'){
         getData(target);
         var parent=target.parents('.order-list-item');
         var order_id=parent.attr('data-id');
         data.order_id=order_id;
-    }
-    else if(action =='batch_print'){
+    }else if(action =='batch_print'){
         var list=[];
         $('.order-checked').each(function(){
             var $this=$(this);
@@ -482,16 +483,25 @@ function orderPrint(target,action){
             return Tip('您还未选择任何订单');
         }
         data.order_list_id=list;
-    }
-    else if(action=="wirelessPrint"){
-         var console_type=parseInt($("#console-type").val());
-         if(console_type==0){
-           $.ajax({"url":"/admin/WirelessPrint?action=ylyprint&data=123","type":"get","success":function(){
-                return Tip("233333")
-            }}) 
+    }else if(action=="wirelessPrint"){
+        _action = "print"
+        var console_type=parseInt($("#console-type").val());
+        var order_id=parseInt(target.parents('.order-list-item').attr('data-id'));
+        data.order_id=order_id;
+        if(console_type==0){
+            var _url="/admin/WirelessPrint";
+            var _args={
+                action:"ylyprint",
+                data:{id:order_id}
+            };
+            $.postJson(_url,_args,function(res){
+                if(res.success){
+
+                }
+            });
          }
-        
     }
+
         //var OpenWindow = window.open("","","width=500,height=600");
         //OpenWindow.document.body.style.margin = "0";
         //OpenWindow.document.body.style.marginTop = "15px";
@@ -499,27 +509,28 @@ function orderPrint(target,action){
         //OpenWindow.document.body.appendChild(box);
         //OpenWindow.document.close();
         var args={
-            action:action,
+            action:_action,
             data:data
         };
         $.postJson(url,args,function(res){
                 if(res.success){
                     target.addClass('text-grey9');
-                    var inner=window.document.body.innerHTML;
-                    window.document.body.innerHTML=html.innerHTML;
-                    var img = $("#img");
-                    var src=img.attr('src');
-                    if(src!='None'&& src!=undefined){
-                      img.on("load",function(){
-                         window.print();
-                         window.document.body.innerHTML=inner;
-                        });  
-                    }
-                    else{
-                       window.print();
-                       window.document.body.innerHTML=inner; 
-                    }
-                    
+                    if(action=="print"||action=="batch_print"){
+                        var inner=window.document.body.innerHTML;
+                        window.document.body.innerHTML=html.innerHTML;
+                        var img = $("#img");
+                        var src=img.attr('src');
+                        if(src!='None'&& src!=undefined){
+                          img.on("load",function(){
+                             window.print();
+                             window.document.body.innerHTML=inner;
+                            });  
+                        }
+                        else{
+                           window.print();
+                           window.document.body.innerHTML=inner; 
+                        }
+                    }   
                 }
                 else return Tip(res.error_text);
             },

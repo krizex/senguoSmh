@@ -3245,32 +3245,53 @@ class WirelessPrint(AdminBaseHandler):
 			# partner=6 #用户 ID
 			# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
 			username='senguo' #用户名
-			mobilephone='15982424080' #打印机内的手机号
-			printname='senguo' #打印机名称
+			mobilephone='123456' #打印机内的手机号
 			timenow=str(int(time.time())) #当前时间戳
-			content="@@2             订单信息\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"订单编号：272000270\r\n"+\
-					"下单时间：2015-07-10 14:32:42\r\n"+\
-					"顾客姓名：森小果\r\n"+\
-					"顾客电话：400-0270-1355\r\n"+\
-					"下单时间：2015-07-10 16:30~17:30\r\n"+\
-					"配送地址：华中科技大学西一区35栋402室\r\n"+\
-					"买家留言：尽快配送！\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"@@2             商品清单\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"1: 美国进口红提 20.50元/2.00kg * 1\r\n"+\
-					"2: 精品红富士 4.00元/1.00斤 * 2\r\n"+\
-					"\r\n"+\
-					"总价：28.05元\r\n"+\
-					"支付方式：货到付款\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"欢迎扫描二维码关注～\r\n"+\
-					"<q>http://senguo.cc/qqtest</q>"
-					#打印内容
+			printname='senguo'+timenow #打印机名称
 
 			if self.args["action"] == "ylyprint":
+				order_id=int(self.args["data"]["id"])
+				order  = self.session.query(models.Order).filter_by(id=order_id).first()
+				order_num = order.num
+				order_time = order.create_date.strftime("%Y-%m-%d %H:%m")
+				phone = order.phone
+				receiver = order.receiver
+				address = order.address_text
+				send_time = order.send_time
+				message = order.message
+				fruits = eval(order.fruits)
+				totalPrice = str(order.totalPrice)
+				pay_type = order.pay_type
+				receipt_msg = self.current_shop.config.receipt_msg
+				if pay_type == 1:
+					_type = "货到付款"
+				elif pay_type == 2:
+					_type = "余额"
+				elif pay_type == 3:
+					_type = "在线支付"
+				i=1
+				fruit_list = []
+				for key in fruits:
+					fruit_list.append(str(i)+":"+fruits[key]["fruit_name"]+""+fruits[key]["charge"]+" * "+str(fruits[key]["num"])+"\r\n")
+					i = i +1				
+				content="@@2              订单信息\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"订单编号："+order_num+"\r\n"+\
+						"下单时间："+order_time+"\r\n"+\
+						"顾客姓名："+receiver+"\r\n"+\
+						"顾客电话："+phone+"\r\n"+\
+						"配送时间："+send_time+"\r\n"+\
+						"配送地址："+address+"\r\n"+\
+						"买家留言："+message+"\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"@@2             商品清单\r\n"+\
+						"------------------------------------------------\r\n"+\
+						''.join(fruit_list)+"\r\n"+\
+						"\r\n"+\
+						"总价："+totalPrice+"元\r\n"+\
+						"支付方式："+_type+"\r\n"+\
+						"------------------------------------------------\r\n"+\
+						receipt_msg
 				machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
 				mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
 				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
