@@ -633,7 +633,11 @@ function goodsNum(target,action){
         {
             num--;
             item.val(num);
-            storage=storage+change_num;
+            if(num<=0){
+                storage = change_num
+            }else{
+              storage=storage+change_num;  
+            }
             parent.attr({'data-storage':storage});
             if(val==1){
                 target.removeClass('anim-pulse');

@@ -161,8 +161,15 @@ $(document).ready(function(){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
         if(!regNum.test(num)) {
-            $this.siblings('.number-input').val(storage);
+            $this.siblings('.number-input').val(1);
             return noticeBox('商品数量只能为整数！',$this);
+        }
+        if(storage-num<0){
+            return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
+        }else if(storage-num==0){
+            $this.siblings('.number-change').find('.number-input').val(0);
+        }else{
+            $this.siblings('.number-change').find('.number-input').val(0); 
         }
         if(num<999) {pulse($this);goodsNum($this,2);}
         else {
@@ -412,7 +419,12 @@ function goodsNum(target,action){
         {
             num--;
             item.val(num);
-            storage=storage+change_num;
+            console.log(change_num);
+            if(num<=0){
+                storage = change_num
+            }else{
+              storage=storage+change_num;  
+            }
             parent.attr({'data-storage':storage});
             if(val==1){
                 target.removeClass('anim-pulse');
