@@ -25,51 +25,32 @@
             <li data-id="3"><a href="javascript:;" class="sort-month text-grey3">按月排</a></li>
         </ul>
     </div>
-    <div id="order_trend" style="height:400px" class="clearfix"></div>
+    <div id="goods_type" style="height:400px" class="clearfix"></div>
     <hr class="clearfix"/>
 
+
     <p class="tit font16">销量排行-按商品名称排序</p>
-    <div class="change-box">
-        <ul id="order_time_change" class="change-list pull-left">
-            <li data-id="1"><a href="javascript:;" class="text-grey3">累计数据/个</a></li>
-            <li data-id="2"><a href="javascript:;" class="text-grey3">昨日数据/元</a></li>
+    <div class="choose-change center-block font18 txt-center">
+        <a href="javascript:;" class="pre-item2 text-grey2"> < </a>
+        <span class="choose-time">
+            <span class="year-span2"><span class="year2"></span>年</span>
+            <span class="month-span2"><span class="month2"></span>月</span>
+            <span class="date-span2"><span class="date2"></span>日</span>
+            <span class="week-span2 hidden">第<span class="week2"></span>周</span>
+            <span class="week-span2 hidden">(<span class="week-month12">7</span>月<span class="week-date12">8</span>日~<span class="week-month22">7</span>月<span class="week-date22">15</span>日)</span>
+        </span>
+        <a href="javascript:;" class="next-item2 text-grey2"> > </a>
+    </div>
+     <div class="change-box">　　
+        <ul id="sell_way_change" class="sell-change-list2 pull-left">
+            <li data-id="1"><a href="javascript:;" class="sort-date2 text-grey3">按天排</a></li>
+            <li data-id="2"><a href="javascript:;" class="sort-week2 text-grey3">按周排</a></li>
+            <li data-id="3"><a href="javascript:;" class="sort-month2 text-grey3">按月排</a></li>
         </ul>
     </div>
-    <div id="order_time" style="height:400px"  class="clearfix"></div>
+    <div id="goods_name" style="height:400px"  class="clearfix"></div>
     <hr class="clearfix"/>
-    <p class="tit font16">收货时间统计</p>
-    <div class="change-box">
-        <ul id="receive_time_change" class="change-list pull-left">
-            <li data-id="1"><a href="javascript:;" class="text-grey3">累计数据/个</a></li>
-            <li data-id="2"><a href="javascript:;" class="text-grey3">昨日数据/元</a></li>
-        </ul>
-    </div>
-    <div id="receive_time" style="height:400px"  class="clearfix"></div>
-    <hr/>
-    <p class="tit font16">详细数据</p>
-    <table class="detail-count text-center table-count">
-        <tr class="bg-grey2">
-            <td>时间</td>
-            <td>日订单数</td>
-            <td>累计订单</td>
-            <td>日订单金额</td>
-            <td>累计订单金额</td>
-            <td>客单价</td>
-        </tr>
-    </table>
-    <hr/>
-    <p class="tit font16">重复购买率</p>
-    <table class="detail-rate text-center table-count">
-        <tr class="bg-grey2">
-            <td>时间</td>
-            <td>新增老用户订单</td>
-            <td>累计老用户订单</td>
-            <td>新增订单</td>
-            <td>累计总订单</td>
-            <td>日回头率</td>
-            <td>累计回头率</td>
-        </tr>
-    </table>
+
 </div>
 {% end %}
 

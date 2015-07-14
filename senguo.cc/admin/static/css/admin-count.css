@@ -22,3 +22,10 @@
 .center-block{display:block !important;margin:0 auto;}
 .txt-center{text-align:center;}
 /**/
+
+/*add by jyj 2015-7-14*/
+.sell-change-list2{margin-left:60px;margin-top: 10px;}
+.sell-change-list2 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.sell-change-list2 li.active{border-color:#44b549;}
+.sell-change-list2 li.active a{color:#44b549;}
+/**/
