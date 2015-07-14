@@ -283,6 +283,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		print('shop add success')
 
 		#添加商品
+		print('start add goods')
 		spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = temp_shop.shop_id).all()
 		for temp_good in spider_goods:
 			new_good = models.Fruits(shop_id = shop.id , fruit_type_id = 1,name = temp_good.goods_name,
