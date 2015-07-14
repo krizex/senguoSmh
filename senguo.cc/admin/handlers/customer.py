@@ -1628,11 +1628,9 @@ class Cart(CustomerBaseHandler):
 
 			return self.send_success(success_url=success_url,order_id = order.id)
 
-		auto_print = shop.config.auto_print
+		auto_print = config.auto_print
 		if auto_print == 1:
-			data={"action":"ylyprint","data":{"id":order.id}}
-			r=requests.post("http://test123.senguo.cc/admin/WirelessPrint",data=data)
-			print(r.text,"i am auto_print")
+			self.autoPrint(order.id)
 		# 执行后续的记录修改
 
 		return self.send_success(order_id = order.id)
@@ -1649,6 +1647,75 @@ class Cart(CustomerBaseHandler):
 			# print("[定时任务]订单取消成功：",order.num)
 		#else:
 		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
+
+	def autoPrint(self,order_id):
+		import hashlib
+		import time
+		import requests
+		partner='1693' #用户ID
+		apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
+		username='senguo' #用户名
+		timenow=str(int(time.time())) #当前时间戳
+		order  = self.session.query(models.Order).filter_by(id=order_id).first()
+		order_num = order.num
+		order_time = order.create_date.strftime("%Y-%m-%d %H:%m")
+		phone = order.phone
+		receiver = order.receiver
+		address = order.address_text
+		send_time = order.send_time
+		message = order.message
+		fruits = eval(order.fruits)
+		totalPrice = str(order.totalPrice)
+		pay_type = order.pay_type
+		receipt_msg = self.current_shop.config.receipt_msg
+		if not receipt_msg:
+			receipt_msg = ""
+		if not message:
+			message = "无"
+		if pay_type == 1:
+			_type = "货到付款"
+		elif pay_type == 2:
+			_type = "余额"
+		elif pay_type == 3:
+			_type = "在线支付"
+		i=1
+		fruit_list = []
+		for key in fruits:
+			fruit_list.append(str(i)+":"+fruits[key]["fruit_name"]+""+fruits[key]["charge"]+" * "+str(fruits[key]["num"])+"\r\n")
+			i = i +1				
+		content="@@2              订单信息\r\n"+\
+				"------------------------------------------------\r\n"+\
+				"订单编号："+order_num+"\r\n"+\
+				"下单时间："+order_time+"\r\n"+\
+				"顾客姓名："+receiver+"\r\n"+\
+				"顾客电话："+phone+"\r\n"+\
+				"配送时间："+send_time+"\r\n"+\
+				"配送地址："+address+"\r\n"+\
+				"买家留言："+message+"\r\n"+\
+				"------------------------------------------------\r\n"+\
+				"@@2             商品清单\r\n"+\
+				"------------------------------------------------\r\n"+\
+				''.join(fruit_list)+"\r\n"+\
+				"\r\n"+\
+				"总价："+totalPrice+"元\r\n"+\
+				"支付方式："+_type+"\r\n"+\
+				"------------------------------------------------\r\n"+\
+				receipt_msg
+		machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
+		mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
+		sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
+		print("sign str    :",sign)
+		sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+		print("sign str md5:",sign)
+		data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
+		print("post        :",data)
+		r=requests.post("http://open.10ss.net:8888",data=data)
+
+		print("======返回信息======")
+		print("res url        :",r.url)
+		print("res status_code:",r.status_code)
+		print("res text       :",r.text)
+		print("====================")
 
 # 购物篮 - 订单提交回调
 class CartCallback(CustomerBaseHandler):
