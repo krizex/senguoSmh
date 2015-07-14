@@ -1713,7 +1713,7 @@ class CartCallback(CustomerBaseHandler):
 		auto_print = shop.config.auto_print
 		if auto_print == 1:
 			data={"action":"ylyprint","data":{"id":order.id}}
-			r=requests.post("http://zone.senguo.cc/admin/WirelessPrint",data=data)
+			r=requests.post("http://test123.senguo.cc/admin/WirelessPrint",data=data)
 			print(r.text,"i am auto_print")
 		return self.send_success()
 
