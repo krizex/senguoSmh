@@ -282,6 +282,14 @@ class ShopAdminInfo(AdminBaseHandler):
 		self.session.commit()
 		print('shop add success')
 
+		#添加商品
+		spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = temp_shop.shop_id).all()
+		for temp_good in spider_goods:
+			new_good = models.Fruits(shop_id = shop.id , fruit_type_id = 1,name = temp_good.goods_name,
+				storage = 100,unit = 2,img_url = good_img_url ,)
+			new_good.charge_types.append(models.ChargeType(price = new_good.goods_price,unit = 2,num =1,market_price = new_good.goods_price))
+			self.session.add(new_good)
+			self.session.commit()
 		######################################################################################
 		# inspect whether staff exited
 		######################################################################################
