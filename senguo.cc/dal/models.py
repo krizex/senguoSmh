@@ -1769,7 +1769,7 @@ class Spider_Shop(MapBase , _CommonApi):
 	shop_logo   = Column(String(200))
 	delivery_freight = Column(String(64))
 	shop_link  = Column(String(128))
-	delivery_time = Column(String(16))
+	delivery_time = Column(String(128))
 	shop_phone  = Column(String(16))
 	delivery_mincharge = Column(String(32))
 	delivery_area   = Column(String(128))

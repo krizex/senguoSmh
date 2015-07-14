@@ -1,32 +1,36 @@
 /**
  * Created by Administrator on 2015/7/6.
  */
-var isLoad = true, pn = 1, cur_action="", ulng= 0, ulat=0;
+var isLoad = true, pn = 0, cur_action="", ulng= 114.4121185, ulat=30.5086864, action="to_do";
 $(document).ready(function(){
+    getAddress(ulng,ulat);
     loadData("to_do");
 }).on("click",".shop-list li",function(){
-    var shop_id=$(this).data('id');
-    var shop_code = $(this).attr("data-code");
-    window.location.href="/market/shopinfo";
+    var id=$(this).data('id');
+    window.location.href="/market/shopinfo?id="+id;
 }).on("click",".tab-list li",function(){
     var index = $(this).index();
     $(".tab-list li").removeClass("active").eq(index).addClass("active");
     $(window).scrollTop(0);
+    pn=0;
     if(index==0){
         cur_action=0;
-        loadData("to_do");
+        action = "to_do"
+        loadData();
     }else{
         cur_action=1;
-        loadData("has_done");
+        action="has_done";
+        loadData();
     }
 }).on("click","#cur_address",function(){//刷新列表
     $(window).scrollTop(0);
+    initLocation();
 });
 /*根据经纬度获取地址*/
 function getAddress(lng,lat){
     var point = new BMap.Point(lng,lat);
     var geoc = new BMap.Geocoder();
-    geoc.getLocation(pt, function(rs){
+    geoc.getLocation(point, function(rs){
         var addComp = rs.addressComponents;
         var address = addComp.city + " " + addComp.district + " " + addComp.street + " " + addComp.streetNumber;
         $("#address").html(address);
@@ -38,16 +42,29 @@ function initLocation(){
         navigator.geolocation.getCurrentPosition(function(position){
             ulat = position.coords.latitude;
             ulng = position.coords.longitude;//经度
-            getAddress(ulng,ulat);
+            //getAddress(ulng,ulat);
         },function(error){
             return Tip("请用手机浏览器，并开启定位功能");
         });
     }
 }
+/*根据经纬度获取距离*/
+function getDist(distance){
+    var dis = 0;
+    if(distance<1000){
+        dis = distance.toFixed(0)+"m";
+    }else{
+        dis = (distance/1000).toFixed(1)+"km";
+    }
+    return dis;
+}
 //加载
-function loadData(action){
+function loadData(){
     var url = "";
     var args={
+        page:pn,
+        lon:ulng,
+        lat:ulat,
         action:action
     };
     $.postJson(url,args,function(res){
@@ -58,11 +75,11 @@ function loadData(action){
             for(var i=0; i<goods_list.length;i++){
                 var shop = goods_list[i];
                 if(cur_action==0){
-                    lis += '<li data-id="'+shop.id+'" data-code="'+shop.shop_code+'"><dl class="shop-dl"><dd><img src="/static/images/TDSG.png?imageView2/5/w/100/h/100" alt="'+shop.shop_name+'"/></dd>'+
-                        '<dt><p class="name"><span class="c999 f12 fr">1.2km</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl></li>';
+                    lis += '<li data-id="'+shop.id+'"><dl class="shop-dl"><dd><img src="'+shop.shop_logo+'" alt="'+shop.shop_name+'"/></dd>'+
+                        '<dt><p class="name"><span class="c999 f12 fr">'+getDist(shop.distance)+'</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl></li>';
                 }else{
-                    lis += '<li data-id="'+shop.id+'" data-code="'+shop.shop_code+'"><dl class="shop-dl"><dd><img src="/static/images/TDSG.png?imageView2/5/w/100/h/100" alt="'+shop.shop_name+'"/></dd>'+
-                        '<dt><p class="name"><span class="c999 f12 fr">1.2km</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl>'+
+                    lis += '<li data-id="'+shop.id+'"><dl class="shop-dl"><dd><img src="'+shop.shop_logo+'" alt="'+shop.shop_name+'"/></dd>'+
+                        '<dt><p class="name"><span class="c999 f12 fr">'+getDist(shop.distance)+'</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl>'+
                         '<div class="admin-text"><span class="fr c333">完成时间:'+shop.done_time+'</span><span class="c333">负责人:'+shop.curator+'</span></div></li>';
                 }
             }
@@ -72,6 +89,12 @@ function loadData(action){
                 var winHeight = $(window).height()+$(window).scrollTop()+150;
                 if(winHeight>=$("body").height() && isLoad){
                     $(".no-result").html("数据加载中...").show();
+                    var args={
+                        page:pn,
+                        lon:ulng,
+                        lat:ulat,
+                        action:action
+                    };
                     isLoad=false;
                     $.postJson(url,args,function(res) {
                         if (res.success) {
@@ -86,11 +109,11 @@ function loadData(action){
                                 for(var i=0; i<goods_list.length;i++){
                                     var shop = goods_list[i];
                                     if(cur_action==0){
-                                        lis += '<li data-id="'+shop.id+'" data-code="'+shop.shop_code+'"><dl class="shop-dl"><dd><img src="/static/images/TDSG.png?imageView2/5/w/100/h/100" alt="'+shop.shop_name+'"/></dd>'+
-                                            '<dt><p class="name"><span class="c999 f12 fr">1.2km</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl></li>';
+                                        lis += '<li data-id="'+shop.id+'"><dl class="shop-dl"><dd><img src="'+shop.shop_logo+'" alt="'+shop.shop_name+'"/></dd>'+
+                                            '<dt><p class="name"><span class="c999 f12 fr">'+getDist(shop.distance)+'</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl></li>';
                                     }else{
-                                        lis += '<li data-id="'+shop.id+'" data-code="'+shop.shop_code+'"><dl class="shop-dl"><dd><img src="/static/images/TDSG.png?imageView2/5/w/100/h/100" alt="'+shop.shop_name+'"/></dd>'+
-                                            '<dt><p class="name"><span class="c999 f12 fr">1.2km</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl>'+
+                                        lis += '<li data-id="'+shop.id+'"><dl class="shop-dl"><dd><img src="'+shop.shop_logo+'" alt="'+shop.shop_name+'"/></dd>'+
+                                            '<dt><p class="name"><span class="c999 f12 fr">'+getDist(shop.distance)+'</span>'+shop.shop_name+'</p><p class="addre mt15">'+shop.shop_address+'</p></dt></dl>'+
                                             '<div class="admin-text"><span class="fr c333">完成时间:'+shop.done_time+'</span><span class="c333">负责人:'+shop.curator+'</span></div></li>';
                                     }
                                 }

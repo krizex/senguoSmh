@@ -15,31 +15,31 @@
     <ul class="data-list mt15">
         <li class="logo-li" id="shop_img_box">
             <a href="javascript:;">
-                <span class="fr"><span class="img-border"><img id="shop_logo" src="/static/images/TDSG.png" alt="店铺logo"/></span></span>
+                <span class="fr"><span class="img-border"><img id="shop_logo" src="{{shop_logo}}" alt="店铺logo"/></span></span>
                 <span class="text-left ">店铺logo</span>
             </a>
         </li>
         <li>
             <a href="javascript:;" class="edit_item" data-action="name">
-                <span class="fr c333 more" id="shop_name">水果太太</span>
+                <span class="fr c333 more" id="shop_name">{{shop_name}}</span>
                 <span class="text-left">店铺名称</span>
             </a>
         </li>
         <li>
             <a href="javascript:;" class="edit_item" data-action="phone">
-                <span class="fr c333 more" id="shop_tel">15002323323</span>
+                <span class="fr c333 more" id="shop_tel">{{shop_phone}}</span>
                 <span class="text-left">联系电话</span>
             </a>
         </li>
         <li>
-            <a href="javascript:;" class="edit_item" data-action="range">
-                <span class="fr c333 more" id="shop_area">3公里</span>
+            <a href="javascript:;" class="edit_item" data-action="area">
+                <span class="fr c333 more" id="shop_area">{{delivery_area}}</span>
                 <span class="text-left">配送范围</span>
             </a>
         </li>
         <li>
             <a href="javascript:;" class="edit_item" data-action="address">
-                <span class="fr c333 more" id="shop_address">湖北省武汉市洪山区华中科技大学</span>
+                <span class="fr c333 more" id="shop_address">{{shop_address}}</span>
                 <span class="text-left">店铺地址</span>
             </a>
         </li>
@@ -47,20 +47,20 @@
     <p class="c666 mt10 txt-center">信息录入</p>
     <ul class="data-list mt10">
         <li id="add-licence-box">
-            <a href="javascript:;" class="" id="add-licence" data-action="licence" data-url="">
-                <span class="fr c333 shop_status more" id="shop_licence"><span>未录入</span><img src="/static/images/load.gif" alt="loading" class="loading"/></span>
+            <a href="javascript:;" class="" id="add-licence" data-action="licence" url="">
+                <span class="fr c333 shop_status more" id="shop_licence"><span>{{shop_auth}}</span><img src="/static/images/load.gif" alt="loading" class="loading"/></span>
                 <span class="text-left">营业执照</span>
             </a>
         </li>
         <li>
-            <a href="javascript:;" class="" data-flag="0" id="shoper">
-                <span class="fr c333 shop_auth more" id="shop_shoper">周兵-15000202210-微信已绑</span>
+            <a href="javascript:;" class="" data-flag="0" id="shoper" data-id="{{id}}">
+                <span class="fr c333 shop_auth more" id="shop_shoper">{{admin_info}}</span>
                 <span class="text-left">店长信息</span>
             </a>
         </li>
         <li class="info-li">
             <a href="javascript:;" class="group" data-action="staff" id="staffer">
-                <span class="fr c333 text-clip more" id="shop_staff">未录入</span>
+                <span class="fr c333 text-clip more" id="shop_staff">{{staff_info}}</span>
                 <span class="text-left info-left">配送员信息</span>
             </a>
         </li>
@@ -68,7 +68,7 @@
     <ul class="data-list mt10">
         <li>
             <a href="javascript:;" class="edit_item" data-action="remark">
-                <span class="fr c333 more" id="shop_remark">无备注</span>
+                <span class="fr c333 more" id="shop_remark">{{description}}</span>
                 <span class="text-left">备注信息</span>
             </a>
         </li>

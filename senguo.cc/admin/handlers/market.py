@@ -11,6 +11,7 @@ from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
 import decimal
+import json
 
 #市场推广 - 首页
 class Home(AdminBaseHandler):
@@ -42,17 +43,14 @@ class Home(AdminBaseHandler):
 			return self.send_fail("action error")
 		shops  = self.get_shop_data(shop_list)
 		for shop in shops:
-			url = "http://api.map.baidu.com/geocoder/v2/?address="+shop["shop_address"]+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
-			r = requests.get(url)
-			result = json.loads(r.text)
-			if result["status"] == 0:
-				lat2 = float(result["result"]["location"]["lat"])
-				lon2 = float(result["result"]["location"]["lng"])
+			lat2 = shop["lat"]
+			lon2 = shop["lon"]
 			if lat1 and lon1 and lat2 and lon2:
-				shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+				shop['distance'] = int(self.get_distance(lon1,lat1,lon2,lat2))
 			else:
 				shop['distance'] = 9999999
 		shops.sort(key = lambda shop:shop['distance'])
+		shops = shops[page_size*page:page_size*page+page_size]
 		total_page = int(shop_count/page_size) if shop_count % page_size == 0 else int(shop_count/page_size)+1
 		if total_page <= page:
 			nomore = True
@@ -62,9 +60,8 @@ class Home(AdminBaseHandler):
 	def get_shop_data(self,shop_list):
 		shop_data = []
 		for shop in shop_list:
-			for shop in shops:
-				shop_data.append({"id":shop.id,"shop_name":shop.shop_name,"shop_address":shop.shop_address\
-				,"curator":shop.curator,"done_time":shop.done_time,"shop_logo":shop.shop_logo,"distance":distance})
+			shop_data.append({"id":shop.id,"shop_name":shop.shop_name,"shop_address":shop.shop_address\
+			,"curator":shop.curator,"done_time":shop.done_time,"shop_logo":shop.shop_logo,"lat":shop.lat,"lon":shop.lon})
 		return shop_data
 
 
@@ -88,17 +85,17 @@ class Info(AdminBaseHandler):
 		shop_address = shop.shop_address
 		delivery_area = shop.delivery_area
 
-		shop_auth   = shop.shop_auth  if shop.shop_auth else '未录入'
+		shop_auth   = "已录入"  if shop.shop_auth else '未录入'
 		admin_info = shop.admin_info  if shop.admin_info else '未录入'
-		staff_info = shop.staff_info  if shop.staff_info else '为录入'
+		staff_info = shop.staff_info  if shop.staff_info else '未录入'
 		description = shop.description if shop.description else '无备注'
 
-		return self.render("market/shop-info.html",shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
+		return self.render("market/shop-info.html",id =id,shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
 			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
-		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str')
+		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str','data')
 	def post(self):
 		id = int(self.args['id'])
 		action = self.args['action']
@@ -107,23 +104,27 @@ class Info(AdminBaseHandler):
 		except:
 			return self.send_fail('shop not found')
 		if action == 'logo':
-			shop.shop_logo = self.args['shop_logo']
+			shop.shop_logo = self.args['data']['shop_logo']
 		elif action == 'name':
-			shop.shop_name = self.args['shop_name']
+			shop.shop_name = self.args['data'].get('shop_name',None)
 		elif action == 'phone':
-			shop.shop_phone = self.args['shop_phone']
+			print('login phone')
+			shop.shop_phone = self.args['data'].get('shop_phone',None)
+			print(self.args['data'].get('shop_phone',None))
+			print(shop.shop_phone)
+			
 		elif action == 'deliver_area':
-			shop.deliver_area = self.args['deliver_area']
+			shop.delivery_area = self.args['data'].get('deliver_area',None)
 		elif action == 'shop_address':
-			shop.shop_address = self.args['shop_address']
+			shop.shop_address = self.args['data'].get('shop_address',None)
 		elif action == 'description':
-			shop.description = self.args['description']
+			shop.description = self.args['data'].get('description',None)
 		elif action == 'admin_info':
 			pass
 		elif action == 'staff_info':
 			pass
 		elif action == 'shop_auth':
-			shop.shop_auth = self.args['shop_auth']
+			shop.shop_auth = self.args['data']['shop_auth']
 		else:
 			return self.send_fail('action error')
 
@@ -139,8 +140,8 @@ class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('id?','action?:str')
 	def get(self):
-		id = self.args.get('id',None)
-		
+		id = self.args['id']
+		print(id)
 		if id:
 			try:
 				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
@@ -150,13 +151,13 @@ class ShopAdminInfo(AdminBaseHandler):
 			if admin_info:
 				admin_name,admin_phone,wx_nickname = admin_info.split('-')
 
-		action = self.args.get('action',None)
-		if action == 'bind':
-			if not self.is_wexin_browser():
-				return self.send_fail("请在微信中执行此从操作!")
+			action = self.args.get('action',None)
+			if action == 'bind':
+				if not self.is_wexin_browser():
+					return self.send_fail("请在微信中执行此从操作!")
 
-			else:
-				wx_bind  =  self.wx_bind()
+				else:
+					wx_bind  =  self.wx_bind()
 		else:
 
 			return self.send_fail('id error')
@@ -192,7 +193,6 @@ class ShopAdminInfo(AdminBaseHandler):
 			print(self.get_wexin_oauth_link2(next_url = next_url))
 			return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
 		else:
-		
 			code = self.args['code']
 			mode = self.args['mode']
 			if mode not in ['mp','kf']:

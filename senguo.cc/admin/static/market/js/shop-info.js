@@ -42,12 +42,18 @@ $(document).ready(function(){
         $(".shop_text").focus();
     }
 }).on("click","#save_info",function(){//保存信息
-    window.location.href="/market/success";
-}).on("click","#shoper",function(){//编辑店长信息
-    window.location.href="/market/shopinsert";
-}).on("click","#staffer",function(){//编辑配送员信息
     if(parseInt($("#shoper").attr("data-flag"))==1){
-        window.location.href="/market/shopinsert?staff=1";
+        window.location.href="/market/success";
+    }else{
+        Tip("请先录入店长信息");
+    }
+}).on("click","#shoper",function(){//编辑店长信息
+    var id = $("#shoper").attr("data-id");
+    window.location.href="/market/shopinsert?id="+id;
+}).on("click","#staffer",function(){//编辑配送员信息
+    var id = $("#shoper").attr("data-id");
+    if(parseInt($("#shoper").attr("data-flag"))==1){
+        window.location.href="/market/shopinsert?id="+id+"&staff=1";
     }else{
         return Tip("请先编辑店长信息");
     }
@@ -76,7 +82,7 @@ function infoEdit(action_name){
         data={shop_address:shop_address};
     }else if(action_name=='licence'){
         action = "shop_auth";
-        shop_licence = $('.shop_text').val();
+        shop_licence = $('#add-licence').attr("url");
         data={shop_auth:shop_licence};
     }else if(action_name=='remark'){
         action = "description";
@@ -157,6 +163,7 @@ $(document).ready(function(){
                 $("#add-licence").attr("url","http://shopimg.qiniudn.com/"+file.id);
                 $(".loading").hide();
                 $(".loading").prev("span").html("已录入").show();
+                infoEdit("licence");
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {

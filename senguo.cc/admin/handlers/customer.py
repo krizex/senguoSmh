@@ -2470,7 +2470,7 @@ class InsertData(CustomerBaseHandler):
 	# @tornado.web.asynchronous
 	def get(self):
 		# import gevent
-		# import requests
+		import requests
 		import json
 		shop_list , good_list = self.get_data()
 		# print(shop_list)
@@ -2478,7 +2478,7 @@ class InsertData(CustomerBaseHandler):
 			temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
 				shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
 				delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-				delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'])
+				delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],lon = shop['lon'])
 			self.session.add(temp_shop)
 		self.session.commit()
 
@@ -2516,11 +2516,11 @@ class InsertData(CustomerBaseHandler):
 		# gevent.spawn(async_task)
 
 	def get_data(self):
-
+		import requests
 		shop_list = []
 		good_list = []
-
-		f = open('/home/monk/www/senguo.cc/senguo.cc/admin/handlers/shopData.txt',encoding = 'utf-8')
+		import os
+		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
 		c = f.read()
 		s = eval(c)
 		print(type(s))
@@ -2540,6 +2540,15 @@ class InsertData(CustomerBaseHandler):
 						shop['delivery_area']      = temp.get('delivery_area',None)
 						shop['shop_name']          = temp.get('shop_name',None)
 						shop['shop_notice']        = temp.get('shop_notice',None)
+						url = "http://api.map.baidu.com/geocoder/v2/?address="+temp.get('shop_address',None)+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+						r = requests.get(url)
+						result = json.loads(r.text)
+						if result["status"] == 0:
+							shop['lat']  = float(result["result"]["location"]["lat"])
+							shop['lon'] = float(result["result"]["location"]["lng"])
+						else:
+							shop['lat'] = 0
+							shop['lon'] = 0
 						shop_list.append(shop)
 						temp_goods                 = temp.get('goods_list',None)
 						for temp_good in temp_goods:
