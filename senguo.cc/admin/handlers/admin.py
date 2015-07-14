@@ -3268,6 +3268,10 @@ class WirelessPrint(AdminBaseHandler):
 					totalPrice = str(order.totalPrice)
 					pay_type = order.pay_type
 					receipt_msg = self.current_shop.config.receipt_msg
+					if not receipt_msg:
+						receipt_msg = ""
+					if not message:
+						message = "无"
 					if pay_type == 1:
 						_type = "货到付款"
 					elif pay_type == 2:
