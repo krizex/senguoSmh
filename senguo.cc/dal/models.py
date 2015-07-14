@@ -1788,6 +1788,8 @@ class Spider_Shop(MapBase , _CommonApi):
 	
 	description = Column(String(128))
 
+	shop_code = Column(String(20)) #正式生成后的店铺code
+
 
 #added by woody 7.11
 class Spider_Good(MapBase,_CommonApi):

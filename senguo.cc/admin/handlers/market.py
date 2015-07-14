@@ -161,24 +161,34 @@ class ShopAdminInfo(AdminBaseHandler):
 					shop.curator = self.current_user.accountinfo.nickname
 					shop_code =  self.add_shop(admin_id,shop_id)
 					self.session.commit()
+<<<<<<< HEAD
 					return self.send_success(shop_code = shop_code,curator = shop.curator , done_time = shop.done_time)
+=======
+					return self.render('market/shop-success.html')
+>>>>>>> origin/senguo2.0
 			else:
 				admin_info = shop.admin_info
 				if admin_info:
 					admin_name,admin_phone,wx_nickname = admin_info.split('-')
 				else:
 					admin_name = admin_phone = wx_nickname = None
-		else:
+		else:			
 			return self.send_fail('id error')
+<<<<<<< HEAD
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
 
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
+=======
+		url = "http://i.senguo.cc/market/shopinsert?action=bind&id="+str(id)
+		return self.render("market/shop-manager.html",url=url)
+	
+	@AdminBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
+>>>>>>> origin/senguo2.0
 	def post(self):
 		action = self.args.get('action',None)
 		if action == 'save':
 			id = self.args.get('id',None)
-			id = 1
 			if id:
 				try:
 					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
@@ -186,10 +196,15 @@ class ShopAdminInfo(AdminBaseHandler):
 					return self.send_fail('shop not found')
 				admin_name = self.args['admin_name']
 				admin_phone= self.args['admin_phone']
-				wx_nickname = wx_nickname
-				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_nickname)
+				if shop.done_time:
+					wx_info = '微信已绑定'
+				else:
+					wx_info = '微信未绑定'
+				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_info)
 				self.session.commit()
-			return self.render("market/shop-info.html")
+			return self.send_success()
+		else:
+			return self.send_fail('action error')
 
 
 
@@ -262,6 +277,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		config.periods.extend([period1, period2, period3])
 		marketing = models.Marketing()
 		shop_code = self.make_shop_code()
+		temp_shop.shop_code = shop_code
 		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
 			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,
 			shop_city = 420100 , shop_address_detail= temp_shop.shop_address,shop_intro = temp_shop.description,shop_code = shop_code)
@@ -323,7 +339,15 @@ class ShopAdminInfo(AdminBaseHandler):
 #店铺入驻成功
 class Success(AdminBaseHandler):
 	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('id')
 	def get(self):
-
-		return self.render("market/success.html")
+		try:
+			shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
+		except:
+			return self.send_fail('shop not found')
+		shop_name = shop_name
+		curator = shop.curator
+		done_time = shop.done_time
+		shop_code = shop.shop_code
+		return self.render("market/success.html",curator = curator , done_time = done_time , shop_code = shop_code, shop_name=shop_name)
 

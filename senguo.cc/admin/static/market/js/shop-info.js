@@ -42,8 +42,9 @@ $(document).ready(function(){
         $(".shop_text").focus();
     }
 }).on("click","#save_info",function(){//保存信息
-    if(parseInt($("#shoper").attr("data-flag"))==1){
-        window.location.href="/market/success";
+    if($("#shop_shoper").html()!="未录入"){
+        var id = $("#shoper").attr("data-id");
+        window.location.href="/market/success?id="+id;
     }else{
         Tip("请先录入店长信息");
     }
@@ -52,7 +53,7 @@ $(document).ready(function(){
     window.location.href="/market/shopinsert?id="+id;
 }).on("click","#staffer",function(){//编辑配送员信息
     var id = $("#shoper").attr("data-id");
-    if(parseInt($("#shoper").attr("data-flag"))==1){
+    if($("#shop_shoper").html()!="未录入"){
         window.location.href="/market/shopinsert?id="+id+"&staff=1";
     }else{
         return Tip("请先编辑店长信息");

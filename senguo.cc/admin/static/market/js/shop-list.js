@@ -3,8 +3,9 @@
  */
 var isLoad = true, pn = 0, cur_action="", ulng= 114.4121185, ulat=30.5086864, action="to_do";
 $(document).ready(function(){
-    getAddress(ulng,ulat);
-    loadData("to_do");
+    /*getAddress(ulng,ulat);
+    loadData("to_do");*/
+    initLocation();
 }).on("click",".shop-list li",function(){
     var id=$(this).data('id');
     window.location.href="/market/shopinfo?id="+id;
@@ -42,7 +43,8 @@ function initLocation(){
         navigator.geolocation.getCurrentPosition(function(position){
             ulat = position.coords.latitude;
             ulng = position.coords.longitude;//经度
-            //getAddress(ulng,ulat);
+            loadData(action);
+            getAddress(ulng,ulat);
         },function(error){
             return Tip("请用手机浏览器，并开启定位功能");
         });
