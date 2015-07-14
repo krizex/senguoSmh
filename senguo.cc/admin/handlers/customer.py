@@ -2540,7 +2540,7 @@ class InsertData(CustomerBaseHandler):
 						shop['delivery_freight']   = temp.get('delivery_freight',None)
 						shop['shop_link']          = temp.get('shop_link',None)
 						shop['delivery_time']      = temp.get('delivery_time',None)
-						shop['shop_phone']         = temp.get('shop',None)
+						shop['shop_phone']         = temp.get('shop_phone',None)
 						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
 						shop['delivery_area']      = temp.get('delivery_area',None)
 						shop['shop_name']          = temp.get('shop_name',None)
