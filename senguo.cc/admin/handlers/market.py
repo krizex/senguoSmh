@@ -275,7 +275,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		print('make  shop_code  success')
 		temp_shop.shop_code = shop_code
 		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
-			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,
+			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,shop_auth = 5,
 			shop_city = 420100 , shop_address_detail= temp_shop.shop_address,shop_intro = temp_shop.description,shop_code = shop_code)
 		shop.config = config
 		shop.marketing = marketing
