@@ -1839,8 +1839,7 @@ class CartCallback(CustomerBaseHandler):
 
 		return self.send_success()
 
-
-
+# 订单提交成功页面
 class Notice(CustomerBaseHandler):
 	def get(self):
 		return self.render("notice/order-success.html",context=dict(subpage='cart'))
