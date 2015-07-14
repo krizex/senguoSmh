@@ -37,7 +37,7 @@ class SearchList(FruitzoneBaseHandler):
 # 店铺列表
 class ShopList(FruitzoneBaseHandler):
 	def initialize(self):
-		print("******************11111111************************")
+		# print("******************11111111************************")
 		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
 			self.request.headers.get('X-Real-Ip',self.request.remote_ip))
 	@FruitzoneBaseHandler.check_arguments('action?:str')
@@ -218,7 +218,7 @@ class ShopList(FruitzoneBaseHandler):
 			else:
 				return self.send_fail(error_text = 'key_word error')
 		shops = shops[_page_count*page:_page_count*page+_page_count]
-		print(shops,"***********shops********")
+		# print(shops,"***********shops********")
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)

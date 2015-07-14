@@ -112,7 +112,7 @@ class Info(AdminBaseHandler):
 			shop.shop_phone = self.args['data'].get('shop_phone',None)
 			print(self.args['data'].get('shop_phone',None))
 			print(shop.shop_phone)
-			
+
 		elif action == 'deliver_area':
 			shop.delivery_area = self.args['data'].get('deliver_area',None)
 		elif action == 'shop_address':
@@ -158,10 +158,10 @@ class ShopAdminInfo(AdminBaseHandler):
 					admin_id  =  self.wx_bind()
 					shop_id   =  int(id)
 					shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-					shop.curator = self.current_user.accountinfo.nickname					
+					shop.curator = self.current_user.accountinfo.nickname
 					shop_code =  self.add_shop(admin_id,shop_id)
 					self.session.commit()
-					return self.send_success(shop_code = shop_code,curator = shop.curator , done_time = shop.done_time) 
+					return self.send_success(shop_code = shop_code,curator = shop.curator , done_time = shop.done_time)
 			else:
 				admin_info = shop.admin_info
 				if admin_info:
@@ -172,7 +172,7 @@ class ShopAdminInfo(AdminBaseHandler):
 			return self.send_fail('id error')
 		# return self.send_success()
 		return self.render("market/shop-manager.html")
-	
+
 	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
 	def post(self):
 		action = self.args.get('action',None)
@@ -191,8 +191,8 @@ class ShopAdminInfo(AdminBaseHandler):
 				self.session.commit()
 			return self.render("market/shop-info.html")
 
-	
-		
+
+
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('code')
@@ -247,7 +247,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		try:
 			shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).one()
 		except:
-		
+
 			return self.send_fail('shop_admin not found')
 		temp_shop = self.session.query(models.Spider_Shop).filter_by(id = 1).first()
 		if not temp_shop:
@@ -293,25 +293,25 @@ class ShopAdminInfo(AdminBaseHandler):
 			self.session.commit()
 
 		return shop.shop_code
-	
+
 	def make_shop_code(self):
-		chars = 'abcdefghijklmnopqrstuvwsyz'
+		chars = '0123456789'
 		str = ''
 		random = Random()
-		for i in range(8):
+		for i in range(6):
 			str += chars[random.randint(0,len(chars)-1)]
 		while True:
 			shop = self.session.query(models.Shop).filter_by(shop_code = str).first()
 			if not shop:
 				break
-		return 'wh'+ str
+		return 'wh-'+ str
 
 
 
 
 
 
-		
+
 
 
 #店铺录入

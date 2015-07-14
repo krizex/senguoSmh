@@ -1795,9 +1795,9 @@ class WxOauth2:
 		user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
 		res = requests.get(user_subcribe_url,headers = {"connection":"close"})
 		if type(res.content)== bytes:
-			s = str(res.content,'ascii')
+			s = str(res.content,'utf-8')
 		else:
-			s = res.content.decode('ascii')
+			s = res.content.decode('utf-8')
 		data = json.loads(s)
 		json_data = json.dumps(data)
 		#print(data)

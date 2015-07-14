@@ -66,14 +66,15 @@ class Home(AdminBaseHandler):
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
-			if total_money:		
+			if total_money:
 				shop.total_money = format(total_money,'.2f')
-			else:		
+			else:
 				shop.total_money=0
 			shop.address = self.code_to_text("shop_city",shop.shop_city) +" " + shop.shop_address_detail
 			shop_list.append(shop.safe_props())
 		return shop_list
-		
+
+# 移动后台 - 店铺
 class Shop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -106,9 +107,9 @@ class Shop(AdminBaseHandler):
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
 		except:
 			total_money = None
-		if total_money:		
+		if total_money:
 			total_money = format(total_money,'.2f')
-		else:		
+		else:
 			total_money=0
 
 		order_list=self.session.query(models.Order).filter_by(shop_id=shop.id)
@@ -129,6 +130,7 @@ class Set(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/shop-set.html")
+
 # 移动后台 - 设置
 class SetAttr(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -176,11 +178,13 @@ class SetAttr(AdminBaseHandler):
 			return self.render('m-admin/shop-add-notice.html',notice=notice,token=token,context=dict())
 		if action=="pay":
 			return self.render('m-admin/shop-set-pay.html',context=dict())
-		# 移动后台 - 设置
+
+# 移动后台 - 设置
 class Address(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/shop-address.html")
+
 # 移动后台 - 店铺信息
 class Info(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -201,6 +205,7 @@ class Info(AdminBaseHandler):
 		token = self.get_qiniu_token("shopAuth_cookie","token")
 		return self.render("m-admin/shop-info.html", token=token,current_shop=self.current_shop,city=city,province=province,address=address,lat=lat,lon=lon, \
 			service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
+
 # 移动后台 - 订单
 class Order(AdminBaseHandler):
 	@tornado.web.authenticated
