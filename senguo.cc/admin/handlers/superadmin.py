@@ -1087,9 +1087,9 @@ class CommentInfo(SuperBaseHandler):
 		page = 0
 		ajaxFlag = self.args["ajaxFlag"]
 
-		order_list =  self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		order_list =  self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
 
-		all_comment_order = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
+		all_comment_order = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
 		all_count = all_comment_order.count()
 		full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
 		img_count = all_comment_order.filter(models.Order.comment_imgUrl.like('http:%')).count()
@@ -1173,7 +1173,7 @@ class CommentInfo(SuperBaseHandler):
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
-		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
@@ -1197,7 +1197,7 @@ class CommentInfo(SuperBaseHandler):
 		output_data_tmp = []
 		output_data = []
 
-		order_list_data = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
+		order_list_data = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
 
 		if action == 'all':
 			order_list = order_list_data.offset(page*page_size).limit(page_size).all()
