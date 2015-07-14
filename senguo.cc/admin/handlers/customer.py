@@ -1659,6 +1659,13 @@ class Cart(CustomerBaseHandler):
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id)
+			fruits = eval(order.fruits)
+			if fruits:
+				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+					filter(models.ChargeType.id.in_(fruits.keys())).all()
+				for s in ss:
+					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+					s[0].current_saled -= num
 			# print("[定时任务]订单取消成功：",order.num)
 		#else:
 		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
@@ -2004,6 +2011,13 @@ class Order(CustomerBaseHandler):
 			########################################################################################
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
+			fruits = eval(order.fruits)
+			if fruits:
+				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+					filter(models.ChargeType.id.in_(fruits.keys())).all()
+				for s in ss:
+					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+					s[0].current_saled -= num
 			if order.pay_type == 2:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \

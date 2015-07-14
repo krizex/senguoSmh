@@ -775,6 +775,7 @@ class Order(AdminBaseHandler):
 		if order_status == 5:
 			# print('login in order_status 5')
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+			# 更新fruit 的 current_saled
 			self.order_done(self.session,order)
 
 	@tornado.web.authenticated
