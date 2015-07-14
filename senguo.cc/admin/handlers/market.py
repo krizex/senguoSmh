@@ -162,11 +162,8 @@ class ShopAdminInfo(AdminBaseHandler):
 					shop.curator = self.current_user.accountinfo.nickname
 					shop_code =  self.add_shop(admin_id,shop_id)
 					self.session.commit()
-<<<<<<< HEAD
-					return self.send_success(shop_code = shop_code,curator = shop.curator , done_time = shop.done_time)
-=======
 					return self.render('market/shop-success.html')
->>>>>>> origin/senguo2.0
+
 			else:
 				admin_info = shop.admin_info
 				if admin_info:
@@ -175,17 +172,10 @@ class ShopAdminInfo(AdminBaseHandler):
 					admin_name = admin_phone = wx_nickname = None
 		else:			
 			return self.send_fail('id error')
-<<<<<<< HEAD
-		# return self.send_success()
-		return self.render("market/shop-manager.html")
-
-	@AdminBaseHandler.check_arguments('shop_id?','admin_name?:str','admin_phone?:str','wx_nickname?:str')
-=======
 		url = "http://i.senguo.cc/market/shopinsert?action=bind&id="+str(id)
 		return self.render("market/shop-manager.html",url=url)
 	
 	@AdminBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
->>>>>>> origin/senguo2.0
 	def post(self):
 		action = self.args.get('action',None)
 		if action == 'save':
