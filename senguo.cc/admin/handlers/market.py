@@ -73,6 +73,7 @@ class Info(AdminBaseHandler):
 
 	def get(self):
 		id = int(self.args['id'])
+		print(id)
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
@@ -140,13 +141,14 @@ class Info(AdminBaseHandler):
 class ShopAdminInfo(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action?:str')
-	def get(self):
+	def get(self,id):
 		print(self.args)
-		shop_id = int(self.get_secure_cookie("spider_shop"))
+		#shop_id = int(self.get_secure_cookie("spider_shop"))
+		#shop_id = int(self.args['id'])
+		shop_id = int(id)
 		action = self.args.get('action',None)
 		print(shop_id,'shopinsert hhhhhhhhhhhhh')
 		if shop_id:
-			
 			shop = self.session.query(models.Spider_Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('shop not found aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
@@ -155,7 +157,7 @@ class ShopAdminInfo(AdminBaseHandler):
 				#if not self.is_wexin_browser():
 				#	return self.send_fail("请在微信中执行此从操作!")
 				#else:
-				admin_id  =  self.wx_bind()
+				admin_id  =  self.wx_bind(shop_id)
 				print(admin_id)
 				shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 				shop.curator = self.current_user.accountinfo.nickname
@@ -171,14 +173,15 @@ class ShopAdminInfo(AdminBaseHandler):
 					admin_name = admin_phone = wx_nickname = None
 		else:			
 			return self.send_fail('id error')
-		url = "http://i.senguo.cc/market/shopinsert?action=bind&shop=%s" % (str(shop_id))
+		url = "http://i.senguo.cc/market/shopinsert/%s?action=bind" % (str(shop_id))
+		print(url)
 		return self.render("market/shop-manager.html",url=url)
 	
 	@AdminBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
-	def post(self):
+	def post(self,id):
 		action = self.args.get('action',None)
 		if action == 'save':
-			id = self.args.get('id',None)
+			#id = self.args.get('id',None)
 			if id:
 				try:
 					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
@@ -201,14 +204,14 @@ class ShopAdminInfo(AdminBaseHandler):
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('code')
-	def wx_bind(self):
+	def wx_bind(self,shop_id):
 		code = self.args.get('code',None)
 		next_url = self.get_argument('next', '')
 		#next_url = 'http://test123.senguo.cc/market/shopinsert?action=bind'
 		if not code:
 			#print(self.get_wexin_oauth_link2(next_url = next_url))
 			#return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
-			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'.format(MP_APPID,'http://auth.senguo.cc/market/shopinsert?action=bind')
+			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'.format(MP_APPID,'http://auth.senguo.cc/market/shopinsert/%d?action=bind') %(shop_id)
 			print(url)
 			return self.redirect(url)
 		else:

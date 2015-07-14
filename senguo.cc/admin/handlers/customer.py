@@ -25,6 +25,7 @@ import urllib
 from sqlalchemy.orm.exc import NoResultFound
 
 import datetime
+import requests
 # from wxpay import QRWXpay
 
 # 登录处理
@@ -287,21 +288,23 @@ class Home(CustomerBaseHandler):
 			shop_id   = shop.id
 			shop_logo = shop.shop_trademark_url
 			balance_on = shop.config.balance_on_active
+			shop_auth = shop.shop_auth
 			if shop.marketing:
 				shop_marketing = shop.marketing.confess_active
 			else:
 				shop_marketing = 0
-			if shop.shop_auth in [1,2,3,4]:
+			if shop_auth in [1,2,3,4]:
 				show_balance = True
 			# print(shop,shop.shop_auth)
 		else:
 			# print("[个人中心]店铺不存在：",shop_code)
 			return self.send_fail('shop not found')
 		customer_id = self.current_user.id
-		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+		self.set_cookie("market_shop_id",str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
-		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_marketing",str(shop_marketing))
+		self.set_cookie("shop_auth",str(shop_auth))
 		shop_point = 0
 		shop_balance = 0
 		try:
@@ -377,6 +380,7 @@ class Discover(CustomerBaseHandler):
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
 			self.set_cookie("shop_marketing", str(shop_marketing))
+			self.set_cookie("shop_auth", str(shop_auth))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -568,6 +572,7 @@ class ShopProfile(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
+		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
 		else:
@@ -577,6 +582,7 @@ class ShopProfile(CustomerBaseHandler):
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_auth", str(shop_auth))
 		satisfy = 0
 		commodity_quality = 0
 		send_speed        = 0
@@ -919,6 +925,7 @@ class Market(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
 		else:
@@ -929,6 +936,7 @@ class Market(CustomerBaseHandler):
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_auth", str(shop_auth))
 
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
@@ -1282,9 +1290,15 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits")
 	def cart_list(self):
 		fruits = self.args["fruits"]
+		shop_id = int(self.get_cookie('market_shop_id'))
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
-		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
+		try:
+			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+		except:
+			self.session.add(models.Cart(id=self.current_user.id,shop_id=shop_id))  # 如果没有购物车，就增加一个
+			self.session.commit()
+			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
@@ -1355,6 +1369,7 @@ class Cart(CustomerBaseHandler):
 		shop_id = shop.id
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
+		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
 		else:
@@ -1371,6 +1386,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("shop_marketing", str(shop_marketing))
+		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render(self.tpl_path(shop.shop_tpl)+"/cart-empty.html",context=dict(subpage='cart'))
@@ -1621,7 +1637,15 @@ class Cart(CustomerBaseHandler):
 
 			return self.send_success(success_url=success_url,order_id = order.id)
 
-
+		auto_print = config.auto_print
+		print_type = config.receipt_type
+		wireless_type = config.wireless_type
+		if auto_print == 1 and print_type == 1:
+			if wireless_type == 0:
+				_action = "ylyprint"
+			elif wireless_type == 1:
+				_action = "fyprint"
+			self.autoPrint(order.id,current_shop,_action)
 		# 执行后续的记录修改
 
 		return self.send_success(order_id = order.id)
@@ -1638,6 +1662,109 @@ class Cart(CustomerBaseHandler):
 			# print("[定时任务]订单取消成功：",order.num)
 		#else:
 		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
+
+	def autoPrint(self,order_id,current_shop,action):
+		import hashlib
+		import time
+		import requests
+		partner='1693' #用户ID
+		apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
+		username='senguo' #用户名
+		timenow=str(int(time.time())) #当前时间戳
+		order  = self.session.query(models.Order).filter_by(id=order_id).first()
+		order_num = order.num
+		order_time = order.create_date.strftime("%Y-%m-%d %H:%M")
+		phone = order.phone
+		receiver = order.receiver
+		address = order.address_text
+		send_time = order.send_time
+		message = order.message
+		fruits = eval(order.fruits)
+		totalPrice = str(order.totalPrice)
+		pay_type = order.pay_type
+		receipt_msg = current_shop.config.receipt_msg
+		if not receipt_msg:
+			receipt_msg = ""
+		if not message:
+			message = "无"
+		if pay_type == 1:
+			_type = "货到付款"
+		elif pay_type == 2:
+			_type = "余额支付"
+		elif pay_type == 3:
+			_type = "在线支付"
+		i=1
+		fruit_list = []
+		fruits = sorted(fruits.items(), key=lambda d:d[0])
+		for key in fruits:
+			fruit_list.append(str(i)+":"+key[1]["fruit_name"]+"  "+key[1]["charge"]+" * "+str(key[1]["num"])+"\r\n")
+			i = i +1
+		if action == "ylyprint":
+			content="@@2              订单信息\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"订单编号："+order_num+"\r\n"+\
+					"下单时间："+order_time+"\r\n"+\
+					"顾客姓名："+receiver+"\r\n"+\
+					"顾客电话："+phone+"\r\n"+\
+					"配送时间："+send_time+"\r\n"+\
+					"配送地址："+address+"\r\n"+\
+					"买家留言："+message+"\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"@@2             商品清单\r\n"+\
+					"------------------------------------------------\r\n"+\
+					''.join(fruit_list)+"\r\n"+\
+					"\r\n"+\
+					"总价："+totalPrice+"元\r\n"+\
+					"支付方式："+_type+"\r\n"+\
+					"------------------------------------------------\r\n"+\
+					receipt_msg
+			machine_code=current_shop.config.wireless_print_num #打印机终端号 520
+			mkey=current_shop.config.wireless_print_key#打印机密钥 110110
+			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
+			print("sign str    :",sign)
+			sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+			print("sign str md5:",sign)
+			data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
+			# print("post        :",data)
+			r=requests.post("http://open.10ss.net:8888",data=data)
+
+			print("======WirelessPrint======")
+			print("res url        :",r.url)
+			print("res status_code:",r.status_code)
+			print("res text       :",r.text)
+			print("====================")
+		elif action == "fyprint":
+			reqTime = int(time.time()*1000)
+			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
+			API_KEY = '47519b0f'
+			deviceNo = '9602292847397158'
+			mode = 2
+			msgDetail = "                 <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+						"----------------------------------------\n"+\
+						"订单编号："+order_num+"\n"+\
+						"下单时间："+order_time+"\n"+\
+						"顾客姓名："+receiver+"\n"+\
+						"顾客电话："+phone+"\n"+\
+						"配送时间："+send_time+"\n"+\
+						"配送地址："+address+"\n"+\
+						"买家留言："+message+"\n"+\
+						"----------------------------------------\n"+\
+						"                   <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
+						"----------------------------------------\n"+\
+						''.join(fruit_list)+"\r\n"+\
+						"\n"+\
+						"总价："+totalPrice+"元\n"+\
+						"支付方式："+_type+"\n"+\
+						"----------------------------------------\n"+\
+						"            "+receipt_msg
+						#打印内容
+			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
+			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
+			data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
+			r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
+			print(r.url)
+			print(r.status_code)
+			print(r.text)
 
 # 购物篮 - 订单提交回调
 class CartCallback(CustomerBaseHandler):
@@ -1702,6 +1829,7 @@ class CartCallback(CustomerBaseHandler):
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
+
 		return self.send_success()
 
 

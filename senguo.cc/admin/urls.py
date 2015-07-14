@@ -40,7 +40,7 @@ handlers = [
 	#市场推广
 	(r"/market/home", handlers.market.Home, {}, "MarketHome"),
 	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
-	(r"/market/shopinsert", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
+	(r"/market/shopinsert/(\w+)", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
 	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
 
 
