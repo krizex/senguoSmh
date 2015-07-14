@@ -11,11 +11,8 @@ from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
 import decimal
-<<<<<<< HEAD
 import json
-=======
 from random import Random
->>>>>>> e3da44c9ba4f892ccb3763bd33c265a647c5b939
 
 #市场推广 - 首页
 class Home(AdminBaseHandler):
