@@ -884,7 +884,7 @@ class Market(CustomerBaseHandler):
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
-			# return self.write('您访问的店铺不存在')
+			return self.write('您访问的店铺不存在')
 			pass
 		print(shop.admin.id)
 
@@ -1283,9 +1283,15 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits")
 	def cart_list(self):
 		fruits = self.args["fruits"]
+		shop_id = int(self.get_cookie('market_shop_id'))
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
-		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=self.shop_id).one()
+		try:
+			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+		except:
+			self.session.add(models.Cart(id=self.current_user.id,shop_id=shop_id))  # 如果没有购物车，就增加一个
+			self.session.commit()
+			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
@@ -1706,10 +1712,9 @@ class CartCallback(CustomerBaseHandler):
 
 		auto_print = shop.config.auto_print
 		if auto_print == 1:
-			print(23333)
 			data={"action":"ylyprint","data":{"id":order.id}}
 			r=requests.post("http://zone.senguo.cc/admin/WirelessPrint",data=data)
-			print(r.text)
+			print(r.text,"i am auto_print")
 		return self.send_success()
 
 
@@ -2548,7 +2553,7 @@ class InsertData(CustomerBaseHandler):
 						shop['delivery_freight']   = temp.get('delivery_freight',None)
 						shop['shop_link']          = temp.get('shop_link',None)
 						shop['delivery_time']      = temp.get('delivery_time',None)
-						shop['shop_phone']         = temp.get('shop',None)
+						shop['shop_phone']         = temp.get('shop_phone',None)
 						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
 						shop['delivery_area']      = temp.get('delivery_area',None)
 						shop['shop_name']          = temp.get('shop_name',None)
