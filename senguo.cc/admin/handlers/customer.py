@@ -1630,7 +1630,7 @@ class Cart(CustomerBaseHandler):
 
 		auto_print = config.auto_print
 		if auto_print == 1:
-			self.autoPrint(order.id)
+			self.autoPrint(order.id,current_shop)
 		# 执行后续的记录修改
 
 		return self.send_success(order_id = order.id)
@@ -1648,7 +1648,7 @@ class Cart(CustomerBaseHandler):
 		#else:
 		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 
-	def autoPrint(self,order_id):
+	def autoPrint(self,order_id,current_shop):
 		import hashlib
 		import time
 		import requests
@@ -1667,7 +1667,7 @@ class Cart(CustomerBaseHandler):
 		fruits = eval(order.fruits)
 		totalPrice = str(order.totalPrice)
 		pay_type = order.pay_type
-		receipt_msg = self.current_shop.config.receipt_msg
+		receipt_msg = current_shop.config.receipt_msg
 		if not receipt_msg:
 			receipt_msg = ""
 		if not message:
@@ -1701,8 +1701,8 @@ class Cart(CustomerBaseHandler):
 				"支付方式："+_type+"\r\n"+\
 				"------------------------------------------------\r\n"+\
 				receipt_msg
-		machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
-		mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
+		machine_code=current_shop.config.wireless_print_num #打印机终端号 520
+		mkey=current_shop.config.wireless_print_key#打印机密钥 110110
 		sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
 		print("sign str    :",sign)
 		sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
