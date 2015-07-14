@@ -1,5 +1,6 @@
 $(document).ready(function(){
     $('.info-edit').on('click',function(){
+        console.log(2333);
         var $this=$(this);
         $this.parents('.set-list-item').find('.address-show').hide();
         $this.parents('.set-list-item').find('.address-edit').show();
@@ -34,6 +35,21 @@ $(document).ready(function(){
         var tpl_id=parseInt($('.tpl-list').attr('data-id'));
         $('.choose-btn').eq(tpl_id).addClass('active');
     }
+    if($(".type-choose")){
+        var type=parseInt($('.type-choose').attr('data-id'));
+        $(".type-choose li").eq(type).addClass('active');
+        if($(".wireless-type")){
+            var text;
+            if(type==0){
+                text="易连云";
+            }else if(type==1){
+                text="飞印";
+            }
+            $(".wireless-type").text(text);
+        }
+    }
+}).on("click",".type-choose li",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
 }).on('click','.cash_active',function(){
     var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
@@ -244,9 +260,7 @@ $(document).ready(function(){
         function(res){
             if(res.success){
                 $this.attr("data-flag","on");
-                if(confirm('是否添加该用户为店铺管理员？点击确定后请使用超级管理员微信进行二维码扫描')){
-                    window.location.href="/admin/wxauth";
-                }
+                window.location.href="/admin/wxauth";
             }else{
                     $this.attr("data-flag","on");
                     return Tip(res.error_text);

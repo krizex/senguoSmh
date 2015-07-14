@@ -17,80 +17,80 @@
 {% end %}
 <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
 <div class="rainshed2 text-center font18 text-black fix-title bg_change">店铺详情</div>
- <div class="info1 bg-white clearfix mt42 pt20">
-     <div class="shop-logo pull-left">
-         <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/170/h/170">
-     </div>
-     <div class="info set-w100-fle">
+<div class="info1 bg-white clearfix mt42 pt20">
+    <div class="shop-logo pull-left">
+        <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/170/h/170">
+    </div>
+    <div class="info set-w100-fle">
         <p class="font16 line18"><span class="shop-name">{{shop.shop_name}}</span><span class="cert-type {{color}}">{{shop_auth}}</span></p>
         <p class="font12 mt10 m-b10">店铺号：<span class="" id="shop_code">{{shop.shop_code}}</span></p>
-     </div>
-     <div class="info set-w100-fle">
-         <!--<div class="level-box btn font9 border-ca w49 p0 bg-grey5">
-             <div class="font10 m-b5 clearfix">
-                 <em class="set-inl-blo text-white text-center pull-left bg_change">1</em>
-                 <span class="pull-left">初来乍到</span>
-             </div>
-             <span class="status-box border-ca set-inl-blo clearfix">
-                 <span class="status-percent bg-green set-inl-blo"></span>
-             </span>
-         </div>-->
-         {% set sign_bg='' %}
-         {% set sign_text='' %}
-         {% set follow_show='' %}
-         {% set sign_color='' %}
-         {% set ml20='' %}
-         {% set sign_status=''%}
-         {% if follow%}
-             {% set follow_show='hidden' %}
-             {% set sign_show='show' %}
-         {% else %}
+    </div>
+    <div class="info set-w100-fle">
+        <!--<div class="level-box btn font9 border-ca w49 p0 bg-grey5">
+            <div class="font10 m-b5 clearfix">
+                <em class="set-inl-blo text-white text-center pull-left bg_change">1</em>
+                <span class="pull-left">初来乍到</span>
+            </div>
+            <span class="status-box border-ca set-inl-blo clearfix">
+                <span class="status-percent bg-green set-inl-blo"></span>
+            </span>
+        </div>-->
+        {% set sign_bg='' %}
+        {% set sign_text='' %}
+        {% set follow_show='' %}
+        {% set sign_color='' %}
+        {% set ml20='' %}
+        {% set sign_status=''%}
+        {% if follow%}
+            {% set follow_show='hidden' %}
+            {% set sign_show='show' %}
+        {% else %}
             {% set follow_show='show' %}
             {% set sign_show='hidden' %}
-         {% end %}
-         {% if signin %}
+        {% end %}
+        {% if signin %}
             {% set sign_bg='bg-grey3' %}
             {% set sign_color='text-white' %}
             {% set sign_text='已签到' %}
             {% set sign_status='signed'%}
-         {% else %}
+        {% else %}
             {% set sign_text='店铺签到' %}
             {% set ml20='ml20' %}
             {% set sign_status='un_sign'%}
-         {% end %}
-         <button class="btn text-green3 font12 border-ca pull-left w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} {{sign_status}} font13 bg-grey5" id="signin-shop">
-             {% if not signin %}
-             <em class="set-inl-blo bg_change"></em>
-             {% end %}
-             <span class="sign_text {{ml20}}">{{sign_text}}</span>
-         </button>
-         <button  class="btn text-white bg-pink font12 border-ca pull-right w49 sign-box p0 {{follow_show}} font13 bg-grey5" id="focus-shop">+店铺关注</button>
-     </div>
- </div>
- <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
-     <li class="w25 pull-left">
+        {% end %}
+        <button class="btn text-green3 font12 border-ca pull-left w49 sign-box p0 {{sign_bg}} {{sign_show}} {{sign_color}} {{sign_status}} font13 bg-grey5" id="signin-shop">
+            {% if not signin %}
+            <em class="set-inl-blo bg_change"></em>
+            {% end %}
+            <span class="sign_text {{ml20}}">{{sign_text}}</span>
+        </button>
+        <button  class="btn text-white bg-pink font12 border-ca pull-right w49 sign-box p0 {{follow_show}} font13 bg-grey5" id="focus-shop">+店铺关注</button>
+    </div>
+</div>
+<ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
+    <li class="w25 pull-left">
         <p class="text-grey9 text-center">运营时间</p>
         <p class="mt3 text-center">{{operate_days or 0}}天</p>
-     </li>
-     <li class="w25 pull-left">
-         <p class="text-grey9 text-center">粉丝</p>
-         <p class="mt3 text-center">{{fans_sum or 0}}个</p>
-     </li>
-     <li class="w25 pull-left">
-         <p class="text-grey9 text-center">总订单数</p>
-         <p class="mt3 text-center">{{order_sum}}个</p>
-     </li>
-     <li class="w25 pull-left">
-         <p class="text-grey9 text-center">商品种类</p>
-         <p class="mt3 text-center">{{goods_sum or 0}}种</p>
-     </li>
+    </li>
+    <li class="w25 pull-left">
+        <p class="text-grey9 text-center">粉丝</p>
+        <p class="mt3 text-center">{{fans_sum or 0}}个</p>
+    </li>
+    <li class="w25 pull-left">
+        <p class="text-grey9 text-center">总订单数</p>
+        <p class="mt3 text-center">{{order_sum}}个</p>
+    </li>
+    <li class="w25 pull-left">
+        <p class="text-grey9 text-center">商品种类</p>
+        <p class="mt3 text-center">{{goods_sum or 0}}种</p>
+    </li>
 </ul>
 <div class="bg-white m-b10 clearfix pb0">
     <p class="title clearfix box-style bm-line">
         <span class="pull-left font14"><em class="shop-icon set-inl-blo pull-left bg_change"></em>店铺信息</span></p>
     <ul class="shop-info text-grey9 font14">
         <li class="set-w100-fle hand bt-none" id="go-shop-area"><span class="pull-left">店铺地址：</span><span class="pull-left set-inl-blo w8">{{address}}</span><em class="area-icon set-inl-blo pull-right"></em></li>
-        <li class="set-w100-fle"><span class="pull-left">配送区域：</span><span class="pull-left set-inl-blo w8">{{shop.deliver_area or '无'}}</span></li>
+        <li class="set-w100-fle hand" id="go-send-area"><span class="pull-left">配送区域：</span><span class="pull-left set-inl-blo w8">{{shop.deliver_area or '无'}}</span><em class="area-icon set-inl-blo pull-right"></em></li>
         <a href="tel:{{shop.shop_phone}}" class="text-grey9">
         <li class="set-w100-fle"><span class="pull-left">联系电话：</span><span class="pull-left set-inl-blo w8">{{shop.shop_phone or '无'}}</span><em class="phone-icon set-inl-blo pull-right"></em></li>
         </a>
@@ -135,7 +135,7 @@
                 <ul class="group com-goods-lst">
                     {% for img in comment[10] %}
                     <li>
-                        <a href="{{img}}" title=""><img src="{{img}}?imageView2/5/w/200/h/200" alt="晒单图片"/></a>
+                        <a href="{{img}}" title=""><img src="{{img}}?imageView2/1/w/200/h/200" alt="晒单图片"/></a>
                     </li>
                     {% end %}
                 </ul>

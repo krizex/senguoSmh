@@ -220,9 +220,9 @@ class SwitchShop(AdminBaseHandler):
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
-			if total_money:		
+			if total_money:
 				shop.total_money = format(total_money,'.2f')
-			else:		
+			else:
 				shop.total_money=0
 			shop.address = self.code_to_text("shop_city",shop.shop_city) +" " + shop.shop_address_detail
 			shop_list.append(shop.safe_props())
@@ -239,7 +239,7 @@ class Realtime(AdminBaseHandler):
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
-		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum, 
+		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum,
 			follower_sum=follower_sum,on_num=on_num)
 
 
@@ -309,9 +309,9 @@ class OrderStatic(AdminBaseHandler):
 			end_date = datetime.datetime(date.year, date.month, date.day)
 
 		orders = self.session.query(
-			models.Order.id, 
+			models.Order.id,
 			models.Order.create_date,
-			models.Order.totalPrice, 
+			models.Order.totalPrice,
 			models.Order.type,
 			models.Order.pay_type).filter(models.Order.shop_id == self.current_shop.id,
 				   models.Order.create_date >= start_date,
@@ -403,7 +403,7 @@ class OrderStatic(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 15
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
-		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size-1) 
+		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size-1)
 		# print(start_date , end_date )
 
 		# 日订单数，日总订单金额
@@ -454,7 +454,7 @@ class OrderStatic(AdminBaseHandler):
 					# print(s[i][1],date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d'),s[i][2])
 					total[1] -= s[i][1]
 					total[0] -= s[i][2]
-					old_total -= s_old[j][1] 
+					old_total -= s_old[j][1]
 					i += 1
 					j += 1
 				else:
@@ -764,7 +764,7 @@ class Order(AdminBaseHandler):
 			if page+1 == page_sum:
 				nomore = True
 			# print("[订单管理]当前店铺：",self.current_shop)
-			
+
 			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminOrder"))
@@ -778,7 +778,7 @@ class Order(AdminBaseHandler):
 		shop_id = self.current_shop.id
 		#shop_point add by order.totalPrice
 		staff_info = []
-		
+
 		if order_status == 4:
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			if send_message:
@@ -1033,7 +1033,7 @@ class Shelf(AdminBaseHandler):
 							   menus=self.current_shop.menus,
 							   context=dict(subpage="goods", goodsSubpage="fruit"))
 		elif action == "menu":#todo 合法性检查
-			_id = int(self.args["id"]) 
+			_id = int(self.args["id"])
 			if _id == 2000:
 				mgoodses = self.session.query(models.Fruit).filter_by(fruit_type_id=2000,shop_id=self.current_shop.id).all()
 
@@ -1270,7 +1270,7 @@ class Goods(AdminBaseHandler):
 				else:
 					page = 0
 				page_size = 10
-				offset = page * page_size				
+				offset = page * page_size
 				filter_status = self.args["filter_status"]
 				if filter_status == []:
 					filter_status = "all"
@@ -1297,12 +1297,12 @@ class Goods(AdminBaseHandler):
 						print(goods.count())
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
-						
+
 
 				if order_status1 =="group":
 					case_one = 'models.Fruit.group_id'
 				elif order_status1 =="classify":
-					case_one = 'models.Fruit.fruit_type_id'	
+					case_one = 'models.Fruit.fruit_type_id'
 
 
 				if order_status2 == "add_time":
@@ -1341,8 +1341,8 @@ class Goods(AdminBaseHandler):
 			c_list.append({"all_count":all_count,"on_count":on_count,"off_count":off_count,"sold_count":sold_count,"dealing_count":dealing_count})
 
 			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list,shop_code=shop_code)
-						
-		elif action == "classify":	
+
+		elif action == "classify":
 			if self.args["type"] != [] :
 				_type = self.args["type"]
 				sub_type = self.args["sub_type"]
@@ -1639,14 +1639,14 @@ class Goods(AdminBaseHandler):
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
 					if re_count >= 6:
 						return self.send_fail("推荐分组至多只能添加六个商品")
-				
+
 				if group_id !=0 and group_id !=-1:
 						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
 						if _group:
 							group_id = _group.id
 						else:
 							return self.send_fail('该商品分组不存在或已被删除')
-				goods.update(session=self.session, group_id = int(data["group_id"]))			
+				goods.update(session=self.session, group_id = int(data["group_id"]))
 
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
@@ -1726,7 +1726,7 @@ class Goods(AdminBaseHandler):
 											select_num=select_num,
 											relate=relate)
 							self.session.add(charge_types)
-							
+
 				if "del_charge_types" in data  and  data['del_charge_types']:
 					try:
 						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]))
@@ -1776,7 +1776,7 @@ class Goods(AdminBaseHandler):
 						 num=data["num"],
 						 unit_num=data["unit_num"])
 			self.session.commit()
-		
+
 		elif action == "add_img":
 			return self.send_qiniu_token("add", 0)
 
@@ -1809,7 +1809,7 @@ class Goods(AdminBaseHandler):
 			if group_count == 5:
 				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
-				return self.send_fail('请填写相应分组信息')			
+				return self.send_fail('请填写相应分组信息')
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
 			self.session.commit()
@@ -1824,7 +1824,7 @@ class Goods(AdminBaseHandler):
 					_group.status = 0
 					goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=_id).all()
 					for good in goods :
-						good.group_id = 0 
+						good.group_id = 0
 				elif action =="edit_group":
 					_group.name = data["name"]
 					_group.intro = data["intro"]
@@ -1950,7 +1950,7 @@ class Follower(AdminBaseHandler):
 		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
 		# TODO: 搜索性能需改进，应进行多表联合查询
 		##################################################################
-		elif action == "search":  
+		elif action == "search":
 			wd = self.args["wd"]
 
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
@@ -1970,7 +1970,7 @@ class Follower(AdminBaseHandler):
 					customer_list.append(customer)
 			customers = customer_list
 
-					
+
 		elif action =="filter":
 			wd = self.args["wd"]
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
@@ -2107,7 +2107,7 @@ class Staff(AdminBaseHandler):
 					hire_link.active = 1
 			else:
 				if admin_id and hire_link.staff_id == admin_id:
-					return self.send_fail('管理员不可设置为下班状态')			
+					return self.send_fail('管理员不可设置为下班状态')
 				if hire_link.default_staff == 1:
 					return self.send_fail('请先取消该员工的默认员工状态，再让设置该员工为下班')
 				else:
@@ -2183,7 +2183,7 @@ class Config(AdminBaseHandler):
 		except:return self.send_error(404)
 		action = self.args["action"]
 		if action == "delivery":
-			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))	
+			return self.render("admin/shop-address-set.html", addresses=config.addresses,context=dict(subpage='shop_set',shopSubPage='delivery_set'))
 		elif action == "recharge":
 			pass
 		elif action == "receipt":
@@ -2222,7 +2222,7 @@ class Config(AdminBaseHandler):
 		action = self.args["action"]
 		data = self.args["data"]
 
-		if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire"]:
+		if action in ["add_addr1", "add_notice", "edit_receipt", "edit_hire","edit_receipt_img"]:
 			if action == "add_addr1":
 				addr1 = models.Address1(name=data)
 				self.current_shop.config.addresses.append(addr1)
@@ -2241,7 +2241,9 @@ class Config(AdminBaseHandler):
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
 				self.current_shop.config.update(session=self.session,
-												receipt_msg=data["receipt_msg"])				
+												receipt_msg=data["receipt_msg"])
+			elif action =="edit_receipt_img":
+				self.current_shop.config.update(session=self.session,receipt_img=data["receipt_img"])
 		elif action in ["add_addr2", "edit_addr1_active"]:
 			addr1 = next((x for x in self.current_shop.config.addresses if x.id==data["addr1_id"]), None)
 			if action == "add_addr2":
@@ -2255,9 +2257,9 @@ class Config(AdminBaseHandler):
 			except:return self.send_error(404)
 			addr2.update(session=self.session, active=not addr2.active)
 		elif action in ("edit_notice_active", "edit_notice"):  # notice_id
-			notice = next((x for x in self.current_shop.config.notices if x.id == data["notice_id"]), None)
+			notice = next((x for x in self.current_shop.config.notices if x.id == int(data["notice_id"])), None)
 			if not notice:
-				return self.send_error(404)
+				return self.send_error('没有该公告的任何消息')
 			if action == "edit_notice_active":
 				notice.active = 1 if notice.active == 2 else 2
 			elif action == "edit_notice":
@@ -2302,7 +2304,7 @@ class Config(AdminBaseHandler):
 				active = 0
 			else:
 				active = 1
-			self.current_shop.config.update(session=self.session,balance_on_active=active)	
+			self.current_shop.config.update(session=self.session,balance_on_active=active)
 		elif action == "online_on":
 			if self.current_shop.shop_auth ==0:
 				return self.send_fail('您的店铺还未认证，不能使用该功能')
@@ -2326,16 +2328,16 @@ class Config(AdminBaseHandler):
 			data = []
 			info  = self.session.query(models.Accountinfo).filter_by(id = _id).first()
 			if not info:
-				return self.send_fail('该用户不存在')
-			customer = self.session.query(models.Customer).filter_by(id = info.id).first()
-			if not customer:
-				return self.send_fail('该用户还没有关注您的店铺')
-			customer_shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id= customer.id,shop_id=self.current_shop.id).first()
-			if not customer_shop_follow:
-				return self.send_fail('该用户还没有关注您的店铺')
-			if info and customer and customer_shop_follow:
-				data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
-				return self.send_success(data=data)
+				return self.send_fail('该用户还不是森果的用户，无法添加其为管理员')
+			# customer = self.session.query(models.Customer).filter_by(id = info.id).first()
+			# if not customer:
+			# 	return self.send_fail('该用户还没有关注您的店铺')
+			# customer_shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id= customer.id,shop_id=self.current_shop.id).first()
+			# if not customer_shop_follow:
+			# 	return self.send_fail('该用户还没有关注您的店铺')
+			# if info and customer and customer_shop_follow:
+			data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
+			return self.send_success(data=data)
 		elif action =="add_admin":
 			if self.current_shop.shop_auth ==0:
 				return self.send_fail('您的店铺还未认证，不能使用该功能')
@@ -2417,6 +2419,24 @@ class Config(AdminBaseHandler):
 			self.current_shop.shop_tpl=tpl_id
 			self.session.commit()
 			return self.send_success()
+		elif action=="receipt_type_set":
+			self.current_shop.config.receipt_type = 0 if self.current_shop.config.receipt_type == 1 else 1
+			self.session.commit()
+		elif action=="auto_print_set":
+			self.current_shop.config.auto_print = 0 if self.current_shop.config.auto_print == 1 else 1
+			self.session.commit()
+		elif action=="console_set":
+			_type = int(self.args["data"]["type"])
+			num = self.args["data"]["num"]
+			key = self.args["data"]["key"]
+			if len(num) > 20:
+				return self.send_fail("console num is too long")
+			if len(key) > 20:
+				return self.send_fail("console key is too long")
+			self.current_shop.config.wireless_print_num = num
+			self.current_shop.config.wireless_print_key = key
+			self.current_shop.config.wireless_type = _type
+			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -2429,7 +2449,11 @@ class AdminAuth(AdminBaseHandler):
 	def get(self):
 		next_url = self.get_argument('next', '')
 		if self._action == 'wxauth':
-			return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
+			if self.is_pc_browser():
+				link = self.get_wexin_oauth_link2(next_url=next_url)
+				return self.render("admin/wx-auth.html",link=link)
+			else:
+				return self.redirect(self.get_wexin_oauth_link2(next_url=next_url))
 		elif self._action == 'wxcheck':
 			return self.check_admin(next_url)
 
@@ -2479,10 +2503,15 @@ class AdminAuth(AdminBaseHandler):
 			r = requests.post(url,data = postdata , headers = headers)
 			# print(r.text)
 			WxOauth2.post_add_msg(account_info.wx_openid, message_shop_name,account_info.nickname)
-			return self.redirect('/admin/config?action=admin')
-
+			if self.is_pc_browser():
+				return self.redirect('/admin/config?action=admin')
+			else:
+				return self.redirect('/madmin/shopattr?action=admin')
 		else:
-			return self.redirect('/admin/config?action=admin&status=fail')
+			if self.is_pc_browser():
+				return self.redirect('/admin/config?action=admin&status=fail')
+			else:
+				return self.redirect('/madmin/shopattr?action=admin&status=fail')
 
 # 账户余额
 class ShopBalance(AdminBaseHandler):
@@ -2508,7 +2537,7 @@ class ShopBalance(AdminBaseHandler):
 		try:
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
 			apply_cash = apply_list.order_by(desc(models.ApplyCashHistory.create_time)).first()
-			
+
 			has_done = apply_cash.has_done
 			decline_reason = apply_cash.decline_reason
 			apply_value = apply_cash.value
@@ -2519,7 +2548,7 @@ class ShopBalance(AdminBaseHandler):
 
 		except:
 			print("ShopBalance: no apply_cash found")
-			
+
 		if shop_auth in [1,2,3,4]:
 			show_balance = True
 			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
@@ -2591,7 +2620,7 @@ class ShopBalance(AdminBaseHandler):
 			count =q[0][1]
 			if q[0][0]:
 				total=q[0][0]
-			total = format(total,'.2f')	
+			total = format(total,'.2f')
 			times = count
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
@@ -2643,7 +2672,7 @@ class ShopBalance(AdminBaseHandler):
 			count = q[0][1]
 			if q1[0][0]:
 				pay = q1[0][0]
-			total = format(total,'.2f')	
+			total = format(total,'.2f')
 			pay = format(pay,'.2f')
 			left = float(total)-float(pay)
 			left = format(left,'.2f')
@@ -2671,7 +2700,7 @@ class ShopBalance(AdminBaseHandler):
 				total =q[0][0]
 			count = q[0][1]
 			times = count
-			total = format(total,'.2f')	
+			total = format(total,'.2f')
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
 			#	print('get all BalanceHistory error')
@@ -2694,7 +2723,7 @@ class ShopBalance(AdminBaseHandler):
 			spend_total = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type =1,is_cancel = 0).all()
 			if spend_total[0][0]:
 				total =spend_total[0][0]
-			total = format(total,'.2f')	
+			total = format(total,'.2f')
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
 			#	print('get all BalanceHistory error')
@@ -2765,6 +2794,8 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_name = data["shop_name"]
 		elif action == "edit_shop_img":
 			return self.send_qiniu_token("shop", shop.id)
+		elif action == "edit_shop_logo":
+			shop.shop_trademark_url=data["img_url"]
 		elif action == "edit_shop_code":
 			if len(data["shop_code"]) < 6:
 				return self.send_fail("店铺号至少要6位")
@@ -2782,15 +2813,17 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
 			shop_city = int(data["shop_city"])
-			lat       = float(data["lat"])
-			lon       = float(data['lon'])
+			if "lat" in data:
+				lat       = float(data["lat"])
+				shop.lat       = lat
+			if "lon" in data:
+				lon       = float(data['lon'])
+				shop.lon       = lon
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
 			shop.shop_province = shop_city//10000*10000
 			shop.shop_city = shop_city
-			shop.lat       = lat
-			shop.lon       = lon
 			shop.shop_address_detail = shop_address_detail
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
@@ -2802,7 +2835,7 @@ class ShopConfig(AdminBaseHandler):
 				shop.area_radius  = int(data["area_radius"])
 			if "area_list" in data and data["area_list"] !="":
 				shop.area_list = data["area_list"]
-			
+
 		elif action == "edit_have_offline_entity":
 			shop.have_offline_entity = data["have_offline_entity"]
 		elif action =="shop_status":
@@ -2828,7 +2861,7 @@ class ShopAuthenticate(AdminBaseHandler):
 		has_done = 0
 		apply_type = 0
 		decline_reason= ''
-		if auth_apply: 
+		if auth_apply:
 			has_done = auth_apply.has_done
 			apply_type = auth_apply.shop_type
 			decline_reason = auth_apply.decline_reason
@@ -2965,7 +2998,7 @@ class Marketing(AdminBaseHandler):
 			if select_rule==0:
 				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).all()
 			elif select_rule==1:
-				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).filter(models.CouponsShop.customer_id!=None).all()	
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).filter(models.CouponsShop.customer_id!=None).all()
 			elif select_rule==2:
 				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,if_used=1).all()
 			else :
@@ -2986,7 +3019,7 @@ class Marketing(AdminBaseHandler):
 			"last_day":q.last_day,"uneffective_time":q.uneffective_time,"coupon_totalnum":q.coupon_totalnum}
 			return self.render("admin/editcoupon.html",output_data=x_coupon,context=dict(subpage='marketing'))
 		'''
-	
+
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data")
 	def post(self):
@@ -3092,7 +3125,7 @@ class Marketing(AdminBaseHandler):
 		# 	if select_rule==0:
 		# 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).all()
 		# 	elif select_rule==1:
-		# 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).filter(models.CouponsShop.customer_id!=None).all()	
+		# 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).filter(models.CouponsShop.customer_id!=None).all()
 		# 	elif select_rule==2:
 		# 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,if_used=1).all()
 		# 	else :
@@ -3105,13 +3138,12 @@ class Marketing(AdminBaseHandler):
 		# 			customer_id=q.customer_id
 		# 		x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"customer_id":customer_id,"get_date":x.get_date,"use_date":x.use_date,"order_id":x.order_id}
 		# 		data.append(x_coupon)
-		# 	return self.render("admin/details.html",output_data=data,context=dict(subpage='marketing')) 
+		# 	return self.render("admin/details.html",output_data=data,context=dict(subpage='marketing'))
 		# '''
 		else:
 			return self.send_fail('something must wrong')
 		self.session.commit()
 		return self.send_success()
-
 
 # 营销和玩法 - 告白墙管理
 class Confession(AdminBaseHandler):
@@ -3159,7 +3191,7 @@ class Confession(AdminBaseHandler):
 		# 	# 我开始的时候用的识filter 但是后台报错 我使用了 filter_by之后错误解决 为什么呢？？？
 		# 	q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.create_time.desc())
 		# elif action == "hot":
-		# 	q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.great.desc())	
+		# 	q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.great.desc())
 		# else:
 		# 	return self.send_error(404)
 		# confession = q.offset(page*page_size).limit(page_size).all()
@@ -3204,51 +3236,117 @@ class MessageManage(AdminBaseHandler):
 				shop_admin = self.session.query(models.ShopAdmin).filter_by(id = self.current_user.id).one()
 			except:
 				return self.send_fail('shop_admin not found')
+			shop.admin.has_mp  = 1   #管理员有自己的平台
 			shop_admin.mp_name = mp_name
 			shop_admin.mp_appid = mp_appid
 			shop_admin.mp_appsecret = mp_appsecret
 			self.session.commit()
 			return self.send_success()
 
-	
 
-
-
-class printTest(AdminBaseHandler):
+class WirelessPrint(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action?:str')
-	def get(self):
+	@AdminBaseHandler.check_arguments('action?:str',"data?")
+	def post(self):
 		import hashlib
 		import time
 		import requests
-		partner=1693 #用户ID
-		apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
-		# partner=6 #用户 ID
-		# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
-		machine_code='613' #打印机终端号
-		mkey='123456' #打印机密钥
-		msign='123456'
-		username='senguo' #用户名
-		mobilephone='15982424080' #打印机内的手机号
-		printname='天府广场店' #打印机名称
-		time=int(time.time()) #当前时间戳
-		content= "测试打印" #打印内容
-		if self.args["action"] == "order":
-			sign=apikey+'machine_code'+machine_code+'partner'+str(partner)+'time'+str(time)+mkey #生成的签名加密
-			sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
-			res1={"partner":partner,"machine_code":machine_code,"content":content,"time":time,"sign":sign}
-			final= 'partner='+str(partner)+'&machine_code='+machine_code+'&time='+str(time)+'&sign='+sign+'&content='+content
-			r=requests.post("http://open.10ss.net:8888",data=json.dumps(final))
-			print(r.url)
-			print(r.status_code)
-			print(r.text)
-		elif self.args["action"] == "add":
-			sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
-			sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
-			res1={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
-			final= 'partner='+str(partner)+'&machine_code='+machine_code+'&username='+username+'&printname='+printname+'&mobilephone='+mobilephone+'&msign='+msign+'&sign='+sign
-			r=requests.post("http://open.10ss.net:8888",data=json.dumps(final))
-			print(r.url)
-			print(r.status_code)
-			print(r.text)
+		if self.args["action"] in ["ylyprint","ylyadd"]:
+			partner='1693' #用户ID
+			apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
+			# partner=6 #用户 ID
+			# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
+			username='senguo' #用户名
+			mobilephone='15982424080' #打印机内的手机号
+			printname='senguo' #打印机名称
+			timenow=str(int(time.time())) #当前时间戳
+			content="@@2             订单信息\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"订单编号：272000270\r\n"+\
+					"下单时间：2015-07-10 14:32:42\r\n"+\
+					"顾客姓名：森小果\r\n"+\
+					"顾客电话：400-0270-1355\r\n"+\
+					"下单时间：2015-07-10 16:30~17:30\r\n"+\
+					"配送地址：华中科技大学西一区35栋402室\r\n"+\
+					"买家留言：尽快配送！\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"@@2             商品清单\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"1: 美国进口红提 20.50元/2.00kg * 1\r\n"+\
+					"2: 精品红富士 4.00元/1.00斤 * 2\r\n"+\
+					"\r\n"+\
+					"总价：28.05元\r\n"+\
+					"支付方式：货到付款\r\n"+\
+					"------------------------------------------------\r\n"+\
+					"欢迎扫描二维码关注～\r\n"+\
+					"<q>http://senguo.cc/qqtest</q>"
+					#打印内容
 
+			if self.args["action"] == "ylyprint":
+				machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
+				mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
+				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
+				print("sign str    :",sign)
+				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+				print("sign str md5:",sign)
+				data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
+				print("post        :",data)
+				r=requests.post("http://open.10ss.net:8888",data=data)
+
+				print("======返回信息======")
+				print("res url        :",r.url)
+				print("res status_code:",r.status_code)
+				print("res text       :",r.text)
+				print("====================")
+
+			elif self.args["action"] == "ylyadd":
+				print(self.args)
+				machine_code = self.args["data"]["num"] #打印机终端号
+				msign = self.args["data"]["key"]#打印机密钥
+				sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
+				sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
+				data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
+				r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
+
+				print("======返回信息======")
+				print("res url        :",r.url)
+				print("res status_code:",r.status_code)
+				print("res text       :",r.text)
+				print("====================")
+				if int(r.text)==1:
+					return self.send_success()
+				elif int(r.text)==2:
+					return self.send_fail("重复添加")
+
+		elif self.args["action"] == "fyprint":
+			reqTime = int(time.time()*1000)
+			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
+			API_KEY = '47519b0f'
+			deviceNo = '9602292847397158'
+			mode = 2
+			msgDetail = "  <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+						"-------------------------\n"+\
+						"订单编号：272000270\n"+\
+						"下单时间：2015-07-10 14:32:42\n"+\
+						"顾客姓名：森小果\n"+\
+						"顾客电话：400-0270-1355\n"+\
+						"下单时间：2015-07-10 16:30~17:30\n"+\
+						"配送地址：华中科技大学西一区35栋402室\n"+\
+						"买家留言：尽快配送！\n"+\
+						"-------------------------\n"+\
+						"  <Font# Bold=1 Width=2 Height=2>商品详情</Font#>\n"+\
+						"-------------------------\n"+\
+						"1: 美国进口红提 20.50元/2.00kg * 1\n"+\
+						"2: 精品红富士 4.00元/1.00斤 * 2\n"+\
+						"\n"+\
+						"总价：28.05元\n"+\
+						"支付方式：货到付款\n"+\
+						"-------------------------\n"
+						#打印内容
+			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
+			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
+			data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
+			r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
+			print(r.url)
+			print(r.status_code)
+			print(r.text)

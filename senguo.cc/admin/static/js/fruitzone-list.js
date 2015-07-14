@@ -9,8 +9,7 @@ $(document).ready(function(){
             var id=$.getUrlParam('id');
             shopsList(0,id,'admin_shop');
         }
-    }
-    else{
+    }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
         if(q && q!="null"){
             Search(q);
@@ -101,8 +100,8 @@ $(document).ready(function(){
          else{
              add_bg();
             $('.province_list').removeClass('hidden');
-            $this.addClass('city_choosed');     
-         } 
+            $this.addClass('city_choosed');
+         }
     });
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
@@ -180,6 +179,7 @@ function initLocation(){
                 var addComp = rs.addressComponents;
                 initProviceAndCityCode(addComp.province, addComp.city);
                 $(".city_name").text(addComp.city);
+                window.dataObj.type='city';
                 filter($("#city_id").val());
             });
         },function(error){
@@ -330,12 +330,10 @@ var shopItem=function (shops){
             }
 }
 window.dataObj.page=1;
-window.dataObj.finished=true;
 window.dataObj.action='shop';
 window.dataObj.type='city';
 var nomore = false;
 var shopsList=function(page,data,action){
-    $(".wrap-loading-box").removeClass("hidden");
     var url='';
     var action =action;
     var args={
@@ -361,19 +359,15 @@ var shopsList=function(page,data,action){
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                $(".wrap-loading-box").addClass("hidden");
                 initData(res);
                 nomore = res.nomore;
             }
         else {
-            $(".wrap-loading-box").addClass("hidden");
             return noticeBox(res.error_text);
         }
         },function(){
-            $(".wrap-loading-box").addClass("hidden");
             return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
         function(){
-            $(".wrap-loading-box").addClass("hidden");
             return noticeBox('服务器貌似出错了~ ( >O< ) ~');
         }
         );
@@ -382,30 +376,35 @@ var shopsList=function(page,data,action){
             window.dataObj.maxnum=res.page_total;
             shopItem(shops);
             $('.loading').hide();
-            window.dataObj.finished=true;
+            $('.no_more').hide();
+            if(nomore){
+                window.dataObj.finished=false;
+            }else{
+                window.dataObj.finished=true;
+            }
     }
 };
-
+window.dataObj.finished=true;
 var scrollLoading=function(){
-    var range = 60;             //距下边界长度/单位px          //插入元素高度/单位px  
-    var totalheight = 0;   
-    var main = $(".container");                  //主体元素   
+    var range = 60;             //距下边界长度/单位px          //插入元素高度/单位px
+    var totalheight = 0;
+    var main = $(".container");                  //主体元素
     $(window).scroll(function(){
-        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)  
-        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);  
-        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && nomore==false) { 
-            $('.no_more').hide();
+        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+        if(window.dataObj.finished&&(main.height()-range) <= totalheight  && nomore==false) {
             $('.loading').show();
+            $('.no_more').hide();
             window.dataObj.finished=false;
-            window.dataObj.page++; 
+            window.dataObj.page++;
             shopsList(window.dataObj.page,window.dataObj.data,window.dataObj.action);
-        }       
-        else if(nomore==true){
+        }
+        else if(window.dataObj.finished==false && nomore==true){
               $('.loading').hide();
               $('.no_more').show();
-        } 
-    }); 
-}   
+        }
+    });
+}
 
 function Search(q){
     window.dataObj.page=1;
@@ -438,10 +437,9 @@ function Search(q){
             }
             else return noticeBox(res.error_text);
         },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}    
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
     );
 }
-
 function filter(data){
    $(".wrap-loading-box").removeClass("hidden");
    var type = window.dataObj.type;
@@ -463,11 +461,11 @@ function filter(data){
     if(data){
         if(type=='city') {
             args.city=Int(data);
-            window.dataObj.type=='city'
+            window.dataObj.type=='city';
         }
         else if(type=='province') {
             args.province=Int(data);
-            window.dataObj.type=='province'
+            window.dataObj.type=='province';
         }
     }
     $.postJson(url,args,
@@ -475,19 +473,24 @@ function filter(data){
             if(res.success)
             {
                 remove_bg();
-                $('.shoplist').empty();
                  var shops=res.shops;
                  nomore = res.nomore;
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
                  if(shops.length==0){
-                    $('.shoplist').empty();
+                    window.dataObj.finished = false;
                     window.dataObj.maxnum=1;
-                    $('.shoplist').append('<h4 class="text-center mt10 text-grey">无搜索结果！</h4>');
+                    $('.shoplist').append('<h4 class="text-center mt10 text-grey">无任何结果！</h4>');
                  }
                 else {
+                    if(nomore){
+                        window.dataObj.finished = false;
+                    }else{
+                        window.dataObj.finished = true;
+                    }
                       window.dataObj.action='filter';
                       window.dataObj.data=Int(data);
+                      $('.shoplist').empty();
                      shopItem(shops);
                 }
                 $(".wrap-loading-box").addClass("hidden");

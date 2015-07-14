@@ -2,7 +2,7 @@ var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
     $("html,body").addClass("h100");
     width = $(window).width();
-    var minheight = $(window).height()-70;
+    var minheight = $(window).height()-80;
     //$(".swiper-wrapper").width(width*$(".swiper-slide").size());
     $(".order-lists").css({minHeight:minheight+"px"});
 
@@ -38,8 +38,8 @@ $(document).ready(function(){
             var index = swiper.activeIndex;
             $(".order-lists").eq(index).empty();
             $(".second-tab-list").children(".item").eq(index).addClass("active").siblings(".item").removeClass("active");
-             _page=0;
-             getOrder(_page);
+            _page=0;
+            getOrder(_page);
             $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);          
         }
     });
@@ -131,7 +131,7 @@ function scrollLoading(){
             getOrder(_page);
         }
         else if(nomore==true){
-              $(".no-result").html("没有更多订单了");
+            $(".no-result").html("没有更多订单了");
         }
     });
 }

@@ -184,7 +184,7 @@ img{border:none;}
 
 .text-green{color:#44b549 !important;}
 .text-white{color:#fff;}
-.text-grey{color:#ccc; !important;}
+.text-grey{color:#ccc !important;}
 .text-grey2{color:#666;}
 .text-grey3{color:#333;}
 .text-grey9{color:#999;}
@@ -383,3 +383,7 @@ input{color:#333;text-indent:5px;}
     }
 }
 .logout{padding: 14px 15px 0 0;color: #6ba4ef;}
+
+.auth-box{width:450px;margin:0 auto;position:relative;background:#fff;padding:10px;border:1px solid #eee;}
+.auth-box h1{margin-top:10px;font-size:16px !important;margin-left:-105px;position:absolute;left:50%;top:0;background:#fff;line-height:30px;}
+.auth-box iframe{border:none;margin-top:20px;}

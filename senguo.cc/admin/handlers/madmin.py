@@ -129,7 +129,78 @@ class Set(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/shop-set.html")
-
+# 移动后台 - 设置
+class SetAttr(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action","id?:int")
+	def get(self):
+		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
+		except:return self.send_error(404)
+		action= self.args["action"]
+		if action=="receipt":
+			token = self.get_qiniu_token("shopAuth_cookie","token")
+			return self.render("m-admin/shop-set-receipt.html",token=token,receipt_msg=config.receipt_msg,current_shop=self.current_shop,context=dict(subpage='shop_set',shopSubPage='receipt_set'))
+		if action=="verify":
+			return self.render('m-admin/shop-set-verify.html',text_message_active=self.current_shop.config.text_message_active,context=dict(subpage='shop_set',shopSubPage='phone_set'))
+		if action=="admin":
+			notice=''
+			if 'status' in self.args:
+				status = self.args["status"]
+				if status == 'success':
+					notice='管理员添加成功'
+				elif status == 'fail':
+					notice='您不是超级管理员，无法进行管理员添加操作'
+			admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
+			datalist =[]
+			for admin in admin_list:
+				info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
+				datalist.append({'id':info.accountinfo.id,'imgurl':info.accountinfo.headimgurl_small,'nickname':info.accountinfo.nickname,'temp_active':admin.temp_active})
+			return self.render('m-admin/shop-set-admin.html',current_shop=self.current_shop,context=dict(),notice=notice,datalist=datalist)
+		if action=="addAdmin":
+			return self.render('m-admin/shop-add-admin.html',context=dict())
+		if action=="template":
+			shop_tpl = self.current_shop.shop_tpl
+			return self.render('m-admin/shop-set-template.html',shop_tpl=shop_tpl,context=dict())
+		if action=="notice":
+			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
+			return self.render('m-admin/shop-set-notice.html',notices=config.notices,token=token,context=dict())
+		if action=="addNotice":
+			token = self.get_qiniu_token("shop_notice_cookie",self.current_shop.id)
+			notice = ''
+			if "id" in self.args:
+				n_id = int(self.args["id"])
+				for notice in config.notices:
+					if notice.id == n_id:
+						notice = notice
+						break
+			return self.render('m-admin/shop-add-notice.html',notice=notice,token=token,context=dict())
+		if action=="pay":
+			return self.render('m-admin/shop-set-pay.html',context=dict())
+		# 移动后台 - 设置
+class Address(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/shop-address.html")
+# 移动后台 - 店铺信息
+class Info(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		if self.get_secure_cookie("shop_id"):
+			shop_id = int(self.get_secure_cookie("shop_id").decode())
+			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
+			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			self.current_shop = shop
+			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
+		city = self.code_to_text("city", self.current_shop.shop_city)
+		province = self.code_to_text("province", self.current_shop.shop_province)
+		address = self.code_to_text("shop_city", self.current_shop.shop_city) +\
+				  " " + self.current_shop.shop_address_detail
+		service_area = self.code_to_text("service_area", self.current_shop.shop_service_area)
+		lat = self.current_shop.lon
+		lon = self.current_shop.lat
+		token = self.get_qiniu_token("shopAuth_cookie","token")
+		return self.render("m-admin/shop-info.html", token=token,current_shop=self.current_shop,city=city,province=province,address=address,lat=lat,lon=lon, \
+			service_area=service_area, context=dict(subpage='shop_set',shopSubPage='info_set'))
 # 移动后台 - 订单
 class Order(AdminBaseHandler):
 	@tornado.web.authenticated

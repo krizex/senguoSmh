@@ -2,7 +2,6 @@
 var if_login=$('.pop-login').attr('data-id');
 $(document).ready(function(){
     cookie.setCookie("next_url",window.location.href);
-
     var height = $(window).height();
     $(".container").css("minHeight",height-40);
     //fastclick initialise
@@ -16,7 +15,7 @@ $(document).ready(function(){
          $(".pop-win").addClass("hide");
     });
     $(".goback").on("click",function(){
-        history.go(-1);
+        history.back();
     });
     
     if($("#order-success").size()>0){
