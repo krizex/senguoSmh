@@ -25,6 +25,7 @@ $(document).ready(function(){
     }
 }).on("click","#cur_address",function(){//刷新列表
     $(window).scrollTop(0);
+    pn=0;
     initLocation();
 });
 /*根据经纬度获取地址*/
