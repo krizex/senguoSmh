@@ -872,7 +872,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 # 商城入口
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@get_unblock
+	# @get_unblock
 	def get(self, shop_code):
 		# print('login in ')
 		w_follow = True
@@ -1620,6 +1620,10 @@ class Cart(CustomerBaseHandler):
 				print("Cart: online_type error")
 
 			return self.send_success(success_url=success_url,order_id = order.id)
+
+
+		# 执行后续的记录修改
+
 		return self.send_success(order_id = order.id)
 
 	def order_cancel_auto(self,session,order_id):
@@ -1641,6 +1645,7 @@ class CartCallback(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
+		pass
 		try:
 			order_id = int(self.args['order_id'])
 			# print(order_id)
@@ -1698,7 +1703,7 @@ class CartCallback(CustomerBaseHandler):
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success()
-
+		
 
 
 class Notice(CustomerBaseHandler):
