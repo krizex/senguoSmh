@@ -3,8 +3,6 @@
  */
 var isLoad = true, pn = 0, cur_action="", ulng= 0, ulat=0, action="to_do";
 $(document).ready(function(){
-    /*getAddress(ulng,ulat);
-    loadData("to_do");*/
     initLocation();
 }).on("click",".shop-list li",function(){
     var id=$(this).data('id');
@@ -12,7 +10,7 @@ $(document).ready(function(){
 }).on("click",".tab-list li",function(){
     var index = $(this).index();
     $(".tab-list li").removeClass("active").eq(index).addClass("active");
-    $(window).scrollTop(0);
+    document.body.scrollTop=0;
     pn=0;
     if(index==0){
         cur_action=0;
@@ -24,9 +22,13 @@ $(document).ready(function(){
         loadData();
     }
 }).on("click","#cur_address",function(){//刷新列表
-    $(window).scrollTop(0);
-    pn=0;
-    initLocation();
+    if($(this).attr("data-flag")=="1"){
+    }else{
+        document.body.scrollTop=0;
+        $(".loading").show().attr("data-flag","1");
+        pn=0;
+        initLocation();
+    }
 });
 /*根据经纬度获取地址*/
 function getAddress(lng,lat){
@@ -77,6 +79,7 @@ function loadData(){
     };
     $.postJson(url,args,function(res){
         if(res.success){
+            $(".loading").hide().attr("data-flag","0");
             var goods_list = res.shops;
             $("#shop_list").empty();
             var lis = "";
