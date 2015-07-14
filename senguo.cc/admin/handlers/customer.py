@@ -884,7 +884,7 @@ class Market(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			# return self.write('您访问的店铺不存在')
-			pass
+			return self.send_fail('shop not found')
 		print(shop.admin.id)
 
 		if shop.admin.has_mp:
