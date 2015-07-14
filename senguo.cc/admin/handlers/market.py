@@ -19,14 +19,15 @@ class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		#return self.send_success()
-
-		return self.render('market/shop-list.html')
+		logo_img = self.current_user.accountinfo['headimgurl_small']
+		return self.render('market/shop-list.html',logo_img=logo_img)
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action',"page?:int","lat","lon")
 	def post(self):
 		action = self.args['action']
 		page_size = 20
 		nomore = False
+
 		_shop = self.session.query(models.Spider_Shop)
 		lat1 = float(self.args['lat'])
 		lon1 = float(self.args['lon'])
@@ -217,10 +218,10 @@ class ShopAdminInfo(AdminBaseHandler):
 			wx_userinfo = self.get_wx_userinfo(code,mode)
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 			if user:
-				print('存在且id为',user.id)
+				print('id exits , it is',user.id)
 				return user.id
 			else:
-				print("[微信登录]用户不存在，注册为新用户")
+				print("user not exit , make new wx_info")
 				if wx_userinfo["headimgurl"] not in [None,'']:
 					headimgurl = wx_userinfo["headimgurl"]
 					headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
@@ -242,12 +243,14 @@ class ShopAdminInfo(AdminBaseHandler):
 					u = mode.ShopAdmin()
 					u.accountinfo = account_info
 					self.session.commit()
+					print('get wx_userinfo success')
 				except:
 					return False
 				return user.id
 
 	@tornado.web.authenticated
 	def add_shop(self,shop_id,admin_id):
+		print('login in add_shop')
 		try:
 			shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).one()
 		except:
@@ -266,6 +269,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		config.periods.extend([period1, period2, period3])
 		marketing = models.Marketing()
 		shop_code = self.make_shop_code()
+		print('make  shop_code  success')
 		temp_shop.shop_code = shop_code
 		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
 			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,
@@ -275,6 +279,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		shop.shop_start_timestamp = time.time()
 		self.session.add(shop)
 		self.session.commit()
+		print('shop add success')
 
 		######################################################################################
 		# inspect whether staff exited

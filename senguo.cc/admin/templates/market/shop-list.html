@@ -6,7 +6,7 @@
 <div class="header">
     <a href="javascript:;" class="back market-city">武汉<i class="icert"></i></a>
     <span>森果市场推广系统</span>
-    <a href="javascrpt:;" class="head-right spread-user"><span class="img-border"><img src="/static/images/TDSG.png" alt="陈逸林"/></span></a>
+    <a href="javascrpt:;" class="head-right spread-user"><span class="img-border"><img src="{{ logo_img or '/static/images/TDSG.png'}}" alt="头像"/></span></a>
 </div>
 {% end %}
 {% block content %}
@@ -19,35 +19,9 @@
     </div>
     <div class="cur-address" id="cur_address">
         <span class="fr">更新</span>
-        当前位置:<span class="address">武汉市华中科技大学</span>
+        当前位置:<span class="address" id="address"></span>
     </div>
     <ul class="shop-list" id="shop_list">
-        <!--<li data-id="" data-code="">
-            <dl class="shop-dl">
-                <dd>
-                    <img src="/static/images/TDSG.png" alt=""/>
-                </dd>
-                <dt>
-                    <p class="name"><span class="c999 f12 fr">1.2km</span>水果太太(光谷店)</p>
-                    <p class="addre mt15">武汉市洪山区珞瑜路华中科技大学</p>
-                </dt>
-            </dl>
-            <div class="admin-text">
-                <span class="fr c333">完成时间:2015-05-04 15:05:05</span>
-                <span class="c333">负责人:周兵</span>
-            </div>
-        </li>
-        <li data-id="" data-code="">
-            <dl class="shop-dl">
-                <dd>
-                    <img src="/static/images/TDSG.png" alt=""/>
-                </dd>
-                <dt>
-                <p class="name"><span class="c999 f12 fr">1.2km</span>水果太太(光谷店)</p>
-                <p class="addre mt15">武汉市洪山区珞瑜路华中科技大学愠苑2栋303</p>
-                </dt>
-            </dl>
-        </li>-->
     </ul>
     <p class="mt20 no-result">当前没有任何数据！</p>
 </div>
