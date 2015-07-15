@@ -81,7 +81,6 @@ def gen_msg_token(phone):
 		s.close()
 		return True
 
-
 # def gen_msg_token(wx_id, phone):
 #     s = DBSession()
 #     code = "".join(random.sample("123456789", 4))
@@ -154,10 +153,7 @@ def gen_msg_token(phone):
 #         else:
 #             return False
 
-
-
-
-
+# 检查验证码
 def check_msg_token(phone, code):
 	s = DBSession()
 	try:
@@ -182,6 +178,7 @@ def check_msg_token(phone, code):
 def test_abc():
 	pass
 
+# 管理员新订单短信提醒
 def order_new_msg(mobile,admin_name,shop_name):
 	message_content ='管理员{0}您好，店铺{1}有一笔新的订单，请及时登录后台http://senguo.cc/admin处理订单。'.format(
 		admin_name,shop_name)
@@ -192,6 +189,7 @@ def order_new_msg(mobile,admin_name,shop_name):
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
 
+# 管理员商品售完短信提醒
 def goods_sold_out_msg(mobile,admin_name,shop_name,good_name):
 	message_content ='管理员{0}您好，店铺{1}中{2}已售完，请及时登录后台http://senguo.cc/admin添加库存或下架该商品。'.format(
 		admin_name,shop_name,good_name)
@@ -202,6 +200,7 @@ def goods_sold_out_msg(mobile,admin_name,shop_name,good_name):
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
 
+# 用户订单完成短信提醒
 def customer_done_msg(mobile,customer_name,shop_name,order_num,order_sendtime,shop_phone):
 	message_content ='用户{1}您好，您在店铺{2}的订单已完成，订单编号{3}，\
 	完成时间{4}，如有疑问请与店铺客服联系，电话{5}'.format(customer_name,shop_name,order_num,order_sendtime,shop_phone)
@@ -212,6 +211,7 @@ def customer_done_msg(mobile,customer_name,shop_name,order_num,order_sendtime,sh
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
 
+# 用户订单提交成功短信提醒
 def customer_order_msg(mobile,customer_name,shop_name,order_num,order_createdate,shop_phone):
 	message_content ='用户{1}您好，您在店铺{2}成功下了一笔订单，订单编号{3}，\
 	下单时间{4}，如有疑问请与店铺客服联系，电话{5}'.format(customer_name,shop_name,order_num,order_createdate,shop_phone)
@@ -222,6 +222,7 @@ def customer_order_msg(mobile,customer_name,shop_name,order_num,order_createdate
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
 
+# 管理员订单评论短信提醒
 def order_comment_msg(mobile,admin_name,shop_name):
 	message_content ='管理员{0}您好，店铺{1}有一条新的订单评论，登录后台http://senguo.cc/admin查看详情。'.format(
 		admin_name,shop_name)
@@ -232,6 +233,7 @@ def order_comment_msg(mobile,admin_name,shop_name):
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
 
+# 员工新订单短信提醒
 def staff_order_msg(mobile,staff_name,shop_name):
 	message_content ='配送员{0}您好，店铺{1}有一笔新的订单需要配送，请及时登录员工后台http://senguo.cc/staff处理订单。'.format(
 		staff_name,shop_name)
@@ -242,6 +244,7 @@ def staff_order_msg(mobile,staff_name,shop_name):
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
 
+# 管理员店铺认证成功短信提醒
 def shop_auth_msg(mobile,admin_name,shop_name):
 	message_content ='尊敬的{0}，您好，您在森果平台申请认证的店铺{1}已经通过审核，请登陆后台i.senguo.cc/admin 查看详情。'.format(
 		admin_name,shop_name)
@@ -252,6 +255,7 @@ def shop_auth_msg(mobile,admin_name,shop_name):
 	headers = dict(Host = '106.ihuyi.cn',connection="close")
 	r = requests.post(url,data = postdata , headers = headers)
 
+# 管理员店铺认证失败短信提醒
 def shop_auth_fail_msg(mobile,admin_name,shop_name):
 	message_content ='尊敬的{0}，您好，您在森果平台申请认证的店铺{1}未通过审核，请登陆后台i.senguo.cc/admin 查看详情。'.format(
 		admin_name,shop_name)

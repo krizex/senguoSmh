@@ -2,7 +2,7 @@ var notify = null,notice = false;
 $(document).ready(function(){
     if (window.screen.width=='600')
         document.write ('<body style="zoom: 55%">');
-    else if (window.screen.width=='800') 
+    else if (window.screen.width=='800')
         document.write ('<body style="zoom: 75%">');
     $('.developing').on('click',function(){
         Tip('此功能暂未开放！');
@@ -58,14 +58,14 @@ $(document).ready(function(){
     return Tip("您的店铺还未进行认证，此功能暂不可用");
 });
 
-function stopDefault(e){       
+function stopDefault(e){
     if(e&&e.preventDefault){
-        e.preventDefault(); 
+        e.preventDefault();
     }else{
         window.event.returnValue = false;
-    }                        
+    }
     return false;
-} 
+}
 
 function switchTitle(title){
     if(title.indexOf("【　　　】")!=-1){
@@ -105,6 +105,7 @@ function getRealData(){
                 }
                 if(new_order_sum>0){
                     notice = true;
+                    $('#chatAudio')[0].play();
                     $("#order_ordernum").removeClass("hidden");
                 }else{
                     notice = false;
@@ -145,15 +146,15 @@ function getRealData(){
 var shop_id=$('#currentShop').data('id');
 var shop_name=$('#currentShop').text();
 
-function isWeiXin(){ 
-    var ua = window.navigator.userAgent.toLowerCase(); 
-        if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
-        return true; 
+function isWeiXin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+        if(ua.match(/MicroMessenger/i) == 'micromessenger'){
+        return true;
         }
         else{
             return false;
         }
-} 
+}
 
 function worMode(target){
     target.hide().siblings().show();
@@ -189,7 +190,7 @@ function otherShop(){
                         shop_name:shop_name
                     });
                     $('#currentShopChange').append(content);
-                } 
+                }
             }
         }
     });
