@@ -1730,6 +1730,9 @@ class Goods(AdminBaseHandler):
 				if (not detail_describe) or detail_describe == "":
 					detail_describe = None
 
+				if "fruit_type_id" in data:
+					fruit_type_id = int(data["fruit_type_id"])
+
 				goods.update(session=self.session,
 						name = data["name"],
 						storage = data["storage"],
@@ -1740,7 +1743,8 @@ class Goods(AdminBaseHandler):
 						limit_num = data["limit_num"],
 						group_id = group_id,
 						detail_describe = detail_describe,
-						tag = int(data["tag"])
+						tag = int(data["tag"]),
+						fruit_type_id = fruit_type_id
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).all()
 				data = self.getGoodsData(_data,"one")
