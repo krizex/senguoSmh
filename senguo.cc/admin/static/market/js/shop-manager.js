@@ -6,7 +6,7 @@ $(document).ready(function(){
     if($.getUrlParam("staff")){
         $("#shop_txt").html("配送员信息");
     }
-    cur_id = $.getUrlParam("id");
+    cur_id = $("#shop_id").val();
     new QRCode($("#big-code2")[0],{
         width : 150,
         height : 150

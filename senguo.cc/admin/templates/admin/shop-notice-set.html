@@ -22,13 +22,13 @@
                 </div>
             </td>
             <td class="col-lg-3 address-show summary">{{notice.summary}}</td>
-            <td class="col-lg-3 address-edit"  style="display:none;"><textarea class="notice_summary">{{notice.summary}}</textarea></td>
+            <td class="col-lg-3 address-edit" style="display:none;"><textarea class="notice_summary">{{notice.summary}}</textarea></td>
             <td class="col-lg-4 address-show detail">{{notice.detail}}</td>
             <td class="col-lg-4 address-edit" style="display:none;"> <textarea class="notice_detail">{{notice.detail}}</textarea></td>
             <td class="col-lg-3 address-show img_url"><img src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" class="notice_img"/></td>
             <td class="col-lg-3 address-edit"  style="display:none;">
                 <div class="notice_img_box" id="wrap-legal-img">
-                    <img class="notice_img preview-img" src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" alt="背景" url="{{notice.img_url}}?imageView2/1/w/180/h/100"/>
+                    <img class="notice_img preview-img" src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" alt="背景" url="{{notice.img_url}}"/>
                     <span class="title text-white text-center edit-img">点击修改</span>
                 </div>
             </td>

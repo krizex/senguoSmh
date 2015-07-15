@@ -213,14 +213,6 @@ class Order(StaffBaseHandler):
 				if order.pay_type == 1:  # 货到付款订单，员工需收款
 					self.hirelink.money += order.totalPrice
 
-				# 更新fruit 的 current_saled
-				fruits = eval(order.fruits)
-				if fruits:
-					ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
-						filter(models.ChargeType.id.in_(fruits.keys())).all()
-					for s in ss:
-						num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-						s[0].current_saled -= num
 
 			else:
 				return self.send.fail("你还没分配工作，请联系商家")

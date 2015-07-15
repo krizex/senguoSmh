@@ -856,6 +856,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order.shop.shop_property += totalprice_inc
 		# print(order.shop.shop_property,'order.shop.shop_property')
 
+		fruits = eval(order.fruits)
+		if fruits:
+			print(fruits.keys())
+			ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType)\
+			.filter(models.ChargeType.id.in_(fruits.keys())).all()
+			for s in ss:
+				print(s)
+				num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+				s[0].current_saled -= num
+
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
