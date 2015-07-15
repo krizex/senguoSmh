@@ -516,7 +516,6 @@ function dealGoods($item,type){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请填写正确的库存，只能为数字")
     }
-    debugger;
     //商品类目
     var fruit_type_id = $item.find(".goods-classify").attr("data-id");
     //商品图片
@@ -744,6 +743,7 @@ function finishEditGoods($item,data){
     $item.find(".limit-num").html(goods.limit_num);
     $item.find(".item-goods-txt").html(goods.intro);
     $item.find(".goods-price-list").empty();
+    $item.find(".goods-classify").html(goods.fruit_type_name).attr("data-id",goods.fruit_type_id);
     if(goods.charge_types.length>0){
         for(var j=0; j<goods.charge_types.length; j++){
             var good = goods.charge_types[j];
