@@ -1,4 +1,4 @@
-var ulat = 0,ulng =0,loc_flag=false;
+var ulat = 0,ulng =0,loc_flag=false,first=true;
 $(document).ready(function(){
     var link_action=$.getUrlParam('action');
     if(link_action){
@@ -14,7 +14,6 @@ $(document).ready(function(){
         if(q && q!="null"){
             Search(q);
         }else{
-            initLocation();
             var city_id = $("#city_id").val();
             if(city_id){
                 window.dataObj.action='filter';
@@ -28,7 +27,6 @@ $(document).ready(function(){
     scrollLoading();
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
-    //shop info
     //province and city
     var area=window.dataObj.area;
     //province data
@@ -168,6 +166,7 @@ $(document).ready(function(){
 
 //获取用户当前地理位置
 function initLocation(){
+    first=false;
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
             ulat = position.coords.latitude;
@@ -375,7 +374,6 @@ var shopsList=function(page,data,action){
             $('.loading').hide();
             $('.no_more').show();
         }else{
-            window.dataObj.maxnum=res.page_total;
             shopItem(shops);
             $('.loading').hide();
             $('.no_more').hide();
@@ -416,7 +414,6 @@ function Search(q){
                  var shops=res.shops;
                  nomore = res.nomore;
                 if(shops.length==0){
-                    window.dataObj.maxnum=1;
                     $('.shoplist').append('<h4 class="text-center mt10 text-grey">没有搜索到店铺</h4>');
                  }
                 else {
@@ -462,23 +459,26 @@ function filter(data){
         function(res){
             if(res.success)
             {
+                if(first){
+                    setTimeout(function(){
+                        initLocation();
+                    },10);
+                }
+                $(".wrap-loading-box").addClass("hidden");
                 remove_bg();
                  var shops=res.shops;
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
+                 $('.shoplist').empty();
                  if(shops.length==0){
                     window.dataObj.finished = false;
-                    window.dataObj.maxnum=1;
                     $('.shoplist').append('<h4 class="text-center mt10 text-grey">没有搜索到店铺</h4>');
-                 }
-                else {
+                 }else{
                       window.dataObj.finished = true;
                       window.dataObj.action='filter';
                       window.dataObj.data=Int(data);
-                      $('.shoplist').empty();
                      shopItem(shops);
                 }
-                $(".wrap-loading-box").addClass("hidden");
             }else{
                 $(".wrap-loading-box").addClass("hidden");
                 return noticeBox(res.error_text);
