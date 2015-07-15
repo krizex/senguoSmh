@@ -166,22 +166,23 @@ $(document).ready(function () {
                 if(type == 0){
                     url = "/admin/WirelessPrint";
                     text="易连云";
+                     var _args={
+                        action:"ylyadd",
+                        data:{key:key,num:num}
+                    };
+                    $.postJson(url,_args,
+                        function(res){
+                          
+                        }
+                    );
                 }else if(type==1){
                     text="飞印";
                 }
-                 var _args={
-                    action:"ylyadd",
-                    data:{key:key,num:num}
-                };
-                $.postJson(url,_args,
-                    function(res){
-                        $(".wireless-type").text(text);
-                        $(".console-num").text(num);
-                        $(".console-key").text(key);
-                        $this.parents('.set-list-item').find('.address-show').show();
-                        $this.parents('.set-list-item').find('.address-edit').hide();
-                    }
-                );
+                $(".wireless-type").text(text);
+                $(".console-num").text(num);
+                $(".console-key").text(key);
+                $this.parents('.set-list-item').find('.address-show').show();
+                $this.parents('.set-list-item').find('.address-edit').hide();
             }
             else{
                 $this.attr("data-flag","on");

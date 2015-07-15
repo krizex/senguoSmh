@@ -455,7 +455,7 @@ function infoEdit(target,is_address){
     {
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
-        if(shop_phone.length=0){return Tip('"电话不能为空o(╯□╰)o"')}
+        if(shop_phone.length==0){return Tip('"电话不能为空o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }
     else if(action_name=='area')

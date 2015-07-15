@@ -9,7 +9,7 @@ $(document).ready(function(){
     (function() {
         var hm = document.createElement("script");
         hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-        var s = document.getElementsByTagName("script")[0]; 
+        var s = document.getElementsByTagName("script")[0];
         s.parentNode.insertBefore(hm, s);
     })();
     if($("#order-success").size()>0){
@@ -63,7 +63,8 @@ $(document).ready(function(){
     }
 
     var shop_marketing=parseInt(getCookie('shop_marketing'));
-    if(shop_marketing==0){
+    var shop_auth=parseInt(getCookie('shop_auth'));
+    if(shop_auth==0 || shop_marketing==0){
         $('.discover-tab').hide();
         $('.bottom-nav li').removeClass('w20').addClass('w25');
     }
@@ -96,7 +97,7 @@ function wexin(link,imgurl){
             wx.ready(function(){
                 if(logo_Item.length==0){
                     wx.hideMenuItems({
-                        menuList: ['menuItem:share:appMessage','menuItem:share:timeline'] 
+                        menuList: ['menuItem:share:appMessage','menuItem:share:timeline']
                     });
                 }
                 wx.onMenuShareTimeline({
@@ -122,9 +123,9 @@ function wexin(link,imgurl){
         else return alert(res.error_text);
     })
 }
-function isWeiXin(){ 
-    var ua = window.navigator.userAgent.toLowerCase(); 
-        if(ua.match(/MicroMessenger/i) == 'micromessenger'){ 
+function isWeiXin(){
+    var ua = window.navigator.userAgent.toLowerCase();
+        if(ua.match(/MicroMessenger/i) == 'micromessenger'){
             return true;
         }
         else{
@@ -224,14 +225,14 @@ function is_weixin(){
 })(Zepto);
 
 //prevent 冒泡
-function stopPropagation(e) {  
-    e = e || window.event;  
-    if(e.stopPropagation) { //W3C阻止冒泡方法  
-        e.stopPropagation();  
-    } else {  
-        e.cancelBubble = true; //IE阻止冒泡方法  
-    }  
-}  
+function stopPropagation(e) {
+    e = e || window.event;
+    if(e.stopPropagation) { //W3C阻止冒泡方法
+        e.stopPropagation();
+    } else {
+        e.cancelBubble = true; //IE阻止冒泡方法
+    }
+}
 //confirmbox
 getItem('/static/items/confirmBox.html?v=20150613',function(data){window.dataObj.confirmBox=data});
 var confirmBox=function(text,index,type,id){
