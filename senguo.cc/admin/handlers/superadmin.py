@@ -265,7 +265,7 @@ class ShopManage(SuperBaseHandler):
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
-		comment = self.session.query(models.Order).filter(models.Order.status  == 6).count()
+		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
@@ -1444,13 +1444,13 @@ class ShopAuthenticate(SuperBaseHandler):
 	def get(self):
 		page=int(self.args["page"])
 		page_size = 10
-		page_area =page*page_size
+		page_area = page*page_size
 
 		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
-		comment = self.session.query(models.Order).filter(models.Order.status  == 6).count()
+		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
