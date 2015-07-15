@@ -229,25 +229,25 @@ class ShopAdminInfo(AdminBaseHandler):
 				else:
 					headimgurl = None
 					headimgurl_small = None
-				account_info = Accountinfo(
-					wx_unionid=wx_userinfo["unionid"],
-					wx_openid=wx_userinfo["openid"],
-					wx_country=wx_userinfo["country"],
-					wx_province=wx_userinfo["province"],
-					wx_city=wx_userinfo["city"],
-					headimgurl=headimgurl,
-					headimgurl_small = headimgurl_small,
-					nickname=wx_userinfo["nickname"],
-					sex = wx_userinfo["sex"])
-				try:
-					self.session.add(account_info)
-					u = mode.ShopAdmin()
-					u.accountinfo = account_info
-					self.session.commit()
-					print('get wx_userinfo success')
-				except:
-					return False
-				return user.id
+					account_info = Accountinfo(
+						wx_unionid=wx_userinfo["unionid"],
+						wx_openid=wx_userinfo["openid"],
+						wx_country=wx_userinfo["country"],
+						wx_province=wx_userinfo["province"],
+						wx_city=wx_userinfo["city"],
+						headimgurl=headimgurl,
+						headimgurl_small = headimgurl_small,
+						nickname=wx_userinfo["nickname"],
+						sex = wx_userinfo["sex"])
+					try:
+						self.session.add(account_info)
+						u = mode.ShopAdmin()
+						u.accountinfo = account_info
+						self.session.commit()
+						print('get wx_userinfo success')
+					except:
+						return False
+					return user.id
 
 	@tornado.web.authenticated
 	def add_shop(self,shop_id,admin_id):
@@ -329,15 +329,22 @@ class ShopAdminInfo(AdminBaseHandler):
 
 
 
+#职工录入
+class StaffInfo(AdminBaseHandler):
+	# @tornado.web.authenticated
+	@AdminBaseHandler.check_arguments('shop_id', 'bind')
+	def get(self):
+		action = self.args('action',None)
+		if action == 'bind':
 
+			return self.send_success()
 
-
-
-
-#店铺录入
-# class Insert(AdminBaseHandler):
-# 	@tornado.web.authenticated
-# 	def get(self):
+	@AdminBaseHandler.check_arguments('staff_name','staff_phone','shop_id')
+	def post(self):
+		staff_name = self.args.get('staff_name',None)
+		staff_phone = self.args.get('staff_phone',None)
+		return self.send_success()
+	
 
 
 #店铺入驻成功
