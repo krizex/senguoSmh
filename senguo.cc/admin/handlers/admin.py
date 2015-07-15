@@ -265,9 +265,12 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 # 销售统计 add by jyj 2015-7-8
 class SellStatic(AdminBaseHandler):
 	def get(self):
-		aa = self.session.query(models.FruitType.name).filter(models.Fruit.fruit_type_id == models.FruitType.id,models.Fruit.shop_id == 1203).distinct(models.Fruit.fruit_type_id).all()
-		for a in aa:
-			print(a)
+		# now = datetime.datetime.now()
+		# now_date = datetime.datetime(now.year,now.month,now.date)
+		# now_date = now_date.strftime("%Y-%m-%d")
+		# print("$$$$$$$$$$$",now_date)
+
+		today_type_data = self.session.query(models.Order.fruits).filter(models.Order.shop_id == 1203).distinct(models.Fruit.fruit_type_id).all()
 		return self.render("admin/sell-count.html",context=dict(subpage='sellstatic'))
 
 	@tornado.web.authenticated

@@ -477,7 +477,7 @@ function WeekNumOfYear(date) {
 		var week_num = Math.ceil((date_diff-(7-day))/7)+1;
 	}
 
-	return week_num + 1;
+	return week_num;
 }
 
  //计算天数差的函数，通用  
