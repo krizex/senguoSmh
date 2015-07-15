@@ -1,4 +1,4 @@
-var goods_list=null,curItem=null,curPrice=null,curEditor="",goodsEdit = false,cur_code="",aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type,isSearch=false,del_list=[];
+var goods_list=null,curItem=null,curPrice=null,curEditor="",cur_type="",goodsEdit = false,cur_code="",aLis=[],aPos=[],zIndex= 1,pn= 0,editor=null,_type,_sub_type,isSearch=false,del_list=[];
 $(document).ready(function(){
     $(document).on("click",function(e){
         if($(e.target).closest(".sw-er-tip").size()==0){
@@ -179,12 +179,13 @@ $(document).ready(function(){
         Tip("请先完成正在编辑的商品");
         return false;
     }
+    cur_type = "edit";
     var _this = $(this);
     var goods_item = _this.closest(".goods-all-item");
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?v=20150615",function(data){
+    $.getItem("/static/items/admin/goods-item.html?v=20150715",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -221,6 +222,7 @@ $(document).ready(function(){
         Tip("请先完成正在编辑的商品");
         return false;
     }
+    cur_type = "add";
     $(".wrap-classify").prevAll("div").addClass("hidden");
     $(".wrap-classify").removeClass("hidden");
     $(this).addClass("hidden");
@@ -231,32 +233,44 @@ $(document).ready(function(){
     var classify = $(this).html();
     var class_id = $(this).attr("data-id");
     var goods_code = $(this).attr("data-code");
-    $.getItem("/static/items/admin/goods-item.html?v=20150615",function(data){
-        var goodsItem = data;
-        var $item = $(goodsItem).clone();
-        $item.find(".goods-classify").html(classify).attr("data-id",class_id);
-        $item.find(".group-edit-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
-        $item.find(".group-edit-goods-lst").find(".group-counts").hide();
-        $item.find(".switch-btn").addClass("hidden");
-        $item.find(".all-item-title").remove();
-        $item.find(".choose-classify").removeClass("hidden");
-        $item.find(".drag-img-list").children(".add-img-box").before('<li class="img-bo" data-index="0" data-rel="0"><img src="/static/design_img/'+goods_code+'.png" url="/static/design_img/'+goods_code+'.png" alt="商品图片" class="image"><a class="del-img" href="javascript:;">x</a></li>');
-        var $price = $(".wrap-price-item").children(".wrap-add-price").clone();
-        $price.find(".price-index").html("1");
-        $item.find(".edit-item-right").children("p").before($price);
-        $(".goods-step").children(".step1").removeClass("c333").addClass("c999");
-        $(".goods-step").children(".step2").removeClass("c999").addClass("c333");
-        $(".goods-classify-box").addClass("hidden");
-        $(".new-goods").empty().append($item).removeClass("hidden");
-        curItem = $item;
-        cur_code = goods_code;
-        goodsEdit = true;
-    });
+    if(cur_type=="add"){
+        $.getItem("/static/items/admin/goods-item.html?v=20150615",function(data){
+            var goodsItem = data;
+            var $item = $(goodsItem).clone();
+            $item.find(".goods-classify").html(classify).attr("data-id",class_id);
+            $item.find(".group-edit-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
+            $item.find(".group-edit-goods-lst").find(".group-counts").hide();
+            $item.find(".switch-btn").addClass("hidden");
+            $item.find(".all-item-title").remove();
+            $item.find(".choose-classify").removeClass("hidden");
+            $item.find(".drag-img-list").children(".add-img-box").before('<li class="img-bo" data-index="0" data-rel="0"><img src="/static/design_img/'+goods_code+'.png" url="/static/design_img/'+goods_code+'.png" alt="商品图片" class="image"><a class="del-img" href="javascript:;">x</a></li>');
+            var $price = $(".wrap-price-item").children(".wrap-add-price").clone();
+            $price.find(".price-index").html("1");
+            $item.find(".edit-item-right").children("p").before($price);
+            $(".goods-step").children(".step1").removeClass("c333").addClass("c999");
+            $(".goods-step").children(".step2").removeClass("c999").addClass("c333");
+            $(".goods-classify-box").addClass("hidden");
+            $(".new-goods").empty().append($item).removeClass("hidden");
+            curItem = $item;
+            cur_code = goods_code;
+            goodsEdit = true;
+        });
+    }else{
+        curItem.find(".goods-classify").html(classify).attr("data-id",class_id);
+        cancelAddGoods();
+    }
 }).on("click",".choose-classify",function(){//重选分类
-    $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
-    $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
-    $(".goods-classify-box").removeClass("hidden");
-    $(".new-goods").empty().addClass("hidden");
+    if(cur_type == "add"){
+        $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
+        $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+        $(".goods-classify-box").removeClass("hidden");
+        $(".new-goods").empty().addClass("hidden");
+    }else{
+        $(".wrap-classify").prevAll("div").addClass("hidden");
+        $(".wrap-classify").removeClass("hidden");
+        $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
+        $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+    }
 }).on("click","#upload-img",function(){ //保存上传后的图片
     var $list = $("#item-img-lst").children(".img-bo");
     var $item = curItem;
@@ -487,7 +501,6 @@ function dealGoods($item,type){
     //数字正则、金额正则
     var testNum = /^[0-9]\d*(\.\d+)?$/;
     var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
-    
     //商品名称、商品分组、库存、库存单位
     var name = $item.find(".goods-goods-name").val().trim();
     var group_name = $item.find(".current-group").html();
@@ -503,10 +516,9 @@ function dealGoods($item,type){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请填写正确的库存，只能为数字")
     }
-
+    debugger;
     //商品类目
     var fruit_type_id = $item.find(".goods-classify").attr("data-id");
-    
     //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
@@ -528,7 +540,6 @@ function dealGoods($item,type){
         imgList.index = arr1;
         imgList.src = arr2;
     }
-
     //售价方式
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
     var price_list = [];
@@ -574,14 +585,12 @@ function dealGoods($item,type){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请填写正确的市场价，若不需要设置市场价，请留空");
     }
-
     //商品简介
     var info = $item.find(".goods-info").val();
     if(info.length>100){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("商品简介不能超过100个字，更多内容请在商品图文详情中添加");
     }
-
     //商品详情
     var detail_describe = "";
     if(editor){
@@ -592,7 +601,6 @@ function dealGoods($item,type){
             detail_describe = editor.body.innerHTML;
         }
     }
-
     //商品限购、排序优先级
     var limit_num = $item.find(".limit_num").val().trim();
     var priority = $item.find(".goods-priority").val().trim();
@@ -604,7 +612,6 @@ function dealGoods($item,type){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("优先级必须为0-9之间的整数");
     }
-    
     //传入数据
     var url="";
     var data={
