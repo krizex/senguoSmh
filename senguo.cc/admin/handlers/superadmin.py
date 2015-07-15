@@ -906,8 +906,6 @@ class OrderStatic(SuperBaseHandler):
 		type = self.args["type"]
 		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 				filter(not_(models.Order.status.in_([-1,0])))
-		#q = self.session.query(models.Order.create_date).\
-		#		filter(not_(models.Order.status.in_([-1,0])))
 		if type == 1:  # 累计数据
 			pass
 		elif type == 2:  # 昨天数据
@@ -948,18 +946,18 @@ class OrderStatic(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 
-		#stop_range = self.current_shop.config.stop_range
 
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				data[order[1].hour + (order[1].minute+order[3])//60] += 1
+				if order[1].hour + (order[1].minute+order[3])//60 == 24:
+					data[0] += 1
+				else:
+					data[order[1].hour + (order[1].minute+order[3])//60] += 1
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
-
-		#print(data)
 		return self.send_success(data=data)
 ##
 
