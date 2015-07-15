@@ -176,61 +176,6 @@ function noticeActive(target){
         function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
 }
 
-$(function() {
-    //公告背景添加
-    var uploader1 = Qiniu.uploader({
-            runtimes: 'html5,flash,html4',
-            browse_button: 'upload-add',
-            container: 'wrap-add-img',
-            max_file_size: '4mb',
-            filters : {
-                max_file_size : '4mb',//限制图片大小
-                mime_types: [
-                    {title : "image type", extensions : "jpg,jpeg,gif,png"}
-                ]
-            },
-            flash_swf_url: 'static/js/plupload/Moxie.swf',
-            dragdrop: false,
-            chunk_size: '4mb',
-            domain: "http://shopimg.qiniudn.com/",
-            uptoken: $('#data').val(),
-            unique_names: false,
-            save_key: false,
-            auto_start: true,
-            init: {
-                'FilesAdded': function (up, files) {
-                    var file = files[0];
-                    !function(){
-                        previewImage(file,function(imgsrc){
-                            $("#add-img").attr("src",imgsrc).removeClass("hide");
-                        })
-                    }();
-                },
-                'UploadProgress': function (up, file) {
-                },
-                'FileUploaded': function (up, file, info) {
-                    $("#add-img").attr("url","http://shopimg.qiniudn.com/"+file.id).removeClass("hide");
-                },
-                'Error': function (up, err, errTip) {
-                    if (err.code == -600) {
-                        alert("图片大小不能超过4M哦");
-                    } else if (err.code == -601) {
-                        alert("图片格式不对哦");
-                    } else if (err.code == -200) {
-                        alert("当前页面过期，请刷新页面再上传");
-                    } else {
-                        alert(err.code + ": " + err.message);
-                    }
-                    up.removeFile(err.file.id);
-                    $("#add-img").attr("src","").attr("url","").addClass("hide");
-                },
-                'Key': function (up, file) {
-                    var key = file.id;
-                    return key;
-                }
-            }
-        });
-});
 /*转化图片为base64*/
 function previewImage(file,callback){//file为plupload事件监听函数参数中的file对象,callback为预览图片准备完成的回调函数
     if(!file || !/image\//.test(file.type)) return; //确保文件是图片
