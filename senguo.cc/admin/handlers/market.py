@@ -1,4 +1,4 @@
-from handlers.base import AdminBaseHandler,WxOauth2,unblock,get_unblock
+from handlers.base import AdminBaseHandler,WxOauth2,unblock,get_unblock,CustomerBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
@@ -15,14 +15,14 @@ import json
 from random import Random
 
 #市场推广 - 首页
-class Home(AdminBaseHandler):
+class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		#return self.send_success()
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		return self.render('market/shop-list.html',logo_img=logo_img)
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action',"page?:int","lat","lon")
+	@CustomerBaseHandler.check_arguments('action',"page?:int","lat","lon")
 	def post(self):
 		action = self.args['action']
 		page_size = 20
@@ -67,9 +67,8 @@ class Home(AdminBaseHandler):
 		return shop_data
 
 #店铺信息
-class Info(AdminBaseHandler):
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id')
+class Info(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments('id')
 
 	def get(self):
 		id = int(self.args['id'])
@@ -86,7 +85,7 @@ class Info(AdminBaseHandler):
 		shop_phone = shop.shop_phone
 		shop_address = shop.shop_address
 		delivery_area = shop.delivery_area
-		shop.curator = self.current_user.accountinfo.nickname
+		#shop.curator = self.current_user.accountinfo.nickname
 		shop_auth   = "已录入"  if shop.shop_auth else '未录入'
 		admin_info = shop.admin_info  if shop.admin_info else '未录入'
 		staff_info = shop.staff_info  if shop.staff_info else '未录入'
@@ -95,8 +94,7 @@ class Info(AdminBaseHandler):
 		return self.render("market/shop-info.html",id =id,shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
 			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
+	@CustomerBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
 		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str','data')
 	def post(self):
 		id = int(self.args['id'])
@@ -132,15 +130,14 @@ class Info(AdminBaseHandler):
 
 		self.session.commit()
 		return self.send_success()
-	@AdminBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','wx_nickname')
+	@CustomerBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','wx_nickname')
 	def bing_admin(self):
 		admin_name = self.args.get('admin_name',None)
 		admin_phone = self.args.get('admin_phone',None)
 
 #店长信息
-class ShopAdminInfo(AdminBaseHandler):
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action?:str')
+class ShopAdminInfo(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments('action?:str')
 	def get(self,id):
 		print(self.args)
 		#shop_id = int(self.get_secure_cookie("spider_shop"))
@@ -177,7 +174,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		print(url)
 		return self.render("market/shop-manager.html",url=url,shop_id = shop_id)
 	
-	@AdminBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
+	@CustomerBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
 	def post(self,id):
 		action = self.args.get('action',None)
 		if action == 'save':
@@ -193,6 +190,7 @@ class ShopAdminInfo(AdminBaseHandler):
 					wx_info = '微信已绑定'
 				else:
 					wx_info = '微信未绑定'
+				shop.curator = self.current_user.accountinfo.nickname
 				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_info)
 				self.session.commit()
 			return self.send_success()
@@ -202,8 +200,7 @@ class ShopAdminInfo(AdminBaseHandler):
 
 
 
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('code')
+	@CustomerBaseHandler.check_arguments('code')
 	def wx_bind(self,shop_id):
 		code = self.args.get('code',None)
 		next_url = self.get_argument('next', '')
@@ -231,7 +228,7 @@ class ShopAdminInfo(AdminBaseHandler):
 				else:
 					headimgurl = None
 					headimgurl_small = None
-				account_info = Accountinfo(
+				account_info = models.Accountinfo(
 					wx_unionid=wx_userinfo["unionid"],
 					wx_openid=wx_userinfo["openid"],
 					wx_country=wx_userinfo["country"],
@@ -242,16 +239,16 @@ class ShopAdminInfo(AdminBaseHandler):
 					nickname=wx_userinfo["nickname"],
 					sex = wx_userinfo["sex"])
 				try:
-					self.session.add(account_info)
-					u = mode.ShopAdmin()
+					#self.session.add(account_info)
+					u = models.ShopAdmin()
 					u.accountinfo = account_info
+					self.session.add(u)
 					self.session.commit()
 					print('get wx_userinfo success')
 				except:
 					return False
-				return user.id
+				return u.id
 
-	@tornado.web.authenticated
 	def add_shop(self,admin_id,shop_id):
 		print('login in add_shop')
 		
@@ -345,9 +342,9 @@ class ShopAdminInfo(AdminBaseHandler):
 
 
 #店铺入驻成功
-class Success(AdminBaseHandler):
+class Success(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id')
+	@CustomerBaseHandler.check_arguments('id')
 	def get(self):
 		id = self.args['id']
 		try:
