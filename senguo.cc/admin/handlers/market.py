@@ -173,7 +173,7 @@ class ShopAdminInfo(AdminBaseHandler):
 		else:			
 			return self.send_fail('id error')
 		url = "http://i.senguo.cc/market/shopinsert?action=bind&id="+str(id)
-		return self.render("market/shop-manager.html",url=url)
+		return self.render("market/shop-manager.html",url=url,shop_id=id)
 	
 	@AdminBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
 	def post(self):
@@ -352,7 +352,8 @@ class StaffInsert(AdminBaseHandler):
 			self.session.commit()
 			self.session.add(models.HireLink(staff_id=staff_id, shop_id=new_shop_id,default_staff=1))
 			self.session.commit()
-		return self.send_success()
+		url = "http://i.senguo.cc/market/staffinsert?action=bind&shop_id="+str(shop_id)
+		return self.render("market/shop-manager.html",url=url,shop_id=shop_id)
 
 
 	@AdminBaseHandler.check_arguments('staff_name','staff_phone','shop_id')

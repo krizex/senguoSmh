@@ -516,7 +516,7 @@ function dealGoods($item,type){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请填写正确的库存，只能为数字")
     }
-    //商品类目
+    //商品类目3
     var fruit_type_id = $item.find(".goods-classify").attr("data-id");
     //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
