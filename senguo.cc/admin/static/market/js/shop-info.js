@@ -54,7 +54,7 @@ $(document).ready(function(){
 }).on("click","#staffer",function(){//编辑配送员信息
     var id = $("#shoper").attr("data-id");
     if($("#shop_shoper").html()!="未录入"){
-        window.location.href="/market/shopinsert/"+id+"?staff=1";
+        window.location.href="/market/staffinsert?shop_id="+id;
     }else{
         return Tip("请先编辑店长信息");
     }
