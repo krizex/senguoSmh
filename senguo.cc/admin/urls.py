@@ -42,7 +42,7 @@ handlers = [
 	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
 	(r"/market/shopinsert/(\w+)", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
 	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
-	(r'/market/staffinsert',handlers.market.StaffInsert,{},"staffinsert"),
+	#(r'/market/staffinsert',handlers.market.StaffInsert,{},"staffinsert"),
 
 
 	#优惠券
