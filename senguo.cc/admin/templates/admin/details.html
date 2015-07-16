@@ -1,13 +1,38 @@
 {% extends 'base.html' %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
 
 {% block content %}
 {% set shop_code = current_shop.shop_code %}
-<div class="row">
-    <a href="/admin/marketing?action=coupon"><button class="button clearfix">返回</button></a>
-   <span class="mytitle">优惠券/优惠券详情</span>
-</div>
-
+   <ul class="category-list group">
+        <li>
+            <div class="row header_back">
+               <img src="/static/images/admin_back.png" class="cmw5 back-main">
+                <a href="/admin/marketing?action=coupon" class="back_text">返回</a>
+                <span class="mytitle">优惠券/优惠券详情</span>
+                </div>
+        </li>
+        <li>
+            <div class="cate-title">商品状态 : </div>
+            <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有({{data1["a"]}})</em>
+                    <span class="caret pull-right no-margin-left rotate0 "></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                    <li role="presentation">
+                        <a class="item couponall" href="javascript:;" data-id="all">所有({{data1["a"]}})</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item couponget" href="javascript:;" data-id="on">已领取({{data1["b"]}})</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item couponuse" href="javascript:;" data-id="off">已使用({{data1["c"]}})</a>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
 <div class="row div2 div0">
     <div class="col-lg-2">
        优惠码
@@ -29,36 +54,104 @@
     </div>
 </div>
 
-<div class="div1">
+<div class="div1" id="list-coupons">
     <ul>
     {% for data in output_data %}
-        <li class="top-box row details">
+        <li class="top-box row ">
             <div class="col-lg-2">
-                <p class="tit1">{{data["coupon_key"]}}</p>
-                <button class="copy">复制</button>
+                <p class="" id="cmtargetcopy">{{data["coupon_key"]}}</p>
+                <button class="cmcopy">复制</button>
             </div>
             <div>
-                <div class="col-lg-2">
-                
-                <p class="tit2">{{data["coupon_money"]}}</p>
+                <div class="col-lg-1">
+                <p class="tit2"><span class="money">{{data["coupon_money"]}}</span>元</p>
             </div>
-            <div class="col-lg-2">
+            {% if data["customer_id"]=='未领取' %}
+            <div class="col-lg-3 " id="noget">
                 {{data["customer_id"]}}
             </div>
-            <div class="col-lg-2">
+            {% else %}
+            <div class="col-lg-3">
+                <div class="row">
+                    <div class="col-lg-3 ">
+                    {% if data["headimgurl"]==None%}
+                       <img src="/static/images/TDSG.png" class="cmw10" id="headimg">
+                    {% else %}
+                    <img src="{{data["headimgurl"]}}" class="cmw10" id="headimg">
+                    {% end %}
+                    </div>
+                    <div class="col-lg-6">
+                        <p id="nickname">{{data["nickname"]}}</p>
+                        <p>ID:<span id="orderid">{{data["customer_id"]}}</span></p>
+                    </div>
+                </div>
+            </div>
+
+            {% end %}
+            <div class="col-lg-2" id="getdate">
                 {{data["get_date"]}}
             </div>
-            <div class="col-lg-2">
+            <div class="col-lg-2" id="usedate">
                 {{data["use_date"]}}
             </div>
-            <div class="col-lg-2 tit3">
+            <div class="col-lg-2 tit3" id="customerid">
                 {{data["order_id"]}}</div>
             </div>
         </li>
         {% end %}
     </ul>
 </div>
+<div class="div1 hidden" >
+    <ul id="temp-coupons">
+        <li class="top-box row ">
+            <div class="col-lg-2">
+                <p class="" id="cmtargetcopy"></p>
+                <button class="cmcopy">复制</button>
+            </div>
+            <div>
+                <div class="col-lg-1">
+                <p class="tit2"><span class="money"></span>元</p>
+            </div>
+            {% if data["customer_id"]=='未领取' %}
+            <div class="col-lg-3 " id="noget">
+                
+            </div>
+            {% else %}
+            <div class="col-lg-3">
+                <div class="row">
+                    <div class="col-lg-3 ">
+                    {% if data["headimgurl"]==None%}
+                       <img src="/static/images/TDSG.png" class="cmw10" id="headimg">
+                    {% else %}
+                    <img src="{{data["headimgurl"]}}" class="cmw10" id="headimg">
+                    {% end %}
+                    </div>
+                    <div class="col-lg-6">
+                        <p id="nickname"></p>
+                        <p>ID:<a id="customerid"></a></p>
+                    </div>
+                </div>
+            </div>
+
+            {% end %}
+            <div class="col-lg-2" id="getdate">
+                
+            </div>
+            <div class="col-lg-2" id="usedate">
+                
+            </div>
+            <div class="col-lg-2 tit3" id="orderid">
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div id="noresult">
+    <h4 class="text-center" id="text"></h4>
+</div>
 {% end %}
 {% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="/static/js/third/qrcode.min.js"></script>
 <script src="{{static_url('js/admin-marketing.js')}}"></script>
 {% end %}

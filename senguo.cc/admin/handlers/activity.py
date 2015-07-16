@@ -440,17 +440,37 @@ class Coupon(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?:str")
 	def get(self):
-		#action=self.args["action"]
-		#customer_id=self.current_user.id
-		#data=[]
-		#q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id).all()
-		#for x in q:
-		#	x_coupon={"coupon_money":x.coupon_money,"get_date":x.get_date,"uneffective_time":x.uneffective_time,"if_used":x.if_used}
-		#	data.append(x_coupon)
-		#return self.render("coupon/coupon.html",output_data=data)
-		return self.render("coupon/coupon.html")
-
-# 发现 - 优惠券 - 详情
+		action=self.args["action"]
+		customer_id=self.current_user.id
+		data=[]
+		q1=self.session.query(models.CouponsShop).filter_by(customer_id=customer_id,if_used=0,if_uneffective=0).all()
+		m=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,if_used=0,if_uneffective=0).count()
+		q2=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,if_used=1,if_uneffective=0).all()
+		q3=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,if_used=0,if_uneffective=1).all()
+		for x in q1:
+			coupon_status=0
+			shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
+			shop_code=shop.shop_code
+			shop_name=shop.shop_name
+			effective_time=str(x.get_date)+'---'+str(x.uneffective_time)
+			x_coupon={"shop_id":x.shop_id,"shop_code":shop_code,"if_used":x.if_used,"coupon_key":x.coupon_key,"use_rule":x.use_rule,"shop_name":shop_name,"coupon_money":x.coupon_money,"effective_time":effective_time,"coupon_status":coupon_status}
+			data.append(x_coupon)
+		for x in q2:
+			coupon_status=1
+			shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
+			shop_code=shop.shop_code
+			shop_name=shop.shop_name
+			x_coupon={"shop_id":x.shop_id,"shop_code":shop_code,"if_used":x.if_used,"coupon_key":x.coupon_key,"use_rule":x.use_rule,"shop_name":shop_name,"coupon_money":x.coupon_money,"effective_time":effective_time,"coupon_status":coupon_status}
+			data.append(x_coupon)
+		for x in q3:
+			coupon_status=2
+			shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
+			shop_code=shop.shop_code
+			shop_name=shop.shop_name
+			x_coupon={"shop_id":x.shop_id,"shop_code":shop_code,"if_used":x.if_used,"coupon_key":x.coupon_key,"use_rule":x.use_rule,"shop_name":shop_name,"coupon_money":x.coupon_money,"effective_time":effective_time,"coupon_status":coupon_status}
+			data.append(x_coupon)
+		print(data)
+		return self.render("coupon/coupon.html",output_data=data)
 class CouponDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_key:str")
@@ -459,24 +479,49 @@ class CouponDetail(CustomerBaseHandler):
 		customer_id=self.current_user.id
 		print(self.args)
 		mcoupon_key=self.args["coupon_key"]
-		print(mcoupon_key)
-		data=[]
 		if action=="detail":
 			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,coupon_key=mcoupon_key).first()
+			x_coupon={}
 			if q!=None:
-				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
-				data.append(x_coupon)
-			return self.render("coupon/coupon-detail.html",output_data=data)
-		elif action=="search":
-			url=self.reverse_url("CouponDetail")+'?action=detail&coupon_key='+mcoupon_key
-			print(url)
-			# return self.render("coupon/detail.html")
-			return self.redirect(url)
-		elif action=="":
-			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,coupon_key=mcoupon_key)
-			if q!=None:
-				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
-				data.append(x_coupon)
-			return self.render("coupon/detail.html",output_data=data)
-		elif action=="grab":
-			pass
+				effective_time=str(q.start_time)+'---'+str(q.uneffective_time)
+				x_coupon={"effective_time":effective_time,"use_rule":q.use_rule,"coupon_key":mcoupon_key,"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
+			return self.render("coupon/coupon-detail.html",output_data=x_coupon)
+		elif action=="exchange":
+			q=self.session.query(models.CouponsShop).filter_by(coupon_key=mcoupon_key,customer_id=None).first()
+			if q==None:
+				return self.send_fail("对不起，您的优惠券码有错误！")
+			else:
+				uneffective_time=None
+				today=datetime.date.today()
+				shop=self.session.query(models.Shop).filter_by(id=q.shop_id).first()
+				shop_code=shop.shop_code
+				shop_name=shop.shop_name
+				effective_time=None
+				if q.valid_way==0:
+					start_time=q.start_time
+					uneffective_time=q.uneffective_time
+					effective_time=str(start_time)+"----"+str(uneffective_time)
+				else :
+					day=q.day_start
+					start_time=today+datetime.timedelta(days=day)
+					all_days=q.day_start+q.last_day
+					uneffective_time=today+datetime.timedelta(days=all_days)
+					effective_time=str(start_time)+'---'+str(uneffective_time)
+				new_coupon=models.CouponsCustomer(shop_id=q.shop_id,coupon_id=q.coupon_id,start_time=start_time,uneffective_time=uneffective_time,get_date=today,\
+				coupon_money=q.coupon_money,used_for=q.used_for,use_rule=q.use_rule,coupon_key=q.coupon_key,customer_id=customer_id,\
+				shop_name=q.shop_name)
+				self.session.add(new_coupon)
+				merge_coupon=models.CouponsShop(coupon_key=mcoupon_key,shop_name=shop_name,customer_id=customer_id,get_date=today)
+				self.session.merge(merge_coupon)
+				self.session.commit()
+				x_coupon={"coupon_key":mcoupon_key,"shop_name":q.shop_name,"shop_code":shop_code,"use_rule":q.use_rule,"coupon_money":q.coupon_money,"effective_time":effective_time}
+				return self.send_success(output_data=x_coupon)
+		# elif action=="":
+		# 	q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,coupon_key=mcoupon_key)
+		# 	if q!=None:
+		# 		x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
+		# 		data.append(x_coupon)
+		# 	return self.render("coupon/detail.html",output_data=data)
+		# elif action=="grab":
+		# 	pass
+

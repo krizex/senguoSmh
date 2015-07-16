@@ -3,11 +3,13 @@
 
 {% block content %}
 {% set shop_code = current_shop.shop_code %}
-<div class="row">
-    <a href="/admin/marketing?action=coupon"><button class="button clearfix">返回</button></a>
-   <span class="mytitle">优惠券/编辑优惠券</span>
-   <p class="tit7"> 当前正在编辑的优惠券编号为[{{output_data["coupon_id"]}}]</p>
+<div class="row header_back">
+               <div class="">
+                 <a href="/admin/marketing?action=coupon"><span  class="cate-title">< 返回</span></a>
+                <span class="mytitle">优惠券/编辑优惠券</span>
+                </div>
 </div>
+<p class="tit7"> 当前正在编辑的优惠券编号为[{{output_data["coupon_id"]}}]</p>
 <div class="row"> 
       <div class="col-lg-8">
            <div class="row div1">
@@ -49,70 +51,207 @@
                 <p class="col-lg-2">张</p>
             </div>
             <div class="row div1">
+                <div class="col-lg-3">可消费商品</div>
+                <div class="col-lg-3">选择商品分组</div>
+                <div class="col-lg-4">
+                     <select id="in9"  style="width:100px"  >
+                        <option value="0">默认分组 </option>
+                        <option value="-1">推荐分组 </option>
+                        {% for data1 in output_data1 %}
+                            <option value="{{data1['group_id']}}">{{data1['group_name']}}</option>
+                        {% end %}
+                </select>    
+                </div>
+            </div>
+            {% if output_data["valid_way"] ==0%}
+            <div class="row div1">
                 <p class="col-lg-2">有效期</p> 
                 <div class="in col-lg-2">
                     <form action="" method="get"> 
-                        <label class="tit5"><input name="valid_way" type="radio" value="{{output_data["uneffective_time"]}}" checked="checked"/>固定日期 </label></br>
-                        <label class="tit5"><input name="valid_way" type="radio" value="" />领取后</label> 
+                        <label class="tit5"><input name="valid_way" type="radio" value="" checked="checked"/>固定日期 </label></br>
+                        <label class="tit5 cmradio"><input name="valid_way" type="radio" value="" />领取后</label> 
                     </form> 
             </div>
             <div class="col-lg-7">
-                <!-- <div class="">
-                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有</em>
-                    <span class="caret pull-right no-margin-left rotate0"></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="all">所有</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="on">已上架</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="off">已下架</a>
-                    </li>
-                </ul>
-            </div> -->
-                <div><input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in7"></div>
+                <div class="">
+                    <div class="row"> 
+                        <p class="col-lg-4">生效时间：</p>
+                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in7">
+                    </div>
+                    <div class="row"> 
+                        <p class="col-lg-4">失效时间：</p>
+                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in8">
+                    </div>
+                </div>
+                
                 <div class="row">
-                    <input class="col-lg-2" id="in5">
-                    <div class="col-lg-3 tit5">生效</div>
-                    <div class="col-lg-4 tit5">有效天数</div>
-                    <!-- <span class="col-lg-5 tit5 ">生效<span class="tit5" type="margin-left">   有效天数</span></span> -->
-                    <input class="col-lg-2" id="in6">
+                    <select id="in5"  class="col-lg-3 tit5"  >
+                        <option value="0">当天 </option>
+                        <option value="1">1天 </option>
+                        <option value="2">2天 </option>
+                        <option value="3">3天 </option>
+                        <option value="4">4天 </option>
+                        <option value="5">5天 </option>
+                        <option value="6">6天 </option>
+                        <option value="7">7天 </option>
+                        <option value="8">8天 </option>
+                        <option value="9">9天 </option>
+                        <option value="10">10天 </option>
+                        <option value="11">11天 </option>
+                        <option value="12">12天 </option>
+                        <option value="13">13天 </option>
+                        <option value="14">14天 </option>
+                        <option value="15">15天 </option>
+                        <option value="16">16天 </option>
+                        <option value="17">17天 </option>
+                        <option value="18">18天 </option>
+                        <option value="19">19天 </option>
+                        <option value="20">20天 </option>
+                        <option value="21">21天 </option>
+                        <option value="22">22天 </option>
+                        <option value="23">23天 </option>
+                        <option value="24">24天 </option>
+                        <option value="25">25天 </option>
+                        <option value="26">26天 </option>
+                        <option value="27">27天 </option>
+                        <option value="28">28天 </option>
+                        <option value="29">29天 </option>
+                        <option value="30">30天 </option>
+                    </select>    
+                    <div class="col-lg-5 tit5">生效<span style="margin-left:25px">有效天数</span></div>
+                    <select id="in6"  class="col-lg-3"  >
+                        <option value="1" selected="selected">1天 </option>
+                        <option value="2">2天 </option>
+                        <option value="3">3天 </option>
+                        <option value="4">4天 </option>
+                        <option value="5">5天 </option>
+                        <option value="6">6天 </option>
+                        <option value="7">7天 </option>
+                        <option value="8">8天 </option>
+                        <option value="9">9天 </option>
+                        <option value="10">10天 </option>
+                        <option value="11">11天 </option>
+                        <option value="12">12天 </option>
+                        <option value="13">13天 </option>
+                        <option value="14">14天 </option>
+                        <option value="15">15天 </option>
+                        <option value="16">16天 </option>
+                        <option value="17">17天 </option>
+                        <option value="18">18天 </option>
+                        <option value="19">19天 </option>
+                        <option value="20">20天 </option>
+                        <option value="21">21天 </option>
+                        <option value="22">22天 </option>
+                        <option value="23">23天 </option>
+                        <option value="24">24天 </option>
+                        <option value="25">25天 </option>
+                        <option value="26">26天 </option>
+                        <option value="27">27天 </option>
+                        <option value="28">28天 </option>
+                        <option value="29">29天 </option>
+                        <option value="30">30天 </option>
+                    </select> 
+                </div> 
+           {% else %}
+            <div class="row div1">
+                <p class="col-lg-2">有效期</p> 
+                <div class="in col-lg-2">
+                    <form action="" method="get"> 
+                        <label class="tit5"><input name="valid_way" type="radio" value="{{output_data["uneffective_time"]}}"/>固定日期 </label></br>
+                        <label class="tit5"><input name="valid_way" type="radio" value="" checked="checked" />领取后</label> 
+                    </form> 
+            </div>
+            <div class="col-lg-7">
+                <div class="">
+                    <div class="row"> 
+                        <p class="col-lg-4">生效时间：</p>
+                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in7">
+                    </div>
+                    <div class="row"> 
+                        <p class="col-lg-4">失效时间：</p>
+                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in8">
+                    </div>
+                </div>
+                 <div class="row">
+                    <select id="in5"  class="col-lg-3 tit5"  >
+                        <option value="0">当天 </option>
+                        <option value="1">1天 </option>
+                        <option value="2">2天 </option>
+                        <option value="3">3天 </option>
+                        <option value="4">4天 </option>
+                        <option value="5">5天 </option>
+                        <option value="6">6天 </option>
+                        <option value="7">7天 </option>
+                        <option value="8">8天 </option>
+                        <option value="9">9天 </option>
+                        <option value="10">10天 </option>
+                        <option value="11">11天 </option>
+                        <option value="12">12天 </option>
+                        <option value="13">13天 </option>
+                        <option value="14">14天 </option>
+                        <option value="15">15天 </option>
+                        <option value="16">16天 </option>
+                        <option value="17">17天 </option>
+                        <option value="18">18天 </option>
+                        <option value="19">19天 </option>
+                        <option value="20">20天 </option>
+                        <option value="21">21天 </option>
+                        <option value="22">22天 </option>
+                        <option value="23">23天 </option>
+                        <option value="24">24天 </option>
+                        <option value="25">25天 </option>
+                        <option value="26">26天 </option>
+                        <option value="27">27天 </option>
+                        <option value="28">28天 </option>
+                        <option value="29">29天 </option>
+                        <option value="30">30天 </option>
+                    </select>    
+                    <div class="col-lg-5 tit5">生效<span style="margin-left:25px">有效天数</span></div>
+                    <select id="in6"  class="col-lg-3"  >
+                        <option value="1" selected="selected">1天 </option>
+                        <option value="2">2天 </option>
+                        <option value="3">3天 </option>
+                        <option value="4">4天 </option>
+                        <option value="5">5天 </option>
+                        <option value="6">6天 </option>
+                        <option value="7">7天 </option>
+                        <option value="8">8天 </option>
+                        <option value="9">9天 </option>
+                        <option value="10">10天 </option>
+                        <option value="11">11天 </option>
+                        <option value="12">12天 </option>
+                        <option value="13">13天 </option>
+                        <option value="14">14天 </option>
+                        <option value="15">15天 </option>
+                        <option value="16">16天 </option>
+                        <option value="17">17天 </option>
+                        <option value="18">18天 </option>
+                        <option value="19">19天 </option>
+                        <option value="20">20天 </option>
+                        <option value="21">21天 </option>
+                        <option value="22">22天 </option>
+                        <option value="23">23天 </option>
+                        <option value="24">24天 </option>
+                        <option value="25">25天 </option>
+                        <option value="26">26天 </option>
+                        <option value="27">27天 </option>
+                        <option value="28">28天 </option>
+                        <option value="29">29天 </option>
+                        <option value="30">30天 </option>
+                    </select> 
                 </div> 
             </div>
+            {% end %}
         </div>
 </div>
       <div class="col-lg-4 div1"> hhhh</div>
 </div>
 <div class="row">
-    <button class="edit editconfigbtn">确认</button>
-    <a href="/admin/marketing?action=coupon"> <button class="configcancel">取消</button></a>
+    <button class="edit editconfigbtn cmhref">确认</button>
+    <a href="/admin/marketing?action=coupon" class="cmhref"> <button class="configcancel ">取消</button></a>
 </div>
-<!-- <div class="row div2 div0">
-    <div class="col-lg-2">
-       优惠码
-    </div>
-    <div class="col-lg-2">
-     优惠金额
-    </div>
-    <div class="col-lg-2">
-       用户
-    </div>
-    <div class="col-lg-2">
-    领取时间
-    </div>
-    <div class="col-lg-2">
-    使用时间
-    </div>
-    <div class="col-lg-2">
-      消费记录
-    </div>
-</div> -->
 {% end %}
 {% block bottom %}
-<script src="/static/js/third/datepicker/WdatePicker.js"></script>
+<script src="{{static_url('js/third/datepicker/WdatePicker.js')}}"></script>
 <script src="{{static_url('js/admin-marketing.js')}}"></script>
 {% end %}

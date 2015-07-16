@@ -3,8 +3,8 @@ $(document).ready(function(){
     $(".container").css("minHeight",height);
     //兑换
     $(document).on("click","#convert-btn",function(){
-        var key = $("#convert-btn").val();
-        if($.trim(key)!=""){
+        var key = $(".coupon-ipt").val();
+        if(key!=""){
             searchKey(key);
         }
     });
@@ -37,11 +37,11 @@ function getCoupon(coupon_key){
 //兑换优惠券
 function searchKey(key){
     $.ajax({
-        url:"/coupon/detail?action=detail&coupon_key="+key,
+        url:"/coupon/detail?action=exchange&coupon_key="+key,
         type:"get",
         success:function(res){
             if(res.success){
-                var coupon = res.data;
+                var coupon = res.output_data;
                 var $item = $("#coupon-item").children().clone();
                 $item.find(".coupon-link").attr("href","/coupon/detail?action=detail&coupon_key="+coupon.coupon_key);
                 $item.find(".shop-name").html(coupon.shop_name);
@@ -56,7 +56,11 @@ function searchKey(key){
                     str="已过期";
                 }
                 $item.find(".is_used").html(str);
-                $("#coupon-list").children().first().before($item);
+                if($("#coupon-list").children().size()==0){
+                    $("#coupon-list").append($item);                    
+                }else{
+                    $("#coupon-list").children().first().before($item);
+                }     
                 Tip("兑换成功");
             }else{
                 Tip(res.error_text);

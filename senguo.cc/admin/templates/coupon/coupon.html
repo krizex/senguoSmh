@@ -13,7 +13,7 @@
             <a href="javascrpipt:;" class="convert-btn" id="convert-btn">兑换</a>
         </div>
         <ul class="coupon-list" id="coupon-list">
-            {#{% for coupon in output_data %}
+            {% for coupon in output_data %}
             <li>
                 <a href="/coupon/detail?action=detail&coupon_key={{coupon['coupon_key']}}">
                     <div class="gap gap-right"></div>
@@ -37,7 +37,7 @@
                     </div>
                 </a>
             </li>
-            {% end %}#}
+            {% end %}
         </ul>
     </div>
 </div>
