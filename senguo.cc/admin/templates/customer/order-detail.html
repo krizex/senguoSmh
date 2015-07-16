@@ -61,25 +61,25 @@
                 {% end %}
             {% end %}
             {% if order.mgoods %}
-            {% set mgoods = eval(order.mgoods)%}
-            {% for key in mgoods %}
-            {% set price2 = "" %}
-            {% for i in range(mgoods[key]['charge'].index("元")) %}
-            {% set price2 += mgoods[key]['charge'][i] %}
-            {% end %}
-            <li class="group TDSG">
-                <dl class="goods-item group">
-                    <dd>
-                        <img src="/static/design_img/TDSG.png" alt="商品图片"/>
-                    </dd>
-                    <dt class="bg">
-                        <p class="color">{{mgoods[key]['mgoods_name']}}</p>
-                        <p class="color txt-ar"><span class="big">{{mgoods[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price2)*mgoods[key]['num'], 2)}}</span>元</p>
-                        <p class="color">{{mgoods[key]['charge']}}</p>
-                    </dt>
-                </dl>
-            </li>
-            {% end %}
+                {% set mgoods = eval(order.mgoods)%}
+                {% for key in mgoods %}
+                    {% set price2 = "" %}
+                    {% for i in range(mgoods[key]['charge'].index("元")) %}
+                        {% set price2 += mgoods[key]['charge'][i] %}
+                    {% end %}
+                    <li class="group TDSG">
+                        <dl class="goods-item group">
+                            <dd>
+                                <img src="/static/design_img/TDSG.png" alt="商品图片"/>
+                            </dd>
+                            <dt class="bg">
+                                <p class="color">{{mgoods[key]['mgoods_name']}}</p>
+                                <p class="color txt-ar"><span class="big">{{mgoods[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price2)*mgoods[key]['num'], 2)}}</span>元</p>
+                                <p class="color">{{mgoods[key]['charge']}}</p>
+                            </dt>
+                        </dl>
+                    </li>
+                {% end %}
             {% end %}
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
