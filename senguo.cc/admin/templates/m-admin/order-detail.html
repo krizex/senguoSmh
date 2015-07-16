@@ -62,7 +62,9 @@
                     {% for charge_type in charge_types %}
                         {% if key == charge_type.id %}
                             {% set code = charge_type.fruit.fruit_type.code %}
+                            {% if charge_type.fruit.img_url %}
                             {% set imgurl = charge_type.fruit.img_url.split(';')[0] +"?imageView2/1/w/170/h/170" %}
+                            {% end %}
                         {% end %}
                     {% end %}
                     <li class="group {{code}}">
