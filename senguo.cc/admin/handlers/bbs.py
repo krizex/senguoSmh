@@ -13,7 +13,7 @@ class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("type?","page?")
 	def get(self):
-		# print(self.get_secure_cookie("customer_id"))
+		# print("[BbsMain]self.get_secure_cookie("customer_id"):",self.get_secure_cookie("customer_id"))
 		if "page" in self.args and self.args["page"] !=[]:
 			if self.args["page"]==[]:
 				page = 0
@@ -161,7 +161,7 @@ class Detail(FruitzoneBaseHandler):
 				try:
 					article = self.session.query(models.Article).filter_by( id = _id).first()
 				except:
-					return self.send_fail("no such article")
+					return self.send_fail("[BbsDetail]no such article")
 				if article:
 					article.great_num = article.great_num +num_1
 					article.if_scan = 0
@@ -191,7 +191,7 @@ class Detail(FruitzoneBaseHandler):
 				_comment = self.session.query(models.ArticleComment).filter_by(id=comment_id).first()
 			except:
 				_comment = None
-			# print(num_1,_comment)
+			# print("[BbsDetail]num_1:",num_1,", _comment:",_comment)
 			if _comment:
 				_comment.great_num = _comment.great_num +num_1
 				_comment.if_scan = 0
@@ -202,8 +202,8 @@ class Detail(FruitzoneBaseHandler):
 			try:
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 			except:
-				return self.send_fail("no such article")
-			# print(article)
+				return self.send_fail("[BbsDetail]no such article")
+			# print("[BbsDetail]article:",article)
 			if action == "comment":
 				_type = 0
 				comment_author_id = 0
@@ -211,7 +211,7 @@ class Detail(FruitzoneBaseHandler):
 				_type = 1
 				comment_author_id = self.session.query(models.ArticleComment).filter_by(id=data["comment_id"]).first().account_id
 			else:
-				return send_fail("no such action")
+				return send_fail("[BbsDetail]no such action")
 			comment = models.ArticleComment(
 				article_id = _id,
 				account_id = self.current_user.id,
@@ -249,11 +249,11 @@ class Detail(FruitzoneBaseHandler):
 			try:
 				article = self.session.query(models.Article).filter_by( id = _id).first()
 			except:
-				return self.send_fail("no such article")
+				return self.send_fail("[BbsDetail]no such article")
 			try:
 				current_user = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id).first()
 			except:
-				return self.send_fail("you has no priority to delete this article")
+				return self.send_fail("[BbsDetail]you have no priority to delete this article")
 			article.status=0
 			self.session.commit()
 			return self.send_success()
