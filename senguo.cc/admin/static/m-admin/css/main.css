@@ -177,8 +177,8 @@
 .shop-dl>dd img{width: 72px;height: 72px;border-radius: 50%;}
 .shop-dl>dt{padding-left: 85px;position: relative;}
 .shop-dl .arr-item{position: absolute;right: 0px;top: 38px;width: 8px;height: 13px;background-image: url(/static/m-admin/img/shop_arr.png);}
-.shop-dl .name{font-size: 16px;color: #48B6A4;}
-.shop-dl .shop-cert{font-size: 12px;display: inline-block;position:relative;top:-2px;height: 16px;line-height: 16px;border: 1px solid #48B6A4;border-radius: 8px;width: 70px;text-align: center;margin-left:5px;}
+.shop-dl .name{font-size: 16px;color: #48B6A4;white-space: nowrap;}
+.shop-dl .shop-cert{font-size: 12px;display: inline-block;position:relative;vertical-align:middle;height: 16px;line-height: 16px;border: 1px solid #48B6A4;border-radius: 8px;width: 70px;text-align: center;margin-left:5px;}
 .shop-dl .addre{color: #848484;font-size: 12px;padding-left: 14px;background-image: url(/static/m-admin/img/loc.png);background-size: 10px auto;background-position: left center;background-repeat: no-repeat;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
 .shop-prop{width: 96%;}
 .shop-prop>li{float: left;width: 33.33%;color: #848484;line-height: 18px;font-size: 12px;white-space: nowrap;}
@@ -193,6 +193,7 @@
 .shop-qalist .title{font-size: 16px;text-align: center;}
 .pop-qa{background-color: rgba(0,0,0,.7);}
 .pop-spread .code2-logo{margin-top: 45px;}
+.shop-item-name{display: inline-block;max-width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;vertical-align: middle;}
 /*店铺设置*/
 .list-title{padding-left: 10px;color: #666;font-size: 14px;line-height: 28px;}
 .data-list{background-color: #fff;padding-left: 10px;}

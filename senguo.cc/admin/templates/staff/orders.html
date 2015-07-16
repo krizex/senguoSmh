@@ -57,7 +57,7 @@
             </div>
             <div class="content text-grey">
                 <p data-id="deliveryTime">配送时间：<span class="send_date"></span><span class="send_time">{{order.send_time}}</span></p>
-                <p>配送地址：{{order.address_text}}</p>
+                <p class="delivery-address"><em class="area-icon set-inl-blo pull-right"></em>配送地址：<span>{{order.address_text}}</span></p>
                 <p>
                     收货人：
                     <span>{{order.receiver}}</span>
@@ -94,7 +94,6 @@
                     <span class="pull-left text-pink">x{{fruits[key]['num']}}</span>
                 </li>
                 {% end %}
-                
             </ul>
             <!--<div class="status-bar-box" data-id="status-bar-box" >
                 <div class="status-bar" data-id="status-bar" >

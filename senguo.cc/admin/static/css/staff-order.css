@@ -7,7 +7,7 @@ p{margin-bottom:5px;}
 .order-list-item{width:100%;text-align:left;position:relative;font-size:13px;}
 .order-list-item .toggle{display:block;}
 .order-list-item .button-box {position: absolute;right:10px;top:5px;}
-.order-list-item .clear-btn {width:90px;}
+.order-list-item .clear-btn {padding: 4px 10px;}
 .order-list-item span {margin-right: 8px;}
 .order-list-item .active {background-color: rgba(20, 200, 20, 0.1);}
 .order-list-item .not-started {color: #888;background-color: #f6f6f6;}
@@ -38,3 +38,4 @@ p{margin-bottom:5px;}
 .filter-box{clear:both;height:50px;line-height:50px;}
 .filter-box a{width:20%;color:#333;background:#F3FFF1;border:1px solid #ddd;}
 .filter-box a.active{background:#33CC66;color:#fff;}
+.area-icon{width:14px;height:22px;background:url('../svg/icon_list-2.png') 0 -48px;background-size:140px 180px;position: relative;right: 3px;margin-top: -3px;}

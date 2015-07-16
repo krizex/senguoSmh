@@ -1164,6 +1164,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 			return self.finish('你不是这个店铺的员工，可能已经被解雇了')
 		self.shop_id = shop_id
 		self.shop_name = next(x for x in self.current_user.shops if x.id == shop_id).shop_name
+		self.shop_code = next(x for x in self.current_user.shops if x.id == shop_id).shop_code
 		self.hirelink = self.session.query(models.HireLink).filter_by(
 			staff_id=self.current_user.id, shop_id=self.shop_id).one()
 		self.current_user.work = self.hirelink.work

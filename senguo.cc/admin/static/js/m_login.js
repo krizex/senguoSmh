@@ -1,8 +1,7 @@
 $(document).ready(function(){
     if(window.location.href.indexOf("?next")!=-1){
-	SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
+	    SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
     }else{
-        
     }
 
 }).on('click','#phoneLogin',function(){

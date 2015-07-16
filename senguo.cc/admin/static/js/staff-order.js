@@ -95,6 +95,10 @@ $(document).ready(function(){
         //     $this.find('.send_date').text(create_year+'-'+create_month+'-'+(create_day+1));
         // }  
     });
+
+}).on("click",".delivery-address",function(){
+    var address = $(this).find('span').html();
+    window.location.href="/shoparea/"+$(".shop_change").attr("data-code")+"?staff=1&address="+address;
 });
 function statusText(target,n){
     switch (n){

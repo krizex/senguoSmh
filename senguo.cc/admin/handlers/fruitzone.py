@@ -118,8 +118,9 @@ class ShopList(FruitzoneBaseHandler):
 					shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
 					shop.comment_count = comment_count
 					shop.goods_count = fruit_count
+					shop.address = self.code_to_text("city",shop.shop_city)+shop.shop_address_detail
 					shops.append(shop.safe_props())
-		# print(shops,'shops')
+		print(len(shops),'********************店铺*******************')
 		return shops
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
@@ -172,8 +173,7 @@ class ShopList(FruitzoneBaseHandler):
 			shop_count = q.count()
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
-		else:
-			print("ShopList: handle_filter error")
+		
 
 
 		# if "live_month" in self.args:
@@ -198,18 +198,23 @@ class ShopList(FruitzoneBaseHandler):
 		#print()
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
+			lat1 = None
+			lon1 = None
+			if self.args["lat"] != '[]':
+				lat1 = float(self.args['lat'])
+			if self.args["lon"] != '[]' :
+				lon1 = float(self.args['lon'])
+			for shop in shops:
+				lat2 = shop['lat']
+				lon2 = shop['lon']
+				if lat1 and lon1 and lat2 and lon2:
+					shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+				else:
+					shop['distance'] = 9999999
 			if key_word == 1: #商品最多
 				shops.sort(key = lambda shop:shop['goods_count'],reverse = True)
 			elif key_word == 2: #距离最近
-				lat1 = float(self.args['lat'])
-				lon1 = float(self.args['lon'])
-				for shop in shops:
-					lat2 = shop['lat']
-					lon2 = shop['lon']
-					if lat1 and lon1 and lat2 and lon2:
-						shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
-					else:
-						shop['distance'] = 9999999
+				
 				shops.sort(key = lambda shop:shop['distance'])
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
