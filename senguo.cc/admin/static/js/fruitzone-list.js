@@ -165,16 +165,21 @@ function initLocation(){
     first=false;
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
-            ulat = position.coords.latitude;
-            ulng = position.coords.longitude;//经度
-            var point = new BMap.Point(ulng,ulat);
-            var geoc = new BMap.Geocoder();
-            geoc.getLocation(point, function(rs){
-                var addComp = rs.addressComponents;
-                initProviceAndCityCode(addComp.province, addComp.city);
-                $(".city_name").text(addComp.city);
-                window.dataObj.type='city';
-                filter($("#city_id").val());
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;//经度
+            var gpsPoint = new BMap.Point(lng,lat);
+            BMap.Convertor.translate(gpsPoint,0,function(point){
+                ulng = point.lng;
+                ulat = point.lat;
+                var point = new BMap.Point(ulng,ulat);
+                var geoc = new BMap.Geocoder();
+                geoc.getLocation(point, function(rs){
+                    var addComp = rs.addressComponents;
+                    initProviceAndCityCode(addComp.province, addComp.city);
+                    $(".city_name").text(addComp.city);
+                    window.dataObj.type='city';
+                    filter($("#city_id").val());
+                });
             });
         },function(error){
             if(error.code == error.PERMISSION_DENIED){
