@@ -1,4 +1,4 @@
-var ulat = 0,ulng =0,loc_flag=false,first=true;
+var ulat = 0,ulng =0,first=true;
 $(document).ready(function(){
     var link_action=$.getUrlParam('action');
     if(link_action){
@@ -91,7 +91,7 @@ $(document).ready(function(){
     $(document).on('click','.city_choose',function(){
         var $this=$(this);
          if($this.hasClass('city_choosed')){
-            remove_bg();
+             remove_bg();
             $('.list_item').addClass('hidden');
             $this.removeClass('city_choosed');
          }
@@ -152,13 +152,9 @@ $(document).ready(function(){
         var key_word = parseInt($(this).attr("data-key"));
         $("#comm_name").text($(this).html()).attr("data-key",key_word);
         $(this).closest("ul").hide();
-        loc_flag = false;
         if(ulat==0 && key_word==2){
             initLocation();
         }else{
-            if(key_word==2){
-                loc_flag = true;
-            }
             filter($('.city_name').attr('data-id'));
         }
     });
@@ -209,31 +205,25 @@ function initProviceAndCityCode(p, c){
     })
 }
 /*根据经纬度获取距离*/
-function getDist(lat,lng){
-    if(!lat || lat == 0) return false;
-    var res = '';
-    var map = new BMap.Map("map");
-    var pointA = new BMap.Point(ulng,ulat);  // 用户坐标
-    var pointB = new BMap.Point(lat,lng);  // 店铺坐标
-    var distance = map.getDistance(pointA,pointB);
-    if(distance<1000){
-        res = distance.toFixed(0)+"m";
+function getDist(dis){
+    var res = 0;
+    if(dis<1000){
+        res = dis.toFixed(0)+"m";
     }else{
-        res = (distance/1000).toFixed(1)+"km";
+        res = (dis/1000).toFixed(1)+"km";
     }
     return res;
 }
 function add_bg(){
     $('.area_box').addClass('area_sty');
-    $('body').css({'overflow':'hidden'}).attr({'onmousewheel':'return false'});
+    $('body').css({'overflow':'hidden'});
 }
 function remove_bg(){
     $('.area_box').removeClass('area_sty');
-    $('body').css({'overflow':'auto'}).attr({'onmousewheel':''});
+    $('body').css({'overflow':'auto'});
 }
-
 var shopItem=function (shops){
-    var $item = '<li class="item bg-white">'+
+    /*var $item = '<li class="item bg-white">'+
                             '<a href="{{link}}" class="shop_link">'+
                             '<div class="shop-status {{statu}}"></div>'+
                             '<div class="clearfix pr">'+
@@ -248,83 +238,94 @@ var shopItem=function (shops){
                             '</div>'+
                             //'<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
                             '</a>'+
-                        '</li>';
-    for(var key in shops){
-                var logo_url=shops[key]['shop_trademark_url'];
-                var name=shops[key]['shop_name'];
-                var shop_code=shops[key]['shop_code'];
-                var province=shops[key]['shop_province'];
-                var city=shops[key]['shop_city'];
-                var address=shops[key]['shop_address_detail'];
-                var intro=shops[key]['shop_intro'];
-                var shop_auth=shops[key]['shop_auth'];
-                var satisfy = shops[key]['satisfy'];
-                var comment_count = shops[key]['comment_count'];
-                var goods_count = shops[key]['goods_count'];
-                var status = shops[key]['status'];
-                var lat = shops[key]['lon'];//经度
-                var lon = shops[key]['lat'];//纬度
-                var area=window.dataObj.area;
-                var hide='';
-                var statu = '';
-                var dishide = '';
-                var distance = '';
-                var link = '/'+shop_code;
-                if(!lat || lat == 0 || !ulat || ulat == 0){
-                    dishide = "hidden";
-                }else{
-                    distance = getDist(lat,lon);
-                }
-                if(province==city) {
-                    city='';
-                }
-                if(status == 2){
-                    statu = 'shop-waiting';
-                    link = 'javascript:;';
-                }else if(status == 3){
-                    statu = 'shop-rest';
-                }
-                for(var key in area){
-                    if(key==province){
-                        province=area[key]['name'];
-                        if(city!=''){
-                            var cities=area[key]['city'];
-                            for(var code in cities){
-                                if(code==city){
-                                    city=cities[code]['name'];
-                                }
-                            }
-                        }
-                    }
-                 }
-                if(!logo_url) {
-                    logo_url='/static/design_img/Li_l.png';
-                }
-                if(shop_auth>0){
-                    shop_auth='已认证';
-                }
-                else {
-                    hide='hidden';
-                }
-                var render=template.compile($item);
-                var content=render({
-                    link:link,
-                    logo_url:logo_url+'?imageView2/1/w/100/h/100',
-                    shop_name:name,
-                    shop_code:shop_code,
-                    shop_auth:shop_auth,
-                    address:city+address,
-                    satisfy:satisfy,
-                    comment_count:comment_count,
-                    goods_count:goods_count,
-                    intro:intro,
-                    hide:hide,
-                    statu:statu,
-                    dishide:dishide,
-                    distance:distance
-                });
-                $('.shoplist').append(content);
+                        '</li>';*/
+    for(var i=0; i<shops.length; i++){
+        var $item = $('<li class="item bg-white">'+
+            '<a href="" class="shop_link">'+
+            '<div class="shop-status"></div>'+
+            '<div class="clearfix pr">'+
+            '<div class="logo_box pull-left">'+
+            '<img src="" class="shop_logo lazy_img"/>'+
+            '</div>'+
+            '<div class="pull-left info">'+
+            '<p class="shop_name font14"><span class="shop_auth"></span></p>'+
+            '<p class="shop_attr">满意度 <span class="shop_satisfy"></span>&nbsp;&nbsp;&nbsp;评价 <span class="shop_comment_cont"></span>&nbsp;&nbsp;&nbsp;商品数 <span class="shop_goods_count"></span></p>'+
+            '<p class="text-grey9 adre-box"><span class="distance"></span><i class="location"></i><span class="shop_code"></span></p>'+
+            '</div>'+
+            '</div>'+
+            '</a>'+
+            '</li>');
+            var logo_url=shops[i].shop_trademark_url;
+            var name=shops[i].shop_name;
+            var shop_code=shops[i].shop_code;
+            var address=shops[i].shop_address_detail;
+            var intro=shops[i].shop_intro;
+            var shop_auth=shops[i].shop_auth;
+            var satisfy = shops[i].satisfy;
+            var comment_count = shops[i].comment_count;
+            var goods_count = shops[i].goods_count;
+            var status = shops[i].status;
+            var lat = shops[i].lon;//经度
+            var lon = shops[i].lat;//纬度
+            var distance = shops[i].distance;
+            var hide='';
+            var statu = '';
+            var dishide = '';
+            var link = '/'+shop_code;
+            if(!lat || lat == 0 || !ulat || ulat == 0){
+                dishide = "hidden";
+            }else{
+                distance = getDist(distance);
             }
+            if(status == 2){
+                statu = 'shop-waiting';
+                link = 'javascript:;';
+            }else if(status == 3){
+                statu = 'shop-rest';
+            }
+            if(!logo_url) {
+                logo_url='/static/design_img/Li_l.png';
+            }
+            if(shop_auth>0){
+                shop_auth='已认证';
+            }else {
+                hide='hidden';
+            }
+            /*var render=template.compile($item);
+            var content=render({
+                link:link,
+                logo_url:logo_url+'?imageView2/1/w/100/h/100',
+                shop_name:name,
+                shop_code:shop_code,
+                shop_auth:shop_auth,
+                address:address,
+                satisfy:satisfy,
+                comment_count:comment_count,
+                goods_count:goods_count,
+                intro:intro,
+                hide:hide,
+                statu:statu,
+                dishide:dishide,
+                distance:distance
+            });*/
+        $item.find('.shop_link').attr("href",link);
+        $item.find(".shop-status").addClass(statu);
+        $item.find(".shop_logo").attr("src",logo_url+'?imageView2/1/w/100/h/100');
+        $item.find(".shop_name").html(name);
+        $item.find(".shop_auth").html(shop_auth);
+        if(hide=='hidden'){
+            $item.find(".shop_auth").addClass("hidden");
+        }
+        $item.find(".shop_satisfy").html(satisfy);
+        $item.find(".shop_comment_cont").html(comment_count);
+        $item.find(".shop_goods_count").html(goods_count);
+        $item.find(".shop_code").html(address);
+        $item.find(".distance").html(distance);
+        if(dishide == "hidden"){
+            $item.find(".distance").addClass("hidden");
+        }
+        $('.shoplist').append($item);
+    }
 }
 window.dataObj.page=1;
 window.dataObj.action='shop';
@@ -343,7 +344,7 @@ var shopsList=function(page,data,action){
         if(window.dataObj.type=='city') {args.city=data}
         else if(window.dataObj.type=='province') {args.province=data}
     }
-    if(loc_flag){
+    if(ulat!=0){
         args.lat = ulat;
         args.lon = ulng;
     }
@@ -430,7 +431,7 @@ function Search(q){
 function filter(data){
    $(".wrap-loading-box").removeClass("hidden");
    var type = window.dataObj.type;
-    window.dataObj.action="filter";
+   window.dataObj.action="filter";
    var action="filter";
    window.dataObj.page=1;
     var page = window.dataObj.page;
@@ -441,7 +442,7 @@ function filter(data){
         service_area:$("#school_name").attr("data-key"),
         key_word:$("#comm_name").attr("data-key")
     };
-    if(loc_flag){
+    if(ulat != 0){
         args.lat = ulat;
         args.lon = ulng;
     }
@@ -465,25 +466,23 @@ function filter(data){
                     },10);
                 }
                 $(".wrap-loading-box").addClass("hidden");
-                remove_bg();
                  var shops=res.shops;
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
                  $('.shoplist').empty();
                  if(shops.length==0){
                     window.dataObj.finished = false;
-                    $('.shoplist').append('<h4 class="text-center mt10 text-grey">没有搜索到店铺</h4>');
                  }else{
                       window.dataObj.finished = true;
                       window.dataObj.action='filter';
                       window.dataObj.data=Int(data);
                      shopItem(shops);
-                }
+                 }
             }else{
                 $(".wrap-loading-box").addClass("hidden");
                 return noticeBox(res.error_text);
             }
-        },function(){$(".wrap-loading-box").addClass("hidden"); return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){$(".wrap-loading-box").addClass("hidden"); return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        },function(){$(".wrap-loading-box").addClass("hidden");},
+        function(){$(".wrap-loading-box").addClass("hidden");}
     );
 }
