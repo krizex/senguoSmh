@@ -240,24 +240,42 @@ class Realtime(AdminBaseHandler):
 		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum,
 			follower_sum=follower_sum,on_num=on_num)
 
-# websocket 版后台轮询
-class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
-	session = DBSession()
-	def open(self):
-		print('[AdminRealtimeWebsocket]open')
-	def onclose(self):
-		print('[AdminRealtimeWebsocket]onclose')
-	def on_message(self,message):
-		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
-		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
-			not_(models.Order.status.in_([-1,0]))).count()
-		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
-		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
-		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
-		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
-		data = dict(new_order_sum = new_order_sum , order_sum = order_sum , new_follower_sum = new_follower_sum,
-			follower_sum = follower_sum , on_num = on_num)
-		return self.write_message(json.dumps(data))
+# # websocket 版后台轮询
+# class Realtime(AdminBaseHandler,tornado.websocket.WebSocketHandler):
+
+# 	session = DBSession()
+# 	socket_handlers = set ()
+
+# 	@tornado.web.asynchronous
+# 	def send_data(self):
+# 		import time
+# 		import threading
+# 		print(self)
+# 		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
+# 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+# 			not_(models.Order.status.in_([-1,0]))).count()
+# 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+# 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+# 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+# 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+# 		data = dict(new_order_sum = new_order_sum , order_sum = order_sum , new_follower_sum = new_follower_sum,
+# 			follower_sum = follower_sum , on_num = on_num)
+# 		self.write_message(json.dumps(data))
+# 		threading.Timer(5.0, self.send_data()).start()
+
+# 	def check_origin(self, origin):
+# 		return True
+
+# 	def open(self):
+# 		print('[AdminRealtimeWebsocket]open')
+# 		Realtime.socket_handlers.add(self.send_data)
+
+# 	def onclose(self):
+# 		print('[AdminRealtimeWebsocket]onclose')
+# 		Realtime.socket_handlers.remove(self.send_data)
+
+# 	def on_message(self,message):
+# 		self.send_data()
 
 # 订单统计
 class OrderStatic(AdminBaseHandler):
