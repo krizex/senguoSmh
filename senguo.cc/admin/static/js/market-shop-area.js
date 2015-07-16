@@ -45,7 +45,7 @@ function initStaffMap(){
             map.centerAndZoom(point, 17);
             marker = new BMap.Marker(point);
             map.addOverlay(marker);
-            var infoWindow = new BMap.InfoWindow("地址："+staff_address, opts);  // 创建信息窗口对象
+            var infoWindow = new BMap.InfoWindow("配送地址："+staff_address+"（该点基于用户所填地址自动生成，仅供参考）", opts);  // 创建信息窗口对象
             map.openInfoWindow(infoWindow,oPoint);
             marker.addEventListener("click", function(){
                 map.openInfoWindow(infoWindow,point);  //开启信息窗口
