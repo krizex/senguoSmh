@@ -1528,6 +1528,7 @@ class WxOauth2:
 			return access_token.access_token
 		else:
 			# print("[微信授权]Token错误")
+			print("[WxAuth]Get Token Error")
 			return None
 
 	@classmethod
@@ -1551,6 +1552,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]店铺审核消息发送失败：", data)
+			print("[TempMsg]Shop apply success message send failed:",data)
 			return False
 		return True
 
@@ -1575,6 +1577,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模板消息]店铺审核消息发送失败：", data)
+			print("[TempMsg]Shop apply fail message send failed:",data)
 			return False
 		return True
 
@@ -1598,6 +1601,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]添加店铺管理员消息发送失败：", data)
+			print("[TempMsg]Add admin message send failed:",data)
 			return False
 		return True
 
@@ -1632,6 +1636,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]管理员订单消息发送失败：",data)
+			print("[TempMsg]Admin's order message send failed:",data)
 			return False
 		# print("[模版消息]发送给管理员成功")
 		return True
@@ -1666,6 +1671,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]配送员订单消息发送失败：",data)
+			print("[TempMsg]Staff's order message send failed:",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1691,6 +1697,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]配送员批量订单消息发送失败：",data)
+			print("[TempMsg]Staff's barth order message send failed:",data)
 			return False
 		# print("[模版消息]发送给配送员成功")
 		return True
@@ -1717,6 +1724,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]订单提交成功消息发送失败：",data)
+			print("[TempMsg]Order commit message send failed:",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1742,6 +1750,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]订单完成消息发送失败：",data)
+			print("[TempMsg]Order done message send failed:",data)
 			return False
 		# print("[模版消息]发送给客户成功")
 		return True
@@ -1764,7 +1773,8 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
 		data = json.loads(res.content.decode("ascii"))
 		if data['errcode'] != 0:
-			# print("[模版消息]订单提交成功消息发送失败：",data)
+			# print("[模版消息]订单取消消息发送失败：",data)
+			print("[TempMsg]Order canceled message send failed:",data)
 			return False
 		else:
 			return True
@@ -1797,6 +1807,7 @@ class WxOauth2:
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
 			# print("[模版消息]店铺认证消息发送失败：",data)
+			print("[TempMsg]Shop auth message send failed:",data)
 			return False
 		# print("[模版消息]店铺认证消息发送成功")
 		return True
