@@ -855,7 +855,22 @@ class Order(AdminBaseHandler):
 											start_time_now=start_time, end_time_now=end_time,
 											freight_now=data["freight_now"] or 0,intime_period=data["intime_period"] or 30)
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
-			order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
+			try:
+				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).first()
+			except:
+				order = None
+			try:
+				shop = self.session.query(models.Shop).filter_by(id=order.shop_id).first()
+			except:
+				return self.send_error(404)
+			try:
+				HireLink = self.session.query(models.HireLink).filter_by(shop_id=order.shop_id,staff_id=self.current_user.id,work=9,active=1).first()
+			except:
+				pass
+
+			if not shop.admin_id == self.current_user.id and not HireLink:
+				return self.send_fail("您没有查看该订单的权限")
+
 			if not order:
 				return self.send_fail("没找到该订单")
 			if action == "edit_remark":
@@ -867,7 +882,7 @@ class Order(AdminBaseHandler):
 					return self.send_fail("订单已被取消或删除，不能操作该订单")
 				elif order.status > 4:
 					return self.send_fail("订单已经完成，不能操作该订单")
-				SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
+				SH2 = next((x for x in shop.staffs if x.id == int(data["staff_id"])), None)
 				if not SH2:
 					return self.send_fail("没找到该送货员")
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
@@ -3313,8 +3328,9 @@ class WirelessPrint(AdminBaseHandler):
 				elif action == "fyadd":
 					headers={}
 					data={"deviceCode":_data["deviceCode"],"installAddress":"","simCode":"","groupname":""}
-					r=requests.post("http://my.feyin.net/activeDevice",data=data)
-					# POST /activeDevice deviceCode=9602292847397158&installAddress=&simCode=&groupname=
+					r = requests.post("http://my.feyin.net/activeDevice",data=data)
+					res = r.text
+					print(res)
 
 			else:
 				return self.send_fail("请设置为飞印无线打印")

@@ -232,6 +232,9 @@ class OrderDetail(AdminBaseHandler):
 		if not shop.admin_id == self.current_user.id and not HireLink:
 			return self.write("<h1>您没有查看该订单的权限</h1>")
 
+		if shop:
+			self.current_shop = shop
+
 		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 		print(charge_types)
 		if order.pay_type == 1:
