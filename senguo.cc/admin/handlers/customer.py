@@ -1451,7 +1451,7 @@ class Cart(CustomerBaseHandler):
 				except:
 					limit_if = None
 				# print(limit_num)
-				if limit_num !=0:
+				if limit_num != 0:
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
 						return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")

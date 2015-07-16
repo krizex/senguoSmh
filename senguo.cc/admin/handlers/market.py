@@ -154,6 +154,8 @@ class ShopAdminInfo(CustomerBaseHandler):
 				#if not self.is_wexin_browser():
 				#	return self.send_fail("请在微信中执行此从操作!")
 				#else:
+				if shop.has_done == 1:
+					return self.send_fail('该店铺已录入！')
 				admin_id  =  self.wx_bind(shop_id)
 				print(admin_id)
 				shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
