@@ -120,7 +120,7 @@ class ShopList(FruitzoneBaseHandler):
 					shop.goods_count = fruit_count
 					shop.address = self.code_to_text("city",shop.shop_city)+shop.shop_address_detail
 					shops.append(shop.safe_props())
-		print(len(shops),'********************店铺*******************')
+		# print(len(shops),'********************店铺*******************')
 		return shops
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
@@ -158,7 +158,6 @@ class ShopList(FruitzoneBaseHandler):
 			if service_area > 0:
 				q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 			# q = q.filter_by(shop_service_area = service_area)
-		print(self.args)
 		if "city" in self.args:
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
