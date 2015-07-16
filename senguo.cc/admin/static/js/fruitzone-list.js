@@ -223,22 +223,6 @@ function remove_bg(){
     $('body').css({'overflow':'auto'});
 }
 var shopItem=function (shops){
-    /*var $item = '<li class="item bg-white">'+
-                            '<a href="{{link}}" class="shop_link">'+
-                            '<div class="shop-status {{statu}}"></div>'+
-                            '<div class="clearfix pr">'+
-                                '<div class="logo_box pull-left">'+
-                                    '<img src="{{logo_url}}" class="shop_logo lazy_img"/>'+
-                                '</div>'+
-                                '<div class="pull-left info">'+
-                                    '<p class="shop_name font14">{{shop_name}}<span class="shop_auth  {{hide}}">{{shop_auth}}</span></p>'+
-                                    '<p class="shop_attr">满意度 {{satisfy}}&nbsp;&nbsp;&nbsp;评价 {{comment_count}}&nbsp;&nbsp;&nbsp;商品数 {{goods_count}}</p>'+
-                                    '<p class="text-grey9 adre-box"><span class="distance {{dishide}}">{{distance}}</span><i class="location"></i><span class="shop_code">{{address}}</span></p>'+
-                                '</div>'+
-                            '</div>'+
-                            //'<p class="sty1 shop-intro">店铺简介：<span class="intro">{{intro}}</span></p>'+
-                            '</a>'+
-                        '</li>';*/
     for(var i=0; i<shops.length; i++){
         var $item = $('<li class="item bg-white">'+
             '<a href="" class="shop_link">'+
@@ -291,23 +275,6 @@ var shopItem=function (shops){
             }else {
                 hide='hidden';
             }
-            /*var render=template.compile($item);
-            var content=render({
-                link:link,
-                logo_url:logo_url+'?imageView2/1/w/100/h/100',
-                shop_name:name,
-                shop_code:shop_code,
-                shop_auth:shop_auth,
-                address:address,
-                satisfy:satisfy,
-                comment_count:comment_count,
-                goods_count:goods_count,
-                intro:intro,
-                hide:hide,
-                statu:statu,
-                dishide:dishide,
-                distance:distance
-            });*/
         $item.find('.shop_link').attr("href",link);
         $item.find(".shop-status").addClass(statu);
         $item.find(".shop_logo").attr("src",logo_url+'?imageView2/1/w/100/h/100');
