@@ -47,16 +47,12 @@
                     <li class="group {{code}}">
                         <dl class="goods-item group">
                             <dd>
-                                {% if charge_type.fruit.img_url %}
                                 <img src="{{imgurl}}" alt="商品图片"/>
-                                {% else %}
-                                <img src="/static/design_img/TDSG.png" alt="商品图片"/>
-                                {% end %}
                             </dd>
                             <dt class="bg">
-                                <p class="color">{{fruits[charge_type.id]['fruit_name']}}</p>
-                                <p class="color txt-ar"><span class="big">{{fruits[charge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[charge_type.id]['num'], 2)}}</span>元</p>
-                                <p class="color">{{fruits[charge_type.id]['charge']}}</p>
+                                <p class="color">{{fruits[key]['fruit_name']}}</p>
+                                <p class="color txt-ar"><span class="big">{{fruits[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[key]['num'], 2)}}</span>元</p>
+                                <p class="color">{{fruits[key]['charge']}}</p>
                             </dt>
                         </dl>
                     </li>
