@@ -329,7 +329,7 @@ class SellStatic(AdminBaseHandler):
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量降序排序：
-			total_price_list.sort(key = lambda item:item["total_price"],reverse = True)
+			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
 
 			# 查询total_price_list表中所有商品的类目，并存到一个字典中：
 			goods_type_list = {}
@@ -350,14 +350,15 @@ class SellStatic(AdminBaseHandler):
 						tmp["type_total_price"] += tpl["total_price"]
 						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
 				type_total_price_list.append(tmp)
-			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=True)
+			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
 			output_data = {
 				'type_data':type_total_price_list,
 				'name_data':total_price_list,
 				'single_type_data':type_total_price_list[0],
 				'single_name_data':total_price_list[0]
 			}
-
+			print(len(type_total_price_list))
+			print(type_total_price_list)
 			return self.send_success(output_data = output_data)
 		elif action == 'type':
 			# 查询店铺所有的水果类目
@@ -418,7 +419,7 @@ class SellStatic(AdminBaseHandler):
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量降序排序：
-			total_price_list.sort(key = lambda item:item["total_price"],reverse = True)
+			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
 
 			# 查询total_price_list表中所有商品的类目，并存到一个字典中：
 			goods_type_list = {}
@@ -439,7 +440,7 @@ class SellStatic(AdminBaseHandler):
 						tmp["type_total_price"] += tpl["total_price"]
 						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
 				type_total_price_list.append(tmp)
-			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=True)
+			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
 
 			return self.send_success(output_data = type_total_price_list)
 			
@@ -502,7 +503,7 @@ class SellStatic(AdminBaseHandler):
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量降序排序：
-			total_price_list.sort(key = lambda item:item["total_price"],reverse = True)
+			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
 
 			return self.send_success(output_data = total_price_list)
 		elif action == 'single_type':
