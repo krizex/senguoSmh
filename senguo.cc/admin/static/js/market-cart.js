@@ -780,7 +780,7 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-            window.location.href= '/notice/success'
+           // window.location.href= '/notice/success'
             var url='/customer/cartback';
             var args={order_id:res.order_id};
             $.postJson(url,args,function(data) {

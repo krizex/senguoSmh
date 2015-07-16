@@ -174,9 +174,10 @@ class ShopAdminInfo(CustomerBaseHandler):
 		print(url)
 		return self.render("market/shop-manager.html",url=url,shop_id = shop_id)
 	
-	@CustomerBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
+	@CustomerBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','action')
 	def post(self,id):
 		action = self.args.get('action',None)
+		print(id)
 		if action == 'save':
 			#id = self.args.get('id',None)
 			if id:

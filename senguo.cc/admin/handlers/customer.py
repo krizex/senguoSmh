@@ -1619,22 +1619,26 @@ class Cart(CustomerBaseHandler):
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-
+		print('order success',order.id)
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
+			print('online order')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
+			time.sleep(0.5)
 			if online_type == 'wx':
+				print(online_type)
 				success_url = self.reverse_url('onlineWxPay')
 			elif online_type == 'alipay':
+				print(online_type)
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print("Cart: online_type error")
-
+			print(online_type,'last',success_url)
 			return self.send_success(success_url=success_url,order_id = order.id)
 
 		auto_print = config.auto_print
@@ -1647,6 +1651,7 @@ class Cart(CustomerBaseHandler):
 				_action = "fyprint"
 			self.autoPrint(order.id,current_shop,_action)
 		# 执行后续的记录修改
+		print('before callback')
 
 		return self.send_success(order_id = order.id)
 
@@ -1779,7 +1784,7 @@ class CartCallback(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
-		pass
+		print('login callback')
 		try:
 			order_id = int(self.args['order_id'])
 			# print(order_id)
@@ -1806,12 +1811,14 @@ class CartCallback(CustomerBaseHandler):
 			print(shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
 		else:
+			print(None)
 			access_token = None
+		print('lalalalalallalal')
 
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			print(access_token,'access_token')
-			self.send_admin_message(self.session,order,access_token)
+			self.send_admin_message(self.session,order)
 
 
 		####################################################
