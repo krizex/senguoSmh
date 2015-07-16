@@ -433,6 +433,7 @@ function filter(data){
                     },10);
                 }
                 $(".wrap-loading-box").addClass("hidden");
+                remove_bg();
                  var shops=res.shops;
                  $('.list_item').addClass('hidden');
                  $('.city_choose').removeClass('city_choosed');
