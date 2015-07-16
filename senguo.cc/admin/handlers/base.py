@@ -98,14 +98,11 @@ class GlobalBaseHandler(BaseHandler):
 		if hasattr(self, "_session"):
 			return self._session
 		self._session = models.DBSession()
-		# print("DB session open !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		return self._session
 
 	def on_finish(self):
 		# release db connection
-		# print("DB session on_finish =========================================================")
 		if hasattr(self, "_session"):
-			# print("DB session close!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			self._session.close()
 
 	def timestamp_to_str(self, timestamp):
@@ -324,7 +321,7 @@ class GlobalBaseHandler(BaseHandler):
 					group_name = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id=shop_id,status=1).first().name
 				except:
 					group_name = None
-				# print(group_name)
+				# print("[GlobalBaseHandler]getGoodsData, group_name:",group_name)
 
 			charge_types = []
 			for charge in d.charge_types:
@@ -343,7 +340,7 @@ class GlobalBaseHandler(BaseHandler):
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code})
 		if _type and _type=="one":
 			data = data[0]
-		# print(data)
+		# print([GlobalBaseHandler]getGoodsData, data:",data)
 		return data
 
 	# 获取森果社区文章
@@ -442,7 +439,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		# print("[微信授权]跳转链接：",next_url)
+		# print("[WxAuth]next_url:",next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -460,7 +457,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_oauth_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		# print("[微信授权]授权链接：",link)
+		# print("[WxAuth]Auth link:",link)
 		return link
 
 	def get_wexin_oauth_link2(self, next_url=""):
@@ -471,7 +468,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('login in get_weixin_oauth_link2',self,next_url)
+		print('[WxAuth]login in get_weixin_oauth_link2, next_url:',self,next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -489,7 +486,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				APP_OAUTH_CALLBACK_URL+\
 				self.reverse_url(self.__wexin_check_url_name__) + para_str)
 			link = self._wx_oauth_pc.format(appid=KF_APPID, redirect_uri=redirect_uri)
-		# print("[微信授权]授权链接：",link)
+		# print("[WxAuth]Auth link:",link)
 		return link
 
 	def get_login_url(self):
@@ -497,7 +494,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return self.reverse_url('customerLogin')
 
 	def get_weixin_login_url(self):
-		# print("[微信登录]登录URL：",self.request.full_url())
+		# print("[WxAuth]Login URL:",self.request.full_url())
 		# next_url =  self.reverse_url("fruitzoneShopList")
 		next_url = self.get_cookie('next_url')
 		if next_url is None:
@@ -506,7 +503,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	# 获取当前用户
 	def get_current_user(self):
-		# print(self.__account_model__,'到底是什么？',self.__account_cookie_name__)
+		# print("[_AccountBaseHandler]self.__account_model__:",self.__account_model__,', self.__account_cookie_name__:',self.__account_cookie_name__)
 		if not self.__account_model__ or not self.__account_cookie_name__:
 			raise Exception("overwrite model to support authenticate.")
 
@@ -515,19 +512,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		user_id = self.get_secure_cookie(self.__account_cookie_name__) or b'0'
 		user_id = int(user_id.decode())
-		# print("[用户信息]当前用户ID：",user_id)
-		# print(type(self))
-		# print(self.__account_model__)
+		# print("[_AccountBaseHandler]current user_id:",user_id)
+		# print("[_AccountBaseHandler]type(self):",type(self))
+		# print("[_AccountBaseHandler]self.__account_model__:",self.__account_model__)
 
 		if not user_id:
 			self._user = None
 		else:
-			# Logger.info("_AccountBaseHandler get_current_user: user_id: ",user_id)
+			# print("[_AccountBaseHandler]get_current_user: user_id: ",user_id)
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
-			# Logger.info("_AccountBaseHandler get_current_user: self._user: ",self._user)
+			# print("[_AccountBaseHandler]get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				Logger.warn("_AccountBaseHandler get_current_user: self._user not found")
+				print("[_AccountBaseHandler]get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -555,7 +552,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
 		# token = q.upload_token(BUCKET_SHOP_IMG,expires = 120)
-		# print("[七牛授权]发送Token：",token)
+		# print("[QiniuAuth]Send Token:",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 
 	# 编辑器获取七牛Token
@@ -564,13 +561,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 							  policy={"returnUrl": "http://i.senguo.cc/admin/editorCallback",
 									  "returnBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
-		# print("[七牛授权]发送Token：",token)
+		# print("[QiniuAuth]Send Token:",token)
 		return self.send_success(token=token, key=action + ':' + str(time.time())+':'+str(id))
 	# 获取七牛Token
 	def get_qiniu_token(self,action,id):
 		q = qiniu.Auth(ACCESS_KEY,SECRET_KEY)
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100)
-		# print("[七牛授权]获得Token：",token)
+		# print("[QiniuAuth]Get Token:",token)
 		return token
 
 	# 获取评论
@@ -611,7 +608,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],\
 				comments_new['comment_imgUrl'],item[11],item[12],item[13],comments_new['index']])
 			comments_count = comments_count-1
-		#print(comments_result)
+		# print("[_AccountBaseHandler]comments_result:",comments_result)
 		# return comments_result
 		return comments_array
 
@@ -675,12 +672,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送新订单模版消息给配送员, woody,6.17
 	@classmethod
 	def send_staff_message(self,session,order):
-		# print('login in send_staff_message')
-		# print(order.SH2_id)
+		# print('[TempMsg]login in send_staff_message')
+		# print("[TempMsg]Send staff message to staff ID:",order.SH2_id)
 		try:
 			staff_info = session.query(models.Accountinfo).filter_by(id = order.SH2_id).first()
 		except NoResultFound:
-			return self.send_fail('send_staff_message:staff_info not found')
+			return self.send_fail('[_AccountBaseHandler]send_staff_message: staff_info not found')
 		openid = staff_info.wx_openid
 		staff_name = staff_info.nickname
 		order_id = order.num
@@ -695,7 +692,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 			order_totalPrice,send_time,phone,address,)
-		# print('SUCCESS')
+		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员
 	@classmethod
@@ -778,7 +775,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
-			return self.send_fail('order_done: customer not found')
+			return self.send_fail('[_AccountBaseHandler]order_done_msg: customer not found')
 		touser = customer_info.wx_openid
 		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 
@@ -869,21 +866,21 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
-			return self.send_fail('order_done: customer not found')
+			return self.send_fail('[_AccountBaseHandler]order_done: customer not found')
 		customer_info.is_new = 1
 		name = customer_info.nickname
 
 		try:
 			shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,shop_id = shop_id).first()
 		except NoResultFound:
-			return self.send_fail('shop_follow error')
+			return self.send_fail('[_AccountBaseHandler]order_done: shop_follow error')
 		if shop_follow.shop_new == 0:
 			shop_follow.shop_new = 1
 			# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
 		try:
 			order_count = session.query(models.Order).filter_by(customer_id = customer_id,shop_id = shop_id).count()
 		except:
-			self.send_fail("find order by customer_id and shop_id error")
+			self.send_fail("[_AccountBaseHandler]order_done: find order by customer_id and shop_id error")
 		#首单 积分 加5 ,woody
 		if order_count==1:
 			if shop_follow.shop_point == None:
@@ -893,7 +890,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			try:
 				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
 			except NoResultFound:
-				self.send_fail("point_history error:First_order")
+				self.send_fail("[_AccountBaseHandler]order_done: point_history error, First_order")
 			if point_history:
 				point_history.point_type = models.POINT_TYPE.FIRST_ORDER
 				point_history.each_point = 5
@@ -903,11 +900,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			if shop_follow.shop_point == None:
 				shop_follow.shop_point =0
 			shop_follow.shop_point += 2
-			# print(shop_follow.shop_point,'shop_follow.shop_point')
+			# print("[_AccountBaseHandler]shop_follow.shop_point:",shop_follow.shop_point)
 			try:
 				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
 			except:
-				self.send_fail("point_history error:PREPARE_PAY")
+				self.send_fail("[_AccountBaseHandler]order_done: point_history error, PREPARE_PAY")
 			if point_history:
 				point_history.point_type = models.POINT_TYPE.PREPARE_PAY
 				point_history.each_point = 2
@@ -915,7 +912,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			# 订单完成后，将相应店铺可提现 余额相应增加
 			order.shop.available_balance += totalprice
-			# print(order.shop.available_balance,'order.shop.available_balance')
+			# print("[_AccountBaseHandler]order.shop.available_balance:",order.shop.available_balance)
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
@@ -937,7 +934,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			try:
 				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
 			except:
-				self.send_fail("point_history error:totalprice")
+				self.send_fail("[_AccountBaseHandler]order_done: point_history error, totalprice")
 			if point_history:
 				point_history.point_type = models.POINT_TYPE.TOTALPRICE
 				point_history.each_point = totalprice
@@ -953,13 +950,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 	# 关闭店铺
 	def shop_close(self):
 		# print(self)
-		# print("[定时任务]关闭店铺")
+		# print("[SuperBaseHandler]Shop close")
 		session = models.DBSession()
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
 			shops = None
-			# print("[定时任务]关闭店铺错误")
+			# print("[SuperBaseHandler]Shop close error")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -967,18 +964,18 @@ class SuperBaseHandler(_AccountBaseHandler):
 				fruits = shop.fruits
 				menus = shop.menus
 				fans_count = shop.fans_count
-				# print(menus)
+				# print("[SuperBaseHandler]shop_close: menus:",menus)
 				create_date = shop.create_date_timestamp
 				x = datetime.datetime.fromtimestamp(create_date)
-				# print(x)
+				# print("[SuperBaseHandler]shop_close: x:",x)
 				now = datetime.datetime.now()
 				days = (now - x).days
 				if days > 14:
 					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						# print("[定时任务]店铺关闭成功：",shop_id)
+						# print("[SuperBaseHandler]Shop closed, Shop ID:",shop_id)
 			session.commit()
-			# print("[定时任务]关闭店铺完成")
+			# print("[SuperBaseHandler]Shop close done")
 			# return self.send_success(close_shop_list = close_shop_list)
 
 	def get_login_url(self):
@@ -998,21 +995,21 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				models.Shop.shop_code !='not set' ).count()
 		except:
-			return self.send_fail("shop count error")
+			return self.send_fail("[FruitzoneBaseHandler]get_shop_count: shop count error")
 		return shop_count
 	# 获取某个省的店铺总数
 	def get_province_shop_count(self,shop_province):
 		try:
 			shop_count = self.session.query(models.Shop).filter(shop_province == shop_province,shop_code !='not set' ).count()
 		except:
-			return self.send_fail('shop_province error')
+			return self.send_fail('[FruitzoneBaseHandler]get_province_shop_count: shop_province error')
 		return shop_count
 	# 获取某个城市的店铺总数
 	def get_city_shop_count(self,shop_city):
 		try:
 			shop_count = self.session.query(models.Shop).filter(shop_city == shop_city,shop_code !='not set' ).count()
 		except:
-			return self.send_fail('shop_city error')
+			return self.send_fail('[FruitzoneBaseHandler]get_city_shop_count: shop_city error')
 		return shop_count
 
 	def get_shop_group(self):
@@ -1021,12 +1018,12 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
 			filter(models.Shop.shop_code != 'not set').group_by(models.Shop.shop_province).all()
 		except:
-			return self.send_fail('group error')
-		#print(type(shop_count))
+			return self.send_fail('[FruitzoneBaseHandler]get_shop_group: group error')
+		# print("[FruitzoneBaseHandler]get_shop_group: type(shop_count):",type(shop_count))
 		shoplist = []
 		# shop_count = shop_count.filter(shop_code != 'not set')
 		for shop in shop_count:
-			#print(shop[0],shop[1])
+			# print("[FruitzoneBaseHandler]get_shop_group: shop[0]:",shop[0],", shop[1]:",shop[1])
 			shoplist.append([shop[0],shop[1]])
 
 		return shoplist
@@ -1041,7 +1038,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			return self._shop_id
 		shop_id = self.get_cookie("market_shop_id")
 		if not shop_id:
-			print(("FruitzoneBaseHandler: shop_id error"))
+			print(("[FruitzoneBaseHandler]shop_id: shop_id error"))
 			#return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
 		self._shop_id = int(shop_id)
 		# if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -1133,7 +1130,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
 			if follow:
 				d["shop_new"]=follow.shop_new
-				# print("[订单管理]读取订单，订单用户ID：",order.customer_id,"，新用户标识：",d["shop_new"])
+				# print("[AdminBaseHandler]getOrder: Order's User ID:",order.customer_id,", shop_new:",d["shop_new"])
 			SH2s = []
 			for staff in staffs:
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
@@ -1141,7 +1138,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 				SH2s.append(staff_data)
 				if staff.id == order.SH2_id:  # todo JH、SH1
 					d["SH2"] = staff_data
-					# print(d["SH2"],'i am admin order' )
+					# print("[AdminBaseHandler]getOrder:",d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
 		return data
@@ -1259,14 +1256,13 @@ class CustomerBaseHandler(_AccountBaseHandler):
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num}
 		return fruits
 
-
 	@property
 	def shop_id(self):
 		if hasattr(self, "_shop_id"):
 			return self._shop_id
 		shop_id = self.get_cookie("market_shop_id")
 		if not shop_id:
-			return self.send_fail("shop_id error")
+			return self.send_fail("[CustomerBaseHandler]shop_id: shop_id error")
 			#return self.redirect("/shop/1")  #todo 这里应该重定向到商铺列表
 		self._shop_id = int(shop_id)
 		# if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -1293,13 +1289,12 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		try:
 			account_info  = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except:
-			return self.send_fail('customer error')
+			return self.send_fail('[CustomerBaseHandler]get_phone: customer error')
 		if account_info:
 			phone = account_info.phone
 		else:
 			phone = None
 		return phone
-
 
 	# get the total,privince,city count of shop
 	# woody 4.4
@@ -1307,19 +1302,19 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		try:
 			shop_count = self.session.query(models.Shop).count()
 		except:
-			return self.send_fail("shop count error")
+			return self.send_fail("[CustomerBaseHandler]get_shop_count: shop count error")
 		return shop_count
 	def get_province_shop_count(self,shop_province):
 		try:
 			shop_count = self.session.query(models.Shop).filter_by(shop_province = shop_province).count()
 		except:
-			return self.send_fail('shop_province error')
+			return self.send_fail('[CustomerBaseHandler]get_province_shop_count: shop_province error')
 		return shop_count
 	def get_city_shop_count(self,shop_city):
 		try:
 			shop_count = self.session.query(models.Shop).filter_by(shop_city = shop_city).count()
 		except:
-			return self.send_fail('shop_city error')
+			return self.send_fail('[CustomerBaseHandler]get_city_shop_count: shop_city error')
 		return shop_count
 
 	def get_shop_group(self):
@@ -1328,8 +1323,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
 			group_by(models.Shop.shop_province).all()
 		except:
-			return self.send_fail('group error')
-		#print(shop_count)
+			return self.send_fail('[CustomerBaseHandler]get_shop_group: group error')
+		# print("[CustomerBaseHandler]get_shop_group: shop_count:",shop_count)
 		return shop_count
 
 	def tpl_path(self,tpl_id):#模板切换
@@ -1410,15 +1405,13 @@ class WxOauth2:
 			return None
 		access_token, openid = data
 		userinfo_url = cls.userinfo_url.format(access_token=access_token, openid=openid)
-		#print('code',code)
-		#print('mode',mode)
+		# print('[WxOauth2]get_userinfo: mode:',mode,', code:',code)
 		try:
-			data = json.loads(
-				urllib.request.urlopen(userinfo_url).read().decode("utf-8"))
+			data = json.loads(urllib.request.urlopen(userinfo_url).read().decode("utf-8"))
 
-			#print("return data")
-			#for key in data:
-			#    print(key,data[key])
+			# print("[WxOauth2]get_userinfo: return data")
+			# for key in data:
+			#     print("[WxOauth2]get_userinfo: key:",key,", data[key]:",data[key])
 			userinfo_data = dict(
 				openid=data["openid"],
 				nickname=data["nickname"],
@@ -1429,10 +1422,10 @@ class WxOauth2:
 				headimgurl=data["headimgurl"],
 				unionid=data["unionid"]
 			)
-			#print(userinfo_data)
+			# print("[WxOauth2]get_userinfo: userinfo_data:",userinfo_data)
 		except Exception as e:
-			#Logger.warn("Oauth2 Error", "获取用户信息失败")
-			#traceback.print_exc()
+			print("[WxOauth2]get_userinfo: Oauth2 Error, get userinfo failed")
+			# traceback.print_exc()
 			return None
 
 		return userinfo_data
@@ -1450,9 +1443,9 @@ class WxOauth2:
 		# 获取access_token
 		try:
 			data = json.loads(urllib.request.urlopen(token_url).read().decode("utf-8"))
-			#print(data)
+			# print("[WxOauth2]get_access_token_openid: data:",data)
 		except Exception as e:
-			#Logger.warn("WxOauth2 Error", "获取access_token失败，注意是否存在攻击")
+			print("[WxOauth2]get_access_token_openid: Oauth2 Error, get access token failed")
 			#traceback.print_exc()
 			return None
 		if "access_token" not in data:
@@ -1487,10 +1480,10 @@ class WxOauth2:
 		if data["errcode"] == 0:
 			jsapi_ticket["jsapi_ticket"] = data["ticket"]
 			jsapi_ticket["create_timestamp"] = datetime.datetime.now().timestamp()
-			#print('ticket',data["ticket"])
+			# print('[WxOauth2]get_jsapi_ticket: ticket:',data["ticket"])
 			return data["ticket"]
 		else:
-			#print("获取jsapi_ticket出错：", data)
+			# print("[WxOauth2]get_jsapi_ticket: get jsapi ticket failed:",data)
 			return None
 
 	@classmethod
@@ -1515,7 +1508,7 @@ class WxOauth2:
 			access_token = None
 		if access_token is not None:
 			if datetime.datetime.now().timestamp()- (access_token.create_timestamp) <3600  and access_token.access_token:
-				# print("[微信授权]当前Token：",access_token.access_token)
+				# print("[WxOauth2]get_client_access_token: Current Token:",access_token.access_token)
 				return access_token.access_token
 			else:
 				session.query(models.AccessToken).delete()
@@ -1528,10 +1521,10 @@ class WxOauth2:
 			session.commit()
 			return access_token.access_token
 		else:
-			# print("[微信授权]Token错误")
-			print("[WxAuth]Get Token Error")
+			print("[WxOauth2]get_client_access_token: Get token failed")
 			return None
 
+	# 店铺申请成功模版消息（发送给申请者）
 	@classmethod
 	def post_template_msg(cls, touser, shop_name, name, phone):
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1552,11 +1545,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]店铺审核消息发送失败：", data)
 			print("[TempMsg]Shop apply success message send failed:",data)
 			return False
 		return True
 
+	# 店铺申请失败模版消息（发送给申请者）
 	@classmethod
 	def fail_template_msg(cls, touser, shop_name, name, phone,reason):
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1577,11 +1570,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模板消息]店铺审核消息发送失败：", data)
 			print("[TempMsg]Shop apply fail message send failed:",data)
 			return False
 		return True
 
+	# 店铺添加管理员成功模版消息（发送给新管理员）
 	@classmethod
 	def post_add_msg(cls, touser, shop_name, name):
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1601,11 +1594,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token), data=json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]添加店铺管理员消息发送失败：", data)
 			print("[TempMsg]Add admin message send failed:",data)
 			return False
 		return True
 
+	# 新订单模版消息（发送给管理员）
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
@@ -1636,12 +1629,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]管理员订单消息发送失败：",data)
 			print("[TempMsg]Admin's order message send failed:",data)
 			return False
-		# print("[模版消息]发送给管理员成功")
 		return True
 
+	# 新订单模版消息（发送给配送员）
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address,other_access_token = None):
@@ -1671,12 +1663,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]配送员订单消息发送失败：",data)
 			print("[TempMsg]Staff's order message send failed:",data)
 			return False
-		# print("[模版消息]发送给配送员成功")
 		return True
 
+	# 批量新订单模版消息（发送给配送员）
 	@classmethod
 	def post_batch_msg(cls,touser,staff_name,shop_name,count):
 		postdata = {
@@ -1697,13 +1688,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]配送员批量订单消息发送失败：",data)
 			print("[TempMsg]Staff's barth order message send failed:",data)
 			return False
-		# print("[模版消息]发送给配送员成功")
 		return True
 
-
+	# 订单提交成功模版消息（发送给用户）
 	@classmethod
 	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
@@ -1724,12 +1713,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]订单提交成功消息发送失败：",data)
 			print("[TempMsg]Order commit message send failed:",data)
 			return False
-		# print("[模版消息]发送给客户成功")
 		return True
 
+	# 订单完成模版消息（发送给用户）
 	@classmethod
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
@@ -1750,12 +1738,11 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]订单完成消息发送失败：",data)
 			print("[TempMsg]Order done message send failed:",data)
 			return False
-		# print("[模版消息]发送给客户成功")
 		return True
 
+	# 订单取消模版消息（发送给管理员）
 	@classmethod
 	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
@@ -1774,13 +1761,12 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {'connection':'close'})
 		data = json.loads(res.content.decode("ascii"))
 		if data['errcode'] != 0:
-			# print("[模版消息]订单取消消息发送失败：",data)
 			print("[TempMsg]Order canceled message send failed:",data)
 			return False
 		else:
 			return True
 
-
+	# 店铺认证状态更新模版消息（发送给管理员）
 	@classmethod
 	def shop_auth_msg(cls,touser,shop_name,success):
 		if success == True:
@@ -1807,15 +1793,13 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[模版消息]店铺认证消息发送失败：",data)
 			print("[TempMsg]Shop auth message send failed:",data)
 			return False
-		# print("[模版消息]店铺认证消息发送成功")
 		return True
 
 	@classmethod
 	def get_user_subcribe(cls,openid):
-		# print(type(openid))
+		# print("[WxOauth2]get_user_subcribe: type(openid):",type(openid))
 		access_token = cls.get_client_access_token()
 		user_subcribe_url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
 		res = requests.get(user_subcribe_url,headers = {"connection":"close"})
@@ -1825,7 +1809,7 @@ class WxOauth2:
 			s = res.content.decode('utf-8')
 		data = json.loads(s)
 		json_data = json.dumps(data)
-		#print(data)
+		# print("[WxOauth2]get_user_subcribe: data:",data)
 		subscribe = data.get('subscribe')
 		return subscribe
 

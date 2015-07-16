@@ -1358,9 +1358,9 @@ class Cart(CustomerBaseHandler):
 
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
-			print("Cart: present market_shop_code doesn't exist in cookie" )
+			print("[Cart]present market_shop_code doesn't exist in cookie" )
 
-		# print("[购物篮]当前店铺：",shop)
+		# print("[Cart]Current shop：",shop)
 		if shop.shop_auth !=0 :
 			show_balance = True
 
@@ -1378,7 +1378,7 @@ class Cart(CustomerBaseHandler):
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
 		except:
-			print('Cart: custormer_balance error')
+			print('[Cart]custormer_balance error')
 		if customer_follow:
 			if customer_follow.shop_balance:
 				balance_value = format(customer_follow.shop_balance,'.2f')
@@ -1408,11 +1408,11 @@ class Cart(CustomerBaseHandler):
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int",'online_type?:str')
 	def post(self,shop_code):#提交订单
-		# print("[提交订单]支付类型：",self.args['pay_type'])
+		# print("[Cart]pay_type:",self.args['pay_type'])
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
-		# print(json.dumps(self.args))
+		# print("[Cart]json.dumps(self.args):",json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 		online_type = ''
 		shop_status = current_shop.status
@@ -1433,7 +1433,7 @@ class Cart(CustomerBaseHandler):
 		if fruits:
 			if type(fruits) == str:
 				fruits = json.loads(fruits)
-			# print("login fruits")
+			# print("[Cart]login fruits")
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for charge_type in charge_types:
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
@@ -1450,8 +1450,8 @@ class Cart(CustomerBaseHandler):
 					.order_by(models.GoodsLimit.create_time.desc()).first()
 				except:
 					limit_if = None
-				# print(limit_num)
-				if limit_num !=0:
+				# print("[Cart]limit_num:",limit_num)
+				if limit_num != 0:
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
 						return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
@@ -1486,7 +1486,7 @@ class Cart(CustomerBaseHandler):
 				charge_type.fruit.current_saled += num  # 更新售出
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)
-				# print(charge_type.price)
+				# print("[Cart]charge_type.price:",charge_type.price)
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
@@ -1500,6 +1500,7 @@ class Cart(CustomerBaseHandler):
 		now = datetime.datetime.now()
 		try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
 		except:return self.send_fail("找不到店铺")
+
 		if self.args["type"] == 2: #按时达
 			if totalPrice < config.min_charge_on_time:
 				return self.send_fail("订单总价没达到起送价，请再增加商品")
@@ -1511,14 +1512,13 @@ class Cart(CustomerBaseHandler):
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
-					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择下一个时间段！")
+					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择其他时间段")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			elif today == 2:
 				tomorrow = now + datetime.timedelta(days = 1)
 				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			start_time = period.start_time
 			end_time = period.end_time
-
 
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
@@ -1557,7 +1557,7 @@ class Cart(CustomerBaseHandler):
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
-				return self.send_fail('shop_follow not found')
+				return self.send_fail('您没有关注该店铺，请进入店铺首页关注')
 			if shop_follow.shop_balance < totalPrice:
 				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
 			self.session.commit()
@@ -1575,7 +1575,7 @@ class Cart(CustomerBaseHandler):
 		try:
 			default_staff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
 		except:
-			print('Cart: this shop has no default staff')
+			print('[Cart]this shop has no default staff')
 		if default_staff:
 			w_SH2_id =default_staff.staff_id
 		else:
@@ -1615,26 +1615,30 @@ class Cart(CustomerBaseHandler):
 			self.session.add(order)
 			self.session.commit()
 		except:
-			return self.send_fail("订单提交失败")
+			return self.send_fail("您的订单提交失败，请保证网络通畅，重新提交")
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-
+		print('[Cart]Order commit success, order ID:',order.id)
 		#如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
+			print('[Cart]This is online pay order, set unpay delete timer: 15min')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
 			order.online_type = online_type
 			self.session.commit()
+			time.sleep(0.5)
 			if online_type == 'wx':
+				print("[Cart]online_type:",online_type)
 				success_url = self.reverse_url('onlineWxPay')
 			elif online_type == 'alipay':
+				print("[Cart]online_type:",online_type)
 				success_url = self.reverse_url('onlineAliPay')
 			else:
-				print("Cart: online_type error")
-
+				print("[Cart]online_type error")
+			print("[Cart]online_type:",online_type,', success_url:',success_url)
 			return self.send_success(success_url=success_url,order_id = order.id)
 
 		auto_print = config.auto_print
@@ -1647,14 +1651,15 @@ class Cart(CustomerBaseHandler):
 				_action = "fyprint"
 			self.autoPrint(order.id,current_shop,_action)
 		# 执行后续的记录修改
+		print('[Cart]before callback')
 
 		return self.send_success(order_id = order.id)
 
 	def order_cancel_auto(self,session,order_id):
-		# print("[定时任务]订单取消：",order_id,self)
+		# print("[Cart]Order auto cancel: order ID:",order_id,", self:",self)
 		order = session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
-			return self.send_fail('order_cancel_auto: order not found!')
+			return self.send_fail('[Cart]Order auto cancel: order not found!')
 		if order.status == -1:
 			order.status = 0
 			order.del_reason = "timeout"
@@ -1666,9 +1671,9 @@ class Cart(CustomerBaseHandler):
 				for s in ss:
 					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 					s[0].current_saled -= num
-			# print("[定时任务]订单取消成功：",order.num)
+			# print("[Cart]Order auto cancel: order.num:",order.num)
 		#else:
-		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
+		#	print("[Cart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 
 	def autoPrint(self,order_id,current_shop,action):
 		import hashlib
@@ -1739,7 +1744,7 @@ class Cart(CustomerBaseHandler):
 			print("res url        :",r.url)
 			print("res status_code:",r.status_code)
 			print("res text       :",r.text)
-			print("====================")
+			print("=========================")
 		elif action == "fyprint":
 			reqTime = int(time.time()*1000)
 			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
@@ -1779,25 +1784,25 @@ class CartCallback(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
-		pass
+		print('[CartCallback]login callback')
 		try:
 			order_id = int(self.args['order_id'])
-			# print(order_id)
+			# print("[CartCallback]order_id:",order_id)
 		except:
-			Logger.error("CartCallback: get order_id error")
-			return self.send_fail("CartCallback: get order_id error")
+			print("[CartCallback]get order_id error")
+			return self.send_fail("[CartCallback]get order_id error")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
-			Logger.warn("CartCallback: order not found")
-			return self.send_fail("CartCallback: order not found")
+			print("[CartCallback]order not found")
+			return self.send_fail("[CartCallback]order not found")
 		totalPrice = order.totalPrice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-		shop    =  self.session.query(models.Shop).filter_by(id = shop_id).first()
+		shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
-			Logger.warn("CartCallback: shop/customer not found")
-			return self.send_fail('CartCallback: shop/customer not found')
+			print("[CartCallback]shop/customer not found")
+			return self.send_fail('[CartCallback]shop/customer not found')
 		# 送货地址处理
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
@@ -1806,12 +1811,14 @@ class CartCallback(CustomerBaseHandler):
 			print(shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
 		else:
+			print(None)
 			access_token = None
+		print('lalalalalallalal')
 
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			print(access_token,'access_token')
-			self.send_admin_message(self.session,order,access_token)
+			self.send_admin_message(self.session,order)
 
 
 		####################################################
@@ -1881,7 +1888,7 @@ class Order(CustomerBaseHandler):
 				order.sender_phone = staff_info.phone
 				order.sender_img = staff_info.headimgurl_small
 			else:
-				order.sender_phone =None
+				order.sender_phone = None
 				order.sender_img = None
 			send_time = order.send_time
 			order_status = order.status
@@ -1930,8 +1937,8 @@ class Order(CustomerBaseHandler):
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
-			# print("[订单列表]滚动加载offset：",offset)
-			# print("[订单列表]滚动加载total：",total_count)
+			# print("[Order]Scoll load offset：",offset)
+			# print("[Order]Scoll load total：",total_count)
 			if offset + page_size <= total_count:
 				orders = orders[offset:offset + page_size]
 			elif offset < total_count and offset + page_size >= total_count:
@@ -1947,7 +1954,7 @@ class Order(CustomerBaseHandler):
 				orderlist = self.session.query(models.Order).order_by(desc(models.Order.arrival_day),models.Order.arrival_time).\
 				filter_by(customer_id = self.current_user.id).all()
 			except:
-				return self.send_fail("orderlist error")
+				return self.send_fail("[Order]orderlist error")
 
 			# Modify by Sky - 2015.6.5
 			# 当前“已完成”只展示“未评价”订单，前台“已完成”改为了“未评价”，但action还未改，仍为finish
@@ -1996,9 +2003,9 @@ class Order(CustomerBaseHandler):
 				return self.send_fail("该订单已经送达，无法取消")
 			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
-			# print("[订单管理]取消订单，订单原状态：",order.status)
+			# print("[Order]Order cancel, order.status(before):",order.status)
 			order.status = 0
-			# print("[订单管理]取消订单，订单现状态：",order.status)
+			# print("[Order]Order cancel, order.status(now)   :",order.status)
 			# recover the sale and storage
 			# woody
 			# 3.27
@@ -2022,12 +2029,12 @@ class Order(CustomerBaseHandler):
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 						customer_id , shop_id = shop_id).first()
 				except:
-					return self.send_fail('shop_follow error')
+					return self.send_fail('[Order]Order cancel: shop_follow error')
 				if shop_follow:
 					shop_follow.shop_balance += order.totalPrice
 				shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 				if not shop:
-					return self.send_fail('shop not found')
+					return self.send_fail('[Order]Order cancel: shop not found')
 
 				#将 该订单 对应的 余额记录取出来 ，置为 不可用
 
@@ -2036,7 +2043,7 @@ class Order(CustomerBaseHandler):
 
 				old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 				if old_balance_history is None:
-					print('Order: old history not found')
+					print('[Order]Order Cancel: old history not found')
 				else:
 					old_balance_history.is_cancel = 1
 					self.session.commit()
@@ -2066,7 +2073,7 @@ class Order(CustomerBaseHandler):
 						order.customer_id,shop_id = order.shop_id).first()
 				except :
 					shop_follow = None
-					self.send_fail("shop_point error")
+					self.send_fail("[Order]Order Comment: shop_point error")
 
 				if shop_follow:
 					if shop_follow.shop_point:
@@ -2074,7 +2081,7 @@ class Order(CustomerBaseHandler):
 					try:
 						point_history = models.PointHistory(customer_id = self.current_user.id , shop_id = order.shop_id)
 					except:
-						self.send_fail("point_history error:COMMENT")
+						self.send_fail("[Order]Order Comment: point_history error")
 					if point_history:
 						point_history.point_type = models.POINT_TYPE.SHOP_FULLPOINT
 						point_history.each_point = 2
@@ -2126,7 +2133,7 @@ class Order(CustomerBaseHandler):
 						order.customer_id,shop_id = order.shop_id).first()
 				except :
 					shop_follow = None
-					self.send_fail("shop_point error")
+					self.send_fail("[Order]Order Comment: shop_point error")
 
 				if shop_follow:
 					if shop_follow.shop_point:
@@ -2177,7 +2184,7 @@ class OrderDetail(CustomerBaseHandler):
 				order.sender_phone = staff_info.phone
 				order.sender_img = staff_info.headimgurl_small
 		else:
-				order.sender_phone =None
+				order.sender_phone = None
 				order.sender_img = None
 		delta = datetime.timedelta(1)
 		if order.comment_imgUrl:
@@ -2241,16 +2248,16 @@ class Balance(CustomerBaseHandler):
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		except:
-			print('Balance: shop_follow none')
+			print('[Balance]shop_follow none')
 		try:
 			shop=self.session.query(models.Shop).filter_by(id = shop_id).first()
 		except:
-			print('Balance: shop none')
+			print('[Balance]shop none')
 		if shop:
 			shop_name=shop.shop_name
 			shop_logo=shop.shop_trademark_url
 		if not shop_follow:
-			print('Balance: shop_follow not fount')
+			print('[Balance]shop_follow not fount')
 		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
@@ -2279,14 +2286,14 @@ class Balance(CustomerBaseHandler):
 				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).all()
 		except:
 			shop_balance_history = None
-			# print("balance show error ")
+			# print("[Balance]balance show error")
 
 		try:
 			count = self.session.query(models.BalanceHistory).filter_by(customer_id =\
 				customer_id , shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,4,5])).count()
 			pages = int(count/page_size) if count % page_size == 0 else int(count/page_size) + 1
 		except:
-			print('Balance: pages 0')
+			print('[Balance]pages 0')
 
 		if pages == page:
 			nomore = True
@@ -2320,7 +2327,7 @@ class Points(CustomerBaseHandler):
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 				customer_id,shop_id =shop_id).first()
 		except:
-			self.send_fail("point show error")
+			self.send_fail("[Points]point show error")
 		if shop_follow:
 			if shop_follow.shop_point:
 				shop_point = int(shop_follow.shop_point)
@@ -2344,7 +2351,7 @@ class Points(CustomerBaseHandler):
 			shop_history = self.session.query(models.PointHistory).filter_by(customer_id =\
 				customer_id,shop_id = shop_id).all()
 		except:
-			print("Points: point history error")
+			print("[Points]point history error")
 
 		if shop_history:
 			for temp in shop_history:
@@ -2356,7 +2363,7 @@ class Points(CustomerBaseHandler):
 
 		count = len(history)
 		history = history[::-1]
-		# print('history',history)
+		# print('[Points]history:',history)
 		if page==1 and count<=page_size:
 			nomore=True
 		if offset + page_size <= count:
@@ -2365,8 +2372,8 @@ class Points(CustomerBaseHandler):
 			data = history[offset:]
 		else:
 			nomore=True
-			# print("nomore history page")
-		# print("data\n",data)
+			# print("[Points]nomore history page")
+		# print("[Points]data:",data)
 
 		return self.send_success(data = data,nomore=nomore)
 
@@ -2379,21 +2386,21 @@ class Recharge(CustomerBaseHandler):
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
-		# print("[微信充值]next_url：",next_url)
+		# print("[WxCharge]next_url:",next_url)
 		if action == 'get_code':
 			# print(self.request.full_url())
 			path_url = self.request.full_url()
 			jsApi  = JsApi_pub()
-			#path = 'http://auth.senguo.cc/fruitzone/paytest'
+			# path = 'http://auth.senguo.cc/fruitzone/paytest'
 			path = APP_OAUTH_CALLBACK_URL + self.reverse_url('customerRecharge')
-			# print("[微信充值]redirect_uri：",path)
-			# print(self.args['code'],'sorry  i dont know')
+			# print("[WxCharge]redirect_uri:",path)
+			# print(self.args['code'],'sorry i dont know')
 			code = self.args.get('code',None)
-			# print("[微信充值]当前code：",code)
+			# print("[WxCharge]Corrent code：",code)
 			if len(code) is 2:
 				url = jsApi.createOauthUrlForCode(path)
-				# print("[微信充值]获取code的url：",url)
-				#return self.redirect(url)
+				# print("[WxCharge]Get code, url:",url)
+				# return self.redirect(url)
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url )
 
@@ -2441,44 +2448,44 @@ class payTest(CustomerBaseHandler):
 			# print(res_dict['code_url'])
 			# url = pyqrcode.create(res_dict['code_url'])
 			# url.png('really.png',scale = 8)
-			print(qr_url,'chargewxpay no in weixin')
+			print("[WxQrCharge]qr_url:",qr_url)
 			return self.render("customer/qrwxpay.html" , qr_url =qr_url ,totalPrice=totalPrice)
 		else:
-			print(self.request.full_url())
+			# print(self.request.full_url())
 			path_url = self.request.full_url()
 			jsApi  = JsApi_pub()
 			path = APP_OAUTH_CALLBACK_URL + self.reverse_url('fruitzonePayTest')
-			print(path , 'redirect_uri is Ture?')
-			print(self.args['code'],'sorry  i dont know')
+			# print(path , 'redirect_uri is Ture?')
+			# print(self.args['code'],'sorry i dont know')
 			code = self.args.get('code',None)
-			print(code,'how old are you',len(code))
+			# print(code,'how old are you',len(code))
 			if len(code) is 2:
 				url = jsApi.createOauthUrlForCode(path)
-				print(url,'code?')
+				# print(url,'code?')
 				return self.redirect(url)
 			else:
 				jsApi.setCode(code)
 				openid = jsApi.getOpenid()
-				print(openid,code,'hope is not []')
+				# print(openid,code,'hope is not []')
 				if not openid:
-					print('openid not exit')
+					print('[WxCharge]openid not exit')
 				unifiedOrder =   UnifiedOrder_pub()
 				# totalPrice = self.args['totalPrice']
-				#totalPrice =float( self.get_cookie('money'))
-				print(totalPrice,'long time no see!')
+				# totalPrice =float( self.get_cookie('money'))
+				# print(totalPrice,'long time no see!')
 				unifiedOrder.setParameter("body",'charge')
 				unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/fruitzone/paytest')
 				unifiedOrder.setParameter("openid",openid)
 				unifiedOrder.setParameter("out_trade_no",orderId)
-				#orderPriceSplite = (order.price) * 100
-				print(wxPrice,'sure')
+				# orderPriceSplite = (order.price) * 100
+				# print(wxPrice,'sure')
 				unifiedOrder.setParameter('total_fee',wxPrice)
 				unifiedOrder.setParameter('trade_type',"JSAPI")
 				prepay_id = unifiedOrder.getPrepayId()
-				print(prepay_id,'prepay_id================')
+				# print(prepay_id,'prepay_id================')
 				jsApi.setPrepayId(prepay_id)
 				renderPayParams = jsApi.getParameters()
-				print(renderPayParams)
+				# print(renderPayParams)
 				noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
 				timestamp = datetime.datetime.now().timestamp()
 				wxappid = 'wx0ed17cdc9020a96e'
@@ -2517,10 +2524,10 @@ class payTest(CustomerBaseHandler):
 			# print(self.args,'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 
 		# 微信 余额 支付
-	#	if action == 'wx_pay':
-			# print("[微信充值]回调成功")
+		# if action == 'wx_pay':
+			# print("[WxCharge]Callback Success")
 			data = self.request.body
-			# print("[微信充值]回调request.body：",self.request.body)
+			# print("[WxCharge]Callback request.body:",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
@@ -2533,22 +2540,21 @@ class payTest(CustomerBaseHandler):
 			transaction_id = str(xmlArray['transaction_id'])
 			if status != 'SUCCESS':
 				return False
-		#	shop_code  = self.current_shop.shop_code
-		#	shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
-		#	if not shop:
-		#		return self.send_fail('shop not found')
+			# shop_code = self.current_shop.shop_code
+			# shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+			# if not shop:
+			# 	return self.send_fail('shop not found')
 
-			#shop_id = self.get_cookie('market_shop_id')
-			#customer_id = self.current_user.id
+			# shop_id = self.get_cookie('market_shop_id')
+			# customer_id = self.current_user.id
 
-
-		#	code = self.args['code']
-		#	path_url = self.request.full_url()
-
+			# code = self.args['code']
+			# path_url = self.request.full_url()
 
 
-			#totalPrice =float( self.get_cookie('money'))
-			#print(customer_id,shop_id,totalPrice)
+
+			# totalPrice =float( self.get_cookie('money'))
+			# print(customer_id,shop_id,totalPrice)
 			#########################################################
 			# 用户余额增加
 			# 同时店铺余额相应增加

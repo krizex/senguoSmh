@@ -24,7 +24,7 @@ function saveAdmin(){
     }
     var args = {};
     if(action="admin"){
-        url='/market/shopinsert'
+        url='/market/shopinsert/'+cur_id
         args = {
             action:"save",
             id:cur_id,
@@ -32,7 +32,7 @@ function saveAdmin(){
             admin_phone:tel
         }
     }else{
-        url='/market/staffinsert';
+        url='/market/staffinsert/';
         args = {
             shop_id:cur_id,
             staff_name:name,

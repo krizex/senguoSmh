@@ -10,8 +10,8 @@
 .order-list-action{margin:10px 0;}
 .order-list-action .select-box{border:1px solid #ccc;}
 .order-list-action .select-all{margin-top:2px;margin-left:5px;}
-.order-list-item{margin-bottom:5px;position:relative;padding-top:10px;border:1px solid #f9f9f9;transition:0.3s;-webkit-transition:0.3s;}
-.order-list-item:hover{background:#f2f2f2;cursor:pointer;border-color:#f2f2f2;}
+.order-list-item{margin-bottom:10px;position:relative;padding-top:10px;border:1px solid #f4f4f4;transition:0.3s;-webkit-transition:0.3s;}
+.order-list-item:hover{background:#eee;cursor:pointer;border-color:#eee;}
 .order-list-item:hover .custom-order{background:#fff;}
 
 .order-list-item .list-title{height:28px;line-height:28px;padding:0 24px;padding-left:30px;}
@@ -42,7 +42,7 @@
 
 .order-list-item .order-message{margin-bottom:4px;}
 .order-list-item .staff-replay{margin-bottom:4px;}
-.order-list-item .saler-remark{margin-bottom:4px;} 
+.order-list-item .saler-remark{margin-bottom:4px;}
 .order-list-item .order-message .message-img{width:17px;height:15px;background:url("../images/container-icon.gif") no-repeat 0 -199px;}
 
 .order-list-item .order-status{display:inline-block;min-height:50px;}

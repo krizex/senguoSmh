@@ -7,7 +7,7 @@
 {% end %}
 {% block top %}订单详情{% end %}
 {% block content %}
-{% set fruits=eval(order.fruits)%}
+
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -29,25 +29,58 @@
     <div class="order-item">
         <h4 class="top-title"><a href="/{{shop_code}}"><span class="black-txt">{{shop_name}}</span></a><span class="arr-right"></span><a href="tel:{{order.sender_phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></h4>
         <ul class="goods-lst">
-        {% for charge_type in charge_types %}
-            <li class="group {{charge_type.fruit.fruit_type.code}}">
+            {% if order.fruits %}
+                {% set fruits = eval(order.fruits) %}
+                {% for key in fruits %}
+                    {% set price1 = "" %}
+                    {% for i in range(fruits[key]['charge'].index("元")) %}
+                        {% set price1 += fruits[key]['charge'][i] %}
+                    {% end %}
+                    {% set code = "TDSG" %}
+                    {% set imgurl = "/static/design_img/TDSG.png" %}
+                    {% for charge_type in charge_types %}
+                        {% if key == charge_type.id %}
+                            {% set code = charge_type.fruit.fruit_type.code %}
+                            {% if charge_type.fruit.img_url %}
+                            {% set imgurl = charge_type.fruit.img_url.split(';')[0] +"?imageView2/1/w/170/h/170" %}
+                            {% end %}
+                        {% end %}
+                    {% end %}
+                    <li class="group {{code}}">
+                        <dl class="goods-item group">
+                            <dd>
+                                <img src="{{imgurl}}" alt="商品图片"/>
+                            </dd>
+                            <dt class="bg">
+                                <p class="color">{{fruits[key]['fruit_name']}}</p>
+                                <p class="color txt-ar"><span class="big">{{fruits[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[key]['num'], 2)}}</span>元</p>
+                                <p class="color">{{fruits[key]['charge']}}</p>
+                            </dt>
+                        </dl>
+                    </li>
+                {% end %}
+            {% end %}
+            {% if order.mgoods %}
+            {% set mgoods = eval(order.mgoods)%}
+            {% for key in mgoods %}
+            {% set price2 = "" %}
+            {% for i in range(mgoods[key]['charge'].index("元")) %}
+            {% set price2 += mgoods[key]['charge'][i] %}
+            {% end %}
+            <li class="group TDSG">
                 <dl class="goods-item group">
                     <dd>
-                        {% if charge_type.fruit.img_url %}
-                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView2/1/w/170/h/170" alt="商品图片"/>
-                        {% else %}
                         <img src="/static/design_img/TDSG.png" alt="商品图片"/>
-                        {% end %}
                     </dd>
                     <dt class="bg">
-                        <p class="color">{{fruits[charge_type.id]['fruit_name']}}</p>
-                        <p class="color txt-ar"><span class="big">{{fruits[charge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(charge_type.price*fruits[charge_type.id]['num'], 2)}}</span>元</p>
-                        <p class="color">{{fruits[charge_type.id]['charge']}}</p>
+                        <p class="color">{{mgoods[key]['mgoods_name']}}</p>
+                        <p class="color txt-ar"><span class="big">{{mgoods[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price2)*mgoods[key]['num'], 2)}}</span>元</p>
+                        <p class="color">{{mgoods[key]['charge']}}</p>
                     </dt>
                 </dl>
             </li>
             {% end %}
-            
+            {% end %}
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
