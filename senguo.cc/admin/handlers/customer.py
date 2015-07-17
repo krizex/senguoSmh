@@ -1423,10 +1423,10 @@ class Cart(CustomerBaseHandler):
 		elif shop_status == 3:
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
 		if not fruits:
-			return self.send_fail('请至少选择一种商品')
+			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
 		if len(fruits) > 20:
-			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种物品")
+			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
 		f_d={}
 		totalPrice=0
 
@@ -1454,7 +1454,7 @@ class Cart(CustomerBaseHandler):
 				if limit_num != 0:
 					allow_num = limit_num - buy_num
 					if allow_num < 0:
-						return self.send_fail("限购商品"+charge_type.fruit.name+"购买数量已达上限")
+						return self.send_fail("限购商品“"+charge_type.fruit.name+"”购买数量已达上限")
 					else:  #购买数量未超过限购数量
 						if limit_if:  #有限购记录
 							time_now = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -1499,7 +1499,7 @@ class Cart(CustomerBaseHandler):
 		send_time = 0
 		now = datetime.datetime.now()
 		try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
-		except:return self.send_fail("找不到店铺")
+		except:return self.send_fail("找不到该店铺")
 
 		if self.args["type"] == 2: #按时达
 			if totalPrice < config.min_charge_on_time:
@@ -1508,7 +1508,7 @@ class Cart(CustomerBaseHandler):
 			totalPrice += freight
 			today=int(self.args["today"])
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"]).one()
-			except:return self.send_fail("找不到时间段")
+			except:return self.send_fail("找不到该时间段")
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
@@ -1522,7 +1522,7 @@ class Cart(CustomerBaseHandler):
 
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
-				return self.send_fail("订单总价没达到起送价，请再增加商品")
+				return self.send_fail("订单总价没达到起送价，再去添加一些商品吧")
 			freight = config.freight_now
 			totalPrice += freight
 			if "tip" in self.args:
@@ -1557,11 +1557,10 @@ class Cart(CustomerBaseHandler):
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
-				return self.send_fail('您没有关注该店铺，请进入店铺首页关注')
+				return self.send_fail('您没有关注该店铺，请进入店铺首页进行关注')
 			if shop_follow.shop_balance < totalPrice:
 				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
 			self.session.commit()
-
 
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
@@ -1666,7 +1665,6 @@ class Cart(CustomerBaseHandler):
 		#else:
 		#	print("[Cart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 
-	
 
 # 购物篮 - 订单提交回调
 class CartCallback(CustomerBaseHandler):
@@ -1709,7 +1707,6 @@ class CartCallback(CustomerBaseHandler):
 		if order.pay_type != 3:
 			print(access_token,'access_token')
 			self.send_admin_message(self.session,order)
-
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，

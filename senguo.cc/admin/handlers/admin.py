@@ -3347,7 +3347,6 @@ class WirelessPrint(AdminBaseHandler):
 		else:
 			return self.send_fail("您当前的打印模式不是无线打印模式")
 
-
 	def orderData(self,orders,action):
 		import hashlib
 		import time
@@ -3398,7 +3397,7 @@ class WirelessPrint(AdminBaseHandler):
 						"总价："+totalPrice+"元\r\n"+\
 						"支付方式："+_type+"\r\n"+\
 						"------------------------------------------------\r\n"+\
-						receipt_msg
+						"\r\n"+receipt_msg
 				partner='1693' #用户ID
 				apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
 				timenow=str(int(time.time())) #当前时间戳
@@ -3416,7 +3415,7 @@ class WirelessPrint(AdminBaseHandler):
 				print("res url        :",r.url)
 				print("res status_code:",r.status_code)
 				print("res text       :",r.text)
-				print("====================")
+				print("=========================")
 
 			elif action == "fyprint":
 				reqTime = int(time.time()*1000)
@@ -3424,24 +3423,24 @@ class WirelessPrint(AdminBaseHandler):
 				API_KEY = '47519b0f' #API密钥（ API_KEY ）
 				deviceNo = self.current_shop.config.wireless_print_num #飞印打印机的设备编码 9602292847397158/test
 				mode = 2
-				msgDetail = "                 <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
-						"----------------------------------------\n"+\
-						"订单编号："+order_num+"\n"+\
-						"下单时间："+order_time+"\n"+\
-						"顾客姓名："+receiver+"\n"+\
-						"顾客电话："+phone+"\n"+\
-						"配送时间："+send_time+"\n"+\
-						"配送地址："+address+"\n"+\
-						"买家留言："+message+"\n"+\
-						"----------------------------------------\n"+\
-						"                   <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
-						"----------------------------------------\n"+\
-						''.join(fruit_list)+"\r\n"+\
-						"\n"+\
-						"总价："+totalPrice+"元\n"+\
-						"支付方式："+_type+"\n"+\
-						"----------------------------------------\n"+\
-						"            "+receipt_msg
+				msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+							"-------------------------\n"+\
+							"订单编号："+order_num+"\n"+\
+							"下单时间："+order_time+"\n"+\
+							"顾客姓名："+receiver+"\n"+\
+							"顾客电话："+phone+"\n"+\
+							"配送时间："+send_time+"\n"+\
+							"配送地址："+address+"\n"+\
+							"买家留言："+message+"\n"+\
+							"-------------------------\n"+\
+							"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
+							"-------------------------\n"+\
+							''.join(fruit_list)+"\r\n"+\
+							"\n"+\
+							"总价："+totalPrice+"元\n"+\
+							"支付方式："+_type+"\n"+\
+							"-------------------------\n"+\
+							"\n"+receipt_msg
 							#打印内容
 				content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
 				securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()

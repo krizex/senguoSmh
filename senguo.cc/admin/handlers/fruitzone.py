@@ -37,18 +37,18 @@ class SearchList(FruitzoneBaseHandler):
 # 店铺列表
 class ShopList(FruitzoneBaseHandler):
 	def initialize(self):
-		# print("******************11111111************************")
+		# print("[ShopList]initialize")
 		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
 			self.request.headers.get('X-Real-Ip',self.request.remote_ip))
 	@FruitzoneBaseHandler.check_arguments('action?:str')
 
 	def get(self):
 		remote_ip = self.remote_ip
-		# print(remote_ip)
+		# print("[ShopList]remote_ip:",remote_ip)
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
 		res =  requests.get(url,headers = {"connection":"close"})
 		content = res.text
-		# print(content)
+		# print("[ShopList]content:",content)
 		t = json.loads(content)
 		data = t.get('data',None)
 		if data:
@@ -57,7 +57,7 @@ class ShopList(FruitzoneBaseHandler):
 		else:
 			city = None
 			city_id = None
-			print('ShopList: get city by ip error!')
+			print('[ShopList]get city by ip error')
 
 		province_count=self.get_shop_group()
 		shop_count = self.get_shop_count()
@@ -91,9 +91,9 @@ class ShopList(FruitzoneBaseHandler):
 				if shop.shop_code !='not set' and shop.status !=0:
 					satisfy = 0
 					shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
-												 'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
-												 'alipay_account','alipay_account_name','available_balance',\
-												 'new_follower_sum','new_order_sum']
+												'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
+												'alipay_account','alipay_account_name','available_balance',\
+												'new_follower_sum','new_order_sum']
 					orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
 					if orders:
 						commodity_quality = 0
@@ -120,7 +120,7 @@ class ShopList(FruitzoneBaseHandler):
 					shop.goods_count = fruit_count
 					shop.address = self.code_to_text("city",shop.shop_city)+shop.shop_address_detail
 					shops.append(shop.safe_props())
-		# print(len(shops),'********************店铺*******************')
+		# print("[ShopList]len(shops):",len(shops))
 		return shops
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
@@ -172,12 +172,9 @@ class ShopList(FruitzoneBaseHandler):
 			shop_count = q.count()
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
-		
-
 
 		# if "live_month" in self.args:
 		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
-
 
 		# if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
 		#     q = q.filter(models.Shop.id.in_(
@@ -194,7 +191,6 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		shops = self.get_data(q)
-		#print()
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
 			lat1 = None
@@ -213,7 +209,7 @@ class ShopList(FruitzoneBaseHandler):
 			if key_word == 1: #商品最多
 				shops.sort(key = lambda shop:shop['goods_count'],reverse = True)
 			elif key_word == 2: #距离最近
-				
+
 				shops.sort(key = lambda shop:shop['distance'])
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
@@ -237,7 +233,6 @@ class ShopList(FruitzoneBaseHandler):
 		shops = self.get_data(shop_list)
 		return self.send_success(shops=shops)
 
-
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
 	def handle_search(self):
 		_page_count = 15
@@ -255,7 +250,8 @@ class ShopList(FruitzoneBaseHandler):
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops ,nomore = nomore)
-	##快速搜索
+
+	# 快速搜索
 	@FruitzoneBaseHandler.check_arguments("q")
 	def handle_qsearch(self):
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
@@ -605,7 +601,6 @@ class QiniuCallback(FruitzoneBaseHandler):
 	def initialize(self, action):
 		self._action = action
 
-
 	def post(self):
 		key = self.get_argument("key")
 		id = int(self.get_argument("id"))
@@ -685,7 +680,6 @@ class QiniuCallback(FruitzoneBaseHandler):
 			return self.write('{"error":0, "url": "'+s['url']+'"}')
 		return self.send_error(404)
 
-
 	def check_xsrf_cookie(self):  #必须要复写tornado自带的检查_xsrf 参数，否则回调不成功
 		pass
 		return
@@ -746,7 +740,6 @@ class PhoneVerify(_AccountBaseHandler):
 			return self.send_fail(error_text = "验证码过期或者不正确")
 		else:
 			return self.send_success()
-
 
 	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str" , "password")
@@ -925,7 +918,6 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.write("fail")
 		return self.write("success")
 
-
 	@FruitzoneBaseHandler.check_arguments("service", "v","sec_id","sign","notify_data")
 	def handle_alipay_notify(self):
 		print("login handler_alipay_notify")
@@ -947,8 +939,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		shop_id = int(data[1])
 		customer_id = int(data[2])
 		print(totalPrice,shop_id ,customer_id,'ididid')
-	#	code = self.args['code']
-	#	path_url = self.request.full_url()
+		# code = self.args['code']
+		# path_url = self.request.full_url()
 		# totalPrice =float( self.get_cookie('money'))
 		#########################################################
 		# 用户余额增加
@@ -985,7 +977,6 @@ class SystemPurchase(FruitzoneBaseHandler):
 		self.session.commit()
 		print("return success?")
 		return self.write("success")
-
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 	def _create_tmporder_url(self, charge_data):
@@ -1030,7 +1021,6 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return True
 		return super().check_xsrf_cookie()
 
-
 	def _check_info_complete(self):
 		u = self.current_user
 
@@ -1061,8 +1051,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		shop_id = int(data[1])
 		customer_id = self.current_user.id
 		print(totalPrice,shop_id ,customer_id,'ididid')
-	#	code = self.args['code']
-	#	path_url = self.request.full_url()
+		# code = self.args['code']
+		# path_url = self.request.full_url()
 		# totalPrice =float( self.get_cookie('money'))
 		#########################################################
 		# 用户余额增加
