@@ -457,6 +457,7 @@ function orderPrint(target,action){
     var html=document.createElement("div"); 
     var type=parseInt($("#receipt-type").val());
     var console_type=parseInt($("#console-type").val());
+    console.log(console_type);
     if(action =='print'){
         var parent=target.parents('.order-list-item');
         var order_id=parent.attr('data-id');
@@ -485,33 +486,32 @@ function orderPrint(target,action){
         var list=[];
         $('.order-checked').each(function(){
             var $this=$(this);
-            var target=$this.parents('.order-list-item').find('.print-order');
+            var _target=$this.parents('.order-list-item').find('.print-order');
             var order_id=$this.parents('.order-list-item').attr('data-id');
             list.push(order_id);
             if(type==0){
-                getData(target);
-            }else{
-                var _action;
-                if(console_type==0){
-                     _action="ylyprint";
-                }else if(console_type==1){
-                    _action="fyprint";
-                }
-                var _url="/admin/WirelessPrint";
-                var _args={
-                    action:"ylyprint",
-                    data:{order_list_id:list}
-                };
-                $.postJson(_url,_args,function(res){
-                    if(res.success){
-                        
-                    }
-                });
+                getData(_target);
             }
         });
         if(list.length==0){
             return Tip('您还未选择任何订单');
         }
+        var _action;
+        if(console_type==0){
+             _action="ylyprint";
+        }else if(console_type==1){
+            _action="fyprint";
+        }
+        var _url="/admin/WirelessPrint";
+        var _args={
+            action:_action,
+            data:{order_list_id:list}
+        };
+        $.postJson(_url,_args,function(res){
+            if(res.success){
+                
+            }
+        });
         data.order_list_id=list;
     }
 

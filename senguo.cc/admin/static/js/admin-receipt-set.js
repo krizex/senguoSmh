@@ -64,6 +64,11 @@ $(document).ready(function () {
         $('.circle-btn').eq(_id).addClass('active');
         $("._box").eq(_id).removeClass("hidden");
     }
+    
+}).on("click",".yly",function(){
+    $(".secket-key").show();
+}).on("click",".fy",function(){
+    $(".secket-key").hide();
 }).on("click",".type-list li",function(){
     var $this=$(this);
     var index=$this.index();
@@ -157,40 +162,75 @@ $(document).ready(function () {
         action:action,
         data:{type:type,key:key,num:num}
     };
-    $.postJson(url,args,
-        function(res){
-            if(res.success){
-                var url;
-                var text;
-                $this.attr("data-flag","on");
-                if(type == 0){
-                    url = "/admin/WirelessPrint";
-                    text="易连云";
-                     var _args={
-                        action:"ylyadd",
-                        data:{key:key,num:num}
-                    };
-                    $.postJson(url,_args,
+    var _url;
+    var text;
+    $this.attr("data-flag","on");
+    if(type == 0){
+        _url = "/admin/WirelessPrint";
+        text="易连云";
+         var _args={
+            action:"ylyadd",
+            data:{key:key,num:num}
+        };
+        $.postJson(_url,_args,
+            function(res){
+                if(res.success){
+                    $.postJson(url,args,
                         function(res){
-                          
-                        }
+                            if(res.success){
+                                Tip("添加成功");
+                                $(".wireless-type").text(text);
+                                $(".console-num").text(num);
+                                $(".console-key").text(key);
+                                $this.parents('.set-list-item').find('.address-show').show();
+                                $this.parents('.set-list-item').find('.address-edit').hide(); 
+                            }else{
+                                $this.attr("data-flag","on");
+                                Tip(res.error_text);
+                            }
+                        },
+                        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
                     );
-                }else if(type==1){
-                    text="飞印";
-                }
-                $(".wireless-type").text(text);
-                $(".console-num").text(num);
-                $(".console-key").text(key);
-                $this.parents('.set-list-item').find('.address-show').show();
-                $this.parents('.set-list-item').find('.address-edit').hide();
-            }
-            else{
-                $this.attr("data-flag","on");
+                }else{
                 Tip(res.error_text);
+                }
             }
-        },
-        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
+            
         );
+    }else if(type==1){
+        text="飞印";
+        _url = "/admin/WirelessPrint";
+         var _args={
+            action:"fyadd",
+            data:{deviceCode:num}
+        };
+        $.postJson(_url,_args,
+            function(res){
+               if(res.success){
+                $.postJson(url,args,
+                    function(res){
+                        if(res.success){
+                            Tip("添加成功");
+                            $(".wireless-type").text(text);
+                            $(".console-num").text(num);
+                            $(".console-key").text(key);
+                            $this.parents('.set-list-item').find('.address-show').show();
+                            $this.parents('.set-list-item').find('.address-edit').hide(); 
+                        }else{
+                            $this.attr("data-flag","on");
+                            Tip(res.error_text);
+                        }
+                    },
+                    function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
+                );  
+              }else{
+                Tip(res.error_text);
+              }
+            }
+        );
+    }
+
+   
 });
 
 function receiptEdit(target) {
