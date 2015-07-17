@@ -62,7 +62,7 @@ $(document).ready(function(){
         $('.all_city').attr({'data-code':province_code,'data-name':province_name}).find('.num').text(pro_num);
         $('.city_list').removeClass('hidden');
         if(if_city=='true'){
-             $('.citylist').empty();
+            $('.citylist').empty();
             for(var key in area){
                 var city=area[key]['city'];
                 if(key==province_code&&city){
@@ -91,12 +91,12 @@ $(document).ready(function(){
     $(document).on('click','.city_choose',function(){
         var $this=$(this);
          if($this.hasClass('city_choosed')){
-             remove_bg();
+            remove_bg();
             $('.list_item').addClass('hidden');
             $this.removeClass('city_choosed');
          }
          else{
-             add_bg();
+            add_bg();
             $('.province_list').removeClass('hidden');
             $this.addClass('city_choosed');
          }
@@ -123,7 +123,7 @@ $(document).ready(function(){
         window.dataObj.action='shop';
         remove_bg();
         $('.shoplist').empty();
-         filter();
+        filter();
         $('.list_item').addClass('hidden');
         $('.city_choose').removeClass('city_choosed');
         $('.city_name').text('全国').attr("data-id",'');
@@ -165,16 +165,21 @@ function initLocation(){
     first=false;
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
-            ulat = position.coords.latitude;
-            ulng = position.coords.longitude;//经度
-            var point = new BMap.Point(ulng,ulat);
-            var geoc = new BMap.Geocoder();
-            geoc.getLocation(point, function(rs){
-                var addComp = rs.addressComponents;
-                initProviceAndCityCode(addComp.province, addComp.city);
-                $(".city_name").text(addComp.city);
-                window.dataObj.type='city';
-                filter($("#city_id").val());
+            var lat = position.coords.latitude;
+            var lng = position.coords.longitude;//经度
+            var gpsPoint = new BMap.Point(lng,lat);
+            BMap.Convertor.translate(gpsPoint,0,function(point){
+                ulng = point.lng;
+                ulat = point.lat;
+                var point = new BMap.Point(ulng,ulat);
+                var geoc = new BMap.Geocoder();
+                geoc.getLocation(point, function(rs){
+                    var addComp = rs.addressComponents;
+                    initProviceAndCityCode(addComp.province, addComp.city);
+                    $(".city_name").text(addComp.city);
+                    window.dataObj.type='city';
+                    filter($("#city_id").val());
+                });
             });
         },function(error){
             if(error.code == error.PERMISSION_DENIED){
@@ -239,42 +244,42 @@ var shopItem=function (shops){
             '</div>'+
             '</a>'+
             '</li>');
-            var logo_url=shops[i].shop_trademark_url;
-            var name=shops[i].shop_name;
-            var shop_code=shops[i].shop_code;
-            var address=shops[i].shop_address_detail;
-            var intro=shops[i].shop_intro;
-            var shop_auth=shops[i].shop_auth;
-            var satisfy = shops[i].satisfy;
-            var comment_count = shops[i].comment_count;
-            var goods_count = shops[i].goods_count;
-            var status = shops[i].status;
-            var lat = shops[i].lon;//经度
-            var lon = shops[i].lat;//纬度
-            var distance = shops[i].distance;
-            var hide='';
-            var statu = '';
-            var dishide = '';
-            var link = '/'+shop_code;
-            if(!lat || lat == 0 || !ulat || ulat == 0){
-                dishide = "hidden";
-            }else{
-                distance = getDist(distance);
-            }
-            if(status == 2){
-                statu = 'shop-waiting';
-                link = 'javascript:;';
-            }else if(status == 3){
-                statu = 'shop-rest';
-            }
-            if(!logo_url) {
-                logo_url='/static/design_img/Li_l.png';
-            }
-            if(shop_auth>0){
-                shop_auth='已认证';
-            }else {
-                hide='hidden';
-            }
+        var logo_url=shops[i].shop_trademark_url;
+        var name=shops[i].shop_name;
+        var shop_code=shops[i].shop_code;
+        var address=shops[i].shop_address_detail;
+        var intro=shops[i].shop_intro;
+        var shop_auth=shops[i].shop_auth;
+        var satisfy = shops[i].satisfy;
+        var comment_count = shops[i].comment_count;
+        var goods_count = shops[i].goods_count;
+        var status = shops[i].status;
+        var lat = shops[i].lon;//经度
+        var lon = shops[i].lat;//纬度
+        var distance = shops[i].distance;
+        var hide='';
+        var statu = '';
+        var dishide = '';
+        var link = '/'+shop_code;
+        if(!lat || lat == 0 || !ulat || ulat == 0){
+            dishide = "hidden";
+        }else{
+            distance = getDist(distance);
+        }
+        if(status == 2){
+            statu = 'shop-waiting';
+            link = 'javascript:;';
+        }else if(status == 3){
+            statu = 'shop-rest';
+        }
+        if(!logo_url) {
+            logo_url='/static/design_img/Li_l.png';
+        }
+        if(shop_auth>0){
+            shop_auth='已认证';
+        }else {
+            hide='hidden';
+        }
         $item.find('.shop_link').attr("href",link);
         $item.find(".shop-status").addClass(statu);
         $item.find(".shop_logo").attr("src",logo_url+'?imageView2/1/w/100/h/100');
@@ -322,11 +327,9 @@ var shopsList=function(page,data,action){
         args.id=data;
     }
     $.postJson(url,args,function(res){
-            if(res.success)
-            {
-                initData(res);
-            }
-        else {
+        if(res.success){
+            initData(res);
+        }else{
             return noticeBox(res.error_text);
         }
         },function(){
@@ -379,11 +382,11 @@ function Search(q){
             if(res.success)
             {
                 $('.shoplist').empty();
-                 var shops=res.shops;
-                 nomore = res.nomore;
+                var shops=res.shops;
+                nomore = res.nomore;
                 if(shops.length==0){
                     $('.shoplist').append('<h4 class="text-center mt10 text-grey">没有搜索到店铺</h4>');
-                 }
+                }
                 else {
                     window.dataObj.action='search';
                     window.dataObj.data=q;
@@ -434,18 +437,18 @@ function filter(data){
                 }
                 $(".wrap-loading-box").addClass("hidden");
                 remove_bg();
-                 var shops=res.shops;
-                 $('.list_item').addClass('hidden');
-                 $('.city_choose').removeClass('city_choosed');
-                 $('.shoplist').empty();
-                 if(shops.length==0){
+                var shops=res.shops;
+                $('.list_item').addClass('hidden');
+                $('.city_choose').removeClass('city_choosed');
+                $('.shoplist').empty();
+                if(shops.length==0){
                     window.dataObj.finished = false;
-                 }else{
-                      window.dataObj.finished = true;
-                      window.dataObj.action='filter';
-                      window.dataObj.data=Int(data);
-                     shopItem(shops);
-                 }
+                }else{
+                    window.dataObj.finished = true;
+                    window.dataObj.action='filter';
+                    window.dataObj.data=Int(data);
+                    shopItem(shops);
+                }
             }else{
                 $(".wrap-loading-box").addClass("hidden");
                 return noticeBox(res.error_text);
