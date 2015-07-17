@@ -2480,8 +2480,8 @@ class payTest(CustomerBaseHandler):
 			self.session.commit()
 
 			return self.write('success')
-	#	else:
-	#		return self.send_fail('其它支付方式尚未开发')
+		# else:
+		#	return self.send_fail('其它支付方式尚未开发')
 
 class wxChargeCallBack(CustomerBaseHandler):
 	def get(self):
