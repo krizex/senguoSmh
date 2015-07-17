@@ -192,7 +192,6 @@ class ShopList(FruitzoneBaseHandler):
 		# else:
 		#     q = q.limit(self._page_count)
 		shops = self.get_data(q)
-		#print()
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
 			lat1 = None
