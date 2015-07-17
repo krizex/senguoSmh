@@ -42,8 +42,10 @@ $(document).ready(function(){
             var text;
             if(type==0){
                 text="易连云";
+                $(".secket-key").show();
             }else if(type==1){
                 text="飞印";
+                $(".secket-key").hide();
             }
             $(".wireless-type").text(text);
         }

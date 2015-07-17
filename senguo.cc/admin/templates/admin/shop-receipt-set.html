@@ -72,8 +72,8 @@
                 <span class="w1 pull-left set-inl-blo mr20">无线打印机品牌</span>
                 <span class="address-show wireless-type"></span>
                 <ul class="type-choose console-type address-edit" data-id="{{current_shop.config.wireless_type}}" style="display:none">
-                    <li data-id="0"><span class="circle"></span>易连云</li>
-                    <!-- <li data-id="1"><span class="circle"></span>飞印</li> -->
+                    <li data-id="0" class="yly"><span class="circle"></span>易连云</li>
+                    <li data-id="1" class="fy"><span class="circle"></span>飞印</li>
                 </ul>
             </div>
             <div class="iti">
@@ -83,7 +83,7 @@
                     <input class="address-edit num-input"  type="text" value="{{current_shop.config.wireless_print_num or '请设置'}}" style="display:none"/>
                 </div>
             </div>
-            <div class="iti">
+            <div class="iti secket-key">
                  <span class="w1 pull-left set-inl-blo mr20">无线打印机密钥</span>
                  <div class="w2 pull-left">
                     <span class="address-show console-key">{{current_shop.config.wireless_print_key or '请设置'}}</span>

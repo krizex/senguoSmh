@@ -3275,22 +3275,26 @@ class WirelessPrint(AdminBaseHandler):
 		_data=self.args["data"]
 		print_type = self.current_shop.config.receipt_type
 		wireless_type =  self.current_shop.config.wireless_type
-		if "order_list_id" in _data:
-			list_id = _data["order_list_id"]
-			orders = self.session.query(models.Order).filter(models.Order.id.in_(list_id)).all()
-		elif "id" in _data:
-			order_id=int(_data["id"])
-			orders  = self.session.query(models.Order).filter_by(id=order_id).all()
-		if action in ["ylyprint","ylyadd"]:
-			if  print_type ==1 and wireless_type == 0:
+
+		if  print_type ==1 :
+			if "order_list_id" in _data:
+				list_id = _data["order_list_id"]
+				orders = self.session.query(models.Order).filter(models.Order.id.in_(list_id)).all()
+			elif "id" in _data:
+				order_id=int(_data["id"])
+				orders  = self.session.query(models.Order).filter_by(id=order_id).all()
+			if action in ["ylyprint","ylyadd"]:
 				partner='1693' #用户ID
 				apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
 				username='senguo' #用户名
 				mobilephone='123456' #打印机内的手机号
 				timenow=str(int(time.time())) #当前时间戳
 				printname='senguo'+timenow #打印机名称
-				if action == "ylyprint":
-					self.orderData(orders,"ylyprint")
+				if action == "ylyprint" :
+					if wireless_type == 0:
+						self.orderData(orders,"ylyprint")
+					else:
+						return self.send_fail("请设置为易联云无线打印")
 				elif action == "ylyadd":
 					machine_code = _data["num"] #打印机终端号
 					msign = _data["key"]#打印机密钥
@@ -3304,36 +3308,45 @@ class WirelessPrint(AdminBaseHandler):
 					print("res status_code:",r.status_code)
 					print("res text       :",r.text)
 					print("==============================")
-					if int(r.text)==1:
+					text = int(r.text)
+					if text ==1:
 						return self.send_success()
-					elif int(r.text)==2:
-						return self.send_fail("打印机重复，请确保此打印机没有添加到其他账号")
-					elif int(r.text)==3:
+					elif text ==2:
+						return self.send_success()
+						print("打印机重复，请确保此打印机没有添加到其他账号")
+					elif text == 3:
 						return self.send_fail("打印机添加失败")
-					elif int(r.text)==4:
+					elif text == 4:
 						return self.send_fail("签名错误")
-					elif int(r.text)==5:
+					elif text == 5:
 						return self.send_fail("用户验证失败")
-					elif int(r.text)==6:
+					elif text == 6:
 						return self.send_fail("打印机终端号错误")
 					else:
 						return self.send_fail("未知错误")
-			else:
-				return self.send_fail("请设置为易联云无线打印")
 
-		elif action in ["fyprint","fyadd"]:
-			if  print_type ==1 and wireless_type == 1:
+			elif action in ["fyprint","fyadd"]:
+				import re
 				if action == "fyprint":
-					self.orderData(orders,"fyprint")
+					if wireless_type == 1:
+						self.orderData(orders,"fyprint")
+					else:
+						return self.send_fail("请设置为飞印无线打印")
 				elif action == "fyadd":
-					headers={}
-					data={"deviceCode":_data["deviceCode"],"installAddress":"","simCode":"","groupname":""}
-					r = requests.post("http://my.feyin.net/activeDevice",data=data)
-					res = r.text
-					print(res)
+					# s = requests.Session()
+					headers = {"Cookie":"__utmt=1; sessionid=d2e9cb1cd2c64639f4e18019d35343ee; username=; usertype=1; account=7502; key=e506eb41e1c43558a6abd7618321b6aa; __utma=240375839.1986845255.1436857060.1437040538.1437050867.4; __utmb=240375839.5.10.1437050867; __utmc=240375839; __utmz=240375839.1436857060.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)","Host":"my.feyin.net","Referer":"http://my.feyin.net/crm/accountIndex","User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.89 Safari/537.36","Connection":"keep-alive"}
+					data = {"deviceCode":_data["deviceCode"],"installAddress":"","simCode":"","groupname":""}
+					r = requests.post("http://my.feyin.net/activeDevice",data=data,headers=headers)
+					content = r.content.decode("utf-8")
+					pattern = re.compile('终端编号不存在',re.S)
+					result = re.search(pattern,content)
+					if result:
+						return self.send_fail("终端编号不存在")
+					else:
+						return self.send_success()
+		else:
+			return self.send_fail("您当前的打印模式不是无线打印模式")
 
-			else:
-				return self.send_fail("请设置为飞印无线打印")
 
 	def orderData(self,orders,action):
 		import hashlib
@@ -3392,9 +3405,9 @@ class WirelessPrint(AdminBaseHandler):
 				machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
 				mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
 				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
-				print("sign str    :",sign)
+				# print("sign str    :",sign)
 				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
-				print("sign str md5:",sign)
+				# print("sign str md5:",sign)
 				data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
 				# print("post        :",data)
 				r=requests.post("http://open.10ss.net:8888",data=data)
@@ -3409,7 +3422,7 @@ class WirelessPrint(AdminBaseHandler):
 				reqTime = int(time.time()*1000)
 				memberCode = 'e6f90e5826b011e5a1b652540008b6e6' #商户编码
 				API_KEY = '47519b0f' #API密钥（ API_KEY ）
-				deviceNo = '9602292847397158' #飞印打印机的设备编码
+				deviceNo = self.current_shop.config.wireless_print_num #飞印打印机的设备编码 9602292847397158/test
 				mode = 2
 				msgDetail = "                 <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
 						"----------------------------------------\n"+\
@@ -3434,6 +3447,6 @@ class WirelessPrint(AdminBaseHandler):
 				securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
 				data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
 				r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
-				print(r.url)
-				print(r.status_code)
+				# print(r.url)
+				# print(r.status_code)
 				print(r.text)
