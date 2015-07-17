@@ -120,11 +120,7 @@ class ShopList(FruitzoneBaseHandler):
 					shop.goods_count = fruit_count
 					shop.address = self.code_to_text("city",shop.shop_city)+shop.shop_address_detail
 					shops.append(shop.safe_props())
-<<<<<<< HEAD
-		print("[ShopList]len(shops):",len(shops))
-=======
-		# print(len(shops),'********************店铺*******************')
->>>>>>> origin/senguo2.0
+		# print("[ShopList]len(shops):",len(shops))
 		return shops
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
@@ -176,8 +172,6 @@ class ShopList(FruitzoneBaseHandler):
 			shop_count = q.count()
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
-
-
 
 		# if "live_month" in self.args:
 		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
@@ -241,7 +235,6 @@ class ShopList(FruitzoneBaseHandler):
 		shops = self.get_data(shop_list)
 		return self.send_success(shops=shops)
 
-
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
 	def handle_search(self):
 		_page_count = 15
@@ -259,7 +252,8 @@ class ShopList(FruitzoneBaseHandler):
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops ,nomore = nomore)
-	##快速搜索
+
+	# 快速搜索
 	@FruitzoneBaseHandler.check_arguments("q")
 	def handle_qsearch(self):
 		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
@@ -609,7 +603,6 @@ class QiniuCallback(FruitzoneBaseHandler):
 	def initialize(self, action):
 		self._action = action
 
-
 	def post(self):
 		key = self.get_argument("key")
 		id = int(self.get_argument("id"))
@@ -750,7 +743,6 @@ class PhoneVerify(_AccountBaseHandler):
 			return self.send_fail(error_text = "验证码过期或者不正确")
 		else:
 			return self.send_success()
-
 
 	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str" , "password")
@@ -929,7 +921,6 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.write("fail")
 		return self.write("success")
 
-
 	@FruitzoneBaseHandler.check_arguments("service", "v","sec_id","sign","notify_data")
 	def handle_alipay_notify(self):
 		print("login handler_alipay_notify")
@@ -951,8 +942,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		shop_id = int(data[1])
 		customer_id = int(data[2])
 		print(totalPrice,shop_id ,customer_id,'ididid')
-	#	code = self.args['code']
-	#	path_url = self.request.full_url()
+		# code = self.args['code']
+		# path_url = self.request.full_url()
 		# totalPrice =float( self.get_cookie('money'))
 		#########################################################
 		# 用户余额增加
@@ -1065,8 +1056,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		shop_id = int(data[1])
 		customer_id = self.current_user.id
 		print(totalPrice,shop_id ,customer_id,'ididid')
-	#	code = self.args['code']
-	#	path_url = self.request.full_url()
+		# code = self.args['code']
+		# path_url = self.request.full_url()
 		# totalPrice =float( self.get_cookie('money'))
 		#########################################################
 		# 用户余额增加
