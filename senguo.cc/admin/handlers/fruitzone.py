@@ -176,7 +176,6 @@ class ShopList(FruitzoneBaseHandler):
 		# if "live_month" in self.args:
 		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
 
-
 		# if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
 		#     q = q.filter(models.Shop.id.in_(
 		#         select([models.ShopOnsalefruitLink.shop_id]).\
@@ -681,7 +680,6 @@ class QiniuCallback(FruitzoneBaseHandler):
 			return self.write('{"error":0, "url": "'+s['url']+'"}')
 		return self.send_error(404)
 
-
 	def check_xsrf_cookie(self):  #必须要复写tornado自带的检查_xsrf 参数，否则回调不成功
 		pass
 		return
@@ -980,7 +978,6 @@ class SystemPurchase(FruitzoneBaseHandler):
 		print("return success?")
 		return self.write("success")
 
-
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 	def _create_tmporder_url(self, charge_data):
 		# 创建临时订单
@@ -1023,7 +1020,6 @@ class SystemPurchase(FruitzoneBaseHandler):
 			Logger.info("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
 			return True
 		return super().check_xsrf_cookie()
-
 
 	def _check_info_complete(self):
 		u = self.current_user
