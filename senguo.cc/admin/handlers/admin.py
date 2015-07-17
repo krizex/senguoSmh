@@ -491,6 +491,10 @@ class SellStatic(AdminBaseHandler):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
 
+			name_list = []
+			for i in range(len(total_price_list)):
+				name_list.append(total_price_list[i]['fruit_name'])
+
 			for goods in shop_all_goods:
 				if goods[0] not in name_list:
 					tmp = {}
@@ -526,10 +530,133 @@ class SellStatic(AdminBaseHandler):
 			else:
 				return self.send_success(output_data = total_price_list)
 		elif action == 'single_type':
-			pass
+			type_name = self.args["type_name"]
+			# type_name = '荔枝'
+
+			start_date_str = start_date
+			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+			month0 = start_date.month
+
+			month_price_list = []
+			while start_date.month == month0:
+				start_date_str = start_date.strftime('%Y-%m-%d')
+				start_date_pre = start_date + datetime.timedelta(days = -1)
+				start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+				start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+				end_date = start_date
+				end_date_str = start_date_str
+				end_date_next = end_date + datetime.timedelta(days = 1)
+				end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+				end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+
+				fruit_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+							        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+							        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+				
+				#每单种水果的销售额
+				total_price_list = []  
+				name_list = []
+				for fl in fruit_list:
+					fl = eval(fl[0])
+					for key in fl:
+						tmp = {}
+						fl_value = fl[key]
+						num = float(fl_value["num"])
+						single_price = float(fl_value["charge"].split('元')[0])
+						total_price = single_price * num
+						tmp["fruit_name"] = fl_value["fruit_name"]
+						tmp["total_price"] = total_price
+						for tpl in total_price_list:
+							name_list.append(tpl['fruit_name'])
+						if tmp["fruit_name"] not in name_list:
+							total_price_list.append(tmp)
+						else:
+							for i in range(len(total_price_list)):
+								if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
+									total_price_list[i]['total_price'] += total_price
+
+				name_list = []
+				for i in range(len(total_price_list)):
+					name_list.append(total_price_list[i]['fruit_name'])
+
+				for goods in shop_all_goods:
+					if goods[0] not in name_list:
+						tmp = {}
+						tmp["fruit_name"] = goods[0]
+						tmp["total_price"] = 0
+						total_price_list.append(tmp)
+				# 按销量排序：
+				total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
+
+				# 查询total_price_list表中所有商品的类目，并存到一个字典中：
+				goods_type_list = {}
+				for tpl in total_price_list:
+					if tpl["fruit_name"] not in list(goods_type_list.keys()):
+						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.Fruit.name == tpl["fruit_name"]).all()[0][0]
+
+				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
+				type_total_price_list = []
+				for t_name in shop_all_type_name:
+					tmp = {}
+					t_name = t_name[0]
+					if t_name == type_name:
+						tmp["date"] = start_date_str
+						tmp["type_name"] = t_name
+						tmp["type_total_price"] = 0.0
+						tmp["per_name_total_price"] = {}
+						for tpl in total_price_list:
+							if goods_type_list[tpl["fruit_name"]] == t_name:
+								tmp["type_total_price"] += tpl["total_price"]
+								tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+						month_price_list.append(tmp)
+						break
+				start_date = start_date + datetime.timedelta(days = 1)
+				
+			return self.send_success(output_data = month_price_list)
+
 		elif action == 'single_name':
-			# goods_name = self.args["goods_name"]
-			pass
+			goods_name = self.args["goods_name"]
+			# goods_name = '红苹果'
+
+			start_date_str = start_date
+			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+			now = datetime.datetime.now()
+			now_date = datetime.datetime(now.year,now.month,now.day)
+			
+			month_price_list = []
+			while start_date <= now_date:
+				start_date_str = start_date.strftime('%Y-%m-%d')
+				start_date_pre = start_date + datetime.timedelta(days = -1)
+				start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+				start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+				end_date = start_date
+				end_date_str = start_date_str
+				end_date_next = end_date + datetime.timedelta(days = 1)
+				end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+				end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+
+				fruit_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+							        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+							        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+				
+				#每单种水果每天的销售额
+				total = 0.0
+				for fl in fruit_list:
+					fl = eval(fl[0])
+					for key in fl:
+						tmp = {}
+						fl_value = fl[key]
+						if fl_value["fruit_name"] == goods_name:
+							num = float(fl_value["num"])
+							single_price = float(fl_value["charge"].split('元')[0])
+							total_price = single_price * num
+							total += total_price
+				month_price_list.append(total)
+				start_date = start_date + datetime.timedelta(days = 1)
+
+			return self.send_success(output_data = month_price_list)
 		else:
 			return self.send_error(404)
 ##

@@ -51,7 +51,7 @@
     <div id="goods_name" class="clearfix mlf20"></div>
     <hr class="clearfix"/>
 
-    <p class="tit font16">月销售额 - 单种类目商品</p>
+    <p class="tit font16">月销售额走势图 - 单种类目商品</p>
     <div class="choose-change center-block font18 txt-center">
         <a href="javascript:;" class="pre-item3 text-grey2"> < </a>
         <span class="choose-time">
@@ -60,10 +60,38 @@
         </span>
         <a href="javascript:;" class="next-item3 text-grey2"> > </a>
     </div>
+
+   <li>
+        <div class="tit cate-title">选择商品类目：</div>
+        <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有 (1111)</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="all">所有 (11)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="on">已上架 (22)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="off">已下架 (333)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="sold_out">已售完 (44)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="current_sell">待成交 (55)</a>
+                    </li>
+                </ul>
+            </div>
+    </li>
+
     <div id="single_type" class="clearfix mlf20"></div>
     <hr class="clearfix"/>
 
-    <p class="tit font16">月销售额 - 单种商品</p>
+    <p class="tit font16">月销售额走势图 - 单种商品</p>
     <div class="choose-change center-block font18 txt-center">
         <a href="javascript:;" class="pre-item4 text-grey2"> < </a>
         <span class="choose-time">
@@ -72,6 +100,34 @@
         </span>
         <a href="javascript:;" class="next-item4 text-grey2"> > </a>
     </div>
+
+     <li>
+        <div class="tit cate-title">选择商品名称：</div>
+        <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" id="first_name">所有 (1111)</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="all">所有 (11)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="on">已上架 (22)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="off">已下架 (333)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="sold_out">已售完 (44)</a>
+                    </li>
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="current_sell">待成交 (55)</a>
+                    </li>
+                </ul>
+            </div>
+    </li>
+
     <div id="single_name" class="clearfix mlf20"></div>
 
 </div>

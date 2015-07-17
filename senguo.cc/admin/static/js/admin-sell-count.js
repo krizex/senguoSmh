@@ -640,92 +640,23 @@ function show_all_single_chart(start_date,end_date){
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
-				var output_data = res.output_data;
-				// console.log(output_data);
-				
 
+				var output_data = res.output_data;
+				var type_max = output_data["type_max"];
+				var name_max = output_data["name_max"];
+				var all_type = output_data["all_type"];
+				var all_goods = output_data["all_goods"] ;
+				console.log(all_goods);
+				show_chart("single_type",start_date,end_date,type_max);
+
+				show_chart("single_name",start_date,end_date,name_max);
+				$("#first_name").text(name_max);
+
+				 for(var i = 0;i < all_goods.length;i++){
+
+				 }
 				
-				// $("#single_type").css("height","400px");
-				// $("#single_name").css("height","400px");
-				// require.config({
-				//        	paths: {
-				//             		echarts:'/static/js'
-				//         	}
-				// });
-				// require(
-				//              [
-				// 	            'echarts',
-				// 	            'echarts/chart/bar',
-				// 	            'echarts/chart/line',
-				// 	            'echarts/chart/pie'
-				//              ],
-			 //        		function (ec) {
-			 //            		            var myChart1 = ec.init(document.getElementById('single_type'));
-			 //            		            myChart1.showLoading({
-			 //                	            		text: '正在努力的读取数据中...'
-			 //            			});
-			 //            			myChart1.hideLoading();
-			 //            			var options = {
-			 //            				    title : {
-				// 			        	        subtext: '数值单位：元',
-				// 			        	        x:'center',
-				// 			        	        subtextStyle: {
-				// 				            		color: '#000'          // 副标题文字颜色
-				// 				        }
-				// 			    },
-				// 			    tooltip : {
-				// 				        trigger: 'axis',
-				// 				        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-				// 				            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-				// 				        }
-				// 			    },
-				// 			    toolbox: {
-				// 				        show : true,
-				// 				        feature : {
-				// 				            mark : {show: true},
-				// 				            magicType : {show: true, type: []},
-				// 				            restore : {show: true},
-				// 				            saveAsImage : {show: true}
-				// 				        }
-				// 			    },
-				// 			    calculable : true,
-				// 			    xAxis : [
-				// 				        {
-				// 				            show : false,	
-				// 				            type : 'value'
-				// 				        }
-				// 			    ],
-				// 			    yAxis : [
-				// 				        {
-				// 				            show : true,
-				// 				            type : 'category'
-				// 				        }
-				// 			    ],
-				// 			    series : [ 
-				// 				        {
-				// 				            name:'销售额',
-				// 				            type:'bar',
-				// 				            stack: '总量',
-				// 				            itemStyle : { 
-				// 				            		normal: {
-				// 				            			label : 
-				// 				            			{
-				// 				            				show: true, 
-				// 				            				position: 'right',
-				// 				            				textStyle : {
-				// 							                            fontWeight : 'bold'
-				// 							             }
-				// 				            			}
-				// 				            		}
-				// 				            	}
-				// 				        }
-				// 			    ],
-				// 			    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
-				// 			                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
-				// 			                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
-				// 			                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
-				// 		};
-				// 		getCount("type",options,myChart1,output_data["type_data"]);
+				
 
 				// 		var myChart2 = ec.init(document.getElementById('single_name'));
 			 //            		             myChart2.showLoading({
@@ -761,7 +692,6 @@ function show_all_chart(start_date,end_date){
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
-				console.log(output_data["name_data"]);
 				$("#goods_type").css("height",output_data["type_data"].length*50 + "px");
 				$("#goods_name").css("height",output_data["name_data"].length*50 + "px");
 				require.config({
@@ -867,17 +797,23 @@ function show_all_chart(start_date,end_date){
             	);
 }
 
-function show_chart(action,start_date,end_date){
+function show_chart(action,start_date,end_date,name){
+	if(name == undefined){
+		name = "";
+	}
 	var url = "";
 	var args = {
 		action:action,
 		start_date:getDateStr(start_date),
-		end_date:getDateStr(end_date)
+		end_date:getDateStr(end_date),
+		type_name:name,
+		goods_name:name
 	};
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
+
 				if(action == 'type'){
 					$("#goods_type").css("height",output_data.length*50 + "px");
 					require.config({
@@ -1049,16 +985,210 @@ function show_chart(action,start_date,end_date){
 					);
 				}
 				else if(action == 'single_type'){
+					$("#single_type").css("height","400px");
+					require.config({
+					       	paths: {
+					            		echarts:'/static/js'
+					        	}
+					});
+					require(
+					             [
+						            'echarts',
+						            'echarts/chart/bar',
+						            'echarts/chart/line',
+						            'echarts/chart/pie'
+					             ],
+				        		function (ec) {
+				            		            var myChart = ec.init(document.getElementById('single_type'));
+				            		            myChart.showLoading({
+				                	            		text: '正在努力的读取数据中...'
+				            			});
+				            			myChart.hideLoading();
+				            			var options = {
+								    tooltip : {
+								        show: true,
+								        trigger: 'item'
+								    },
+								    toolbox: {
+								        show : true,
+								        feature : {
+								            mark : {show: true},
+								            dataView : {show: false, readOnly: false},
+								            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+								            restore : {show: true},
+								            saveAsImage : {show: true}
+								        }
+								    },
+								    calculable : true,
+								    xAxis : [
+								        {
+								            type : 'category',
+								            data : ['周一','周二','周三','周四','周五','周六','周日','周一','周二','周三','周四','周五','周六','周日','周一','周二','周三','周四','周五','周六','周日','周六','周日','周一','周二','周三','周四','周五','周六','周日']
+								        }
+								    ],
+								   yAxis : [
+								        	{
+								        		name: '增长趋势',
+								            		type : 'value',
+								            		axisLabel: {
+                            									formatter: '{value}元'
+                       									 }
+								        	}
+								    ],
+								    series : [
+								        {
+								            name:'邮件营销',
+								            stack: '总量',
+								            type:'bar',
+								            data:[220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210]
+								        },
+								        {
+								            name:'联盟广告',
+								            type:'bar',
+								            stack: '总量',
+								            data:[120, 232, 451, 134, 190, 230, 110,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210]
+								        },
+								        {
+								            name:'直接访问',
+								            type:'bar',
+								            stack: '总量',
+								            data:[
+								                320, 332, 100, 334,390,330, 320,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210
+								            ]
+								        },
+								        {
+								            name:'搜索引擎',
+								            stack: '总量',
+								            type:'bar',
+								            data:[
+								                620, 732, 701,734, 890, 930, 820,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210
+								            ]
+
+								        },
+								        {	
+								        	// show:false,
+								        	// name:"",
+								        	// stack: '总量',
+								         //      type:'bar',
+								         //      data:[]
+								        },
+								        {
+								        	// show:false,
+								        	// name:"",
+								        	// stack: '总量',
+								         //      type:'bar',
+								         //      data:[]
+								        }
+								        
+								    ],
+								    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+								                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+								                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+								                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+							};
+							// options.series[4] = {};
+							// options.series[5] = {};
+							// options.series[4].show = true;
+							// options.series[4].name = "lalaa";
+							// options.series[4].data = [100,200,300,400,500,600,700];
+							myChart.refresh();
+							myChart.setOption(options);
+							// getCount("type",options,myChart1,output_data["type_data"]);
+						}
+					);
 
 				}
-				else if(action == 'singtle_name'){
+				else if(action == 'single_name'){
+					$("#single_name").css("height","400px");
+					require.config({
+					       	paths: {
+					            		echarts:'/static/js'
+					        	}
+					});
+					require(
+					             [
+						            'echarts',
+						            'echarts/chart/bar',
+						            'echarts/chart/line',
+						            'echarts/chart/pie'
+					             ],
+				        		function (ec) {
+				            		            var myChart = ec.init(document.getElementById('single_name'));
+				            		            myChart.showLoading({
+				                	            		text: '正在努力的读取数据中...'
+				            			});
+				            			myChart.hideLoading();
+				            			var options = {
+								    
+								    tooltip : {
+								        	        trigger: 'axis'
+								    },
+								    toolbox: {
+								        		show : true,
+								       		 feature : {
+								            			mark : {show: true},
+								            			dataView : {show: false, readOnly: false},
+								            			magicType : {show: true, type: ['line', 'bar']},
+								            			restore : {show: true},
+								            			saveAsImage : {show: true}
+								       		 }
+								    },
+								    calculable : true,
+								    // legend:{
+								    // 	data:["销售额"]
+								    // },
+								    xAxis : [
+								        	{
+								            		type : 'category',
+								            		boundaryGap: false,
+								            		data : []
+								        	}
+								    ],
+								    yAxis : [
+								        	{
+								        		name: '增长趋势',
+								            		type : 'value',
+								            		axisLabel: {
+                            									formatter: '{value}元'
+                       									 }
+								        	}
+								    ],
+								    series : [
+								        	       {
+								            		name:'销售额',
+								            		type:'line',
+								            		data:[],
+								            		markPoint : {
+								                		data : [
+								                    			{type : 'max', name: '最大值'},
+								                    			{type : 'min', name: '最小值'}
+								                		]
+								            		},
+								            		markLine : {
+									                data : [
+									                    {type : 'average', name : '平均值'}
+									                ]
+									            }
+								        	        }
+								        	        
+								   	 ],
+								   	 color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+								                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+								                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+								                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+							};
+							getCount("single_name",options,myChart,output_data);
 
+						}
+					);
 				}
 				else{
+
 					return Tip(res.error_text);
 				}
 			}
 			else{
+
 				return Tip(res.error_text);
 			}
 		},
@@ -1098,34 +1228,28 @@ function getCount(action,options,myChart,output_data){
 			options.series[0].data.push(price);
 		}
 	}	
-	// else if(action == "single_type"){
-	// 	options.xAxis[0].show = true;
-	// 	options.xAxis[0].type = "category";
-	// 	options.yAxis[0].type = "value";
-	// 	options.series[0].itemStyle.normal.label.position = 'top';
-	// 	for(var i = output_data.length - 1;i >= 0;i--){
-	// 		var data = output_data[i];
-	// 		var price = parseFloat(data["type_total_price"]).toFixed(2);
-	// 		options.xAxis[0].data.push(data["type_name"]);
-	// 		options.series[0].data.push(price);
-	// 	}
-	// }
-	// else if(action == "single_name"){
-	// 	options.xAxis[0].show = true;
-	// 	options.xAxis[0].type = "category";
-	// 	options.yAxis[0].type = "value";
-	// 	options.series[0].itemStyle.normal.label.position = 'top';
-	// 	for(var i = output_data.length - 1;i >= 0;i--){
-	// 		var data = output_data[i];
-	// 		var price = parseFloat(data["total_price"]).toFixed(2);
-	// 		options.xAxis[0].data.push(data["fruit_name"]);
-	// 		options.series[0].data.push(price);
-	// 	}
-	// }
+	else if(action == "single_type"){
+		// for(var i = output_data.length - 1;i >= 0;i--){
+		// 	var data = output_data[i];
+		// 	var price = parseFloat(data["type_total_price"]).toFixed(2);
+		// 	options.xAxis[0].data.push(data["type_name"]);
+		// 	options.series[0].data.push(price);
+		// }
+		
+
+
+	}
+	else if(action == "single_name"){
+		for(var i = 0;i < output_data.length;i++){
+			var data = output_data[i];
+			var price =  parseFloat(parseFloat(data).toFixed(2));
+			options.xAxis[0].data.push(i+1+"号");
+			options.series[0].data.push(price);
+		}
+	}
 	else{
 		return Tip('网络好像不给力呢~ ( >O< ) ~！');
 	}
-
 	myChart.refresh();
 	myChart.setOption(options);
 }
