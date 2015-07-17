@@ -3,174 +3,125 @@
 {% block setcontent %}
 {% if shop_code and shop_code!='not set' %}
 <div class="clearfix top-box">
-    <p>用户可使用优惠券在下单支付时抵扣现金。 </p>
-    <p>商家可以通过发放优惠券的形式吸引用户，活动形式有：充值送优惠券、购买某种商品送优惠券、参与活动送优惠券等。</p>
+    <p class="c333 f16 coupon-show-txt">已<span>开启</span>优惠券<a href="javascript:;" class="ml10 f16">查看详情</a></p>
+    <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
+    <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
      <button class="btn text-white  action-btn coupon-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
 </div>
 <div class="category-list">
-    <div>优惠券 <span class="tit3">/ 优惠券总况</span>
-        <button class="newbtn cmbtn btn">+ 新建优惠券</button></div>
+    <div class="c999">优惠券<span class="c333">/优惠券管理</span></div>
+    <div class="subnav-box group mt30">
+        <ul class="subnav chinav pull-left furit-type">
+            <li class="txt-center active" data-type="active"><a href="javascript:;">活动优惠券</a></li>
+            <li class="txt-center" data-type="charge"><a href="javascript:;">充值优惠券</a></li>
+        </ul>
+        <div class="wrap-newbtn fr">
+            <button class="newbtn add-btn  mt6 mr10">+新建优惠券</button>
+        </div>
+    </div>
 </div>
-<!-- <div class="row div0 top-box">
-    <div class="col-lg-2">
-    优惠金额
-    </div>
-    <div class="col-lg-2">
-     发放日期
-    </div>
-    <div class="col-lg-2">
-    领取限制
-    </div>
-    <div class="col-lg-2">
-    可消费商品
-    </div>
-    <div class="col-lg-2">
-    使用/领取/库存
-    </div>
-    <div class="col-lg-2">
-      操作
-    </div>
-</div> -->
-<table class="row div0 top-box">
-    <tr >
-        <td class="table_height1">领取条件</td>
-        <td class="table_height1">优惠金额</td>
-        <td class="table_height1">发放日期</td>
-        <td class="table_height1">领取限制</td>
-        <td class="table_height1">可消费商品</td>
-        <td class="table_height1">使用/领取/库存</td>
-        <td class="table_height1">操作</td>
-    </tr>
-</table>
-<div class="div1">
-    <ul>
-    {% for data in output_data %}
-    <table >
-    <tr>
-        <td width="84%">
-            <a href="/admin/marketing?action=details&select_rule=0&coupon_id={{data['coupon_id']}}">
-            <table class="cmtop-box row details">
+<div class="wrap-tb mt30">
+    <table class="tb-enty tb-active">
+        <colgorup>
+            <col width="18%"/>
+            <col width="8%"/>
+            <col width="10%"/>
+            <col width="10%"/>
+            <col width="18%"/>
+            <col width="10%"/>
+            <col width="12%"/>
+            <col width="14%"/>
+        </colgorup>
+        <thead>
+            <tr class="thead">
+                <td>领取时间</td>
+                <td>领取限制</td>
+                <td>优惠条件</td>
+                <td>优惠金额</td>
+                <td>优惠券有效期</td>
+                <td>可消费商品</td>
+                <td>使用/领取/库存</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        <tbody>
+        {% for data in output_data %}
             <tr>
-                <td class="table_heigth2"><p class="tit2">订单满{{data["use_rule"]}}元才能消费</p></td>
-                <td width="14%"><p class="tit1">{{data["coupon_money"]}}元</p></td>
-                <td width="14%"> {{data["uneffective_time"]}}</td>
-                <td width="14%"><div class='tit2'>每人限领{{data["get_limitnum"]}}张</div></td>
-                <td width="14%"><div  class='tit2' >限商品分组：{{data["use_for"]}}</div></td>
-                <td width="14%"> {{data["coupon_usenum"]}}  /{{data["coupon_getnum"]}}/ {{data["coupon_totalnum"]}}</td>
-        </tr>
-     
-    </table>
-       </a>
-        </td>
-        <td width="16%">
-        <table  class="cmtop-box row ">
-        <tr>
-            <td class="table_heigth3">
-                <a  href="javascript:;" class="col-lg 4 tit6 spread-all-item">推广</a>
-            </td>
-            <td>
-                <a href="/admin/marketing?action=editcoupon&coupon_id={{data['coupon_id']}}" class="col-lg 4 tit6 " id="edit">编辑</a>
-            </td>
-            <td>
-                <a href="javascript:;" class="col-lg 4 tit6 cmclose">关闭</a>
-            </td>
-        </tr>
-        <div class="sw-er-tip all-position invisible" >
-                <div class="top-arr">
-                    <span class="line1"></span>
-                    <span class="line2"></span>
-                </div>
-                <p class="er-text">商品链接</p>
-                <div class="wrap-ipt">
-                    <input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/coupon/detail?action=detail&coupon_key=0VBH3M1203" disabled/>
-                    <input type="button" class="sw-link-copy" value="复制链接"/>
-                </div>
-                <div class="wrap-er group">
-                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                    <div class="er-text lh80 fl">列表二维码</div>
-                    <div class="er-img fl er-code-img">
-                    </div>
-                </div>
-            </div>
-    </table>
-        </td>
-    </tr>
- </table>
-
-            <!-- <td width="14%">
-             <div>
-                 <a  href="javascript:;" class="col-lg 4 tit6 spread-all-item">推广</a>
-                <a href="/admin/marketing?action=editcoupon&coupon_id={{data['coupon_id']}}" class="col-lg 4 tit6 " id="edit">编辑</a>
-                <a href="javascript:;" class="col-lg 4 tit6 cmclose">关闭</a>
-             </div>
-             <div class="sw-er-tip all-position invisible" >
-                <div class="top-arr">
-                    <span class="line1"></span>
-                    <span class="line2"></span>
-                </div>
-                <p class="er-text">商品链接</p>
-                <div class="wrap-ipt">
-                    <input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/coupon/detail?action=detail&coupon_key=0VBH3M1203" disabled/>
-                    <input type="button" class="sw-link-copy" value="复制链接"/>
-                </div>
-                <div class="wrap-er group">
-                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                    <div class="er-text lh80 fl">列表二维码</div>
-                    <div class="er-img fl er-code-img">
-                    </div>
-                </div>
-            </div>
-             </td> -->
-        <!-- <li class="cmtop-box row details">
-        <a href="/admin/marketing?action=details&select_rule=0&coupon_id={{data['coupon_id']}}">
-             <div>
-                <p class="tit1">{{data["coupon_money"]}}元</p>
-            </div>
-            <div>
-                <div class="col-lg-2">
-                
-                <p class="tit2">订单满{{data["use_rule"]}}元才能消费</p>
-            </div>
-            <div class="col-lg-2">
-                {{data["uneffective_time"]}}
-            </div>
-            <div class="col-lg-2">
-                每人限领{{data["get_limitnum"]}}张
-            </div>
-            <div class="col-lg-2 tit2">
-                限商品分组：{{data["use_for"]}}
-            </div>
-            <div class="col-lg-2 tit3">
-                {{data["coupon_usenum"]}}  /{{data["coupon_getnum"]}}/ {{data["coupon_totalnum"]}}</div>
-                 </a> 
-            <div class="col-lg-2 row all-bm-group">
-                 <a  href="javascript:;" class="col-lg 4 tit6 spread-all-item">推广</a>
-                 <a href="/admin/marketing?action=editcoupon&coupon_id={{data['coupon_id']}}" class="col-lg 4 tit6 " id="edit">编辑</a>
-                 <a href="javascript:;" class="col-lg 4 tit6 cmclose">关闭</a>
-            </div>
-            <div class="sw-er-tip all-position invisible" >
-                <div class="top-arr">
-                    <span class="line1"></span>
-                    <span class="line2"></span>
-                </div>
-                <p class="er-text">商品链接</p>
-                <div class="wrap-ipt">
-                    <input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/coupon/detail?action=detail&coupon_key=0VBH3M1203" disabled/>
-                    <input type="button" class="sw-link-copy" value="复制链接"/>
-                </div>
-                <div class="wrap-er group">
-                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                    <div class="er-text lh80 fl">列表二维码</div>
-                    <div class="er-img fl er-code-img">
-                    </div>
-                </div>
-            </div>
-            </div> 
-        </li> -->
+                <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+                <td>每人限领一张</td>
+                <td>任意商品买满金额可用</td>
+                <td>5.00元</td>
+                <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+                <td>限商品分组:店铺推荐</td>
+                <td>8/12/10</td>
+                <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span>已停用</span></td>
+            </tr>
+            <tr class="dis-coupon">
+                <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+                <td>每人限领一张</td>
+                <td>任意商品买满金额可用</td>
+                <td>5.00元</td>
+                <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+                <td>限商品分组:店铺推荐</td>
+                <td>8/12/10</td>
+                <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span>已停用</span></td>
+            </tr>
         {% end %}
-    </ul>
+        </tbody>
+    </table>
+    <table class="tb-enty tb-charge hidden">
+        <colgorup>
+            <col width="18%"/>
+            <col width="8%"/>
+            <col width="10%"/>
+            <col width="12%"/>
+            <col width="18%"/>
+            <col width="10%"/>
+            <col width="10%"/>
+            <col width="14%"/>
+        </colgorup>
+        <thead>
+        <tr class="thead">
+            <td>领取时间</td>
+            <td>领取条件</td>
+            <td>领取限制</td>
+            <td>使用优惠券条件</td>
+            <td>优惠金额和优惠条件</td>
+            <td>可消费商品</td>
+            <td>使用/领取</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in output_data %}
+        <tr>
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>每人限领一张</td>
+            <td>任意商品买满金额可用</td>
+            <td>5.00元</td>
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>限商品分组:店铺推荐</td>
+            <td>8/12/10</td>
+            <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span>已停用</span></td>
+        </tr>
+        <tr class="dis-coupon">
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>每人限领一张</td>
+            <td>任意商品买满金额可用</td>
+            <td>5.00元<br><span class="c999">任意商品买满任意金额可用</span></td>
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>限商品分组:店铺推荐</td>
+            <td>8/12/10</td>
+            <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span>已停用</span></td>
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
 </div>
 {% else %}
 <h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
 {% end %}
+{% end %}
+{% block js %}
+<script src="{{static_url('js/admin-coupon.js')}}"></script>
 {% end %}

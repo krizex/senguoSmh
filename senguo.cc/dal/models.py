@@ -1850,10 +1850,10 @@ class Spider_Good(MapBase,_CommonApi):
 class CouponsShop(MapBase, _CommonApi):
  	__tablename__='coupon_shop'
  	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
- 	shop_name=Column(String)
+ 	shop_name=Column(String(128))
  	coupon_id=Column(Integer,nullable=False)
  	customer_id=Column(Integer,ForeignKey(Customer.id))
- 	coupon_key=Column(String,primary_key=True,nullable=False)
+ 	coupon_key=Column(String(11),primary_key=True,nullable=False)
  	coupon_money=Column(Float,nullable=False)
  	coupon_totalnum=Column(Integer,nullable=False)
  	coupon_usenum=Column(Integer,default=0)
@@ -1882,7 +1882,7 @@ class CouponsCustomer(MapBase, _CommonApi):
 	coupon_id=Column(String(11),nullable=False)
 	coupon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
 	customer_id=Column(Integer,ForeignKey(Customer.id),primary_key=True,nullable=False)
-	shop_name=Column(String)
+	shop_name=Column(String(128))
 	coupon_money=Column(Float,nullable=False)
 	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id))
 	get_date=Column(Date,default=func.now())
