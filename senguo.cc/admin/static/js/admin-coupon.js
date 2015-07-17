@@ -79,7 +79,7 @@ $(document).ready(function () {
 }).on("click",'.goback',function(){
     window.history.back();
 }).on('click','.ok-coupon',function(){
-    getinput("newcoupon",type);
+    addCoupon("newcoupon",type);
 }).on("click",".radio-list .radio",function(){
     $(".radio-list .radio").removeClass("radio-active");
     $(this).addClass("radio-active");
@@ -87,7 +87,7 @@ $(document).ready(function () {
     var coupon_id=$.getUrlParam("coupon_id");
     insertcoupon(coupon_id);
 }).on('click','.newbtn',function(){
-    window.location.href="/admin/marketing?action=newpage";
+    window.location.href="/admin/marketing?action=newcouponpage";
 }).on("click",'.coupon-types .item',function(){//优惠券类型
     var id = parseInt($(this).attr("data-id"));
     $(".current-type").html($(this).html()).attr("data-id",id);
@@ -168,21 +168,25 @@ function insertcoupon(selected_status){
             Tip('网络好像不给力呢~ ( >O< ) ~');
         });
 }
-function getinput(action,coupon_id){
+function addCoupon(type){
+
     var data={
+        "conpon_type":type,
+        from_get_date:'',//领取
+        to_get_datae:'',
         "coupon_money":in1,
         "use_rule":in2,
-        "total_num":in3,//库存
-        "get_limitnum":in4,
-        "used_for":in9,//商品分组
-        "valid_way":valid_way,//有效期方式
-        "start_time":start_time,//
-        "uneffective_time":uneffective_time,//
-        "day_start":day_start,
+        "total_number":in3,//库存
+        "get_limit":in4,
+        "use_goods_group":'',
+        "use_goods":'',//
+        "valid_way":0,//有效期方式
+        "from_valid_date":'',//
+        "to_valid_date":'',//
+        "start_day":0,
         "last_day":last_day,
-        "coupon_id":coupon_id
     };
-    var args={action:action,data:data};
+    var args={action:"newcoupon",data:data};
     var url='';
     $.postJson(url,args,
         function (res) {

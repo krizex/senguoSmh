@@ -45,19 +45,19 @@
                     <td class="ver-top"><span class="ver-5">领取时间</span></td>
                     <td>
                         <div class="">
-                            选择领取时间 : <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
-                             到 <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                            选择领取时间 : <input type="text" class="Wdate from_get_data" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                             到 <input type="text" class="Wdate to_get_data" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
                         </div>
                         <p class="red-txt f12 mt6">优惠券将于领取时间内发放至发现中，由用户领取</p>
                     </td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">领取限制<br><span class="c999 ml10">(选填)</span></span></td>
-                    <td><input type="text" class="mr10"/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
+                    <td><input type="text" class="mr10 get_limit"/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">库存</span></td>
-                    <td><input type="text" class="mr10"/>张<p class="mt6 f12 red-txt">只能为整数</p></td>
+                    <td><input type="text" class="mr10 total_number"/>张<p class="mt6 f12 red-txt">只能为整数</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
@@ -66,21 +66,20 @@
                             <span class="mr10 ver7">选择商品分组:</span>
                             <div class="dropdown slide-down-select w130 mr10">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 current-group" data-id="2">所有分组</em>
+                                    <em class="pull-left c333 use_goods_group" data-id="2">所有分组</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
+                                    {% for group in output_data%}
                                     <li class="presentation" role="presentation">
-                                        <a class="item" href="javascript:;" data-id="0">店铺推荐</a>
+                                        <a class="item" href="javascript:;" data-id="{{group.group_id}}">{{group.group_name}}</a>
                                     </li>
-                                    <li class="presentation" role="presentation">
-                                        <a class="item" href="javascript:;" data-id="1">默认分组</a>
-                                    </li>
+                                    {% end %}
                                 </ul>
                             </div>
                             <div class="dropdown slide-down-select w130">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 current-group" data-id="2">所有商品</em>
+                                    <em class="pull-left c333 use_goods" data-id="2">所有商品</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
