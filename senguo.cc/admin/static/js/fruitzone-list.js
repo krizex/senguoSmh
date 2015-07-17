@@ -90,16 +90,16 @@ $(document).ready(function(){
     //city filter
     $(document).on('click','.city_choose',function(){
         var $this=$(this);
-         if($this.hasClass('city_choosed')){
+        if($this.hasClass('city_choosed')){
             remove_bg();
             $('.list_item').addClass('hidden');
             $this.removeClass('city_choosed');
-         }
-         else{
+        }
+        else{
             add_bg();
             $('.province_list').removeClass('hidden');
             $this.addClass('city_choosed');
-         }
+        }
     });
     $(document).on('click','.city_list li',function(){
         var $this=$(this);
@@ -110,7 +110,7 @@ $(document).ready(function(){
         filter(city_code,'city');
     });
     //all city
-     $(document).on('click','.all_city',function(){
+    $(document).on('click','.all_city',function(){
         var $this=$(this);
         var province_code=$this.attr('data-code');
         var province_name=$this.attr('data-name');
@@ -119,7 +119,7 @@ $(document).ready(function(){
         filter(province_code,'province');
     });
     //whole country
-     $(document).on('click','.whole_country',function(){
+    $(document).on('click','.whole_country',function(){
         window.dataObj.action='shop';
         remove_bg();
         $('.shoplist').empty();
