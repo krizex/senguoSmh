@@ -6,7 +6,7 @@
 {% block content %}
 <span class="right-title">销售统计</span>　
 <div class="box">
-    <p class="tit font16">销量排行-按商品类目排序</p>
+    <p class="tit font16">销售额排行 - 按商品类目排序</p>
     <div class="choose-change center-block font18 txt-center">
         <a href="javascript:;" class="pre-item text-grey2"> < </a>
         <span class="choose-time">
@@ -25,11 +25,11 @@
             <li data-id="3"><a href="javascript:;" class="sort-month text-grey3">按月排</a></li>
         </ul>
     </div>
-    <div id="goods_type" style="height:400px" class="clearfix"></div>
+    <div id="goods_type" class="clearfix mlf20"></div>
     <hr class="clearfix"/>
 
 
-    <p class="tit font16">销量排行-按商品名称排序</p>
+    <p class="tit font16">销售额排行 - 按商品名称排序</p>
     <div class="choose-change center-block font18 txt-center">
         <a href="javascript:;" class="pre-item2 text-grey2"> < </a>
         <span class="choose-time">
@@ -48,8 +48,31 @@
             <li data-id="3"><a href="javascript:;" class="sort-month2 text-grey3">按月排</a></li>
         </ul>
     </div>
-    <div id="goods_name" class="clearfix"></div>
+    <div id="goods_name" class="clearfix mlf20"></div>
     <hr class="clearfix"/>
+
+    <p class="tit font16">月销售额 - 单种类目商品</p>
+    <div class="choose-change center-block font18 txt-center">
+        <a href="javascript:;" class="pre-item3 text-grey2"> < </a>
+        <span class="choose-time">
+            <span class="year-span3"><span class="year3"></span>年</span>
+            <span class="month-span3"><span class="month3"></span>月</span>
+        </span>
+        <a href="javascript:;" class="next-item3 text-grey2"> > </a>
+    </div>
+    <div id="single_type" class="clearfix mlf20"></div>
+    <hr class="clearfix"/>
+
+    <p class="tit font16">月销售额 - 单种商品</p>
+    <div class="choose-change center-block font18 txt-center">
+        <a href="javascript:;" class="pre-item4 text-grey2"> < </a>
+        <span class="choose-time">
+            <span class="year-span4"><span class="year4"></span>年</span>
+            <span class="month-span4"><span class="month4"></span>月</span>
+        </span>
+        <a href="javascript:;" class="next-item4 text-grey2"> > </a>
+    </div>
+    <div id="single_name" class="clearfix mlf20"></div>
 
 </div>
 {% end %}

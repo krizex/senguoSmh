@@ -268,11 +268,24 @@ class SellStatic(AdminBaseHandler):
 		return self.render("admin/sell-count.html",context=dict(subpage='sellstatic'))
 
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str","start_date:str","end_date:str")
+	@AdminBaseHandler.check_arguments("action:str","start_date:str","end_date:str","type_name?:str","goods_name?:str")
 	def post(self):
 		action = self.args["action"]
 		start_date = self.args["start_date"]
 		end_date = self.args["end_date"]
+
+		# 查询店铺所有的水果类目
+		shop_all_type_name = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
+
+		# 查询店铺的所有水果名称：
+		shop_all_goods = self.session.query(models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
+		
+		# 查询店铺所有水果类目中分别有多少种水果：
+		shop_type_num_list = {}
+		for shop_type_name in shop_all_type_name:
+			shop_type_name = shop_type_name[0]
+			shop_type_num_list[shop_type_name] = self.session.query(models.FruitType).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.FruitType.name == shop_type_name).count()
+
 		if action == 'all':
 			now = datetime.datetime.now()
 			now_date = datetime.datetime(now.year,now.month,now.day)
@@ -280,19 +293,8 @@ class SellStatic(AdminBaseHandler):
 			yesterday_date = datetime.datetime(now.year,now.month,now.day-1)
 			yesterday_date = yesterday_date.strftime("%Y-%m-%d")
 
-			# 查询店铺所有的水果类目
-			shop_all_type_name = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
-
-			# 查询店铺的所有水果名称：
-			shop_all_goods = self.session.query(models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
-
-			# 查询店铺所有水果类目中分别有多少种水果：
-			shop_type_num_list = {}
-			for shop_type_name in shop_all_type_name:
-				shop_type_name = shop_type_name[0]
-				shop_type_num_list[shop_type_name] = self.session.query(models.FruitType).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.FruitType.name == shop_type_name).count()
-
-			# 从order表中查询出特定的一天店铺的所有有效订单（status字段的值大于等于5）的fruits字段：
+			
+			# 从order表中查询出一天店铺的所有有效订单（status字段的值大于等于5）的fruits字段：
 			now_date_str = now_date + '%'
 			yesterday_date_str = yesterday_date + '%'
 			today_fruits_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
@@ -304,7 +306,6 @@ class SellStatic(AdminBaseHandler):
 			name_list = []
 			for fl in today_fruits_list:
 				fl = eval(fl[0])
-
 				for key in fl:
 					tmp = {}
 					fl_value = fl[key]
@@ -313,14 +314,18 @@ class SellStatic(AdminBaseHandler):
 					total_price = single_price * num
 					tmp["fruit_name"] = fl_value["fruit_name"]
 					tmp["total_price"] = total_price
-					for tpl in total_price_list:
-						name_list.append(tpl['fruit_name'])
+					for i in range(len(total_price_list)):
+						name_list.append(total_price_list[i]['fruit_name'])
 					if tmp["fruit_name"] not in name_list:
 						total_price_list.append(tmp)
 					else:
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
+			
+			name_list = []
+			for i in range(len(total_price_list)):
+				name_list.append(total_price_list[i]['fruit_name'])
 
 			for goods in shop_all_goods:
 				if goods[0] not in name_list:
@@ -328,7 +333,7 @@ class SellStatic(AdminBaseHandler):
 					tmp["fruit_name"] = goods[0]
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
-			# 按销量降序排序：
+			# 按销量排序：
 			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
 
 			# 查询total_price_list表中所有商品的类目，并存到一个字典中：
@@ -354,24 +359,21 @@ class SellStatic(AdminBaseHandler):
 			output_data = {
 				'type_data':type_total_price_list,
 				'name_data':total_price_list,
-				'single_type_data':type_total_price_list[0],
-				'single_name_data':total_price_list[0]
 			}
-			print(len(type_total_price_list))
-			print(type_total_price_list)
 			return self.send_success(output_data = output_data)
-		elif action == 'type':
-			# 查询店铺所有的水果类目
-			shop_all_type_name = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
 
-			# 查询店铺的所有水果名称：
-			shop_all_goods = self.session.query(models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
+		elif action == 'all_single':
+			output_data = {}
 
-			# 查询店铺所有水果类目中分别有多少种水果：
-			shop_type_num_list = {}
-			for shop_type_name in shop_all_type_name:
-				shop_type_name = shop_type_name[0]
-				shop_type_num_list[shop_type_name] = self.session.query(models.FruitType).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.FruitType.name == shop_type_name).count()
+			shop_all_type_list = []
+			shop_all_goods_list = []
+			for item in shop_all_type_name:
+				shop_all_type_list.append(item[0])
+			for item in shop_all_goods:
+				shop_all_goods_list.append(item[0])
+
+			output_data["all_type"] = shop_all_type_list
+			output_data["all_goods"] = shop_all_goods_list
 
 			# 从order表中查询出某个日期区间内某个店铺的所有有效订单（status字段的值大于等于5）的fruits字段(比如2015-07-15和2015-07-16两天的)：
 			start_date_str = start_date
@@ -411,17 +413,20 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-
+			name_list = []
+			for i in range(len(total_price_list)):
+				name_list.append(total_price_list[i]['fruit_name'])
+				
 			for goods in shop_all_goods:
 				if goods[0] not in name_list:
 					tmp = {}
 					tmp["fruit_name"] = goods[0]
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
-			# 按销量降序排序：
-			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
+			# 按销量排序：
+			total_price_list.sort(key = lambda item:item["total_price"],reverse = True)
+			output_data["name_max"] = total_price_list[0]["fruit_name"]
 
-			# 查询total_price_list表中所有商品的类目，并存到一个字典中：
 			goods_type_list = {}
 			for tpl in total_price_list:
 				if tpl["fruit_name"] not in list(goods_type_list.keys()):
@@ -440,23 +445,13 @@ class SellStatic(AdminBaseHandler):
 						tmp["type_total_price"] += tpl["total_price"]
 						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
 				type_total_price_list.append(tmp)
-			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
 
-			return self.send_success(output_data = type_total_price_list)
-			
-		elif action == 'name':
-			# 查询店铺所有的水果类目
-			shop_all_type_name = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
+			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=True)
+			output_data["type_max"] = type_total_price_list[0]["type_name"]
 
-			# 查询店铺的所有水果名称：
-			shop_all_goods = self.session.query(models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
+			return self.send_success(output_data = output_data)
 
-			# 查询店铺所有水果类目中分别有多少种水果：
-			shop_type_num_list = {}
-			for shop_type_name in shop_all_type_name:
-				shop_type_name = shop_type_name[0]
-				shop_type_num_list[shop_type_name] = self.session.query(models.FruitType).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.FruitType.name == shop_type_name).count()
-
+		elif action == 'type' or action == 'name':
 			# 从order表中查询出某个日期区间内某个店铺的所有有效订单（status字段的值大于等于5）的fruits字段(比如2015-07-15和2015-07-16两天的)：
 			start_date_str = start_date
 			end_date_str = end_date
@@ -502,13 +497,38 @@ class SellStatic(AdminBaseHandler):
 					tmp["fruit_name"] = goods[0]
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
-			# 按销量降序排序：
+			# 按销量排序：
 			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
 
-			return self.send_success(output_data = total_price_list)
+			if action == 'type':
+				# 查询total_price_list表中所有商品的类目，并存到一个字典中：
+				goods_type_list = {}
+				for tpl in total_price_list:
+					if tpl["fruit_name"] not in list(goods_type_list.keys()):
+						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.Fruit.name == tpl["fruit_name"]).all()[0][0]
+
+				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
+				type_total_price_list = []
+				for type_name in shop_all_type_name:
+					tmp = {}
+					type_name = type_name[0]
+					tmp["type_name"] = type_name
+					tmp["type_total_price"] = 0.0
+					tmp["per_name_total_price"] = {}
+					for tpl in total_price_list:
+						if goods_type_list[tpl["fruit_name"]] == type_name:
+							tmp["type_total_price"] += tpl["total_price"]
+							tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+					type_total_price_list.append(tmp)
+				type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
+
+				return self.send_success(output_data = type_total_price_list)
+			else:
+				return self.send_success(output_data = total_price_list)
 		elif action == 'single_type':
 			pass
 		elif action == 'single_name':
+			# goods_name = self.args["goods_name"]
 			pass
 		else:
 			return self.send_error(404)

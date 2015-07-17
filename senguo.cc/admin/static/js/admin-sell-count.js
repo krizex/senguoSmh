@@ -19,6 +19,14 @@ var choose_month2 = current_month;
 var choose_date2 = current_date;
 var choose_week2 = current_week;
 
+var ChooseDate3 = CurrentDate;
+var choose_year3 = current_year;
+var choose_month3 = current_month;
+
+var ChooseDate4 = CurrentDate;
+var choose_year4 = current_year;
+var choose_month4 = current_month;
+
 var current_sort_way = 1;  //当前的排列方式  1:按日排,2:按周排,3:按月排，默认为按日排
 var current_sort_way2 = 1;
 
@@ -320,6 +328,68 @@ $(document).ready(function(){
 			show_chart('name',start_date,end_date);
 			break;
 	}
+}).on("click",".pre-item3",function(){
+	if(choose_month3 == 1){
+		choose_month3 = 12;
+		choose_year3 = choose_year3-1;
+	}
+	else{
+		choose_month3=choose_month3-1;
+	}
+				
+	$(".year3").text(choose_year3);
+	$(".month3").text(choose_month3);
+
+	// var start_date = new Date(choose_year2,choose_month2-1,1);
+	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
+	// show_chart('name',start_date,end_date);
+}).on("click",".next-item3",function(){
+	if(choose_month3 == 12){
+		choose_month3 = 1;
+		choose_year3 = choose_year3+1;
+	}
+	else{
+		choose_month3=choose_month3+1;
+	}
+				
+	$(".year3").text(choose_year3);
+	$(".month3").text(choose_month3);
+
+	// var start_date = new Date(choose_year2,choose_month2-1,1);
+	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
+	// show_chart('name',start_date,end_date);
+}).on("click",".pre-item4",function(){
+	if(choose_month4 == 1){
+		choose_month4 = 12;
+		choose_year4 = choose_year4-1;
+	}
+	else{
+		choose_month4=choose_month4-1;
+	}
+				
+	$(".year4").text(choose_year4);
+	$(".month4").text(choose_month4);
+
+	// var start_date = new Date(choose_year2,choose_month2-1,1);
+	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
+	// show_chart('name',start_date,end_date);
+
+}).on("click",".next-item4",function(){
+	if(choose_month4 == 12){
+		choose_month4 = 1;
+		choose_year4 = choose_year4+1;
+	}
+	else{
+		choose_month4=choose_month4+1;
+	}
+				
+	$(".year4").text(choose_year4);
+	$(".month4").text(choose_month4);
+
+	// var start_date = new Date(choose_year2,choose_month2-1,1);
+	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
+	// show_chart('name',start_date,end_date);
+	
 });
 
 // 实时更新函数
@@ -342,6 +412,12 @@ function initCharts(){
 	$(".month2").text(current_month);
 	$(".date2").text(current_date);
 
+	$(".year3").text(current_year);
+	$(".month3").text(current_month);
+
+	$(".year4").text(current_year);
+	$(".month4").text(current_month);
+
 	$(".sell-change-list").each(function(){
 		var $this = $(this);
 		$this.find("li").eq(0).addClass("active");
@@ -353,6 +429,9 @@ function initCharts(){
 	});
 	show_all_chart(CurrentDate,CurrentDate);
 
+	var start_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),1);
+	var end_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),getLastDayOfMonth(CurrentDate.getMonth()+1,CurrentDate.getFullYear()))
+	show_all_single_chart(start_date,end_date);
 }
 
 // 获取当前日期的前后N天日期(返回值为Date类型)(N<=28):
@@ -551,14 +630,126 @@ function getLastDayOfMonth(month,year){
 	}
 }
 
-function goods_type_chart(type,start_date,end_date){
-	
-                    
+function show_all_single_chart(start_date,end_date){
+	var url = "";
+	var args = {
+		action:'all_single',
+		start_date:getDateStr(start_date),
+		end_date:getDateStr(end_date)
+	};
+	$.postJson(url,args,
+		function(res){
+			if(res.success){
+				var output_data = res.output_data;
+				// console.log(output_data);
+				
+
+				
+				// $("#single_type").css("height","400px");
+				// $("#single_name").css("height","400px");
+				// require.config({
+				//        	paths: {
+				//             		echarts:'/static/js'
+				//         	}
+				// });
+				// require(
+				//              [
+				// 	            'echarts',
+				// 	            'echarts/chart/bar',
+				// 	            'echarts/chart/line',
+				// 	            'echarts/chart/pie'
+				//              ],
+			 //        		function (ec) {
+			 //            		            var myChart1 = ec.init(document.getElementById('single_type'));
+			 //            		            myChart1.showLoading({
+			 //                	            		text: '正在努力的读取数据中...'
+			 //            			});
+			 //            			myChart1.hideLoading();
+			 //            			var options = {
+			 //            				    title : {
+				// 			        	        subtext: '数值单位：元',
+				// 			        	        x:'center',
+				// 			        	        subtextStyle: {
+				// 				            		color: '#000'          // 副标题文字颜色
+				// 				        }
+				// 			    },
+				// 			    tooltip : {
+				// 				        trigger: 'axis',
+				// 				        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+				// 				            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+				// 				        }
+				// 			    },
+				// 			    toolbox: {
+				// 				        show : true,
+				// 				        feature : {
+				// 				            mark : {show: true},
+				// 				            magicType : {show: true, type: []},
+				// 				            restore : {show: true},
+				// 				            saveAsImage : {show: true}
+				// 				        }
+				// 			    },
+				// 			    calculable : true,
+				// 			    xAxis : [
+				// 				        {
+				// 				            show : false,	
+				// 				            type : 'value'
+				// 				        }
+				// 			    ],
+				// 			    yAxis : [
+				// 				        {
+				// 				            show : true,
+				// 				            type : 'category'
+				// 				        }
+				// 			    ],
+				// 			    series : [ 
+				// 				        {
+				// 				            name:'销售额',
+				// 				            type:'bar',
+				// 				            stack: '总量',
+				// 				            itemStyle : { 
+				// 				            		normal: {
+				// 				            			label : 
+				// 				            			{
+				// 				            				show: true, 
+				// 				            				position: 'right',
+				// 				            				textStyle : {
+				// 							                            fontWeight : 'bold'
+				// 							             }
+				// 				            			}
+				// 				            		}
+				// 				            	}
+				// 				        }
+				// 			    ],
+				// 			    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+				// 			                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+				// 			                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+				// 			                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				// 		};
+				// 		getCount("type",options,myChart1,output_data["type_data"]);
+
+				// 		var myChart2 = ec.init(document.getElementById('single_name'));
+			 //            		             myChart2.showLoading({
+			 //                	            		text: '正在努力的读取数据中...'
+			 //            			});
+			 //            			myChart2.hideLoading();
+			 //            			getCount("name",options,myChart2,output_data["name_data"]);
+
+			 
+				// 	}	
+
+				// );
+
+			}
+			else{
+				return Tip(res.error_text);
+			}
+		},
+		function(){
+            			return Tip('网络好像不给力呢~ ( >O< ) ~！');
+            		}
+            	);	
 }
 
-// function goods_name_chart(){
-
-// }
 function show_all_chart(start_date,end_date){
 	var url = "";
 	var args = {
@@ -570,6 +761,9 @@ function show_all_chart(start_date,end_date){
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
+				console.log(output_data["name_data"]);
+				$("#goods_type").css("height",output_data["type_data"].length*50 + "px");
+				$("#goods_name").css("height",output_data["name_data"].length*50 + "px");
 				require.config({
 				       	paths: {
 				            		echarts:'/static/js'
@@ -621,17 +815,33 @@ function show_all_chart(start_date,end_date){
 							    ],
 							    yAxis : [
 								        {
+								            show : true,
 								            type : 'category'
 								        }
 							    ],
-							    series : [
+							    series : [ 
 								        {
 								            name:'销售额',
 								            type:'bar',
 								            stack: '总量',
-								            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}}
+								            itemStyle : { 
+								            		normal: {
+								            			label : 
+								            			{
+								            				show: true, 
+								            				position: 'right',
+								            				textStyle : {
+											                            fontWeight : 'bold'
+											             }
+								            			}
+								            		}
+								            	}
 								        }
-							    ]
+							    ],
+							    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+							                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+							                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+							                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
 						};
 						getCount("type",options,myChart1,output_data["type_data"]);
 
@@ -644,12 +854,8 @@ function show_all_chart(start_date,end_date){
 
 					}	
 
-				)			
+				);
 
-				console.log(output_data["type_data"]);
-				// console.log(output_data["name_data"]);
-				// console.log(output_data["single_type_data"]);
-				// console.log(output_data["single_name_data"]);
 			}
 			else{
 				return Tip(res.error_text);
@@ -673,6 +879,7 @@ function show_chart(action,start_date,end_date){
 			if(res.success){
 				var output_data = res.output_data;
 				if(action == 'type'){
+					$("#goods_type").css("height",output_data.length*50 + "px");
 					require.config({
 					       	paths: {
 					            		echarts:'/static/js'
@@ -757,6 +964,7 @@ function show_chart(action,start_date,end_date){
 					);
 				}
 				else if(action == 'name'){
+					$("#goods_name").css("height",output_data.length*50 + "px");
 					require.config({
 					       	paths: {
 					            		echarts:'/static/js'
@@ -869,35 +1077,57 @@ function getDateStr(date){
 }
 
 function getCount(action,options,myChart,output_data){
+	options.xAxis[0].data = []
 	options.yAxis[0].data = [];
     	options.series[0].data = [];
 	myChart.clear();
 	if(action == "type"){
 		for(var i = 0;i < output_data.length;i++){
 			var data = output_data[i];
+			var price = parseFloat(data["type_total_price"]).toFixed(2);
 			options.yAxis[0].data.push(data["type_name"]);
-			options.series[0].data.push(data["type_total_price"]);
+			options.series[0].data.push(price);
 		}
 
-		$("#goods_type").attr("style","height:"+"400"+"px");
-		
 	}
 	else if(action == "name"){
 		for(var i = 0;i < output_data.length;i++){
 			var data = output_data[i];
+			var price = parseFloat(data["total_price"]).toFixed(2);
 			options.yAxis[0].data.push(data["fruit_name"]);
-			options.series[0].data.push(data["total_price"]);
+			options.series[0].data.push(price);
 		}
-		myChart.refresh();
-		myChart.setOption(options);
-		$("#goods_name").attr("style","height:"+"500"+"px");
+	}	
+	// else if(action == "single_type"){
+	// 	options.xAxis[0].show = true;
+	// 	options.xAxis[0].type = "category";
+	// 	options.yAxis[0].type = "value";
+	// 	options.series[0].itemStyle.normal.label.position = 'top';
+	// 	for(var i = output_data.length - 1;i >= 0;i--){
+	// 		var data = output_data[i];
+	// 		var price = parseFloat(data["type_total_price"]).toFixed(2);
+	// 		options.xAxis[0].data.push(data["type_name"]);
+	// 		options.series[0].data.push(price);
+	// 	}
+	// }
+	// else if(action == "single_name"){
+	// 	options.xAxis[0].show = true;
+	// 	options.xAxis[0].type = "category";
+	// 	options.yAxis[0].type = "value";
+	// 	options.series[0].itemStyle.normal.label.position = 'top';
+	// 	for(var i = output_data.length - 1;i >= 0;i--){
+	// 		var data = output_data[i];
+	// 		var price = parseFloat(data["total_price"]).toFixed(2);
+	// 		options.xAxis[0].data.push(data["fruit_name"]);
+	// 		options.series[0].data.push(price);
+	// 	}
+	// }
+	else{
+		return Tip('网络好像不给力呢~ ( >O< ) ~！');
 	}
 
 	myChart.refresh();
 	myChart.setOption(options);
-
-	
-	
 }
 
 
