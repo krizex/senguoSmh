@@ -860,7 +860,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					"总价："+totalPrice+"元\r\n"+\
 					"支付方式："+_type+"\r\n"+\
 					"------------------------------------------------\r\n"+\
-					receipt_msg
+					"\r\n"+receipt_msg
 			machine_code=current_shop.config.wireless_print_num #打印机终端号 520
 			mkey=current_shop.config.wireless_print_key#打印机密钥 110110
 			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
@@ -882,8 +882,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			API_KEY = '47519b0f'
 			deviceNo = current_shop.config.wireless_print_num #'9602292847397158'
 			mode = 2
-			msgDetail = "                 <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
-						"----------------------------------------\n"+\
+			msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+						"-------------------------\n"+\
 						"订单编号："+order_num+"\n"+\
 						"下单时间："+order_time+"\n"+\
 						"顾客姓名："+receiver+"\n"+\
@@ -891,15 +891,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
 						"配送时间："+send_time+"\n"+\
 						"配送地址："+address+"\n"+\
 						"买家留言："+message+"\n"+\
-						"----------------------------------------\n"+\
-						"                   <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
-						"----------------------------------------\n"+\
+						"-------------------------\n"+\
+						"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
+						"-------------------------\n"+\
 						''.join(fruit_list)+"\r\n"+\
 						"\n"+\
 						"总价："+totalPrice+"元\n"+\
 						"支付方式："+_type+"\n"+\
-						"----------------------------------------\n"+\
-						"            "+receipt_msg
+						"-------------------------\n"+\
+						"\n"+receipt_msg
 						#打印内容
 			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
 			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
@@ -938,7 +938,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					return None
 		else:
 			return None
-
 
 	##############################################################################################
 	# 订单完成后 ，积分 相应增加 ，店铺可提现余额相应增加
