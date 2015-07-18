@@ -14,7 +14,7 @@
             <span class="month-span"><span class="month"></span>月</span>
             <span class="date-span"><span class="date"></span>日</span>
             <span class="week-span hidden">第<span class="week"></span>周</span>
-            <span class="week-span hidden">(<span class="week-month1">7</span>月<span class="week-date1">8</span>日~<span class="week-month2">7</span>月<span class="week-date2">15</span>日)</span>
+            <span class="week-span11 hidden"><span class="week-month1">7</span>月<span class="week-date1">8</span>日~<span class="week-month2">7</span>月<span class="week-date2">15</span>日</span>
         </span>
         <a href="javascript:;" class="next-item text-grey2"> > </a>
     </div>
@@ -25,7 +25,7 @@
             <li data-id="3"><a href="javascript:;" class="sort-month text-grey3">按月排</a></li>
         </ul>
     </div>
-    <div id="goods_type" class="clearfix mlf20"></div>
+    <div class="max-height-roll clearfix mlf20"><div id="goods_type" class="clearfix"></div></div>
     <hr class="clearfix"/>
 
 
@@ -37,7 +37,7 @@
             <span class="month-span2"><span class="month2"></span>月</span>
             <span class="date-span2"><span class="date2"></span>日</span>
             <span class="week-span2 hidden">第<span class="week2"></span>周</span>
-            <span class="week-span2 hidden">(<span class="week-month12">7</span>月<span class="week-date12">8</span>日~<span class="week-month22">7</span>月<span class="week-date22">15</span>日)</span>
+            <span class="week-span22 hidden"><span class="week-month12">7</span>月<span class="week-date12">8</span>日~<span class="week-month22">7</span>月<span class="week-date22">15</span>日</span>
         </span>
         <a href="javascript:;" class="next-item2 text-grey2"> > </a>
     </div>
@@ -48,7 +48,7 @@
             <li data-id="3"><a href="javascript:;" class="sort-month2 text-grey3">按月排</a></li>
         </ul>
     </div>
-    <div id="goods_name" class="clearfix mlf20"></div>
+    <div class="max-height-roll clearfix mlf20"><div id="goods_name" class="clearfix"></div></div>
     <hr class="clearfix"/>
 
     <p class="tit font16">月销售额走势图 - 单种类目商品</p>
@@ -65,31 +65,16 @@
         <div class="tit cate-title">选择商品类目：</div>
         <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有 (1111)</em>
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" id="first_type"></em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="all">所有 (11)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="on">已上架 (22)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="off">已下架 (333)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="sold_out">已售完 (44)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="current_sell">待成交 (55)</a>
-                    </li>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentTypeName">
                 </ul>
             </div>
     </li>
 
     <div id="single_type" class="clearfix mlf20"></div>
-    <hr class="clearfix"/>
+    <hr class="clearfix mt50"/>
 
     <p class="tit font16">月销售额走势图 - 单种商品</p>
     <div class="choose-change center-block font18 txt-center">
@@ -105,30 +90,15 @@
         <div class="tit cate-title">选择商品名称：</div>
         <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" id="first_name">所有 (1111)</em>
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" id="first_name"></em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="all">所有 (11)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="on">已上架 (22)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="off">已下架 (333)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="sold_out">已售完 (44)</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item" href="javascript:;" data-id="current_sell">待成交 (55)</a>
-                    </li>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentGoodsName">
                 </ul>
             </div>
     </li>
 
-    <div id="single_name" class="clearfix mlf20"></div>
+    <div id="single_name" class="clearfix mlf20 mb50"></div>
 
 </div>
 {% end %}

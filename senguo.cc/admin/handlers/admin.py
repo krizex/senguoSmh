@@ -531,14 +531,27 @@ class SellStatic(AdminBaseHandler):
 				return self.send_success(output_data = total_price_list)
 		elif action == 'single_type':
 			type_name = self.args["type_name"]
-			# type_name = '荔枝'
 
 			start_date_str = start_date
 			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
-			month0 = start_date.month
+			now = datetime.datetime.now()
+			now_date = datetime.datetime(now.year,now.month,now.day)
+			if start_date.month == now.month:
+				flag_date = now_date
+			else:
+				if start_date.month in [1,3,5,7,8,10,12]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,31)
+				elif start_date.month in [4,6,9,11]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,30)
+				elif start_date.month == 2:
+					year = start_date.year
+					if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+						flag_date = datetime.datetime(start_date.year,start_date.month,29)
+					else:
+						flag_date = datetime.datetime(start_date.year,start_date.month,28)
 
 			month_price_list = []
-			while start_date.month == month0:
+			while start_date <=flag_date:
 				start_date_str = start_date.strftime('%Y-%m-%d')
 				start_date_pre = start_date + datetime.timedelta(days = -1)
 				start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
@@ -617,15 +630,27 @@ class SellStatic(AdminBaseHandler):
 
 		elif action == 'single_name':
 			goods_name = self.args["goods_name"]
-			# goods_name = '红苹果'
 
 			start_date_str = start_date
 			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
 			now = datetime.datetime.now()
 			now_date = datetime.datetime(now.year,now.month,now.day)
-			
+			if start_date.month == now.month:
+				flag_date = now_date
+			else:
+				if start_date.month in [1,3,5,7,8,10,12]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,31)
+				elif start_date.month in [4,6,9,11]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,30)
+				elif start_date.month == 2:
+					year = start_date.year
+					if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+						flag_date = datetime.datetime(start_date.year,start_date.month,29)
+					else:
+						flag_date = datetime.datetime(start_date.year,start_date.month,28)
+
 			month_price_list = []
-			while start_date <= now_date:
+			while start_date <= flag_date:
 				start_date_str = start_date.strftime('%Y-%m-%d')
 				start_date_pre = start_date + datetime.timedelta(days = -1)
 				start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
@@ -655,7 +680,6 @@ class SellStatic(AdminBaseHandler):
 							total += total_price
 				month_price_list.append(total)
 				start_date = start_date + datetime.timedelta(days = 1)
-
 			return self.send_success(output_data = month_price_list)
 		else:
 			return self.send_error(404)

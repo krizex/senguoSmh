@@ -45,7 +45,7 @@ $(document).ready(function(){
 	current_sort_way = 1;
 	liveInit();
 	ChooseDate = CurrentDate;
-	$(".week-span").hide();
+	$(".week-span11").hide();
 
 	$(".year-span").show();
 	$(".month-span").show();
@@ -57,8 +57,7 @@ $(document).ready(function(){
 	liveInit();
 	ChooseDate = CurrentDate;
 	var week_first_date = getWeekFirstDate(CurrentDate);
-	var week_last_date = getWeekLastDate(CurrentDate);
-
+	var week_last_date = GetDateN(week_first_date,6);
 	$(".week-month1").text(week_first_date.getMonth()+1);
 	$(".week-date1").text(week_first_date.getDate());
 	$(".week-month2").text(week_last_date.getMonth()+1);
@@ -67,7 +66,7 @@ $(document).ready(function(){
 	$(".month-span").hide();
 	$(".date-span").hide();
 	$(".year-span").show();
-	$(".week-span").removeClass("hidden").show();
+	$(".week-span11").removeClass("hidden").show();
 
 	show_chart('type',week_first_date,week_last_date);
 
@@ -77,7 +76,7 @@ $(document).ready(function(){
 	ChooseDate = CurrentDate;
 
 	$(".date-span").hide();
-	$(".week-span").hide();
+	$(".week-span11").hide();
 
 	$(".year-span").show();
 	$(".month-span").show();
@@ -106,7 +105,7 @@ $(document).ready(function(){
 			choose_week = WeekNumOfYear(ChooseDate);
 
 			var week_first_date = getWeekFirstDate(ChooseDate);
-			var week_last_date = getWeekLastDate(ChooseDate);
+			var week_last_date = GetDateN(week_first_date,6);
 
 			$(".week-month1").text(week_first_date.getMonth()+1);
 			$(".week-date1").text(week_first_date.getDate());
@@ -155,7 +154,7 @@ $(document).ready(function(){
 			choose_week = WeekNumOfYear(ChooseDate);
 
 			var week_first_date = getWeekFirstDate(ChooseDate);
-			var week_last_date = getWeekLastDate(ChooseDate);
+			var week_last_date = GetDateN(week_first_date,6);
 
 			$(".week-month1").text(week_first_date.getMonth()+1);
 			$(".week-date1").text(week_first_date.getDate());
@@ -195,7 +194,7 @@ $(document).ready(function(){
 	current_sort_way2 = 1;
 	liveInit();
 	ChooseDate2 = CurrentDate;
-	$(".week-span2").hide();
+	$(".week-span22").hide();
 
 	$(".year-span2").show();
 	$(".month-span2").show();
@@ -207,7 +206,7 @@ $(document).ready(function(){
 	liveInit();
 	ChooseDate2 = CurrentDate;
 	var week_first_date = getWeekFirstDate(CurrentDate);
-	var week_last_date = getWeekLastDate(CurrentDate);
+	var week_last_date = GetDateN(week_first_date,6);
 
 	$(".week-month12").text(week_first_date.getMonth()+1);
 	$(".week-date12").text(week_first_date.getDate());
@@ -217,7 +216,7 @@ $(document).ready(function(){
 	$(".month-span2").hide();
 	$(".date-span2").hide();
 	$(".year-span2").show();
-	$(".week-span2").removeClass("hidden").show();
+	$(".week-span22").removeClass("hidden").show();
 
 	show_chart('name',week_first_date,week_last_date);
 }).on("click",".sort-month2",function(){
@@ -226,7 +225,7 @@ $(document).ready(function(){
 	ChooseDate2 = CurrentDate;
 
 	$(".date-span2").hide();
-	$(".week-span2").hide();
+	$(".week-span22").hide();
 
 	$(".year-span2").show();
 	$(".month-span2").show();
@@ -254,7 +253,7 @@ $(document).ready(function(){
 			choose_week2 = WeekNumOfYear(ChooseDate2);
 
 			var week_first_date = getWeekFirstDate(ChooseDate2);
-			var week_last_date = getWeekLastDate(ChooseDate2);
+			var week_last_date = GetDateN(week_first_date,6);
 
 			$(".week-month12").text(week_first_date.getMonth()+1);
 			$(".week-date12").text(week_first_date.getDate());
@@ -301,7 +300,7 @@ $(document).ready(function(){
 			choose_week2 = WeekNumOfYear(ChooseDate2);
 
 			var week_first_date = getWeekFirstDate(ChooseDate2);
-			var week_last_date = getWeekLastDate(ChooseDate2);
+			var week_last_date = GetDateN(week_first_date,6);
 
 			$(".week-month12").text(week_first_date.getMonth()+1);
 			$(".week-date12").text(week_first_date.getDate());
@@ -340,9 +339,10 @@ $(document).ready(function(){
 	$(".year3").text(choose_year3);
 	$(".month3").text(choose_month3);
 
-	// var start_date = new Date(choose_year2,choose_month2-1,1);
-	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
-	// show_chart('name',start_date,end_date);
+	var first_type = $("#first_type").text();
+	var start_date = new Date(choose_year3,choose_month3-1,1);
+	var end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
+	show_chart('single_type',start_date,end_date,first_type);
 }).on("click",".next-item3",function(){
 	if(choose_month3 == 12){
 		choose_month3 = 1;
@@ -355,9 +355,10 @@ $(document).ready(function(){
 	$(".year3").text(choose_year3);
 	$(".month3").text(choose_month3);
 
-	// var start_date = new Date(choose_year2,choose_month2-1,1);
-	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
-	// show_chart('name',start_date,end_date);
+	var first_type = $("#first_type").text();
+	var start_date = new Date(choose_year3,choose_month3-1,1);
+	var end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
+	show_chart('single_type',start_date,end_date,first_type);
 }).on("click",".pre-item4",function(){
 	if(choose_month4 == 1){
 		choose_month4 = 12;
@@ -370,9 +371,10 @@ $(document).ready(function(){
 	$(".year4").text(choose_year4);
 	$(".month4").text(choose_month4);
 
-	// var start_date = new Date(choose_year2,choose_month2-1,1);
-	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
-	// show_chart('name',start_date,end_date);
+	var first_name = $("#first_name").text();
+	var start_date = new Date(choose_year4,choose_month4-1,1);
+	var end_date = new Date(choose_year4,choose_month4-1,getLastDayOfMonth(choose_month4,choose_year4))
+	show_chart('single_name',start_date,end_date,first_name);
 
 }).on("click",".next-item4",function(){
 	if(choose_month4 == 12){
@@ -386,10 +388,10 @@ $(document).ready(function(){
 	$(".year4").text(choose_year4);
 	$(".month4").text(choose_month4);
 
-	// var start_date = new Date(choose_year2,choose_month2-1,1);
-	// var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
-	// show_chart('name',start_date,end_date);
-	
+	var first_name = $("#first_name").text();
+	var start_date = new Date(choose_year4,choose_month4-1,1);
+	var end_date = new Date(choose_year4,choose_month4-1,getLastDayOfMonth(choose_month4,choose_year4))
+	show_chart('single_name',start_date,end_date,first_name);
 });
 
 // 实时更新函数
@@ -646,29 +648,49 @@ function show_all_single_chart(start_date,end_date){
 				var name_max = output_data["name_max"];
 				var all_type = output_data["all_type"];
 				var all_goods = output_data["all_goods"] ;
-				console.log(all_goods);
-				show_chart("single_type",start_date,end_date,type_max);
 
-				show_chart("single_name",start_date,end_date,name_max);
 				$("#first_name").text(name_max);
+				$("#first_type").text(type_max);
+				show_chart("single_type",start_date,end_date,type_max);
+				show_chart("single_name",start_date,end_date,name_max);
+				
+				 $("#currentTypeName").empty();
+				 $("#currentGoodsName").empty();
+
+				  for(var i = 0;i < all_type.length;i++){
+
+				 	var type_id = "type"+i;
+				 	var item = '<li>'
+				 	   +'<a class="item" id={{type_id}} onclick="onTypeItemClick({{type_id}})">{{type_name}}</a>'
+				 	     '</li';
+				 	var render = template.compile(item);
+
+				 	var type_name = all_type[i];
+				 	var list_item= render({
+				 		type_id:type_id,
+				 		type_name:type_name			 	
+					 });
+				 	$("#currentTypeName").append(list_item);
+
+				 }
 
 				 for(var i = 0;i < all_goods.length;i++){
 
+				 	var goods_id = "goods"+i;
+				 	var item = '<li>'
+				 	   +'<a class="item" id={{goods_id}} onclick="onNameItemClick({{goods_id}})">{{goods_name}}</a>'
+				 	     '</li';
+				 	var render = template.compile(item);
+
+				 	var goods_name = all_goods[i];
+				 	var list_item= render({
+				 		goods_id:goods_id,
+				 		goods_name:goods_name			 	
+					 });
+				 	$("#currentGoodsName").append(list_item);
+
 				 }
-				
-				
 
-				// 		var myChart2 = ec.init(document.getElementById('single_name'));
-			 //            		             myChart2.showLoading({
-			 //                	            		text: '正在努力的读取数据中...'
-			 //            			});
-			 //            			myChart2.hideLoading();
-			 //            			getCount("name",options,myChart2,output_data["name_data"]);
-
-			 
-				// 	}	
-
-				// );
 
 			}
 			else{
@@ -679,6 +701,24 @@ function show_all_single_chart(start_date,end_date){
             			return Tip('网络好像不给力呢~ ( >O< ) ~！');
             		}
             	);	
+}
+
+function  onTypeItemClick(type_id){
+	var first_type = $("#"+type_id.id).text();
+	$("#first_type").text(first_type);
+	var start_date = new Date(choose_year3,choose_month3-1,1);
+	var end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
+	show_chart('single_type',start_date,end_date,first_type);
+
+}
+
+function  onNameItemClick(goods_id){
+	var first_name = $("#"+goods_id.id).text();
+	$("#first_name").text(first_name);
+	var start_date = new Date(choose_year4,choose_month4-1,1);
+	var end_date = new Date(choose_year4,choose_month4-1,getLastDayOfMonth(choose_month4,choose_year4))
+	show_chart('single_name',start_date,end_date,first_name);
+
 }
 
 function show_all_chart(start_date,end_date){
@@ -692,8 +732,8 @@ function show_all_chart(start_date,end_date){
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
-				$("#goods_type").css("height",output_data["type_data"].length*50 + "px");
-				$("#goods_name").css("height",output_data["name_data"].length*50 + "px");
+				$("#goods_type").css("height",output_data["type_data"].length*40 + "px");
+				$("#goods_name").css("height",output_data["name_data"].length*40 + "px");
 				require.config({
 				       	paths: {
 				            		echarts:'/static/js'
@@ -815,7 +855,7 @@ function show_chart(action,start_date,end_date,name){
 				var output_data = res.output_data;
 
 				if(action == 'type'){
-					$("#goods_type").css("height",output_data.length*50 + "px");
+					$("#goods_type").css("height",output_data.length*40 + "px");
 					require.config({
 					       	paths: {
 					            		echarts:'/static/js'
@@ -849,6 +889,7 @@ function show_chart(action,start_date,end_date,name){
 									            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
 									        }
 								    },
+
 								    toolbox: {
 									        show : true,
 									        feature : {
@@ -900,7 +941,7 @@ function show_chart(action,start_date,end_date,name){
 					);
 				}
 				else if(action == 'name'){
-					$("#goods_name").css("height",output_data.length*50 + "px");
+					$("#goods_name").css("height",output_data.length*40 + "px");
 					require.config({
 					       	paths: {
 					            		echarts:'/static/js'
@@ -985,6 +1026,7 @@ function show_chart(action,start_date,end_date,name){
 					);
 				}
 				else if(action == 'single_type'){
+					
 					$("#single_type").css("height","400px");
 					require.config({
 					       	paths: {
@@ -1005,6 +1047,13 @@ function show_chart(action,start_date,end_date,name){
 				            			});
 				            			myChart.hideLoading();
 				            			var options = {
+				            				   title : {
+								        	        subtext: '数值单位：元',
+								        	        x:'center',
+								        	        subtextStyle: {
+									            		color: '#000'          // 副标题文字颜色
+									        }
+								    },
 								    tooltip : {
 								        show: true,
 								        trigger: 'item'
@@ -1013,17 +1062,28 @@ function show_chart(action,start_date,end_date,name){
 								        show : true,
 								        feature : {
 								            mark : {show: true},
+								             dataZoom : {show: true},
 								            dataView : {show: false, readOnly: false},
 								            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
 								            restore : {show: true},
 								            saveAsImage : {show: true}
 								        }
 								    },
+								    dataZoom: {
+								       	show: true,
+								       	handleSize:20,
+								       	realtime : true
+       									 
+   								     },
 								    calculable : true,
+								       
+								     legend:{
+								    	data:[]
+								    },
 								    xAxis : [
 								        {
 								            type : 'category',
-								            data : ['周一','周二','周三','周四','周五','周六','周日','周一','周二','周三','周四','周五','周六','周日','周一','周二','周三','周四','周五','周六','周日','周六','周日','周一','周二','周三','周四','周五','周六','周日']
+								            data : []
 								        }
 								    ],
 								   yAxis : [
@@ -1036,49 +1096,6 @@ function show_chart(action,start_date,end_date,name){
 								        	}
 								    ],
 								    series : [
-								        {
-								            name:'邮件营销',
-								            stack: '总量',
-								            type:'bar',
-								            data:[220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210]
-								        },
-								        {
-								            name:'联盟广告',
-								            type:'bar',
-								            stack: '总量',
-								            data:[120, 232, 451, 134, 190, 230, 110,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210]
-								        },
-								        {
-								            name:'直接访问',
-								            type:'bar',
-								            stack: '总量',
-								            data:[
-								                320, 332, 100, 334,390,330, 320,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210
-								            ]
-								        },
-								        {
-								            name:'搜索引擎',
-								            stack: '总量',
-								            type:'bar',
-								            data:[
-								                620, 732, 701,734, 890, 930, 820,220, 232, 101, 234, 190, 330, 210,220, 232, 101, 234, 190, 330, 210,330, 210,220, 232, 101, 234, 190, 330, 210
-								            ]
-
-								        },
-								        {	
-								        	// show:false,
-								        	// name:"",
-								        	// stack: '总量',
-								         //      type:'bar',
-								         //      data:[]
-								        },
-								        {
-								        	// show:false,
-								        	// name:"",
-								        	// stack: '总量',
-								         //      type:'bar',
-								         //      data:[]
-								        }
 								        
 								    ],
 								    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
@@ -1086,14 +1103,9 @@ function show_chart(action,start_date,end_date,name){
 								                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
 								                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
 							};
-							// options.series[4] = {};
-							// options.series[5] = {};
-							// options.series[4].show = true;
-							// options.series[4].name = "lalaa";
-							// options.series[4].data = [100,200,300,400,500,600,700];
-							myChart.refresh();
-							myChart.setOption(options);
-							// getCount("type",options,myChart1,output_data["type_data"]);
+							getCount("single_type",options,myChart,output_data);
+							// myChart.refresh();
+							// myChart.setOption(options);
 						}
 					);
 
@@ -1119,7 +1131,13 @@ function show_chart(action,start_date,end_date,name){
 				            			});
 				            			myChart.hideLoading();
 				            			var options = {
-								    
+								     title : {
+								        	        subtext: '数值单位：元',
+								        	        x:'center',
+								        	        subtextStyle: {
+									            		color: '#000'          // 副标题文字颜色
+									        }
+								    },
 								    tooltip : {
 								        	        trigger: 'axis'
 								    },
@@ -1127,16 +1145,21 @@ function show_chart(action,start_date,end_date,name){
 								        		show : true,
 								       		 feature : {
 								            			mark : {show: true},
+								            			dataZoom : {show: true},
 								            			dataView : {show: false, readOnly: false},
 								            			magicType : {show: true, type: ['line', 'bar']},
 								            			restore : {show: true},
 								            			saveAsImage : {show: true}
 								       		 }
 								    },
+								    dataZoom: {
+								       	show: true,
+								       	handleSize:20,
+								       	realtime : true
+       									 
+   								     },
 								    calculable : true,
-								    // legend:{
-								    // 	data:["销售额"]
-								    // },
+								   
 								    xAxis : [
 								        	{
 								            		type : 'category',
@@ -1209,9 +1232,9 @@ function getDateStr(date){
 function getCount(action,options,myChart,output_data){
 	options.xAxis[0].data = []
 	options.yAxis[0].data = [];
-    	options.series[0].data = [];
 	myChart.clear();
 	if(action == "type"){
+		options.series[0].data = [];
 		for(var i = 0;i < output_data.length;i++){
 			var data = output_data[i];
 			var price = parseFloat(data["type_total_price"]).toFixed(2);
@@ -1221,6 +1244,7 @@ function getCount(action,options,myChart,output_data){
 
 	}
 	else if(action == "name"){
+		options.series[0].data = [];
 		for(var i = 0;i < output_data.length;i++){
 			var data = output_data[i];
 			var price = parseFloat(data["total_price"]).toFixed(2);
@@ -1229,17 +1253,26 @@ function getCount(action,options,myChart,output_data){
 		}
 	}	
 	else if(action == "single_type"){
-		// for(var i = output_data.length - 1;i >= 0;i--){
-		// 	var data = output_data[i];
-		// 	var price = parseFloat(data["type_total_price"]).toFixed(2);
-		// 	options.xAxis[0].data.push(data["type_name"]);
-		// 	options.series[0].data.push(price);
-		// }
-		
+		options.series = [];
+		var obj0 = output_data[0]["per_name_total_price"];
+		for(var key in obj0){
+			options.series.push({name:key,stack:'总量',type:'bar',data:[obj0[key]]});
+			options.legend.data.push(key);
+		}
+		options.xAxis[0].data.push("1号");
 
-
+		for(var i = 1;i < output_data.length;i++){
+			var obj = output_data[i]["per_name_total_price"];
+			var n = 0;
+			for (var key in obj){
+				options.series[n].data.push(obj[key]);
+				n++;
+			}
+			options.xAxis[0].data.push(i+1+"号");
+		}		
 	}
 	else if(action == "single_name"){
+		options.series[0].data = [];
 		for(var i = 0;i < output_data.length;i++){
 			var data = output_data[i];
 			var price =  parseFloat(parseFloat(data).toFixed(2));
