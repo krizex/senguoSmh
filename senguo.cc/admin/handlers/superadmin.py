@@ -907,8 +907,6 @@ class OrderStatic(SuperBaseHandler):
 		type = self.args["type"]
 		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 				filter(not_(models.Order.status.in_([-1,0])))
-		#q = self.session.query(models.Order.create_date).\
-		#		filter(not_(models.Order.status.in_([-1,0])))
 		if type == 1:  # 累计数据
 			pass
 		elif type == 2:  # 昨天数据
@@ -961,7 +959,6 @@ class OrderStatic(SuperBaseHandler):
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
 
-		
 		return self.send_success(data=data)
 ##
 
@@ -1453,6 +1450,7 @@ class ShopAuthenticate(SuperBaseHandler):
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
 		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
+
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
