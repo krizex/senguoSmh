@@ -1855,7 +1855,7 @@ class Spider_Good(MapBase,_CommonApi):
 class CouponsShop(MapBase, _CommonApi):
  	__tablename__='coupon_shop'
  	id=Column(Integer,autoincrement=True,primary_key=True)
- 	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+ 	shop_id=Column(Integer,nullable=False)
  	coupon_id=Column(Integer,nullable=False)
  	coupon_type=Column(Integer,default=0)
  	coupon_money=Column(Float,nullable=False)
@@ -1875,6 +1875,7 @@ class CouponsShop(MapBase, _CommonApi):
  	last_day=Column(Integer)
  	get_limit=Column(Integer)
  	closed=Column(Integer,default=0)
+ 	get_rule=Column(Integer,default=0)
  		 	
 # 用户优惠券
 class CouponsCustomer(MapBase, _CommonApi):
@@ -1882,8 +1883,8 @@ class CouponsCustomer(MapBase, _CommonApi):
 	coupon_type=Column(Integer,default=0)
 	coupon_id=Column(String(11),nullable=False)
 	coupon_key=Column(String(11),nullable=False,primary_key=True)
-	customer_id=Column(Integer,ForeignKey(Customer.id))
-	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id),nullable=False)
+	customer_id=Column(Integer)
+	shop_id=Column(Integer,nullable=False)
 	get_date=Column(Integer)
 	use_date=Column(Integer)
 	effective_time=Column(Integer)

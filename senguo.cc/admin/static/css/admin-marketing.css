@@ -8,8 +8,7 @@
 .top-box{line-height:20px;margin-bottom:20px;position:relative;padding:15px;background:#f4f5f9;}
 .top-box .action-btn{position:absolute;right:10px;top:18px;}
 
-
-table{width:100%;border-collapse:collapse;overflow:hidden;}
+table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .set-box td{padding:10px;border-top:solid 1px #eee;}
 .set-box textarea{width:100%;height:60px;padding:2px;}
 
@@ -52,16 +51,26 @@ table{width:100%;border-collapse:collapse;overflow:hidden;}
 .slide-down-select .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;width: 100%;}
 .slide-down-select em{font-style:normal;display:inline-block;width:110px;font-size:14px;overflow:hidden;padding-left: 10px;text-align: left;}
 .dropdown-toggle{padding:0 4px;}
-.dropdown-menu{width:102%;}
+.dropdown-menu{width:102%;max-height: 200px;overflow: hidden;overflow-y: auto;}
 .dropdown-menu li{width:100%;padding:0;}
 .caret{position: absolute;right:5px;top: 10px;}
-.dropdown-menu li a{padding-left: 13px;}
+.dropdown-menu li a{padding-left: 13px;padding-right: 5px;width: 100%;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;}
 .header_back{background-color: #33CC66;width:400px;display: inline-block;}
 .cmtop-box{line-height:20px;margin-bottom:5px;position:relative;padding:8px;background:#f4f5f9;text-align: center;}
 .table_height1{height: 40px;padding-top: 10px;width: 14%;}
 .table_heigth2{height: 30px;padding-top:8px;width: 14%;}
 .table_heigth3{height: 30px;padding-top:8px;}
 /*优惠券*/
+.pop-win{width: 100%;height: 100%;position: fixed;background-color: rgba(0,0,0,.4);top: 0;left: 0;z-index:9999;}
+.pop-container{position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);border-radius: 2px;width:600px;background-color: #fff;color: #222;}
+.pop-top{background-color: #f4f5f9;height: 50px;line-height: 50px;}
+.close-pop{position: absolute;right: 10px;top:12px;font-size: 20px !important;color: #999;width: 24px;height: 24px;line-height: 24px;text-align: center;}
+.rolli{position: absolute;top: 76px;left: 26px;background-color:#00b0f0;width: 38px;height: 38px;border-radius: 50%;color: #fff;text-align: center;line-height: 38px;font-size: 20px;}
+.pop-cont{padding: 30px 30px 40px 80px;}
+.pop-cont>p{line-height: 22px;}
+.detail-title{text-indent: 15px;}
+.pop-bm{background-color: #f4f5f9;padding: 10px 0;text-align: center;}
+.pop-bm>a{display:inline-block;background-color: #41b546;color: #fff;width: 86px;height: 28px;line-height: 28px;text-align: center;border-radius: 2px;margin: 0 20px;}
 .coupon-active{margin-top: 13px;}
 .furit-type{padding-left: 100px;}
 .chinav li{width: 120px;}
@@ -69,17 +78,18 @@ table{width:100%;border-collapse:collapse;overflow:hidden;}
 .chinav .active{border-width:2px;}
 .newbtn{background-color: #44b549;}
 .tb-enty td{text-align: center;color: #333;}
-.tb-enty tbody tr{border:1px solid #e7e7eb;}
+.tb-enty tbody tr{border:1px solid #e7e7eb;cursor: pointer;}
 .thead{background-color: #f4f5f9;}
 .thead>td{height: 40px;line-height: 40px;font-weight:bold;}
 .tb-enty tbody td{padding: 15px 5px;-webkit-box-sizing: border-box;vertical-align: middle;font-size: 12px;}
 .tb-enty .dis-coupon>td{color: #999;}
 .tb-enty .dis-coupon a{display: none;}
-.operate span{display: none;}
+.operate .stop{display: none;}
+.operate{position: relative;}
+.all-position{top: 100%;right: -40px;left:auto;margin-top: 10px;border-color: #eee;}
 .tb-enty .dis-coupon span{display: inline;}
-
-.wrap-coupontb{width: 80%;background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;}
-.coupon-prview{width: 20%;border: 1px solid #e7e7eb;border-left:none;height: 547px;}
+.wrap-coupontb{width: 80%;background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;height:580px;}
+.coupon-prview{width: 20%;border: 1px solid #e7e7eb;border-left:none;height: 580px;}
 .coupon-tb input{width: 170px;border:1px solid #e7e7eb;height: 28px;background-color: #fff;}
 .coupon-tb td{padding: 10px 0;border:none;vertical-align: middle;}
 .cancel-add-goods{display: inline-block;height:18px;background-size: 18px;background-image: url('/static/images/admin_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
@@ -91,7 +101,6 @@ table{width:100%;border-collapse:collapse;overflow:hidden;}
 .ver7{vertical-align: 7px;}
 .ver-5{vertical-align: -5px;}
 .ver-top{vertical-align: top !important;}
-
 
 
 

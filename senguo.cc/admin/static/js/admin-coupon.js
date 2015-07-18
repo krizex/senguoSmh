@@ -1,4 +1,4 @@
-var type = 0;
+var type = 0,goods_list = null;
 $(document).ready(function () {
     $('.action-btn').each(function () {
         var $this = $(this);
@@ -10,6 +10,7 @@ $(document).ready(function () {
             $this.addClass('bg-green').text('启用');
         }
     });
+    goods_list=eval($("#goods").val());
     /*$(".cmcopy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
         copy: function(){
@@ -36,11 +37,26 @@ $(document).ready(function () {
             height : 80
         }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
     });
-}).on("click",".spread-all-item",function(e){
+    $(document).on("click",function(e){
+        if($(e.target).closest(".sw-er-tip").size()==0){
+            $(".sw-er-tip").addClass("invisible");
+        }
+    });
+}).on("click",".show-detail",function(){
+    $(".pop-detail").removeClass("hidden");
+}).on("click",".spread-btn",function(e){
     e.stopPropagation();
     $(".sw-er-tip").addClass("invisible");
-    $(this).closest(".all-bm-group").next(".sw-er-tip").toggleClass("invisible");
-}).on('click', '.coupon-active', function() {
+    $(this).closest(".operate").children(".sw-er-tip").removeClass("invisible");
+}).on("click",".coupon-edit",function(){//编辑
+    var id = $(this).attr("data-id");
+    var type = $(this).attr("data-type");
+    window.location.href="/admin/marketing?action=coupon&coupon_type="+type+"&coupon_id="+id;
+}).on("click",".detail-tr",function(){//点击看详情
+    var id = $(this).attr("data-id");
+    var type = $(this).attr("data-type");
+    window.location.href="/admin/marketing?action=coupon&coupon_type="+type+"&coupon_id="+id;
+}).on('click', '.coupon-active', function(){
     var $this = $(this);
     if ($this.attr("data-flag") == "off") return false;
     $this.attr("data-flag", "off");
@@ -75,7 +91,7 @@ $(document).ready(function () {
     var index = $(this).index();
     type = index;
     $(".chinav li").removeClass("active").eq(index).addClass("active");
-    $(".wrap-tb table").removeClass("hidden").eq(index).addClass("hidden");
+    $(".wrap-tb table").addClass("hidden").eq(index).removeClass("hidden");
 }).on("click",'.goback',function(){
     window.history.back();
 }).on('click','.ok-coupon',function(){
@@ -98,12 +114,17 @@ $(document).ready(function () {
     }
 }).on("click",".use_goods_group_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
+    var index = $(this).closest("li").index();
+    console.log(index);
+    getGoods(index,$('.use_goods_lst'));
     $(".use_goods_group").html($(this).html()).attr("data-id",id);
 }).on("click",".use_goods_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
     $(".use_goods").html($(this).html()).attr("data-id",id);
 }).on("click",".use_goods_group_lsts .item",function(){
     var id = parseInt($(this).attr("data-id"));
+    var index = $(this).closest("li").index();
+    getGoods(index,$('.use_goods_lsts'));
     $(".use_goods_groups").html($(this).html()).attr("data-id",id);
 }).on("click",".use_goods_lsts .item",function(){
     var id = parseInt($(this).attr("data-id"));
@@ -125,7 +146,16 @@ $(document).ready(function () {
     $("#dropdownMenu4 em").text($(".couponuse").text());
     insertcoupon(selected_status);
 });
-
+function getGoods(index,$obj){
+    $obj.empty();
+    console.log(goods_list);
+    var goods = goods_list[index];
+    var lis = '';
+    for(var i=0; i<goods.length; i++){
+        lis+='<li class="presentation" role="presentation"><a class="item" title="'+goods[i].goods_name+'" href="javascript:;" data-id="'+goods[i].goods_id+'">'+goods[i].goods_name+'</a></li>';
+    }
+    $obj.append(lis);
+}
 function insertcoupon(selected_status){
     var coupon_id=$.getUrlParam("coupon_id");
     var url='';
@@ -185,6 +215,7 @@ function addCoupon(type){
         if(from_get_date>to_get_date){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
+        var get_rule = 0;
         var coupon_money = $(".coupon_money").val();
         if(isNaN(coupon_money)){
             return Tip("优惠金额应该为数字类型");
@@ -215,6 +246,10 @@ function addCoupon(type){
         if(from_get_date>to_get_date){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
+        var get_rule = $(".get_rule").val();
+        if(isNaN(get_rule)){
+            return Tip("领取条件必须为数字");
+        }
         var coupon_money = $(".coupon_moneys").val();
         if(isNaN(coupon_money)){
             return Tip("优惠金额应该为数字类型");
@@ -244,6 +279,7 @@ function addCoupon(type){
         "coupon_type":type,
         "from_get_date":from_get_date,
         "to_get_date":to_get_date,
+        "get_rule":get_rule,
         "coupon_money":coupon_money,
         "use_rule":use_rule,
         "total_number":total_number,//库存

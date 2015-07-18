@@ -1,9 +1,69 @@
 {% extends 'base.html' %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
 {% end %}
-
 {% block content %}
 {% set shop_code = current_shop.shop_code %}
+<div class="">
+    <div class="c333 mt10 choose-text">
+        <div class="iblock fr">
+            <span class="mr10 ver7">筛选:</span>
+            <div class="dropdown slide-down-select w130 mr10">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                    <em class="pull-left c333 use_goods_group" data-id="-2">所有(55)</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu18">
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="-1">所有(55)</a>
+                    </li>
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="1">已领取(55)</a>
+                    </li>
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="2">已消费(55)</a>
+                    </li>
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="3">已失效(55)</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <a href="javasript:;" class="c999 cancel-add-goods goback">优惠券</a>
+        <span class="c333"> / 新建优惠券</span>
+    </div>
+</div>
+<div class="wrap-newcoupon mt20">
+    <table class="tb-enty tb-active">
+        <thead>
+            <tr class="thead">
+                <td>优惠码</td>
+                <td>优惠金额</td>
+                <td>用户</td>
+                <td>领取时间</td>
+                <td>使用时间</td>
+                <td>消费记录</td>
+            </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td><span>RDLD888dr</span><a href="javascript:;">复制</a></td>
+            <td>5.00元</td>
+            <td>等待晴天<br>ID:66666</td>
+            <td>2015-05-06 17:03:03</td>
+            <td>2015-05-06 12:34:33</td>
+            <td>订单号:<a href="javascript:;">666666666</a></td>
+        </tr>
+        <tr class="dis-coupon">
+            <td><span>RDLD888dr</span><a href="javascript:;">复制</a></td>
+            <td>5.00元</td>
+            <td>未领取</td>
+            <td>未领取</td>
+            <td>未领取</td>
+            <td>未领取</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
    <ul class="category-list group">
         <li>
             <div class="row header_back">
@@ -152,6 +212,5 @@
 {% end %}
 {% block bottom %}
 <script src="/static/js/third/jquery.zclip.min.js"></script>
-<script src="/static/js/third/qrcode.min.js"></script>
-<script src="{{static_url('js/admin-marketing.js')}}"></script>
+<script src="{{static_url('js/admin-coupon.js')}}"></script>
 {% end %}
