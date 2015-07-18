@@ -45,8 +45,8 @@
                     <td class="ver-top"><span class="ver-5">领取时间</span></td>
                     <td>
                         <div class="">
-                            选择领取时间 : <input type="text" class="Wdate from_get_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
-                             到 <input type="text" class="Wdate to_get_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                            选择领取时间 : <input type="text" class="Wdate from_get_date" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'})">
+                             到 <input type="text" class="Wdate to_get_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})">
                         </div>
                         <p class="red-txt f12 mt6">优惠券将于领取时间内发放至发现中，由用户领取</p>
                     </td>
@@ -57,7 +57,7 @@
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">库存</span></td>
-                    <td><input type="text" class="mr10 total_number"/>张<p class="mt6 f12 red-txt">只能为整数</p></td>
+                    <td><input type="text" class="mr10 total_number" value="1"/>张<p class="mt6 f12 red-txt">只能为整数</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
@@ -93,7 +93,7 @@
                             </div>
                         </div>
                         <p><input type="text" class="mr10 use_rule"/>元</p>
-                        <p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p>
+                        <p class="c999 f12 mt6">买满多少元的什么商品可消费优惠券。如不填，则默认：任意商品买满任意金额均可使用。</p>
                     </td>
                 </tr>
                 <tr>
@@ -105,8 +105,8 @@
                     <td class="radio-list radio-list1">
                         <div class="coupon-row f12">
                             <a href="javascript:;" class="radio" data-id="0"></a>
-                            <input type="text" class="Wdate from_valid_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
-                             到 <input type="text" class="Wdate to_valid_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                            <input type="text" class="Wdate from_valid_date" id="3" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date4\')}'})">
+                             到 <input type="text" class="Wdate to_valid_date" id="4" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date3\')}'})">
                         </div>
                         <div class="coupon-row f12 mt10">
                             <a href="javascript:;" class="radio" data-id="1"></a>
@@ -124,19 +124,19 @@
                     <td class="ver-top"><span class="ver-5">领取时间2</span></td>
                     <td>
                         <div class="">
-                            选择领取时间 : <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
-                            到 <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                            选择领取时间 : <input type="text" class="Wdate from_get_dates" id="date5" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date6\')}'})">
+                            到 <input type="text" class="Wdate to_get_dates" id="date6" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date5\')}'})">
                         </div>
                         <p class="red-txt f12 mt6">优惠券将于领取时间内发放至发现中，由用户领取</p>
                     </td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">领取限制<br><span class="c999 ml10">(选填)</span></span></td>
-                    <td><input type="text" class="mr10"/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
+                    <td><input type="text" class="mr10 get_limits"/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">库存</span></td>
-                    <td><input type="text" class="mr10"/>张<p class="mt6 f12 red-txt">只能为整数</p></td>
+                    <td><input type="text" class="mr10 total_numbers"/>张<p class="mt6 f12 red-txt">只能为整数</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
@@ -145,24 +145,23 @@
                             <span class="mr10 ver7">选择商品分组:</span>
                             <div class="dropdown slide-down-select w130 mr10">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 current-group" data-id="2">所有分组</em>
+                                    <em class="pull-left c333 use_goods_groups" data-id="-2">所有分组</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lsts" role="menu" aria-labelledby="dropdownMenu18">
+                                    {% for group in output_data%}
                                     <li class="presentation" role="presentation">
-                                        <a class="item" href="javascript:;" data-id="0">店铺推荐</a>
+                                        <a class="item" href="javascript:;" data-id="{{group['group_id']}}">{{group['group_name']}}</a>
                                     </li>
-                                    <li class="presentation" role="presentation">
-                                        <a class="item" href="javascript:;" data-id="1">默认分组</a>
-                                    </li>
+                                    {% end %}
                                 </ul>
                             </div>
                             <div class="dropdown slide-down-select w130">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 current-group" data-id="2">所有商品</em>
+                                    <em class="pull-left c333 use_goodss" data-id="2">所有商品</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_lsts" role="menu" aria-labelledby="dropdownMenu18">
                                     <li class="presentation" role="presentation">
                                         <a class="item" href="javascript:;" data-id="0">麒麟大西瓜</a>
                                     </li>
@@ -172,26 +171,28 @@
                                 </ul>
                             </div>
                         </div>
+                        <p><input type="text" class="mr10 use_rules"/>元</p>
+                        <p class="c999 f12 mt6">买满多少元的什么商品可消费优惠券。如不填，则默认：任意商品买满任意金额均可使用。</p>
                     </td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠金额</span></td>
-                    <td><input type="text" class="mr10"/>元<p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p></td>
+                    <td><input type="text" class="mr10 coupon_moneys"/>元<p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠券有效期</span></td>
-                    <td class="radio-list">
+                    <td class="radio-list radio-list2">
                         <div class="coupon-row f12">
-                            <a href="javascript:;" class="radio"></a>
-                            <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
-                            到 <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                            <a href="javascript:;" class="radio" data-id="0"></a>
+                            <input type="text" class="Wdate from_valid_dates" id="date7" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date8\')}'})">
+                            到 <input type="text" class="Wdate to_valid_dates" id="date8" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date7\')}'})">
                         </div>
                         <div class="coupon-row f12 mt10">
-                            <a href="javascript:;" class="radio"></a>
-                            领取即生效，有效期天数为 <input type="text" class="mr10">天
+                            <a href="javascript:;" class="radio" data-id="1"></a>
+                            领取即生效，有效期天数为 <input type="text" class="mr10 last_days">天
                         </div>
                         <div class="coupon-row f12 mt10">
-                            <a href="javascript:;" class="radio radio-active"></a>
+                            <a href="javascript:;" class="radio radio-active" data-id="2"></a>
                             不限时间，任何时间能用
                         </div>
                     </td>

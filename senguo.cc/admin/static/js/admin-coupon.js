@@ -102,6 +102,12 @@ $(document).ready(function () {
 }).on("click",".use_goods_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
     $(".use_goods").html($(this).html()).attr("data-id",id);
+}).on("click",".use_goods_group_lsts .item",function(){
+    var id = parseInt($(this).attr("data-id"));
+    $(".use_goods_groups").html($(this).html()).attr("data-id",id);
+}).on("click",".use_goods_lsts .item",function(){
+    var id = parseInt($(this).attr("data-id"));
+    $(".use_goodss").html($(this).html()).attr("data-id",id);
 }).on('click','.couponall',function(){ //所有
     var selected_status=0;
     $("#dropdownMenu3 em").text($(".couponall").text());
@@ -173,18 +179,67 @@ function insertcoupon(selected_status){
         });
 }
 function addCoupon(type){
-    var from_get_date = $(".from_get_date").val();
-    var to_get_date = $(".to_get_date").val();
-    var coupon_money = $(".coupon_money").val();
-    var use_rule = $(".use_rule").val();
-    var total_number = $(".total_number").val();
-    var get_limit = $(".get_limit").val();
-    var use_goods_group = $(".use_goods_group").attr("data-id");
-    var use_goods = $(".use_goods").attr("data-id");
-    var valid_way = $(".radio-list1").find(".radio-active").attr('data-id');
-    var from_valid_date = $(".from_valid_date").val();
-    var to_valid_date = $(".to_valid_date").val();
-    var last_day = $(".last_day").val();
+    if(type==0){
+        var from_get_date = $(".from_get_date").val();
+        var to_get_date = $(".to_get_date").val();
+        if(from_get_date>to_get_date){
+            return Tip("领取时间的开始时间不能大于结束时间");
+        }
+        var coupon_money = $(".coupon_money").val();
+        if(isNaN(coupon_money)){
+            return Tip("优惠金额应该为数字类型");
+        }
+        var use_rule = $(".use_rule").val();
+        var total_number = $(".total_number").val();
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
+            return Tip("库存应该为数字类型");
+        }
+        var get_limit = $(".get_limit").val();
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
+            return Tip("领取限制应该为数字类型");
+        }
+        var use_goods_group = $(".use_goods_group").attr("data-id");
+        var use_goods = $(".use_goods").attr("data-id");
+        var valid_way = $(".radio-list1").find(".radio-active").attr('data-id');
+        var from_valid_date = $(".from_valid_date").val();
+        var to_valid_date = $(".to_valid_date").val();
+        if(parseInt(valid_way)==0){
+            if(from_valid_date>to_valid_date){
+                return Tip("优惠券的有效期起始时间不能大于结束时间");
+            }
+        }
+        var last_day = $(".last_day").val();
+    }else{
+        var from_get_date = $(".from_get_dates").val();
+        var to_get_date = $(".to_get_dates").val();
+        if(from_get_date>to_get_date){
+            return Tip("领取时间的开始时间不能大于结束时间");
+        }
+        var coupon_money = $(".coupon_moneys").val();
+        if(isNaN(coupon_money)){
+            return Tip("优惠金额应该为数字类型");
+        }
+        var use_rule = $(".use_rules").val();
+        var total_number = $(".total_numbers").val();
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
+            return Tip("库存应该为数字类型");
+        }
+        var get_limit = $(".get_limits").val();
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
+            return Tip("领取限制应该为数字类型");
+        }
+        var use_goods_group = $(".use_goods_groups").attr("data-id");
+        var use_goods = $(".use_goodss").attr("data-id");
+        var valid_way = $(".radio-list2").find(".radio-active").attr('data-id');
+        var from_valid_date = $(".from_valid_dates").val();
+        var to_valid_date = $(".to_valid_dates").val();
+        if(parseInt(valid_way)==0){
+            if(from_valid_date>to_valid_date){
+                return Tip("优惠券的有效期起始时间不能大于结束时间");
+            }
+        }
+        var last_day = $(".last_days").val();
+    }
     var data={
         "coupon_type":type,
         "from_get_date":from_get_date,
@@ -207,8 +262,11 @@ function addCoupon(type){
         function(res){
             if(res.success){
                 Tip('新建优惠券成功!');
+                setTimeout(function(){
+                    window.location.href="/admin/marketing?action=coupon&coupon_type=0";
+                },2000);
             }else{
-                Tip('新建优惠券成功!');
+                Tip(res.error_text);
             }
         },
         function(){
