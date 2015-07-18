@@ -79,15 +79,13 @@ $(document).ready(function () {
 }).on("click",'.goback',function(){
     window.history.back();
 }).on('click','.ok-coupon',function(){
-    addCoupon("newcoupon",type);
+    addCoupon(type);
 }).on("click",".radio-list .radio",function(){
     $(".radio-list .radio").removeClass("radio-active");
     $(this).addClass("radio-active");
 }).on('click','#selected_status',function(){ //详情类型切换
     var coupon_id=$.getUrlParam("coupon_id");
     insertcoupon(coupon_id);
-}).on('click','.newbtn',function(){
-    window.location.href="/admin/marketing?action=newcouponpage";
 }).on("click",'.coupon-types .item',function(){//优惠券类型
     var id = parseInt($(this).attr("data-id"));
     $(".current-type").html($(this).html()).attr("data-id",id);
@@ -98,6 +96,12 @@ $(document).ready(function () {
         $(".coupon1").addClass("hidden");
         $(".coupon2").removeClass("hidden");
     }
+}).on("click",".use_goods_group_lst .item",function(){
+    var id = parseInt($(this).attr("data-id"));
+    $(".use_goods_group").html($(this).html()).attr("data-id",id);
+}).on("click",".use_goods_lst .item",function(){
+    var id = parseInt($(this).attr("data-id"));
+    $(".use_goods").html($(this).html()).attr("data-id",id);
 }).on('click','.couponall',function(){ //所有
     var selected_status=0;
     $("#dropdownMenu3 em").text($(".couponall").text());
@@ -169,35 +173,45 @@ function insertcoupon(selected_status){
         });
 }
 function addCoupon(type){
-
+    var from_get_date = $(".from_get_date").val();
+    var to_get_date = $(".to_get_date").val();
+    var coupon_money = $(".coupon_money").val();
+    var use_rule = $(".use_rule").val();
+    var total_number = $(".total_number").val();
+    var get_limit = $(".get_limit").val();
+    var use_goods_group = $(".use_goods_group").attr("data-id");
+    var use_goods = $(".use_goods").attr("data-id");
+    var valid_way = $(".radio-list1").find(".radio-active").attr('data-id');
+    var from_valid_date = $(".from_valid_date").val();
+    var to_valid_date = $(".to_valid_date").val();
+    var last_day = $(".last_day").val();
     var data={
-        "conpon_type":type,
-        from_get_date:'',//领取
-        to_get_datae:'',
-        "coupon_money":in1,
-        "use_rule":in2,
-        "total_number":in3,//库存
-        "get_limit":in4,
-        "use_goods_group":'',
-        "use_goods":'',//
-        "valid_way":0,//有效期方式
-        "from_valid_date":'',//
-        "to_valid_date":'',//
+        "coupon_type":type,
+        "from_get_date":from_get_date,
+        "to_get_date":to_get_date,
+        "coupon_money":coupon_money,
+        "use_rule":use_rule,
+        "total_number":total_number,//库存
+        "get_limit":get_limit,
+        "use_goods_group":use_goods_group,
+        "use_goods":use_goods,//
+        "valid_way":valid_way,//有效期方式
+        "from_valid_date":from_valid_date,//
+        "to_valid_date":to_valid_date,//
         "start_day":0,
-        "last_day":last_day,
+        "last_day":last_day
     };
     var args={action:"newcoupon",data:data};
     var url='';
     $.postJson(url,args,
-        function (res) {
-            if (res.success) {
+        function(res){
+            if(res.success){
                 Tip('新建优惠券成功!');
-            }
-            else {
+            }else{
                 Tip('新建优惠券成功!');
             }
         },
-        function () {
+        function(){
             Tip('网络好像不给力呢~ ( >O< ) ~');
         });
 }

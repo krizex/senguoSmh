@@ -45,8 +45,8 @@
                     <td class="ver-top"><span class="ver-5">领取时间</span></td>
                     <td>
                         <div class="">
-                            选择领取时间 : <input type="text" class="Wdate from_get_data" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
-                             到 <input type="text" class="Wdate to_get_data" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                            选择领取时间 : <input type="text" class="Wdate from_get_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                             到 <input type="text" class="Wdate to_get_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
                         </div>
                         <p class="red-txt f12 mt6">优惠券将于领取时间内发放至发现中，由用户领取</p>
                     </td>
@@ -66,13 +66,13 @@
                             <span class="mr10 ver7">选择商品分组:</span>
                             <div class="dropdown slide-down-select w130 mr10">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 use_goods_group" data-id="2">所有分组</em>
+                                    <em class="pull-left c333 use_goods_group" data-id="-2">所有分组</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu18">
                                     {% for group in output_data%}
                                     <li class="presentation" role="presentation">
-                                        <a class="item" href="javascript:;" data-id="{{group.group_id}}">{{group.group_name}}</a>
+                                        <a class="item" href="javascript:;" data-id="{{group['group_id']}}">{{group['group_name']}}</a>
                                     </li>
                                     {% end %}
                                 </ul>
@@ -82,7 +82,7 @@
                                     <em class="pull-left c333 use_goods" data-id="2">所有商品</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
-                                <ul class="dropdown-menu dropdown-menu-right w130 group-goods-lst" role="menu" aria-labelledby="dropdownMenu18">
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_lst" role="menu" aria-labelledby="dropdownMenu18">
                                     <li class="presentation" role="presentation">
                                         <a class="item" href="javascript:;" data-id="0">麒麟大西瓜</a>
                                     </li>
@@ -92,26 +92,28 @@
                                 </ul>
                             </div>
                         </div>
+                        <p><input type="text" class="mr10 use_rule"/>元</p>
+                        <p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p>
                     </td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠金额</span></td>
-                    <td><input type="text" class="mr10"/>元<p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p></td>
+                    <td><input type="text" class="mr10 coupon_money"/>元<p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠券有效期</span></td>
-                    <td class="radio-list">
+                    <td class="radio-list radio-list1">
                         <div class="coupon-row f12">
-                            <a href="javascript:;" class="radio"></a>
-                            <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
-                             到 <input type="text" class="Wdate" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                            <a href="javascript:;" class="radio" data-id="0"></a>
+                            <input type="text" class="Wdate from_valid_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
+                             到 <input type="text" class="Wdate to_valid_date" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})">
                         </div>
                         <div class="coupon-row f12 mt10">
-                            <a href="javascript:;" class="radio"></a>
-                            领取即生效，有效期天数为 <input type="text" class="mr10">天
+                            <a href="javascript:;" class="radio" data-id="1"></a>
+                            领取即生效，有效期天数为 <input type="text" class="mr10 last_day">天
                         </div>
                         <div class="coupon-row f12 mt10">
-                            <a href="javascript:;" class="radio radio-active"></a>
+                            <a href="javascript:;" class="radio radio-active" data-id="2"></a>
                             不限时间，任何时间能用
                         </div>
                     </td>
@@ -360,12 +362,6 @@
                 </div> 
             </div>
         </div>
-</div>
-      <div class="col-lg-4 div1"> hhhh</div>
-</div>
-<div class="row">
-    <button class="configbtn cmhref btn">确认</button>
-    <a href="/admin/marketing?action=coupon" class="cmhref"> <button class="btn configcancel">取消</button></a>
 </div>
 {% end %}
 {% block bottom %}

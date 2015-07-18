@@ -1854,8 +1854,9 @@ class Spider_Good(MapBase,_CommonApi):
 # 	use_rule=Column(Float,nullable=False)
 class CouponsShop(MapBase, _CommonApi):
  	__tablename__='coupon_shop'
- 	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False,primary_key=True)
- 	coupon_id=Column(Integer,nullable=False,primary_key=True)
+ 	id=Column(Integer,autoincrement=True,primary_key=True)
+ 	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+ 	coupon_id=Column(Integer,nullable=False)
  	coupon_type=Column(Integer,default=0)
  	coupon_money=Column(Float,nullable=False)
  	from_get_date=Column(Integer,nullable=False)

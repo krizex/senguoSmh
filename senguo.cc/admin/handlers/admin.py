@@ -2929,6 +2929,8 @@ class ShopAuthenticate(AdminBaseHandler):
 # 营销和玩法
 class Marketing(AdminBaseHandler):
 	def updatecoupon(self):
+		current_shop_id=self.current_shop.id
+		current_customer_id=self.current_user.id
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id).all()
 		for x in q:
@@ -2943,6 +2945,8 @@ class Marketing(AdminBaseHandler):
 		self.session.commit()
 		return None		
 	def getcoupon(self,q):
+		current_shop_id=self.current_shop.id
+		current_customer_id=self.current_user.id
 		for x in q:
 			if q.use_goods_group==0:
 				use_goods_group="默认分组"
@@ -2962,22 +2966,22 @@ class Marketing(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int")
 	def get(self):
 		action = self.args["action"]
-		coupon_type=self.args["coupon_type"]
 		current_shop_id=self.current_shop.id
 		current_shop=self.current_shop
-		updatecoupon(self)
+		self.updatecoupon()
 		if action == "lovewall":
 			return self.render("admin/lovewall.html",context=dict(subpage='marketing',subpage2='love_wall'))
 		
 		elif action=="coupon":
+			coupon_type=self.args["coupon_type"]
 			m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type).count()
 			data=[]
 			use_goods_group=None
 			use_goods=None
 			q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,closed=0).all()
 			q2=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,closed=1).all()
-			getcoupon(self,q1)
-			getcoupon(self,q2)		
+			self.getcoupon(q1)
+			self.getcoupon(q2)		
 			return self.render("admin/coupon.html",output_data=data,context=dict(subpage='marketing',subpage2='coupon'))
 		elif action=="newcoupon":
 			pass
@@ -3007,6 +3011,7 @@ class Marketing(AdminBaseHandler):
 			# session.commit()
 			# return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
 		elif action=="details":
+			coupon_type=self.args["coupon_type"]
 			coupon_id=int(self.args["coupon_id"])
 			coupon_type=int(self.args["coupon_type"])
 			data=[]
@@ -3048,7 +3053,7 @@ class Marketing(AdminBaseHandler):
 			return self.render("admin/details.html",output_data=data,data1=data1,context=dict(subpage='marketing'))
 		elif action=="newcouponpage":
 			data=[]
-			date1=[]
+			data1=[]
 			q=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
 			for x in q:
 				x_goodsgroup={"group_id":x.id,"group_name":x.name}
@@ -3090,12 +3095,12 @@ class Marketing(AdminBaseHandler):
 			self.session.commit()
 			return self.send_success()
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int")
+	@AdminBaseHandler.check_arguments("action:str","data?","coupon_id?:int","select_rule?:int","coupon_type?:int")
 	def post(self):
 		action = self.args["action"]
 		current_shop_id = self.current_shop.id
 		current_shop=self.current_shop
-		updatecoupon(self)
+		self.updatecoupon()
 		if action == "confess_active":
 			active = current_shop.marketing.confess_active
 			current_shop.marketing.confess_active = 0 if active == 1 else 1
@@ -3131,17 +3136,17 @@ class Marketing(AdminBaseHandler):
 			# return self.render("admin/coupon.html",output_data=data,context=dict(subpage='coupon'))
 		elif action=="newcoupon":
 			data=self.args["data"]
-			coupon_type=data["coupon_type"]
+			coupon_type=int(data["coupon_type"])
 			x=data["from_get_date"]
 			from_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
 			x=data["to_get_date"]
 			to_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
-			coupon_money=data["coupon_money"]
-			use_rule=data["use_rule"]
+			coupon_money=float(data["coupon_money"])
+			use_rule=float(data["use_rule"])
 			total_number=int(data["total_number"])
-			get_limit=data["get_limit"]
-			use_goods_group=data["use_goods_group"]
-			use_goods=data["use_goods"]
+			get_limit=int(data["get_limit"])
+			use_goods_group=int(data["use_goods_group"])
+			use_goods=int(data["use_goods"])
 			valid_way=int(data["valid_way"])
 			from_valid_date=None
 			to_valid_date=None
@@ -3160,9 +3165,9 @@ class Marketing(AdminBaseHandler):
 			coupon_id=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()+1
 			new_coupon=models.CouponsShop(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_money=coupon_money,\
 				from_get_date=from_get_date,to_get_date=to_get_date,use_goods_group=use_goods_group,use_goods=use_goods,use_rule=use_rule,\
-				total_number=total_number,use_number=use_number,get_number=use_number,valid_way=valid_way,from_valid_date=from_valid_date,\
+				total_number=total_number,use_number=0,get_number=0,valid_way=valid_way,from_valid_date=from_valid_date,\
 				to_valid_date=to_valid_date,start_day=start_day,last_day=last_day,get_limit=get_limit,closed=0)
-			self.add(new_coupon)
+			self.session.add(new_coupon)
 			for i in range(total_number):
 				chars=string.digits+string.ascii_letters
 				chars=''.join(random.sample(chars*10,4))
