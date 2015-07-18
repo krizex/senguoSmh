@@ -1,0 +1,291 @@
+{% extends 'detail-base.html' %}
+{% block title %}个人中心{% end %}
+{% block top %}个人中心{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-profile.css')}}"/>
+{% end %}
+{% block content %}
+<div class="user-info-detail pt36 clea bm-none" id="container">
+    <div class="item-title">基本信息</div>
+    <ul class="pt2 profile-lst bm-line">
+        <a href="javascript:;">
+        <li class="item bt-none">
+            <div class="info-con">
+                <span class="title img-title pull-left text-grey3">头像</span>
+                <i class="arr-right pull-right mt12"></i>
+                <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="user-img pull-right"/>
+            </div>
+        </li>
+        </a>
+        <!--<li class="item">
+            <div class="info-con">
+                <span class="title pull-left">昵称</span>
+                <a href="javascript:;" class="nickname pull-right s1 editInfo">{{current_user.accountinfo.nickname or '无'}}</a>
+            </div>
+        </li>-->
+        <a href="javascript:;" class="box" id="userRealname">
+        <li class="item">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">姓名</span>
+                <i class="arr-right pull-right"></i>
+                <span class="nickname pull-right s1" id="userName">{{current_user.accountinfo.realname or '无'}}</span>
+            </div>
+        </li>
+        </a>
+        <a href="javascript:;" id="userSex" class="box">
+        <li class="item">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">性别</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right s1 user_sex" data-id="{{current_user.accountinfo.sex}}"></span>    
+            </div>
+        </li>
+        </a>
+        <a href="javascript:;" class="box" id="userBirthday">
+        <li class="item">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">出生日期</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right s1" id="birthDay">{{context['birthday'] or '请设置'}}</span>
+            </div>
+        </li>
+        </a>
+    </ul>
+    <ul class="profile-lst">
+        <li class="item bt-none">
+            <div class="info-con">
+                <span class="title img-title pull-left">我浏览过的店铺</span>
+                <a href="javascript:;">
+                    <i class="arr-right pull-right mt12"></i>
+                    {% if context['shop_info'] %}
+                    {% for shop in context['shop_info'] %}
+                        <a href="/{{shop['shop_code']}}" class="wrap-img  pull-right ml6">
+                            <span class="wrap-img-b"><img src="{{shop['logo'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" class="shop-img"/></span>
+                        </a>
+                    {% end %}
+                    {% else %}
+                        <span class="title img-title pull-right">没有店铺浏览</span>
+                    {% end %}
+                </a>
+            </div>
+        </li>
+        <a href="/admin" id="1" class="box">
+        <li class="item">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">我是卖家</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right text-grey9">管理我的店铺</span>
+            </div>
+        </li>
+        </a>
+        <a href="/staff" id="2" class="box">
+        <li class="item">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">我是店铺成员</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right text-grey9">进入员工后台</span>
+            </div>
+        </li>
+        </a>
+    </ul>
+    <div class="item-title">帐号与安全</div>
+    <ul class="m-b20 profile-lst">
+        <a href="javascript:;" id="senguoID" class="box">
+        <li class="item bt-none">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">我的用户ID&nbsp;&nbsp;<span class="c999">{{current_user.accountinfo.id}}</span></span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right question-icon g-txt"></span>
+            </div>
+        </li>
+        </a>
+        <a href="javascript:;" id="phoneNumber" class="box">
+        <li class="item">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">手机号绑定&nbsp;&nbsp;<span class="c999 phone">{{current_user.accountinfo.phone or '未绑定'}}</span></span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right tiephone g-txt">更换</span>    
+            </div>
+        </li>
+        </a>
+        <a href="{{reverse_url('customerPassword')}}" class="box">
+        <li class="item">
+            <div class="info-con h19">
+                <span class="title pull-left text-grey3">密码管理</span>
+                <i class="arr-right pull-right"></i>
+                <span class="pull-right g-txt">重置</span>
+                <!--<a href="javascript:;" id="setPwd" class="box">
+                    <span class="title pull-left text-grey3">密码管理</span>
+                     <i class="arr-right pull-right"></i>
+                    <span class="pull-right setPwd g-txt">设置密码</span>
+                </a>-->
+            </div>
+        </li>
+        </a>
+        <li class="item">
+            <div class="info-con">
+                <span class="title img-title pull-left lh50">第三方帐号绑定</span>
+                <a href="javascript:;" class="third-bind" data-wx="{{context['wxnotice']}}">
+                    <i class="arr-right pull-right mt8"></i>
+                    {% if context['third'] and context['third'][0]['weixin'] == True %}
+                    <a href="javascript:;" class="bind_wx"><img src="/static/images/wx.png" class="third-img pull-right ml6"/></a>
+                    {% else %}
+                    <a href="javascript:;" class="bind_wx"><img src="/static/images/wx_grey.png" class="third-img pull-right ml6"/></a>
+                    {% end %}
+                </a>
+            </div>
+        </li>
+        <!--<li class="item">
+            <div class="info-con">
+                <span class="title pull-left">邮箱</span>
+                <a href="javascript:;" class="pull-right s1 editInfo" id="userMail">{{current_user.accountinfo.email}}</a>
+            </div>
+            <div class="info-edit" style="display:none;">
+                <input type="text" class="edit-box" id="mailEdit" value="{{current_user.accountinfo.email or ''}}" placeholder="请设置"/>
+                <div class="btn-box">
+                    <a href="javascript:;" class="btn concel-btn text-white">取消</a>
+                    <a href="javascript:;" class="btn sure-btn text-white" data-action="email">确定</a>
+                </div>
+            </div>
+        </li>-->
+
+    </ul>
+    <a class="back-btn clearfix b-radius0 mt20" href="{{reverse_url('customerLogout')}}">退出登录</a>
+    <p class="copy-right">powered by senguo.cc</p>
+</div>
+{% end %}
+{% block bottom %}
+<div class="modal fade tie-popbox" id="tieBox">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title text-center line48">绑定手机</h2>
+            </div>
+            <div class="modal-body font14 clearfix">
+                <div class="tie-info">
+                    <div class="phone-number">
+                        <input type="tel" placeholder="请输入手机号" class="phone input1 pull-left" id="enterPhone"/>
+                        <button type="button" class="get-code pull-right btn bg-green3 sure_btn" id="getVrify"/>获取验证码</button>
+                    </div>
+                    <input type="text" placeholder="请输入收到的短信验证码" class="input1" id="enterVrify"/>
+                </div>
+            </div>
+            <div class="modal-warn">
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>
+            </div>
+             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<!--<div class="modal fade" id="pwdBox">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title text-center line48">{% if current_user.accountinfo.password %}修改密码{% else %}设置密码{% end %}</h2>
+            </div>
+            <div class="modal-body font14 clearfix">
+                <div class="tie-info set-pwd-box" style="display:none">
+                    <input type="password" placeholder="设置一个手机号登录密码" class="input1" id="loginPassword"/>
+                    <input type="password" placeholder="密码确认" class="input1" id="passwordConfirm"/>
+                </div>
+                <div class="tie-info change-pwd-box" style="display:none">
+                    <input type="password" placeholder="请输入原始密码" class="input1" id="originPassword"/>
+                    <input type="password" placeholder="请输入新密码" class="input1" id="newPassword"/>
+                    <input type="password" placeholder="请再次输入新密码" class="input1" id="newConfirm"/>
+                    <p class="text-right"><a href="{{reverse_url('customerPassword')}}" class="text-pink">忘记密码？</a></p>
+                </div>
+            </div>
+            <div class="modal-warn">
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white"  id="pwdSure">确定</button>
+            </div>
+             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>-->
+<div class="modal fade sex-popbox" id="sexBox">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48"></h2>
+            </div>
+            <div class="modal-body">
+                <ul class="list-group sex-list font16">
+                    <li class="list-group-item height40" data-id="1">男</li>
+                    <li class="list-group-item height40" data-id="2">女</li>
+                    <li class="list-group-item height40" data-id="0">其他</li>
+                </ul>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade sex-popbox" id="nameBox">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">修改姓名</h2>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="name-ipt input1" id="realnameEdit" placeholder="请输入真实姓名" value="{{current_user.accountinfo.realname or ''}}"/>
+            </div>
+            <div class="modal-warn">
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white" id="nameSure">确定</button>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade sex-popbox" id="birthBox">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">修改生日</h2>
+            </div>
+            <div class="modal-body">
+                <input type="text" class="birth-ipt input1" id="year-ipt" placeholder="出生年份,如：2015" value=""/>
+                <input type="text" class="birth-ipt input1" id="month-ipt" placeholder="出生月份,如：05" value=""/>
+                <input type="text" class="birth-ipt input1" id="day-ipt" placeholder="出生当天,如：20" value=""/>
+            </div>
+            <div class="modal-warn">
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white" id="birthSure">确定</button>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<div class="modal fade sex-popbox" id="questionBox">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">什么是用户ID？</h2>
+            </div>
+            <div class="modal-body">
+                <p class="font14 text-center">用户ID是您在该平台的唯一身份标识</p>
+            </div>
+            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+        </div>
+    </div>
+</div>
+<script src="/static/js/sha256.js"></script>
+<script src="{{static_url('js/market-profile.js')}}"></script>
+{% end %}

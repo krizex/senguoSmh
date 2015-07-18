@@ -1,0 +1,176 @@
+{% extends 'market-base.html' %}
+{% block title%}营销设置{% end %}
+{% block setcontent %}
+{% if shop_code and shop_code!='not set' %}
+<div class="clearfix top-box">
+    <p class="c333 f16 coupon-show-txt">已<span>开启</span>优惠券<a href="javascript:;" class="ml10 f16 show-detail">查看详情</a></p>
+    <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
+    <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
+     <button class="btn text-white  action-btn coupon-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
+</div>
+<div class="category-list">
+    <div class="c999">优惠券<span class="c333">/优惠券管理</span></div>
+    <div class="subnav-box group mt30">
+        <ul class="subnav chinav pull-left furit-type">
+            <li class="txt-center active" data-type="active"><a href="javascript:;">活动优惠券</a></li>
+            <li class="txt-center" data-type="charge"><a href="javascript:;">充值优惠券</a></li>
+        </ul>
+        <div class="wrap-newbtn fr">
+            <a href="/admin/marketing?action=newcouponpage" class="newbtn add-btn  mt6 mr10">+新建优惠券</a>
+        </div>
+    </div>
+</div>
+<div class="wrap-tb mt30">
+    <table class="tb-enty tb-active">
+        <colgorup>
+            <col width="18%"/>
+            <col width="8%"/>
+            <col width="10%"/>
+            <col width="10%"/>
+            <col width="18%"/>
+            <col width="10%"/>
+            <col width="12%"/>
+            <col width="14%"/>
+        </colgorup>
+        <thead>
+            <tr class="thead">
+                <td>领取时间</td>
+                <td>领取限制</td>
+                <td>优惠条件</td>
+                <td>优惠金额</td>
+                <td>优惠券有效期</td>
+                <td>可消费商品</td>
+                <td>使用/领取/库存</td>
+                <td>操作</td>
+            </tr>
+        </thead>
+        <tbody>
+        {#{% for coupon in output_data %}
+            <tr class="detail-tr">
+                <td>{{coupon['from_get_date']}}到{{coupon['to_get_date']}}</td>
+                <td>每人限领{{coupon['get_limit']}}张</td>
+                <td>任意商品买满金额可用</td>
+                <td>{{coupon['coupon_money']}}元</td>
+                <td>{{coupon['from_valid_date']}}到{{coupon['to_valid_date']}}</td>
+                <td>{% if coupon['use_goods_group'] == -2 %}所有商品{% else %}限商品分组:{{coupon['use_goods_group']}}{% end %}</td>
+                <td>8/12/coupon['total_number']</td>
+                <td class="operate">
+                    <a href="javascript:;" class="mr10 coupon-edit" data-id="{{coupon['id']}}">编辑</a>
+                    <a href="javascript:;" class="mr10 spread-btn">推广</a>
+                    <a href="javascript:;" class="red-txt" data-id="{{coupon['id']}}">停用</a>
+                    <span class="stop">已停用</span>
+                    <div class="sw-er-tip all-position invisible">
+                        <div class="top-arr">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                        <p class="er-text">优惠券链接</p>
+                        <div class="wrap-ipt">
+                            <input type="text" class="sw-link-txt" value="http://senguo.cc/list" disabled="">
+                            <input type="button" class="sw-link-copy" value="复制链接">
+                            <div class="zclip" id="zclip-ZeroClipboardMovie_1" style="position: absolute; left: 220px; top: 45px; width: 80px; height: 30px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="/static/js/third/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="80" height="30" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=80&amp;height=30" wmode="transparent"></div></div>
+                        <div class="wrap-er group">
+                            <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                            <div class="er-text lh80 fl">链接二维码</div>
+                            <div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% end %}#}
+        <tr class="detail-tr dis-coupon hidden">
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>每人限领一张</td>
+            <td>任意商品买满金额可用</td>
+            <td>5.00元</td>
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>限商品分组:店铺推荐</td>
+            <td>8/12/10</td>
+            <td class="operate">
+                <a href="javascript:;" class="mr10 coupon-edit">编辑</a>
+                <a href="javascript:;" class="mr10">推广</a>
+                <a href="javascript:;" class="red-txt">停用</a>
+                <span class="stop">已停用</span>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <table class="tb-enty tb-charge hidden">
+        <colgorup>
+            <col width="18%"/>
+            <col width="8%"/>
+            <col width="10%"/>
+            <col width="12%"/>
+            <col width="18%"/>
+            <col width="10%"/>
+            <col width="10%"/>
+            <col width="14%"/>
+        </colgorup>
+        <thead>
+        <tr class="thead">
+            <td>领取时间</td>
+            <td>领取条件</td>
+            <td>领取限制</td>
+            <td>使用优惠券条件</td>
+            <td>优惠金额和优惠条件</td>
+            <td>可消费商品</td>
+            <td>使用/领取</td>
+            <td>操作</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for data in data1 %}
+        <tr>
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>每人限领一张</td>
+            <td>任意商品买满金额可用</td>
+            <td>5.00元</td>
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>限商品分组:店铺推荐</td>
+            <td>8/12/10</td>
+            <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span class="stop">已停用</span></td>
+        </tr>
+        <tr class="dis-coupon">
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>每人限领一张</td>
+            <td>任意商品买满金额可用</td>
+            <td>5.00元<br><span class="c999">任意商品买满任意金额可用</span></td>
+            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+            <td>限商品分组:店铺推荐</td>
+            <td>8/12/10</td>
+            <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span class="stop">已停用</span></td>
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
+</div>
+<div class="pop-win pop-detail hidden">
+    <div class="pop-container">
+        <a href="javascript:;" class="close-pop">x</a>
+        <span class="rolli">i</span>
+        <div class="pop-top">
+            <p class="detail-title">提示</p>
+        </div>
+        <div class="pop-cont">
+            <p class="f16">优惠券发放规则</p>
+            <p class="mt6">1、商家可通过新建两种类型的优惠券进行促销、充值活动。</p>
+            <p>2、在领取时间内，优惠券将发放至商城的发现列表中，供用户领取；商家也可通过发
+                放兑换码，供用在商城中我的优惠券列表中领取。</p>
+            <p>3、每笔订单仅限使用一张优惠券，不可找零、叠加、拆分使⽤用。</p>
+            <p>4、请慎重考虑使用停用功能。⼀一旦停用，该优惠券发放机制失效，但已领取优惠券的
+                用户优惠券仍能使用。</p>
+            <p>5、使用非正常途径或手段获得的优惠券奖励无效，最终解释权归森果所有。</p>
+        </div>
+        <div class="pop-bm">
+            <a href="javascript:;">我知道了</a>
+            <a href="javascript:;">更多详情</a>
+        </div>
+    </div>
+</div>
+{% else %}
+<h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
+{% end %}
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-coupon.js')}}"></script>
+{% end %}

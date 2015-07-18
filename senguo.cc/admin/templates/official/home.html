@@ -1,0 +1,213 @@
+{% extends 'base.html'%}
+
+{% block head-css%}
+<link rel="stylesheet" href="{{static_url('m-admin/css/idangerous.swiper.css')}}"/>
+<link href="{{static_url('css/official_home.css')}}" rel="stylesheet">
+{% end %}
+{% block content%}
+<div class="slide_box" id="slideBox">
+    <div class="swiper-container" id="swiper-container">
+        <div class="swiper-wrapper">
+            <div class="swiper-slide item">
+                <img src="{{static_url('official_img/bg.jpg')}}" class="bg"/>
+                <div class="bg-bg"></div>
+                <div class="bg-text">
+                    <h1>再小的水果店，也要有自己的O2O平台</h1>
+                    <p>水果零售新模式，再不加入就晚了。</p>
+                    <a href="{{reverse_url('fruitzoneShopApply')}}">申请接入</a>
+                </div>
+            </div>
+            <div class="swiper-slide item">
+                <img src="{{static_url('official_img/bg.jpg')}}" class="bg"/>
+                <div class="bg-bg"></div>
+                <div class="bg-text">
+                    <h1>全平台的水果商城</h1>
+                    <p>微信、客户端、PC网站，全方位覆盖</p>
+                    <a href="{{reverse_url('fruitzoneShopApply')}}">申请接入</a>
+                </div>
+            </div>
+            <div class="swiper-slide item">
+                <img src="{{static_url('official_img/bg.jpg')}}" class="bg"/>
+                <div class="bg-bg"></div>
+                <div class="bg-text">
+                    <h1>最好用的后台管理系统</h1>
+                    <p>全方位数据统计、免注册微信登录、卡片式订单管理、最简易商品管理、自助式员工招募、</br>方便的工资结算，想要的功能应有尽有。</p>
+                    <a href="{{reverse_url('fruitzoneShopApply')}}">申请接入</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pagination"></div>
+</div>
+<div class="w1000 center-block">
+	<!--<div class="announcement text-center">
+		<ul class="box font16">
+			<li class="item"><span class="con mr10 pull-left">公告:森果推出新功能</span><span class="date text-grey pull-right">2015-03-11</span></li>
+		</ul>
+	</div>-->
+    <ul class="bar-list group">
+        <li>
+            <ul class="text-list">
+                <div class="title">官方公告<a class="pull-right font12 text-grey" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official"  target="_blank">更多>></a></div>
+                {% for a in article_list["notice"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}" target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
+            </ul>
+        </li>
+        <li>
+            <ul class="text-list">
+                <div class="title">产品更新<a class="pull-right font12 text-grey" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update"  target="_blank">更多>></a></div>
+                {% for a in article_list["update"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
+            </ul>
+        </li>
+        <li>
+            <ul class="text-list">
+                <div class="title">运营干货<a class="pull-right font12 text-grey" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry"  target="_blank">更多>></a></div>
+               {% for a in article_list["dry"]%}
+                <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+                {% end %}
+            </ul>
+        </li>
+    </ul>
+    <div class="group"></div>
+    <div class="wrap-type">
+        <p class="box-title">森果适用的水果经营模式</p>
+        <ul class="type-list group">
+            <li>
+                <div class="type-img"><img src="/static/official_img/icon9.png" alt="水果O2O"/></div>
+                <p class="mt20 first-title">水果O2O</p>
+                <p class="second-title">森果有多种风格的商城模板，完善便捷的店铺管理功能，方便您进行水果O2O的一切探索。
+                    无论是线上下单线下自提或配送的基础模式，还是预售、团购、秒杀、周期购等创新形式，森果满足您对于技术上的一切需求。
+                </p>
+            </li>
+            <li>
+                <div class="type-img"><img src="/static/official_img/icon10.png" alt="水果连锁经营"/></div>
+                <p class="mt20 first-title">水果单店铺经营</p>
+                <p class="second-title">省去店铺收银系统、CRM系统、商超系统等昂贵的成本，手机+电子秤+扫描枪，轻松开店。
+                </p>
+            </li>
+            <li>
+                <div class="type-img"><img src="/static/official_img/icon11.png" alt="水果单店铺经营"/></div>
+                <p class="mt20 first-title">水果连锁经营</p>
+                <p class="second-title">使用森果对您连锁经营的多个店铺进行管理，对每个店铺的采购和销售情况、员工和工资记录等，了如指掌。
+                </p>
+            </li>
+            <li>
+                <div class="type-img"><img src="/static/official_img/icon12.png" alt="水果商家聚合"/></div>
+                <p class="mt20 first-title">水果商家聚合</p>
+                <p class="second-title">您可以将附近的水果店整合起来，打造水果商家聚合平台。
+                </p>
+            </li>
+        </ul>
+    </div>
+    <div class="group"></div>
+    <div class="wrap-trait">
+        <p class="box-title mt30">线上买水果，森果更懂你</p>
+        <ul class="trait-list">
+            <li class="first"><span class="roll black-bg l-roll">潮流</span><span class="mobg rb-bg"></span><span class="mobg lt-bg first-lt"></span>精致简约水果商城，创新有趣的营销玩法设计，引领潮流</li>
+            <li class="second"><span class="roll cyan-bg r-roll">专业</span><span class="mobg lt-bg"></span><span class="mobg lb-bg"></span>专注于水果O2O，后台功能强大，使用便捷，稳定而高效</li>
+            <li class="third"><span class="roll purple-bg l-roll">经验</span><span class="mobg rt-bg"></span><span class="mobg rb-bg"></span>团队前身为微信水果先行者--We信水果帮，拥有水果线上运营宝贵的经验</li>
+            <li class="four"><span class="roll cyan-bg r-roll">同行</span><span class="mobg lt-bg"></span><span class="mobg lb-bg"></span>最大的水果零售商聚集地，拥有丰富的同行资源，供分享交流学习提高</li>
+            <li class="five"><span class="roll black-bg l-roll">供应链</span><span class="mobg rt-bg"></span><span class="mobg lb-bg five-lb"></span>从产地到批发到零售，完善的水果供应链信息提供</li>
+        </ul>
+    </div>
+    <div class="intro_list">
+        <div class="intro-top">水果O2O应用场景</div>
+        <ul class="group">
+            <li class="item pull-left text-center">
+                <img src="{{static_url('official_img//intro1.png')}}" class="img"/>
+                <div class="intro mt10">
+                    <p class="text-center font18">高校</p>
+                    <p class="text-center font14">水果O2O领跑之域</p>
+                    <p class="text-grey text-center mt-3">学生越来越懒、社交平台传播快、寝室楼栋集中</p>
+                </div>
+            </li>
+            <li class="item pull-left text-center">
+                <img src="{{static_url('official_img//intro2.png')}}" class="img"/>
+                <div class="intro mt10">
+                    <p class="text-center font18">商圈</p>
+                    <p class="text-center font14">水果O2O盈利之所</p>
+                    <p class="text-grey text-center mt-3">配送方便、写字楼与上班族、对果切等水果加工品需求高</p>
+                </div>
+            </li>
+            <li class="item pull-left text-center">
+                <img src="{{static_url('official_img//intro3.png')}}" class="img"/>
+                <div class="intro mt10">
+                    <p class="text-center font18">社区</p>
+                    <p class="text-center font14">水果O2O必争之地</p>
+                    <p class="text-grey text-center mt-3">小区人口集中、消费水平高、水果消费意识好、客单价高</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="wrap-step">
+        <p class="box-title">新手上路</p>
+        <ul class="step-list group">
+            <li>
+                <div class="roll-step yellow-bg">step<br>1</div>
+                <p class="first-title">提交店铺申请</p>
+                <p class="second-title">森果将在24小时内完成审核</p>
+            </li>
+            <li class="wp5"></li>
+            <li>
+                <div class="roll-step dgreen-bg">step<br>2</div>
+                <p class="first-title">设置店铺信息</p>
+                <p class="second-title">管理后台拥有强大便捷的设置功能</p>
+            </li>
+            <li class="wp5"></li>
+            <li>
+                <div class="roll-step blue-bg">step<br>3</div>
+                <p class="first-title">推广您的店铺</p>
+                <p class="second-title">多渠道多形式增加店铺粉丝数</p>
+            </li>
+        </ul>
+    </div>
+    <div class="wrap-qa mt40">
+        <p class="box-title">大家都在问</p>
+        <ul class="qa-list group">
+            <li>
+                <ul class="qa-text-list">
+                    <li>
+                        <div class="wrap-qa-item mb20">
+                            <p class="qus">Q：森果是免费的吗？</p>
+                            <p class="ans">A：森果系统对卖家是永久免费的，不仅免费，有很多原本收费的服务我们还有补贴。</p>
+                        </div>
+                        <div class="wrap-qa-item mb20">
+                            <p class="qus">Q：森果系统只能在微信上使用吗？</p>
+                            <p class="ans">A：森果提供了微信、qq、支付宝、手机号等多种登录方式。您可以在微信、qq、支付宝、微博等多个渠道进行店铺的推广与经营。</p>
+                        </div>
+                        <div class="wrap-qa-item">
+                            <p class="qus">Q：接入需要什么条件？</p>
+                            <p class="ans">A：几乎是不需要什么条件的。不过最好您进来是卖水果的，为水果行业提供免费的互联网工具，提高行业运转效率，这是我们的初衷。</p>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <ul class="qa-text-list">
+                    <li>
+                        <div class="wrap-qa-item mb20">
+                            <p class="qus">Q：我是新手想学习水果开店经验？</p>
+                            <p class="ans">A：恭喜你来对了地方！森果平台是中国最大的水果零售商聚集地。您可以联系客户加入用户交流群向同行牛人学习，也可以在森果社区学习水果行业的相关知识。</p>
+                        </div>
+                        <div class="wrap-qa-item mb20">
+                            <p class="qus">Q：你们提供货源吗？</p>
+                            <p class="ans">A：森果是一个免费的水果第三方平台，主要提供技术支持，目前不提供货源。不过我们会为您提供采购信息支持。</p>
+                        </div>
+                        <div class="wrap-qa-item">
+                            <p class="qus">Q：店铺认证有什么作用？</p>
+                            <p class="ans">A：为保障店铺和消费者的权益，森果开设的店铺需要进行店铺认证。认证完全免费，且流程简单。店铺认证后才能使用支付等高级功能。</p>
+                        </div>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+{% end %}
+{% block bottom-js%}
+<script src="{{static_url('m-admin/js/idangerous.swiper.min.js')}}"></script>
+<script src="{{static_url('js/official_home.js')}}"></script>
+{% end %}

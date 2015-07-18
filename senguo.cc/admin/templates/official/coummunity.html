@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block head-css %}
+<link href="{{static_url('css/community.css')}}" rel="stylesheet">
+{% end %}
+{% block content %}
+<div class="w1000">
+	<div class="banner bg-red"><img src="/static/images/c_banner.png"/></div>
+	<div class="classify_list mt40">
+		<ul>
+			<li class="item pull-left">
+				<a href="#">
+					<div class="img img1 text-white">A</div>
+					<p class="text-center mt10 font14">产品新动态</p>
+				</a>
+			</li>
+			<li class="item pull-left">
+				<a href="#">
+					<div class="img img2 text-white">B</div>
+					<p class="text-center mt10 font14">创业最前沿</p>
+				</a>
+			</li>
+			<li class="item pull-left">
+				<a href="#">
+					<div class="img img3 text-white">C</div>
+					<p class="text-center mt10 font14">运营经验集</p>
+				</a>
+			</li>
+			<li class="item pull-left">
+				<a href="#">
+					<div class="img img4 text-white">D</div>
+					<p class="text-center mt10 font14">水果知一二</p>
+				</a>
+			</li>
+		</ul>
+	</div>
+	<div class="article_list mt40">
+		<ul>
+			<li class="item">
+				<div class="article_img pull-left">
+					<img src="/static/images/logo.png" class="img"/>
+					<button type="button" class="great">
+						<p class="text-grey font16 text-center mt10">赞</p>
+						<p class="text-white text-center mt2">2222</p>
+					</button>
+				</div>
+				<div class="article_intro pull-left">
+					<p class="title font20">新功能上线,呵呵呵呵</p>
+					<p class="con text-grey">新功能上线,呵呵呵呵新功能上线,呵呵呵呵新功能上线,呵呵呵呵新功能上线,呵呵呵呵新功能上线,呵呵呵呵</p>
+					<div class="some clearfix">
+						<div class="info pull-left">
+							by:<span class="text-red name ml5 mr5">呵呵</span><span class="text-grey">2015-03-15 16:00</span>
+						</div>
+						<a href="javascript:;" class="share pull-right"></a>
+						<a href="javascript:;" class="comment pull-right"><span class="num text-grey">88</span></a>
+					</div>
+				</div>
+				<span class="type bg-red text-center text-white">A</span>
+			</li>
+		</ul>
+	</div>
+</div>
+{% end%}

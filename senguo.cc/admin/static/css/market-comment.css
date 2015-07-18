@@ -1,0 +1,7 @@
+.comment-item{position:relative;padding:5px;margin-top:5px;overflow:hidden;}
+.img-box{padding:3px;margin-right:-70px}
+.img-box img{width:52px;height:52px;border-radius:50%;}
+.info{position:absolute;top:10px;right:0;}
+.comment-text{margin-top:35px;margin-left:-5px;word-break:break-all;}
+.comment{margin-left:-5px;margin-top:5px;}
+.sty1{width:100%;padding-left:70px;}

@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-shop-set.css')}}"/>{% end %}
+
+{% block content %}
+{% set shopSubPage = context.get('shopSubPage') %}
+
+{% set notice_active = '' %}
+{% set pay_active ='' %}
+{% set tpl_active= ''%}
+
+{% if shopSubPage == 'notice_set' %}
+    {% set notice_active ='active' %}
+{% elif shopSubPage =='pay_set' %}
+    {% set pay_active ='active' %}
+{% elif shopSubPage =='template_set' %}
+    {% set tpl_active ='active' %}
+{% end %}
+{% set shop_code =current_shop.shop_code %}
+<span class="right-title">商城设置</span>
+<div class="subnav-box">
+    <ul class="subnav group">
+        <li class="{{tpl_active}}"><a href="{{reverse_url('adminConfig')}}?action=template"  class="{{no_auth}}">商城模板</a></li>
+        <li class="{{notice_active}}" id="noticeSet"><a href="{{reverse_url('adminConfig')}}?action=notice">商城公告</a></li>  
+        <li class="{{pay_active}}"><a href="{{reverse_url('adminConfig')}}?action=pay" class="{{no_auth}}">支付方式</a></li>
+    </ul>
+</div>
+{% block setcontent %}{% end %}
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-set.js')}}"></script>
+{% block setbottom %}{% end %}
+{% end %}
