@@ -17,13 +17,6 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .div0{font-size: 18px;margin-top:20px;text-align: center;}
 .div1{font-size: 15px;margin-top: 20px;border-color: #0000ff}
 .text-red{color: #ff0000;}
-.tit1{margin-left: 25px;}
-.tit2{font-size: 12px;text-align: center;}
-.tit3{font-size: 18px;margin-left: 0px;text-align: center;}
-.tit4{font-size: 13px;}
-.tit5{font-size: 13px}
-.tit6{font-size: 15px;color: #0000ff}
-.tit7{font-size: 15px;color: #ff7700;margin-left: 20px}
 .back{background-color: #00ff00;margin-left: 20px;font-size: 20px}
 .mytitle{font-size: 18px;margin-left: 40px}
 .div2{line-height:20px;margin-bottom:20px;margin-top:60px;position:relative;padding:15px;background:#f4f5f9;}
@@ -70,7 +63,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .pop-cont>p{line-height: 22px;}
 .detail-title{text-indent: 15px;}
 .pop-bm{background-color: #f4f5f9;padding: 10px 0;text-align: center;}
-.pop-bm>a{display:inline-block;background-color: #41b546;color: #fff;width: 86px;height: 28px;line-height: 28px;text-align: center;border-radius: 2px;margin: 0 20px;}
+.pop-bm>a{display:inline-block;background-color: #41b546;color: #fff;width: 86px;height: 28px;font-size:12px;line-height: 28px;text-align: center;border-radius: 2px;margin: 0 20px;}
 .coupon-active{margin-top: 13px;}
 .furit-type{padding-left: 100px;}
 .chinav li{width: 120px;}
@@ -101,7 +94,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .ver7{vertical-align: 7px;}
 .ver-5{vertical-align: -5px;}
 .ver-top{vertical-align: top !important;}
-
+.choose-detail-type{margin-left: 10px;margin-right: 170px;}
 
 
 

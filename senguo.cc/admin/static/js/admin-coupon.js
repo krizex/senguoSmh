@@ -44,6 +44,8 @@ $(document).ready(function () {
     });
 }).on("click",".show-detail",function(){
     $(".pop-detail").removeClass("hidden");
+}).on("click",".close-tip",function(){
+    $(".pop-detail").addClass("hidden");
 }).on("click",".spread-btn",function(e){
     e.stopPropagation();
     $(".sw-er-tip").addClass("invisible");
@@ -54,8 +56,7 @@ $(document).ready(function () {
     window.location.href="/admin/marketing?action=coupon&coupon_type="+type+"&coupon_id="+id;
 }).on("click",".detail-tr",function(){//点击看详情
     var id = $(this).attr("data-id");
-    var type = $(this).attr("data-type");
-    window.location.href="/admin/marketing?action=coupon&coupon_type="+type+"&coupon_id="+id;
+    window.location.href="/admin/marketing?action=details&coupon_type="+type+"&coupon_id="+id;
 }).on('click', '.coupon-active', function(){
     var $this = $(this);
     if ($this.attr("data-flag") == "off") return false;
