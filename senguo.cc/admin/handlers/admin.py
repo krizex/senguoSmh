@@ -3330,9 +3330,9 @@ class Marketing(AdminBaseHandler):
 			else:
 				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
 				use_goods=q1.name
-			if now_date<from_get_date:
+			if now_date<x.from_get_date:
 				edit_status=0
-			elif now_date<to_get_date:
+			elif now_date<x.to_get_date:
 				edit_status=1
 			else:
 				edit_status=2
@@ -3341,6 +3341,7 @@ class Marketing(AdminBaseHandler):
 			from_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_get_date))
 			to_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_get_date))
 			x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
+
 			"get_number":x.get_number,"total_number":x.total_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"from_get_date":from_get_date,"to_get_date":to_get_date,"get_rule":x.get_rule}
 			data.append(x_coupon)
 	@tornado.web.authenticated
@@ -3548,6 +3549,8 @@ class Marketing(AdminBaseHandler):
 			data=self.args["data"]
 			coupon_type=int(data["coupon_type"])
 			x=data["from_get_date"]
+			print("hhhhhhh")
+			print(x)
 			from_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
 			x=data["to_get_date"]
 			to_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))

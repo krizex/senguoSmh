@@ -3,27 +3,28 @@
 {% end %}
 {% block content %}
 {% set shop_code = current_shop.shop_code %}
+<input  type="hidden" id="coupon_detail">
 <div class="">
     <div class="c333 mt10 choose-text">
-        <div class="iblock fr">
+        <div class="iblock pull-right choose-detail-type">
             <span class="mr10 ver7">筛选:</span>
             <div class="dropdown slide-down-select w130 mr10">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                    <em class="pull-left c333 use_goods_group" data-id="-2">所有(55)</em>
+                    <em class="pull-left c333 use_goods_group" data-id="0">所有({{data1['a']}})</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu18">
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="-1">所有(55)</a>
+                        <a class="item" href="javascript:;" data-id="0">所有({{data1['a']}})</a>
                     </li>
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="1">已领取(55)</a>
+                        <a class="item" href="javascript:;" data-id="1">已领取({{data1['b']}})</a>
                     </li>
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="2">已消费(55)</a>
+                        <a class="item" href="javascript:;" data-id="2">已消费({{data1['c']}})</a>
                     </li>
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="3">已失效(55)</a>
+                        <a class="item" href="javascript:;" data-id="3">已失效({{data1['d']}})</a>
                     </li>
                 </ul>
             </div>
@@ -46,7 +47,7 @@
         </thead>
         <tbody>
         <tr>
-            <td><span>RDLD888dr</span><a href="javascript:;">复制</a></td>
+            <td class="relative"><span>RDLD888dr</span><a href="javascript:;" class="copy-coupon-code">复制</a></td>
             <td>5.00元</td>
             <td>等待晴天<br>ID:66666</td>
             <td>2015-05-06 17:03:03</td>
@@ -63,148 +64,6 @@
         </tr>
         </tbody>
     </table>
-</div>
-   <ul class="category-list group">
-        <li>
-            <div class="row header_back">
-               <img src="/static/images/admin_back.png" class="cmw5 back-main">
-                <a href="/admin/marketing?action=coupon" class="back_text">返回</a>
-                <span class="mytitle">优惠券/优惠券详情</span>
-                </div>
-        </li>
-        <li>
-            <div class="cate-title">商品状态 : </div>
-            <div class="dropdown slide-down-select pull-left w130">
-                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" data-id="all">所有({{data1["a"]}})</em>
-                    <span class="caret pull-right no-margin-left rotate0 "></span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
-                    <li role="presentation">
-                        <a class="item couponall" href="javascript:;" data-id="all">所有({{data1["a"]}})</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item couponget" href="javascript:;" data-id="on">已领取({{data1["b"]}})</a>
-                    </li>
-                    <li role="presentation">
-                        <a class="item couponuse" href="javascript:;" data-id="off">已使用({{data1["c"]}})</a>
-                    </li>
-                </ul>
-            </div>
-        </li>
-    </ul>
-<div class="row div2 div0">
-    <div class="col-lg-2">
-       优惠码
-    </div>
-    <div class="col-lg-2">
-     优惠金额
-    </div>
-    <div class="col-lg-2">
-       用户
-    </div>
-    <div class="col-lg-2">
-    领取时间
-    </div>
-    <div class="col-lg-2">
-    使用时间
-    </div>
-    <div class="col-lg-2">
-      消费记录
-    </div>
-</div>
-
-<div class="div1" id="list-coupons">
-    <ul>
-    {% for data in output_data %}
-        <li class="top-box row ">
-            <div class="col-lg-2">
-                <p class="" id="cmtargetcopy">{{data["coupon_key"]}}</p>
-                <button class="cmcopy">复制</button>
-            </div>
-            <div>
-                <div class="col-lg-1">
-                <p class="tit2"><span class="money">{{data["coupon_money"]}}</span>元</p>
-            </div>
-            {% if data["customer_id"]=='未领取' %}
-            <div class="col-lg-3 " id="noget">
-                {{data["customer_id"]}}
-            </div>
-            {% else %}
-            <div class="col-lg-3">
-                <div class="row">
-                    <div class="col-lg-3 ">
-                    {% if data["headimgurl"]==None%}
-                       <img src="/static/images/TDSG.png" class="cmw10" id="headimg">
-                    {% else %}
-                    <img src="{{data["headimgurl"]}}" class="cmw10" id="headimg">
-                    {% end %}
-                    </div>
-                    <div class="col-lg-6">
-                        <p id="nickname">{{data["nickname"]}}</p>
-                        <p>ID:<span id="orderid">{{data["customer_id"]}}</span></p>
-                    </div>
-                </div>
-            </div>
-
-            {% end %}
-            <div class="col-lg-2" id="getdate">
-                {{data["get_date"]}}
-            </div>
-            <div class="col-lg-2" id="usedate">
-                {{data["use_date"]}}
-            </div>
-            <div class="col-lg-2 tit3" id="customerid">
-                {{data["order_id"]}}</div>
-            </div>
-        </li>
-        {% end %}
-    </ul>
-</div>
-<div class="div1 hidden" >
-    <ul id="temp-coupons">
-        <li class="top-box row ">
-            <div class="col-lg-2">
-                <p class="" id="cmtargetcopy"></p>
-                <button class="cmcopy">复制</button>
-            </div>
-            <div>
-                <div class="col-lg-1">
-                <p class="tit2"><span class="money"></span>元</p>
-            </div>
-            {% if data["customer_id"]=='未领取' %}
-            <div class="col-lg-3 " id="noget">
-                
-            </div>
-            {% else %}
-            <div class="col-lg-3">
-                <div class="row">
-                    <div class="col-lg-3 ">
-                    {% if data["headimgurl"]==None%}
-                       <img src="/static/images/TDSG.png" class="cmw10" id="headimg">
-                    {% else %}
-                    <img src="{{data["headimgurl"]}}" class="cmw10" id="headimg">
-                    {% end %}
-                    </div>
-                    <div class="col-lg-6">
-                        <p id="nickname"></p>
-                        <p>ID:<a id="customerid"></a></p>
-                    </div>
-                </div>
-            </div>
-
-            {% end %}
-            <div class="col-lg-2" id="getdate">
-                
-            </div>
-            <div class="col-lg-2" id="usedate">
-                
-            </div>
-            <div class="col-lg-2 tit3" id="orderid">
-                </div>
-            </div>
-        </li>
-    </ul>
 </div>
 <div id="noresult">
     <h4 class="text-center" id="text"></h4>

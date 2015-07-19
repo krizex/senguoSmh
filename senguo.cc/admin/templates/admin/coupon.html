@@ -45,19 +45,19 @@
             </tr>
         </thead>
         <tbody>
-        {#{% for coupon in output_data %}
-            <tr class="detail-tr">
+        {% for coupon in output_data %}
+            <tr class="detail-tr" data-id="{{coupon['coupon_id']}}">
                 <td>{{coupon['from_get_date']}}到{{coupon['to_get_date']}}</td>
                 <td>每人限领{{coupon['get_limit']}}张</td>
                 <td>任意商品买满金额可用</td>
                 <td>{{coupon['coupon_money']}}元</td>
                 <td>{{coupon['from_valid_date']}}到{{coupon['to_valid_date']}}</td>
                 <td>{% if coupon['use_goods_group'] == -2 %}所有商品{% else %}限商品分组:{{coupon['use_goods_group']}}{% end %}</td>
-                <td>8/12/coupon['total_number']</td>
+                <td>{{coupon['use_number']}}/{{coupon['get_number']}}/{{coupon['total_number']}}</td>
                 <td class="operate">
-                    <a href="javascript:;" class="mr10 coupon-edit" data-id="{{coupon['id']}}">编辑</a>
+                    <a href="javascript:;" class="mr10 coupon-edit" data-id="{{coupon['coupon_id']}}">编辑</a>
                     <a href="javascript:;" class="mr10 spread-btn">推广</a>
-                    <a href="javascript:;" class="red-txt" data-id="{{coupon['id']}}">停用</a>
+                    <a href="javascript:;" class="red-txt" data-id="{{coupon['coupon_id']}}">停用</a>
                     <span class="stop">已停用</span>
                     <div class="sw-er-tip all-position invisible">
                         <div class="top-arr">
@@ -77,7 +77,7 @@
                     </div>
                 </td>
             </tr>
-        {% end %}#}
+        {% end %}
         <tr class="detail-tr dis-coupon hidden">
             <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
             <td>每人限领一张</td>
@@ -146,7 +146,7 @@
 </div>
 <div class="pop-win pop-detail hidden">
     <div class="pop-container">
-        <a href="javascript:;" class="close-pop">x</a>
+        <a href="javascript:;" class="close-pop close-tip">x</a>
         <span class="rolli">i</span>
         <div class="pop-top">
             <p class="detail-title">提示</p>
@@ -157,12 +157,12 @@
             <p>2、在领取时间内，优惠券将发放至商城的发现列表中，供用户领取；商家也可通过发
                 放兑换码，供用在商城中我的优惠券列表中领取。</p>
             <p>3、每笔订单仅限使用一张优惠券，不可找零、叠加、拆分使⽤用。</p>
-            <p>4、请慎重考虑使用停用功能。⼀一旦停用，该优惠券发放机制失效，但已领取优惠券的
+            <p>4、请慎重考虑使用停用功能。一旦停用，该优惠券发放机制失效，但已领取优惠券的
                 用户优惠券仍能使用。</p>
             <p>5、使用非正常途径或手段获得的优惠券奖励无效，最终解释权归森果所有。</p>
         </div>
         <div class="pop-bm">
-            <a href="javascript:;">我知道了</a>
+            <a href="javascript:;" class="close-tip">我知道了</a>
             <a href="javascript:;">更多详情</a>
         </div>
     </div>

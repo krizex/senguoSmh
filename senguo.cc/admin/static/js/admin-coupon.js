@@ -11,15 +11,19 @@ $(document).ready(function () {
         }
     });
     goods_list=eval($("#goods").val());
-    /*$(".cmcopy").zclip({
-        path: "/static/js/third/ZeroClipboard.swf",
-        copy: function(){
-            return $(this).siblings("#cmtargetcopy").html();
-        },
-        afterCopy:function(){
-            Tip("优惠券码已经复制到剪切板");
+    if($("#coupon_detail").size()>0){//详情
+        console.log(3333);
+        $(".copy-coupon-code").zclip({
+                path: "/static/js/third/ZeroClipboard.swf",
+                copy: function(){
+                    return $(this).prev('span').html();
+                },
+                afterCopy:function(){
+                    Tip("优惠券码已经复制到剪切板");
+                }
+            });
         }
-    });*/
+    
     /*$(".sw-link-copy").zclip({
         path: "/static/js/third/ZeroClipboard.swf",
         copy: function(){
@@ -44,6 +48,8 @@ $(document).ready(function () {
     });
 }).on("click",".show-detail",function(){
     $(".pop-detail").removeClass("hidden");
+}).on("click",".close-tip",function(){
+    $(".pop-detail").addClass("hidden");
 }).on("click",".spread-btn",function(e){
     e.stopPropagation();
     $(".sw-er-tip").addClass("invisible");
@@ -54,8 +60,7 @@ $(document).ready(function () {
     window.location.href="/admin/marketing?action=coupon&coupon_type="+type+"&coupon_id="+id;
 }).on("click",".detail-tr",function(){//点击看详情
     var id = $(this).attr("data-id");
-    var type = $(this).attr("data-type");
-    window.location.href="/admin/marketing?action=coupon&coupon_type="+type+"&coupon_id="+id;
+    window.location.href="/admin/marketing?action=details&coupon_type="+type+"&coupon_id="+id;
 }).on('click', '.coupon-active', function(){
     var $this = $(this);
     if ($this.attr("data-flag") == "off") return false;
@@ -104,6 +109,7 @@ $(document).ready(function () {
     insertcoupon(coupon_id);
 }).on("click",'.coupon-types .item',function(){//优惠券类型
     var id = parseInt($(this).attr("data-id"));
+    type = id;
     $(".current-type").html($(this).html()).attr("data-id",id);
     if(id==0){
         $(".coupon1").removeClass("hidden");
@@ -255,14 +261,8 @@ function addCoupon(type){
             return Tip("优惠金额应该为数字类型");
         }
         var use_rule = $(".use_rules").val();
-        var total_number = $(".total_numbers").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
-            return Tip("库存应该为数字类型");
-        }
+        var total_number = 0;
         var get_limit = $(".get_limits").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
-            return Tip("领取限制应该为数字类型");
-        }
         var use_goods_group = $(".use_goods_groups").attr("data-id");
         var use_goods = $(".use_goodss").attr("data-id");
         var valid_way = $(".radio-list2").find(".radio-active").attr('data-id');
