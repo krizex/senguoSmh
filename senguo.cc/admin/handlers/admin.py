@@ -334,6 +334,8 @@ class SellStatic(AdminBaseHandler):
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量排序：
+			# if len(total_price_list) == 0:
+
 			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
 
 			# 查询total_price_list表中所有商品的类目，并存到一个字典中：
@@ -341,6 +343,7 @@ class SellStatic(AdminBaseHandler):
 			for tpl in total_price_list:
 				if tpl["fruit_name"] not in list(goods_type_list.keys()):
 					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.Fruit.name == tpl["fruit_name"]).all()[0][0]
+
 
 			# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 			type_total_price_list = []
@@ -469,6 +472,7 @@ class SellStatic(AdminBaseHandler):
 						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
 						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
 
+			print("####",fruit_list)
 			#每单种水果的销售额
 			total_price_list = []  
 			name_list = []
@@ -525,7 +529,7 @@ class SellStatic(AdminBaseHandler):
 							tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
 					type_total_price_list.append(tmp)
 				type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
-
+				# print("@@@",type_total_price_list)
 				return self.send_success(output_data = type_total_price_list)
 			else:
 				return self.send_success(output_data = total_price_list)

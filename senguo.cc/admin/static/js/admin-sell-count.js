@@ -732,8 +732,8 @@ function show_all_chart(start_date,end_date){
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
-				$("#goods_type").css("height",output_data["type_data"].length*40 + "px");
-				$("#goods_name").css("height",output_data["name_data"].length*40 + "px");
+				$("#goods_type").css("height",output_data["type_data"].length*40+105 + "px");
+				$("#goods_name").css("height",output_data["name_data"].length*40+105 + "px");
 				require.config({
 				       	paths: {
 				            		echarts:'/static/js'
@@ -855,7 +855,8 @@ function show_chart(action,start_date,end_date,name){
 				var output_data = res.output_data;
 
 				if(action == 'type'){
-					$("#goods_type").css("height",output_data.length*40 + "px");
+					console.log(output_data);
+					$("#goods_type").css("height",output_data.length*40+105 + "px");
 					require.config({
 					       	paths: {
 					            		echarts:'/static/js'
@@ -941,7 +942,7 @@ function show_chart(action,start_date,end_date,name){
 					);
 				}
 				else if(action == 'name'){
-					$("#goods_name").css("height",output_data.length*40 + "px");
+					$("#goods_name").css("height",output_data.length*40+105 + "px");
 					require.config({
 					       	paths: {
 					            		echarts:'/static/js'
