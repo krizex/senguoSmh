@@ -855,7 +855,6 @@ function show_chart(action,start_date,end_date,name){
 				var output_data = res.output_data;
 
 				if(action == 'type'){
-					console.log(output_data);
 					$("#goods_type").css("height",output_data.length*40+105 + "px");
 					require.config({
 					       	paths: {

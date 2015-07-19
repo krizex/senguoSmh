@@ -472,7 +472,6 @@ class SellStatic(AdminBaseHandler):
 						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
 						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
 
-			print("####",fruit_list)
 			#每单种水果的销售额
 			total_price_list = []  
 			name_list = []
