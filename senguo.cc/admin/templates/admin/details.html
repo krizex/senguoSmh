@@ -3,6 +3,7 @@
 {% end %}
 {% block content %}
 {% set shop_code = current_shop.shop_code %}
+<input  type="hidden" id="coupon_detail">
 <div class="">
     <div class="c333 mt10 choose-text">
         <div class="iblock pull-right choose-detail-type">
@@ -46,7 +47,7 @@
         </thead>
         <tbody>
         <tr>
-            <td><span>RDLD888dr</span><a href="javascript:;">复制</a></td>
+            <td class="relative"><span>RDLD888dr</span><a href="javascript:;" class="copy-coupon-code">复制</a></td>
             <td>5.00元</td>
             <td>等待晴天<br>ID:66666</td>
             <td>2015-05-06 17:03:03</td>

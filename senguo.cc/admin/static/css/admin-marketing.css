@@ -54,6 +54,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .table_heigth2{height: 30px;padding-top:8px;width: 14%;}
 .table_heigth3{height: 30px;padding-top:8px;}
 /*优惠券*/
+.relative{position: relative;}
 .pop-win{width: 100%;height: 100%;position: fixed;background-color: rgba(0,0,0,.4);top: 0;left: 0;z-index:9999;}
 .pop-container{position:absolute;top:50%;left:50%;-webkit-transform:translate(-50%,-50%);border-radius: 2px;width:600px;background-color: #fff;color: #222;}
 .pop-top{background-color: #f4f5f9;height: 50px;line-height: 50px;}

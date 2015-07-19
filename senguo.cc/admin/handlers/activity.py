@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.base import CustomerBaseHandler,AdminBaseHandler,WxOauth2
 import dal.models as models
 import tornado.web
 from settings import *
@@ -436,10 +436,12 @@ class ConfessionList(CustomerBaseHandler):
 			return self.send_success(datalist = datalist,nomore=nomore)
 
 # 发现 - 优惠券
-class Coupon(CustomerBaseHandler):
+class Coupon(AdminBaseHandler):
 	def updatecoupon(self):
+		current_customer_id=self.current_user.id
+		current_shop_id=self.current_shop.id
 		now_date=int(time.time())
-		q=self.session.query(models.CouponsCustomer),filter_by(shop_id=current_shop_id,customer_id=current_customer_id).all()
+		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,customer_id=current_customer_id).all()
 		for x in q:
 			if x.valid_way==0:
 				if now_date>x.to_valid_date:
@@ -452,6 +454,8 @@ class Coupon(CustomerBaseHandler):
 		self.session.commit()
 		return None			
 	def getcoupon(self,coupon_status):
+		current_customer_id=self.current_user.id
+		current_shop_id=self.current_shop.id
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).all()
 		for x in q:
 			effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.effective_time))
@@ -469,12 +473,12 @@ class Coupon(CustomerBaseHandler):
 		action=self.args["action"]
 		current_customer_id=self.current_user.id
 		current_shop_id=self.current_shop.id
-		updatecoupon(self)
+		self.updatecoupon()
 		data=[]
-		for x in xrange(1,3):
-			getcoupon(self,x)
+		for x in range(1,3):
+			self.getcoupon(x)
 		return self.render("coupon/coupon.html",output_data=data)
-class CouponDetail(CustomerBaseHandler):
+class CouponDetail(AdminBaseHandler):
 	def updatecoupon(self):
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer),filter_by(shop_id=current_shop_id,customer_id=current_customer_id).all()
@@ -549,7 +553,7 @@ class CouponDetail(CustomerBaseHandler):
 		# 	return self.render("coupon/detail.html",output_data=data)
 		# elif action=="grab":
 		# 	pass
-class CouponCustomer(CustomerBaseHandler):
+class CouponCustomer(AdminBaseHandler):
 	def updatecoupon(self):
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer),filter_by(shop_id=current_shop_id,customer_id=current_customer_id).all()
