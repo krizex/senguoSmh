@@ -2935,333 +2935,6 @@ class Marketing(AdminBaseHandler):
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id).all()
 		for x in q:
-			if x.valid_way==0:
-				if now_date>x.to_valid_date:
-					merge_coupon=models.CouponsCustomer(shop_id=x.shop_id,coupon_id=x.coupon_id,customer_id=current_customer_id,coupon_type=x.coupon_type,coupon_status=3)
-					self.session.merge(merge_coupon)
-			elif x.valid_way==1:
-				if now_date>x.uneffective_time:
-					merge_coupon=models.CouponsCustomer(shop_id=x.shop_id,coupon_id=x.coupon_id,customer_id=current_customer_id,coupon_type=x.coupon_type,coupon_status=3)
-					self.session.merge(merge_coupon)		
-		self.session.commit()
-		return None		
-	def getcoupon(self,q):
-		current_shop_id=self.current_shop.id
-		current_customer_id=self.current_user.id
-		for x in q:
-			if q.use_goods_group==0:
-				use_goods_group="默认分组"
-			elif q.use_goods_group==-1:
-				use_goods_group="店铺推荐"
-			else:
-				q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=q.use_goods_group).first()
-				use_goods_group=q1.name
-			q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=q.use_goods).first()
-			use_goods=q1.name
-			from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.from_valid_date))
-			to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.to_valid_date))
-			x_coupon={"coupon_id":q.coupon_id,"coupon_money":q.coupon_money,"get_limit":q.get_limit,"use_rule":q.use_rule,"use_goods_group":use_goods_group,"use_number":q.use_number,\
-			"get_number":q.get_number,"total_number":q.total_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date}
-			data.append(x_coupon)
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int")
-	def get(self):
-		action = self.args["action"]
-		current_shop_id=self.current_shop.id
-		current_shop=self.current_shop
-		self.updatecoupon()
-		if action == "lovewall":
-			return self.render("admin/lovewall.html",context=dict(subpage='marketing',subpage2='love_wall'))
-		
-		elif action=="coupon":
-			coupon_type=self.args["coupon_type"]
-			m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type).count()
-			data=[]
-			use_goods_group=None
-			use_goods=None
-			q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,closed=0).all()
-			q2=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,closed=1).all()
-			self.getcoupon(q1)
-			self.getcoupon(q2)		
-			return self.render("admin/coupon.html",output_data=data,context=dict(subpage='marketing',subpage2='coupon'))
-		elif action=="newcoupon":
-			pass
-			# @AdminBaseHandler.check_arguments("action:str","coupon_money:int","use_rule:float","total_num:int",\
-			# 	"get_limitnum:int","used_for:int","valid_way:int","uneffictive_time:date","day_start:int","last_day:int")
-			# data=self.args["data"]
-			# data = json.loads(data)
-			# coupon_money=data["coupon_money"]
-			# use_rule=data["use_rule"]
-			# total_num=data["total_num"]
-			# get_limitnum=data["get_limitnum"]
-			# used_for=data["used_for"]
-			# valid_way=data["valid_way"]
-			# uneffictive_time=data["uneffictive_time"]
-			# day_start=data["day_start"]
-			# last_day=data["last_day"]
-			# coupons_id=self.session.query(models.CouponsShop).filter_by(shop_id=self.curent_shop_id).count()+1
-			# for i in range(total_num):
-			# 	chars=string.digits+string.ascii_letters
-			# 	chars=''.join(random.sample(chars*10,4))
-			# 	chars=chars+str(i)+'M'+str(current_shop_id)
-			# 	new_coupon=models.CouponsShop(shop_id=self.curent_shop_id,coupon_id=coupons_id,coupon_key=chars,\
-			# 		coupon_money=coupon_money,coupon_totalnum=total_num,coupon_remainnum=total_num,valid_way=valid_way,\
-			# 		day_start=day_start,last_day=last_day,\
-			# 		get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
-			# 	session.add(new_coupon)
-			# session.commit()
-			# return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
-		elif action=="details":
-			coupon_type=self.args["coupon_type"]
-			coupon_id=int(self.args["coupon_id"])
-			coupon_type=int(self.args["coupon_type"])
-			data=[]
-			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).all()
-			for x in q:
-				customer_id=None
-				get_date=None
-				use_date=None
-				order_id=None
-				nickname=None
-				headimgurl=None
-				if x.coupon_status==None:
-					customer_id="未领取"
-					get_date="未领取"
-					use_date="未领取"
-					order_id="未领取"
-				elif x.coupon_status==1:
-					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
-					nickname=customer.nickname
-					headimgurl=customer.headimgurl
-					customer_id=x.customer_id
-					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
-					use_date="未使用"
-					order_id="未使用"
-				else:
-					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
-					nickname=customer.nickname
-					headimgurl=customer.headimgurl
-					customer_id=x.customer_id
-					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
-					use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.use_date))
-					order_id=x.order_id
-				x_coupon={"nickname":nickname,"headimgurl":headimgurl,"coupon_money":x.coupon_money,"customer_id":customer_id,\
-				"get_date":get_date,"use_date":use_date,"order_id":order_id}
-				data.append(x_coupon)
-			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,coupon_id=coupon_id).first()
-			d=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,coupon_id=coupon_id,closed=1).count()
-			data1={"a":q.total_number,"b":q.get_number,"c":q.use_number,"d":d}
-			return self.render("admin/details.html",output_data=data,data1=data1,context=dict(subpage='marketing'))
-		elif action=="newcouponpage":
-			data=[]
-			data1=[]
-			q=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
-			for x in q:
-				x_goodsgroup={"group_id":x.id,"group_name":x.name}
-				data.append(x_goodsgroup)
-			q=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1).all()
-			for x in q:
-				x_goods={"goods_id":x.id,"goods_name":x.name}
-				data1.append(x_goods)
-			return self.render("admin/newcoupon.html",output_data=data,data1=data1,context=dict(subpage='marketing'))
-		# elif action=="editcoupon":
-		# 	coupon_id=int(self.args["coupon_id"])
-		# 	data=[]
-		# 	q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).first()
-		# 	q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
-		# 	for x in q1:
-		# 		x_goodsgroup={"group_id":x.id,"group_name":x.name}
-		# 		data.append(x_goodsgroup)
-		# 	data1=[]
-		# 	q2=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
-		# 	# 保证两次获取商品分组渲染有output_data
-		# 	for x in q2:
-		# 		x_goodsgroup={"group_id":x.id,"group_name":x.name}
-		# 		data1.append(x_goodsgroup)
-		# 	x_coupon={"coupon_id":coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"valid_way":q.valid_way,"day_start":q.day_start,\
-		# 	"last_day":q.last_day,"start_time":q.start_time,"uneffective_time":q.uneffective_time,"coupon_totalnum":q.coupon_totalnum}
-		# 	return self.render("admin/editcoupon.html",output_data=x_coupon,output_data1=data1,context=dict(subpage='marketing'))
-		elif action=="close":
-			coupons_id=int(self.args["coupon_id"])
-			q=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=coupon_type,coupon_id=coupons_id).first()
-			new_coupon=models.CouponsShop(shop_id=q.shop_id,coupon_type=q.coupon_type,coupon_id=q.coupon_id,closed=1)
-			self.session.merge(new_coupon)
-			self.session.commit()
-			return self.send_success()
-		elif action=="closeall":
-			q=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id).all()
-			for x in q:
-				new_coupon=models.CouponsShop(shop_id=q.shop_id,closed=1)
-				self.session.merge(new_coupon)
-			self.session.commit()
-			return self.send_success()
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str","data?","coupon_id?:int","select_rule?:int","coupon_type?:int")
-	def post(self):
-		action = self.args["action"]
-		current_shop_id = self.current_shop.id
-		current_shop=self.current_shop
-		self.updatecoupon()
-		if action == "confess_active":
-			active = current_shop.marketing.confess_active
-			current_shop.marketing.confess_active = 0 if active == 1 else 1
-		elif action == "confess_notice":
-			current_shop.marketing.confess_notice = self.args["data"]
-		elif action =="confess_type":
-			_type = current_shop.marketing.confess_type
-			# print(_type)
-			current_shop.marketing.confess_type = 0 if _type == 1 else 1
-		elif action == "confess_only":
-			only = current_shop.marketing.confess_only
-			current_shop.marketing.confess_only = 0 if only == 1 else 1
-		
-		elif action=="newpage":
-			data=[]
-			q=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
-			for x in q:
-				x_goodsgroup={"group_id":x.id,"group_name":x.name}
-				data.append(x_goodsgroup)
-			return self.render("admin/newcoupon.html",output_data=data,context=dict(subpage='coupon'))
-		#elif action=="coupon":
-			# coupons=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
-			# m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()
-			# data=[]
-			# a=self.session.query(func.max(models.CouponsShop.coupon_id)).filter_by(shop_id=current_shop_id)
-			# for x in range(1,a[0][0]+1):
-			# 	q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x).first()
-			# 	get_num=self.session.query(models.CouponsShop).filter(shop_id==current_shop_id,coupon_id==x,customer_id!=None).count()
-
-			# 	x_coupon={"coupon_id":q.coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"coupon_usenum":q.coupon_usenum,\
-			# 		"uneffective_time":q.uneffective_time,"coupon_getnum":get_num,"coupon_totalnum":q.coupon_totalnum}
-			# 	data.append(x_coupon)
-			# return self.render("admin/coupon.html",output_data=data,context=dict(subpage='coupon'))
-		elif action=="newcoupon":
-			data=self.args["data"]
-			coupon_type=int(data["coupon_type"])
-			x=data["from_get_date"]
-			from_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
-			x=data["to_get_date"]
-			to_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
-			coupon_money=float(data["coupon_money"])
-			use_rule=float(data["use_rule"])
-			total_number=int(data["total_number"])
-			get_limit=int(data["get_limit"])
-			use_goods_group=int(data["use_goods_group"])
-			use_goods=int(data["use_goods"])
-			valid_way=int(data["valid_way"])
-			from_valid_date=None
-			to_valid_date=None
-			start_day=None
-			last_day=None
-			if valid_way==0:
-				x=data["from_valid_date"]
-				from_valid_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
-				to_valid_date=int(time.mktime(time.strptime(data["to_valid_date"],'%Y-%m-%d %H:%M:%S')))
-			elif valid_way==1:
-				start_day=data["start_day"]
-				last_day=data["last_day"]
-			else:
-				pass
-			#  注意这里获得coupon_id的过程 相当的曲折 ，这里的a 识query类型  而a[0]识 result 类型 只有a[0][0]才是int类型
-			coupon_id=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()+1
-			new_coupon=models.CouponsShop(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_money=coupon_money,\
-				from_get_date=from_get_date,to_get_date=to_get_date,use_goods_group=use_goods_group,use_goods=use_goods,use_rule=use_rule,\
-				total_number=total_number,use_number=0,get_number=0,valid_way=valid_way,from_valid_date=from_valid_date,\
-				to_valid_date=to_valid_date,start_day=start_day,last_day=last_day,get_limit=get_limit,closed=0)
-			self.session.add(new_coupon)
-			for i in range(total_number):
-				chars=string.digits+string.ascii_letters
-				chars=''.join(random.sample(chars*10,4))
-				chars=chars+str(coupon_id)+'C'+str(i)+'M'+str(current_shop_id)
-				new_coupon=models.CouponsCustomer(shop_id=current_shop_id,coupon_id=coupon_id,coupon_key=chars,coupon_type=coupon_type,coupon_status=0)
-				self.session.add(new_coupon)
-			self.session.commit()
-			return self.send_success()
-		# elif action=="editcoupon":
-		# 	data=self.args["data"]
-		# 	coupon_money=data["coupon_money"]
-		# 	use_rule=data["use_rule"]
-		# 	total_num=int(data["total_num"])
-		# 	get_limitnum=data["get_limitnum"]
-		# 	used_for=data["used_for"]
-		# 	valid_way=int(data["valid_way"])
-		# 	coupon_id=int(data["coupon_id"])
-		# 	uneffective_time=None
-		# 	start_time=None
-		# 	if(valid_way==0):
-		# 		uneffective_time=data["uneffective_time"]
-		# 		start_time=data["start_time"]
-		# 		day_start=None
-		# 		last_day=None
-		# 	else:
-		# 		day_start=data["day_start"]
-		# 		last_day=data["last_day"]
-		# 	q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).all()
-		# 	for x in q:
-		# 		new_coupon=models.CouponsShop(coupon_key=x.coupon_key,uneffective_time=uneffective_time,\
-		# 			start_time=start_time,coupon_money=coupon_money,coupon_totalnum=total_num,\
-		# 			coupon_remainnum=total_num,valid_way=valid_way,day_start=day_start,last_day=last_day,\
-		# 			get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
-		# 		self.session.merge(new_coupon)
-		# 	self.session.commit()
-		# 	return self.send_success()
-		elif action=="details":
-			data=self.args["data"]
-			coupon_id=int(self.args["coupon_id"])
-			select_rule=int(data["select_rule"])
-			data=[]
-			if select_rule==0:
-				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).all()
-			elif select_rule==1:
-				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=1).all()	
-			elif select_rule==2:
-				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=2).all()
-			else :
-				pass
-			for x in q:
-				customer_id=None
-				get_date=None
-				use_date=None
-				order_id=None
-				nickname=None
-				headimgurl=None
-				if x.customer_id==None:
-					customer_id="未领取"
-					get_date="未领取"
-					use_date="未领取"
-					order_id="未领取"
-				elif x.if_used==0:
-					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
-					nickname=customer.nickname
-					headimgurl=customer.headimgurl
-					customer_id=x.customer_id
-					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
-					use_date="未使用"
-					order_id="未使用"
-				else:
-					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
-					nickname=customer.nickname
-					headimgurl=customer.headimgurl
-					customer_id=x.customer_id
-					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
-					use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.use_date))
-					order_id=x.order_id
-				x_coupon={"coupon_key":x.coupon_key,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"customer_id":customer_id,\
-				"nickname":nickname,"headimgurl":headimgurl,"get_date":get_date,"use_date":use_date,"order_id":order_id}
-				data.append(x_coupon)
-			return self.send_success(output_data=data,context=dict(subpage='coupon')) 
-		else:
-			return self.send_fail('something must wrong')
-		self.session.commit()
-		return self.send_success()
-'''
-class Marketing(AdminBaseHandler):
-	def updatecoupon(self):
-		current_shop_id=self.current_shop.id
-		current_customer_id=self.current_user.id
-		now_date=int(time.time())
-		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id).all()
-		for x in q:
 			q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
 			if q1!=None:
 				if q1.valid_way==0 and x.coupon_status!=0:
@@ -3617,7 +3290,381 @@ class Marketing(AdminBaseHandler):
 			return self.send_fail('something must wrong')
 		self.session.commit()
 		return self.send_success()
+'''
+class Marketing(AdminBaseHandler):
+	def updatecoupon(self):
+		current_shop_id=self.current_shop.id
+		current_customer_id=self.current_user.id
+		now_date=int(time.time())
+		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id).all()
+		for x in q:
+			q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
+			if q1!=None:
+				if q1.valid_way==0 and x.coupon_status!=0:
+					if now_date>x.to_valid_date:
+						merge_coupon=models.CouponsCustomer(shop_id=x.shop_id,coupon_id=x.coupon_id,customer_id=current_customer_id,coupon_type=x.coupon_type,coupon_status=3)
+						self.session.merge(merge_coupon)
+				elif q1.valid_way==1 and x.coupon_status!=0:
+					if now_date>x.uneffective_time:
+						merge_coupon=models.CouponsCustomer(shop_id=x.shop_id,coupon_id=x.coupon_id,customer_id=current_customer_id,coupon_type=x.coupon_type,coupon_status=3)
+						self.session.merge(merge_coupon)		
+		self.session.commit()
+		return None		
+	def getcoupon(self,q,data):
+		current_shop_id=self.current_shop.id
+		current_customer_id=self.current_user.id
+		now_date=int(time.time())
+		edit_status=None
+		for x in q:
+			if x.use_goods_group==0:
+				use_goods_group="默认分组"
+			elif x.use_goods_group==-1:
+				use_goods_group="店铺推荐"
+			elif x.use_goods_group==-2:
+				use_goods_group="所有分组"
+			else:
+				q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
+				use_goods_group=q1.name
+			if x.use_goods==-1:
+				use_goods="所有分组"
+			else:
+				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
+				use_goods=q1.name
+			if now_date<from_get_date:
+				edit_status=0
+			elif now_date<to_get_date:
+				edit_status=1
+			else:
+				edit_status=2
+			from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
+			to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
+			from_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_get_date))
+			to_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_get_date))
+			x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
+			"get_number":x.get_number,"total_number":x.total_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"from_get_date":from_get_date,"to_get_date":to_get_date,"get_rule":x.get_rule}
+			data.append(x_coupon)
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int")
+	def get(self):
+		action = self.args["action"]
+		current_shop_id=self.current_shop.id
+		current_shop=self.current_shop
+		self.updatecoupon()
+		if action == "lovewall":
+			return self.render("admin/lovewall.html",context=dict(subpage='marketing',subpage2='love_wall'))
+		
+		elif action=="coupon":
+			coupon_type=self.args["coupon_type"]
+			m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type).count()
+			data=[]
+			data1=[]
+			use_goods_group=None
+			use_goods=None
+			if coupon_type==0:
+				q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0).all()
+				q2=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=1).all()
+				self.getcoupon(q1,data)
+				self.getcoupon(q2,data)	
+				print(data)	
+			else:
+				q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=0).all()
+				q2=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=1).all()
+				self.getcoupon(q1,data1)
+				self.getcoupon(q2,data1)
+				print(data1)	
+			return self.render("admin/coupon.html",output_data=data,data1=data1,context=dict(subpage='marketing',subpage2='coupon'))
+		elif action=="newcoupon":
+			pass
+			# @AdminBaseHandler.check_arguments("action:str","coupon_money:int","use_rule:float","total_num:int",\
+			# 	"get_limitnum:int","used_for:int","valid_way:int","uneffictive_time:date","day_start:int","last_day:int")
+			# data=self.args["data"]
+			# data = json.loads(data)
+			# coupon_money=data["coupon_money"]
+			# use_rule=data["use_rule"]
+			# total_num=data["total_num"]
+			# get_limitnum=data["get_limitnum"]
+			# used_for=data["used_for"]
+			# valid_way=data["valid_way"]
+			# uneffictive_time=data["uneffictive_time"]
+			# day_start=data["day_start"]
+			# last_day=data["last_day"]
+			# coupons_id=self.session.query(models.CouponsShop).filter_by(shop_id=self.curent_shop_id).count()+1
+			# for i in range(total_num):
+			# 	chars=string.digits+string.ascii_letters
+			# 	chars=''.join(random.sample(chars*10,4))
+			# 	chars=chars+str(i)+'M'+str(current_shop_id)
+			# 	new_coupon=models.CouponsShop(shop_id=self.curent_shop_id,coupon_id=coupons_id,coupon_key=chars,\
+			# 		coupon_money=coupon_money,coupon_totalnum=total_num,coupon_remainnum=total_num,valid_way=valid_way,\
+			# 		day_start=day_start,last_day=last_day,\
+			# 		get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
+			# 	session.add(new_coupon)
+			# session.commit()
+			# return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
+		elif action=="details":
+			#coupon_type=self.args["coupon_type"]
+			coupon_id=int(self.args["coupon_id"])
+			coupon_type=int(self.args["coupon_type"])
+			data=[]
+			q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).all()
+			for x in q:
+				customer_id=None
+				get_date=None
+				use_date=None
+				order_id=None
+				nickname=None
+				headimgurl=None
+				if x.coupon_status==0:
+					customer_id="未领取"
+					get_date="未领取"
+					use_date="未领取"
+					order_id="未领取"
+				elif x.coupon_status==1:
+					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
+					nickname=customer.nickname
+					headimgurl=customer.headimgurl
+					customer_id=x.customer_id
+					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
+					use_date="未使用"
+					order_id="未使用"
+				else:
+					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
+					nickname=customer.nickname
+					headimgurl=customer.headimgurl
+					customer_id=x.customer_id
+					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
+					use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.use_date))
+					order_id=x.order_id
+				q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
+				x_coupon={"nickname":nickname,"headimgurl":headimgurl,"coupon_money":q1.coupon_money,"customer_id":customer_id,\
+				"get_date":get_date,"use_date":use_date,"order_id":order_id,"coupon_key":x.coupon_key}
+				data.append(x_coupon)
+			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,coupon_id=coupon_id).first()
+			d=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,coupon_id=coupon_id,closed=1).count()
+			data1={"a":q.total_number,"b":q.get_number,"c":q.use_number,"d":d}
+			return self.render("admin/details.html",output_data=data,data1=data1,context=dict(subpage='marketing'))
+		elif action=="newcouponpage":
+			data=[]
+			data0=[]
+			data1=[]
+			x_goodsgroup={"group_id":0,"group_name":"默认分组"}
+			data.append(x_goodsgroup)
+			q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=0,active=1)
+			for y in q1:
+				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
+				data0.append(x_goodsgroup)
+			data1.append(data0)
+			x_goodsgroup={"group_id":-1,"group_name":"店铺推荐"}
+			data.append(x_goodsgroup)
+			q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=-1,active=1)
+			for y in q1:
+				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
+				data0.append(x_goodsgroup)
+			data1.append(data0)
+			q=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
+			for x in q:
+				x_goodsgroup={"group_id":x.id,"group_name":x.name}
+				data.append(x_goodsgroup)
+				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=x.id,active=1)
+				for y in q1:
+					x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
+					data0.append(x_goodsgroup)
+				data1.append(data0)
+			print(current_shop_id)
+			print(data)
+			print(data1)
+			return self.render("admin/newcoupon.html",output_data=data,data1=data1,context=dict(subpage='marketing'))
+		# elif action=="editcoupon":
+		# 	coupon_id=int(self.args["coupon_id"])
+		# 	data=[]
+		# 	q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).first()
+		# 	q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
+		# 	for x in q1:
+		# 		x_goodsgroup={"group_id":x.id,"group_name":x.name}
+		# 		data.append(x_goodsgroup)
+		# 	data1=[]
+		# 	q2=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
+		# 	# 保证两次获取商品分组渲染有output_data
+		# 	for x in q2:
+		# 		x_goodsgroup={"group_id":x.id,"group_name":x.name}
+		# 		data1.append(x_goodsgroup)
+		# 	x_coupon={"coupon_id":coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"valid_way":q.valid_way,"day_start":q.day_start,\
+		# 	"last_day":q.last_day,"start_time":q.start_time,"uneffective_time":q.uneffective_time,"coupon_totalnum":q.coupon_totalnum}
+		# 	return self.render("admin/editcoupon.html",output_data=x_coupon,output_data1=data1,context=dict(subpage='marketing'))
+		elif action=="close":
+			coupons_id=int(self.args["coupon_id"])
+			q=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=coupon_type,coupon_id=coupons_id).first()
+			new_coupon=models.CouponsShop(shop_id=q.shop_id,coupon_type=q.coupon_type,coupon_id=q.coupon_id,closed=1)
+			self.session.merge(new_coupon)
+			self.session.commit()
+			return self.send_success()
+		elif action=="closeall":
+			q=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id).all()
+			for x in q:
+				new_coupon=models.CouponsShop(shop_id=q.shop_id,closed=1)
+				self.session.merge(new_coupon)
+			self.session.commit()
+			return self.send_success()
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","data?","coupon_id?:int","select_rule?:int","coupon_type?:int")
+	def post(self):
+		action = self.args["action"]
+		current_shop_id = self.current_shop.id
+		current_shop=self.current_shop
+		self.updatecoupon()
+		if action == "confess_active":
+			active = current_shop.marketing.confess_active
+			current_shop.marketing.confess_active = 0 if active == 1 else 1
+		elif action == "confess_notice":
+			current_shop.marketing.confess_notice = self.args["data"]
+		elif action =="confess_type":
+			_type = current_shop.marketing.confess_type
+			# print(_type)
+			current_shop.marketing.confess_type = 0 if _type == 1 else 1
+		elif action == "confess_only":
+			only = current_shop.marketing.confess_only
+			current_shop.marketing.confess_only = 0 if only == 1 else 1
+		
+		elif action=="newpage":
+			data=[]
+			q=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
+			for x in q:
+				x_goodsgroup={"group_id":x.id,"group_name":x.name}
+				data.append(x_goodsgroup)
+			return self.render("admin/newcoupon.html",output_data=data,context=dict(subpage='coupon'))
+		#elif action=="coupon":
+			# coupons=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
+			# m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()
+			# data=[]
+			# a=self.session.query(func.max(models.CouponsShop.coupon_id)).filter_by(shop_id=current_shop_id)
+			# for x in range(1,a[0][0]+1):
+			# 	q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x).first()
+			# 	get_num=self.session.query(models.CouponsShop).filter(shop_id==current_shop_id,coupon_id==x,customer_id!=None).count()
 
+			# 	x_coupon={"coupon_id":q.coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"coupon_usenum":q.coupon_usenum,\
+			# 		"uneffective_time":q.uneffective_time,"coupon_getnum":get_num,"coupon_totalnum":q.coupon_totalnum}
+			# 	data.append(x_coupon)
+			# return self.render("admin/coupon.html",output_data=data,context=dict(subpage='coupon'))
+		elif action=="newcoupon":
+			data=self.args["data"]
+			coupon_type=int(data["coupon_type"])
+			x=data["from_get_date"]
+			from_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
+			x=data["to_get_date"]
+			to_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
+			coupon_money=float(data["coupon_money"])
+			use_rule=float(data["use_rule"])
+			total_number=int(data["total_number"])
+			get_limit=int(data["get_limit"])
+			use_goods_group=int(data["use_goods_group"])
+			use_goods=int(data["use_goods"])
+			get_rule = float(data["get_rule"])
+			valid_way=int(data["valid_way"])
+			from_valid_date=None
+			to_valid_date=None
+			start_day=None
+			last_day=None
+			if valid_way==0:
+				x=data["from_valid_date"]
+				from_valid_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
+				to_valid_date=int(time.mktime(time.strptime(data["to_valid_date"],'%Y-%m-%d %H:%M:%S')))
+			elif valid_way==1:
+				start_day=data["start_day"]
+				last_day=data["last_day"]
+			else:
+				pass
+			#  注意这里获得coupon_id的过程 相当的曲折 ，这里的a 识query类型  而a[0]识 result 类型 只有a[0][0]才是int类型
+			coupon_id=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()+1
+			new_coupon=models.CouponsShop(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_money=coupon_money,\
+				from_get_date=from_get_date,to_get_date=to_get_date,use_goods_group=use_goods_group,use_goods=use_goods,use_rule=use_rule,\
+				total_number=total_number,use_number=0,get_number=0,valid_way=valid_way,from_valid_date=from_valid_date,\
+				to_valid_date=to_valid_date,start_day=start_day,last_day=last_day,get_limit=get_limit,closed=0,get_rule=get_rule)
+			self.session.add(new_coupon)
+			for i in range(total_number):
+				chars=string.digits+string.ascii_letters
+				chars=''.join(random.sample(chars*10,4))
+				chars=chars+str(coupon_id)+'C'+str(i)+'M'+str(current_shop_id)
+				new_coupon=models.CouponsCustomer(shop_id=current_shop_id,coupon_id=coupon_id,coupon_key=chars,coupon_type=coupon_type,coupon_status=0)
+				self.session.add(new_coupon)
+			print("hhhhhhh")
+			self.session.commit()
+			return self.send_success()
+		# elif action=="editcoupon":
+		# 	data=self.args["data"]
+		# 	coupon_money=data["coupon_money"]
+		# 	use_rule=data["use_rule"]
+		# 	total_num=int(data["total_num"])
+		# 	get_limitnum=data["get_limitnum"]
+		# 	used_for=data["used_for"]
+		# 	valid_way=int(data["valid_way"])
+		# 	coupon_id=int(data["coupon_id"])
+		# 	uneffective_time=None
+		# 	start_time=None
+		# 	if(valid_way==0):
+		# 		uneffective_time=data["uneffective_time"]
+		# 		start_time=data["start_time"]
+		# 		day_start=None
+		# 		last_day=None
+		# 	else:
+		# 		day_start=data["day_start"]
+		# 		last_day=data["last_day"]
+		# 	q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).all()
+		# 	for x in q:
+		# 		new_coupon=models.CouponsShop(coupon_key=x.coupon_key,uneffective_time=uneffective_time,\
+		# 			start_time=start_time,coupon_money=coupon_money,coupon_totalnum=total_num,\
+		# 			coupon_remainnum=total_num,valid_way=valid_way,day_start=day_start,last_day=last_day,\
+		# 			get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
+		# 		self.session.merge(new_coupon)
+		# 	self.session.commit()
+		# 	return self.send_success()
+		elif action=="details":
+			data=self.args["data"]
+			coupon_id=int(self.args["coupon_id"])
+			select_rule=int(data["select_rule"])
+			data=[]
+			if select_rule==0:
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).all()
+			elif select_rule==1:
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=1).all()	
+			elif select_rule==2:
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=2).all()
+			else :
+				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=3).all()
+			for x in q:
+				customer_id=None
+				get_date=None
+				use_date=None
+				order_id=None
+				nickname=None
+				headimgurl=None
+				if x.customer_id==None:
+					customer_id="未领取"
+					get_date="未领取"
+					use_date="未领取"
+					order_id="未领取"
+				elif x.if_used==0:
+					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
+					nickname=customer.nickname
+					headimgurl=customer.headimgurl
+					customer_id=x.customer_id
+					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
+					use_date="未使用"
+					order_id="未使用"
+				else:
+					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
+					nickname=customer.nickname
+					headimgurl=customer.headimgurl
+					customer_id=x.customer_id
+					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
+					use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.use_date))
+					order_id=x.order_id
+				x_coupon={"coupon_key":x.coupon_key,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"customer_id":customer_id,\
+				"nickname":nickname,"headimgurl":headimgurl,"get_date":get_date,"use_date":use_date,"order_id":order_id}
+				data.append(x_coupon)
+			return self.send_success(output_data=data,context=dict(subpage='coupon')) 
+		else:
+			return self.send_fail('something must wrong')
+		self.session.commit()
+		return self.send_success()
 # 营销和玩法 - 告白墙管理
 class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
