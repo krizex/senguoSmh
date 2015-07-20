@@ -83,7 +83,7 @@
 .order-w50{width:50%;}
 .order-l100{left:100%;}
 .order-w100{width:100%;}
-.order-status-txt{position: absolute;display: inline-block;line-height: 20px;font-size: 12px;-webkit-transform:translate(-50%,0);top:28px;color:#333;width: 150px;text-align: center;}
+.order-status-txt{position: absolute;display: inline-block;line-height: 20px;font-size: 12px;-webkit-transform:translate(-50%,0);top:28px;color:#333;width: 160px;text-align: center;}
 .order-status-txt>a{font-size: 12px;margin-left:5px;}
 .arr-right{display: inline-block;width: 8px;height:14px;background-image: url("/static/images/arr-right.png");background-size: contain;background-repeat: no-repeat;position: relative;top: 2px;left: 10px;}
 .goods-info-lst{padding-bottom:50px;}

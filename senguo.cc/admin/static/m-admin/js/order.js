@@ -214,7 +214,7 @@ var getOrder=function(page){
                             width='order-w0';
                             left='order-l0';
                             hide='hide';
-                            show='show';
+                            show='';
                             if(del_reason){
                                 if(del_reason=='timeout'){
                                     del_status='该订单15分钟未支付，已自动取消';
@@ -239,13 +239,13 @@ var getOrder=function(page){
                             width='order-w50';
                             left='order-l50';
                             sender_name=sender+'配送中';
-                            tel_show='show';
+                            tel_show='';
                             break;
                         case 5:
                             width='order-w100';
                             left='order-l100';
                             sender_name=sender+'已送达';
-                            tel_show='show';
+                            tel_show='';
                             break;
                         case 6:
                         case 7:

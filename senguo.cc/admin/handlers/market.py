@@ -170,12 +170,12 @@ class ShopAdminInfo(CustomerBaseHandler):
 					admin_name,admin_phone,wx_nickname = admin_info.split('-')
 				else:
 					admin_name = admin_phone = wx_nickname = None
-		else:			
+		else:
 			return self.send_fail('id error')
 		url = "http://i.senguo.cc/market/shopinsert/%s?action=bind" % (str(shop_id))
 		print(url)
 		return self.render("market/shop-manager.html",url=url,shop_id = shop_id)
-	
+
 	@CustomerBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','action')
 	def post(self,id):
 		action = self.args.get('action',None)
@@ -254,7 +254,7 @@ class ShopAdminInfo(CustomerBaseHandler):
 
 	def add_shop(self,admin_id,shop_id):
 		print('login in add_shop')
-		
+
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
 		if not shop_admin:
 
@@ -272,7 +272,7 @@ class ShopAdminInfo(CustomerBaseHandler):
 		config.periods.extend([period1, period2, period3])
 		marketing = models.Marketing()
 		shop_code = self.make_shop_code()
-		print('make  shop_code  success')
+		print('make shop_code success')
 		temp_shop.shop_code = shop_code
 		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
 			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,shop_auth = 5,
@@ -290,7 +290,7 @@ class ShopAdminInfo(CustomerBaseHandler):
 		spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = temp_shop.shop_id).all()
 		for temp_good in spider_goods:
 			print(shop.id)
-			new_good = models.Fruit(shop_id = shop.id , fruit_type_id = 1,name = temp_good.goods_name,
+			new_good = models.Fruit(shop_id = shop.id , fruit_type_id = 999,name = temp_good.goods_name,
 				storage = 100,unit = 2,img_url = temp_good.good_img_url ,)
 			new_good.charge_types.append(models.ChargeType(price = temp_good.goods_price,unit = 2,num =1,market_price = temp_good.goods_price))
 			self.session.add(new_good)
