@@ -3469,6 +3469,7 @@ class Marketing(AdminBaseHandler):
 			for x in q:
 				x_goodsgroup={"group_id":x.id,"group_name":x.name}
 				data.append(x_goodsgroup)
+				print(x.id)
 				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=x.id,active=1)
 				for y in q1:
 					x_goodsgroup={"goods_id":y.id,"goods_name":y.name}

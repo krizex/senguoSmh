@@ -505,12 +505,14 @@ class CouponDetail(AdminBaseHandler):
 		current_shop_id=self.current_shop.id
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,customer_id=current_customer_id).all()
+
 		for x in q:
-			if x.valid_way==0:
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
+			if qq.valid_way==0:
 				if now_date>x.to_valid_date:
 					merge_coupon=models.CouponsCustomer(shop_id=x.shop_id,coupon_id=x.coupon_id,customer_id=current_customer_id,coupon_type=x.coupon_type,coupon_status=3)
 					self.session.merge(merge_coupon)
-			elif x.valid_way==1:
+			elif qq.valid_way==1:
 				if now_date>x.uneffective_time:
 					merge_coupon=models.CouponsCustomer(shop_id=x.shop_id,coupon_id=x.coupon_id,customer_id=current_customer_id,coupon_type=x.coupon_type,coupon_status=3)
 					self.session.merge(merge_coupon)		
@@ -549,22 +551,21 @@ class CouponDetail(AdminBaseHandler):
 				m_effective_time=None
 				m_uneffective_time=None
 				m_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(get_date))
-				if q.valid_way==0:
+				if qq.valid_way==0:
 					uneffective_time=qq.uneffective_time
 					effective_time=qq.effective_time
 					m_effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(effective_time))
 					m_uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(uneffective_time))
-				elif q.valid_way==1:
+				elif qq.valid_way==1:
 					all_days=qq.start_day+qq.last_day
 					uneffective_time=get_date+all_days*60*60*24
 					effective_time=get_date+qq.start_day*24*60*60
 				else :
 					pass
-				new_coupon=models.CouponsCustomer(shop_id=q.shop_id,coupon_id=q.coupon_id,coupon_type=q.coupon_type,effective_time=effective_time,uneffective_time=uneffective_time,get_date=get_date,coupon_key=q.coupon_key,customer_id=customer_id,coupon_status=1)
-				self.session.merge(new_coupon)
+				q.update(self.session,effective_time=effective_time,uneffective_time=uneffective_time,get_date=get_date,customer_id=current_customer_id,coupon_status=1)
 				get_number=self.session.query(shop_id=q.shop_id,coupon_id=q.coupon_id,coupon_type=q.coupon_type).first().get_number+1
-				merge_coupon=models.CouponsShop(shop_id=q.shop_id,coupon_id=q.coupon_id,coupon_type=q.coupon_type,get_number=get_number)
-				self.session.merge(merge_coupon)
+				print(get_number,'++++++++++++++++++++++++++++++')
+				qq.update(self.session,get_number=get_number)
 				self.session.commit()
 				x_coupon={"shop_name":shop.shop_name,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":mcoupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
 				return self.send_success(output_data=x_coupon)
