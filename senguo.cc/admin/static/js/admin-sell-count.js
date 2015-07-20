@@ -1026,7 +1026,6 @@ function show_chart(action,start_date,end_date,name){
 					);
 				}
 				else if(action == 'single_type'){
-					
 					$("#single_type").css("height","400px");
 					require.config({
 					       	paths: {
@@ -1076,6 +1075,10 @@ function show_chart(action,start_date,end_date,name){
        									 
    								     },
 								    calculable : true,
+								    legend:{
+								    	show:true,
+								    	data:[]
+								    },
 								    xAxis : [
 								        {
 								            type : 'category',
@@ -1250,17 +1253,15 @@ function getCount(action,options,myChart,output_data){
 	}	
 	else if(action == "single_type"){
 		options.series = [];
-		var obj0 = output_data[0]["per_name_total_price"];
-		for(var key in obj0){
-			options.series.push({name:key,stack:'总量',type:'bar',data:[obj0[key]]});
+		for(var i = 0;i < output_data[0].length;i++){
+			options.series.push({name:output_data[0][i],stack:'总量',type:'bar',data:[]});
+			
 		}
-		options.xAxis[0].data.push("1号");
 
-		for(var i = 1;i < output_data.length;i++){
-			var obj = output_data[i]["per_name_total_price"];
+		for(var i = 0;i < output_data[1].length;i++){
 			var n = 0;
-			for (var key in obj){
-				options.series[n].data.push(obj[key]);
+			for (var j = 0;j < output_data[1][i].length;j++){
+				options.series[n].data.push(output_data[1][i][j]);
 				n++;
 			}
 			options.xAxis[0].data.push(i+1+"号");
