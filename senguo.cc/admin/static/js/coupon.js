@@ -44,11 +44,12 @@ function searchKey(key){
                 var coupon = res.output_data;
                 var $item = $("#coupon-item").children().clone();
                 $item.find(".coupon-link").attr("href","/coupon/detail?action=detail&coupon_key="+coupon.coupon_key);
-                $item.find(".shop-name").html(coupon.shop_name);
-                $item.find(".shop-url").html("http://senguo.cc/"+coupon.shop_code).attr("href","http://senguo.cc/"+coupon.shop_code);
+                //$item.find(".shop-name").html(coupon.shop_name);
+                //$item.find(".shop-url").html("http://senguo.cc/"+coupon.shop_code).attr("href","http://senguo.cc/"+coupon.shop_code);
                 $item.find(".coupon-money").html(coupon.coupon_money);
                 $item.find(".used-rule").html(coupon.use_rule);
-                $item.find(".use-time").html(coupon.effective_time);
+                $item.find(".start-time").html(coupon.effective_time);
+                $item.find(".end-time").html(coupon.uneffective_time);
                 var str = "未消费";
                 if(coupon.coupon_status == 1){
                     str="已消费";
