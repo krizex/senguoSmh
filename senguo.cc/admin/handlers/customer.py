@@ -1476,7 +1476,7 @@ class Cart(CustomerBaseHandler):
 									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
 
 		#按时达/立即送 的时间段处理
-		start_time = 0
+		start_time = 0 
 		end_time = 0
 		freight = 0
 		tip = 0

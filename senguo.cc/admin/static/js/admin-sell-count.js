@@ -1076,10 +1076,6 @@ function show_chart(action,start_date,end_date,name){
        									 
    								     },
 								    calculable : true,
-								       
-								     legend:{
-								    	data:[]
-								    },
 								    xAxis : [
 								        {
 								            type : 'category',
@@ -1242,7 +1238,7 @@ function getCount(action,options,myChart,output_data){
 			options.series[0].data.push(price);
 		}
 
-	}
+	} 
 	else if(action == "name"){
 		options.series[0].data = [];
 		for(var i = 0;i < output_data.length;i++){
@@ -1257,7 +1253,6 @@ function getCount(action,options,myChart,output_data){
 		var obj0 = output_data[0]["per_name_total_price"];
 		for(var key in obj0){
 			options.series.push({name:key,stack:'总量',type:'bar',data:[obj0[key]]});
-			options.legend.data.push(key);
 		}
 		options.xAxis[0].data.push("1号");
 
