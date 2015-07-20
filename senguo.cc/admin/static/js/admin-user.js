@@ -22,7 +22,7 @@ $(document).ready(function(){
     });
     $('.search-con').on('keydown',function(){
         var $this=$(this);
-    	if(window.event.keyCode == 13)
+        if(window.event.keyCode == 13)
         {
             var con=$('.search-con').val().trim();
             if(!con){return Tip('搜索内容不能为空')};
@@ -43,9 +43,10 @@ $(document).ready(function(){
     $('.remark-box').modal('show').attr({'data-id':id,'data-index':index});
 }).on('click','.remark-sure',function(){
     var $this=$(this);
-     if($this.attr("data-flag")=="off") {
-        return false;}
-     $this.attr("data-flag","off");
+    if($this.attr("data-flag")=="off") {
+        return false;
+    }
+    $this.attr("data-flag","off");
     var id=$('.remark-box').attr('data-id');
     var index=$('.remark-box').attr('data-index');
     var remark=$('.remark-content').val().trim();
@@ -67,8 +68,8 @@ $(document).ready(function(){
         function(res){
             if(res.success){
                 $this.attr("data-flag","on");
-               $('.users-list-item').eq(index).find('.remark').removeClass('hidden').text('备注：'+remark);
-               $('.remark-box').modal('hide');
+                $('.users-list-item').eq(index).find('.remark').removeClass('hidden').text('备注：'+remark);
+                $('.remark-box').modal('hide');
             }
             else{
                 $this.attr("data-flag","on");

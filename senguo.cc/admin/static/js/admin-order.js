@@ -170,11 +170,11 @@ $(document).ready(function(){
     //订单搜索
     $(document).on('click','.order-search',function(){orderSearch()});
     $(document).on('keydown','.search-con',function(){
-    	var $this=$(this);
-    	if(window.event.keyCode == 13)
-	{
-	     orderSearch();
-	}
+        var $this=$(this);
+        if(window.event.keyCode == 13)
+        {
+            orderSearch();
+        }
     });
     //实时请求未处理订单
     setInterval(function(){
@@ -194,8 +194,8 @@ $(document).ready(function(){
                 }
             }
         })
-    },10000);
-    
+    },30000);
+
 }).on("click","#new-order-box",function(){
    window.location.reload(true);
 }).on("click",".send-day .btn",function(){
@@ -355,11 +355,11 @@ function activePeriod(target,active){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                if(active==1) 
+                if(active==1)
                     {
                         target.attr({'data-id':2}).find('.work-mode').hide().siblings('.stop-mode').show();
                     }
-                else 
+                else
                     {
                         target.attr({'data-id':1}).find('.work-mode').show().siblings('.stop-mode').hide();
                     }

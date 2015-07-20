@@ -8,8 +8,8 @@ $(document).ready(function(){
     //     var ws = new MozWebSocket("ws:zone.senguo.cc/admin/realtime");
     // }
     //  ws.onopen = function(res){
-    //     var myDate = new Date(); 
-    //     ws.send(myDate.getTime());   
+    //     var myDate = new Date();
+    //     ws.send(myDate.getTime());
     // }
     //  ws.onmessage = function(res){
     //     $("#new_order_sum").text(res.new_order_sum);
@@ -17,7 +17,7 @@ $(document).ready(function(){
     //     $("#new_follower_sum").text(res.new_follower_sum);
     //     $("#follower_sum").text(res.follower_sum);
     // }
-    
+
     // ws.onclose = function(){
     //     console.log("close");
     // }
@@ -34,5 +34,5 @@ $(document).ready(function(){
                 }
             }
         })
-    },10000);
+    },30000);
 });

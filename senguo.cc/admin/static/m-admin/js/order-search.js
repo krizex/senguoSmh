@@ -24,6 +24,16 @@ $(document).ready(function(){
             searchOrder(id);
         }
     });
+    $("#search-ipt").on("keydown",function(){  //订单搜索
+        if(window.event.keyCode == 13){
+            var id = $("#search-ipt").val();
+            if($.trim(id)=="" || isNaN($.trim(id))){
+                return Tip("请输入只含数字的订单编号");
+            }else{
+                searchOrder(id);
+            }
+        }
+    });
 }).on("click","#order-item>li",function(e){//进入订单详情
     var $this=$(this);
     var num = $this.attr("data-num");
@@ -100,10 +110,10 @@ function searchOrder(id){
         success:function(res){
             if(res.success){
                 var data = res.data[0];
-                if(data.length==0){
+                if(!data){
                     $(".no-result").html("没有查到任何数据").removeClass("hide");
                 }else{
-                    console.log(data);
+                    $(".no-result").addClass("hide");
                     var id=data['id'];
                     var order_status=parseInt(data['status']);
                     var order_num=data['num'];
