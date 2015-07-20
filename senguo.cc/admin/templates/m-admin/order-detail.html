@@ -17,12 +17,12 @@
             <div class="order-wawa">
                 <a class="img-border task-staff" href="javascript:;" data-id="{{order.status}}">
                     {% if order.status == -1%}
-                    <img src="/static/images/TDSG.png" alt="配送员头像"/>
+                    <img src="/static/m-admin/img/sender_holder.png" alt="配送员头像"/>
                     {% else %}
                         {% if order.SH2%}
-                        <img src="{{order.SH2['headimgurl'] or '/static/images/TDSG.png'}}" alt="配送员头像"/>
+                        <img src="{{order.SH2['headimgurl'] or '/static/m-admin/img/sender_holder.png'}}" alt="配送员头像"/>
                         {% else %}
-                        <img src="/static/images/TDSG.png" alt="配送员头像"/>
+                        <img src="/static/m-admin/img/sender_holder.png" alt="配送员头像"/>
                         {% end %}
                     {% end %}
                 </a>
@@ -121,7 +121,7 @@
                 {% for SH2 in order.SH2s %}
                 <li data-id="{{SH2['id']}}" data-tel="{{SH2['phone']}}">
                     <span class="check fr">✓</span>
-                    <span class="img-border mr10"><img src="{{SH2['headimgurl'] or '/static/images/TDSG.png'}}" alt="员工头像"/></span>
+                    <span class="img-border mr10"><img src="{{SH2['headimgurl'] or '/static/m-admin/img/sender_holder.png'}}" alt="员工头像"/></span>
                     <span>{{SH2['nickname']}}</span>
                 </li>
                {% end %}

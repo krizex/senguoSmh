@@ -28,7 +28,7 @@ $(document).ready(function(){
     var $this=$(this);
     var num = $this.attr("data-num");
     if($(e.target).closest(".task-staff").size()==0){
-       window.location.href="/madmin/orderDetail/"+num; 
+       window.location.href="/madmin/orderDetail/"+num;
     }
 }).on("click",".order-grade .task-staff",function(e){
      var $this=$(this);
@@ -38,7 +38,7 @@ $(document).ready(function(){
         curStaff = $(this).closest(".order-grade");
         $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.order-item').attr('data-id'));
         $(".staff-list").empty().html($this.parents('.order-item').find('.order-staff-list').html());
-     } 
+     }
 }).on("click",".staff-list>li",function(){
     var index = $(this).index();
     var src = $(this).find("img").attr("src");
@@ -128,10 +128,10 @@ function searchOrder(id){
                         var staff_phone=data['SH2']['phone'];
                         var sender=data['SH2']['nickname'];
                     }else{
-                        var staff_img='/static/images/TDSG.png';
+                        var staff_img='/static/m-admin/img/sender_holder.png';
                         var staff_phone='';
                         var sender='';
-                    }   
+                    }
                     if(pay_type==1){
                         pay_type = "货到付款";
                     }else if(pay_type==2){
@@ -147,7 +147,7 @@ function searchOrder(id){
                             show='hide';
                             hide='show';
                             break;
-                        case 0:         
+                        case 0:
                             width='order-w0';
                             left='order-l0';
                             hide='hide';
@@ -157,12 +157,12 @@ function searchOrder(id){
                                     del_status='该订单15分钟未支付，已自动取消';
                                 }else{
                                     del_status='该订单已删除（原因：'+del_reason+')';
-                                }  
+                                }
                             }
                             else{
                                 del_status='该订单已被用户取消';
                             }
-                            
+
                             break;
                         case 1:
                             width='order-w0';
