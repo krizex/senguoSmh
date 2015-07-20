@@ -84,8 +84,8 @@ $(document).ready(function(){
 function noticeAdd(){
     var url=link;
     var action="add_notice";
-    var summary=$('.new-notice-title').val();
-    var detail=$('.new-notice-detail').val();
+    var summary=$('.new-notice-title').val().trim();
+    var detail=$('.new-notice-detail').val().trim();
     var img_url=$("#add-img").attr("url");
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
@@ -115,8 +115,8 @@ function noticeEdit(target){
     var action="edit_notice";
     var parent=target.parents('.set-list-item');
     var notice_id=parent.data('id');
-    var summary=parent.find('.notice_summary').val();
-    var detail=parent.find('.notice_detail').val();
+    var summary=parent.find('.notice_summary').val().trim();
+    var detail=parent.find('.notice_detail').val().trim();
     var img_url=parent.find(".preview-img").attr("url");
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
