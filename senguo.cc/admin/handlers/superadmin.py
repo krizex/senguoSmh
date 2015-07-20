@@ -903,6 +903,7 @@ class OrderStatic(SuperBaseHandler):
 
 	@SuperBaseHandler.check_arguments("type:int")
 	def order_time(self):
+
 		type = self.args["type"]
 		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 				filter(not_(models.Order.status.in_([-1,0])))
@@ -927,7 +928,6 @@ class OrderStatic(SuperBaseHandler):
 					data[0] += 1
 				else:
 					data[e[0]] += 1
-
 		return self.send_success(data=data)
 
 	@SuperBaseHandler.check_arguments("type:int")
@@ -958,6 +958,7 @@ class OrderStatic(SuperBaseHandler):
 					data[order[1].hour + (order[1].minute+order[3])//60] += 1
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
+
 		return self.send_success(data=data)
 ##
 
@@ -1449,6 +1450,7 @@ class ShopAuthenticate(SuperBaseHandler):
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
 		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
+
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {

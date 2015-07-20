@@ -1,0 +1,109 @@
+<!-- create by jyj 2015-7-8 -->
+{% extends 'base.html' %}
+{% block title %}销售统计{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-count.css')}}"/>{% end %}
+
+{% block content %}
+<span class="right-title">销售统计</span>　
+<div class="box">
+    <p class="tit font16">销售额排行 - 按商品类目排序</p>
+    <div class="choose-change center-block font18 txt-center">
+        <a href="javascript:;" class="pre-item text-grey2"> < </a>
+        <span class="choose-time">
+            <span class="year-span"><span class="year"></span>年</span>
+            <span class="month-span"><span class="month"></span>月</span>
+            <span class="date-span"><span class="date"></span>日</span>
+            <span class="week-span hidden">第<span class="week"></span>周</span>
+            <span class="week-span11 hidden"><span class="week-month1">7</span>月<span class="week-date1">8</span>日~<span class="week-month2">7</span>月<span class="week-date2">15</span>日</span>
+        </span>
+        <a href="javascript:;" class="next-item text-grey2"> > </a>
+    </div>
+     <div class="change-box">　　
+        <ul id="sell_way_change" class="sell-change-list pull-left">
+            <li data-id="1"><a href="javascript:;" class="sort-date text-grey3">按天排</a></li>
+            <li data-id="2"><a href="javascript:;" class="sort-week text-grey3">按周排</a></li>
+            <li data-id="3"><a href="javascript:;" class="sort-month text-grey3">按月排</a></li>
+        </ul>
+    </div>
+    <div class="max-height-roll clearfix mlf20"><div id="goods_type" class="clearfix"></div></div>
+    <hr class="clearfix"/>
+
+
+    <p class="tit font16">销售额排行 - 按商品名称排序</p>
+    <div class="choose-change center-block font18 txt-center">
+        <a href="javascript:;" class="pre-item2 text-grey2"> < </a>
+        <span class="choose-time">
+            <span class="year-span2"><span class="year2"></span>年</span>
+            <span class="month-span2"><span class="month2"></span>月</span>
+            <span class="date-span2"><span class="date2"></span>日</span>
+            <span class="week-span2 hidden">第<span class="week2"></span>周</span>
+            <span class="week-span22 hidden"><span class="week-month12">7</span>月<span class="week-date12">8</span>日~<span class="week-month22">7</span>月<span class="week-date22">15</span>日</span>
+        </span>
+        <a href="javascript:;" class="next-item2 text-grey2"> > </a>
+    </div>
+     <div class="change-box">　　
+        <ul id="sell_way_change" class="sell-change-list2 pull-left">
+            <li data-id="1"><a href="javascript:;" class="sort-date2 text-grey3">按天排</a></li>
+            <li data-id="2"><a href="javascript:;" class="sort-week2 text-grey3">按周排</a></li>
+            <li data-id="3"><a href="javascript:;" class="sort-month2 text-grey3">按月排</a></li>
+        </ul>
+    </div>
+    <div class="max-height-roll clearfix mlf20"><div id="goods_name" class="clearfix"></div></div>
+    <hr class="clearfix"/>
+
+    <p class="tit font16">月销售额走势图 - 单种类目商品</p>
+    <div class="choose-change center-block font18 txt-center">
+        <a href="javascript:;" class="pre-item3 text-grey2"> < </a>
+        <span class="choose-time">
+            <span class="year-span3"><span class="year3"></span>年</span>
+            <span class="month-span3"><span class="month3"></span>月</span>
+        </span>
+        <a href="javascript:;" class="next-item3 text-grey2"> > </a>
+    </div>
+
+   <li>
+        <div class="tit cate-title">选择商品类目：</div>
+        <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" id="first_type"></em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentTypeName">
+                </ul>
+            </div>
+    </li>
+
+    <div id="single_type" class="clearfix mlf20"></div>
+    <hr class="clearfix mt50"/>
+
+    <p class="tit font16">月销售额走势图 - 单种商品</p>
+    <div class="choose-change center-block font18 txt-center">
+        <a href="javascript:;" class="pre-item4 text-grey2"> < </a>
+        <span class="choose-time">
+            <span class="year-span4"><span class="year4"></span>年</span>
+            <span class="month-span4"><span class="month4"></span>月</span>
+        </span>
+        <a href="javascript:;" class="next-item4 text-grey2"> > </a>
+    </div>
+
+     <li>
+        <div class="tit cate-title">选择商品名称：</div>
+        <div class="dropdown slide-down-select pull-left w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left filter_status" id="first_name"></em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentGoodsName">
+                </ul>
+            </div>
+    </li>
+
+    <div id="single_name" class="clearfix mlf20 mb50"></div>
+
+</div>
+{% end %}
+
+{% block bottom %}
+<script src="/static/js/echarts.js"></script>
+<script src="{{static_url('js/admin-sell-count.js')}}"></script>
+{% end %}
