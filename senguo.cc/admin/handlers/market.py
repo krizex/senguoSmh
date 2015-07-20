@@ -14,7 +14,7 @@ import decimal
 import json
 from random import Random
 
-#市场推广 - 首页
+# 市场推广 - 首页
 class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -66,7 +66,7 @@ class Home(CustomerBaseHandler):
 			,"curator":shop.curator,"done_time":shop.done_time,"shop_logo":shop.shop_logo,"lat":shop.lat,"lon":shop.lon})
 		return shop_data
 
-#店铺信息
+# 市场推广 - 店铺信息录入
 class Info(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('id')
 
@@ -135,7 +135,7 @@ class Info(CustomerBaseHandler):
 		admin_name = self.args.get('admin_name',None)
 		admin_phone = self.args.get('admin_phone',None)
 
-#店长信息
+# 市场推广 - 店长信息录入
 class ShopAdminInfo(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('action?:str')
 	def get(self,id):
@@ -200,9 +200,6 @@ class ShopAdminInfo(CustomerBaseHandler):
 		else:
 			return self.send_fail('action error')
 
-
-
-
 	@CustomerBaseHandler.check_arguments('code')
 	def wx_bind(self,shop_id):
 		code = self.args.get('code',None)
@@ -252,6 +249,7 @@ class ShopAdminInfo(CustomerBaseHandler):
 					return False
 				return u.id
 
+	# 生成店铺、添加商品
 	def add_shop(self,admin_id,shop_id):
 		print('login in add_shop')
 
@@ -285,7 +283,7 @@ class ShopAdminInfo(CustomerBaseHandler):
 		self.session.commit()
 		print('shop add success')
 
-		#添加商品
+		# 添加商品
 		print('start add goods')
 		spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = temp_shop.shop_id).all()
 		for temp_good in spider_goods:
@@ -318,6 +316,7 @@ class ShopAdminInfo(CustomerBaseHandler):
 
 		return shop.shop_code
 
+	# 生成店铺号，格式：whXXXXXX(6位随机数字)
 	def make_shop_code(self):
 		chars = '0123456789'
 		str = ''
@@ -330,21 +329,12 @@ class ShopAdminInfo(CustomerBaseHandler):
 				break
 		return 'wh'+ str
 
-
-
-
-
-
-
-
-
-#店铺录入
+# 店铺录入
 # class Insert(AdminBaseHandler):
 # 	@tornado.web.authenticated
 # 	def get(self):
 
-
-#店铺入驻成功
+# 店铺入驻成功
 class Success(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('id')
@@ -361,4 +351,3 @@ class Success(CustomerBaseHandler):
 		print(self.current_user.accountinfo.nickname)
 		print(shop_code,curator,shop_name)
 		return self.render("market/success.html",curator = curator , done_time = done_time , shop_code = shop_code, shop_name=shop_name)
-
