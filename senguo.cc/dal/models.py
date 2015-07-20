@@ -1316,7 +1316,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				# print("[订单管理]取消订单，恢复库存数量：",num)
+				# print("[Order]Order Canceled, restore storage:",num)
 		session.commit()
 		return True
 
