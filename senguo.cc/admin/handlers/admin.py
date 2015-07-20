@@ -327,7 +327,6 @@ class SellStatic(AdminBaseHandler):
 			yesterday_date = datetime.datetime(now.year,now.month,now.day-1)
 			yesterday_date = yesterday_date.strftime("%Y-%m-%d")
 
-
 			# 从order表中查询出一天店铺的所有有效订单（status字段的值大于等于5）的fruits字段：
 			now_date_str = now_date + '%'
 			yesterday_date_str = yesterday_date + '%'
@@ -588,6 +587,7 @@ class SellStatic(AdminBaseHandler):
 						flag_date = datetime.datetime(start_date.year,start_date.month,28)
 
 			month_price_list = []
+			name_item_list = []
 			while start_date <=flag_date:
 				start_date_str = start_date.strftime('%Y-%m-%d')
 				start_date_pre = start_date + datetime.timedelta(days = -1)
@@ -647,23 +647,27 @@ class SellStatic(AdminBaseHandler):
 
 				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 				type_total_price_list = []
-				for t_name in shop_all_type_name:
-					tmp = {}
-					t_name = t_name[0]
-					if t_name == type_name:
-						tmp["date"] = start_date_str
-						tmp["type_name"] = t_name
-						tmp["type_total_price"] = 0.0
-						tmp["per_name_total_price"] = {}
-						for tpl in total_price_list:
-							if goods_type_list[tpl["fruit_name"]] == t_name:
-								tmp["type_total_price"] += tpl["total_price"]
-								tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
-						month_price_list.append(tmp)
-						break
+				tmp = {}
+				tmp["date"] = start_date_str
+				tmp["per_name_total_price"] = {}
+				for tpl in total_price_list:
+					if goods_type_list[tpl["fruit_name"]] == type_name:
+						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+
+				name_item_list = list(tmp["per_name_total_price"].keys())
+
+				name_price_item_list = []
+				for i in range(len(name_item_list)):
+					name_price_item_list.append(tmp["per_name_total_price"][name_item_list[i]])
+
+				month_price_list.append(name_price_item_list)
 				start_date = start_date + datetime.timedelta(days = 1)
 
-			return self.send_success(output_data = month_price_list)
+			output_data = []
+			output_data.append(name_item_list)
+			output_data.append(month_price_list)
+
+			return self.send_success(output_data = output_data)
 
 		elif action == 'single_name':
 			goods_name = self.args["goods_name"]
