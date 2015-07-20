@@ -12,3 +12,53 @@
 /*add by jyj 2015-6-23*/
 .mlf15{margin-left: 40px;}
 /**/
+
+/*add by jyj 2015-7-8*/
+.sell-change-list{margin-left:60px;margin-top: 10px;}
+.sell-change-list li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.sell-change-list li.active{border-color:#44b549;}
+.sell-change-list li.active a{color:#44b549;}
+.choose-change{width:400px;margin-top:10px;margin-bottom:10px;}
+.center-block{display:block !important;margin:0 auto;}
+.txt-center{text-align:center;}
+/**/
+
+/*add by jyj 2015-7-14*/
+.sell-change-list2{margin-left:60px;margin-top: 10px;}
+.sell-change-list2 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.sell-change-list2 li.active{border-color:#44b549;}
+.sell-change-list2 li.active a{color:#44b549;}
+/**/
+
+/*add by jyj 2015-7-17*/
+.mlf20{margin-left: 20px;}
+.dropdown-menu{overflow: hidden;max-height: 210px;overflow-y: auto;}
+.category-list>li{float: left;width: 25%;}
+.cate-title{font-size: 14px;color: #999;height: 28px;line-height: 28px;float: left;margin-right: 5px;}
+.slide-down-select{display:inline-block;width:100%;background:#fff;color:#000;border:1px solid #ddd;margin-left:0;}
+.slide-down-select .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;width: 100%;}
+.slide-down-select em{font-style:normal;display:inline-block;width:110px;font-size:14px;overflow:hidden;padding-left: 10px;text-align: left;}
+.dropdown-toggle{padding:0 4px;}
+.dropdown-menu li{width:100%;padding:0;}
+.dropdown-menu .item{padding-left:14px;}
+.dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
+.caret{margin-top:10px;color: #c6c6c6;}
+.borderc{border: 1px solid #e7e7eb;}
+.pointer{cursor: pointer;}
+.min80{min-width: 80px;}
+.mt2{margin-top: 2px;}
+.txt-center{text-align: center !important;}
+.txt-left{text-align: left !important;}
+.hig{border: 1px dashed #ff6666 !important;}
+.no-title{font-size: 20px;text-align: center;margin-top: 40px;color: #333;}
+
+.pull-left{float:left !important;}
+.w130{width:130px !important;}
+/**/
+
+/*add by jyj 2015-7-18*/
+.max-height-roll{overflow: hidden;max-height: 400px;overflow-y: auto;width:98%;}
+.width100{width: auto;margin-right:0px;}
+.mt50{margin-top: 50px;}
+.mb50{margin-bottom: 50px;}
+/**/
