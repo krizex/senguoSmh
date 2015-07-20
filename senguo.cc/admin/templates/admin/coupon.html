@@ -46,7 +46,7 @@
         </thead>
         <tbody>
         {% for coupon in output_data %}
-            <tr class="detail-tr" data-id="{{coupon['coupon_id']}}">
+            <tr class="detail-tr {%if coupon['closed']==1%} dis-coupon{%end%}" data-id="{{coupon['coupon_id']}}">
                 <td>{{coupon['from_get_date']}}到{{coupon['to_get_date']}}</td>
                 <td>每人限领{{coupon['get_limit']}}张</td>
                 <td>任意商品买满金额可用</td>
@@ -55,9 +55,9 @@
                 <td>{% if coupon['use_goods_group'] == -2 %}所有商品{% else %}限商品分组:{{coupon['use_goods_group']}}{% end %}</td>
                 <td>{{coupon['use_number']}}/{{coupon['get_number']}}/{{coupon['total_number']}}</td>
                 <td class="operate">
-                    <a href="javascript:;" class="mr10 coupon-edit" data-id="{{coupon['coupon_id']}}">编辑</a>
+                    <a href="/admin/marketing?action=editcouponpage&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
                     <a href="javascript:;" class="mr10 spread-btn">推广</a>
-                    <a href="javascript:;" class="red-txt" data-id="{{coupon['coupon_id']}}">停用</a>
+                    <a href="javascript:;" class="red-txt close_one" data-id="{{coupon['coupon_id']}}">停用</a>
                     <span class="stop">已停用</span>
                     <div class="sw-er-tip all-position invisible">
                         <div class="top-arr">
@@ -87,7 +87,7 @@
             <td>限商品分组:店铺推荐</td>
             <td>8/12/10</td>
             <td class="operate">
-                <a href="javascript:;" class="mr10 coupon-edit">编辑</a>
+                <a href="/admin/marketing?action=editcouponpage&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
                 <a href="javascript:;" class="mr10">推广</a>
                 <a href="javascript:;" class="red-txt">停用</a>
                 <span class="stop">已停用</span>
@@ -95,6 +95,7 @@
         </tr>
         </tbody>
     </table>
+            <input type="hidden" value="{{data1}}">
     <table class="tb-enty tb-charge hidden">
         <colgorup>
             <col width="18%"/>
@@ -120,18 +121,18 @@
         </thead>
         <tbody>
         {% for data in data1 %}
-        <tr>
-            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
-            <td>每人限领一张</td>
+        <tr class=" detail-tr {%if data['closed']==1%}dis-coupon{%end%}"  data-id="{{data['coupon_id']}}">
+             <td>{{data["from_get_date"]}}到{{data["to_get_date"]}}</td>
+            <td>每人限领{{data["get_limit"]}}张</td>
             <td>任意商品买满金额可用</td>
-            <td>5.00元</td>
-            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+              <td>{{data["coupon_money"]}}元</td>
+            <td>{{data["from_valid_date"]}}到{{data["to_valid_date"]}}</td>
             <td>限商品分组:店铺推荐</td>
-            <td>8/12/10</td>
-            <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span class="stop">已停用</span></td>
+            <td>{{data["get_number"]}}/{{data["use_number"]}}</td>
+            <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td>
         </tr>
-        <tr class="dis-coupon">
-            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
+        <!-- <tr class="dis-coupon">
+            <td>{{data["from_get_date"]}}到{{data["to_get_date"]}}</td>
             <td>每人限领一张</td>
             <td>任意商品买满金额可用</td>
             <td>5.00元<br><span class="c999">任意商品买满任意金额可用</span></td>
@@ -139,7 +140,7 @@
             <td>限商品分组:店铺推荐</td>
             <td>8/12/10</td>
             <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span class="stop">已停用</span></td>
-        </tr>
+        </tr> -->
         {% end %}
         </tbody>
     </table>

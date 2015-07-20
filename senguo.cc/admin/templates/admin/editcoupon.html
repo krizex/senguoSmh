@@ -1,257 +1,203 @@
 {% extends 'base.html' %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>{% end %}
-
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-reset.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
 {% block content %}
 {% set shop_code = current_shop.shop_code %}
-<div class="row header_back">
-               <div class="">
-                 <a href="/admin/marketing?action=coupon"><span  class="cate-title">< 返回</span></a>
-                <span class="mytitle">优惠券/编辑优惠券</span>
-                </div>
+<div class="">
+    <p class="c333 mt10 choose-text">
+        <a href="javasript:;" class="c999 cancel-add-goods goback">优惠券</a>
+        <span class="c333"> / 编辑优惠券[{{pre_coupon["coupon_id"]}}]</span>
+    </p>
 </div>
-<p class="tit7"> 当前正在编辑的优惠券编号为[{{output_data["coupon_id"]}}]</p>
-<div class="row"> 
-      <div class="col-lg-8">
-           <div class="row div1">
-                <p class="col-lg-2">优惠金额</p>
-                <div class="in col-lg-5">
-                    <input  value="{{output_data["coupon_money"]}}" id="in1">
-                    <p class="tit4">只能是大于0.01的数字，可以为整数</p>
-                </div>
-                 <p class="col-lg-2">元</p>
-            </div>
-            <div class="row div1">
-                <div class="col-lg-2">
-                    <p>消费条件</p>
-                    <p>(选填)</p>
-                </div>
-                 <div class="in col-lg-5">
-                    <input value="{{output_data["use_rule"]}}"id="in2">
-                    <p class="tit5">订单满多少元可用。如不填，则默认:订单满任意金额可用</p>
-                </div>
-                 <p class="col-lg-2">元</p>
-             </div>
-            <div class="row div1">
-                <p class="col-lg-2">库存</p> 
-                <div class="in col-lg-5">
-                    <input value="{{output_data["coupon_totalnum"]}}"id="in3">
-                    <p class="tit4">只能是大于0的数字</p>
-                </div>
-                <p class="col-lg-2">张</p>
-            </div>
-            <div class="row div1">
-                <div class="col-lg-2">
-                <p>领取限制</p>
-                <p>(选填)</p>
-                </div> 
-                <div class="in col-lg-5">
-                    <input value="{{output_data["get_limitnum"]}}"id="in4">
-                    <p class="tit5">每个用户领取上限。如不填，则默认为1</p>
-                </div>
-                <p class="col-lg-2">张</p>
-            </div>
-            <div class="row div1">
-                <div class="col-lg-3">可消费商品</div>
-                <div class="col-lg-3">选择商品分组</div>
-                <div class="col-lg-4">
-                     <select id="in9"  style="width:100px"  >
-                        <option value="0">默认分组 </option>
-                        <option value="-1">推荐分组 </option>
-                        {% for data1 in output_data1 %}
-                            <option value="{{data1['group_id']}}">{{data1['group_name']}}</option>
-                        {% end %}
-                </select>    
-                </div>
-            </div>
-            {% if output_data["valid_way"] ==0%}
-            <div class="row div1">
-                <p class="col-lg-2">有效期</p> 
-                <div class="in col-lg-2">
-                    <form action="" method="get"> 
-                        <label class="tit5"><input name="valid_way" type="radio" value="" checked="checked"/>固定日期 </label></br>
-                        <label class="tit5 cmradio"><input name="valid_way" type="radio" value="" />领取后</label> 
-                    </form> 
-            </div>
-            <div class="col-lg-7">
-                <div class="">
-                    <div class="row"> 
-                        <p class="col-lg-4">生效时间：</p>
-                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in7">
-                    </div>
-                    <div class="row"> 
-                        <p class="col-lg-4">失效时间：</p>
-                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in8">
-                    </div>
-                </div>
-                
-                <div class="row">
-                    <select id="in5"  class="col-lg-3 tit5"  >
-                        <option value="0">当天 </option>
-                        <option value="1">1天 </option>
-                        <option value="2">2天 </option>
-                        <option value="3">3天 </option>
-                        <option value="4">4天 </option>
-                        <option value="5">5天 </option>
-                        <option value="6">6天 </option>
-                        <option value="7">7天 </option>
-                        <option value="8">8天 </option>
-                        <option value="9">9天 </option>
-                        <option value="10">10天 </option>
-                        <option value="11">11天 </option>
-                        <option value="12">12天 </option>
-                        <option value="13">13天 </option>
-                        <option value="14">14天 </option>
-                        <option value="15">15天 </option>
-                        <option value="16">16天 </option>
-                        <option value="17">17天 </option>
-                        <option value="18">18天 </option>
-                        <option value="19">19天 </option>
-                        <option value="20">20天 </option>
-                        <option value="21">21天 </option>
-                        <option value="22">22天 </option>
-                        <option value="23">23天 </option>
-                        <option value="24">24天 </option>
-                        <option value="25">25天 </option>
-                        <option value="26">26天 </option>
-                        <option value="27">27天 </option>
-                        <option value="28">28天 </option>
-                        <option value="29">29天 </option>
-                        <option value="30">30天 </option>
-                    </select>    
-                    <div class="col-lg-5 tit5">生效<span style="margin-left:25px">有效天数</span></div>
-                    <select id="in6"  class="col-lg-3"  >
-                        <option value="1" selected="selected">1天 </option>
-                        <option value="2">2天 </option>
-                        <option value="3">3天 </option>
-                        <option value="4">4天 </option>
-                        <option value="5">5天 </option>
-                        <option value="6">6天 </option>
-                        <option value="7">7天 </option>
-                        <option value="8">8天 </option>
-                        <option value="9">9天 </option>
-                        <option value="10">10天 </option>
-                        <option value="11">11天 </option>
-                        <option value="12">12天 </option>
-                        <option value="13">13天 </option>
-                        <option value="14">14天 </option>
-                        <option value="15">15天 </option>
-                        <option value="16">16天 </option>
-                        <option value="17">17天 </option>
-                        <option value="18">18天 </option>
-                        <option value="19">19天 </option>
-                        <option value="20">20天 </option>
-                        <option value="21">21天 </option>
-                        <option value="22">22天 </option>
-                        <option value="23">23天 </option>
-                        <option value="24">24天 </option>
-                        <option value="25">25天 </option>
-                        <option value="26">26天 </option>
-                        <option value="27">27天 </option>
-                        <option value="28">28天 </option>
-                        <option value="29">29天 </option>
-                        <option value="30">30天 </option>
-                    </select> 
-                </div> 
-           {% else %}
-            <div class="row div1">
-                <p class="col-lg-2">有效期</p> 
-                <div class="in col-lg-2">
-                    <form action="" method="get"> 
-                        <label class="tit5"><input name="valid_way" type="radio" value="{{output_data["uneffective_time"]}}"/>固定日期 </label></br>
-                        <label class="tit5"><input name="valid_way" type="radio" value="" checked="checked" />领取后</label> 
-                    </form> 
-            </div>
-            <div class="col-lg-7">
-                <div class="">
-                    <div class="row"> 
-                        <p class="col-lg-4">生效时间：</p>
-                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in7">
-                    </div>
-                    <div class="row"> 
-                        <p class="col-lg-4">失效时间：</p>
-                        <input type="text" class="Wdate col-lg-5" onFocus="WdatePicker({isShowWeek:true,onpicked:function() {$dp.$('d122_1').value=$dp.cal.getP('W','W');$dp.$('d122_2').value=$dp.cal.getP('W','WW');}})" id="in8">
-                    </div>
-                </div>
-                 <div class="row">
-                    <select id="in5"  class="col-lg-3 tit5"  >
-                        <option value="0">当天 </option>
-                        <option value="1">1天 </option>
-                        <option value="2">2天 </option>
-                        <option value="3">3天 </option>
-                        <option value="4">4天 </option>
-                        <option value="5">5天 </option>
-                        <option value="6">6天 </option>
-                        <option value="7">7天 </option>
-                        <option value="8">8天 </option>
-                        <option value="9">9天 </option>
-                        <option value="10">10天 </option>
-                        <option value="11">11天 </option>
-                        <option value="12">12天 </option>
-                        <option value="13">13天 </option>
-                        <option value="14">14天 </option>
-                        <option value="15">15天 </option>
-                        <option value="16">16天 </option>
-                        <option value="17">17天 </option>
-                        <option value="18">18天 </option>
-                        <option value="19">19天 </option>
-                        <option value="20">20天 </option>
-                        <option value="21">21天 </option>
-                        <option value="22">22天 </option>
-                        <option value="23">23天 </option>
-                        <option value="24">24天 </option>
-                        <option value="25">25天 </option>
-                        <option value="26">26天 </option>
-                        <option value="27">27天 </option>
-                        <option value="28">28天 </option>
-                        <option value="29">29天 </option>
-                        <option value="30">30天 </option>
-                    </select>    
-                    <div class="col-lg-5 tit5">生效<span style="margin-left:25px">有效天数</span></div>
-                    <select id="in6"  class="col-lg-3"  >
-                        <option value="1" selected="selected">1天 </option>
-                        <option value="2">2天 </option>
-                        <option value="3">3天 </option>
-                        <option value="4">4天 </option>
-                        <option value="5">5天 </option>
-                        <option value="6">6天 </option>
-                        <option value="7">7天 </option>
-                        <option value="8">8天 </option>
-                        <option value="9">9天 </option>
-                        <option value="10">10天 </option>
-                        <option value="11">11天 </option>
-                        <option value="12">12天 </option>
-                        <option value="13">13天 </option>
-                        <option value="14">14天 </option>
-                        <option value="15">15天 </option>
-                        <option value="16">16天 </option>
-                        <option value="17">17天 </option>
-                        <option value="18">18天 </option>
-                        <option value="19">19天 </option>
-                        <option value="20">20天 </option>
-                        <option value="21">21天 </option>
-                        <option value="22">22天 </option>
-                        <option value="23">23天 </option>
-                        <option value="24">24天 </option>
-                        <option value="25">25天 </option>
-                        <option value="26">26天 </option>
-                        <option value="27">27天 </option>
-                        <option value="28">28天 </option>
-                        <option value="29">29天 </option>
-                        <option value="30">30天 </option>
-                    </select> 
-                </div> 
-            </div>
-            {% end %}
+<input type="hidden" id="goods" value="{{data1}}"/>
+<div class="wrap-newcoupon mt20">
+    <div class="newcoupon-box group">
+        <div class="wrap-coupontb fl">
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="14%"/>
+                    <col width="86%"/>
+                </colgroup>
+                <thead>
+                <tr>
+                    <td class="">优惠券种类</td>
+                    <td>
+                        <div class="dropdown slide-down-select pull-left w130 mt2">
+                            <button class="btn btn-default dropdown-toggle area height25 slide-btn forbidden-btn" type="button" data-toggle="dropdown">
+                                <em class="pull-left c333 current-type" data-id="0">{% if pre_coupon["coupon_type"]==0%}活动优惠券{%else%}充值优惠券{%end%}</em>
+                                <span class="caret pull-right no-margin-left rotate0"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right w130 coupon-types hidden" role="menu" aria-labelledby="dropdownMenu18">
+                                <li class="presentation" role="presentation">
+                                    <a class="item" href="javascript:;" data-id="0">活动优惠券</a>
+                                </li>
+                                <li class="presentation" role="presentation">
+                                    <a class="item" href="javascript:;" data-id="1">充值优惠券</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
+                </tr>
+                </thead>
+                <tbody class="coupon1">
+                <tr>
+                    <td class="ver-top"><span class="ver-5">领取时间</span></td>
+                    <td>
+                        <div class="">
+                            选择领取时间 : <input type="text" class="Wdate from_get_date  " id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'})" value="{{pre_coupon["from_get_date"]}}" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}>
+                             到 <input type="text" class="Wdate to_get_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})"  value="{{pre_coupon["to_get_date"]}}" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}>
+                        </div>
+                        <p class="red-txt f12 mt6">优惠券将于领取时间内发放至发现中，由用户领取</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">领取限制<br><span class="c999 ml10">(选填)</span></span></td>
+                    <td><input type="text" value="{{pre_coupon["get_limit"]}}" class="mr10 get_limit" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">库存</span></td>
+                    <td><input type="text" class="mr10 total_number {%if  pre_coupon["edit_status"]==2%}disabled="disabled"{%end%}" value="{{pre_coupon["total_number"]}}" />张<p class="mt6 f12 red-txt">只能为整数</p></td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
+                    <td>
+                        <div class="iblock">
+                            <span class="mr10 ver7">选择商品分组:</span>
+                            <div class="dropdown slide-down-select w130 mr10">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn {%end%}" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 use_goods_group" data-id="-2">所有分组</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst {%if  pre_coupon["edit_status"]!=0%}hidden{%end%}" role="menu" aria-labelledby="dropdownMenu18">
+                                    {% for group in output_data%}
+                                    <li class="presentation" role="presentation">
+                                        <a class="item" href="javascript:;" data-id="{{group['group_id']}}">{{group['group_name']}}</a>
+                                    </li>
+                                    {% end %}
+                                </ul>
+                            </div>
+                            <div class="dropdown slide-down-select w130">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn {%end%}" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 use_goods" data-id="-1">所有商品</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_lst {%if  pre_coupon["edit_status"]!=0%}hidden{%end%}" role="menu" aria-labelledby="dropdownMenu18">
+                               <li class="presentation" role="presentation">
+                                </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <p><input type="text" class="mr10 use_rule " value="{{pre_coupon["use_rule"]}}" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%} />元</p>
+                        <p class="c999 f12 mt6">买满多少元的什么商品可消费优惠券。如不填，则默认：任意商品买满任意金额均可使用。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">优惠金额</span></td>
+                    <td><input type="text" class="mr10 coupon_money" value="{{pre_coupon["coupon_money"]}}"  {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}/>元<p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p></td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">优惠券有效期</span></td>
+                    <td class="radio-list radio-list1 {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn {%end%} ">
+                        <div class="coupon-row f12">
+                            <a href="javascript:;" class="radio {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="0"></a>
+                            <input type="text" class="Wdate from_valid_date" id="date3" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date4\')}'})" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%} {%if  pre_coupon["edit_status"]==0%}value="{{pre_coupon["from_valid_date"]}}" {%else%}value="" {%end%}>
+                             到 <input type="text" class="Wdate to_valid_date" id="date4" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date3\')}'})" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%} {%if  pre_coupon["edit_status"]==0%}value="{{pre_coupon["to_valid_date"]}}" {%else%}value="" {%end%}>
+                        </div>
+                        <div class="coupon-row f12 mt10 {%if pre_coupon["coupon_type"]==1%} hidden {%end%} ">
+                            <a href="javascript:;" class="radio {%if  pre_coupon["valid_way"]==1 %}radio-active {%end%} {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="1"></a>
+                            领取即生效，有效期天数为 <input type="text" class="mr10 last_day" {%if  pre_coupon["edit_status"]==1%}value="{{pre_coupon["last_day"]}}" {%else%}value="" {%end%} {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}>天
+                        </div>
+                        <div class="coupon-row f12 mt10">
+                            <a href="javascript:;" class="radio {%if  pre_coupon["valid_way"]==2 %}radio-active {%end%}{%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="2"></a>
+                            不限时间，任何时间能用
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+                <tfoot class="coupon2 hidden">
+                <tr>
+                    <td class="ver-top"><span class="ver-5">领取时间</span></td>
+                    <td>
+                        <div class="">
+                            选择领取时间 : <input type="text" class="Wdate from_get_dates" id="date5" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date6\')}'})" value="{{pre_coupon["from_valid_date"]}}" >
+                            到 <input type="text" class="Wdate to_get_dates" id="date6" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date5\')}'})" value="{{pre_coupon["to_get_date"]}}" >
+                        </div>
+                        <p class="red-txt f12 mt6">用户在领取时间内充值即得优惠券</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">领取条件</span></td>
+                    <td><input type="text" class="mr10 get_rule"/>张<p class="mt6 f12 red-txt">充值满多少元可领取优惠券。只能是大于0.01的数字，可以为整数</p></td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">领取限制<br><span class="c999 ml10">(选填)</span></span></td>
+                    <td><input type="text" class="mr10 get_limits"/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
+                    <td>
+                        <div class="iblock">
+                            <span class="mr10 ver7">选择商品分组:</span>
+                            <div class="dropdown slide-down-select w130 mr10">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 use_goods_groups" data-id="-2">所有分组</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lsts" role="menu" aria-labelledby="dropdownMenu18">
+                                    {% for group in output_data%}
+                                    <li class="presentation" role="presentation">
+                                        <a class="item" href="javascript:;" data-id="{{group['group_id']}}">{{group['group_name']}}</a>
+                                    </li>
+                                    {% end %}
+                                </ul>
+                            </div>
+                            <div class="dropdown slide-down-select w130">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 use_goodss" data-id="-1">所有商品</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_lsts" role="menu" aria-labelledby="dropdownMenu18">
+                                </ul>
+                            </div>
+                        </div>
+                        <p><input type="text" class="mr10 use_rules {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}"/>元</p>
+                        <p class="c999 f12 mt6">买满多少元的什么商品可消费优惠券。如不填，则默认：任意商品买满任意金额均可使用。</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">优惠金额</span></td>
+                    <td><input type="text" class="mr10 coupon_moneys"/>元<p class="red-txt f12 mt6">只能是大于0.01的数字，可以为整数</p></td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">优惠券有效期</span></td>
+                    <td class="radio-list radio-list2">
+                        <div class="coupon-row f12 mt10">
+                            <a href="javascript:;" class="radio {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="1"></a>
+                            领取即生效，有效期天数为 <input type="text" class="mr10 last_days">天
+                        </div>
+                        <div class="coupon-row f12 mt10">
+                            <a href="javascript:;" class="radio radio-active {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="2"></a>
+                            不限时间，任何时间能用
+                        </div>
+                    </td>
+                </tr>
+                </tfoot>
+            </table>
         </div>
-</div>
-      <div class="col-lg-4 div1"> hhhh</div>
-</div>
-<div class="row">
-    <button class="edit editconfigbtn cmhref">确认</button>
-    <a href="/admin/marketing?action=coupon" class="cmhref"> <button class="configcancel ">取消</button></a>
+        <div class="coupon-prview fl">
+            这是预览
+        </div>
+    </div>
+    <div class="wrap-pop-btn wrap-edit-item">
+        <a href="javascript:;" class="ok-btn ok-editcoupon" data-id="{{pre_coupon["coupon_id"]}}" data-flag="{{pre_coupon["edit_status"]}}" data-type="{{pre_coupon["coupon_type"]}}">确定</a>
+        <a href="javascript:;" class="cancel-btn cancel-edit-goods goback">取消</a>
+    </div>
 </div>
 {% end %}
 {% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
 <script src="{{static_url('js/third/datepicker/WdatePicker.js')}}"></script>
-<script src="{{static_url('js/admin-marketing.js')}}"></script>
+<script src="{{static_url('js/admin-coupon.js')}}"></script>
 {% end %}
