@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back"></a>
+    <span>优惠券</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-mycoupon">
+    <ul class="my-coupon-list">
+        <li>
+            <div class="get-coupon">
+                <span>点击<br>领取</span>
+            </div>
+            <div class="coupon-lprice">
+                <i class="gap gap1-right"></i>
+                <p class="price-txt"><span class="f16">￥</span><span class="f26">10.00</span></p>
+                <div class="price-info">
+                    <p class="f14 green-txt">仅剩74张</p>
+                    <p class="f12 c333">满49元即可使用</p>
+                    <p class="f12 c666">2015.7.10-2015.7.19</p>
+                </div>
+            </div>
+        </li>
+        <li>
+            <div class="get-coupon">
+                <span>点击<br>领取</span>
+            </div>
+            <div class="coupon-lprice">
+                <i class="gap gap1-right"></i>
+                <p class="price-txt"><span class="f16">￥</span><span class="f26">10.00</span></p>
+                <div class="price-info">
+                    <p class="f14 green-txt">仅剩74张</p>
+                    <p class="f12 c333 price-des">满49元即可9元即可使用9元即可使用使用</p>
+                    <p class="f12 c666">2015.7.10-2015.7.19</p>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/coupon-profile.js')}}"></script>
+{% end %}

@@ -1,6 +1,6 @@
 $(document).ready(function(){
     var height = $(window).height();
-    $(".container").css("minHeight",height);
+    $(".container").css("minHeight",height-40);
     //兑换
     $(document).on("click","#convert-btn",function(){
         var key = $(".coupon-ipt").val();
@@ -9,7 +9,7 @@ $(document).ready(function(){
         }
     });
     $(document).on("click",".back",function(){
-        history.go(-1);
+        history.back();
     });
     //领取优惠券
     $(document).on("click","#get-coupon",function(){
@@ -24,9 +24,9 @@ function getCoupon(coupon_key){
         type:"get",
         success:function(res){
             if(res.success){
-                Tip("兑换成功");
+                Tip("领取成功");
                 setTimeout(function(){
-                    window.location.href="/coupon?action=coupon";
+                    window.location.href="/coupon/list?action=coupon";
                 },2000);
             }else{
                 Tip(res.error_text);

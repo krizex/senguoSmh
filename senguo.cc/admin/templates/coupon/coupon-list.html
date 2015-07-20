@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back"></a>
+    <span>我的优惠券</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-mycoupon">
+    <div class="wrap-coupon-ipt">
+        <input type="text" class="coupon-ipt" placeholder="输入代金券/优惠券码"/>
+        <a href="javascrpipt:;" class="convert-btn" id="convert-btn">兑换</a>
+    </div>
+    <ul class="my-coupon-list">
+        {% for coupon in output_data %}
+        <li>
+            <div class="get-coupon">
+                <p class="f12 mt8">使用期限</p>
+                <p class="f12">2015.7.10</p>
+                <p class="f12">2015.7.12</p>
+                <p class="f16 bold">未消费</p>
+            </div>
+            <div class="coupon-lprice">
+                <i class="gap gap1-right"></i>
+                <p class="price-stxt"><span class="f16">￥</span><span class="f32">10.00</span></p>
+                <p class="c333">订单满49元即可使用（含运费）</p>
+            </div>
+        </li>
+        <li>
+            <div class="get-coupon coupon-used">
+                <p class="f12 mt8">使用期限</p>
+                <p class="f12">2015.7.10</p>
+                <p class="f12">2015.7.12</p>
+                <p class="f16 bold">已消费</p>
+            </div>
+            <div class="coupon-lprice">
+                <i class="gap gap2-right"></i>
+                <p class="price-stxt c9f"><span class="f16">￥</span><span class="f32">10.00</span></p>
+                <p class="c666 ">订单满49元即可使用（含运费）</p>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/coupon-profile.js')}}"></script>
+{% end %}

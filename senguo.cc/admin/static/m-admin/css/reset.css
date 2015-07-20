@@ -66,6 +66,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .bg-white{background-color: #fff !important;}
 /*字体*/
 .f12{font-size: 12px !important;}
+.f14{font-size: 14px !important;}
 .f16{font-size: 16px !important;}
 /*盒模型*/
 .pt15{padding-top:15px!important;}
@@ -83,6 +84,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .mt2{margin-top: 2px;}
 .mt4{margin-top: 4px;}
 .mt6{margin-top: 6px;}
+.mt8{margin-top: 8px;}
 .mt15{margin-top: 15px;}
 .mt16{margin-top: 16px;}
 .mt44{margin-top: 44px;}

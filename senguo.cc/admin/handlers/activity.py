@@ -437,6 +437,21 @@ class ConfessionList(CustomerBaseHandler):
 
 # 发现 - 优惠券
 class Coupon(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("coupon/coupon.html")
+#用户优惠券		
+class CouponUser(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("coupon/coupon-user.html")
+#我的优惠券		
+class CouponProfile(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("coupon/coupon-profile.html")
+#优惠券列表		
+class CouponList(AdminBaseHandler):
 	def updatecoupon(self):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.current_shop.id
@@ -477,7 +492,13 @@ class Coupon(AdminBaseHandler):
 		data=[]
 		for x in range(1,3):
 			self.getcoupon(x)
-		return self.render("coupon/coupon.html",output_data=data)
+		return self.render("coupon/coupon-list.html",output_data=data)
+#优惠券状态
+class CouponStatus(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("coupon/coupon-status.html")
+
 class CouponDetail(AdminBaseHandler):
 	def updatecoupon(self):
 		now_date=int(time.time())
