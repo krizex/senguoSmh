@@ -1286,7 +1286,6 @@ class Market(CustomerBaseHandler):
 		self.session.commit()
 		return self.send_success(notice='点赞成功，积分+1')
 
-
 	@CustomerBaseHandler.check_arguments("fruits")
 	def cart_list(self):
 		fruits = self.args["fruits"]
