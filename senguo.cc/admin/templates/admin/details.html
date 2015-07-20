@@ -13,7 +13,7 @@
                     <em class="pull-left c333 use_goods_group" data-id="0">所有({{data1['a']}})</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
-                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu18">
+                <ul class="dropdown-menu dropdown-menu-right w130 coupon-items" role="menu" aria-labelledby="dropdownMenu18">
                     <li class="presentation" role="presentation">
                         <a class="item" href="javascript:;" data-id="0">所有({{data1['a']}})</a>
                     </li>
@@ -45,23 +45,45 @@
                 <td>消费记录</td>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="list-coupons">
+        {% for data in output_data %}
+        {% if data["coupon_status"]==2 %}
         <tr>
-            <td class="relative"><span>RDLD888dr</span><a href="javascript:;" class="copy-coupon-code">复制</a></td>
-            <td>5.00元</td>
-            <td>等待晴天<br>ID:66666</td>
-            <td>2015-05-06 17:03:03</td>
-            <td>2015-05-06 12:34:33</td>
-            <td>订单号:<a href="javascript:;">666666666</a></td>
+            <td class="relative"><span>{{data["coupon_key"]}}</span></span><span class="copy-coupon-code">复制</span></td>
+            <td>{{data["coupon_money"]}}</td>
+            <td>{{data["nickname"]}}<br>ID:{{data["customer_id"]}}</td>
+            <td>{{data["get_date"]}}</td>
+            <td>{{data["use_date"]}}</td>
+            <td>订单号:<a href="javascript:;">{{data["order_id"]}}</a></td>
         </tr>
-        <tr class="dis-coupon">
+       {% elif  data["coupon_status"]==0 %}
+        <tr class=" dis-coupon">
+            <td class="relative"><span>{{data["coupon_key"]}}</span><span class="copy-coupon-code">复制</span></td>
+            <td>{{data["coupon_money"]}}</td>
+            <td>未领取</td>
+            <td>{{data["get_date"]}}</td>
+            <td>{{data["use_date"]}}</td>
+            <td>订单号:<a href="javascript:;">{{data["order_id"]}}</a></td>
+        </tr>
+        {% elif  data["coupon_status"]==1  %}
+        <tr class=" dis-coupon">
+            <td class="relative"><span>{{data["coupon_key"]}}</span><span class="copy-coupon-code">复制</span></td>
+            <td>{{data["coupon_money"]}}</td>
+            <td>{{data["nickname"]}}<br>ID:{{data["customer_id"]}}</td>
+            <td>{{data["get_date"]}}</td>
+            <td>{{data["use_date"]}}</td>
+            <td>订单号:<a href="javascript:;">{{data["order_id"]}}</a></td>
+        </tr>
+        {% end %}
+       <!--  <tr class="dis-coupon">
             <td><span>RDLD888dr</span><a href="javascript:;">复制</a></td>
             <td>5.00元</td>
             <td>未领取</td>
             <td>未领取</td>
             <td>未领取</td>
             <td>未领取</td>
-        </tr>
+        </tr> -->
+        {% end %}
         </tbody>
     </table>
 </div>
