@@ -97,7 +97,7 @@
 .user-box{position: absolute;left: 50%;}
 .pop-staff-box{}
 .pop-staff-box .title{text-align: center;margin-bottom:10px;}
-.staff-list{padding: 4px 0 20px 0;}
+.staff-list{padding: 4px 0 20px 0;max-height: 200px;overflow: auto;-webkit-overflow-scrolling: touch;}
 .staff-list>li{height: 41px;line-height: 41px;padding-left: 20px;color: #999;margin-bottom: 10px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
 .staff-list .img-border{border-color:#999;}
 .staff-list .check{visibility:hidden;}
@@ -315,9 +315,3 @@
 .wrap-apay-more .up{display: inline;}
 .wrap-apay-more .down{display: none;}
 .wrap-pay-text p{line-height: 18px;}
-
-
-
-
-
-

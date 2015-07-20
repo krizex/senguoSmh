@@ -15,5 +15,8 @@
         <img src="/static/images/empty_l.png" alt="购物篮中没有商品" class="center-block src_change w210"/>
     </a>
 </div>
+<div class="center-block mt40 text-center">
+    <a class="btn text-green bg-white" href="{{reverse_url('Market', handler.shop_code)}}">去购物</a>
+</div>
 {% end %}
-{% block bottom%}<script type="text/javascript" src="{{static_url('js/market-empty.js')}}"></script>{% end %}
+{% block bottom %}<script type="text/javascript" src="{{static_url('js/market-empty.js')}}"></script>{% end %}
