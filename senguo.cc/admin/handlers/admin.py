@@ -3632,7 +3632,7 @@ class Marketing(AdminBaseHandler):
 			data=self.args["data"]
 			coupon_type=int(data["coupon_type"])
 			x=data["from_get_date"]
-			print(x)
+			print(coupon_type)
 			from_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
 			x=data["to_get_date"]
 			to_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
@@ -3662,6 +3662,7 @@ class Marketing(AdminBaseHandler):
 			#  注意这里获得coupon_id的过程 相当的曲折 ，这里的a 识query类型  而a[0]识 result 类型 只有a[0][0]才是int类型
 			now_date=int(time.time())
 			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
+			print(q)
 			if now_date<q.from_get_date:
 				# if total_number<q.total_number:
 				# 	pass
@@ -3674,7 +3675,6 @@ class Marketing(AdminBaseHandler):
 			elif now_date<q.to_get_date:
 				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
 				for x in range(q.total_number,total_number):
-					
 					chars=string.digits+string.ascii_letters
 					chars=''.join(random.sample(chars*10,4))
 					chars=chars+str(coupon_id)+'C'+str(x)+'M'+str(current_shop_id)

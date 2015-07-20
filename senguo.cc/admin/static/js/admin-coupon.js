@@ -134,8 +134,7 @@ $(document).ready(function () {
     addCoupon(type);
 }).on('click','.ok-editcoupon',function(){
     var coupon_id=$(this).attr("data-id");
-     // vat data-type=$('.furit-type li').attr('data-type');
-    var type=0;
+    var type=$(this).attr("data-type");
     var edit_status=$(this).attr("data-flag");
     editCoupon(type,coupon_id,edit_status);
 }).on("click",".radio-list .radio",function(){
