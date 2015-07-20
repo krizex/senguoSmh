@@ -549,12 +549,12 @@ class CouponDetail(AdminBaseHandler):
 				m_effective_time=None
 				m_uneffective_time=None
 				m_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(get_date))
-				if q.valid_way==0:
+				if qq.valid_way==0:
 					uneffective_time=qq.uneffective_time
 					effective_time=qq.effective_time
 					m_effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(effective_time))
 					m_uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(uneffective_time))
-				elif q.valid_way==1:
+				elif qq.valid_way==1:
 					all_days=qq.start_day+qq.last_day
 					uneffective_time=get_date+all_days*60*60*24
 					effective_time=get_date+qq.start_day*24*60*60
