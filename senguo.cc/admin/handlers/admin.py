@@ -3256,7 +3256,7 @@ class MessageManage(AdminBaseHandler):
 				shop_admin = self.session.query(models.ShopAdmin).filter_by(id = self.current_user.id).one()
 			except:
 				return self.send_fail('shop_admin not found')
-			shop.admin.has_mp  = 1   #管理员有自己的平台
+			shop_admin.has_mp  = 1   #管理员有自己的平台
 			shop_admin.mp_name = mp_name
 			shop_admin.mp_appid = mp_appid
 			shop_admin.mp_appsecret = mp_appsecret
