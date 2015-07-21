@@ -914,7 +914,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def get_other_accessToken(self,session,admin_id):
 		now = datetime.datetime.now().timestamp()
 		try:
-			admin_info = session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+			admin_info = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
 		except:
 			return None
 		if admin_info.mp_name and admin_info.mp_appid and admin_info.mp_appsecret:
