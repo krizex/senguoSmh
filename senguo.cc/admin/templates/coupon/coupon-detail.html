@@ -6,23 +6,51 @@
 </div>
 {% end %}
 {% block content %}
-<div class="container">
-    <ul class="get-coupon-list">
-        <li>
-            <div class="bor-left"></div>
-            <div class="bor-right"></div>
-            <div class="get-top">
-                <a href="javascript:;" class="get-coupon" id="get-coupon" data-key="{{output_data['coupon_key']}}">领取</a>
+<div class="wrap-user-coupon">
+    <div class="coupon-bg-box">
+        <img class="coupon-bg" src="/static/images/coupon_bg.png" alt=""/>
+        <div class="wrap-coupon-ubg">
+            <div class="coupon-ubg">
+                {% if output_data['coupon_status']==1 %}
+                <i class="cou-status cou-status-no"></i>
+                {% elif output_data['coupon_status']==2 %}
+                <i class="cou-status cou-status-yes"></i>
+                {% else %}
+                <i class="cou-status cou-status-null"></i>
+                {% end %}
+                <div class="logo-box">
+                    <div class="wrap-shoplogo">
+                        <img src="{{output_data['shop_logo'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{output_data['shop_name']}}"/>
+                    </div>
+                </div>
+                <p class="c333 txt-center mt6">{{output_data['shop_name']}}</p>
+                <div class="price-box {% if output_data['coupon_status']==1 %}use-no{% else %}use-yes{% end %}">
+                    <p class="txt-center"><span class="f22">￥</span><span class="f42">{{output_data['coupon_money']}}</span></p>
+                    <div class="use-rule">
+                        <p class="rule-line"></p>
+                        <p class="rule-text">订单满{{output_data['use_rule']}}（含运费）即可使用</p>
+                    </div>
+                </div>
+                <p class="coupon-date f12">有效日期 : {{output_data['effective_time']}}</p>
+                <div class="go-link" data-url="/{{output_data['shop_code']}}">
+                    <i class="gap gap-top"></i>
+                    {% if output_data['coupon_status']==1 %}
+                    <span>立即使用</span>
+                    {% else %}
+                    <span>进店逛逛</span>
+                    {% end %}
+                </div>
             </div>
-            <p class="get-money">{{output_data['coupon_money']}}元优惠券</p>
-            <div class="coupon-info">
-                <p>使用限制 : 订单满{{output_data['use_rule']}}元使用（含运费）</p>
-                <p>有效日期 : {{output_data['effective_time']}}</p>
-                <p>领取日期 : {{output_data['effective_time']}}</p>
+            <div class="coupon-im">
+                <p class="f14">使用说明 : </p>
+                <p class="point-left">此券限时限量领取，仅发行100张</p>
+                <p class="point-left">仅限在店铺名称内使用</p>
+                <p class="point-left">每笔订单仅限使用一张优惠券，不可找零</p>
             </div>
-        </li>
-    </ul>
+        </div>
+    </div>
 </div>
 {% end %}
 {% block bottom %}
+<script src="{{static_url('js/coupon-user.js')}}"></script>
 {% end %}

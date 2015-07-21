@@ -440,11 +440,7 @@ class Coupon(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("coupon/coupon.html")
-#用户优惠券		
-class CouponUser(AdminBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		return self.render("coupon/coupon-user.html")
+
 #我的优惠券		
 class CouponProfile(AdminBaseHandler):
 	@tornado.web.authenticated
