@@ -224,6 +224,26 @@
                     </li>
                 </ul>
             </div>
+            <div class="send-address-choose clearfix center-block bg-white box-style">
+                <p class="group">
+                    <span class="pull-left text-grey9 font14 m-b5 pl10">我的优惠券</span>
+                    <span class="pull-right mr10"><span id="coupon_cmoney"></span></span>
+                </p>
+                <div class="wrap-coupontype">
+                    <ul id="couponType" class="coupon_type">
+                        <li data-id="3" class="">
+                            <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
+                            <span class="coupon-bg" data-money="10.00">￥10.00</span>
+                            <span class="coupon-detail">推荐商品满49元<br>可使用（含运费）</span>
+                        </li>
+                        <li data-id="3" class="">
+                            <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
+                            <span class="coupon-bg" data-money="5.00">￥10.00</span>
+                            <span class="coupon-detail">推荐商品满49元<br>可使用（含运费）</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
             {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
             <div class="first_notice center-block clearfix mt10">
@@ -235,7 +255,8 @@
         <div class="bottom-line"></div>
     </div>
     <div class="pay-bill">
-        <span>合计：<span class="yellow-text">￥<span class="final_price"></span></span> 元</span>
+        <span class="pull-left coupon-text hidden">已优惠 ￥<span id="coupon-money"></span></span>
+        <span class="yellow-text">总计：<span class="yellow-text">￥<span class="final_price yellow-text" id="total_price"></span></span> 元</span>
         <a id="submitOrder" class="sub-btn sure_btn order-submit" href="javascript:;">提交订单</a>
     </div>
 {% end %}

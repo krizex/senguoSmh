@@ -3303,7 +3303,7 @@ class Marketing(AdminBaseHandler):
 				if now_date>q1.to_get_date:
 					q1.closed=1
 				if x.coupon_status>0:
-					print(x.uneffective_time,'kkkkkkkkkkkkkkkkkkkkkkkkkk')
+					print(x.coupon_status,'kkkkkkkkkkkkkkkkkkkkkkkkkk')
 					if now_date>x.uneffective_time:
 						x.coupon_status=3
 					self.session.commit()	
