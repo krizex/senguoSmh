@@ -532,9 +532,9 @@ class Shop(MapBase, _CommonApi):
 
 	###################################################
 	#the phone of shop ,   added by woody
-	shop_phone=Column(String(16)) 
+	shop_phone=Column(String(16))
 
-	# 店铺介绍 
+	# 店铺介绍
 	shop_intro = Column(String(568))
 	# 总用户数
 	total_users = Column(Integer)
@@ -1370,7 +1370,7 @@ class Fruit(MapBase, _CommonApi):
 	storage = Column(Float)
 	cart_storage = Column(Float,default = 0)
 	favour = Column(Integer, default=0)  # 赞
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:筐 11:包
 	tag = Column(TINYINT, default=TAG.NULL) #标签
 	img_url = Column(String(500))
 	intro = Column(String(100))
