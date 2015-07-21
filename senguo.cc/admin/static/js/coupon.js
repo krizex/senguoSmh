@@ -51,9 +51,9 @@ function searchKey(key){
                 $item.find(".start-time").html(coupon.effective_time);
                 $item.find(".end-time").html(coupon.uneffective_time);
                 var str = "未消费";
-                if(coupon.coupon_status == 1){
+                if(coupon.coupon_status == 2){
                     str="已消费";
-                }else if(coupon.coupon_status == 2){
+                }else if(coupon.coupon_status == 3){
                     str="已过期";
                 }
                 $item.find(".is_used").html(str);

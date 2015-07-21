@@ -59,7 +59,10 @@ $(document).ready(function () {
     var id = $(this).attr("data-id");
     var type = $(this).attr("data-type");
     window.location.href="/admin/marketing?action=editcouponpage&coupon_type="+type+"&coupon_id="+id;
-}).on("click",".detail-tr",function(){//点击看详情
+}).on("click",".detail-tr",function(e){//点击看详情
+    if($(e.target).closest(".sw-er-tip").size()>0){
+         return false;
+    }
     var id = $(this).attr("data-id");
     window.location.href="/admin/marketing?action=details&coupon_type="+type+"&coupon_id="+id;
 }).on('click', '.coupon-active', function(){
@@ -160,9 +163,9 @@ $(document).ready(function () {
 }).on("click",".use_goods_group_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
     var index = $(this).closest("li").index();
-    console.log(index);
     getGoods(index,$('.use_goods_lst'));
     $(".use_goods_group").html($(this).html()).attr("data-id",id);
+    $(".use_goods").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
     $(".use_goods").html($(this).html()).attr("data-id",id);
@@ -171,11 +174,12 @@ $(document).ready(function () {
     var index = $(this).closest("li").index();
     getGoods(index,$('.use_goods_lsts'));
     $(".use_goods_groups").html($(this).html()).attr("data-id",id);
+    $(".use_goodss").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lsts .item",function(){
     var id = parseInt($(this).attr("data-id"));
     $(".use_goodss").html($(this).html()).attr("data-id",id);
-}).on('click','.coupon-items.item',function(){ //dd
-    var selected_status=$(this.a).attr("data-id");
+}).on('click','.coupon-items .item',function(){ //dd
+    var selected_status=$(this).attr("data-id");
     console.log(selected_status);
     $("#dropdownMenu3 em").text($(".coupon-items.item").text());
     insertcoupon(selected_status);
@@ -302,8 +306,14 @@ function addCoupon(type){
             return Tip("优惠金额应该为数字类型");
         }
         var use_rule = $(".use_rules").val();
-        var total_number = 0;
+        var total_number = $(".total_numbers").val();
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
+            return Tip("库存应该为数字类型");
+        }
         var get_limit = $(".get_limits").val();
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1){
+            return Tip("领取限制应该为数字类型");
+        }
         var use_goods_group = $(".use_goods_groups").attr("data-id");
         var use_goods = $(".use_goodss").attr("data-id");
         var valid_way = $(".radio-list2").find(".radio-active").attr('data-id');

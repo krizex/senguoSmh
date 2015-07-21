@@ -78,21 +78,6 @@
                 </td>
             </tr>
         {% end %}
-        <tr class="detail-tr dis-coupon hidden">
-            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
-            <td>每人限领一张</td>
-            <td>任意商品买满金额可用</td>
-            <td>5.00元</td>
-            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
-            <td>限商品分组:店铺推荐</td>
-            <td>8/12/10</td>
-            <td class="operate">
-                <a href="/admin/marketing?action=editcouponpage&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
-                <a href="javascript:;" class="mr10">推广</a>
-                <a href="javascript:;" class="red-txt">停用</a>
-                <span class="stop">已停用</span>
-            </td>
-        </tr>
         </tbody>
     </table>
             <input type="hidden" value="{{data1}}">
@@ -102,9 +87,9 @@
             <col width="8%"/>
             <col width="10%"/>
             <col width="12%"/>
-            <col width="18%"/>
+            <col width="16%"/>
             <col width="10%"/>
-            <col width="10%"/>
+            <col width="12%"/>
             <col width="14%"/>
         </colgorup>
         <thead>
@@ -115,7 +100,7 @@
             <td>使用优惠券条件</td>
             <td>优惠金额和优惠条件</td>
             <td>可消费商品</td>
-            <td>使用/领取</td>
+            <td>使用/领取/库存</td>
             <td>操作</td>
         </tr>
         </thead>
@@ -128,7 +113,7 @@
               <td>{{data["coupon_money"]}}元</td>
             <td>{{data["from_valid_date"]}}到{{data["to_valid_date"]}}</td>
             <td>限商品分组:店铺推荐</td>
-            <td>{{data["get_number"]}}/{{data["use_number"]}}</td>
+            <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td>
             <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td>
         </tr>
         <!-- <tr class="dis-coupon">

@@ -67,7 +67,7 @@
                             <span class="mr10 ver7">选择商品分组:</span>
                             <div class="dropdown slide-down-select w130 mr10">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn {%end%}" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 use_goods_group" data-id="-2">所有分组</em>
+                                    <em class="pull-left c333 use_goods_group" data-id="-2">{{pre_coupon["use_goods_group"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst {%if  pre_coupon["edit_status"]!=0%}hidden{%end%}" role="menu" aria-labelledby="dropdownMenu18">
@@ -80,7 +80,7 @@
                             </div>
                             <div class="dropdown slide-down-select w130">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn {%end%}" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 use_goods" data-id="-1">所有商品</em>
+                                    <em class="pull-left c333 use_goods" data-id="-1">{{pre_coupon["use_goods"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 use_goods_lst {%if  pre_coupon["edit_status"]!=0%}hidden{%end%}" role="menu" aria-labelledby="dropdownMenu18">

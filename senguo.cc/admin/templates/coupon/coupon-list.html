@@ -11,20 +11,21 @@
         <input type="text" class="coupon-ipt" placeholder="输入代金券/优惠券码"/>
         <a href="javascrpipt:;" class="convert-btn" id="convert-btn">兑换</a>
     </div>
-    <ul class="my-coupon-list">
+    <ul class="my-coupon-list" id="coupon-list">
+        <!--0未领取 1已领取 2已消费 3已过期-->
         {% for coupon in output_data %}
         <li>
-            <a href="/coupon/detail?action=detail&coupon_key={{coupon['coupon_key']}}">
-                <div class="get-coupon {% if coupon['coupon_status']==0 %}{% else %}coupon-used已过期{% end %}">
+            <a href="/coupon/detail?action=detail&coupon_key={{coupon['coupon_key']}}" data-id="{{coupon['coupon_status']}}">
+                <div class="get-coupon {% if coupon['coupon_status']==1 %}{% else %}coupon-used已过期{% end %}">
                     <p class="f12 mt8">使用期限</p>
                     <p class="f12">{{coupon['effective_time']}}</p>
                     <p class="f12">{{coupon['uneffective_time']}}</p>
-                    <p class="f16 bold">{% if coupon['coupon_status']==0 %}未消费{% elif coupon['coupon_status']==1 %}已消费{% else %}已过期{% end %}</p>
+                    <p class="f16 bold">{% if coupon['coupon_status']==1 %}未消费{% elif coupon['coupon_status']==2 %}已消费{% else %}已过期{% end %}</p>
                 </div>
                 <div class="coupon-lprice">
                     <i class="gap gap1-right"></i>
-                    <p class="price-stxt {% if coupon['coupon_status']==0 %}{% else %}c9f{% end %}"><span class="f16">￥</span><span class="f32">{{coupon['coupon_money']}}</span></p>
-                    <p class="{% if coupon['coupon_status']==0 %}c333{% else %}c666{% end %}">订单满{{coupon['use_rule']}}元即可使用（含运费）</p>
+                    <p class="price-stxt {% if coupon['coupon_status']==1 %}{% else %}c9f{% end %}"><span class="f16">￥</span><span class="f32">{{coupon['coupon_money']}}</span></p>
+                    <p class="{% if coupon['coupon_status']==1 %}c333{% else %}c666{% end %}">订单满{{coupon['use_rule']}}元即可使用（含运费）</p>
                 </div>
             </a>
         </li>
