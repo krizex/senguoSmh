@@ -526,9 +526,10 @@ class CouponDetail(AdminBaseHandler):
 				uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.effective_time))
 				get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.get_date))
 				use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.use_date))
-				q2=self.session.query(models.Shop).filter_by(id=q.shop_id).first()
+				q2=self.session.query(models.Accountinfo).filter_by(id=current_customer_id).first()
+				shop=self.session.query(models.Shop).filter_by(id=current_shop_id).first()
 				q3=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
-				x_coupon={"shop_name":q2.shop_name,"effective_time":effective_time,"use_rule":q3.use_rule,"coupon_key":mcoupon_key,"coupon_money":q3.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":q.coupon_status}
+				x_coupon={"shop_code":shop.shop_code,"shop_logo":q2.headimgurl,"shop_name":shop.shop_name,"effective_time":effective_time,"use_rule":q3.use_rule,"coupon_key":mcoupon_key,"coupon_money":q3.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":q.coupon_status}
 			return self.render("coupon/coupon-detail.html",output_data=x_coupon)
 		elif action=="exchange":
 			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_status=0).first()

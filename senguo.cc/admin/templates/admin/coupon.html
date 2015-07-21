@@ -49,9 +49,9 @@
             <tr class="detail-tr {%if coupon['closed']==1%} dis-coupon{%end%}" data-id="{{coupon['coupon_id']}}">
                 <td>{{coupon['from_get_date']}}到{{coupon['to_get_date']}}</td>
                 <td>每人限领{{coupon['get_limit']}}张</td>
-                <td>任意商品买满金额可用</td>
+                <td>{{coupon["use_goods_group"]}}买满{{coupon["use_rule"]}}金额可用</td>
                 <td>{{coupon['coupon_money']}}元</td>
-                <td>{{coupon['from_valid_date']}}到{{coupon['to_valid_date']}}</td>
+                <td>{%if coupon["valid_way"]==0%}{{coupon['from_valid_date']}}到{{coupon['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{coupon["last_day"]}}天{%end%}</td>
                 <td>{% if coupon['use_goods_group'] == -2 %}所有商品{% else %}限商品分组:{{coupon['use_goods_group']}}{% end %}</td>
                 <td>{{coupon['use_number']}}/{{coupon['get_number']}}/{{coupon['total_number']}}</td>
                 <td class="operate">

@@ -3336,18 +3336,15 @@ class Marketing(AdminBaseHandler):
 				edit_status=2
 			from_valid_date=None
 			to_valid_date=None
+			last_day=0
 			if x.valid_way==0:
 				from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
 				to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
-			elif x.valid_way==1:
-				from_valid_date=x.from_valid_date
-				to_valid_date=x.to_valid_date
-			else :
-				from_valid_date="不限时间"
-				to_valid_date="不限时间"
+			else:
+				last_day=x.last_day
 			from_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_get_date))
 			to_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_get_date))
-			x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
+			x_coupon={"last_day":last_day,"valid_way":x.valid_way,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
 			"get_number":x.get_number,"total_number":x.total_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"from_get_date":from_get_date,"to_get_date":to_get_date,"get_rule":x.get_rule,"closed":x.closed}
 			data.append(x_coupon)
 	@tornado.web.authenticated
@@ -3416,10 +3413,7 @@ class Marketing(AdminBaseHandler):
 				nickname=None
 				headimgurl=None
 				if x.coupon_status==0:
-					customer_id="未领取"
-					get_date="未领取"
-					use_date="未领取"
-					order_id="未领取"
+					pass
 				elif x.coupon_status==1:
 					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
 					nickname=customer.nickname
@@ -3428,7 +3422,7 @@ class Marketing(AdminBaseHandler):
 					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
 					use_date="未使用"
 					order_id="未使用"
-				else:
+				elif x.coupon_status==2:
 					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
 					nickname=customer.nickname
 					headimgurl=customer.headimgurl
@@ -3436,6 +3430,8 @@ class Marketing(AdminBaseHandler):
 					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
 					use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.use_date))
 					order_id=x.order_id
+				else:
+					pass
 				q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
 				x_coupon={"nickname":nickname,"coupon_status":x.coupon_status,"coupon_money":q1.coupon_money,"customer_id":customer_id,\
 				"get_date":get_date,"use_date":use_date,"order_id":order_id,"coupon_key":x.coupon_key}
@@ -3732,25 +3728,24 @@ class Marketing(AdminBaseHandler):
 				use_date=None
 				order_id=None
 				nickname=None
-				if x.customer_id==None:
-					customer_id="未领取"
-					get_date="未领取"
-					use_date="未领取"
-					order_id="未领取"
-				elif x.if_used==0:
+				if x.coupon_status==0:
+					pass
+				elif x.coupon_status==1:
 					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
 					nickname=customer.nickname
 					customer_id=x.customer_id
 					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
 					use_date="未使用"
 					order_id="未使用"
-				else:
+				elif x.coupon_status==2:
 					customer=self.session.query(models.Accountinfo).filter_by(id=x.customer_id).first()
 					nickname=customer.nickname
 					customer_id=x.customer_id
 					get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
 					use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.use_date))
 					order_id=x.order_id
+				else:
+					pass
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
 				x_coupon={"coupon_key":x.coupon_key,"coupon_id":x.coupon_id,"coupon_money":qq.coupon_money,"customer_id":customer_id,\
 				"nickname":nickname,"get_date":get_date,"use_date":use_date,"order_id":order_id}
