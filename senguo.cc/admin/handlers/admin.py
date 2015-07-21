@@ -2843,7 +2843,7 @@ class Config(AdminBaseHandler):
 				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
-				return self.send_fail('至多可添加三个管理员')
+				return self.send_fail('最多可添加三个管理员')
 			if self.current_shop.admin.accountinfo.id == _id:
 				return self.send_fail('该用户已经是店铺的管理员')
 			admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
