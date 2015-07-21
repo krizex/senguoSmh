@@ -1076,7 +1076,7 @@ function show_chart(action,start_date,end_date,name){
    								     },
 								    calculable : true,
 								    legend:{
-								    	show:true,
+								    	show:false,
 								    	data:[]
 								    },
 								    xAxis : [

@@ -540,9 +540,9 @@ class Shop(MapBase, _CommonApi):
 
 ###################################################
 	#the phone of shop ,   added by woody
-	shop_phone=Column(String(16))
+	shop_phone=Column(String(16)) 
 
-	# 店铺介绍
+	# 店铺介绍 
 	shop_intro = Column(String(568))
 	# 总用户数
 	total_users = Column(Integer)
