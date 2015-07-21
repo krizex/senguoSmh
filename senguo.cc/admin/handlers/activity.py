@@ -532,13 +532,18 @@ class CouponDetail(AdminBaseHandler):
 				x_coupon={"shop_code":shop.shop_code,"shop_logo":q2.headimgurl,"shop_name":shop.shop_name,"effective_time":effective_time,"use_rule":q3.use_rule,"coupon_key":mcoupon_key,"coupon_money":q3.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":q.coupon_status}
 			return self.render("coupon/coupon-detail.html",output_data=x_coupon)
 		elif action=="exchange":
-			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_status=0).first()
+			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0,coupon_status=0).first()
 			if q==None:
 				return self.send_fail("对不起，您的优惠券码有错误！")
 			else:
-				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,coupon_type=q.coupon_type,closed=0).first()
+				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,coupon_type=0,closed=0).first()
+				qnum=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,customer_id=current_customer_id).count()
+				print(qnum,'fffffffffffffffffff')
+				print(qq.get_limit)
 				if qq==None:
 					return self.send_fail("对不起，您的优惠券码对应优惠券已经被停用！")
+				elif qnum>=qq.get_limit:
+					return self.send_fail("对不起，您的领取次数已经超过了领取数量限制！")
 				else:
 					shop=self.session.query(models.Shop).filter_by(id=q.shop_id).first()
 					effective_time=None

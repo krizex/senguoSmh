@@ -415,6 +415,11 @@ function editCoupon(type,coupon_id,edit_status){
         if(isNaN(total_number) || total_number.indexOf(".")!=-1){
             return Tip("库存应该为数字类型");
         }
+        var old_totalnumber=$(".total_number").attr("total-id");
+        if(total_number<=old_totalnumber){
+             $('.total_number').text('old_totalnumber');
+             return Tip("库存应该大于原来的库存！");
+        }
         var get_limit = $(".get_limit").val();
         if(isNaN(total_number) || total_number.indexOf(".")!=-1){
             return Tip("领取限制应该为数字类型");

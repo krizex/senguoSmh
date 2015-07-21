@@ -3303,8 +3303,9 @@ class Marketing(AdminBaseHandler):
 				self.session.commit()	
 			q=self.session.query(models.CouponsCustomer).with_lockmode('update').filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).all()
 			for y in q:
-				if now_date>y.uneffective_time and y.coupon_status>0:
-					y.coupon_status=3
+				if y.coupon_status>0:
+					if now_date>y.uneffective_time :
+						y.coupon_status=3
 			self.session.commit()
 		return None		
 	def getcoupon(self,q,data):
@@ -3535,7 +3536,7 @@ class Marketing(AdminBaseHandler):
 			if q.use_goods==-1:
 				use_goods="所有分组"
 			else:
-				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
+				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=q.use_goods).first()
 				use_goods=q1.name
 			pre_coupon={"coupon_id":coupon_id,"coupon_type":q.coupon_type,"from_get_date":from_get_date,"to_get_date":to_get_date,"get_rule":q.get_rule, "coupon_money":q.coupon_money,"use_rule":q.use_rule,\
 				"total_number":q.total_number,"get_limit":q.get_limit,"use_goods_group":use_goods_group,"use_goods":use_goods,"valid_way":q.valid_way,"from_valid_date":from_valid_date,\
@@ -3650,10 +3651,11 @@ class Marketing(AdminBaseHandler):
 			data=self.args["data"]
 			coupon_type=int(data["coupon_type"])
 			x=data["from_get_date"]
-			print(coupon_type)
 			from_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
 			x=data["to_get_date"]
 			to_get_date=int(time.mktime(time.strptime(x,'%Y-%m-%d %H:%M:%S')))
+			print(data["coupon_money"],'ggggggggggggggggggg')
+			print(type(data["coupon_money"]))
 			coupon_money=float(data["coupon_money"])
 			use_rule=float(data["use_rule"])
 			total_number=int(data["total_number"])
@@ -3680,7 +3682,6 @@ class Marketing(AdminBaseHandler):
 			#  注意这里获得coupon_id的过程 相当的曲折 ，这里的a 识query类型  而a[0]识 result 类型 只有a[0][0]才是int类型
 			now_date=int(time.time())
 			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
-			print(q)
 			if now_date<q.from_get_date:
 				# if total_number<q.total_number:
 				# 	pass
@@ -3693,12 +3694,13 @@ class Marketing(AdminBaseHandler):
 			elif now_date<q.to_get_date:
 				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
 				for x in range(q.total_number,total_number):
+					print("ggggggggggggggggggggggggggggggg")
 					chars=string.digits+string.ascii_letters
 					chars=''.join(random.sample(chars*10,4))
 					chars=chars+str(coupon_id)+'C'+str(x)+'M'+str(current_shop_id)
 					new_coupon=models.CouponsCustomer(shop_id=current_shop_id,coupon_id=coupon_id,coupon_key=chars,coupon_type=coupon_type,coupon_status=0)
 					self.session.add(new_coupon)
-					q.update(self.session,total_number=total_number)
+				q.update(self.session,total_number=total_number)
 			self.session.commit()
 			return self.send_success()
 		elif action=="details":
