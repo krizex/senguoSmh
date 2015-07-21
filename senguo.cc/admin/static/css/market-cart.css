@@ -24,7 +24,7 @@
 .cart-list-item .w75{width:75%;}
 .cart-list-item .w10{width:10%;}
 .cart-list-item .goods-info{height:100%;}
-.cart-list-item .charge-type{position:absolute;bottom:5px;left:75px;width:130px;}
+.cart-list-item .charge-type{position:absolute;bottom:5px;left:75px;width:130px;font-size: 12px;}
 .cart-list-item .action-box{position:absolute;right:5px;bottom:5px;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:90px;}
@@ -119,6 +119,7 @@
 .title-right{max-width: 60%;position: absolute;top: 8px;left: 104px;}
 .title-right>span{display: block;}
 /*beauty*/
-.yellow-text{color: #f0c83f;}
+.yellow-text{color: #ff9800;}
 .pay-bill{position: fixed;bottom:50px;width:100%;max-width:800px;min-width:320px;z-index:100;height: 40px;border-top:1px solid #eee;line-height: 40px;text-align: right;font-size: 14px;background-color: rgba(255,255,255,.8);color: #666;}
-.order-submit{background-color: #afd6a5;display: inline-block;width: 70px;height: 40px;line-height: 40px;color: #fff;text-align: center;margin-left: 10px;}
+.order-submit{background-color: #ff9800;display: inline-block;width: 80px;height: 40px;line-height: 40px;color: #fff;text-align: center;margin-left: 10px;white-space: nowrap;}
+.coupon-text{color: #666;font-size: 12px;margin-left: 10px;}

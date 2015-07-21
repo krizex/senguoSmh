@@ -7,8 +7,9 @@
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{handler.shop_code}}"></span>
     <div class="rainshed bg_change fix-title"></div>
-    <div class="bg-box">
-        <ul class="cart-list set-w100-fle mt42 m-b0">
+    <div class="bg-box mt42">
+        <ul class="cart-list set-w100-fle m-b0">
+            <p class="text-left text-grey9 font14 m-b5 pl10">商品列表</p>
             {% for key in cart_f %}
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">
@@ -39,17 +40,17 @@
                 </div>
             </li>
             {% end %}
+            <div class="clearfix font14 p010">
+                <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
+                <span class="tit">配送费</span>
+            </div>
         </ul>
         <div class="bg-width center-block text-grey bg-white">
-            <div class="clearfix font14 p010">
+            <div class="clearfix font14 p010 hidden">
                 <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
                 <span class="pull-right tit text-right">商品金额：</span>
             </div>
-            <div class="clearfix font14 p010">
-                <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
-                <span class="pull-right tit text-right">配送费：</span>
-            </div>
-            <div class="clearfix m-b10 font14 p010 text-grey3">
+            <div class="clearfix m-b10 font14 p010 text-grey3 hidden">
                 <span class="pull-right tit2 text-right"><span id="final_price" class="final_price"></span>元</span>
                 <span class="pull-right tit text-right">实付金额：</span>
             </div>
@@ -135,7 +136,6 @@
                     <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
                     {% end %}
                     {% end %}
-                    
                 </div>
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
@@ -210,7 +210,7 @@
                         </div>
                     </li>
                    <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
-	           <a href="javascript:;" class="text-grey">
+	                    <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
                             <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
                         </a>
@@ -230,11 +230,14 @@
                 <span class="pull-left">第一次下单?</span>
                 <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
             </div>
-            {% else %}
-             <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt20 clearfix sure_btn">提交订单</button>
             {% end %}
         </div>
         <div class="bottom-line"></div>
+    </div>
+    <div class="pay-bill">
+        <span class="pull-left coupon-text hidden">已优惠 ￥<span id="coupon-money">10.00</span></span>
+        <span class="yellow-text">总计：<span class="yellow-text">￥<span class="final_price yellow-text"></span></span> 元</span>
+        <a id="submitOrder" class="sub-btn sure_btn order-submit" href="javascript:;">提交订单</a>
     </div>
 {% end %}
 {% block bottom %}
