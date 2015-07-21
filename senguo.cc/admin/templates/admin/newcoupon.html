@@ -107,10 +107,6 @@
                             <a href="javascript:;" class="radio" data-id="1"></a>
                             领取即生效，有效期天数为 <input type="text" class="mr10 last_day">天
                         </div>
-                        <div class="coupon-row f12 mt10">
-                            <a href="javascript:;" class="radio radio-active" data-id="2"></a>
-                            不限时间，任何时间能用
-                        </div>
                     </td>
                 </tr>
                 </tbody>
@@ -132,6 +128,10 @@
                 <tr>
                     <td class="ver-top"><span class="ver-5">领取限制<br><span class="c999 ml10">(选填)</span></span></td>
                     <td><input type="text" class="mr10 get_limits"/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
+                </tr>
+                <tr>
+                    <td class="ver-top"><span class="ver-5">库存</span></td>
+                    <td><input type="text" class="mr10 total_numbers" value="1"/>张<p class="mt6 f12 red-txt">只能为整数</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
@@ -171,13 +171,14 @@
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠券有效期</span></td>
                     <td class="radio-list radio-list2">
+                        <div class="coupon-row f12">
+                            <a href="javascript:;" class="radio" data-id="0"></a>
+                            <input type="text" class="Wdate from_valid_dates" id="date7" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date8\')}'})">
+                            到 <input type="text" class="Wdate to_valid_dates" id="date8" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date7\')}'})">
+                        </div>
                         <div class="coupon-row f12 mt10">
                             <a href="javascript:;" class="radio" data-id="1"></a>
                             领取即生效，有效期天数为 <input type="text" class="mr10 last_days">天
-                        </div>
-                        <div class="coupon-row f12 mt10">
-                            <a href="javascript:;" class="radio radio-active" data-id="2"></a>
-                            不限时间，任何时间能用
                         </div>
                     </td>
                 </tr>

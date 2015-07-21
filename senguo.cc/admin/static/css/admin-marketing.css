@@ -82,8 +82,8 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .operate{position: relative;}
 .all-position{top: 100%;right: -40px;left:auto;margin-top: 10px;border-color: #eee;}
 .tb-enty .dis-coupon span{display: inline;}
-.wrap-coupontb{width: 80%;background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;height:580px;}
-.coupon-prview{width: 20%;border: 1px solid #e7e7eb;border-left:none;height: 580px;}
+.wrap-coupontb{width: 80%;background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;height:610px;}
+.coupon-prview{width: 20%;border: 1px solid #e7e7eb;border-left:none;height: 610px;}
 .coupon-tb input{width: 170px;border:1px solid #e7e7eb;height: 28px;background-color: #fff;}
 .coupon-tb td{padding: 10px 0;border:none;vertical-align: middle;}
 .cancel-add-goods{display: inline-block;height:18px;background-size: 18px;background-image: url('/static/images/admin_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
