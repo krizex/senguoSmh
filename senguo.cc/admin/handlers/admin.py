@@ -581,9 +581,12 @@ class SellStatic(AdminBaseHandler):
 		elif action == 'single_type':
 			type_name = self.args["type_name"]
 
+			shop_all_goods_id_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
+
 			shop_all_goods_id = {}
-			for goods in shop_all_goods:
-				shop_all_goods_id[goods[0]] = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+			for goods_id in shop_all_goods_id_list:
+				shop_all_goods_id[goods_id[0]] = goods_id[1]
+
 
 			start_date_str = start_date
 			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
@@ -626,6 +629,7 @@ class SellStatic(AdminBaseHandler):
 				#每单种水果的销售额
 				total_price_list = []
 				name_list = []
+				goods_id_list = []
 				for fl in fruit_list:
 					fl = eval(fl[0])
 					for key in fl:
@@ -640,6 +644,7 @@ class SellStatic(AdminBaseHandler):
 						tmp["total_price"] = total_price
 						for tpl in total_price_list:
 							name_list.append(tpl['fruit_name'])
+							goods_id_list.append(fruit_id)
 						if tmp["fruit_name"] not in name_list:
 							total_price_list.append(tmp)
 						else:
@@ -647,19 +652,24 @@ class SellStatic(AdminBaseHandler):
 								if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 									total_price_list[i]['total_price'] += total_price
 
+
+				# print("##",month_price_list)
 				name_list = []
 				for i in range(len(total_price_list)):
 					name_list.append(total_price_list[i]['fruit_name'])
 
-				for goods in shop_all_goods:
-					if goods[0] not in name_list:
+				for key in shop_all_goods_id:
+					if key not in goods_id_list:
 						tmp = {}
-						tmp["fruit_id"] = shop_all_goods_id[goods[0]]
-						tmp["fruit_name"] = goods[0]
+						tmp["fruit_id"] = key
+
+						tmp["fruit_name"] = shop_all_goods_id[key]
 						tmp["total_price"] = 0
 						total_price_list.append(tmp)
 				# 按销量排序：
 				total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
+
+
 
 				# 查询total_price_list表中所有商品的类目，并存到一个字典中：
 				goods_type_list = {}
@@ -678,7 +688,6 @@ class SellStatic(AdminBaseHandler):
 
 				if(count_num == 1):
 					name_item_list = list(tmp["per_name_total_price"].keys())
-
 				name_price_item_list = []
 				for i in range(len(name_item_list)):
 					name_price_item_list.append(tmp["per_name_total_price"][name_item_list[i]])
