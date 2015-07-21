@@ -841,6 +841,91 @@ function show_chart(action,start_date,end_date,name){
 	if(name == undefined){
 		name = "";
 	}
+
+	var myChartSingleType = null;
+	var SingleTypeOptions = null;
+	if(action == 'single_type'){
+
+		$("#single_type").css("height","400px");
+		require.config({
+		       	paths: {
+		            		echarts:'/static/js'
+		        	}
+		});
+		require(
+		             [
+			            'echarts',
+			            'echarts/chart/bar',
+			            'echarts/chart/line',
+			            'echarts/chart/pie'
+		             ],
+	        		function (ec) {
+	            		            myChartSingleType = ec.init(document.getElementById('single_type'));
+	            		            myChartSingleType.showLoading({
+	                	            		text: '正在努力的读取数据中...'
+	            			});
+	            			SingleTypeOptions = {
+	            				   title : {
+					        	        subtext: '数值单位：元',
+					        	        x:'center',
+					        	        subtextStyle: {
+						            		color: '#000'          // 副标题文字颜色
+						        }
+					    },
+					    tooltip : {
+					        show: true,
+					        trigger: 'item'
+					    },
+					    toolbox: {
+					        show : true,
+					        feature : {
+					            mark : {show: true},
+					             dataZoom : {show: true},
+					            dataView : {show: false, readOnly: false},
+					            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
+					            restore : {show: true},
+					            saveAsImage : {show: true}
+					        }
+					    },
+					    dataZoom: {
+					       	show: true,
+					       	handleSize:20,
+					       	realtime : true
+
+						     },
+					    calculable : true,
+					    legend:{
+					    	show:false,
+					    	data:[]
+					    },
+					    xAxis : [
+					        {
+					            type : 'category',
+					            data : []
+					        }
+					    ],
+					   yAxis : [
+					        	{
+					        		name: '增长趋势',
+					            		type : 'value',
+					            		axisLabel: {
+	            									formatter: '{value}元'
+	       									 }
+					        	}
+					    ],
+					    series : [
+
+					    ],
+					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+					                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+					                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+					                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				};
+
+			}
+		);
+	}
+
 	var url = "";
 	var args = {
 		action:action,
@@ -969,6 +1054,7 @@ function show_chart(action,start_date,end_date,name){
 									            		color: '#000'          // 副标题文字颜色
 									        }
 								    },
+
 								    tooltip : {
 									        trigger: 'axis',
 									        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
@@ -1025,88 +1111,8 @@ function show_chart(action,start_date,end_date,name){
 					);
 				}
 				else if(action == 'single_type'){
-					$("#single_type").css("height","400px");
-					require.config({
-					       	paths: {
-					            		echarts:'/static/js'
-					        	}
-					});
-					require(
-					             [
-						            'echarts',
-						            'echarts/chart/bar',
-						            'echarts/chart/line',
-						            'echarts/chart/pie'
-					             ],
-				        		function (ec) {
-				            		            var myChart = ec.init(document.getElementById('single_type'));
-				            		            myChart.showLoading({
-				                	            		text: '正在努力的读取数据中...'
-				            			});
-				            			myChart.hideLoading();
-				            			var options = {
-				            				   title : {
-								        	        subtext: '数值单位：元',
-								        	        x:'center',
-								        	        subtextStyle: {
-									            		color: '#000'          // 副标题文字颜色
-									        }
-								    },
-								    tooltip : {
-								        show: true,
-								        trigger: 'item'
-								    },
-								    toolbox: {
-								        show : true,
-								        feature : {
-								            mark : {show: true},
-								             dataZoom : {show: true},
-								            dataView : {show: false, readOnly: false},
-								            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
-								            restore : {show: true},
-								            saveAsImage : {show: true}
-								        }
-								    },
-								    dataZoom: {
-								       	show: true,
-								       	handleSize:20,
-								       	realtime : true
-
-   								     },
-								    calculable : true,
-								    legend:{
-								    	show:false,
-								    	data:[]
-								    },
-								    xAxis : [
-								        {
-								            type : 'category',
-								            data : []
-								        }
-								    ],
-								   yAxis : [
-								        	{
-								        		name: '增长趋势',
-								            		type : 'value',
-								            		axisLabel: {
-                            									formatter: '{value}元'
-                       									 }
-								        	}
-								    ],
-								    series : [
-
-								    ],
-								    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
-								                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
-								                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
-								                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
-							};
-							getCount("single_type",options,myChart,output_data);
-							// myChart.refresh();
-							// myChart.setOption(options);
-						}
-					);
-
+					myChartSingleType.hideLoading();
+					getCount("single_type",SingleTypeOptions,myChartSingleType,output_data);
 				}
 				else if(action == 'single_name'){
 					$("#single_name").css("height","400px");
@@ -1275,8 +1281,10 @@ function getCount(action,options,myChart,output_data){
 	else{
 		return Tip('网络好像不给力呢~ ( >O< ) ~！');
 	}
+
 	myChart.refresh();
 	myChart.setOption(options);
+
 }
 
 
