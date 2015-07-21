@@ -3296,16 +3296,21 @@ class Marketing(AdminBaseHandler):
 		current_shop_id=self.current_shop.id
 		current_customer_id=self.current_user.id
 		now_date=int(time.time())
-		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id).all()
+		q=self.session.query(models.CouponsCustomer).with_lockmode('update').filter_by(shop_id=current_shop_id).all()
 		for x in q:
-			q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
+			q1=self.session.query(models.CouponsShop).with_lockmode('update').filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
 			if q1!=None:
+				if now_date>q1.to_get_date:
+					q1.closed=1
+				else:
+					pass
 				if q1.valid_way==0 and x.coupon_status!=0:
 					if now_date>x.to_valid_date:
 						x.coupon_status=3
 				elif q1.valid_way==1 and x.coupon_status!=0:
 					if now_date>x.uneffective_time:
-						x.coupon_status=3	
+						x.coupon_status=3
+				self.session.commit()	
 		self.session.commit()
 		return None		
 	def getcoupon(self,q,data):
@@ -3360,7 +3365,6 @@ class Marketing(AdminBaseHandler):
 		self.updatecoupon()
 		if action == "lovewall":
 			return self.render("admin/lovewall.html",context=dict(subpage='marketing',subpage2='love_wall'))
-		
 		elif action=="coupon":
 			coupon_type=self.args["coupon_type"]
 			m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type).count()
@@ -3376,7 +3380,6 @@ class Marketing(AdminBaseHandler):
 			q2=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=1).all()
 			self.getcoupon(q1,data1)
 			self.getcoupon(q2,data1)
-			print(data1)	
 			return self.render("admin/coupon.html",output_data=data,data1=data1,context=dict(subpage='marketing',subpage2='coupon'))
 		elif action=="newcoupon":
 			pass
