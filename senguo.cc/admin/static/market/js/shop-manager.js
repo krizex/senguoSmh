@@ -9,8 +9,8 @@ $(document).ready(function(){
     }
     cur_id = $("#shop_id").val();
     new QRCode($("#big-code2")[0],{
-        width : 150,
-        height : 150
+        width : 300,
+        height : 300
     }).makeCode($("#link").val());
 }).on("click","#save_manager",function(){
     saveAdmin();

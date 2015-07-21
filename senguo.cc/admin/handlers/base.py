@@ -694,7 +694,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			order_totalPrice,send_time,phone,address,)
 		# print('[TempMsg]Send staff message SUCCESS')
 
-	# 发送新订单模版消息给管理员
+	# 发送新订单模版消息给管理员 & 自动打印订单
 	@classmethod
 	def send_admin_message(self,session,order,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
@@ -796,6 +796,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_name = shop.shop_name
 		WxOauth2.shop_auth_msg(touser,shop_name,success)
 
+	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,order,cancel_time,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
@@ -805,6 +806,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		cancel_time = cancel_time
 		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,access_token)
 
+	# 无线打印订单
 	@classmethod
 	def autoPrint(self,session,order_id,current_shop,action):
 		import hashlib
@@ -909,7 +911,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			# print(r.status_code)
 			print(r.text)
 
-	# 获取绑定的微信第三方服务号AccessToken
+	# 获取绑定的微信第三方服务号 Access Token
 	@classmethod
 	def get_other_accessToken(self,session,admin_id):
 		now = datetime.datetime.now().timestamp()
@@ -1292,6 +1294,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	__wexin_oauth_url_name__ = "customerOauth"
 	__wexin_check_url_name__ = "customerwxBind"
 	@tornado.web.authenticated
+
 	# 存储购物车数据
 	def save_cart(self, charge_type_id, shop_id, inc):
 		"""
@@ -1338,7 +1341,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				d={charge_type_id:1}
 				setattr(cart, menu, str(d))
 		self.session.commit()
-	# 读取购物车数据
+
+	# 读取购物车数据，删除过期商品
 	def read_cart(self, shop_id):
 		"""
 		读购物车函数，把数据库里的str转换为dict，同时删除购物车里已经过时的商品
@@ -1408,8 +1412,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			phone = None
 		return phone
 
-	# get the total,privince,city count of shop
 	# woody 4.4
+	# 根据省市获取店铺数、获取店铺总数
 	def get_shop_count(self):
 		try:
 			shop_count = self.session.query(models.Shop).count()
@@ -1439,7 +1443,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		# print("[CustomerBaseHandler]get_shop_group: shop_count:",shop_count)
 		return shop_count
 
-	def tpl_path(self,tpl_id):#模板切换
+	# 模板切换
+	def tpl_path(self,tpl_id):
 		tpl_path = ""
 		if tpl_id == 1:
 			tpl_path = "beauty"
@@ -1510,6 +1515,7 @@ class WxOauth2:
 	jsapi_ticket_url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token={access_token}&type=jsapi"
 	template_msg_url = "https://api.weixin.qq.com/cgi-bin/message/template/send?access_token={access_token}"
 
+	# 获取用户微信信息
 	@classmethod
 	def get_userinfo(cls, code, mode):
 		data = cls.get_access_token_openid(code, mode)
@@ -1542,9 +1548,10 @@ class WxOauth2:
 
 		return userinfo_data
 
+	# 获取用户微信 OpenID
 	@classmethod
 	def get_access_token_openid(cls, code, mode):  # access_token接口调用有次数上限，最好全局变量缓存
-												   #这是需要用户授权才能获取的access_token
+												   # 这是需要用户授权才能获取的access_token
 		# 需要改成异步请求
 		if mode == "kf": # 从PC来的登录请求
 			token_url = cls.token_url.format(
@@ -1577,6 +1584,7 @@ class WxOauth2:
 		else:
 			return data['openid']
 
+	# 获取微信 jsapi
 	@classmethod
 	def get_jsapi_ticket(cls):
 		global jsapi_ticket
@@ -1598,6 +1606,7 @@ class WxOauth2:
 			# print("[WxOauth2]get_jsapi_ticket: get jsapi ticket failed:",data)
 			return None
 
+	# 获取微信 Access Token
 	@classmethod
 	def get_client_access_token(cls):  # 微信接口调用所需要的access_token,不需要用户授权
 		session = models.DBSession()
