@@ -2,6 +2,7 @@ var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
     $("html,body").addClass("h100");
     width = $(window).width();
+    $(".no-result").css("width",width);
     var minheight = $(window).height()-80;
     //$(".swiper-wrapper").width(width*$(".swiper-slide").size());
     $(".order-lists").css({minHeight:minheight+"px"});
