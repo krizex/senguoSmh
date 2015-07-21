@@ -163,9 +163,9 @@ $(document).ready(function () {
 }).on("click",".use_goods_group_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
     var index = $(this).closest("li").index();
-    console.log(index);
     getGoods(index,$('.use_goods_lst'));
     $(".use_goods_group").html($(this).html()).attr("data-id",id);
+    $(".use_goods").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
     $(".use_goods").html($(this).html()).attr("data-id",id);
@@ -174,11 +174,12 @@ $(document).ready(function () {
     var index = $(this).closest("li").index();
     getGoods(index,$('.use_goods_lsts'));
     $(".use_goods_groups").html($(this).html()).attr("data-id",id);
+    $(".use_goodss").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lsts .item",function(){
     var id = parseInt($(this).attr("data-id"));
     $(".use_goodss").html($(this).html()).attr("data-id",id);
-}).on('click','.coupon-items.item',function(){ //dd
-    var selected_status=$(this.a).attr("data-id");
+}).on('click','.coupon-items .item',function(){ //dd
+    var selected_status=$(this).attr("data-id");
     console.log(selected_status);
     $("#dropdownMenu3 em").text($(".coupon-items.item").text());
     insertcoupon(selected_status);
