@@ -2515,11 +2515,16 @@ class InsertData(CustomerBaseHandler):
 		shop_list , good_list = self.get_data()
 		# print(shop_list)
 		for shop in shop_list:
-			temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
-				shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
-				delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-				delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],lon = shop['lon'])
-			self.session.add(temp_shop)
+			try:
+				link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
+			except:
+				link_exist = None
+			if not link_exist:
+				temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
+					shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
+					delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
+					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],lon = shop['lon'])
+				self.session.add(temp_shop)
 		self.session.commit()
 
 		for good in good_list:
@@ -2563,7 +2568,7 @@ class InsertData(CustomerBaseHandler):
 		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
 		c = f.read()
 		s = eval(c)
-		print(type(s))
+		# print(type(s))
 		i = 0
 		for key in s:
 				temp = s.get(key,None)
@@ -2600,8 +2605,8 @@ class InsertData(CustomerBaseHandler):
 								good['goods_name']  = temp_good.get('goods_name',None)
 								good_list.append(good)
 				i += 1
-		print(shop_list)
-		print(i)
+		# print(shop_list)
+		# print(i)
 		return shop_list,good_list
 
 
