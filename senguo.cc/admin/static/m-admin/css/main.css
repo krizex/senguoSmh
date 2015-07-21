@@ -188,7 +188,7 @@
 .spread-list{color: #fff;right: 10px;}
 .qa-btn{position: fixed;z-index:9999;right: 18px;bottom:18px;background-color: #48B6A4;color: #fff;text-align: center;width: 38px;height: 38px;line-height: 38px;font-size: 24px;border-radius: 50%;}
 .shop-qalist{padding: 0 20px;position: relative;top: 29%;-webkit-transform:translate(0,-50%);}
-.shop-qalist>li{margin-top: 20px;font-size: 14px;color: #fff;line-height: 16px;}
+.shop-qalist>li{margin-top: 20px;font-size: 14px;color: #fff;line-height: 1.5;}
 .shop-qalist>li .roll-left{display: inline-block;width: 12px;height: 12px;background-color: #48B6A4;border-radius: 50%;margin-right:5px;}
 .close-pop{position: absolute;display: inline-block;right: 18px;bottom: 18px;width:40px;height:40px;background-image:url(/static/m-admin/img/close.png);background-repeat: no-repeat;background-size: 24px;background-position: center center;}
 .shop-qalist .title{font-size: 16px;text-align: center;}
