@@ -120,7 +120,7 @@
 </div>
 {% if order.comment%}
 <div class="wrap-bm-btn">
-    <a class="fr add-comment white-btn" href="/customer/ordercomment?orderid={{order.id}}">修改评价</a>
+    <a class="fr add-comment white-btn" href="{{reverse_url('customerShopComment')}}?orderid={{order.id}}">修改评价</a>
     <a class="fr go-shopping white-btn" href="/{{handler.shop_code}}">继续购买</a>
 </div>
 {% end %}
