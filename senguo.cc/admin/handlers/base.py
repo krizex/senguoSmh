@@ -547,7 +547,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
 
-		token = q.upload_token(BUCKET_SHOP_IMG, expires=60*30*100,
+		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
 									  "callbackBody": "key=$(key)&action=%s&id=%s" % (action, id), "mimeLimit": "image/*"})
@@ -1643,8 +1643,7 @@ class WxOauth2:
 		postdata = {
 			"touser": touser,
 			"template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
-			"url": "http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&"
-				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
+			"url": "http://i.senguo.cc/bbs/detail/30",
 			"topcolor": "#FF0000",
 			"data": {
 				"first": {"value": "您好，您所申请的店铺『%s』已经通过审核！\n请添加森果客服微信：senguocc100" % shop_name, "color": "#44b549"},
@@ -1668,8 +1667,7 @@ class WxOauth2:
 		postdata = {
 			"touser": touser,
 			"template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
-			"url": "http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&"
-				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
+			"url": "http://i.senguo.cc/bbs/detail/30",
 			"topcolor": "#FF0000",
 			"data": {
 				"first": {"value": "您好，您所申请的店铺『%s』未通过审核。" % shop_name, "color": "#44b549"},
@@ -1693,8 +1691,7 @@ class WxOauth2:
 		postdata = {
 			"touser": touser,
 			"template_id": "YDIcdYNMLKk3sDw_yJgpIvmcN5qz_2Uz83N7T9i5O3s",
-			"url": "http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&"
-				   "mid=202647288&idx=1&sn=b6b46a394ae3db5dae06746e964e011b#rd",
+			"url": "http://i.senguo.cc/bbs/detail/30",
 			"topcolor": "#FF0000",
 			"data": {
 				"first": {"value": "您好，%s" % name, "color": "#173177"},

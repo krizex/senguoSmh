@@ -1644,23 +1644,25 @@ class Cart(CustomerBaseHandler):
 
 		return self.send_success(order_id = order.id)
 
+	@classmethod
 	def order_cancel_auto(self,session,order_id):
-		# print("[Cart]Order auto cancel: order ID:",order_id,", self:",self)
+		print("[Cart]Order auto cancel: order ID:",order_id)
 		order = session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
-			return self.send_fail('[Cart]Order auto cancel: order not found!')
+			return False
+			# return self.send_fail('[Cart]Order auto cancel: order not found!')
 		if order.status == -1:
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id)
 			fruits = eval(order.fruits)
 			if fruits:
-				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+				ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
 					filter(models.ChargeType.id.in_(fruits.keys())).all()
 				for s in ss:
 					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 					s[0].current_saled -= num
-			# print("[Cart]Order auto cancel: order.num:",order.num)
+			print("[Cart]Order auto cancel: order.num:",order.num)
 		#else:
 		#	print("[Cart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 

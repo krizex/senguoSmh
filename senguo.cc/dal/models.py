@@ -1316,7 +1316,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				# print("[订单管理]取消订单，恢复库存数量：",num)
+				# print("[Order]Order Canceled, restore storage:",num)
 		session.commit()
 		return True
 
@@ -1370,7 +1370,7 @@ class Fruit(MapBase, _CommonApi):
 	storage = Column(Float)
 	cart_storage = Column(Float,default = 0)
 	favour = Column(Integer, default=0)  # 赞
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:筐 11:包
 	tag = Column(TINYINT, default=TAG.NULL) #标签
 	img_url = Column(String(500))
 	intro = Column(String(100))

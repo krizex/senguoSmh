@@ -327,7 +327,6 @@ class SellStatic(AdminBaseHandler):
 			yesterday_date = datetime.datetime(now.year,now.month,now.day-1)
 			yesterday_date = yesterday_date.strftime("%Y-%m-%d")
 
-
 			# 从order表中查询出一天店铺的所有有效订单（status字段的值大于等于5）的fruits字段：
 			now_date_str = now_date + '%'
 			yesterday_date_str = yesterday_date + '%'
@@ -346,7 +345,9 @@ class SellStatic(AdminBaseHandler):
 					num = float(fl_value["num"])
 					single_price = float(fl_value["charge"].split('元')[0])
 					total_price = single_price * num
-					tmp["fruit_name"] = fl_value["fruit_name"]
+					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 					tmp["total_price"] = total_price
 					for i in range(len(total_price_list)):
 						name_list.append(total_price_list[i]['fruit_name'])
@@ -364,19 +365,20 @@ class SellStatic(AdminBaseHandler):
 			for goods in shop_all_goods:
 				if goods[0] not in name_list:
 					tmp = {}
-					tmp["fruit_name"] = goods[0]
+					fruit_id = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量排序：
 			# if len(total_price_list) == 0:
 
 			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
-
 			# 查询total_price_list表中所有商品的类目，并存到一个字典中：
 			goods_type_list = {}
 			for tpl in total_price_list:
 				if tpl["fruit_name"] not in list(goods_type_list.keys()):
-					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.Fruit.name == tpl["fruit_name"]).all()[0][0]
+					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
 
 
 			# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
@@ -434,13 +436,16 @@ class SellStatic(AdminBaseHandler):
 			name_list = []
 			for fl in fruit_list:
 				fl = eval(fl[0])
+				# print("#@#@##@",fl)
 				for key in fl:
 					tmp = {}
 					fl_value = fl[key]
 					num = float(fl_value["num"])
 					single_price = float(fl_value["charge"].split('元')[0])
 					total_price = single_price * num
-					tmp["fruit_name"] = fl_value["fruit_name"]
+					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 					tmp["total_price"] = total_price
 					for tpl in total_price_list:
 						name_list.append(tpl['fruit_name'])
@@ -457,18 +462,21 @@ class SellStatic(AdminBaseHandler):
 			for goods in shop_all_goods:
 				if goods[0] not in name_list:
 					tmp = {}
-					tmp["fruit_name"] = goods[0]
+					fruit_id = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量排序：
 			total_price_list.sort(key = lambda item:item["total_price"],reverse = True)
 			output_data["name_max"] = total_price_list[0]["fruit_name"]
 
+
+
 			goods_type_list = {}
 			for tpl in total_price_list:
 				if tpl["fruit_name"] not in list(goods_type_list.keys()):
-					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.Fruit.name == tpl["fruit_name"]).all()[0][0]
-
+					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
 			# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 			type_total_price_list = []
 			for type_name in shop_all_type_name:
@@ -517,7 +525,9 @@ class SellStatic(AdminBaseHandler):
 					num = float(fl_value["num"])
 					single_price = float(fl_value["charge"].split('元')[0])
 					total_price = single_price * num
-					tmp["fruit_name"] = fl_value["fruit_name"]
+					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 					tmp["total_price"] = total_price
 					for tpl in total_price_list:
 						name_list.append(tpl['fruit_name'])
@@ -535,7 +545,9 @@ class SellStatic(AdminBaseHandler):
 			for goods in shop_all_goods:
 				if goods[0] not in name_list:
 					tmp = {}
-					tmp["fruit_name"] = goods[0]
+					fruit_id = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量排序：
@@ -545,9 +557,9 @@ class SellStatic(AdminBaseHandler):
 				# 查询total_price_list表中所有商品的类目，并存到一个字典中：
 				goods_type_list = {}
 				for tpl in total_price_list:
-					if tpl["fruit_name"] not in list(goods_type_list.keys()):
-						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.Fruit.name == tpl["fruit_name"]).all()[0][0]
 
+					if tpl["fruit_name"] not in list(goods_type_list.keys()):
+						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
 				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 				type_total_price_list = []
 				for type_name in shop_all_type_name:
@@ -569,6 +581,10 @@ class SellStatic(AdminBaseHandler):
 		elif action == 'single_type':
 			type_name = self.args["type_name"]
 
+			shop_all_goods_id = {}
+			for goods in shop_all_goods:
+				shop_all_goods_id[goods[0]] = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+
 			start_date_str = start_date
 			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
 			now = datetime.datetime.now()
@@ -588,6 +604,9 @@ class SellStatic(AdminBaseHandler):
 						flag_date = datetime.datetime(start_date.year,start_date.month,28)
 
 			month_price_list = []
+			name_item_list = []
+			count_num = 1
+
 			while start_date <=flag_date:
 				start_date_str = start_date.strftime('%Y-%m-%d')
 				start_date_pre = start_date + datetime.timedelta(days = -1)
@@ -615,7 +634,9 @@ class SellStatic(AdminBaseHandler):
 						num = float(fl_value["num"])
 						single_price = float(fl_value["charge"].split('元')[0])
 						total_price = single_price * num
-						tmp["fruit_name"] = fl_value["fruit_name"]
+						fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+						tmp["fruit_id"] = fruit_id
+						tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 						tmp["total_price"] = total_price
 						for tpl in total_price_list:
 							name_list.append(tpl['fruit_name'])
@@ -633,6 +654,7 @@ class SellStatic(AdminBaseHandler):
 				for goods in shop_all_goods:
 					if goods[0] not in name_list:
 						tmp = {}
+						tmp["fruit_id"] = shop_all_goods_id[goods[0]]
 						tmp["fruit_name"] = goods[0]
 						tmp["total_price"] = 0
 						total_price_list.append(tmp)
@@ -643,27 +665,33 @@ class SellStatic(AdminBaseHandler):
 				goods_type_list = {}
 				for tpl in total_price_list:
 					if tpl["fruit_name"] not in list(goods_type_list.keys()):
-						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.Fruit.name == tpl["fruit_name"]).all()[0][0]
-
+						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
 				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 				type_total_price_list = []
-				for t_name in shop_all_type_name:
-					tmp = {}
-					t_name = t_name[0]
-					if t_name == type_name:
-						tmp["date"] = start_date_str
-						tmp["type_name"] = t_name
-						tmp["type_total_price"] = 0.0
-						tmp["per_name_total_price"] = {}
-						for tpl in total_price_list:
-							if goods_type_list[tpl["fruit_name"]] == t_name:
-								tmp["type_total_price"] += tpl["total_price"]
-								tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
-						month_price_list.append(tmp)
-						break
-				start_date = start_date + datetime.timedelta(days = 1)
 
-			return self.send_success(output_data = month_price_list)
+				tmp = {}
+				tmp["date"] = start_date_str
+				tmp["per_name_total_price"] = {}
+				for tpl in total_price_list:
+					if goods_type_list[tpl["fruit_name"]] == type_name:
+						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+
+				if(count_num == 1):
+					name_item_list = list(tmp["per_name_total_price"].keys())
+
+				name_price_item_list = []
+				for i in range(len(name_item_list)):
+					name_price_item_list.append(tmp["per_name_total_price"][name_item_list[i]])
+
+				month_price_list.append(name_price_item_list)
+				start_date = start_date + datetime.timedelta(days = 1)
+				count_num += 1
+
+			output_data = []
+			output_data.append(name_item_list)
+			output_data.append(month_price_list)
+
+			return self.send_success(output_data = output_data)
 
 		elif action == 'single_name':
 			goods_name = self.args["goods_name"]
@@ -710,7 +738,9 @@ class SellStatic(AdminBaseHandler):
 					for key in fl:
 						tmp = {}
 						fl_value = fl[key]
-						if fl_value["fruit_name"] == goods_name:
+						fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+						fruit_name = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+						if fruit_name == goods_name:
 							num = float(fl_value["num"])
 							single_price = float(fl_value["charge"].split('元')[0])
 							total_price = single_price * num
@@ -2814,7 +2844,7 @@ class Config(AdminBaseHandler):
 				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
-				return self.send_fail('至多可添加三个管理员')
+				return self.send_fail('最多可添加三个管理员')
 			if self.current_shop.admin.accountinfo.id == _id:
 				return self.send_fail('该用户已经是店铺的管理员')
 			admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()

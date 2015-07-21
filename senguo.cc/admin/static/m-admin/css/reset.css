@@ -1,9 +1,9 @@
 html, body, div, span, applet, object,
-h1, h2, h3, h4, h5, h6, p, blockquote, pre, 
-a, abbr, acronym, address, big, cite, code, 
-del, dfn, em, font, img, ins, kbd, q, s, samp, 
-small, strike, strong, tt, var, 
-b, u, i, center, dl, dt, dd, ol, ul, li, 
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, tt, var,
+b, u, i, center, dl, dt, dd, ol, ul, li,
 form, label, legend,fieldset,
 table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; border: none; outline: none; vertical-align: baseline;-webkit-appearance: none;-moz-appearance:none;appearance:none;}
 html,body,textarea,input,select,button,h1,h2,h3,h4,h5,h6{line-height: 1.25;font-size:14px;font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica,"ff-tisa-web-pro-1","ff-tisa-web-pro-2","Lucida Grande","Hiragino Sans GB","Hiragino Sans GB W3";}
@@ -124,6 +124,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pop-content .close-btn{position:absolute;right:10px;top:10px;font-size:16px;color:#48b6a4;font-weight:bold;}
 /*页面提示文字*/
 .no-result{font-size: 14px;text-align: center;color: #999;}
+.order-list-box>p{position: absolute;top: 100px;min-width: 320px;}
 /*加载中动画*/
 .wrap-loading-box{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}
 .loading-box{position: fixed;z-index:9999;top: 50%;left:50%;-webkit-transform:translate(-50%, -50%);display: -webkit-flex;display: flex;-webkit-justify-content: center;justify-content: center;}

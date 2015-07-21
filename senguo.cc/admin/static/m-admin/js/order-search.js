@@ -24,6 +24,16 @@ $(document).ready(function(){
             searchOrder(id);
         }
     });
+    $("#search-ipt").on("keydown",function(){  //订单搜索
+        if(window.event.keyCode == 13){
+            var id = $("#search-ipt").val();
+            if($.trim(id)=="" || isNaN($.trim(id))){
+                return Tip("请输入只含数字的订单编号");
+            }else{
+                searchOrder(id);
+            }
+        }
+    });
 }).on("click","#order-item>li",function(e){//进入订单详情
     var $this=$(this);
     var num = $this.attr("data-num");
@@ -31,14 +41,14 @@ $(document).ready(function(){
        window.location.href="/madmin/orderDetail/"+num;
     }
 }).on("click",".order-grade .task-staff",function(e){
-     var $this=$(this);
-     var status=parseInt($this.parents('.order-item').attr('data-status'));
-     if(status==1||status==4){
+    var $this=$(this);
+    var status=parseInt($this.parents('.m-order-item').attr('data-status'));
+    if(status==1||status==4){
         e.stopPropagation();
         curStaff = $(this).closest(".order-grade");
-        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.order-item').attr('data-id'));
-        $(".staff-list").empty().html($this.parents('.order-item').find('.order-staff-list').html());
-     }
+        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.m-order-item').attr('data-id'));
+        $(".staff-list").empty().html($this.parents('.m-order-item').find('.order-staff-list').html());
+    }
 }).on("click",".staff-list>li",function(){
     var index = $(this).index();
     var src = $(this).find("img").attr("src");
@@ -46,7 +56,7 @@ $(document).ready(function(){
     $(".staff-list>li").removeClass("active").eq(index).addClass("active");
 });
 
-var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="order-item" data-id="{{id}}">'+
+var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="m-order-item" data-id="{{id}}">'+
                     '<p class="order-time item">下单时间 : {{create_date}}</p>'+
                     '<ul class="order-content">'+
                         '<li>'+
@@ -100,10 +110,10 @@ function searchOrder(id){
         success:function(res){
             if(res.success){
                 var data = res.data[0];
-                if(data.length==0){
+                if(!data){
                     $(".no-result").html("没有查到任何数据").removeClass("hide");
                 }else{
-                    console.log(data);
+                    $(".no-result").addClass("hide");
                     var id=data['id'];
                     var order_status=parseInt(data['status']);
                     var order_num=data['num'];
