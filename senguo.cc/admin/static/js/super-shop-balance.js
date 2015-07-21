@@ -30,7 +30,7 @@ function getPageSum(){
 	page = 0;
 	var args={
 		page:page
-	}
+	}0.00
 	$.postJson(url,args,function(res){
 		if(res.success){
 			page_sum = res.page_sum;
