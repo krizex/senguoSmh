@@ -216,7 +216,7 @@ function insertcoupon(selected_status){
                             if(coupon.coupon_status==0 && coupon.close==0 ){
                                         trow='<tr class=" dis-coupon">'+
                                                 +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                +'<td>{{coupon_money}}</td>'
+                                                +'<td>{{coupon_money}}无</td>'
                                                 +'<td>未领取</td>'
                                                 +'<td>未领取</td>'
                                                 +'<td>未领取</td>'
@@ -231,7 +231,7 @@ function insertcoupon(selected_status){
                                 else if (coupon.coupon_status==1) {
                                         trow='<tr class=" dis-coupon">'
                                                 +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                +'<td>{{coupon_money}}</td>'
+                                                +'<td>{{coupon_money}}无</td>'
                                                 +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
                                                 +'<td>{{get_date}}</td>'
                                                 +'<td>未停用</td>'
@@ -249,7 +249,7 @@ function insertcoupon(selected_status){
                                 else if (coupon.coupon_status==2){
                                        trow='<tr class=" dis-coupon">'
                                                     +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                    +'<td>{{coupon_money}}</td>'
+                                                    +'<td>{{coupon_money}}无</td>'
                                                     +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
                                                     +'<td>{{get_date}}</td>'
                                                     +'<td>{{use_date}}</td>'
@@ -269,7 +269,7 @@ function insertcoupon(selected_status){
                                 else if ((coupon.coupon_status==0&&coupon.close==1 )||(coupon.coupon_status==3&&coupon.close==0)){
                                             trow='<tr class=" dis-coupon">'
                                                     +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                    +'<td>{{coupon_money}}</td>'
+                                                    +'<td>{{coupon_money}}无</td>'
                                                     +'<td>已失效</td>'
                                                     +'<td>已失效</td>'
                                                     +'<td>已失效</td>'

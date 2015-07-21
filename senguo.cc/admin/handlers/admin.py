@@ -3296,16 +3296,16 @@ class Marketing(AdminBaseHandler):
 		current_shop_id=self.current_shop.id
 		current_customer_id=self.current_user.id
 		now_date=int(time.time())
-		q=self.session.query(models.CouponsCustomer).with_lockmode('update').filter_by(shop_id=current_shop_id).all()
-		for x in q:
-			q1=self.session.query(models.CouponsShop).with_lockmode('update').filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id,closed=0).first()
-			if q1!=None:
-				if now_date>q1.to_get_date:
-					q1.closed=1
-				if now_date>x.uneffective_time and x.coupon_status>0:
-					x.coupon_status=3
+		q1=self.session.query(models.CouponsShop).with_lockmode('update').filter_by(shop_id=current_shop_id,closed=0).all()
+		for x in q1:
+			if now_date>x.to_get_date:
+				x.closed=1
 				self.session.commit()	
-		self.session.commit()
+			q=self.session.query(models.CouponsCustomer).with_lockmode('update').filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).all()
+			for y in q:
+				if now_date>y.uneffective_time and y.coupon_status>0:
+					y.coupon_status=3
+			self.session.commit()
 		return None		
 	def getcoupon(self,q,data):
 		current_shop_id=self.current_shop.id
