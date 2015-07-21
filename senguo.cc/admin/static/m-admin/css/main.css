@@ -114,7 +114,7 @@
 .order-type-list .active{color: #48b6a4;}
 .order-type-list .tab-bg{background-color: #fff;height:28px;border-radius: 28px;position: absolute;z-index:3;-webkit-transition:all ease-in-out .2s;left: 0;}
 .second-tab{position: fixed;top: 40px;left: 0;z-index:999;width: 100%;height: 30px;}
-.second-tab-list{background-color: #fff;padding: 0 10px;position: relative;z-index: 1;}
+.second-tab-list{background-color: #fff;padding: 0 10px;position: relative;z-index: 1;border-bottom: #F0F4F0 solid 1px;}
 .second-tab-list>li{float:left;width: 25%;height: 30px;line-height: 30px;text-align: center;color: #333;}
 .second-tab-list .tab-line{position: absolute;width:24%;bottom:0;height: 2px;background-color: #48b6a4;left: 10px;-webkit-transition:all ease-in-out .2s;}
 .order-content{padding: 0 10px 10px 10px;background-color: #fff;}
