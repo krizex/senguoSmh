@@ -451,6 +451,11 @@ function editCoupon(type,coupon_id,edit_status){
         }
         var use_rule = $(".use_rules").val();
         var total_number = 0;
+        var old_totalnumber=$(".total_number").attr("total-id");
+        if(total_number<=old_totalnumber){
+             $('.total_number').text('old_totalnumber');
+             return Tip("库存应该大于原来的库存！");
+        }
         var get_limit = $(".get_limits").val();
         var use_goods_group = $(".use_goods_groups").attr("data-id");
         var use_goods = $(".use_goodss").attr("data-id");

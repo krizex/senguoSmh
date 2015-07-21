@@ -24,7 +24,7 @@
 .cart-list-item .w75{width:75%;}
 .cart-list-item .w10{width:10%;}
 .cart-list-item .goods-info{height:100%;}
-.cart-list-item .charge-type{position:absolute;bottom:5px;left:75px;width:130px;}
+.cart-list-item .charge-type{position:absolute;bottom:5px;left:75px;width:130px;font-size: 12px;}
 .cart-list-item .action-box{position:absolute;right:5px;bottom:5px;}
 .cart-list-item .charge-item{height:30px;line-height:30px;position:absolute;bottom:0;}
 .cart-list-item .number-change{position:relative;width:90px;}
@@ -108,8 +108,8 @@
 .first_notice .sure_btn{border:none;background:none;color:#4D91E4;}
 .a-cz{color: #33CC66;margin: 0 10px;display: inline-block;}
 .wrap-online-lst{margin-top: -1px;position: relative;}
-.online-lst{padding: 5px 0;border:1px solid #f0f4f0;border-top:none;border-left:2px solid #33cc66;background-color: #f0f4f0;}
-.online-lst>li{height: 50px;padding: 0 15px;cursor: pointer;}
+.check-lst{padding: 5px 0;border:1px solid #f0f4f0;border-top:none;border-left:2px solid #33cc66;background-color: #f0f4f0;}
+.check-lst>li{height: 50px;padding: 0 15px;cursor: pointer;}
 .arrow-top{position: absolute;font-size: 0;line-height: 0;border:10px solid #fff;border-bottom:10px solid #f0f4f0;top:-20px;left:85px;}
 .third-img{width: 40px;height: 40px;margin:4px 0 0 14px;}
 .checkbox-btn{background-image: url('/static/images/check_uncheck.png');width: 20px;height: 20px;margin-top: 14px;background-repeat: no-repeat;background-size: 20px 20px;border-radius: 2px;}
@@ -119,6 +119,9 @@
 .title-right{max-width: 60%;position: absolute;top: 8px;left: 104px;}
 .title-right>span{display: block;}
 /*beauty*/
-.yellow-text{color: #f0c83f;}
+.yellow-text{color: #ff9800;}
 .pay-bill{position: fixed;bottom:50px;width:100%;max-width:800px;min-width:320px;z-index:100;height: 40px;border-top:1px solid #eee;line-height: 40px;text-align: right;font-size: 14px;background-color: rgba(255,255,255,.8);color: #666;}
-.order-submit{background-color: #afd6a5;display: inline-block;width: 70px;height: 40px;line-height: 40px;color: #fff;text-align: center;margin-left: 10px;}
+.order-submit{background-color: #ff9800;display: inline-block;width: 80px;height: 40px;line-height: 40px;color: #fff;text-align: center;margin-left: 10px;white-space: nowrap;}
+.coupon-text{color: #666;font-size: 12px;margin-left: 10px;}
+.coupon_type{padding: 5px 0;border:1px solid #f0f4f0;border-left:2px solid #33cc66;}
+.coupon_type>li{height: 30px;padding: 0 15px;cursor: pointer;font-size: 12px;}
