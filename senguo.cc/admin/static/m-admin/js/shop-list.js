@@ -31,8 +31,8 @@ $(document).ready(function(){
         }
     });
     new QRCode($("#big-code2")[0],{
-        width : 150,
-        height : 150
+        width : 300,
+        height : 300
     }).makeCode($("#shop_list_link").html());
 }).on("click","#qa",function(){
     $(this).addClass("hide");

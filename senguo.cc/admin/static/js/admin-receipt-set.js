@@ -64,7 +64,7 @@ $(document).ready(function () {
         $('.circle-btn').eq(_id).addClass('active');
         $("._box").eq(_id).removeClass("hidden");
     }
-    
+
 }).on("click",".yly",function(){
     $(".secket-key").show();
 }).on("click",".fy",function(){
@@ -167,7 +167,7 @@ $(document).ready(function () {
     $this.attr("data-flag","on");
     if(type == 0){
         _url = "/admin/WirelessPrint";
-        text="易连云";
+        text="易联云";
          var _args={
             action:"ylyadd",
             data:{key:key,num:num}
@@ -183,7 +183,7 @@ $(document).ready(function () {
                                 $(".console-num").text(num);
                                 $(".console-key").text(key);
                                 $this.parents('.set-list-item').find('.address-show').show();
-                                $this.parents('.set-list-item').find('.address-edit').hide(); 
+                                $this.parents('.set-list-item').find('.address-edit').hide();
                             }else{
                                 $this.attr("data-flag","on");
                                 Tip(res.error_text);
@@ -195,7 +195,7 @@ $(document).ready(function () {
                 Tip(res.error_text);
                 }
             }
-            
+
         );
     }else if(type==1){
         text="飞印";
@@ -215,14 +215,14 @@ $(document).ready(function () {
                             $(".console-num").text(num);
                             $(".console-key").text(key);
                             $this.parents('.set-list-item').find('.address-show').show();
-                            $this.parents('.set-list-item').find('.address-edit').hide(); 
+                            $this.parents('.set-list-item').find('.address-edit').hide();
                         }else{
                             $this.attr("data-flag","on");
                             Tip(res.error_text);
                         }
                     },
                     function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
-                );  
+                );
               }else{
                 Tip(res.error_text);
               }
@@ -230,7 +230,7 @@ $(document).ready(function () {
         );
     }
 
-   
+
 });
 
 function receiptEdit(target) {
