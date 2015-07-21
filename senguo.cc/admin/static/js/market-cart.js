@@ -489,8 +489,8 @@ $(document).ready(function(){
         noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
         return false;
     }
-}).on("click",".online-lst li",function(){   //选择在线支付方式
-    $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
+}).on("click",".online-lsts li",function(){   //选择在线支付方式
+    $(".online-lsts").find(".checkbox-btn").removeClass("checkboxed");
     $("#online-pay").attr("data-type",$(this).attr("data-type"));
     pulse($(this));
     $(this).children("a").addClass("checkboxed");
