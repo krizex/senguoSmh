@@ -54,27 +54,27 @@
 <main class="container mt100">
     <div class="s-container">
         <div class="sw-top">
-            <p>店铺列表 {% if current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link" id="spread-list">推广店铺列表</a>{% end %}</p>
+            <p>多店铺管理中心 {% if current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link" id="spread-list">推广店铺链接</a>{% end %}</p>
             <div class="sw-er-tip po-list invisible">
                 <div class="left-arr">
                     <span class="line1"></span>
                     <span class="line2"></span>
                 </div>
-                <p class="er-text">店铺列表链接</p>
+                <p class="er-text">店铺导航链接</p>
                 <div class="wrap-ipt">
                     <input type="text" class="sw-link-txt" value="http://senguo.cc/list?action=shop&&id={{current_shop.admin_id}}" disabled/>
                     <input type="button" class="sw-link-copy"  id="sw-link-copy" value="复制链接"/>
                 </div>
                 <div class="wrap-er group">
                     <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                    <div class="er-text lh80 fl">列表二维码</div>
+                    <div class="er-text lh80 fl">链接二维码</div>
                     <div class="er-img fl er-code-img">
                     </div>
                 </div>
             </div>
         </div>
         <div class="sw-head">
-            <p>每个管理员拥有一个唯一的属于自己的店铺列表和店铺列表链接。</p>
+            <p>每个管理员拥有一个唯一的属于自己的店铺列表和店铺导航链接。</p>
             <p>不论是您创建的店铺还是受其他店铺创建者邀请加入成为管理员的店铺都会显示在这个列表中。</p>
         </div>
         <div class="sw-bm">
@@ -93,14 +93,14 @@
                                     <span class="line1"></span>
                                     <span class="line2"></span>
                                 </div>
-                                <p class="er-text">店铺列表链接</p>
+                                <p class="er-text">店铺导航链接</p>
                                 <div class="wrap-ipt">
                                     <input type="text" class="sw-link-txt" value="http://senguo.cc/{{shop['shop_code']}}" disabled/>
                                     <input type="button" class="sw-link-copy" value="复制链接"/>
                                 </div>
                                 <div class="wrap-er group">
                                     <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                                    <div class="er-text lh80 fl">列表二维码</div>
+                                    <div class="er-text lh80 fl">链接二维码</div>
                                     <div class="er-img fl er-code-img">
                                     </div>
                                 </div>
