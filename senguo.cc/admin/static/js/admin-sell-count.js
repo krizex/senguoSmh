@@ -1253,6 +1253,7 @@ function getCount(action,options,myChart,output_data){
 	}	
 	else if(action == "single_type"){
 		options.series = [];
+
 		for(var i = 0;i < output_data[0].length;i++){
 			options.series.push({name:output_data[0][i],stack:'总量',type:'bar',data:[]});
 			
