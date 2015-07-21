@@ -47,7 +47,6 @@ handlers = [
 	#(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
 	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
 	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
-	(r"/coupon/user",handlers.activity.CouponUser,{},"CouponUser"),
 	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
 	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
 	(r"/coupon/status",handlers.activity.CouponStatus,{},"CouponStatus"),
