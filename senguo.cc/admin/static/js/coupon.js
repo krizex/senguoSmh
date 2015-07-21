@@ -12,21 +12,21 @@ $(document).ready(function(){
         history.back();
     });
     //领取优惠券
-    $(document).on("click","#get-coupon",function(){
-        var coupon_key = $(this).attr("data-key");
-        getCoupon(coupon_key);
+    $(document).on("click",".get-coupon",function(){
+        var coupon_id = $(this).attr("data-id");
+        getCoupon(coupon_id);
     });
 });
 //领取优惠券
-function getCoupon(coupon_key){
+function getCoupon(coupon_id){
     $.ajax({
-        url:"/coupon/detail?action=get_coupon&coupon_key="+coupon_key,
+        url:"/coupon/grub?action=get_coupon&coupon_id="+coupon_id,
         type:"get",
         success:function(res){
             if(res.success){
                 Tip("领取成功");
                 setTimeout(function(){
-                    window.location.href="/coupon/list?action=coupon";
+                    window.location.href="/coupon/list?action=get_one&coupon_key="+res.coupon_key;
                 },2000);
             }else{
                 Tip(res.error_text);

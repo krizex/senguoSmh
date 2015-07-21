@@ -326,10 +326,10 @@ class Home(CustomerBaseHandler):
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
-		# print(count)
+		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id).count()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
+			a=a,show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
@@ -384,7 +384,13 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0
-		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count)
+		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=0).all()
+		a=0
+		now_date=int(time.time())
+		for x in q :
+			if now_date>=x.from_get_date:
+				a+=1
+		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -1382,7 +1388,33 @@ class Cart(CustomerBaseHandler):
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
 		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
-		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,
+		data=[]
+		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
+		for x in q:
+			effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.effective_time))
+			uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.uneffective_time))
+			get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
+			q1=self.session.query(models.CouponsShop).filter_by(shop_id=x.shop_id,coupon_id=x.coupon_id).first()
+			use_goods=None
+			use_goods_group=None
+			if q1.use_goods_group==0:
+				use_goods_group="默认分组"
+			elif q1.use_goods_group==-1:
+				use_goods_group="店铺推荐"
+			elif q1.use_goods_group==-2:
+				use_goods_group="所有分组"
+			else:
+				q2=self.session.query(models.GoodsGroup).filter_by(shop_id=shop.id,id=q1.use_goods_group).first()
+				use_goods_group=q2.name
+			if q1.use_goods==-1:
+				use_goods="所有分组"
+			else:
+				q2=self.session.query(models.Fruit).filter_by(shop_id=shop.id,id=q1.use_goods).first()
+				use_goods=q2.name
+			x_coupon={"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,\
+			"uneffective_time":uneffective_time,"coupon_status":x.coupon_status,"use_goods_group":use_goods_group,"use_goods":use_goods}
+			data.append(x_coupon)
+		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,output_data=data,\
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
 						   shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))

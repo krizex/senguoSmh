@@ -46,10 +46,10 @@ handlers = [
 	#优惠券
 	#(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
 	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
+	(r"/coupon/grub", handlers.activity.CouponCustomer, {}, "CouponDetail"),
 	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
 	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
 	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
-	(r"/coupon/status",handlers.activity.CouponStatus,{},"CouponStatus"),
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),

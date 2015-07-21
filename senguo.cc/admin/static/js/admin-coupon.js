@@ -450,10 +450,10 @@ function editCoupon(type,coupon_id,edit_status){
             return Tip("优惠金额应该为数字类型");
         }
         var use_rule = $(".use_rules").val();
-        var total_number = 0;
-        var old_totalnumber=$(".total_number").attr("total-id");
+       var total_number = $(".total_numbers").val();
+        var old_totalnumber=$(".total_numbers").attr("total-id");
         if(total_number<=old_totalnumber){
-             $('.total_number').text('old_totalnumber');
+             $('.total_numbers').text('old_totalnumber');
              return Tip("库存应该大于原来的库存！");
         }
         var get_limit = $(".get_limits").val();

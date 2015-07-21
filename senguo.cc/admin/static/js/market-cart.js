@@ -494,6 +494,23 @@ $(document).ready(function(){
     $("#online-pay").attr("data-type",$(this).attr("data-type"));
     pulse($(this));
     $(this).children("a").addClass("checkboxed");
+}).on("click",".coupon_type li",function(){//优惠券
+    var index = $(this).index();
+    $(".coupon_type").find(".checkbox-btn").removeClass("checkboxed");
+    $(".coupon_type li").removeClass("active").eq(index).addClass("active");
+    $(this).children("a").addClass("checkboxed");
+    var money = parseFloat($(this).children('.coupon-bg').attr("data-money"));
+    var last_money = parseFloat($("#final_price").html());
+    $("#coupon_cmoney").html(money);
+    $("#coupon-money").html(money);
+    $("#coupon-money").closest('.coupon-text').removeClass("hidden");
+    var smoney = 0;
+    if(money>=last_money){
+        smoney = 0;
+    }else{
+        smoney = last_money - money;
+    }
+    $("#total_price").html(smoney);
 });
 
 window.dataObj.price_list=[];

@@ -3663,6 +3663,7 @@ class Marketing(AdminBaseHandler):
 			use_goods_group=int(data["use_goods_group"])
 			use_goods=int(data["use_goods"])
 			get_rule = float(data["get_rule"])
+			print(data["valid_way"])
 			valid_way=int(data["valid_way"])
 			coupon_id=int(data["coupon_id"])
 			edit_status=int(data["edit_status"])
@@ -3694,7 +3695,6 @@ class Marketing(AdminBaseHandler):
 			elif now_date<q.to_get_date:
 				q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
 				for x in range(q.total_number,total_number):
-					print("ggggggggggggggggggggggggggggggg")
 					chars=string.digits+string.ascii_letters
 					chars=''.join(random.sample(chars*10,4))
 					chars=chars+str(coupon_id)+'C'+str(x)+'M'+str(current_shop_id)

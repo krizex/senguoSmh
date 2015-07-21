@@ -8,34 +8,22 @@
 {% block content %}
 <div class="wrap-mycoupon">
     <ul class="my-coupon-list">
+    {%for data in output_data%}
         <li>
-            <div class="get-coupon">
+            <div class="get-coupon" data-id="{{data["coupon_id"]}}">
                 <span>点击<br>领取</span>
             </div>
             <div class="coupon-lprice">
                 <i class="gap gap1-right"></i>
-                <p class="price-txt"><span class="f16">￥</span><span class="f26">10.00</span></p>
+                <p class="price-txt"><span class="f16">￥</span><span class="f26">{{data["coupon_money"]}}</span></p>
                 <div class="price-info">
-                    <p class="f14 green-txt">仅剩74张</p>
-                    <p class="f12 c333">满49元即可使用</p>
-                    <p class="f12 c666">2015.7.10-2015.7.19</p>
+                    <p class="f14 green-txt">仅剩{{data["remain_number"]}}张</p>
+                    <p class="f12 c333">满{{data["use_rule"]}}元即可使用</p>
+                    <p class="f12 c666">{{data["from_valid_date"]}}-{{data["to_valid_date"]}}</p>
                 </div>
             </div>
         </li>
-        <li>
-            <div class="get-coupon">
-                <span>点击<br>领取</span>
-            </div>
-            <div class="coupon-lprice">
-                <i class="gap gap1-right"></i>
-                <p class="price-txt"><span class="f16">￥</span><span class="f26">10.00</span></p>
-                <div class="price-info">
-                    <p class="f14 green-txt">仅剩74张</p>
-                    <p class="f12 c333 price-des">满49元即可9元即可使用9元即可使用使用</p>
-                    <p class="f12 c666">2015.7.10-2015.7.19</p>
-                </div>
-            </div>
-        </li>
+        {%end%}
     </ul>
 </div>
 {% end %}

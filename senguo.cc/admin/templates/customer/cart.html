@@ -51,7 +51,7 @@
                 <span class="pull-right tit text-right">商品金额：</span>
             </div>
             <div class="clearfix m-b10 font14 p010 text-grey3 hidden">
-                <span class="pull-right tit2 text-right"><span id="final_price" class="final_price"></span>元</span>
+                <span class="pull-right tit2 text-right"><span id="final_price" class="final_price" data-money=""></span>元</span>
                 <span class="pull-right tit text-right">实付金额：</span>
             </div>
             <p class="text-center text-pink mincharge_intime mincharge" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“按时达”起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
@@ -224,22 +224,21 @@
                 </ul>
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
-                <p class="clearfix">
+                <p class="group">
                     <span class="pull-left text-grey9 font14 m-b5 pl10">我的优惠券</span>
-                    <span class="pull-right"><span id="coupon_cmoney">10.00</span></span>
+                    <span class="pull-right mr10"><span id="coupon_cmoney"></span></span>
                 </p>
-                <ul id="couponType" class="coupon_type">
-                    <li data-id="3" class="">
-                        <a href="javascript:;" class="pull-right checkbox-btn"></a>
-                        <span class="coupon-bg">￥10.00</span>
-                        <span>推荐商品满49元即可使用（含运费）</span>
-                    </li>
-                    <li data-id="3" class="">
-                        <a href="javascript:;" class="pull-right checkbox-btn checkboxed"></a>
-                        <span class="coupon-bg">￥10.00</span>
-                        <span>推荐商品满49元即可使用（含运费）</span>
-                    </li>
-                </ul>
+                <div class="wrap-coupontype">
+                    <ul id="couponType" class="coupon_type">
+                    {%for data in output_data%}
+                        <li data-id="3" class="">
+                            <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
+                            <span class="coupon-bg" data-money="{{data["coupon_money"]}}">￥{{data["coupon_money"]}}</span>
+                            <span class="coupon-detail">{{data["use_goods_group"]}}满{{data["use_rule"]}}元<br>可使用（含运费）</span>
+                        </li>
+                       {%end%} 
+                    </ul>
+                </div>
             </div>
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
             {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
@@ -253,8 +252,8 @@
         <div class="bottom-line"></div>
     </div>
     <div class="pay-bill">
-        <span class="pull-left coupon-text hidden">已优惠 ￥<span id="coupon-money">10.00</span></span>
-        <span class="yellow-text">总计：<span class="yellow-text">￥<span class="final_price yellow-text"></span></span> 元</span>
+        <span class="pull-left coupon-text hidden">已优惠 ￥<span id="coupon-money"></span></span>
+        <span class="yellow-text">总计：<span class="yellow-text">￥<span class="final_price yellow-text" id="total_price"></span></span> 元</span>
         <a id="submitOrder" class="sub-btn sure_btn order-submit" href="javascript:;">提交订单</a>
     </div>
 {% end %}
