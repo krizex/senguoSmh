@@ -41,14 +41,14 @@ $(document).ready(function(){
        window.location.href="/madmin/orderDetail/"+num;
     }
 }).on("click",".order-grade .task-staff",function(e){
-     var $this=$(this);
-     var status=parseInt($this.parents('.order-item').attr('data-status'));
-     if(status==1||status==4){
+    var $this=$(this);
+    var status=parseInt($this.parents('.m-order-item').attr('data-status'));
+    if(status==1||status==4){
         e.stopPropagation();
         curStaff = $(this).closest(".order-grade");
-        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.order-item').attr('data-id'));
-        $(".staff-list").empty().html($this.parents('.order-item').find('.order-staff-list').html());
-     }
+        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.m-order-item').attr('data-id'));
+        $(".staff-list").empty().html($this.parents('.m-order-item').find('.order-staff-list').html());
+    }
 }).on("click",".staff-list>li",function(){
     var index = $(this).index();
     var src = $(this).find("img").attr("src");
@@ -56,7 +56,7 @@ $(document).ready(function(){
     $(".staff-list>li").removeClass("active").eq(index).addClass("active");
 });
 
-var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="order-item" data-id="{{id}}">'+
+var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="m-order-item" data-id="{{id}}">'+
                     '<p class="order-time item">下单时间 : {{create_date}}</p>'+
                     '<ul class="order-content">'+
                         '<li>'+

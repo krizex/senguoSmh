@@ -192,9 +192,6 @@ var getOrder=function(page){
                         var staff_phone='';
                         var sender='';
                     }
-                    if(!message){
-                        message='无';
-                    }
                     if(pay_type==1){
                         pay_type = "货到付款";
                     }else if(pay_type==2){
