@@ -1112,7 +1112,7 @@ function show_chart(action,start_date,end_date,name){
 					);
 				}
 				else if(action == 'single_type'){
-
+					// console.log(output_data);
 					myChartSingleType.hideLoading();
 					getCount("single_type",SingleTypeOptions,myChartSingleType,output_data);
 
