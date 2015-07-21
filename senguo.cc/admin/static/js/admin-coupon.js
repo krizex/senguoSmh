@@ -180,20 +180,7 @@ $(document).ready(function () {
     $(".use_goodss").html($(this).html()).attr("data-id",id);
 }).on('click','.coupon-items .item',function(){ //dd
     var selected_status=$(this).attr("data-id");
-    console.log(selected_status);
-    $("#dropdownMenu3 em").text($(".coupon-items.item").text());
-    insertcoupon(selected_status);
-}).on('click','.couponget',function(){//获取
-    var selected_status=1;
-    $("#dropdownMenu3 em").text($(".couponget").text());
-    insertcoupon(selected_status);
-}).on('click','.couponuse',function(){//已使用
-    var selected_status=2;
-    $("#dropdownMenu3 em").text($(".couponuse").text());
-    insertcoupon(selected_status);
-}).on('click','.couponvalid',function(){//失效
-    var selected_status=3;
-    $("#dropdownMenu4 em").text($(".couponuse").text());
+    $(".coupon-items em").text($(this).text());
     insertcoupon(selected_status);
 });
 
@@ -220,38 +207,88 @@ function insertcoupon(selected_status){
     $.postJson(url,args,function(res){
                 if(res.success){
                         var coupons = res.output_data;
-                         $('#list-coupons').children("tr").remove();
+                         $('#list-coupons').empty();
                         if(coupons.length!=0){
                             for(var i=0; i<coupons.length; i++){
                                 var coupon = coupons[i];
-                                var $tr='';
-                                if(coupon.customer_id=="未领取" ){
-                                        $tr='<tr class="dis-coupon">'+
-            +'<td class="relative"><span>{{data["coupon_key"]}}</span><a href="javascript:;" class="copy-coupon-code">复制</a></td>'+
-            +'<td>{{data["coupon_money"]}}</td>'+
-            +'<td>dsfdsds<br>ID:{{data["nickname"]}}</td>'+
-            +'<td>{{data["get_date"]}}</td>'+
-            +'<td>{{data["use_date"]}}</td>'+
-            +'<td>订单号:<a href="javascript:;">{{data["order_id"]}}</a></td>'+
-        +'</tr>';
-    }
-                                else{
-                                        $tr='<tr>'+
-            +'<td class="relative"><span>{{data["coupon_key"]}}</span><a href="javascript:;" class="copy-coupon-code">复制</a></td>'+
-            +'<td>{{data["coupon_money"]}}</td>'+
-            +'<td>dsfdsds<br>ID:{{data["nickname"]}}</td>'+
-            +'<td>{{data["get_date"]}}</td>'+
-            +'<td>{{data["use_date"]}}</td>'+
-            +'<td>订单号:<a href="javascript:;">{{data["order_id"]}}</a></td>'+
-        +'</tr>';
-                                     }
-                                $("#list-coupons").append($tr);
+                                var trow='';
+                                var temp=null;
+                            if(coupon.coupon_status==0 && coupon.close==0 ){
+                                        trow='<tr class=" dis-coupon">'+
+                                                +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                                +'<td>{{coupon_money}}</td>'
+                                                +'<td>未领取</td>'
+                                                +'<td>未领取</td>'
+                                                +'<td>未领取</td>'
+                                                +'<td>订单号:<a href="javascript:;">无</a></td>'
+                                            +'</tr>';
+                                        var render=template.compile(trow);
+                                        temp=render({
+                                            coupon_money:coupon.coupon_money,
+                                            coupon_key:coupon.coupon_key
+                                        });
+                                 }
+                                else if (coupon.coupon_status==1) {
+                                        trow='<tr class=" dis-coupon">'
+                                                +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                                +'<td>{{coupon_money}}</td>'
+                                                +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
+                                                +'<td>{{get_date}}</td>'
+                                                +'<td>未停用</td>'
+                                                +'<td>订单号:<a href="javascript:;">无</a></td>'
+                                            +'</tr>';
+                                        var render=template.compile(trow);
+                                        temp=render({
+                                            coupon_money:coupon.coupon_money,
+                                            nickname:coupon.nickname,
+                                            coupon_id:coupon.coupon_id,
+                                            get_date:coupon.get_date,
+                                            coupon_key:coupon.coupon_key
+                                        });
                                 }
+                                else if (coupon.coupon_status==2){
+                                       trow='<tr class=" dis-coupon">'
+                                                    +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                                    +'<td>{{coupon_money}}</td>'
+                                                    +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
+                                                    +'<td>{{get_date}}</td>'
+                                                    +'<td>{{use_date}}</td>'
+                                                    +'<td>订单号:<a href="javascript:;">{{order_id}}</a></td>'
+                                                +'</tr>';
+                                        var render=template.compile(trow);
+                                        temp=render({
+                                            coupon_money:coupon.coupon_money,
+                                            nickname:coupon.nickname,
+                                            coupon_id:coupon.coupon_id,
+                                            get_date:coupon.get_date,
+                                            order_id:coupon.order_id,
+                                            use_date:coupon.use_date,
+                                            coupon_key:coupon.coupon_key
+                                        });
+                                }
+                                else if ((coupon.coupon_status==0&&coupon.close==1 )||(coupon.coupon_status==3&&coupon.close==0)){
+                                            trow='<tr class=" dis-coupon">'
+                                                    +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                                    +'<td>{{coupon_money}}</td>'
+                                                    +'<td>已失效</td>'
+                                                    +'<td>已失效</td>'
+                                                    +'<td>已失效</td>'
+                                                    +'<td>已失效:<a href="javascript:;">无</a></td>'
+                                                +'</tr>';
+                                            console.log(coupon.coupon_key);
+                                            var render=template.compile(trow);
+                                            temp=render({
+                                                coupon_money:coupon.coupon_money,
+                                                coupon_key:coupon.coupon_key
+                                            });
+                                }
+                                $("#list-coupons").append(temp);
                             }
+                        }
                          else{
-                                var $item=$("#noresult").clone();
-                                $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
-                                $("#list-coupons").append($item);
+                                temp='没有相关查询的优惠券信心呢～（O.O）～'
+                                // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
+                                $("#list-coupons").append(temp);
                                 }
                          }
                          else  Tip(error_text);

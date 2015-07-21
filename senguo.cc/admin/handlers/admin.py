@@ -3748,9 +3748,8 @@ class Marketing(AdminBaseHandler):
 					pass
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
 				x_coupon={"coupon_key":x.coupon_key,"coupon_id":x.coupon_id,"coupon_money":qq.coupon_money,"customer_id":customer_id,\
-				"nickname":nickname,"get_date":get_date,"use_date":use_date,"order_id":order_id}
+				"nickname":nickname,"get_date":get_date,"use_date":use_date,"order_id":order_id,"coupon_status":x.coupon_status,"close":qq.closed}
 				data.append(x_coupon)
-			print(data)
 			return self.send_success(output_data=data,context=dict(subpage='coupon')) 
 		elif action=="close_one":
 			data=self.args["data"]
