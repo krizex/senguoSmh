@@ -24,11 +24,9 @@ $(document).ready(function(){
     }
     var args={
         _xsrf:window.dataObj._xsrf,
-        data:{
-            phone:tel,
-            realname:name,
-            code:code
-        }
+        phone:tel,
+        realname:name,
+        code:code
     };
     $.ajax({
         url:"",
@@ -37,7 +35,10 @@ $(document).ready(function(){
         contentType:"application/json; charset=UTF-8",
         success:function(res){
             if(res.success) {
-                window.location.href="/admin";
+                Tip("店铺申请成功");
+                setTimeout(function(){
+                    window.location.href='/admin';
+                },1500);
             }else{
                 alert(res.error_text);
             }

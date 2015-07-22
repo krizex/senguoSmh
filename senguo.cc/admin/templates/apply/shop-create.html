@@ -22,7 +22,7 @@
                 </colgroup>
                 <tr>
                     <td class="txt-ar c333">店铺名称</td>
-                    <td><input type="text" class="create-ipt ml10" placeholder="请输入店铺名称"/></td>
+                    <td><input type="text" class="create-ipt ml10 shop_name" placeholder="请输入店铺名称"/></td>
                 </tr>
                 <tr>
                     <td class="txt-ar c333">店铺Logo</td>
@@ -30,17 +30,17 @@
                 </tr>
                 <tr>
                     <td class="txt-ar c333">店铺联系电话</td>
-                    <td><input type="text" class="create-ipt ml10" placeholder="请输入店铺名称"/></td>
+                    <td><input type="tel" class="create-ipt ml10 shop_phone" placeholder="请输入店铺联系电话"/></td>
                 </tr>
                 <tr>
                     <td class="vtop txt-ar c333">店铺地址</td>
                     <td>
                         <div class="drop-select ml10">
-                            <span class="select-ipt province" id="province">湖北省</span>
+                            <span class="select-ipt province" id="province">选择省份</span>
                             <i class="i-cert"></i>
                         </div>
                         <div class="drop-select ml10">
-                            <span class="select-ipt city" id="city">武汉市</span>
+                            <span class="select-ipt city" id="city">选择城市</span>
                             <i class="i-cert"></i>
                         </div><br>
                         <input type="text" class="create-ipt mt4 ml10 address" id="address" placeholder="请输入详细地址"/>
@@ -155,9 +155,11 @@
         </div>
     </div>
     <div class="txt-center mt20">
-        <a href="javascript:;" class="go-btn commit-btn">提交</a>
+        <a href="javascript:;" class="go-btn commit-btn" id="commit_shop">提交</a>
     </div>
 </div>
+{% end %}
+{% block other %}
 <div class="pop-bwin hide">
     <div class="wrap-address-list">
         <p class="choose-title">选择省份</p>

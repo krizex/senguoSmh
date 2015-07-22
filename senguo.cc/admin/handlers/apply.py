@@ -44,7 +44,7 @@ class Home(CustomerBaseHandler):
 			return self.send_fail("please input your phone number")
 		if not self.args["realname"]:
 			return self.send_fail("please input your realname")
-		if not check_msg_token(phone=self.args['phone'], code=self.args["code"]):
+		if not check_msg_token(phone=self.args['phone'], code=int(self.args["code"])):
 			return self.send_fail(error_text="验证码过期或者不正确")
 		
 		self.current_user.account_info.phone=self.args["phone"]
@@ -86,9 +86,10 @@ class CreateShop(AdminBaseHandler):
 					return self.send_fail("最多可创建30个店铺")
 
 		if action == "diy":
+			args={}
 			args["admin_id"] = self.current_shop.admin_id
 			args["shop_name"] = data["shop_name"]
-			args["shop_logo"] = data["shop_logo"]
+			args["shop_trademark_url"] = data["shop_logo"]
 			args["shop_phone"] = data["shop_phone"]
 			args["shop_province"] = data["shop_province"]
 			args["shop_city"] = data["shop_city"]
@@ -96,6 +97,7 @@ class CreateShop(AdminBaseHandler):
 			args["lat"] = data["lat"]
 			args["lon"] = data["lon"]
 			args["shop_code"] = self.make_shop_code()
+			args["create_date_timestamp"] = time.time()
 			
 			shop = models.Shop(**args)
 
