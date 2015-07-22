@@ -86,9 +86,10 @@ class CreateShop(AdminBaseHandler):
 					return self.send_fail("最多可创建30个店铺")
 
 		if action == "diy":
+			args={}
 			args["admin_id"] = self.current_shop.admin_id
 			args["shop_name"] = data["shop_name"]
-			args["shop_logo"] = data["shop_logo"]
+			args["shop_trademark_url"] = data["shop_logo"]
 			args["shop_phone"] = data["shop_phone"]
 			args["shop_province"] = data["shop_province"]
 			args["shop_city"] = data["shop_city"]
@@ -96,6 +97,7 @@ class CreateShop(AdminBaseHandler):
 			args["lat"] = data["lat"]
 			args["lon"] = data["lon"]
 			args["shop_code"] = self.make_shop_code()
+			args["create_date_timestamp"] = time.time()
 			
 			shop = models.Shop(**args)
 

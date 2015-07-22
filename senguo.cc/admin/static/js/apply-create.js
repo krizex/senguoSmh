@@ -1,7 +1,5 @@
 var area = window.dataObj.area,type=0;
 $(document).ready(function(){
-    var height = $(window).height();
-    $(".container").css("minHeight",height+"px");
     //初始化省份
     for(var key in area){
         var $item=$('<li></li>');
@@ -36,22 +34,33 @@ $(document).ready(function(){
                 }
             }
         }
+        $(".province").html(name).attr("data-code",code);
         $("#privince_list").addClass("hide");
         $("#city_list").removeClass("hide");
     }else{
         $(".address").attr("data-code",code);
-        $(".province").html(name);
+        $(".province").html(name).attr("data-code",code);
+        $(".city").html(name).attr("data-code",code);
         $(".pop-bwin").addClass("hide");
     }
 }).on("click","#city_list li",function(){
     var code = $(this).attr("data-code");
     var name = $(this).html();
     $(".address").attr("data-code",code);
-    $(".city").html(name);
+    $(".city").html(name).attr("data-code",code);
     $(".pop-bwin").addClass("hide");
     $("#privince_list").removeClass("hide");
     $("#city_list").addClass("hide");
 }).on("click",".province",function(){
+    if($(this).hasClass("forbidden")){
+        return Tip("当前只有湖北省范围");
+    }
+    $(".choose-title").html("选择省份");
+    $(".pop-bwin").removeClass("hide");
+}).on("click",".city",function(){
+    if($(this).hasClass("forbidden")){
+        return Tip("当前只有武汉市范围");
+    }
     $(".choose-title").html("选择省份");
     $(".pop-bwin").removeClass("hide");
 }).on("click",".tab-list li",function(){
@@ -147,14 +156,84 @@ $(document).ready(function(){
             Tip(res.error_text);
         }
     });
-});
+}).on("click","#commit_shop",function(){//提交
+    if(type==0){//手动创建
+        commitHand($(this));
+    }else if(type==1){
 
+    }else{
+
+    }
+});
+function commitHand($btn){
+    if($btn.attr("data-flag")=="off"){
+        return Tip("请勿重复提交");
+    }
+    var shop_name = $.trim($(".shop_name").val());
+    if(shop_name=="" || shop_name.length>15){
+        return Tip("店铺名称不能为空且不能超过15个字符");
+    }
+    var shop_logo = $("#add_logo").attr("url");
+    if(shop_logo==""){
+        return Tip("请上传店铺Logo");
+    }
+    var phone = $.trim($(".shop_phone").val());
+    if(phone==""){
+        return Tip("请输入手机号码");
+    }
+    var lng = $("#address").attr("data-lng");
+    var lat = $("#address").attr("data-lat");
+    if(!lng){
+        return Tip("请点击获取店铺地图坐标按钮");
+    }
+    var shop_province = $("#province").attr("data-code");
+    var shop_city = $("#city").attr("data-code");
+    if(!shop_province || !shop_city){
+        return Tip("请先选择省份和城市");
+    }
+    var shop_address = $.trim($("#address").val());
+    if(shop_address==""){
+        return Tip("请输入店铺的详细地址");
+    }
+    var args = {
+        action:"diy",
+        data:{
+            shop_name:shop_name,
+            shop_logo:shop_logo,
+            shop_phone:phone,
+            shop_province:shop_province,
+            shop_city:shop_city,
+            shop_address_detail:shop_address,
+            lat:lat,
+            lon:lng
+        }
+    };
+    var url = "";
+    $btn.attr("data-flag","off");
+    $.postJson(url,args,function(res){
+        $btn.attr("data-flag","on");
+         if(res.success){
+             Tip("店铺创建成功");
+             setTimeout(function(){
+                 window.location.href='/admin';
+             },1500);
+         }else{
+             return Tip(res.error_text);
+         }
+    });
+}
 function initBmap(){
-    var map = new BMap.Map("bmap",{enableMapClick:false});
+    var map = new BMap.Map("bmap");
     var point = new BMap.Point(114.430551,30.518114);
     map.centerAndZoom(point,15);
     var marker = null;
     $("#get_point").on("click",function(){
+        if($("#province").html()=="" || $("#city").html()==""){
+            return Tip("请先选择省份和城市");
+        }
+        if($.trim($("#address").val())==""){
+            return Tip("请先输入详细地址");
+        }
         var myGeo = new BMap.Geocoder();
         var address = $("#province").html()+$("#city").html()+$.trim($("#address").val());
         myGeo.getPoint(address, function (point) {
@@ -162,8 +241,15 @@ function initBmap(){
                 map.centerAndZoom(point, 17);
                 marker = new BMap.Marker(point);
                 map.addOverlay(marker);
+                $("#address").attr("data-lng",point.lng).attr("data-lat",point.lat)
             }
         });
+    });
+    map.addEventListener("click",function(e){
+        map.removeOverlay(marker);
+        var point = e.point;
+        marker = new BMap.Marker(point);
+        map.addOverlay(marker);
     });
 }
 
