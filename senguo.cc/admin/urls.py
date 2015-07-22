@@ -283,7 +283,7 @@ handlers = [
 	# (r"/fruitzone/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
 	# (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
 	# (r"/fruitzone/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
-	(r"/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
+	(r"/apply", handlers.fruitzone.BecomeSeller, {}, "BecomeSeller"),
 	(r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
 	(r"/apply/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
 	(r"/apply/success", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
