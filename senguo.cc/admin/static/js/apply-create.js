@@ -95,7 +95,7 @@ $(document).ready(function(){
         success:function(res){
             if(res.success) {
                 var shops=res.data;
-                for shop in shops:
+
                     
             }else{
                 Tip(res.error_text);

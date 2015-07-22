@@ -8,9 +8,41 @@ $(document).ready(function(){
     if($(".home-top").size()>0){
         $("#title").html("店铺申请");
         $("#beta").hide();
+        if($("#tel").val()!=""){
+            $("#tel").attr("disabled","disabled").addClass("bgd");
+            $("#update_tel").removeClass("hide");
+        }
     }
 }).on("click","#get_code",function(){
     getCode($(this));
+}).on("click","#commit",function(){
+    var tel = $.trim($("#tel").val());
+    var name = $.trim($("#name").val());
+    var code = $.trim($("#code").val());
+    if(tel == "" || name == "" || code == ""){
+        return Tip("姓名、手机号及验证码都不能为空");
+    }
+    var args={
+        _xsrf:window.dataObj._xsrf,
+        data:{
+            phone:tel,
+            realname:name,
+            code:code
+        }
+    };
+    $.ajax({
+        url:"",
+        type:"post",
+        data:JSON.stringify(args),
+        contentType:"application/json; charset=UTF-8",
+        success:function(res){
+            if(res.success) {
+                window.location.href="/admin";
+            }else{
+                alert(res.error_text);
+            }
+        }
+    });
 });
 
 function getCode($this){
@@ -18,12 +50,8 @@ function getCode($this){
         return false;
     }
     $this.addClass("bg85").attr("data-statu", "1");
-    var tel = $("#perCode").text();
-    if(!tel){
-        return alert('管理员还未绑定手机号')
-    }
     var data={
-        phone:tel
+        phone: $.trim($("#tel").val())
     };
     var args={
         action:'get_code',
@@ -39,7 +67,7 @@ function getCode($this){
             if(res.success) {
                 getCertCode($this);
             }else{
-                $this.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
+                $this.removeClass("bg85").removeAttr("data-statu").val("获取验证码");
                 alert(res.error_text);
             }
         }
@@ -47,14 +75,14 @@ function getCode($this){
 }
 function getCertCode($obj){
     var i=60,timer=null;
-    $obj.html("重新发送(60)");
+    $obj.val("重新发送(60)");
     timer = setInterval(function (){
         i--;
         if(i==0){
-            $obj.removeClass("bg85").removeAttr("data-statu").html("获取验证码");
+            $obj.removeClass("bg85").removeAttr("data-statu").val("获取验证码");
             clearInterval(timer);
         }else{
-            $obj.html("重新发送("+i+")");
+            $obj.val("重新发送("+i+")");
         }
     },1000);
 }

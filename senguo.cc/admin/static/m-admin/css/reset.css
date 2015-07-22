@@ -52,6 +52,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .space-box{height: 3rem;width: 100%;}
 .pointer{cursor: pointer;}
 .white-box{background-color: #fff;padding: 0 10px;margin-bottom: 12px;}
+.iblock{display: inline-block;}
 /*字体颜色*/
 .cfff{color: #fff;}
 .red-txt{color: #ff6666!important;}
@@ -67,6 +68,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .bg85{background-color: #858585 !important;}
 /*背景色*/
 .bg-white{background-color: #fff !important;}
+.bgd{background-color: #ddd !important;}
 /*字体*/
 .f12{font-size: 12px !important;}
 .f16{font-size: 16px !important;}
