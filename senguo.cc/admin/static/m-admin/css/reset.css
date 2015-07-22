@@ -53,6 +53,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pointer{cursor: pointer;}
 .white-box{background-color: #fff;padding: 0 10px;margin-bottom: 12px;}
 /*字体颜色*/
+.cfff{color: #fff;}
 .red-txt{color: #ff6666!important;}
 .green{color: #4be2d4;}
 .c000,.text-black{color: #333 !important;}
@@ -61,6 +62,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .c999{color: #999!important;}
 .c666{color: #666!important;}
 .dgreen{color: #48B6A4!important;}
+.green-txt{color: #41b546 !important;}
 .c84{color: #848484 !important;}
 /*背景色*/
 .bg-white{background-color: #fff !important;}

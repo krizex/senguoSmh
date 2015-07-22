@@ -9,6 +9,7 @@ import handlers.onlinePay
 import handlers.activity
 import handlers.madmin
 import handlers.market
+import handlers.apply
 import handlers.bbs
 from dal import models
 #todo:handlers太大会不会影响性能？
@@ -43,7 +44,9 @@ handlers = [
 	(r"/market/shopinsert/(\w+)", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
 	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
 	#(r'/market/staffinsert',handlers.market.StaffInsert,{},"staffinsert"),
-
+	#店铺申请
+	(r"/apply/home", handlers.apply.Home, {}, "ApplyHome"),
+	(r"/apply/create", handlers.apply.CreateShop, {}, "ApplyCreate"),
 
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
