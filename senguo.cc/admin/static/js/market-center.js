@@ -20,7 +20,7 @@ $(document).ready(function(){
         }
 
 }).on("click","#coupon_btn",function(){
-    window.location.href="/coupon/list";
+    window.location.href="/coupon/list?action=get_all";
 });
     //收货地址编辑
     $(document).on('click','.edit-address',function(){

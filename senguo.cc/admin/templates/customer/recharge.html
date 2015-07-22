@@ -12,9 +12,15 @@
 <div class="wrap-bal-ma">
     <div class="bal-balbox">
         <h3>充值优惠：</h3>
-        <p>1、一次性充值100元送3元</p>
-        <p>2、一次性充值300元送10元</p>
-        <p>3、一次性充值500元送20元</p>
+        {% set i=1%}
+        {%if len(output_data)==0%}
+        <p>商家比较小气，还没有任何发放任何充值优惠券哦～</p>
+        {%else%}
+        {%for data in output_data%}
+        <p>{{i}}、一次性充值{{data["get_rule"]}}元送{{data["coupon_money"]}}元</p>
+        {%set i+=1%}
+        {%end%}
+        {%end%}
     </div>
     <div class="bal-balbm">
         <h3>选择充值方式</h3>

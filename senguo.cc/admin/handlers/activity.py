@@ -697,7 +697,7 @@ class CouponCustomer(AdminBaseHandler):
 				x_coupon={"shop_code":shop.shop_code,"shop_name":shop.shop_name,"shop_logo":shop.shop_trademark_url,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":q.coupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
 				return self.send_success(coupon_key=q.coupon_key)
 			else:
-				return self.render("coupon/coupon-status.html")
+				return self.send_fail("对不起，这批优惠券已经被抢空了，下次再来哦！")
 
 		elif action=="can_use":
 			pass
@@ -716,18 +716,13 @@ class CouponCustomer(AdminBaseHandler):
 			# 	number+=1
 			# return self.send_success(output_data=data,number=number)
 		elif action=="use":
-			coupon_ids=self.args["coupon_ids"]
-			for x in coupon_ids:
-				use_date=int(time.time())
-				q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=x).first()
-				if  use_date:
-					pass
-				q.update(session=self.session,use_date=use_date,order_id=order_id,coupon_status=2)
-				new_coupon=models.CouponsCustomer(shop_id=current_shop_id,coupon_id=x,use_date=use_date,coupon_status=2)
-				self.session.merge(new_coupon)
-				use_number=self.session.query(shop_id=current_shop_id,coupon_id=x).first().use_number+1
-				merge_coupon=models.CouponsShop(shop_id=current_shop_id,coupon_id=x,get_number=use_number)
-				self.session.merge(merge_coupon)
+			coupon_id=self.args["coupon_id"]
+			use_date=int(time.time())
+			q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).first()
+			q.update(session=self.session,use_date=use_date,order_id=order_id,coupon_status=2)
+			qq=self.session.query(models.CouponsShop)(shop_id=current_shop_id,coupon_id=coupon_id).first()
+			use_number=qq.use_number+1
+			qq.update(self.session,use_number=use_number)
 			self.session.commit()
 			return self.send_success()
 

@@ -2270,6 +2270,17 @@ class Recharge(CustomerBaseHandler):
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
+		current_shop_id=shop_id = int(self.get_cookie("market_shop_id"))
+		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).all()
+		get_rule=0
+		coupon_money=0
+		data=[]
+		for x in q:
+			qq=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
+			if qq!=None:
+				data0={"get_rule":x.get_rule,"coupon_money":x.coupon_money}
+				data.append(data0)
+		print(data,'ggggggggggggggggg')
 		# print("[微信充值]next_url：",next_url)
 		if action == 'get_code':
 			# print(self.request.full_url())
@@ -2286,7 +2297,7 @@ class Recharge(CustomerBaseHandler):
 				# print("[微信充值]获取code的url：",url)
 				#return self.redirect(url)
 			return self.send_success(url = url)
-		return self.render("customer/recharge.html",code = code,url=url )
+		return self.render("customer/recharge.html",code = code,url=url ,output_data=data)
 
 # 我的 - 我的订单 - 评价订单
 class OrderComment(CustomerBaseHandler):
