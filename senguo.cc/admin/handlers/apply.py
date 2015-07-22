@@ -24,10 +24,11 @@ class Home(CustomerBaseHandler):
 		# 	if_admin = None
 		# if if_admin:
 		# 	return self.redirect(self.reverse_url("switchshop"))
-		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else None
+		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone)
+		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int")
