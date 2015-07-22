@@ -8,7 +8,7 @@
         <div class="img-border">
             <img class="home-img" src="{{logo_img or '/static/images/TDSG.png'}}" alt="用户头像"/>
         </div>
-        <p class="txt-center cfff mt10">用户昵称</p>
+        <p class="txt-center cfff mt10">{{nickname}}</p>
     </div>
     <div class="wrap-tb">
         <table class="tb-home">
@@ -22,7 +22,7 @@
             <tr>
                 <td class="txt-ar c333">手机号</td>
                 <td>
-                    <input type="tel" class="home-ipt ml10" id="tel" placeholder="请输入手机号"/>
+                    <input type="tel" class="home-ipt ml10" id="tel" placeholder="请输入手机号" value="{{phone}}" />
                     <input type="button" class="get-code" id="get_code" value="获取验证码"/>
                 </td>
             </tr>
