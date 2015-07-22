@@ -299,7 +299,8 @@ class ShopManage(SuperBaseHandler):
 			output_data = []
 			for shop in shops:
 				data = {}
-				##############################################################################
+				##########################################        </li>
+####################################
 				# user's subscribe
 				##############################################################################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
@@ -366,7 +367,8 @@ class ShopManage(SuperBaseHandler):
 
 				#chang by jyj 2015-6-16
 				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
-				##
+				##        </li>
+
 
 				data["shop_property"] = shop.shop_property
 
