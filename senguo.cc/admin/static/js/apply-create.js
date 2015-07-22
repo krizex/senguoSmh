@@ -64,6 +64,19 @@ $(document).ready(function(){
     $(".plant-list li").removeClass("active").eq(index).addClass("active");
 }).on("click",".last-choose",function(){
     $(this).children("i").toggleClass("checked-btn");
+}).on("click",".shop-list li",function(){
+    $(this).toggleClass("active");
+}).on("click",".second",function(){
+    $(".commit-btn").attr({"id":"import"})
+}).on("click",".last-choose",function(){
+    var $this=$(this);
+    if($this.attr("data-status")=="on"){
+        $(this).attr({"data-status":""});
+        $(".shop-list li").removeClass("active"); 
+    }else{
+        $(this).attr({"data-status":"on"});
+        $(".shop-list li").addClass("active");
+    }
 }).on("click",".search-btn",function(){
     var shop_name=$("#shop_name").val().trim();
     if(!shop_name){
@@ -78,6 +91,7 @@ $(document).ready(function(){
                 '</div>'+
             '</li>';
     var data={"shop_name":shop_name}
+    $(".shop-list").empty();
     $.ajax({
         url:"",
         data:JSON.stringify({action:"search",data:data,_xsrf:window.dataObj._xsrf}),
@@ -86,8 +100,33 @@ $(document).ready(function(){
         success:function(res){
             if(res.success) {
                 var shops=res.data;
-                for shop in shops:
-                    
+                for(var key in shops){
+                    var shop=shops[key];
+                    var render=template.compile(item);
+                    var content=render({
+                        id:shop.id,
+                        logo:shop.logo,
+                        address:shop.address,
+                        shop_name:shop.shop_name
+                    });
+                    $(".shop-list").append(content);
+                }  
+            }else{
+                Tip(res.error_text);
+            }
+        }
+    });
+}).on("click","#import",function(){
+
+    $.ajax({
+        url:"",
+        data:JSON.stringify({action:"search",data:data,_xsrf:window.dataObj._xsrf}),
+        contentType:"application/json; charset=UTF-8",
+        type:"post",
+        success:function(res){
+            if(res.success) {
+                var shops=res.data;
+                
             }else{
                 Tip(res.error_text);
             }
