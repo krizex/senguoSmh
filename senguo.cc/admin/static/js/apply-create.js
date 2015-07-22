@@ -73,6 +73,35 @@ $(document).ready(function(){
     $(".plant-list li").removeClass("active").eq(index).addClass("active");
 }).on("click",".last-choose",function(){
     $(this).children("i").toggleClass("checked-btn");
+}).on("click",".search-btn",function(){
+    var shop_name=$("#shop_name").val().trim();
+    if(!shop_name){
+        return Tip("请输入店铺名称");
+    }
+    var item='<li data-id={{id}}>'+
+                '<i class="checkbox-btn"></i>'+
+                '<img class="shop-img" src="{{logo}}" alt="店铺logo"/>'+
+                '<div class="shop-item">'+
+                    '<p class="c333">{{shop_name}}</p>'+
+                    '<p class="c666">{{address}}</p>'+
+                '</div>'+
+            '</li>';
+    var data={"shop_name":shop_name}
+    $.ajax({
+        url:"",
+        data:JSON.stringify({action:"search",data:data,_xsrf:window.dataObj._xsrf}),
+        contentType:"application/json; charset=UTF-8",
+        type:"post",
+        success:function(res){
+            if(res.success) {
+                var shops=res.data;
+                for shop in shops:
+                    
+            }else{
+                Tip(res.error_text);
+            }
+        }
+    });
 });
 
 function initBmap(){
