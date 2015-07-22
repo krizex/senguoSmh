@@ -26,13 +26,12 @@ $(document).ready(function(){
 			afterBlur: function(){this.sync();},
 			afterUpload : function(url) {
 				console.log(url)
-        			},
-        			uploadError:function(file, errorCode, message){
-        				console.log(message)
-        			}
+        	},
+        	uploadError:function(file, errorCode, message){
+        		console.log(message)
+        	}
 		});
-			
 	}});
 });
-</script> 
+</script>
 {% end %}

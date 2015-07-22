@@ -346,6 +346,46 @@ class ApplySuccess(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("fruitzone/apply-success.html")
 
+
+# 成为卖家 7.22 yy
+class BecomeSeller(FruitzoneBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		try:
+			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			if_admin = None
+		if if_admin:
+			return self.redirect(self.reverse_url("switchshop"))
+		phone=self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else None
+		nickname=self.current_user.accountinfo.nickname
+		headimgurl=self.current_user.accountinfo.headimgurl_small
+		return self.render("fruitzone/become.html",phone=phone,nickname=nickname,headimgurl=headimgurl)
+
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("phone:str","realname:str","code:int")
+	def post(self):
+		try:
+			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			if_admin = None
+		if if_admin:
+			return self.send_fail("您已是卖家")
+
+		if not self.args['phone']:
+			return self.send_fail("please input your phone number")
+		if not self.args["realname"]:
+			return self.send_fail("please input your realname")
+		if not check_msg_token(phone=self.args['phone'], code=self.args["code"]):
+			return self.send_fail(error_text="验证码过期或者不正确")
+		
+		self.current_user.account_info.phone=self.args["phone"]
+		self.current_user.account_info.realname=self.args["realname"]
+		self.session.add(models.ShopAdmin(id=self.current_user.id))
+		self.session.commit()
+		return self.send_success()
+
+
 # 店铺申请
 class ShopApply(FruitzoneBaseHandler):
 	MAX_APPLY_COUNT = 150
@@ -406,7 +446,6 @@ class ShopApply(FruitzoneBaseHandler):
 		"shop_intro", "realname:str", "wx_username:str", "code:int","lat","lon")
 	def post(self):
 		#* todo 检查合法性
-
 		if self._action == "apply":
 			account_id = self.current_user.accountinfo.id
 			#判断申请店铺的微信是否已是某店铺的管理员身份

@@ -132,12 +132,12 @@ function editAdmin(active,flag,$obj){
             if (res.success) {
                 if (active == 1) {
                     $obj.removeClass("switch-abtn");
-                    $obj.children("span").html("订单提醒未启用");
+                    $obj.children("span").html("订单提醒关闭");
                     Tip("订单提醒已关闭");
                 }
                 else {
                     $obj.addClass("switch-abtn");
-                    $obj.children("span").html("订单提醒已启用");
+                    $obj.children("span").html("订单提醒开启");
                     Tip("订单提醒已开启");
                 }
             }else{

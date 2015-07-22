@@ -1,7 +1,7 @@
 {% extends 'base.html'%}
 {% block title %}{{shop_name}}-告白墙-个人中心{% end %}
 {% block content %}
- <header class="detail-header text-white center-block">
+<header class="detail-header text-white center-block">
     <a href="{{reverse_url('ConfessionCenter')}}" class="return-btn bg_change">&nbsp;</a>
     <span class="title font16">
     	{% if action == 'public' %}
@@ -27,7 +27,7 @@
 			</li>
 			{% end %}
 		</ul>
-	 <div class="text-grey9 set-w100-fle font12 loading txt-ac mt10">~努力加载中 ( > < )~</div>
+	<div class="text-grey9 set-w100-fle font12 loading txt-ac mt10">~努力加载中 ( > < )~</div>
 	{% else %}
 		<div  class="txt-ac no-record">
 			<img src="/static/images/empty.png" class="mb10"/>
@@ -35,5 +35,4 @@
 		</div>
 	{% end %}
 </div>
-
 {% end %}{% block bottom %}<script src="/static/js/confession/center.js"></script>{% end %}

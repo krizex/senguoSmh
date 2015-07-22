@@ -13,7 +13,7 @@
     {% block head %}{% end %}
     <script>
         window.dataObj = {
-                _xsrf: "{{handler.xsrf_token}}"};
+            _xsrf: "{{handler.xsrf_token}}"};
     </script>
 </head>
 <body>
@@ -43,7 +43,7 @@
                     </div>
                 </li>
                 <li>
-                    <a href="/admin/logout" class="logout">退出</a>
+                    <a href="{{reverse_url('adminLogout')}}" class="logout">退出</a>
                 </li>
             </ul>
         </div>
@@ -62,7 +62,7 @@
                 </div>
                 <p class="er-text">店铺导航链接</p>
                 <div class="wrap-ipt">
-                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list?action=shop&&id={{current_shop.admin_id}}" disabled/>
+                    <input type="text" class="sw-link-txt" value="{{reverse_url('fruitzoneShopList')}}?action=shop&&id={{current_shop.admin_id}}" disabled/>
                     <input type="button" class="sw-link-copy"  id="sw-link-copy" value="复制链接"/>
                 </div>
                 <div class="wrap-er group">

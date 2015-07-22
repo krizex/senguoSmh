@@ -13,7 +13,6 @@
         <div class="modal-content">
             <div class="modal-header set-width-float">
                 <span class="title pull-left" id="myModalLabel">
-                   
                 </span>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
@@ -44,8 +43,8 @@
 <script>
 var action=$.getUrlParam('action');
 if(action=='order') $('.right-title').text('订单搜索结果');
-else if(action=='customer_order') $('.right-title').text('用户订单'); 
-else if(action=='SH2_order') $('.right-title').text('员工订单');  
+else if(action=='customer_order') $('.right-title').text('用户订单');
+else if(action=='SH2_order') $('.right-title').text('员工订单');
 </script>
 <script src="{{static_url('js/admin-user-order.js')}}"></script>
 {% end %}

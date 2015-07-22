@@ -12,7 +12,7 @@ MP_APPSECRET = "6ecd60383b7e26a09d51a12e75649b3e"
 QQ_APPID = '101221864'
 QQ_APPKEY = '23060ad64493f81c2a2619f1c56c9c0e'
 
-#测试号平台
+# 测试号平台
 TEST_APPID = 'wxda9a51b0a18c983a'
 TEST_APPSECRET = 'b4e6f4340b59d51f6b3c18ee2e024163'
 
@@ -23,18 +23,18 @@ MYSQL_PASSWORD = "test123"
 DB_NAME = "senguocc"
 DB_CHARSET = "utf8mb4"
 
-#手机短信验证的设置
+# 手机短信验证的设置
 content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"
 account = "cf_senguocc"
 password = "sg201404"
 
-#alipay 参数
+# alipay 参数
 ALIPAY_PID = "2088511484939521"
 ALIPAY_KEY="oknunsvpq83x358worr6obs7zo2h1xxw"
 ALIPAY_SELLER_ACCOUNT = "senguo@senguo.cc"
 ALIPAY_HANDLE_HOST = "http://auth.senguo.cc"
 
-#七牛云的参数
+# 七牛云的参数
 ACCESS_KEY = "Pm0tzHLClI6iHqxdkCbwlSwHWZycbQoRFQwdqEI_"
 SECRET_KEY = "gCjIMVE_lpW7d2bjI-AdMXDKQeE1bdtKxRInBRTH"
 BUCKET_SHOP_IMG = "shopimg"
