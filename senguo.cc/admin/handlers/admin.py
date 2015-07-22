@@ -307,6 +307,12 @@ class SellStatic(AdminBaseHandler):
 			for fl in today_fruits_list:
 				fl = eval(fl[0])
 				for key in fl:
+					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+						if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+							continue
+						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+							continue
 					tmp = {}
 					fl_value = fl[key]
 					num = float(fl_value["num"])
@@ -405,6 +411,12 @@ class SellStatic(AdminBaseHandler):
 				fl = eval(fl[0])
 				# print("#@#@##@",fl)
 				for key in fl:
+					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+						if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+							continue
+						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+							continue
 					tmp = {}
 					fl_value = fl[key]
 					num = float(fl_value["num"])
@@ -487,12 +499,21 @@ class SellStatic(AdminBaseHandler):
 			for fl in fruit_list:
 				fl = eval(fl[0])
 				for key in fl:
+					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+						if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+							continue
+						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+							continue
 					tmp = {}
 					fl_value = fl[key]
 					num = float(fl_value["num"])
 					single_price = float(fl_value["charge"].split('元')[0])
 					total_price = single_price * num
-					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+
+					# if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()) == 0:
+					# 	fruit_id = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()[0][0]
 					tmp["fruit_id"] = fruit_id
 					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
 					tmp["total_price"] = total_price
@@ -600,6 +621,12 @@ class SellStatic(AdminBaseHandler):
 				for fl in fruit_list:
 					fl = eval(fl[0])
 					for key in fl:
+						if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+							if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+								continue
+							aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+							if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+								continue
 						tmp = {}
 						fl_value = fl[key]
 						num = float(fl_value["num"])
@@ -712,6 +739,12 @@ class SellStatic(AdminBaseHandler):
 				for fl in fruit_list:
 					fl = eval(fl[0])
 					for key in fl:
+						if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+							if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+								continue
+							aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+							if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+								continue
 						tmp = {}
 						fl_value = fl[key]
 						fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
