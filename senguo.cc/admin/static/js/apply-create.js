@@ -1,7 +1,5 @@
 var area = window.dataObj.area,type=0;
 $(document).ready(function(){
-    var height = $(window).height();
-    $(".container").css("minHeight",height+"px");
     //初始化省份
     for(var key in area){
         var $item=$('<li></li>');
@@ -36,11 +34,13 @@ $(document).ready(function(){
                 }
             }
         }
+        $(".province").html(name);
         $("#privince_list").addClass("hide");
         $("#city_list").removeClass("hide");
     }else{
         $(".address").attr("data-code",code);
         $(".province").html(name);
+        $(".city").html(name);
         $(".pop-bwin").addClass("hide");
     }
 }).on("click","#city_list li",function(){
@@ -52,6 +52,15 @@ $(document).ready(function(){
     $("#privince_list").removeClass("hide");
     $("#city_list").addClass("hide");
 }).on("click",".province",function(){
+    if($(this).hasClass("forbidden")){
+        return Tip("当前只有湖北省范围");
+    }
+    $(".choose-title").html("选择省份");
+    $(".pop-bwin").removeClass("hide");
+}).on("click",".city",function(){
+    if($(this).hasClass("forbidden")){
+        return Tip("当前只有武汉市范围");
+    }
     $(".choose-title").html("选择省份");
     $(".pop-bwin").removeClass("hide");
 }).on("click",".tab-list li",function(){
@@ -67,7 +76,7 @@ $(document).ready(function(){
 });
 
 function initBmap(){
-    var map = new BMap.Map("bmap",{enableMapClick:false});
+    var map = new BMap.Map("bmap");
     var point = new BMap.Point(114.430551,30.518114);
     map.centerAndZoom(point,15);
     var marker = null;
@@ -81,6 +90,12 @@ function initBmap(){
                 map.addOverlay(marker);
             }
         });
+    });
+    map.addEventListener("click",function(e){
+        map.removeOverlay(marker);
+        var point = e.point;
+        marker = new BMap.Marker(point);
+        map.addOverlay(marker);
     });
 }
 

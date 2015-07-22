@@ -21,10 +21,39 @@
     {% block head %}{% end %}
 </head>
 <body>
+<header class="head-box">
+    <div class="w1200 header-box">
+        <a href="{{reverse_url('adminHome')}}" class="logo-box">
+            <img src="/static/images/logo.png"/>
+        </a>
+        <span class="title" id="title">后台管理系统</span>
+        <span class="beta" id="beta">beta 2.3</span>
+    </div>
+</header>
     <div class="container">
         {% block content %}{% end %}
     </div>
     {% block other %}{% end %}
+<div class="foot" id="footer">
+    <ul class="links ft">
+        <li class="links_item no_extra ">
+            <a href="{{reverse_url('OfficialHome')}}" target="_blank">森果官网</a>
+        </li>
+        <li class="links_item">
+            <a href="{{reverse_url('OfficialProduct')}}" target="_blank">产品介绍</a>
+        </li>
+        <li class="links_item">
+            <a href="#">服务协议</a>
+        </li>
+        <li class="links_item">
+            <a href="{{reverse_url('OfficialAbout')}}" target="_blank">关于森果</a>
+        </li>
+        <li class="links_item">
+            <a href="mailto:wolf@senguo.cc">联系邮箱</a>
+        </li>
+    </ul>
+    <p class="copyright mt6">Copyright © 2014-2015 Senguo.cc</p>
+</div>
     <script src="/static/js/zepto.min.js"></script>
     <script src="/static/m-admin/js/util.js"></script>
     <script src="{{static_url('js/apply-public.js')}}"></script>
