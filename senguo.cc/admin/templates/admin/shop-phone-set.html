@@ -5,7 +5,7 @@
 	{% if _shop_auth ==0 %}
 	 <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
 	{% else %}
-	<div class="edit-box bg-greya group">
+	<div class="edit-box bg-greyf9 group">
 	    <div class="mode action-mode message_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.text_message_active}}">
 	        <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
 	        <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>

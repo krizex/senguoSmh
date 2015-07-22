@@ -10,7 +10,8 @@
 </div>
 {% end %}
 {% block content %}
-<input type="hidden" id="link" value="http://senguo.cc"/>
+<input type="hidden" id="link" value="{{url}}"/>
+<input type="hidden" id="shop_id" value="{{shop_id}}"/>
 <div class="wrap-shop-info pb45">
     <div class="wrap-code2 mt15">
         <img class="code2-logo" src="/static/images/admin_logo1.png" alt="森果logo"/>
@@ -34,7 +35,7 @@
         </li>
         <li class="info-li">
             <a href="javascript:;" class="group" data-action="staff">
-                <span class="fr c666">已绑定</span>
+                <span class="fr c666">未绑定</span>
                 <span class="text-left info-left">微信号绑定:</span>
             </a>
         </li>

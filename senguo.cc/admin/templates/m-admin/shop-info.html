@@ -27,13 +27,13 @@
         </li>
         <li>
             <a href="javascript:;" class="{% if current_shop.shop_code == 'not set' %}edit_item{% else %}un_edit{% end %}" data-action="code">
-                <span class="fr c333 more">{% if current_shop.shop_code == 'not set' %}未设置{% else %}{{current_shop.shop_code or '请设置'}}{% end %}</span>
+                <span class="fr c333 nomore">{% if current_shop.shop_code == 'not set' %}未设置{% else %}{{current_shop.shop_code or '请设置'}}{% end %}</span>
                 <span class="text-left">店铺号</span>
             </a>
         </li>
         <li>
             <a href="javascript:;" class="un_edit">
-                <span class="fr c333 more" id="shop_link">{% if current_shop.shop_code == 'not set' %}无{% else %}http://senguo.cc/{{current_shop.shop_code}}{% end %}</span>
+                <span class="fr c333 nomore" id="shop_link">{% if current_shop.shop_code == 'not set' %}无{% else %}http://senguo.cc/{{current_shop.shop_code}}{% end %}</span>
                 <span class="text-left">店铺链接</span>
             </a>
         </li>
@@ -53,7 +53,7 @@
         </li>
         <li>
             <a href="javascript:;" class="un_edit" id="shop_auth" data-id="{{current_shop.shop_auth}}">
-                <span class="fr c333 shop_auth more"></span>
+                <span class="fr c333 shop_auth nomore"></span>
                 <span class="text-left">认证状态</span>
             </a>
         </li>

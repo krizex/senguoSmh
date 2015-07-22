@@ -14,7 +14,7 @@
         <li>
             <div>
                 <div class="fr">
-                    <span class="switch-btn {% if current_shop.config.online_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="online"><i></i><span>{% if current_shop.config.online_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
+                    <span class="switch-btn {% if handler.current_shop.config.online_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="online"><i></i><span>{% if handler.current_shop.config.online_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
                 </div>
                 <div class="pay-left">
                     <p class="c333">在线支付</p>
@@ -32,7 +32,7 @@
         <li>
             <div>
                 <div class="fr">
-                    <span class="switch-btn {% if current_shop.config.balance_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="balance"><i></i><span>{% if current_shop.config.balance_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
+                    <span class="switch-btn {% if handler.current_shop.config.balance_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="balance"><i></i><span>{% if handler.current_shop.config.balance_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
                 </div>
                 <div class="pay-left">
                     <p class="c333">余额支付</p>
@@ -51,7 +51,7 @@
         <li>
             <div>
                 <div class="fr">
-                    <span class="switch-btn {% if current_shop.config.cash_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="cash"><i></i><span>{% if current_shop.config.cash_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
+                    <span class="switch-btn {% if handler.current_shop.config.cash_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="cash"><i></i><span>{% if handler.current_shop.config.cash_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
                 </div>
                 <div class="pay-left">
                     <p class="c333">货到付款</p>

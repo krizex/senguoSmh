@@ -1,12 +1,12 @@
 {% extends 'shop-set-base.html' %}
-{% block title%}公告设置{% end %}
+{% block title%}小票设置{% end %}
 
 {% block setcontent %}
 <div class="set-description">
-    <a href="http://senguo.cc/bbs/detail/8" target="_blank" class="pull-right">查看详细打印机教程</a>
+    <a href="{{reverse_url('BbsDetail',8)}}" target="_blank" class="pull-right">查看详细打印机教程</a>
     <p>小票打印设置</p>
 </div>
-<!-- <ul class="type-list font14 mt20" data-id="{{current_shop.config.receipt_type}}">
+<ul class="type-list font14 mt20" data-id="{{current_shop.config.receipt_type}}">
     <li>
         <a href="javascript:;" class="pull-left circle-btn mr10" data-id="0"></a>
         <span class="pull-left mr20">有线打印</span>
@@ -15,10 +15,10 @@
     <li>
         <a href="javascript:;" class="pull-left circle-btn mr10"  data-id="1"></a>
         <span class="pull-left mr20">无线打印</span>
-        <span class="pull-left text-grey2">不可上传图片，可开启订单自动打印，支持易连云、飞印两种品牌的无线打印机。</span>
+        <span class="pull-left text-grey2">不可上传图片，可开启订单自动打印，支持易联云、飞印两种品牌的无线打印机。</span>
     </li>
-</ul> -->
-<table class="set-list table table-bordered _box line-receipt">
+</ul>
+<table class="set-list table table-bordered _box line-receipt hidden">
     <tr class="bg-grey2">
         <td colspan="2">小票附加图片</td>
         <td colspan="2">小票附加消息</td>
@@ -50,7 +50,7 @@
         </td>
     </tr>
 </table>
-<!-- <ul class="info-set-list mt20 font14 edit-box p0 wireless-receipt hidden _box">
+<ul class="info-set-list mt20 font14 edit-box p0 wireless-receipt hidden _box">
     <li class="item clearfix set-list-item">
         <span class="w1 pull-left set-inl-blo">小票附加信息</span>
         <div class="w2 pull-left">
@@ -72,8 +72,8 @@
                 <span class="w1 pull-left set-inl-blo mr20">无线打印机品牌</span>
                 <span class="address-show wireless-type"></span>
                 <ul class="type-choose console-type address-edit" data-id="{{current_shop.config.wireless_type}}" style="display:none">
-                    <li data-id="0"><span class="circle"></span>易连云</li>
-                    <li data-id="1"><span class="circle"></span>飞印</li>
+                    <li data-id="0" class="yly"><span class="circle"></span>易联云</li>
+                    <li data-id="1" class="fy"><span class="circle"></span>飞印</li>
                 </ul>
             </div>
             <div class="iti">
@@ -83,7 +83,7 @@
                     <input class="address-edit num-input"  type="text" value="{{current_shop.config.wireless_print_num or '请设置'}}" style="display:none"/>
                 </div>
             </div>
-            <div class="iti">
+            <div class="iti secket-key">
                  <span class="w1 pull-left set-inl-blo mr20">无线打印机密钥</span>
                  <div class="w2 pull-left">
                     <span class="address-show console-key">{{current_shop.config.wireless_print_key or '请设置'}}</span>
@@ -100,7 +100,7 @@
         </div>
     </li>
 </ul>
- -->
+
 <!--<a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建小票内容</a>-->
 </div>
 {% end %}

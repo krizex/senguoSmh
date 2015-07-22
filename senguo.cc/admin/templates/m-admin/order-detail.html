@@ -17,12 +17,12 @@
             <div class="order-wawa">
                 <a class="img-border task-staff" href="javascript:;" data-id="{{order.status}}">
                     {% if order.status == -1%}
-                    <img src="/static/images/TDSG.png" alt="配送员头像"/>
+                    <img src="/static/m-admin/img/sender_holder.png" alt="配送员头像"/>
                     {% else %}
                         {% if order.SH2%}
-                        <img src="{{order.SH2['headimgurl'] or '/static/images/TDSG.png'}}" alt="配送员头像"/>
+                        <img src="{{order.SH2['headimgurl'] or '/static/m-admin/img/sender_holder.png'}}" alt="配送员头像"/>
                         {% else %}
-                        <img src="/static/images/TDSG.png" alt="配送员头像"/>
+                        <img src="/static/m-admin/img/sender_holder.png" alt="配送员头像"/>
                         {% end %}
                     {% end %}
                 </a>
@@ -43,31 +43,64 @@
         <p>收货地址：<span>{{order.address_text}}</span></p>
         <p>配送时间：<span class="send_date m-r10" style="display: none;">今天</span><span>{{order.send_time}}</span></p>
         {% if order.message %}<p>订单备注：<span>{{order.message or '无'}}</span></p>{% end %}
-        <p class="{% if order.remark == None%}hide{% end %} remark">商家备注：<spanc class="con">{{order.remark or '无'}}</span></p>
+        <p class="{% if order.remark == None%}hide{% end %} remark">商家备注：<span class="con">{{order.remark or '无'}}</span></p>
         <p class="text-black">支付方式：<span>{{order.pay_type_con}}</span></p>
         <p class="del-reason hide">订单删除原因：<span class="text">{{order.del_reason}}</span></p>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><a href="{{reverse_url('MadminHome')}}"><span class="black-txt">{{handler.current_shop.shop_name}}</span></a><span class="arr-right"></span><a href="{{reverse_url('MadminHome')}}" class="shop-manage fr">管理店铺</a></h4>
+        <h4 class="top-title"><span class="black-txt">{{handler.current_shop.shop_name}}</span><span class="arr-right"></span><a href="{{reverse_url('MadminHome')}}" class="shop-manage fr">管理店铺</a></h4>
         <ul class="goods-lst">
-            {% set fruits = eval(order.fruits) %}
-            {% for charge_type in charge_types %}
-            <li class="group {{charge_type.fruit.fruit_type.code}}">
-                <dl class="goods-item dl">
-                    <dt>
-                        {% if charge_type.fruit.img_url %}
-                        <img src="{{charge_type.fruit.img_url.split(';')[0]}}?imageView/1/w/120/h/120" alt="商品图片"/>
-                        {% else %}
-                        <img src="/static/design_img/TDSG.png" alt="商品图片"/>
+            {% if order.fruits %}
+                {% set fruits = eval(order.fruits) %}
+                {% for key in fruits %}
+                    {% set price1 = "" %}
+                    {% for i in range(fruits[key]['charge'].index("元")) %}
+                        {% set price1 += fruits[key]['charge'][i] %}
+                    {% end %}
+                    {% set code = "TDSG" %}
+                    {% set imgurl = "/static/design_img/TDSG.png" %}
+                    {% for charge_type in charge_types %}
+                        {% if key == charge_type.id %}
+                            {% set code = charge_type.fruit.fruit_type.code %}
+                            {% if charge_type.fruit.img_url %}
+                            {% set imgurl = charge_type.fruit.img_url.split(';')[0] +"?imageView2/1/w/170/h/170" %}
+                            {% end %}
                         {% end %}
-                    </dt>
-                    <dd class="bg">
-                        <p class="color">{{fruits[charge_type.id]['fruit_name']}}</p>
-                        <p class="color txt-ar"><span class="big">{{fruits[charge_type.id]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(charge_type.price*fruits[charge_type.id]['num'], 2)}}</span>元</p>
-                        <p class="color">{{fruits[charge_type.id]['charge']}}</p>
-                    </dd>
-                </dl>
-            </li>
+                    {% end %}
+                    <li class="group {{code}}">
+                        <dl class="goods-item dl">
+                            <dt>
+                                <img src="{{imgurl}}" alt="商品图片"/>
+                            </dt>
+                            <dd class="bg">
+                                <p class="color">{{fruits[key]['fruit_name']}}</p>
+                                <p class="color txt-ar"><span class="big">{{fruits[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[key]['num'], 2)}}</span>元</p>
+                                <p class="color">{{fruits[key]['charge']}}</p>
+                            </dd>
+                        </dl>
+                    </li>
+                {% end %}
+            {% end %}
+            {% if order.mgoods %}
+                {% set mgoods = eval(order.mgoods)%}
+                {% for key in mgoods %}
+                    {% set price2 = "" %}
+                    {% for i in range(mgoods[key]['charge'].index("元")) %}
+                        {% set price2 += mgoods[key]['charge'][i] %}
+                    {% end %}
+                     <li class="group TDSG">
+                        <dl class="goods-item dl">
+                            <dt>
+                                <img src="/static/design_img/TDSG.png" alt="商品图片"/>
+                            </dt>
+                            <dd class="bg">
+                                <p class="color">{{mgoods[key]['mgoods_name']}}</p>
+                                <p class="color txt-ar"><span class="big">{{mgoods[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price2)*mgoods[key]['num'], 2)}}</span>元</p>
+                                <p class="color">{{mgoods[key]['charge']}}</p>
+                            </dd>
+                        </dl>
+                    </li>
+                {% end %}
             {% end %}
         </ul>
         <p>商品总价<span class="fr"><span class="red-txt">{{order.totalPrice-order.freight}}元</span></span></p>
@@ -88,7 +121,7 @@
                 {% for SH2 in order.SH2s %}
                 <li data-id="{{SH2['id']}}" data-tel="{{SH2['phone']}}">
                     <span class="check fr">✓</span>
-                    <span class="img-border mr10"><img src="{{SH2['headimgurl'] or '/static/images/TDSG.png'}}" alt="员工头像"/></span>
+                    <span class="img-border mr10"><img src="{{SH2['headimgurl'] or '/static/m-admin/img/sender_holder.png'}}" alt="员工头像"/></span>
                     <span>{{SH2['nickname']}}</span>
                 </li>
                {% end %}

@@ -55,3 +55,7 @@ body{font-size: 14px;}
 .h0{height:0 !important;overflow: hidden;}
 .market{text-decoration:line-through;font-size:11px;}
 .list-box{position:relative;left:0;}
+.sold-out{position:absolute;width:100%;height:100%;z-index:99;background:url('/static/svg/sold_out@2x.png') no-repeat center center;background-color:rgba(0,0,0,0);top:0;background-size:140px;}
+.desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
+.desaturate .bg{background:#FCFCFC !important;}
+.desaturate .color{color:#757575 !important;}

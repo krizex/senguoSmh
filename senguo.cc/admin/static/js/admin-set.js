@@ -18,8 +18,8 @@ $(document).ready(function(){
         if(notice!=''){
             Tip(notice);
             setTimeout(function() {
-            window.location.href="/admin/config?action=admin";
-             },2000);
+                window.location.href="/admin/config?action=admin";
+            },2000);
         }
     }
     $('.func-mode').each(function(){
@@ -41,9 +41,11 @@ $(document).ready(function(){
         if($(".wireless-type")){
             var text;
             if(type==0){
-                text="易连云";
+                text="易联云";
+                $(".secket-key").show();
             }else if(type==1){
                 text="飞印";
+                $(".secket-key").hide();
             }
             $(".wireless-type").text(text);
         }
@@ -165,10 +167,10 @@ $(document).ready(function(){
 }).on('click','.add-admin',function(){
     $('.set-box').modal('show');
 }).on('click','.delete-admin',function(){
-     var $this=$(this);
+    var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
     $this.attr("data-flag","off");
-    if(confirm('是否确定删除该管理员?')){
+    if(confirm('是否确定删除该管理员？')){
         var id =$this.parents('li').attr('data-id');
         var url='';
         var data={id:id};
@@ -184,8 +186,8 @@ $(document).ready(function(){
                     $this.parents('li').remove();
                 }
                 else{
-                        $this.attr("data-flag","on");
-                        return Tip(res.error_text);
+                    $this.attr("data-flag","on");
+                    return Tip(res.error_text);
                 }
             },
             function(){$this.attr("data-flag","on");return Tip('网络好像不给力呢~ ( >O< ) ~');}
@@ -226,7 +228,7 @@ $(document).ready(function(){
                                         '<span class="name pull-left">{{nickname}}</span>'+
                                     '</div>'+
                                     '<a class="add_admin pull-left" href="javascript:;">+添加</a>'+
-                                '</li>'
+                                '</li>';
                 var imgurl=res.data[0]['imgurl'];
                 var nickname=res.data[0]['nickname'];
                 var render=template.compile(item);
@@ -262,17 +264,17 @@ $(document).ready(function(){
                 $this.attr("data-flag","on");
                 window.location.href="/admin/wxauth";
             }else{
-                    $this.attr("data-flag","on");
-                    return Tip(res.error_text);
+                $this.attr("data-flag","on");
+                return Tip(res.error_text);
             }
         },
         function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.set-super-receive',function(){
-     var $this=$(this);
+    var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
     $this.attr("data-flag","off");
-    var status =parseInt($this.attr('data-status'));
+    var status = parseInt($this.attr('data-status'));
     var url='';
     var action="super_temp_active";
     var args={
@@ -286,17 +288,17 @@ $(document).ready(function(){
                 if(status==1){
                     $this.addClass('stop-mode').removeClass('work-mode').attr('data-status',0).find('.text').text('订单提醒未启用');
                 }else{
-                     $this.addClass('work-mode').removeClass('stop-mode').attr('data-status',1).find('.text').text('订单提醒已启用');
+                    $this.addClass('work-mode').removeClass('stop-mode').attr('data-status',1).find('.text').text('订单提醒已启用');
                 }
             }else{
-                    $this.attr("data-flag","on");
-                    return Tip(res.error_text);
+                $this.attr("data-flag","on");
+                return Tip(res.error_text);
             }
         },
         function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
         );
 }).on('click','.set-receive',function(){
-     var $this=$(this);
+    var $this=$(this);
     if($this.attr("data-flag")=="off") return false;
     $this.attr("data-flag","off");
     var status =parseInt($this.attr('data-status'));
@@ -312,16 +314,16 @@ $(document).ready(function(){
         function(res){
             if(res.success){
                 $this.attr("data-flag","on");
-                 if(status==1){
+                if(status==1){
                     $this.addClass('stop-mode').attr('data-status',0).find('.text').text('订单提醒未启用');
                 }else{
-                     $this.addClass('work-mode').removeClass('stop-mode').attr('data-status',1).find('.text').text('订单提醒已启用');
-                     $this.parents('li').siblings('li').find('.set-receive').addClass('stop-mode').removeClass('work-mode').attr('data-status',0).find('.text').text('订单提醒未启用');
+                    $this.addClass('work-mode').removeClass('stop-mode').attr('data-status',1).find('.text').text('订单提醒已启用');
+                    $this.parents('li').siblings('li').find('.set-receive').addClass('stop-mode').removeClass('work-mode').attr('data-status',0).find('.text').text('订单提醒未启用');
                 }
             }
             else{
-                    $this.attr("data-flag","on");
-                    return Tip(res.error_text);
+                $this.attr("data-flag","on");
+                return Tip(res.error_text);
             }
         },
         function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
@@ -346,8 +348,8 @@ $(document).ready(function(){
                 $this.addClass('active').parents('li').siblings('li').find('.choose-btn').removeClass('active');
             }
             else{
-                    $this.attr("data-flag","on");
-                    return Tip(res.error_text);
+                $this.attr("data-flag","on");
+                return Tip(res.error_text);
             }
         },
         function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
@@ -379,7 +381,7 @@ $(document).ready(function(){
                 $(".id").text(id);
                 $(".secret").text(secret);
                 $(".wx-edit-box").modal("hide");
-            }   
+            }
             else{
                 $this.attr("data-flag","on");
                 return Tip(res.error_text);

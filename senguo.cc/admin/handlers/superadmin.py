@@ -905,7 +905,7 @@ class OrderStatic(SuperBaseHandler):
 
 	@SuperBaseHandler.check_arguments("type:int")
 	def order_time(self):
-		
+
 		type = self.args["type"]
 		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 				filter(not_(models.Order.status.in_([-1,0])))
@@ -1445,7 +1445,7 @@ class ShopAuthenticate(SuperBaseHandler):
 	def get(self):
 		page=int(self.args["page"])
 		page_size = 10
-		page_area =page*page_size
+		page_area = page*page_size
 
 		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 
@@ -1501,7 +1501,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			self.session.commit()
 			#发送短消息提醒
 			if shop.shop_phone:
-				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				# print("店铺没有预留电话！")
 				print("no phone")
@@ -1516,7 +1516,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			self.session.commit()
 			#发送短消息提醒
 			if shop.shop_phone:
-				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				# print("店铺没有预留电话！")
 				print("no phone")

@@ -2,6 +2,7 @@ var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
     $("html,body").addClass("h100");
     width = $(window).width();
+    $(".no-result").css("width",width);
     var minheight = $(window).height()-80;
     //$(".swiper-wrapper").width(width*$(".swiper-slide").size());
     $(".order-lists").css({minHeight:minheight+"px"});
@@ -24,11 +25,11 @@ $(document).ready(function(){
         swiper.swipeTo(index);
         $(this).addClass('active').siblings(".item").removeClass("active");
     });
-    
+
     $("#sure-staff").on("click",function(){
         var staff_id=$(".staff-list>.active").attr("data-id");
         orderEdit($(this),"edit_SH2",staff_id)
-    });   
+    });
     swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
         grabCursor: true,
@@ -40,7 +41,7 @@ $(document).ready(function(){
             $(".second-tab-list").children(".item").eq(index).addClass("active").siblings(".item").removeClass("active");
             _page=0;
             getOrder(_page);
-            $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);          
+            $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);
         }
     });
     getOrder(0);
@@ -48,12 +49,12 @@ $(document).ready(function(){
     if(nomore==false){
         scrollLoading();
     }
-    
+
 }).on("click",".order-lists>li",function(e){//进入订单详情
     var $this=$(this);
     var num = $this.attr("data-num");
     if($(e.target).closest(".forbid_click").size()==0){
-       window.location.href="/madmin/orderDetail/"+num; 
+       window.location.href="/madmin/orderDetail/"+num;
     }
 }).on("click",".order-grade .task-staff",function(e){
     var $this=$(this);
@@ -63,7 +64,7 @@ $(document).ready(function(){
         curStaff = $(this).closest(".order-grade");
         $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.m-order-item').attr('data-id'));
         $(".staff-list").empty().html($this.parents('.m-order-item').find('.order-staff-list').html());
-    } 
+    }
 }).on("click",".staff-list>li",function(){
     var index = $(this).index();
     var src = $(this).find("img").attr("src");
@@ -87,7 +88,7 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                             '<p class="item loc">{{send_address}}</p>'+
                         '</li>'+
                         '<li>'+
-                            '<p class="item say red-txt">{{message}}</p>'+
+                            '{{ if message }}<p class="item say red-txt">{{message}}</p>{{ /if }}'+
                         '</li>'+
                         '<li class="{{show}}">'+
                             '<p class="red-txt">{{del_status}}</p>'+
@@ -117,13 +118,13 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                     '</ul>'+
                 '</li>';
 
-function scrollLoading(){ 
+function scrollLoading(){
     $('.swiper-slide').scroll(function(){
         var $this=$(this);
         var srollPos = $this.scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
         var totalheight = 0;
-        var main =$this.find(".order-lists"); 
+        var main =$this.find(".order-lists");
         totalheight = parseFloat($this.height()) + parseFloat(srollPos);
         if(_finished == true &&(main.height()-range) <= totalheight&&nomore==false ) {
             _finished=false;
@@ -145,7 +146,7 @@ var getOrder=function(page){
     var order_type=$('.order-type-list .active').attr('data-id');
     var order_status=$('.second-tab-list .active').attr('data-id');
     var index=$('.second-tab-list .active').index();
-    var url='/admin/order?order_type='+order_type+'&order_status='+order_status+'&page='+page; 
+    var url='/admin/order?order_type='+order_type+'&order_status='+order_status+'&page='+page;
     $.ajax({
         url:url,
         type:"get",
@@ -188,12 +189,9 @@ var getOrder=function(page){
                         var staff_phone=data[i]['SH2']['phone'];
                         var sender=data[i]['SH2']['nickname'];
                     }else{
-                        var staff_img='/static/images/TDSG.png';
+                        var staff_img='/static/m-admin/img/sender_holder.png';
                         var staff_phone='';
                         var sender='';
-                    }   
-                    if(!message){
-                        message='无';
                     }
                     if(pay_type==1){
                         pay_type = "货到付款";
@@ -210,22 +208,22 @@ var getOrder=function(page){
                             show='hide';
                             hide='show';
                             break;
-                        case 0:         
+                        case 0:
                             width='order-w0';
                             left='order-l0';
                             hide='hide';
-                            show='show';
+                            show='';
                             if(del_reason){
                                 if(del_reason=='timeout'){
                                     del_status='该订单15分钟未支付，已自动取消';
                                 }else{
                                     del_status='该订单已删除（原因：'+del_reason+')';
-                                }  
+                                }
                             }
                             else{
                                 del_status='该订单已被用户取消';
                             }
-                            
+
                             break;
                         case 1:
                             width='order-w0';
@@ -239,13 +237,13 @@ var getOrder=function(page){
                             width='order-w50';
                             left='order-l50';
                             sender_name=sender+'配送中';
-                            tel_show='show';
+                            tel_show='';
                             break;
                         case 5:
                             width='order-w100';
                             left='order-l100';
                             sender_name=sender+'已送达';
-                            tel_show='show';
+                            tel_show='';
                             break;
                         case 6:
                         case 7:

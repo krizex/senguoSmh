@@ -258,7 +258,7 @@ function initBmap(){
                 new BMap.Point(lngs,lats-0.002),
                 new BMap.Point(lngs+0.002,lats),
                 new BMap.Point(lngs,lats+0.002)
-            ], {strokeColor:"blue", strokeWeight:2, strokeOpacity:0.5});
+            ], {strokeColor:"blue", strokeWeight:1, strokeOpacity:0.5});
             map1.addOverlay(polygon);
             polygon.enableEditing();
         }
@@ -336,7 +336,8 @@ function initBmap(){
         }
         /*配送区域地图*/
         map1 = new BMap.Map("maparea");
-        map1.addControl(scaleControl);
+        var scaleControl1 = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)});  // 创建比例尺
+        map1.addControl(scaleControl1);
         map1.centerAndZoom(pPoint, 17);
         map1.enableScrollWheelZoom();
         marker1 = new BMap.Marker(pPoint);
@@ -454,7 +455,7 @@ function infoEdit(target,is_address){
     {
         action='edit_phone';
         shop_phone=$('.shop_phone').val().trim();
-        if(shop_phone.length=0){return Tip('"电话不能为空o(╯□╰)o"')}
+        if(shop_phone.length==0){return Tip('"电话不能为空o(╯□╰)o"')}
         data={shop_phone:shop_phone};
     }
     else if(action_name=='area')

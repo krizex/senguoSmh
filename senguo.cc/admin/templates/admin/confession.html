@@ -1,7 +1,7 @@
-  {% extends 'base.html' %}
+{% extends 'base.html' %}
 {% block title %}消息与评价{% end %}
 {% block head %}
-  <link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>{% end %}
+<link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>{% end %}
 {% block content %}
     <span class="right-title">告白墙管理</span>
     <div class="subnav-box">
@@ -9,7 +9,7 @@
             <li class="{% if action == 'all' %} active{% end %}">
                 <a href="{{reverse_url('adminConfession')}}?action=all&&page=0">所有告白</a>
             </li>
-             <li class="{% if action == 'hot' %} active{% end %}">
+            <li class="{% if action == 'hot' %} active{% end %}">
                 <a href="{{reverse_url('adminConfession')}}?action=hot&&page=0">最热告白</a>
             </li>
         </ul>
@@ -57,7 +57,7 @@
             </div>
         </div>
     {% else %}
-    <h4 class="text-center mt20">矮油，没有告白咧 ！</h4>
+    <h4 class="text-center mt20">矮油，没有告白咧！</h4>
     {% end %}
 {% end %}
 {% block bottom %}<script src="{{static_url('js/admin-confess.js')}}"></script>{% end %}

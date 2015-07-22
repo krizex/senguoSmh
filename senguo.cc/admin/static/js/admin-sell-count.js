@@ -125,7 +125,7 @@ $(document).ready(function(){
 			else{
 				choose_month=choose_month-1;
 			}
-						
+
 			$(".year").text(choose_year);
 			$(".month").text(choose_month);
 
@@ -172,7 +172,7 @@ $(document).ready(function(){
 			else{
 				choose_month=choose_month+1;
 			}
-						
+
 			$(".year").text(choose_year);
 			$(".month").text(choose_month);
 
@@ -272,7 +272,7 @@ $(document).ready(function(){
 			else{
 				choose_month2=choose_month2-1;
 			}
-						
+
 			$(".year2").text(choose_year2);
 			$(".month2").text(choose_month2);
 
@@ -318,7 +318,7 @@ $(document).ready(function(){
 			else{
 				choose_month2=choose_month2+1;
 			}
-						
+
 			$(".year2").text(choose_year2);
 			$(".month2").text(choose_month2);
 
@@ -335,7 +335,7 @@ $(document).ready(function(){
 	else{
 		choose_month3=choose_month3-1;
 	}
-				
+
 	$(".year3").text(choose_year3);
 	$(".month3").text(choose_month3);
 
@@ -351,7 +351,7 @@ $(document).ready(function(){
 	else{
 		choose_month3=choose_month3+1;
 	}
-				
+
 	$(".year3").text(choose_year3);
 	$(".month3").text(choose_month3);
 
@@ -367,7 +367,7 @@ $(document).ready(function(){
 	else{
 		choose_month4=choose_month4-1;
 	}
-				
+
 	$(".year4").text(choose_year4);
 	$(".month4").text(choose_month4);
 
@@ -384,7 +384,7 @@ $(document).ready(function(){
 	else{
 		choose_month4=choose_month4+1;
 	}
-				
+
 	$(".year4").text(choose_year4);
 	$(".month4").text(choose_month4);
 
@@ -437,8 +437,8 @@ function initCharts(){
 }
 
 // 获取当前日期的前后N天日期(返回值为Date类型)(N<=28):
-function GetDateN(date,AddDayCount) 
-{ 
+function GetDateN(date,AddDayCount)
+{
 	var dd = new Date(2015,1,1);
 
 	// add by jyj 2015-7-14
@@ -495,7 +495,7 @@ function GetDateN(date,AddDayCount)
 			}
 			else if ((date_month == 1 || date_month == 3 || date_month == 5 || date_month == 7 || date_month == 8 || date_month == 10 ) && date_date + AddDayCount > 31){
 				dd.setMonth(date_month);
-				dd.setDate(date_date+AddDayCount - 31);	
+				dd.setDate(date_date+AddDayCount - 31);
 			}
 			else if(date_month == 12 && date_date + AddDayCount > 31){
 				dd.setDate(date_date+AddDayCount - 31);
@@ -504,7 +504,7 @@ function GetDateN(date,AddDayCount)
 			}
 			else if ((date_month == 4|| date_month == 6 || date_month == 9 || date_month == 11) && date_date + AddDayCount > 30){
 				dd.setMonth(date_month);
-				dd.setDate(date_date+AddDayCount - 30);	
+				dd.setDate(date_date+AddDayCount - 30);
 			}
 			else{
 				dd.setDate(date_date + AddDayCount);
@@ -553,12 +553,12 @@ function GetDateN(date,AddDayCount)
 			}
 		break;
 	}
-	
-	// 
-	var y = dd.getFullYear(); 
+
+	//
+	var y = dd.getFullYear();
 	var m = (dd.getMonth()+1)<10?"0"+(dd.getMonth()+1):(dd.getMonth()+1);//获取当前月份的日期，不足10补0
 	var d = dd.getDate()<10?"0"+dd.getDate():dd.getDate(); //获取当前几号，不足10补0
-	var str = y+"-"+m+"-"+d+" 00:00:00"; 
+	var str = y+"-"+m+"-"+d+" 00:00:00";
 	str = str.replace(/-/g,"/");
 	var new_date = new Date(str);
 	return new_date;
@@ -584,7 +584,7 @@ function getWeekLastDate(date){
 	return next_date;
 }
 
-function WeekNumOfYear(date) {   
+function WeekNumOfYear(date) {
 	var yy = date.getFullYear();
 	var day = date.getDay();
 
@@ -600,8 +600,8 @@ function WeekNumOfYear(date) {
 	return week_num;
 }
 
- //计算天数差的函数，通用  
-function  DateDiff(sDate1,  sDate2){    
+ //计算天数差的函数，通用
+function  DateDiff(sDate1,  sDate2){
 	var  oDate1,  oDate2,  iDays ;
 	var dd1,dd2,mm1,mm2,yy1,yy2;
 	dd1 = sDate1.getDate();
@@ -611,11 +611,11 @@ function  DateDiff(sDate1,  sDate2){
 	mm2 = sDate2.getMonth();
 	yy2 = sDate2.getFullYear();
 
-	oDate1  =  new  Date(yy1,mm1,dd1) ;   
-	oDate2  =  new  Date(yy2,mm2,dd2) ; 
-	iDays  =  parseInt(Math.abs(oDate1  -  oDate2)/1000/60/60/24);    //把相差的毫秒数转换为天数  
-	return  iDays;  
-}    
+	oDate1  =  new  Date(yy1,mm1,dd1) ;
+	oDate2  =  new  Date(yy2,mm2,dd2) ;
+	iDays  =  parseInt(Math.abs(oDate1  -  oDate2)/1000/60/60/24);    //把相差的毫秒数转换为天数
+	return  iDays;
+}
 
 function getLastDayOfMonth(month,year){
 	if(month == 1 || month == 3 || month == 5 || month == 7 || month == 8 || month == 10 || month == 12){
@@ -653,7 +653,7 @@ function show_all_single_chart(start_date,end_date){
 				$("#first_type").text(type_max);
 				show_chart("single_type",start_date,end_date,type_max);
 				show_chart("single_name",start_date,end_date,name_max);
-				
+
 				 $("#currentTypeName").empty();
 				 $("#currentGoodsName").empty();
 
@@ -668,7 +668,7 @@ function show_all_single_chart(start_date,end_date){
 				 	var type_name = all_type[i];
 				 	var list_item= render({
 				 		type_id:type_id,
-				 		type_name:type_name			 	
+				 		type_name:type_name
 					 });
 				 	$("#currentTypeName").append(list_item);
 
@@ -685,7 +685,7 @@ function show_all_single_chart(start_date,end_date){
 				 	var goods_name = all_goods[i];
 				 	var list_item= render({
 				 		goods_id:goods_id,
-				 		goods_name:goods_name			 	
+				 		goods_name:goods_name
 					 });
 				 	$("#currentGoodsName").append(list_item);
 
@@ -700,7 +700,7 @@ function show_all_single_chart(start_date,end_date){
 		function(){
             			return Tip('网络好像不给力呢~ ( >O< ) ~！');
             		}
-            	);	
+            	);
 }
 
 function  onTypeItemClick(type_id){
@@ -782,7 +782,7 @@ function show_all_chart(start_date,end_date){
 							    calculable : true,
 							    xAxis : [
 								        {
-								            show : false,	
+								            show : false,
 								            type : 'value'
 								        }
 							    ],
@@ -792,16 +792,16 @@ function show_all_chart(start_date,end_date){
 								            type : 'category'
 								        }
 							    ],
-							    series : [ 
+							    series : [
 								        {
 								            name:'销售额',
 								            type:'bar',
 								            stack: '总量',
-								            itemStyle : { 
+								            itemStyle : {
 								            		normal: {
-								            			label : 
+								            			label :
 								            			{
-								            				show: true, 
+								            				show: true,
 								            				position: 'right',
 								            				textStyle : {
 											                            fontWeight : 'bold'
@@ -825,7 +825,7 @@ function show_all_chart(start_date,end_date){
 			            			myChart2.hideLoading();
 			            			getCount("name",options,myChart2,output_data["name_data"]);
 
-					}	
+					}
 
 				);
 
@@ -857,7 +857,7 @@ function show_chart(action,start_date,end_date,name){
 	var myChartSingleName = null;
 	var SingleNameOptions = null;
 	if(action == 'single_type'){
-		
+
 		$("#single_type").css("height","400px");
 		require.config({
 		       	paths: {
@@ -906,7 +906,7 @@ function show_chart(action,start_date,end_date,name){
 					       	show: true,
 					       	handleSize:20,
 					       	realtime : true
-								 
+
 						     },
 					    calculable : true,
 					    legend:{
@@ -929,7 +929,7 @@ function show_chart(action,start_date,end_date,name){
 					        	}
 					    ],
 					    series : [
-					        
+
 					    ],
 					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
 					                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
@@ -1229,39 +1229,34 @@ function show_chart(action,start_date,end_date,name){
 					myChartName.hideLoading();
 					$("#goods_name").css("height",output_data.length*40+105 + "px");
 					getCount("name",NameOptions,myChartName,output_data);
-					
 				}
 				else if(action == 'single_type'){
 					myChartSingleType.hideLoading();
 					getCount("single_type",SingleTypeOptions,myChartSingleType,output_data);
-
 				}
 				else if(action == 'single_name'){
 					myChartSingleName.hideLoading();
 					getCount("single_name",SingleNameOptions,myChartSingleName,output_data);
-
 				}
 				else{
-
 					return Tip(res.error_text);
 				}
 			}
 			else{
-
 				return Tip(res.error_text);
 			}
 		},
 		function(){
-            			return Tip('网络好像不给力呢~ ( >O< ) ~！');
-       		}
+            return Tip('网络好像不给力呢~ ( >O< ) ~！');
+       	}
 	);
 }
 
 function getDateStr(date){
-	var y = date.getFullYear(); 
+	var y = date.getFullYear();
 	var m = (date.getMonth()+1)<10?"0"+(date.getMonth()+1):(date.getMonth()+1);//获取当前月份的日期，不足10补0
 	var d = date.getDate()<10?"0"+date.getDate():date.getDate(); //获取当前几号，不足10补0
-	var str = y+"-"+m+"-"+d; 
+	var str = y+"-"+m+"-"+d;
 	return str;
 }
 
@@ -1277,8 +1272,7 @@ function getCount(action,options,myChart,output_data){
 			options.yAxis[0].data.push(data["type_name"]);
 			options.series[0].data.push(price);
 		}
-
-	} 
+	}
 	else if(action == "name"){
 		options.series[0].data = [];
 		for(var i = 0;i < output_data.length;i++){
@@ -1287,13 +1281,13 @@ function getCount(action,options,myChart,output_data){
 			options.yAxis[0].data.push(data["fruit_name"]);
 			options.series[0].data.push(price);
 		}
-	}	
+	}
 	else if(action == "single_type"){
 		options.series = [];
 
 		for(var i = 0;i < output_data[0].length;i++){
 			options.series.push({name:output_data[0][i],stack:'总量',type:'bar',data:[]});
-			
+
 		}
 
 		for(var i = 0;i < output_data[1].length;i++){
@@ -1303,7 +1297,7 @@ function getCount(action,options,myChart,output_data){
 				n++;
 			}
 			options.xAxis[0].data.push(i+1+"号");
-		}		
+		}
 	}
 	else if(action == "single_name"){
 		options.series[0].data = [];

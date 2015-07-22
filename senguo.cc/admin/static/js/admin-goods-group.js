@@ -18,7 +18,7 @@ $(document).ready(function(){
         drag(obj);
     }
     $(".group-lst").children("li").each(function(){
-         $(this).css("position","absolute");
+        $(this).css("position","absolute");
     });
     //group index
     $('.self-group').each(function(){
@@ -70,27 +70,27 @@ $(document).ready(function(){
             function (res) {
                 if (res.success) {
                     $this.attr("data-flag", "on");
-                     $("#del-win").modal('hide');
-                     curGroup.remove();
-                     window.location.reload();
+                    $("#del-win").modal('hide');
+                    curGroup.remove();
+                    window.location.reload();
                 }
                 else {
-                     $this.attr("data-flag", "on");
+                    $this.attr("data-flag", "on");
                     Tip(res.error_text);
                 }
             },
             function () {
-                 $this.attr("data-flag", "on");
+                $this.attr("data-flag", "on");
                 Tip('网络好像不给力呢~ ( >O< ) ~');
             }
-        ); 
+        );
 }).on("click",".add-groups",function(e){
     e.stopPropagation();
     $("#group-name").val("");
     $("#group-info").val("");
     $("#new-win").modal('show').find('title').text('新建分组');
-     $('.ok-add-group').attr('data-action','add');
-}).on("click",".ok-add-group",function(){  
+    $('.ok-add-group').attr('data-action','add');
+}).on("click",".ok-add-group",function(){
     var $this = $(this);
     if ($this.attr("data-flag") == "off") return false;
     $this.attr("data-flag", "off");
@@ -117,7 +117,7 @@ $(document).ready(function(){
         Tip("分组名称请不要超过10个字！");
         return false;
     }
-     if(group_info.length>50){
+    if(group_info.length>50){
         $this.attr("data-flag", "on");
         Tip("分组介绍请不要超过50个字！");
         return false;
@@ -135,7 +135,7 @@ $(document).ready(function(){
     else if(_action=="add"){
         action="add_group";
     }
-   
+
     var args = {
         action:action,
         data:data
@@ -151,7 +151,7 @@ $(document).ready(function(){
                     }
                     else if(_action=="add"){
                         priority("add",res.id);
-                    }        
+                    }
             }
             else {
                  $this.attr("data-flag", "on");
@@ -163,7 +163,7 @@ $(document).ready(function(){
             Tip('网络好像不给力呢~ ( >O< ) ~');
         }
     );
-  
+
 }).on("click",".edit-group",function(e){//编辑
     e.stopPropagation();
     curGroup = $(this).closest("li");
@@ -313,7 +313,7 @@ function priority(type,item_id){
         _index.push(index);
     }
     if(type=="add"){
-         _id.push(item_id);
+        _id.push(item_id);
         _index.push($('.item').length);
     }
     data.id=_id;
@@ -326,9 +326,9 @@ function priority(type,item_id){
     $.postJson(url, args,
         function (res) {
             if (res.success) {
-                 if(type=="add"){
-                     window.location.reload(true);
-                 }
+                if(type=="add"){
+                    window.location.reload(true);
+                }
             }
             else {
                 Tip(res.error_text);

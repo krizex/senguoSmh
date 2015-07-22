@@ -6,7 +6,7 @@
 <div class="header">
     <a href="javascript:;" class="back goback">返回</a>
     <span>店铺列表</span>
-    {% if handler.current_shop.admin_id == current_user.id %}<a href="javascrpt:;" class="head-right spread-list">推广店铺列表</a>{% end %}
+    {% if handler.current_shop.admin_id == current_user.id %}<a href="javascrpt:;" class="head-right spread-list">分享店铺</a>{% end %}
 
 </div>
 {% end %}
@@ -24,7 +24,7 @@
                     </dd>
                     <dt>
                         <i class="arr-item"></i>
-                        <p class="name">{{shop['shop_name']}} <span class="shop-cert auths hide" data-auth="{{shop['shop_auth']}}"></span></p>
+                        <p class="name"><span class="shop-item-name">{{shop['shop_name']}}</span><span class="shop-cert auths hide" data-auth="{{shop['shop_auth']}}"></span></p>
                         <p class="addre mt6">{{shop['address']}}</p>
                         <ul class="shop-prop group mt6">
                             <li>商品<span>{{shop['goods_count']}}</span>件</li>
