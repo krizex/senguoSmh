@@ -3,7 +3,7 @@
 
 {% block setcontent %}
 <div class="set-description">
-    <a href="http://senguo.cc/bbs/detail/8" target="_blank" class="pull-right">查看详细打印机教程</a>
+    <a href="{{reverse_url('BbsDetail',8)}}" target="_blank" class="pull-right">查看详细打印机教程</a>
     <p>小票打印设置</p>
 </div>
 <ul class="type-list font14 mt20" data-id="{{current_shop.config.receipt_type}}">
@@ -15,7 +15,7 @@
     <li>
         <a href="javascript:;" class="pull-left circle-btn mr10"  data-id="1"></a>
         <span class="pull-left mr20">无线打印</span>
-        <span class="pull-left text-grey2">不可上传图片，可开启订单自动打印，支持易联云<!-- 、飞印两种品牌的 -->无线打印机。</span>
+        <span class="pull-left text-grey2">不可上传图片，可开启订单自动打印，支持易联云、飞印两种品牌的无线打印机。</span>
     </li>
 </ul>
 <table class="set-list table table-bordered _box line-receipt hidden">

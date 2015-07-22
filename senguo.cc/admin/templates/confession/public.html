@@ -1,12 +1,12 @@
 {% extends 'base.html'%}
 {% block title %}{{shop_name}}-告白墙-我要告白{% end %}
 {% block content %}
- <header class="detail-header text-white center-block">
+<header class="detail-header text-white center-block">
     <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="return-btn bg_change">&nbsp;</a>
     <span class="title font16">我要告白</span>
 </header>
 <div class="pub-box box mt50" data-code="{{shop_code}}" data-type="{{_type}}">
-             {% if _type==1 %}
+    {% if _type==1 %}
 	<p class="font14 mb10">对方信息：</p>
 	<div class="p-box1 bg-white mb20">
 		<div class="group line1">
@@ -21,7 +21,6 @@
 			<span class="fl tit">地址</span>
 			<input type="text" placeholder="写上TA的地址，方便我们礼品派送哦" class="sty1 fl" id="other-address"/>
 		</div>
-		
 	</div>
 	{% end %}
 	<p class="font14 mb10">你的信息：</p>
@@ -48,11 +47,11 @@
 				<textarea placeholder="在这里写上告白的内容吧～" class="sty2" id="confession"></textarea>
 			</td>
 		</tr>
-		<tr class="font14"> 
+		<tr class="font14">
 			<td>发布方式:</td>
 			<td>
 				<button type="button" class="btn text-white btn-small type-btn active" data-id="0">匿名</button>
-				<button type="button" class="btn text-white btn-small type-btn ml10" data-id="1">实名</button>	
+				<button type="button" class="btn text-white btn-small type-btn ml10" data-id="1">实名</button>
 			</td>
 		</tr>
 		<tr>

@@ -38,7 +38,7 @@ $(document).ready(function(){
     var $this=$(this);
     var num = $this.attr("data-num");
     if($(e.target).closest(".task-staff").size()==0){
-       window.location.href="/madmin/orderDetail/"+num;
+        window.location.href="/madmin/orderDetail/"+num;
     }
 }).on("click",".order-grade .task-staff",function(e){
     var $this=$(this);
@@ -111,7 +111,7 @@ function searchOrder(id){
             if(res.success){
                 var data = res.data[0];
                 if(!data){
-                    $(".no-result").html("没有查到任何数据").removeClass("hide");
+                    $(".no-result").html("没有查到任何订单").removeClass("hide");
                 }else{
                     $(".no-result").addClass("hide");
                     var id=data['id'];

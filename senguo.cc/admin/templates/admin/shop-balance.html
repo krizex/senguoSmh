@@ -3,7 +3,7 @@
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-main.css')}}"/>{% end %}
 {% block content %}
     {% if _shop_auth ==0 %}
-     <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+    <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
     {% else %}
     <div class="account-top">
         <span class="right-title">账户余额</span>
@@ -37,17 +37,17 @@
                 <div class="wrap-acc-num cash-count hidden">
                     <span class="account-num">累计提现&nbsp;<span class="green-txt f16 cash"></span>元</span>
                 </div>
-                 <div class="wrap-acc-num charge-count hidden">
+                <div class="wrap-acc-num charge-count hidden">
                     <span class="account-num">累计额度&nbsp;<span class="green-txt f16 charge-total"></span>元</span>
                     <span class="account-num">用户已使用&nbsp;<span class="green-txt f16 charge-use"></span>元</span>
                     <span class="account-num">未使用剩余&nbsp;<span class="green-txt f16 charge-left"></span>元</span>
                 </div>
-                 <div class="wrap-acc-num online-count hidden">
+                <div class="wrap-acc-num online-count hidden">
                     <span class="account-num">累计额度&nbsp;<span class="green-txt f16 online-total"></span>元</span>
                     <span class="account-num">累计次数&nbsp;<span class="green-txt f16 online-times"></span>次</span>
                     <span class="account-num">累计人数&nbsp;<span class="green-txt f16 online-person"></span>人</span>
                 </div>
-                  <div class="wrap-acc-num spend-count hidden">
+                <div class="wrap-acc-num spend-count hidden">
                     <span class="account-num">累计消费&nbsp;<span class="green-txt f16 spend-total"></span>元</span>
                     <span class="account-num">余额被消费后才能提现，对整个账户余额的值无影响。</span>
                 </div>
@@ -69,7 +69,7 @@
                     </tr>
                 </table>
         </div>
-    </div>        
+    </div>
     <h4 class="text-center hidden no-list">暂无账单信息</h4>
     <div class="list-pagination hidden">
         <ul>
@@ -101,11 +101,11 @@
                             </colgroup>
                             <tr>
                                 <td class="left">可提现额度：</td>
-                                <td > <span class="green-txt f16 available-balance">{{available_balance}}</span>&nbsp;元</td>
+                                <td> <span class="green-txt f16 available-balance">{{available_balance}}</span>&nbsp;元</td>
                             </tr>
                             <tr>
                                 <td class="left">提现金额：</td>
-                                <td> <input tpye="text" class="money-ipt money"></td>
+                                <td> <input type="text" class="money-ipt money"></td>
                             </tr>
                             <tr>
                                 <td class="left">支付宝账号：</td>
