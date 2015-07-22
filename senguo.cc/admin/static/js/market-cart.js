@@ -747,6 +747,10 @@ function orderSubmit(target){
     var mincharge_intime=Number($('.mincharge_intime .mincharge').text());
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
+    var coupon_key=$(".coupon_type").find(".active").attr("data-id");
+    if (coupon_key==undefined){
+        coupon_key=null;
+    }
     if(pay_type == 3){
         online_type = $("#online-pay").attr("data-type");
     }
@@ -781,6 +785,7 @@ function orderSubmit(target){
     $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
+        coupon_key:coupon_key,
         mgoods:mgoods,
         type:type,
         today:today,

@@ -3292,22 +3292,6 @@ class Marketing(AdminBaseHandler):
 		return self.send_success()
 '''
 class Marketing(AdminBaseHandler):
-	def updatecoupon(self):
-		current_shop_id=self.current_shop.id
-		current_customer_id=self.current_user.id
-		now_date=int(time.time())
-		q1=self.session.query(models.CouponsShop).with_lockmode('update').filter_by(shop_id=current_shop_id,closed=0).all()
-		for x in q1:
-			if now_date>x.to_get_date:
-				x.closed=1
-				self.session.commit()	
-			q=self.session.query(models.CouponsCustomer).with_lockmode('update').filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).all()
-			for y in q:
-				if y.coupon_status>0:
-					if now_date>y.uneffective_time :
-						y.coupon_status=3
-			self.session.commit()
-		return None		
 	def getcoupon(self,q,data):
 		current_shop_id=self.current_shop.id
 		current_customer_id=self.current_user.id
@@ -3523,7 +3507,6 @@ class Marketing(AdminBaseHandler):
 			to_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.to_get_date))
 			from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.from_valid_date))
 			to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.from_valid_date))
-			print(data)
 			if q.use_goods_group==0:
 				use_goods_group="默认分组"
 			elif q.use_goods_group==-1:
@@ -3709,21 +3692,22 @@ class Marketing(AdminBaseHandler):
 			select_rule=int(data["select_rule"])
 			data=[]
 			q=[]
+			qget=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=1).all()
+			quse=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=2).all()
+			qvalid=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=3).all()	
 			if select_rule==0:
 				q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).all()
 			elif select_rule==1:
-				q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=1).all()	
+				q=qget+quse+qvalid
 			elif select_rule==2:
-				q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=2).all()
+				q=quse
 			else :
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).first()
-				q1=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id)
 				if qq.closed==0:
-					q=q1.filter_by(coupon_status=3).all()
+					q=qvalid
 				else:
-					qn=q1.filter_by(coupon_status=0).all()
-					qm=q1.filter_by(coupon_status=3).all()
-					q=qn+qm
+					qn=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=0).all()
+					q=qn+qvalid
 			for x in q:
 				customer_id=None
 				get_date=None

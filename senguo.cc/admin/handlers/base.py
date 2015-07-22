@@ -123,6 +123,22 @@ class GlobalBaseHandler(BaseHandler):
 		s*= 1000
 		return s;
 
+	def updatecouponbase(self,shop_id):
+		current_customer_id=self.current_user.id
+		now_date=int(time.time())
+		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,customer_id=current_customer_id).with_lockmode('update').all()
+		for x in q:
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,closed=0).with_lockmode('update').first()
+			if  qq!=None:
+				if now_date>qq.to_get_date:
+					qq.closed=1
+				if x.coupon_status>0:
+					if now_date>x.uneffective_time :
+						x.update(coupon_status=3)
+				self.session.commit()	
+		self.session.commit()
+		return None
+
 	# 数字代号转换为文字描述
 	def code_to_text(self, column_name, code):
 		text = ""
@@ -1093,6 +1109,11 @@ class AdminBaseHandler(_AccountBaseHandler):
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
+	
+	# 刷新数据库优惠券信息
+	def updatecoupon(self):
+		current_shop_id=self.get_secure_cookie("shop_id") 
+		self.updatecouponbase(current_shop_id)
 
 	# 获取订单
 	def getOrder(self,orders):
@@ -1328,6 +1349,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		else:
 			tpl_path = "customer"
 		return tpl_path
+	# 刷新数据库优惠券信息
+	def updatecoupon(self):
+		current_shop_id= self.get_cookie("market_shop_id") 
+		self.updatecouponbase(current_shop_id)
+
 
 
 import urllib.request

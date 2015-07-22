@@ -13,16 +13,22 @@ $(document).ready(function(){
     });
     //领取优惠券
     $(document).on("click",".get-coupon",function(){
-        var coupon_id = $(this).attr("data-id");
-        getCoupon(coupon_id);
+        if($(this).attr("data-flag")=="on"){
+            var coupon_id = $(this).attr("data-id");
+            $(this).attr("data-flag","off");
+            getCoupon(coupon_id,$(this));
+        }else{
+            return Tip("服务器正在处理请求，不要重复点击！");
+        }  
     });
 });
 //领取优惠券
-function getCoupon(coupon_id){
+function getCoupon(coupon_id,$obj){
     $.ajax({
         url:"/coupon/grub?action=get_coupon&coupon_id="+coupon_id,
         type:"get",
         success:function(res){
+            $obj.attr("data-flag","on");
             if(res.success){
                 Tip("领取成功");
                 setTimeout(function(){

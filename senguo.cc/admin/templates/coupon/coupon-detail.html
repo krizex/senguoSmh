@@ -31,7 +31,7 @@
                         <p class="rule-text">订单满{{output_data['use_rule']}}（含运费）即可使用</p>
                     </div>
                 </div>
-                <p class="coupon-date f12">有效日期 : {{output_data['effective_time']}}</p>
+                <p class="coupon-date f12">有效日期 : {{output_data['effective_time']}}  至  {{output_data['uneffective_time']}}</p>
                 <div class="go-link" data-url="/{{output_data['shop_code']}}">
                     <i class="gap gap-top"></i>
                     {% if output_data['coupon_status']==1 %}
@@ -46,6 +46,7 @@
                 <p class="point-left">此券限时限量领取，仅发行100张</p>
                 <p class="point-left">仅限在店铺名称内使用</p>
                 <p class="point-left">每笔订单仅限使用一张优惠券，不可找零</p>
+                <p class="point-left">优惠券一旦使用，在退款的时候不能返回</p>
             </div>
         </div>
     </div>

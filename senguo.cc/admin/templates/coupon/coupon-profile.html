@@ -10,7 +10,8 @@
     <ul class="my-coupon-list">
     {%for data in output_data%}
         <li>
-            <div class="get-coupon" data-id="{{data["coupon_id"]}}">
+            <div class="get-coupon" data-id="{{data["coupon_id"]}}" data-flag="on">
+            
                 <span>点击<br>领取</span>
             </div>
             <div class="coupon-lprice">

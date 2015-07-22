@@ -8,8 +8,8 @@
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{handler.shop_code}}"></span>
     <div class="rainshed bg_change fix-title"></div>
     <div class="bg-box mt42">
+        <p class="text-left text-grey9 font14  pl10 cart-titles">商品列表</p>
         <ul class="cart-list set-w100-fle m-b0">
-            <p class="text-left text-grey9 font14 m-b5 pl10">商品列表</p>
             {% for key in cart_f %}
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">
@@ -226,12 +226,12 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="group">
                     <span class="pull-left text-grey9 font14 m-b5 pl10">我的优惠券</span>
-                    <span class="pull-right mr10"><span id="coupon_cmoney"></span></span>
+                    <span class="pull-right mr10">可用金额为<span id="coupon_cmoney">元</span></span>
                 </p>
                 <div class="wrap-coupontype">
                     <ul id="couponType" class="coupon_type">
                     {%for data in output_data%}
-                        <li data-id="3" class="">
+                        <li data-id="{{data["coupon_key"]}}" class="">
                             <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
                             <span class="coupon-bg" data-money="{{data["coupon_money"]}}">￥{{data["coupon_money"]}}</span>
                             <span class="coupon-detail">{{data["use_goods_group"]}}满{{data["use_rule"]}}元<br>可使用（含运费）</span>

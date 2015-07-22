@@ -1391,29 +1391,33 @@ class Cart(CustomerBaseHandler):
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
 		for x in q:
-			effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.effective_time))
-			uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.uneffective_time))
-			get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
-			q1=self.session.query(models.CouponsShop).filter_by(shop_id=x.shop_id,coupon_id=x.coupon_id).first()
-			use_goods=None
-			use_goods_group=None
-			if q1.use_goods_group==0:
-				use_goods_group="默认分组"
-			elif q1.use_goods_group==-1:
-				use_goods_group="店铺推荐"
-			elif q1.use_goods_group==-2:
-				use_goods_group="所有分组"
+			now_date=int(time.time())
+			if now_date<x.effective_time:
+				pass
 			else:
-				q2=self.session.query(models.GoodsGroup).filter_by(shop_id=shop.id,id=q1.use_goods_group).first()
-				use_goods_group=q2.name
-			if q1.use_goods==-1:
-				use_goods="所有分组"
-			else:
-				q2=self.session.query(models.Fruit).filter_by(shop_id=shop.id,id=q1.use_goods).first()
-				use_goods=q2.name
-			x_coupon={"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,\
-			"uneffective_time":uneffective_time,"coupon_status":x.coupon_status,"use_goods_group":use_goods_group,"use_goods":use_goods}
-			data.append(x_coupon)
+				effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.effective_time))
+				uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.uneffective_time))
+				get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.get_date))
+				q1=self.session.query(models.CouponsShop).filter_by(shop_id=x.shop_id,coupon_id=x.coupon_id).first()
+				use_goods=None
+				use_goods_group=None
+				if q1.use_goods_group==0:
+					use_goods_group="默认分组"
+				elif q1.use_goods_group==-1:
+					use_goods_group="店铺推荐"
+				elif q1.use_goods_group==-2:
+					use_goods_group="所有分组"
+				else:
+					q2=self.session.query(models.GoodsGroup).filter_by(shop_id=shop.id,id=q1.use_goods_group).first()
+					use_goods_group=q2.name
+				if q1.use_goods==-1:
+					use_goods="所有分组"
+				else:
+					q2=self.session.query(models.Fruit).filter_by(shop_id=shop.id,id=q1.use_goods).first()
+					use_goods=q2.name
+				x_coupon={"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,\
+				"uneffective_time":uneffective_time,"coupon_status":x.coupon_status,"use_goods_group":use_goods_group,"use_goods":use_goods}
+				data.append(x_coupon)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,output_data=data,\
 						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
@@ -1422,7 +1426,7 @@ class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
-										 "today:int",'online_type?:str')
+										 "today:int",'online_type?:str',"coupon_key?:str")
 	def post(self,shop_code):#提交订单
 		# print("[提交订单]支付类型：",self.args['pay_type'])
 		shop_id = self.shop_id
@@ -1604,6 +1608,16 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
+		coupon_key=self.args["coupon_key"]
+		print(coupon_key)
+		if coupon_key!='None':
+			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).first()
+			now_date=int(time.time())
+			if now_date>q.uneffective_time:
+				return self.send_fail("下单失败，因为该优惠券已经过期！")
+			else:
+				qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=q.coupon_id).first()
+				totalPrice-=qq.coupon_money
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -1625,6 +1639,7 @@ class Cart(CustomerBaseHandler):
 							 send_time=send_time,
 							 status  = order_status,
 							 online_type = online_type,
+							 coupon_key=coupon_key
 							 )
 
 		try:
@@ -1632,6 +1647,17 @@ class Cart(CustomerBaseHandler):
 			self.session.commit()
 		except:
 			return self.send_fail("订单提交失败")
+		#使用优惠券
+		coupon_key=order.coupon_key
+		if coupon_key!=None:
+			use_date=int(time.time())
+			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
+			q.update(session=self.session,use_date=use_date,order_id=order.id,coupon_status=2)
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
+			use_number=qq.use_number+1
+			print(use_number,'gggggggggggggggggggggggg')
+			qq.update(self.session,use_number=use_number)
+			self.session.commit()
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
@@ -2276,11 +2302,10 @@ class Recharge(CustomerBaseHandler):
 		coupon_money=0
 		data=[]
 		for x in q:
-			qq=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id).first()
+			qq=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id,coupon_status=0).first()
 			if qq!=None:
 				data0={"get_rule":x.get_rule,"coupon_money":x.coupon_money}
 				data.append(data0)
-		print(data,'ggggggggggggggggg')
 		# print("[微信充值]next_url：",next_url)
 		if action == 'get_code':
 			# print(self.request.full_url())
@@ -2487,7 +2512,20 @@ class payTest(CustomerBaseHandler):
 			self.session.add(balance_history)
 			# print(balance_history , '钱没有白充吧？！')
 			self.session.commit()
-
+			
+			# 充值送优惠券
+			self.updatecoupon()
+			CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).with_lockmode('update').all()
+			for x in CouponsShops:
+				CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
+				if CouponsCustomers==None:
+					pass
+				else:
+					now_date=int(time.time())
+					CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+					self.session.commit()
+					break
+				self.session.commit()
 			return self.write('success')
 	#	else:
 	#		return self.send_fail('其它支付方式尚未开发')
