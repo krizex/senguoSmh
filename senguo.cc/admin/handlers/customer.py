@@ -2523,7 +2523,8 @@ class InsertData(CustomerBaseHandler):
 				temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
 					shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
 					delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],lon = shop['lon'])
+					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
+					lon = shop['lon'],shop_province = 420000,shop_city = 420100)
 				self.session.add(temp_shop)
 		self.session.commit()
 
