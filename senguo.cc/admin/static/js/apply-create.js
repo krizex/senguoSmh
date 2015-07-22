@@ -92,44 +92,59 @@ $(document).ready(function(){
             '</li>';
     var data={"shop_name":shop_name}
     $(".shop-list").empty();
-    $.ajax({
-        url:"",
-        data:JSON.stringify({action:"search",data:data,_xsrf:window.dataObj._xsrf}),
-        contentType:"application/json; charset=UTF-8",
-        type:"post",
-        success:function(res){
-            if(res.success) {
-                var shops=res.data;
-                for(var key in shops){
-                    var shop=shops[key];
-                    var render=template.compile(item);
-                    var content=render({
-                        id:shop.id,
-                        logo:shop.logo,
-                        address:shop.address,
-                        shop_name:shop.shop_name
-                    });
-                    $(".shop-list").append(content);
-                }  
-            }else{
-                Tip(res.error_text);
-            }
+    var url="";
+    var args={action:"search",data:data};
+    $.postJson(url,args,function(res){
+        if(res.success) {
+           var shops=res.data;
+           if(shops.length==0){
+             return Tip("无搜索结果");
+           }
+            for(var key in shops){
+                var shop=shops[key];
+                var render=template.compile(item);
+                var content=render({
+                    id:shop.id,
+                    logo:shop.logo,
+                    address:shop.address,
+                    shop_name:shop.shop_name
+                });
+                $(".shop-list").append(content);
+            }  
+        }else{
+            Tip(res.error_text);
         }
     });
 }).on("click","#import",function(){
-
-    $.ajax({
-        url:"",
-        data:JSON.stringify({action:"search",data:data,_xsrf:window.dataObj._xsrf}),
-        contentType:"application/json; charset=UTF-8",
-        type:"post",
-        success:function(res){
-            if(res.success) {
-                var shops=res.data;
-                
-            }else{
-                Tip(res.error_text);
-            }
+    var $this=$(this);
+    if($this.attr("data-statu")=="1") {
+        return false;
+    }
+    $this.attr("data-statu")=="1";
+    var list_id=[];
+    $(".shop-list .active").each(function(){
+        var id=parseInt($(this).attr("data-id"));
+        list_id.push(id);
+    });
+    if(list_id.length==0){
+        $this.attr("data-statu","");
+        return Tip("请选择要导入的店铺");
+    }
+    var member_code=$(".sgipt").val().trim();
+    if(!member_code){
+        $this.attr("data-statu","");
+        return Tip("请输入森果市场人员ID");
+    }
+    var data={"code":member_code,"shop_list":list_id};
+    var url="";
+    var args={action:"import",data:data};
+    $.postJson(url,args,function(res){
+        if(res.success) {
+            $this.attr("data-statu","");
+            window.location.href="/admin";
+        }else{
+            $this.attr("data-statu","");
+            Tip(res.error_text);
         }
     });
 });

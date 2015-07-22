@@ -143,6 +143,9 @@ class CreateShop(AdminBaseHandler):
 			return self.send_success(data=data)
 
 		elif action == "import":
+			if "shop_list" not in data or "code" not in data:
+				return self.send_error(403)
+
 			market_member_id = data["code"]
 			try:
 				if_market = self.session.query(models.SpreadMember).filter_by(code=data["code"]).first()
@@ -153,42 +156,48 @@ class CreateShop(AdminBaseHandler):
 
 			shop_list = data["shop_list"]
 			shop_number = len(self.current_shop.admin.shops)
-			if len(shop_list) + shop_number >=30:
-				return self.send_fail("您已创建%s家店铺 ，至多还可创建%s家店铺",shop_number,30-shop_number)
-			shops  = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.id.in_(shop_list)).all()
+			if len(shop_list) + shop_number >30:
+				notice="您已创建"+str(shop_number)+"家店铺 ，至多还可创建"+str(30-shop_number)+"家店铺"
+				return self.send_fail(notice)
+			spider_shops  = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.id.in_(shop_list)).all()
 			
 			# 添加系统默认的时间段
 			period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
 			period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
 			period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
 
-			config = models.Config()
-			config.periods.extend([period1, period2, period3])
-			marketing = models.Marketing()
-			for shop in shops:
+			
+			for spider_shop in spider_shops:
 				shop = models.Shop(
 					admin_id = self.current_shop.admin_id,
-					shop_name = shop.shop_name,
-					shop_trademark_url = shop.shop_logo,
-					shop_province = shop.shop_province,
-					shop_city = shop.shop_city,
-					shop_address_detail = shop.address,
+					shop_name = spider_shop.shop_name,
+					shop_trademark_url = spider_shop.shop_logo,
+					shop_province = spider_shop.shop_province,
+					shop_city = spider_shop.shop_city,
+					shop_address_detail = spider_shop.shop_address,
 					create_date_timestamp = time.time(),
-					shop_intro = shop.description,
+					shop_intro = spider_shop.description,
 					shop_code = self.make_shop_code(),
-					shop_phone = shop.shop_phone,
-					lat = shop.lat,
-					lon = shop.lon
+					shop_phone = spider_shop.shop_phone,
+					lat = spider_shop.lat,
+					lon = spider_shop.lon
 				)
+				config = models.Config()
+				config.periods.extend([period1, period2, period3])
+				marketing = models.Marketing()
 				shop.config = config
 				shop.marketing = marketing
 				shop.shop_start_timestamp = time.time()
 				self.session.add(shop)
 				self.session.commit()
+
 				# 添加商品
-				spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = shop.shop_id).all()
+				spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = spider_shop.shop_id).all()
 				for temp_good in spider_goods:
-					new_good = models.Fruit(shop_id = shop.id , fruit_type_id = 999,name = temp_good.goods_name,
+					name = temp_good.goods_name
+					if len(name)>20:
+						name=name[1:21]
+					new_good = models.Fruit(shop_id = shop.id , fruit_type_id = 999,name = name,
 						storage = 100,unit = 2,img_url = temp_good.good_img_url ,)
 					new_good.charge_types.append(models.ChargeType(price = temp_good.goods_price,unit = 2,num =1,market_price = temp_good.goods_price))
 					self.session.add(new_good)
