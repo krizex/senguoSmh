@@ -207,9 +207,10 @@ function commitHand($btn){
     });
 }
 function initBmap(){
-    var map = new BMap.Map("bmap");
+    var map = new BMap.Map("bmap",{enableMapClick:false});
     var point = new BMap.Point(114.430551,30.518114);
-    map.centerAndZoom(point,15);
+    map.centerAndZoom(point,16);
+    map.enableScrollWheelZoom(true);
     var marker = null;
     $("#get_point").on("click",function(){
         if($("#province").html()=="" || $("#city").html()==""){
@@ -222,10 +223,12 @@ function initBmap(){
         var address = $("#province").html()+$("#city").html()+$.trim($("#address").val());
         myGeo.getPoint(address, function (point) {
             if (point){
-                map.centerAndZoom(point, 17);
+                map.centerAndZoom(point, 16);
                 marker = new BMap.Marker(point);
                 map.addOverlay(marker);
                 $("#address").attr("data-lng",point.lng).attr("data-lat",point.lat)
+            }else{
+                return Tip("您输入的详细地址不正确，请重新输入");
             }
         });
     });
