@@ -715,6 +715,7 @@ class SellStatic(AdminBaseHandler):
 
 				if(count_num == 1):
 					name_item_list = list(tmp["per_name_total_price"].keys())
+					print("@@@",tmp["per_name_total_price"])
 				name_price_item_list = []
 				for i in range(len(name_item_list)):
 					name_price_item_list.append(tmp["per_name_total_price"][name_item_list[i]])

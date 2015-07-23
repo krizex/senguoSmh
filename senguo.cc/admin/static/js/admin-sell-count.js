@@ -392,6 +392,10 @@ $(document).ready(function(){
 	var start_date = new Date(choose_year4,choose_month4-1,1);
 	var end_date = new Date(choose_year4,choose_month4-1,getLastDayOfMonth(choose_month4,choose_year4))
 	show_chart('single_name',start_date,end_date,first_name);
+}).on("click","#btn_type_bigchart",function(){
+	$("#type_bigchart_bg").removeClass("hidden");
+	$("#type_bigchart").removeClass("hidden");
+	console.log("@@@@@@@@@@@");
 });
 
 // 实时更新函数
@@ -729,13 +733,12 @@ function show_all_chart(start_date,end_date){
 		end_date:getDateStr(end_date)
 	};
 
-
-
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
 				$("#goods_type").css("height",output_data["type_data"].length*40+105 + "px");
+				// $("#goods_type_big").css("height",output_data["type_data"].length*35+105 + "px");
 				$("#goods_name").css("height",output_data["name_data"].length*40+105 + "px");
 				require.config({
 				       	paths: {
@@ -752,10 +755,15 @@ function show_all_chart(start_date,end_date){
 				              //按商品类目排序
 			        		function (ec) {
 			            		            var myChart1 = ec.init(document.getElementById('goods_type'));
+			            		            // var myChart11 = ec.init(document.getElementById('goods_type_big'));
 			            		            myChart1.showLoading({
 			                	            		text: '正在努力的读取数据中...'
 			            			});
 			            			myChart1.hideLoading();
+			            			// myChart11.showLoading({
+			               //  	            		text: '正在努力的读取数据中...'
+			            			// });
+			            			// myChart11.hideLoading();
 			            			var options = {
 			            				    title : {
 							        	        subtext: '数值单位：元',
@@ -817,6 +825,8 @@ function show_all_chart(start_date,end_date){
 							                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
 						};
 						getCount("type",options,myChart1,output_data["type_data"]);
+						// getCount("type",options,myChart11,output_data["type_data"]);
+
 
 						var myChart2 = ec.init(document.getElementById('goods_name'));
 			            		             myChart2.showLoading({
@@ -910,7 +920,7 @@ function show_chart(action,start_date,end_date,name){
 						     },
 					    calculable : true,
 					    legend:{
-					    	show:false,
+					    	show:true,
 					    	data:[]
 					    },
 					    xAxis : [
@@ -941,7 +951,7 @@ function show_chart(action,start_date,end_date,name){
 		);
 	}
 	else if (action == 'type'){
-		// $("#goods_type").css("height","400px");
+		// $(".goods_type").css("height","400px");
 		require.config({
 		       	paths: {
 		            		echarts:'/static/js'
