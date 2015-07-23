@@ -120,7 +120,7 @@
 .title-right>span{display: block;}
 /*beauty*/
 .yellow-text{color: #ff9800;}
-.pay-bill{position: fixed;bottom:50px;width:100%;max-width:800px;min-width:320px;z-index:100;height: 40px;border-top:1px solid #eee;line-height: 40px;text-align: right;font-size: 14px;background-color: rgba(255,255,255,.8);color: #666;}
+.pay-bill{position: fixed;bottom:50px;width:100%;max-width:800px;min-width:320px;z-index:100;height: 40px;border-top:1px solid #eee;line-height: 40px;text-align: right;font-size: 14px;background-color: rgba(255,255,255,.8);color: #666;left: 50%;-webkit-transform:translate(-50%,0);}
 .order-submit{background-color: #ff9800;display: inline-block;width: 80px;height: 40px;line-height: 40px;color: #fff;text-align: center;margin-left: 10px;white-space: nowrap;}
 .coupon-text{color: #666;font-size: 12px;margin-left: 10px;}
 .wrap-coupontype{padding: 0 10px;}
@@ -132,4 +132,4 @@
 .mr8{margin-right: 8px;}
 .mr10{margin-right: 10px;}
 .cart-titles{background-color: #fff;padding-top: 10px;}
-.has-coupon {line-height: 17px;}
+.has-coupon {line-height: 18px;}

@@ -7,11 +7,11 @@
 {% end %}
 {% block content %}
 <div class="wrap-mycoupon">
+    {% if output_data %}
     <ul class="my-coupon-list">
     {%for data in output_data%}
         <li>
-            <div class="get-coupon" data-id="{{data["coupon_id"]}}" data-flag="on">
-            
+            <div class="get-coupon" data-id="{{data['coupon_id']}}" data-flag="on">
                 <span>点击<br>领取</span>
             </div>
             <div class="coupon-lprice">
@@ -26,6 +26,16 @@
         </li>
         {%end%}
     </ul>
+    {% else %}
+    <div class="coupon-status">
+        <i class="gap gap-bm"></i>
+        <div class="wrap-chbox txt-center">
+            <img class="chbox-img" src="/static/images/coupon_charge.png" alt="充值获取优惠券"/>
+            <p class="status-txt mt18">充值即可获得买水果送优惠券机会<br>充多送更多！</p>
+        </div>
+        <a href="/customer/recharge" class="go-next mt10">前往充值</a>
+    </div>
+    {% end %}
 </div>
 {% end %}
 {% block bottom %}

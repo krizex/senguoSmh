@@ -23,16 +23,6 @@ $(document).ready(function () {
                 }
             });
         }
-    
-    /*$(".sw-link-copy").zclip({
-        path: "/static/js/third/ZeroClipboard.swf",
-        copy: function(){
-            return $(this).prev("sw-link-txt").val();
-        },
-        afterCopy:function(){
-            Tip("链接已经复制到剪切板");
-        }
-    });*/
   var id=parseInt($.getUrlParam("coupon_type"));
   if(id){
         type = id;
@@ -195,6 +185,8 @@ $(document).ready(function () {
     var selected_status=$(this).attr("data-id");
     $(".coupon-items em").text($(this).text());
     insertcoupon(selected_status);
+}).on("click",".back-coupon",function(){
+    window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
 });
 
 function getGoods(index,$obj){
@@ -390,8 +382,8 @@ function addCoupon(type){
         }else{
                 var last_day = $(".last_day").val();
                 if(isNaN(last_day)||last_day==''||last_day==0){
-            return Tip("有效天数不为空且为正整数");
-             }
+                    return Tip("有效天数不为空且为正整数");
+                 }
         }
     }else{
          var from_get_date = $(".from_get_dates").val();
@@ -490,7 +482,7 @@ function addCoupon(type){
                 Tip('新建优惠券成功!');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type=0";
-                },2000);
+                },1500);
             }else{
                 Tip(res.error_text);
             }

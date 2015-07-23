@@ -223,6 +223,7 @@
                     </li>
                 </ul>
             </div>
+            {%if output_data!=[]%}
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="group">
                     <span class="pull-left text-grey9 font14 m-b5 pl10">我的优惠券</span>
@@ -231,20 +232,18 @@
                 </p>
                 <div class="wrap-coupontype">
                     <ul id="couponType" class="coupon_type">
-                    {%if output_data==[]%}
-                    <p>暂无可用优惠券哦~</p>
                     {%else%}
                     {%for data in output_data%}
-                        <li data-id="{{data["coupon_key"]}}" class="">
+                        <li data-id="{{data['coupon_key']}}" class="">
                             <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
                             <span class="coupon-bg" data-money="{{data["coupon_money"]}}">￥{{data["coupon_money"]}}</span>
                             <span class="coupon-detail">{{data["use_goods_group"]}}:{{data["use_goods"]}}满{{data["use_rule"]}}元<br>可使用（含运费）</span>
                         </li>
-                       {%end%} 
                        {%end%}
                     </ul>
                 </div>
             </div>
+            {%end%}
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
             {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
             <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
