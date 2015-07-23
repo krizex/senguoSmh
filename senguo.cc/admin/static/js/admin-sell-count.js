@@ -395,8 +395,17 @@ $(document).ready(function(){
 	var end_date = new Date(choose_year4,choose_month4-1,getLastDayOfMonth(choose_month4,choose_year4))
 	show_chart('single_name',start_date,end_date,first_name);
 }).on("click","#btn_type_bigchart",function(){
-	$("#type_bigchart_bg").removeClass("hidden");
-	$("#type_bigchart").removeClass("hidden");
+	$("#type_bigchart_bg").removeClass("invisiable");
+	$("#type_bigchart").removeClass("invisiable");
+}).on("click","#btn_type_bigchart_close",function(){
+	$("#type_bigchart_bg").addClass("invisiable");
+	$("#type_bigchart").addClass("invisiable");
+}).on("click","#btn_name_bigchart",function(){
+	$("#name_bigchart_bg").removeClass("invisiable");
+	$("#name_bigchart").removeClass("invisiable");
+}).on("click","#btn_name_bigchart_close",function(){
+	$("#name_bigchart_bg").addClass("invisiable");
+	$("#name_bigchart").addClass("invisiable");
 });
 
 // 实时更新函数
@@ -435,7 +444,6 @@ function initCharts(){
 		$this.find("li").eq(0).addClass("active");
 	});
 	show_all_chart(CurrentDate,CurrentDate);
-	
 	var start_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),1);
 	var end_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),getLastDayOfMonth(CurrentDate.getMonth()+1,CurrentDate.getFullYear()))
 	show_all_single_chart(start_date,end_date);
@@ -655,6 +663,8 @@ function show_all_single_chart(start_date,end_date){
 					$(".has_no_goods").removeClass("hidden");
 					$("#single_name").removeClass("mb50");
 					$(".hr3").removeClass("mt50");
+					$("#btn_name_bigchart").addClass("hidden");
+					$("#btn_type_bigchart").addClass("hidden");
 					has_no_goods = 1;
 					return ;
 				}
@@ -753,13 +763,22 @@ function show_all_chart(start_date,end_date){
 					$(".has_no_goods").removeClass("hidden");
 					$("#single_name").removeClass("mb50");
 					$(".hr3").removeClass("mt50");
+					$(".change-box").empty();
+
+					$(".pre-item").addClass("hidden");
+					$(".next-item").addClass("hidden");
+					for(var i = 2;i <= 4;i++){
+						$(".pre-item"+i).addClass("hidden");
+						$(".next-item"+i).addClass("hidden");
+					}
 					has_no_goods = 1;
 					return ;
 				}
 
 				$("#goods_type").css("height",output_data["type_data"].length*40+105 + "px");
-				// $("#goods_type_big").css("height",output_data["type_data"].length*35+105 + "px");
+				$("#goods_type_big").css("height",output_data["type_data"].length*35+130 + "px");
 				$("#goods_name").css("height",output_data["name_data"].length*40+105 + "px");
+				$("#goods_name_big").css("height",output_data["name_data"].length*35+130 + "px");
 				require.config({
 				       	paths: {
 				            		echarts:'/static/js'
@@ -775,15 +794,15 @@ function show_all_chart(start_date,end_date){
 				              //按商品类目排序
 			        		function (ec) {
 			            		            var myChart1 = ec.init(document.getElementById('goods_type'));
-			            		            // var myChart11 = ec.init(document.getElementById('goods_type_big'));
+			            		            var myChart11 = ec.init(document.getElementById('goods_type_big'));
 			            		            myChart1.showLoading({
 			                	            		text: '正在努力的读取数据中...'
 			            			});
-			            			myChart1.hideLoading();
-			            			// myChart11.showLoading({
-			               //  	            		text: '正在努力的读取数据中...'
-			            			// });
-			            			// myChart11.hideLoading();
+			            			
+			            			myChart11.showLoading({
+			                	            		text: '正在努力的读取数据中...'
+			            			});
+			            			
 			            			var options = {
 			            				    title : {
 							        	        subtext: '数值单位：元',
@@ -847,14 +866,25 @@ function show_all_chart(start_date,end_date){
 							                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
 						};
 						getCount("type",options,myChart1,output_data["type_data"]);
-						// getCount("type",options,myChart11,output_data["type_data"]);
+						myChart1.hideLoading();
+						
+
+						myChart11.refresh();
+						myChart11.setOption(options);
+						myChart11.hideLoading();
 
 
 						var myChart2 = ec.init(document.getElementById('goods_name'));
 			            		             myChart2.showLoading({
 			                	            		text: '正在努力的读取数据中...'
 			            			});
-			            			myChart2.hideLoading();
+			            			
+
+			            			var myChart22 = ec.init(document.getElementById('goods_name_big'));
+			            		             myChart22.showLoading({
+			                	            		text: '正在努力的读取数据中...'
+			            			});
+
 
 			            			var options2 = {
 			            				    title : {
@@ -919,6 +949,11 @@ function show_all_chart(start_date,end_date){
 						};
 
 			            			getCount("name",options2,myChart2,output_data["name_data"]);
+			            			myChart2.hideLoading();
+
+			            			myChart22.refresh();
+						myChart22.setOption(options2);
+						myChart22.hideLoading();
 
 					}
 
@@ -942,6 +977,9 @@ function show_chart(action,start_date,end_date,name){
 
 	var myChartType = null;
 	var TypeOptions = null;
+
+	var myChartName2 = null;
+	var myChartType2 = null;
 
 	var myChartName = null;
 	var NameOptions = null;
@@ -1059,7 +1097,12 @@ function show_chart(action,start_date,end_date,name){
 	                	            		text: '正在努力的读取数据中...',
 	                	            		y:150
 	            			});
-	            			// myChartType.hideLoading();
+
+	            		            myChartType2 = ec.init(document.getElementById('goods_type_big'));
+	            		            myChartType2.showLoading({
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
+	            			});
 	            			TypeOptions = {
 	            				    title : {
 					        	        subtext: '数值单位：元',
@@ -1143,6 +1186,12 @@ function show_chart(action,start_date,end_date,name){
 	        		function (ec) {
 	            		            myChartName = ec.init(document.getElementById('goods_name'));
 	            		            myChartName.showLoading({
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
+	            			});
+
+	            		             myChartName2 = ec.init(document.getElementById('goods_name_big'));
+	            		            myChartName2.showLoading({
 	                	            		text: '正在努力的读取数据中...',
 	                	            		y:150
 	            			});
@@ -1324,24 +1373,34 @@ function show_chart(action,start_date,end_date,name){
 					$(".has_no_goods").removeClass("hidden");
 					$("#single_name").removeClass("mb50");
 					$(".hr3").removeClass("mt50");
+					$("#btn_name_bigchart").addClass("hidden");
+					$("#btn_type_bigchart").addClass("hidden");
+					myChartSingleType.hideLoading();
+					myChartSingleName.hideLoading();
+					$("#single_type").css("height","0px");
+					$("#single_name").css("height","0px");
 					has_no_goods = 1;
 					return ;
-				}
-				if(output_data["has_goods"] == 0){
-					$(".has_no_goods").removeClass("hidden");
-					$("#single_name").removeClass("mb50");
-					$(".hr3").removeClass("mt50");
-					return;
 				}
 				if(action == 'type'){
 					myChartType.hideLoading();
 					$("#goods_type").css("height",output_data.length*40+105 + "px");
+					$("#goods_type_big").css("height",output_data.length*35+105 + "px");
 					getCount("type",TypeOptions,myChartType,output_data);
+
+					myChartType2.refresh();
+					myChartType2.setOption(TypeOptions);
+					myChartType2.hideLoading();
 				}
 				else if(action == 'name'){
 					myChartName.hideLoading();
+					myChartName2.hideLoading();
 					$("#goods_name").css("height",output_data.length*40+105 + "px");
+					$("#goods_name_big").css("height",output_data.length*35+105 + "px");
 					getCount("name",NameOptions,myChartName,output_data);
+
+					myChartName2.refresh();
+					myChartName2.setOption(NameOptions);
 				}
 				else if(action == 'single_type'){
 					myChartSingleType.hideLoading();
