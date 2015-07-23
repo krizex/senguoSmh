@@ -30,7 +30,7 @@ function getPageSum(){
 	page = 0;
 	var args={
 		page:page
-	}0.00
+	}
 	$.postJson(url,args,function(res){
 		if(res.success){
 			page_sum = res.page_sum;
@@ -60,7 +60,7 @@ function showHistory(page){
 			for(i = 0;i<history.length;i++){
 				his = history[i];
 				var type = his["type"];
-				
+
 				// 此处用于判断用户名是否需要加超链接
 				if(type == 2){
 					var item2 = '<td width="17%">{{record}}{{name}}</td>';
@@ -102,7 +102,7 @@ function showHistory(page){
 		        		var list_item =render({
 		           	 		shop_code:shop_code,
 		            			shop_name:shop_name,
-		            			type:type,		    
+		            			type:type,
 		            			record:record,
 		            			name:name,
 		            			order_num_txt:order_num_txt,
