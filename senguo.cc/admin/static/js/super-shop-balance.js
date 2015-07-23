@@ -75,48 +75,48 @@ function showHistory(page){
 					 +'<td class="text-gray" width="15%">{{time}}</td>'
 					 +'<td class="txt-ar" width="12%"><span class="orange-txt">{{balance_value}}</span>元</td>'
 					 +'<td class="txt-ar pr10" width="15%"><span class="green-txt">{{balance}}</span>元</td>'
-					 '</tr>'
-		        		var render=template.compile(item);
-		        		var shop_code = his["shop_code"];
-		        		var shop_name= his["shop_name"];
-		        		if(shop_name.length >=8){
-		        			shop_name = shop_name.slice(0,7) + '...';
-		        		}
-		        		var record = his["record"];
-		        		var name = his["name"]
-		        		if(name.length >=6){
-		        			name =name.slice(0,5)+'...';
-		        		}
-		        		var order_num_txt = his["order_num_txt"];
-		        		var order_num = his["order_num"];
-		        		var time=his["time"];
-		        		var balance_value = his["balance_value"];
-		        		if(type == 2){
-		        			balance_value = '-' + balance_value;
-		        		}
-		        		else{
-		        			balance_value = '+' + balance_value;
-		        		}
-		        		var balance = his["balance"];
+					 '</tr>';
+		        var render=template.compile(item);
+		        var shop_code = his["shop_code"];
+		        var shop_name= his["shop_name"];
+		        if(shop_name.length >=8){
+		        	shop_name = shop_name.slice(0,7) + '...';
+		        }
+		        var record = his["record"];
+		        var name = his["name"]
+		        if(name.length >=6){
+		        	name =name.slice(0,5)+'...';
+		        }
+		        var order_num_txt = his["order_num_txt"];
+		        var order_num = his["order_num"];
+		        var time=his["time"];
+		        var balance_value = his["balance_value"];
+		        if(type == 2){
+		        	balance_value = '-' + balance_value;
+		        }
+		        else{
+		        	balance_value = '+' + balance_value;
+		        }
+		        var balance = his["balance"];
 
-		        		var list_item =render({
-		           	 		shop_code:shop_code,
-		            			shop_name:shop_name,
-		            			type:type,
-		            			record:record,
-		            			name:name,
-		            			order_num_txt:order_num_txt,
-		            			order_num:order_num,
-		            			time:time,
-		            			balance_value:balance_value,
-		            			balance:balance
-		        		});
-		        		$('.tb-account').append(list_item);
-		        	}
-               	}
-            		else{
-                   		 alert(res.error_text);
-                   	}
+		        var list_item =render({
+		            shop_code:shop_code,
+		            shop_name:shop_name,
+		            type:type,
+		            record:record,
+		            name:name,
+		            order_num_txt:order_num_txt,
+		            order_num:order_num,
+		            time:time,
+		            balance_value:balance_value,
+		            balance:balance
+		        });
+		        $('.tb-account').append(list_item);
+		    }
+        }
+        else{
+            alert(res.error_text);
+        }
 	},
 	function(){alert('网络好像不给力呢~ ( >O< ) ~');}
 	);
