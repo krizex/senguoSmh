@@ -15,16 +15,15 @@
                 <div class="cate-title mt2 c333">选择店铺 : </div>
                 <div class="dropdown slide-down-select pull-left mt2 import-drop-down">
                     <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                        <em title="" class="pull-left shop_name" data-id="4">水果太太(光谷店)</em>
+                        <em title="" class="pull-left shop_name" data-id="{{shop_list[0]['id']}}">{{shop_list[0]['name']}}</em>
                         <span class="caret pull-right no-margin-left rotate0"></span>
                     </button>
                     <ul class="dropdown-menu dropdown-menu-right shop_profile_list" role="menu" aria-labelledby="dropdownMenu110">
+                        {% for shop in shop_list%}
                         <li role="presentation">
-                            <a class="item" href="javascript:;" data-id="1">水果太太(广谱屯)</a>
+                            <a class="item" href="javascript:;" data-id="{{shop['id']}}">{{shop["name"]}}</a>
                         </li>
-                        <li role="presentation">
-                            <a class="item" href="javascript:;" data-id="2">水果太太(汉口店)</a>
-                        </li>
+                        {% end %}
                     </ul>
                 </div>
             </div>
@@ -49,49 +48,17 @@
                             <p class="c666">价格3元/份</p>
                         </div>
                     </li>
-                    <li class="active">
-                        <i class="checkbox-btn"></i>
-                        <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
-                        <div class="shop-item">
-                            <p class="c333">水果太太</p>
-                            <p class="c666">价格3元/份</p>
-                        </div>
-                    </li>
-                    <li class="active">
-                        <i class="checkbox-btn"></i>
-                        <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
-                        <div class="shop-item">
-                            <p class="c333">水果太太</p>
-                            <p class="c666">价格3元/份</p>
-                        </div>
-                    </li>
-                    <li class="active">
-                        <i class="checkbox-btn"></i>
-                        <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
-                        <div class="shop-item">
-                            <p class="c333">水果太太</p>
-                            <p class="c666">价格3元/份</p>
-                        </div>
-                    </li>
-                    <li class="active">
-                        <i class="checkbox-btn"></i>
-                        <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
-                        <div class="shop-item">
-                            <p class="c333">水果太太</p>
-                            <p class="c666">价格3元/份</p>
-                        </div>
-                    </li>
                 </ul>
                 <div class="last-choose mt10 ml5">
                     <span class="all-choose fl">
                         <i class="checkbox-btn fl"></i>
                         <span class="f12 fl ml10">全选</span>
                     </span>
-                    <div class="page-switch">
+                   <!--  <div class="page-switch">
                         <a href="javascript:;" class="prev-page">上一页</a>
                         <span class="page-num"><span id="cur_page">1</span>/<span id="total_page">3</span></span>
                         <a href="javascript:;" class="next-page">下一页</a>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <p class="mt10 show-choose-txt">已选 <span class="green-txt" id="choose_txt">0</span> 种商品</p>
