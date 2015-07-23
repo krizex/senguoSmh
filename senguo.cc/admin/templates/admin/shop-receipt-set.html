@@ -3,7 +3,6 @@
 
 {% block setcontent %}
 <div class="set-description">
-    <a href="{{reverse_url('BbsDetail',8)}}" target="_blank" class="pull-right">查看详细打印机教程</a>
     <p>小票打印设置</p>
 </div>
 <ul class="type-list font14 mt20" data-id="{{current_shop.config.receipt_type}}">
@@ -11,6 +10,7 @@
         <a href="javascript:;" class="pull-left circle-btn mr10" data-id="0"></a>
         <span class="pull-left mr20">有线打印</span>
         <span class="pull-left text-grey2">除订单信息外还可上传图片进行打印。</span>
+        <a href="{{reverse_url('BbsDetail',8)}}" target="_blank" class="pull-right">查看详细打印机教程</a>
     </li>
     <li>
         <a href="javascript:;" class="pull-left circle-btn mr10"  data-id="1"></a>
@@ -76,6 +76,7 @@
                     <li data-id="1" class="fy"><span class="circle"></span>飞印</li>
                 </ul>
             </div>
+            <br>
             <div class="iti">
                 <span class="w1 pull-left set-inl-blo mr20">无线打印机终端号</span>
                 <div class="w2 pull-left">
@@ -83,11 +84,12 @@
                     <input class="address-edit num-input"  type="text" value="{{current_shop.config.wireless_print_num or '请设置'}}" style="display:none"/>
                 </div>
             </div>
-            <div class="iti secket-key">
+            <br>
+            <div class="iti-last secket-key">
                  <span class="w1 pull-left set-inl-blo mr20">无线打印机密钥</span>
                  <div class="w2 pull-left">
                     <span class="address-show console-key">{{current_shop.config.wireless_print_key or '请设置'}}</span>
-                    <input class="address-edit key-input"  type="text" value="{{current_shop.config.wireless_print_key or '请设置'}}" style="display:none"/>
+                    <input class="address-edit key-input" type="text" value="{{current_shop.config.wireless_print_key or '请设置'}}" style="display:none"/>
                 </div>
             </div>
        </div>

@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="/madmin/shopset" class="back goback">返回</a>
+    <a href="{{reverse_url('MadminSet')}}" class="back goback">返回</a>
     <span>商城公告</span>
 </div>
 {% end %}
@@ -17,7 +17,7 @@
             <div class="fr">
                 <span class="switch-btn {% if notice.active==1 %}switch-abtn{% end %} switch-notice"  data-id="{{notice.id}}"><i></i><span>{% if notice.active==1 %}已启用{% else %}未启用{% end %}</span></span>
                 <span class="del-notice ml10 c666 hide"  data-id="{{notice.id}}">删除</span>
-                <a href="/madmin/shopattr?action=addNotice&id={{notice.id}}" class="ml10 c666">编辑</a>
+                <a href="{{reverse_url('MadminSetAttr')}}?action=addNotice&id={{notice.id}}" class="ml10 c666">编辑</a>
             </div>
             <span class="dgreen">公告{% if arrNum[index] %}{{arrNum[index]}}{% end %}</span>
         </li>
@@ -41,7 +41,7 @@
         </li>
     </ul>
     {% end %}
-    <a href="/madmin/shopattr?action=addNotice" class="create-btn add-notice">+添加新公告</a>
+    <a href="{{reverse_url('MadminSetAttr')}}?action=addNotice" class="create-btn add-notice">+添加新公告</a>
 </div>
 {% end %}
 {% block fix %}
