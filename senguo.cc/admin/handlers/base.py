@@ -524,7 +524,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			# print("[_AccountBaseHandler]get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				print("[_AccountBaseHandler]get_current_user: self._user not found")
+				print("[_AccountBaseHandler]get_current_user: self._user not found2333333")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -1170,7 +1170,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 	@tornado.web.authenticated
 	def prepare(self):
 		"""这个函数在get、post等函数运行前运行"""
-		shop_id = self.get_secure_cookie("shop_id") or b'0'
+		shop_id = self.get_secure_cookie("shop_id") or b'0'         
 		shop_id = int(shop_id.decode())
 		try:
 			admin = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.accountinfo.id,active=1,work=9).first()
@@ -1182,16 +1182,25 @@ class AdminBaseHandler(_AccountBaseHandler):
 		except:
 			super_admin = None
 
+
 		if not admin and not super_admin:
 			return self.redirect(self.reverse_url("ApplyHome"))
 
 		if admin:
-			try:
-				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
-				.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
-					models.HireLink.active == 1,models.HireLink.work == 9).first()
-			except:
-				shop = None
+			if shop_id:
+				try:
+					shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+					.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+						models.HireLink.active == 1,models.HireLink.work == 9).first()
+				except:
+					shop = None
+			else:
+				try:
+					shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+					.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+						models.HireLink.active == 1,models.HireLink.work == 9).first()
+				except:
+					shop = None
 			self.current_shop = shop
 
 		if shop_id:
@@ -1232,7 +1241,16 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# 		self.current_shop = shop
 	def if_current_shops(self):
 		if not self.current_user.shops:
-			return self.redirect(self.reverse_url("switchshop"))
+			try:
+				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+				.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+					models.HireLink.active == 1,models.HireLink.work == 9).first()
+			except:
+				shop = None
+			if shop:
+				self.current_shop = shop
+			else:
+				return self.redirect(self.reverse_url("switchshop"))
 
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())

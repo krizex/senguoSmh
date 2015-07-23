@@ -18,12 +18,12 @@ from random import Random
 class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		# try:
-		# 	if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
-		# except:
-		# 	if_admin = None
-		# if if_admin:
-		# 	return self.redirect(self.reverse_url("switchshop"))
+		try:
+			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			if_admin = None
+		if if_admin:
+			return self.redirect(self.reverse_url("switchshop"))
 		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
@@ -71,7 +71,7 @@ class CreateShop(AdminBaseHandler):
 		#权限检查,目前仅超级管理员可以创建店铺
 		if self.current_shop:
 			if self.current_shop.admin_id != self.current_user.id :
-				return self.send_fail("您不是店铺的超级管理员，无法创建新的店铺")
+				return self.send_fail("您不是卖家，无法创建新的店铺")
 		else:
 			try:
 				super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()

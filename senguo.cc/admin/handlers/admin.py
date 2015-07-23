@@ -1283,6 +1283,28 @@ class Order(AdminBaseHandler):
 			# 更新fruit 的 current_saled
 			self.order_done(self.session,order)
 
+	def _count(self):
+		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
+				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0}
+		try:
+			orders = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).all()
+		except:
+			orders = None
+		if orders:		
+			for order in orders:
+				count[order.type*10+5] += 1
+				if order.status == 0:
+					count[order.type*10] += 1
+				elif order.status == 1:
+					count[order.type*10+1] += 1
+				elif order.status in (2, 3, 4):
+					count[order.type*10+2] += 1
+				elif order.status in (5, 6, 7):
+					count[order.type*10+3] += 1
+				elif order.status == 10:
+					count[order.type*10+4] += 1
+		return count
+
 	@tornado.web.authenticated
 	@unblock
 	@AdminBaseHandler.check_arguments("action", "data")
@@ -1483,23 +1505,6 @@ class Order(AdminBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
-	def _count(self):
-		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
-				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0}
-		if self.current_shop.orders:
-			for order in self.current_shop.orders:
-				count[order.type*10+5] += 1
-				if order.status == 0:
-					count[order.type*10] += 1
-				elif order.status == 1:
-					count[order.type*10+1] += 1
-				elif order.status in (2, 3, 4):
-					count[order.type*10+2] += 1
-				elif order.status in (5, 6, 7):
-					count[order.type*10+3] += 1
-				elif order.status == 10:
-					count[order.type*10+4] += 1
-		return count
 
 # 商品管理（老）
 class Shelf(AdminBaseHandler):

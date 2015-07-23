@@ -58,7 +58,7 @@ function getCode($this){
     $this.addClass("bg85").attr("data-statu", "1");
     var phone=$.trim($("#tel").val())
     var args={
-        action:'gencode',
+        action:'gencode_shop_apply',
         phone:phone,
         _xsrf:window.dataObj._xsrf
     };
