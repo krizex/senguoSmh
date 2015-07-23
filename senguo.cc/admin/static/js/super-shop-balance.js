@@ -30,7 +30,7 @@ function getPageSum(){
 	page = 0;
 	var args={
 		page:page
-	}
+	};
 	$.postJson(url,args,function(res){
 		if(res.success){
 			page_sum = res.page_sum;
@@ -38,8 +38,8 @@ function getPageSum(){
 		}
 		else{
 			page = 1;
-                    		alert(res.error_text);
-                    	}
+			alert(res.error_text);
+		}
 	},
 	function(){alert('网络好像不给力呢~ ( >O< ) ~');}
 	);
