@@ -2398,6 +2398,7 @@ class Goods(AdminBaseHandler):
 				return self.send_fail('没有该商品分类')
 			types = self.getClass(fruit_types)
 			return self.send_success(data=types)
+
 		else:
 			return self.send_error(404)
 
@@ -2408,8 +2409,91 @@ class GoodsImport(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str")
 	def get(self):
-			
-		return self.render("admin/goods-import.html",context=dict(subpage="goods")) 
+		shop_list = []
+		try:
+			shops = self.current_user.shops
+		except:
+			shops = None
+		try:
+			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
+		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+		except:
+			other_shops = None
+
+		if shops:
+			shop_list += self.getshop(shops)
+		if other_shops:
+			shop_list += self.getshop(other_shops)
+		return self.render("admin/goods-import.html",context=dict(subpage="goods"),shop_list=shop_list) 
+
+	def getshop(self,shops):
+		shop_list = []
+		for shop in shops:
+			shop_list.append({"id":shop.id,"name":shop.shop_name})
+		return shop_list
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		current_shop = self.current_shop
+		if action == "get_goods":
+			shop_id = int(data["id"])
+			try:
+				shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			except:
+				shop = None
+			if not shop:
+				return self.send_fail("该店铺不存在")
+			if shop not in self.current_shop.admin.shops:
+				return self.send_fail("该店铺不属于您，无法获取数据")
+			goods_list = []
+			for fruit in shop.fruits:
+				charge_types = []
+				for charge in fruit.charge_types:
+					charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
+				img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
+				goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
+			return self.send_success(goods_list=goods_list)
+
+		elif action == "import_goods":
+			fruit_list  = data["fruit_list"]
+			if len(self.current_shop.fruits) + len(fruit_list) >200:
+				return self.send_fail("一家店铺至多可添加200种商品")
+			fruits = self.session.query(models.Fruit).filter(models.Fruit.id.in_(fruit_list)).all()
+			for fruit in fruits:
+				_fruit = models.Fruit(
+					shop_id=self.current_shop.id,
+					fruit_type_id=fruit.fruit_type_id,
+					name=fruit.name,
+					active=fruit.active,
+					storage=fruit.storage,
+					unit=fruit.unit,
+					tag=fruit.tag,
+					img_url=fruit.img_url,
+					intro=fruit.intro,
+					group_id=fruit.group_id,
+					classify=fruit.classify,
+					detail_describe=fruit.detail_describe,
+				)
+				self.session.add(_fruit)
+				self.session.commit()
+				for charge in fruit.charge_types:
+					_charge=models.ChargeType(
+						fruit_id = _fruit.id,
+						price = charge.price,
+						unit = charge.unit,
+						num = charge.num,
+						unit_num = charge.unit_num,
+						active = charge.active,
+						market_price = charge.market_price,
+						select_num = charge.select_num,
+						relate = charge.relate
+					)
+					self.session.add(_charge)
+					self.session.commit()
+			return self.send_success()
 
 class editorTest(AdminBaseHandler):
 	@tornado.web.authenticated

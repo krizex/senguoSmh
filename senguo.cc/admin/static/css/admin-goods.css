@@ -160,7 +160,7 @@ textarea{border-color:#eee;padding: 2px 5px;}
 /*导入商品*/
 .checkbox-btn{background-image: url('/static/images/check_uncheck.png');width: 20px;height: 20px;margin-top: 14px;background-repeat: no-repeat;background-size: 20px 20px;border-radius: 2px;}
 .wrap-shop-goods{padding: 10px;border: 1px solid #ddd;}
-.shop-list{min-height:250px;max-height: 520px;}
+.shop-list{min-height:250px;max-height: 520px;overflow-y:scroll;}
 .shop-list>li{padding: 6px 10px;position: relative;cursor: pointer;width:25%;-webkit-box-sizing: border-box;float:left;}
 .shop-list .active .checkbox-btn{background-image: url('/static/images/check_checked.png');}
 .shop-list>li i{position: absolute;top: -7px;left: 4px;}
