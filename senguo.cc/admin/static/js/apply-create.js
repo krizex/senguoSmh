@@ -249,7 +249,7 @@ function initBmap(){
                 map.centerAndZoom(point, 16);
                 marker = new BMap.Marker(point);
                 map.addOverlay(marker);
-                $("#address").attr("data-lng",point.lng).attr("data-lat",point.lat)
+                $("#address").attr("data-lng",point.lng).attr("data-lat",point.lat);
             }else{
                 return Tip("您输入的详细地址不正确，请重新输入");
             }
@@ -258,6 +258,7 @@ function initBmap(){
     map.addEventListener("click",function(e){
         map.removeOverlay(marker);
         var point = e.point;
+        $("#address").attr("data-lng",point.lng).attr("data-lat",point.lat);
         marker = new BMap.Marker(point);
         map.addOverlay(marker);
     });
