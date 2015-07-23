@@ -472,8 +472,8 @@ class CouponProfile(AdminBaseHandler):
 						use_goods=q1.name
 					from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
 					to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
-					x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,\
-						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date}
+					x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
+						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day}
 					data.append(x_coupon)
 				else:
 					pass
@@ -485,7 +485,7 @@ class CouponList(AdminBaseHandler):
 	def getcoupon(self,coupon_status,data):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.current_shop.id
-		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).all()
+		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).order_by(models.CouponsCustomer.get_date).all()
 		for x in q:
 			effective_time=time.strftime('%Y-%m-%d',time.localtime(x.effective_time))
 			uneffective_time=time.strftime('%Y-%m-%d',time.localtime(x.uneffective_time))
@@ -552,6 +552,9 @@ class CouponDetail(AdminBaseHandler):
 			return self.render("coupon/coupon-detail.html",output_data=x_coupon)
 		elif action=="exchange":
 			self.updatecoupon()
+			qused=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0,coupon_status=1).first()
+			if qused:
+				return send_fail("Sorry，该优惠券已经被领取了哦~")
 			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0,coupon_status=0).first()
 			if q==None:
 				return self.send_fail("对不起，您的优惠券码有错误！")
@@ -628,7 +631,7 @@ class CouponCustomer(AdminBaseHandler):
 				qq.update(self.session,get_number=get_number)
 				self.session.commit()
 				x_coupon={"shop_code":shop.shop_code,"shop_name":shop.shop_name,"shop_logo":shop.shop_trademark_url,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":q.coupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
-				return self.send_success(coupon_key=q.coupon_key)
+				return self.send_success(coupon_money=qq.coupon_money,coupon_key=q.coupon_key)
 			else:
 				return self.send_fail("对不起，这批优惠券已经被抢空了，下次再来哦！")
 

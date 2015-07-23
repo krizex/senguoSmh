@@ -30,7 +30,9 @@ function getCoupon(coupon_id,$obj){
         success:function(res){
             $obj.attr("data-flag","on");
             if(res.success){
-                Tip("领取成功");
+                coupon_money=res.coupon_money;
+                var tip="太棒了！你获得了价值"+coupon_money+"元的优惠券一张哦！";
+                Tip(tip);
                 setTimeout(function(){
                     window.location.href="/coupon/list?action=get_one&coupon_key="+res.coupon_key;
                 },2000);

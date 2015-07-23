@@ -20,7 +20,7 @@
                 <div class="price-info">
                     <p class="f14 green-txt">仅剩{{data["remain_number"]}}张</p>
                     <p class="f12 c333">满{{data["use_rule"]}}元即可使用</p>
-                    <p class="f12 c666">{{data["from_valid_date"]}}-{{data["to_valid_date"]}}</p>
+                     <td>{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</td>
                 </div>
             </div>
         </li>

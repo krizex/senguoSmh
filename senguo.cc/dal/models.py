@@ -1302,7 +1302,8 @@ class Order(MapBase, _CommonApi):
 	online_type       = Column(String(8))
 	send_admin_id =Column(Integer,default=0) #record admin_id when to send the order #5.25
 	finish_admin_id =Column(Integer,default=0) #record admin_id when to finish the order#5.25
-	coupon_key=Column(String(128))
+	coupon_key=Column(String(128))    #优惠券码
+	coupon_money=Column(Float,default=0)  #优惠金额
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
@@ -1802,57 +1803,6 @@ class Spider_Good(MapBase,_CommonApi):
 	shop_id  =Column(Integer,nullable = False)
 	sales = Column(Integer)
 
-
-# add by cm 2015.6.15
-# 商家优惠券
-
-# class CouponsShop(MapBase, _CommonApi):
-#  	__tablename__='coupon_shop'
-#  	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
-#  	shop_name=Column(String(128))
-#  	coupon_id=Column(Integer,nullable=False)
-#  	customer_id=Column(Integer,ForeignKey(Customer.id))
-#  	coupon_key=Column(String(11),primary_key=True,nullable=False)
-#  	coupon_money=Column(Float,nullable=False)
-#  	coupon_totalnum=Column(Integer,nullable=False)
-#  	coupon_usenum=Column(Integer,default=0)
-#  	coupon_remainnum=Column(Integer,nullable=False)
-#  	#优惠方式  0：固定日期  1：领取后生效
-#  	valid_way=Column(Integer,default=0,nullable=False)
-#  	start_time=Column(Date)
-#  	uneffective_time=Column(Date)
-#  	newcoupon_time=Column(Date,default=func.now())
-#  	get_date=Column(Date)
-#  	use_date=Column(Date)
-#  	if_used=Column(Integer,default=0)
-#  	if_uneffective=Column(Integer,default=0)
-#  	order_id=Column(Integer)
-#  	day_start=Column(Integer,default=0,nullable=False)
-#  	last_day=Column(Integer,nullable=False)
-#  	get_limitnum=Column(Integer,nullable=False,default=1)
-#  	used_for=Column(Integer,default=0)
-#  	use_rule=Column(Float,nullable=False)
-#  	closed=Column(Integer,default=0)
- 		 
-	
-# # 用户优惠券
-# class CouponsCustomer(MapBase, _CommonApi):
-# 	__tablename__='coupon_customer'
-# 	coupon_id=Column(String(11),nullable=False)
-# 	coupon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
-# 	customer_id=Column(Integer,ForeignKey(Customer.id),primary_key=True,nullable=False)
-# 	shop_name=Column(String(128))
-# 	coupon_money=Column(Float,nullable=False)
-# 	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id))
-# 	get_date=Column(Date,default=func.now())
-# 	use_date=Column(Date)
-# 	start_time=Column(Date)
-# 	uneffective_time=Column(Date)
-# 	if_used=Column(Integer,default=0)
-# 	if_uneffective=Column(Integer,default=0)
-# 	order_id=Column(Integer,nullable=False)
-# 	used_for=Column(Integer,default=0)
-# 	use_rule=Column(Float,nullable=False)
 class CouponsShop(MapBase, _CommonApi):
  	__tablename__='coupon_shop'
  	id=Column(Integer,autoincrement=True,primary_key=True)
@@ -1876,7 +1826,8 @@ class CouponsShop(MapBase, _CommonApi):
  	last_day=Column(Integer)
  	get_limit=Column(Integer)
  	closed=Column(Integer,default=0)
- 	get_rule=Column(Integer,default=0)
+ 	get_rule=Column(Float,default=0)
+ 	create_date=Column(Integer)
  		 	
 # 用户优惠券
 class CouponsCustomer(MapBase, _CommonApi):

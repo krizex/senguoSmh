@@ -20,6 +20,9 @@
         </div>
     </div>
 </div>
+{%if output_data==[] and data1==[] %}
+<p>this is null </p>
+{%else%}
 <div class="wrap-tb mt30">
     <table class="tb-enty tb-active">
         <colgorup>
@@ -27,10 +30,10 @@
             <col width="8%"/>
             <col width="10%"/>
             <col width="10%"/>
-            <col width="18%"/>
-            <col width="10%"/>
+            <col width="24%"/>
+            <!-- <col width="10%"/> -->
             <col width="12%"/>
-            <col width="14%"/>
+            <col width="16%"/>
         </colgorup>
         <thead>
             <tr class="thead">
@@ -39,20 +42,22 @@
                 <td>优惠条件</td>
                 <td>优惠金额</td>
                 <td>优惠券有效期</td>
-                <td>可消费商品</td>
+             <!--    <td>可消费商品</td> -->
                 <td>使用/领取/库存</td>
                 <td>操作</td>
             </tr>
         </thead>
         <tbody>
         {% for coupon in output_data %}
+         {%if output_data==[]%}
+        <p>this is null </p>
+        {%else%}
             <tr class="detail-tr {%if coupon['closed']==1%} dis-coupon{%end%}" data-id="{{coupon['coupon_id']}}">
                 <td>{{coupon['from_get_date']}}到{{coupon['to_get_date']}}</td>
                 <td>每人限领{{coupon['get_limit']}}张</td>
-                <td>{{coupon["use_goods_group"]}}买满{{coupon["use_rule"]}}金额可用</td>
+                <td>{% if coupon['use_goods_group'] == -2 %}所有商品{% else %}{{coupon['use_goods_group']}}:{{coupon['use_goods']}}{% end %}买满{{coupon["use_rule"]}}元可用</td>
                 <td>{{coupon['coupon_money']}}元</td>
                 <td>{%if coupon["valid_way"]==0%}{{coupon['from_valid_date']}}到{{coupon['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{coupon["last_day"]}}天{%end%}</td>
-                <td>{% if coupon['use_goods_group'] == -2 %}所有商品{% else %}限商品分组:{{coupon['use_goods_group']}}{% end %}</td>
                 <td>{{coupon['use_number']}}/{{coupon['get_number']}}/{{coupon['total_number']}}</td>
                 <td class="operate">
                     <a href="/admin/marketing?action=editcouponpage&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
@@ -78,6 +83,7 @@
                 </td>
             </tr>
         {% end %}
+        {%end%}
         </tbody>
     </table>
             <input type="hidden" value="{{data1}}">
@@ -87,10 +93,10 @@
             <col width="8%"/>
             <col width="10%"/>
             <col width="12%"/>
-            <col width="16%"/>
-            <col width="10%"/>
+            <col width="24%"/>
+            <!-- <col width="10%"/> -->
             <col width="12%"/>
-            <col width="14%"/>
+            <col width="16%"/>
         </colgorup>
         <thead>
         <tr class="thead">
@@ -99,21 +105,26 @@
             <td>领取限制</td>
             <td>使用优惠券条件</td>
             <td>优惠金额和优惠条件</td>
-            <td>可消费商品</td>
+            <!-- <td>可消费商品</td> -->
             <td>使用/领取/库存</td>
             <td>操作</td>
         </tr>
         </thead>
         <tbody>
         {% for data in data1 %}
+        {%if data1==[]%}
+        <p>this is null</p>
+        {%else%}
         <tr class=" detail-tr {%if data['closed']==1%}dis-coupon{%end%}"  data-id="{{data['coupon_id']}}">
              <td>{{data["from_get_date"]}}到{{data["to_get_date"]}}</td>
              <td>充值满{{data["get_rule"]}}元领取</td>
-             <td>每人限领{{data["get_limit"]}}张</td>
-             <td>{{coupon["use_goods_group"]}}买满{{coupon["use_rule"]}}元可用</td>
-            <td>{{data["coupon_money"]}} 元<br>{{coupon["use_goods_group"]}}买满{{coupon["use_rule"]}}元可用</td>
-             <td>{% if coupon['use_goods_group'] == -2 %}所有商品{% else %}限商品分组:{{coupon['use_goods_group']}}{% end %}</td>
-            <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td>
+             {%if data["get_limit"]!=-1%}<td>每人限领{{data["get_limit"]}}张</td>
+             {%else%}
+             <td>多充多送</td>
+             {%end%}
+              <td>{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</td>
+              <td>{{data['coupon_money']}}元<br>{% if data['use_goods_group'] == -2 %}所有商品{% else %}{{data['use_goods_group']}}:{{data['use_goods']}}{% end %}买满{{data["use_rule"]}}元可用</td>
+            <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td>  
             <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td>
         </tr>
         <!-- <tr class="dis-coupon">
@@ -127,9 +138,11 @@
             <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span class="stop">已停用</span></td>
         </tr> -->
         {% end %}
+        {%end%}
         </tbody>
     </table>
 </div>
+{%end%}
 <div class="pop-win pop-detail hidden">
     <div class="pop-container">
         <a href="javascript:;" class="close-pop close-tip">x</a>

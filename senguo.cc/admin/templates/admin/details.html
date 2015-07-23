@@ -57,7 +57,7 @@
             <td>订单号:<a href="javascript:;">{{data["order_id"] or '无'}}</a></td>
         </tr>
        {% elif  data["coupon_status"]==0 %}
-        <tr class=" dis-coupon">
+        <tr class=" ">
             <td class="relative"><span>{{data["coupon_key"]}}</span><span class="copy-coupon-code">复制</span></td>
             <td>{{data["coupon_money"]}}</td>
             <td>未领取</td>

@@ -125,11 +125,11 @@
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">领取条件</span></td>
-                    <td><input type="text" class=" {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} mr10 get_rule" value="{{pre_coupon["get_rule"]}}"  {%if  pre_coupon["edit_status"]!=0%}disabled="disabled"{%end%}/>元<p class="mt6 f12 red-txt" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}>充值满多少元可领取优惠券。只能是大于0.01的数字，可以为整数</p></td>
+                    <td><input type="text" class=" get_rules {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} mr10 get_rule" value="{{pre_coupon["get_rule"]}}"  {%if  pre_coupon["edit_status"]!=0%}disabled="disabled"{%end%}/>元<p class="mt6 f12 red-txt" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}>充值满多少元可领取优惠券。只能是大于0.01的数字，可以为整数</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">领取限制<br><span class="c999 ml10">(选填)</span></span></td>
-                    <td><input type="text" class=" {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} mr10 get_limits" value="{{pre_coupon["get_limit"]}}"  {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为1</p></td>
+                    <td><input type="text" class=" {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} mr10 get_limits" value="{{pre_coupon["get_limit"]}}"  {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}/>张<p class="f12 c999 mt6">每个用户领取上限。如不填，则默认为无上限</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top" ><span class="ver-5">库存</span></td>
