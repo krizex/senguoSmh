@@ -54,7 +54,8 @@
 <main class="container mt100">
     <div class="s-container">
         <div class="sw-top">
-            <p>多店铺管理中心 {% if current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link" id="spread-list">推广店铺链接</a>{% end %}</p>
+            <p>多店铺管理中心 {% if current_shop and current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link" id="spread-list">推广店铺链接</a>{% end %}</p>
+            {% if current_shop %}
             <div class="sw-er-tip po-list invisible">
                 <div class="left-arr">
                     <span class="line1"></span>
@@ -72,6 +73,7 @@
                     </div>
                 </div>
             </div>
+            {% end %}
         </div>
         <div class="sw-head">
             <p>每个管理员拥有一个唯一的属于自己的店铺列表和店铺导航链接。</p>
@@ -133,7 +135,7 @@
                 </li>
                 {% end %}
                 <li>
-                    <a href="/apply" class="add-swshop">+ 创建店铺</a>
+                    <a href="{{reverse_url('CreateShop')}}" class="add-swshop">+ 创建店铺</a>
                 </li>
             </ul>
         </div>

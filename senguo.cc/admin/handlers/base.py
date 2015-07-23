@@ -1177,39 +1177,53 @@ class AdminBaseHandler(_AccountBaseHandler):
 		except:
 			admin = None
 
+		try:
+			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			super_admin = None
+
+		if not admin and not super_admin:
+			return self.redirect(self.reverse_url("ApplyHome"))
+
+		if shop_id:
+			self.current_shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+
+		# if not self.current_user.shops:
+		# 	if admin:
+		# 		try:
+		# 			one_shop = self.session.query(models.Shop).filter_by(id = admin.shop_id).first()
+		# 		except:
+		# 			return self.finish("您还不是任何店铺的管理员，请先申请")
+		# 		if not shop_id:
+		# 			self.current_shop = one_shop
+		# 			self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+		# 		else:
+		# 			try:
+		# 				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+		# 				.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+		# 					models.HireLink.active == 1,models.HireLink.work == 9).first()
+		# 			except:
+		# 				shop = None
+		# 			self.current_shop = shop
+		# 	else:
+		# 		return self.finish("你还没有店铺，请先申请")
+		# else:
+		# 	if admin:
+		# 		shop = next((x for x in self.current_user.shops if x.id == shop_id), \
+		# 			self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+		# 				.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+		# 					models.HireLink.active == 1,models.HireLink.work == 9).first())
+		# 	else:
+		# 		shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
+		# 	if not shop_id or not shop:#初次登录，默认选择一个店铺
+		# 		self.current_shop = self.current_user.shops[0]
+		# 		self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+		# 		return
+		# 	else:
+		# 		self.current_shop = shop
+	def if_current_shops(self):
 		if not self.current_user.shops:
-			if admin:
-				try:
-					one_shop = self.session.query(models.Shop).filter_by(id = admin.shop_id).first()
-				except:
-					return self.finish("您还不是任何店铺的管理员，请先申请")
-				if not shop_id:
-					self.current_shop = one_shop
-					self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
-				else:
-					try:
-						shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
-						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
-							models.HireLink.active == 1,models.HireLink.work == 9).first()
-					except:
-						shop = None
-					self.current_shop = shop
-			else:
-				return self.finish("你还没有店铺，请先申请")
-		else:
-			if admin:
-				shop = next((x for x in self.current_user.shops if x.id == shop_id), \
-					self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
-						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
-							models.HireLink.active == 1,models.HireLink.work == 9).first())
-			else:
-				shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
-			if not shop_id or not shop:#初次登录，默认选择一个店铺
-				self.current_shop = self.current_user.shops[0]
-				self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
-				return
-			else:
-				self.current_shop = shop
+			return self.redirect(self.reverse_url("switchshop"))
 
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())

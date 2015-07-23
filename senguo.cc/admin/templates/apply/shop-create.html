@@ -6,7 +6,7 @@
 <input type="hidden" id="token" value="{{token}}"/>
 <div class="wrap-create">
     <p class="c333 choose-text">
-        <a href="javasript:;" class="c999 cancel-add-goods">多店铺管理中心</a>
+        <a href="{{reverse_url('switchshop')}}" class="c999 cancel-add-goods">多店铺管理中心</a>
         <span class="c333"> / 创建店铺</span>
     </p>
     <ul class="tab-list create-list group mt20">
@@ -92,7 +92,7 @@
                 </div>
                 <div class="last-choose mt10">
                     <i class="checkbox-btn fl"></i>
-                    <span class="f12 fl ml10">我是以上店铺的主人，且认领以上所选店铺</span>
+                    <span class="f12 fl ml10">我是以上店铺的主人，且认领以上所选<span class="shop-number">0</span>店铺</span>
                 </div>
                 <div class="marketer mt10">
                     <span>森果市场人员ID：</span>
