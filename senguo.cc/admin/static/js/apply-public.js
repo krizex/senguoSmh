@@ -16,6 +16,9 @@ $(document).ready(function(){
 }).on("click","#get_code",function(){
     getCode($(this));
 }).on("click","#commit",function(){
+    if($(this).attr("data-flag")=="off"){
+        return Tip("请勿重复提交");
+    }
     var tel = $.trim($("#tel").val());
     var name = $.trim($("#name").val());
     var code = $.trim($("#code").val());
@@ -28,6 +31,7 @@ $(document).ready(function(){
         realname:name,
         code:code
     };
+    $(this).attr("data-flag","off");
     $.ajax({
         url:"",
         type:"post",
@@ -35,12 +39,13 @@ $(document).ready(function(){
         contentType:"application/json; charset=UTF-8",
         success:function(res){
             if(res.success) {
-                Tip("店铺申请成功");
+                Tip("申请成功");
                 setTimeout(function(){
                     window.location.href='/admin';
                 },1500);
             }else{
-                alert(res.error_text);
+                $(this).attr("data-flag","on");
+                Tip(res.error_text);
             }
         }
     });
@@ -51,16 +56,14 @@ function getCode($this){
         return false;
     }
     $this.addClass("bg85").attr("data-statu", "1");
-    var data={
-        phone: $.trim($("#tel").val())
-    };
+    var phone=$.trim($("#tel").val())
     var args={
-        action:'get_code',
-        data:data,
+        action:'gencode',
+        phone:phone,
         _xsrf:window.dataObj._xsrf
     };
     $.ajax({
-        url:"/admin/shopauth",
+        url:"/customer/phoneVerify?action=customer",
         type:"post",
         data:JSON.stringify(args),
         contentType:"application/json; charset=UTF-8",
@@ -69,7 +72,7 @@ function getCode($this){
                 getCertCode($this);
             }else{
                 $this.removeClass("bg85").removeAttr("data-statu").val("获取验证码");
-                alert(res.error_text);
+                Tip(res.error_text);
             }
         }
     });

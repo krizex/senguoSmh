@@ -74,17 +74,25 @@ $(document).ready(function(){
 }).on("click",".last-choose",function(){
     $(this).children("i").toggleClass("checked-btn");
 }).on("click",".shop-list li",function(){
+    var num=parseInt($(".shop-number").text());
+    console.log($(this).hasClass("active"));
+    if($(this).not(".active")){
+        $(".shop-number").text(num+1);
+    }
+    if($(this).hasClass("active")){
+        $(".shop-number").text(num-1);
+    }
     $(this).toggleClass("active");
-}).on("click",".second",function(){
-    $(".commit-btn").attr({"id":"import"})
 }).on("click",".last-choose",function(){
     var $this=$(this);
     if($this.attr("data-status")=="on"){
         $(this).attr({"data-status":""});
         $(".shop-list li").removeClass("active"); 
+        $(".shop-number").text(0);
     }else{
         $(this).attr({"data-status":"on"});
         $(".shop-list li").addClass("active");
+        $(".shop-number").text($(".shop-list .active").length);
     }
 }).on("click",".search-btn",function(){
     var shop_name=$("#shop_name").val().trim();
@@ -101,50 +109,34 @@ $(document).ready(function(){
             '</li>';
     var data={"shop_name":shop_name}
     $(".shop-list").empty();
-    $.ajax({
-        url:"",
-        data:JSON.stringify({action:"search",data:data,_xsrf:window.dataObj._xsrf}),
-        contentType:"application/json; charset=UTF-8",
-        type:"post",
-        success:function(res){
-            if(res.success) {
-                var shops=res.data;
-                for(var key in shops){
-                    var shop=shops[key];
-                    var render=template.compile(item);
-                    var content=render({
-                        id:shop.id,
-                        logo:shop.logo,
-                        address:shop.address,
-                        shop_name:shop.shop_name
-                    });
-                    $(".shop-list").append(content);
-                }  
-            }else{
-                Tip(res.error_text);
-            }
-        }
-    });
-}).on("click","#import",function(){
-    $.ajax({
-        url:"",
-        data:JSON.stringify({action:"search",data:data,_xsrf:window.dataObj._xsrf}),
-        contentType:"application/json; charset=UTF-8",
-        type:"post",
-        success:function(res){
-            if(res.success) {
-                var shops=res.data;
-
-            }else{
-                Tip(res.error_text);
-            }
+    var url="";
+    var args={action:"search",data:data};
+    $.postJson(url,args,function(res){
+        if(res.success) {
+           var shops=res.data;
+           if(shops.length==0){
+             return Tip("无搜索结果");
+           }
+            for(var key in shops){
+                var shop=shops[key];
+                var render=template.compile(item);
+                var content=render({
+                    id:shop.id,
+                    logo:shop.logo,
+                    address:shop.address,
+                    shop_name:shop.shop_name
+                });
+                $(".shop-list").append(content);
+            }  
+        }else{
+            Tip(res.error_text);
         }
     });
 }).on("click","#commit_shop",function(){//提交
     if(type==0){//手动创建
         commitHand($(this));
     }else if(type==1){
-
+        importShop($(this));
     }else{
 
     }
@@ -163,7 +155,7 @@ function commitHand($btn){
     }
     var phone = $.trim($(".shop_phone").val());
     if(phone==""){
-        return Tip("请输入手机号码");
+        return Tip("请输入店铺联系电话");
     }
     var lng = $("#address").attr("data-lng");
     var lat = $("#address").attr("data-lat");
@@ -195,17 +187,48 @@ function commitHand($btn){
     var url = "";
     $btn.attr("data-flag","off");
     $.postJson(url,args,function(res){
-        $btn.attr("data-flag","on");
          if(res.success){
              Tip("店铺创建成功");
              setTimeout(function(){
                  window.location.href='/admin';
              },1500);
          }else{
-             return Tip(res.error_text);
+            $btn.attr("data-flag","on");
+            return Tip(res.error_text);
          }
     });
 }
+
+function importShop($btn){
+    if($btn.attr("data-flag")=="off"){
+        return Tip("请勿重复提交");
+    }
+    var list_id=[];
+    $(".shop-list .active").each(function(){
+        var id=parseInt($(this).attr("data-id"));
+        list_id.push(id);
+    });
+    if(list_id.length==0){
+        return Tip("请选择要导入的店铺");
+    }
+    var member_code=$(".sgipt").val().trim();
+    if(!member_code){
+        return Tip("请输入森果市场人员ID");
+    }
+    var data={"code":member_code,"shop_list":list_id};
+    var url="";
+    var args={action:"import",data:data};
+    $btn.attr("data-flag","off");
+    $.postJson(url,args,function(res){       
+        if(res.success) {
+            window.location.href="/admin";
+        }else{
+            $btn.attr("data-flag","on");
+            return Tip(res.error_text);
+        }
+    });
+}
+
 function initBmap(){
     var map = new BMap.Map("bmap",{enableMapClick:false});
     var point = new BMap.Point(114.430551,30.518114);

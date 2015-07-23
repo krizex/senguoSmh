@@ -6,7 +6,7 @@
 <input type="hidden" id="token" value="{{token}}"/>
 <div class="wrap-create">
     <p class="c333 choose-text">
-        <a href="javasript:;" class="c999 cancel-add-goods">多店铺管理中心</a>
+        <a href="{{reverse_url('switchshop')}}" class="c999 cancel-add-goods">多店铺管理中心</a>
         <span class="c333"> / 创建店铺</span>
     </p>
     <ul class="tab-list create-list group mt20">
@@ -76,27 +76,20 @@
                 </div>
                 <div class="wrap-shop-list mt10">
                     <ul class="shop-list">
-                        <li>
+                       <li>请搜索您希望导入的店铺</li>
+                       <!--  <li>
                             <i class="checkbox-btn"></i>
                             <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
                             <div class="shop-item">
                                 <p class="c333">水果太太</p>
                                 <p class="c666">洪山区珞瑜路888号剑桥春天小区</p>
                             </div>
-                        </li>
-                        <li class="active">
-                            <i class="checkbox-btn"></i>
-                            <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
-                            <div class="shop-item">
-                                <p class="c333">水果太太</p>
-                                <p class="c666">洪山区珞瑜路888号剑桥春天小区</p>
-                            </div>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
                 <div class="last-choose mt10 ml5">
                     <i class="checkbox-btn fl"></i>
-                    <span class="f12 fl ml10">我是以上店铺的主人，且认领以上所选店铺</span>
+                    <span class="f12 fl ml10">我是以上店铺的主人，且认领以上所选<span class="shop-number">0</span>店铺</span>
                 </div>
                 <div class="marketer mt10">
                     <span>森果市场人员ID：</span>
@@ -128,14 +121,6 @@
             <div class="wrap-shop-list mt10">
                 <ul class="shop-list">
                     <li>
-                        <i class="checkbox-btn"></i>
-                        <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
-                        <div class="shop-item">
-                            <p class="c333">水果太太</p>
-                            <p class="c666">洪山区珞瑜路888号剑桥春天小区</p>
-                        </div>
-                    </li>
-                    <li class="active">
                         <i class="checkbox-btn"></i>
                         <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
                         <div class="shop-item">
