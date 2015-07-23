@@ -69,16 +69,20 @@
 
 /*add by jyj 2015-7-21*/
 .div-bigchart_bg{position: fixed;  top: 0%;  left: 0%;  width: 100%;  height: 100%; background-color: #000;  z-index:9998;-moz-opacity:0.7;-khtml-opacity: 0.7;opacity:.70;  filter: alpha(opacity=70);}
-.wrap-bigchart{position: fixed;left: 50%; top:50%; width:45%;  -webkit-transform:translate(-50%,-50%);height: 90%;  border: 1px solid #E8E9F7;  background-color: #FFF; overflow: auto; z-index:9999;}
+.wrap-bigchart{position: fixed;left: 50%; top:50%; width:35%;  -webkit-transform:translate(-50%,-50%);height: 95%;  border: 1px solid #E8E9F7;  background-color: #FFF; overflow: auto; z-index:9999;}
 .invisiable{visibility: hidden;}
 .pull-right{float:right; }
 .mr15{margin-right: 15px !important;}
 
-.warp-pos{left:50%p;width: 90%;}
+.wrap-pos{margin:0 auto;width: 90%;}
+.invisiable{visibility: hidden;}
 /**/
 
 /*add by jyj 2015-7-23*/
 .mt30{margin-top: 30px;}
 .mb30{margin-bottom: 30px;}
 .has_no_goods{text-align:center;font-size: 16px;}
+.fs16{font-size: 16px;}
+.fs20{font-size: 20px;}
+
 /**/
