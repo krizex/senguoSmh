@@ -8,6 +8,14 @@
     <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
      <button class="btn text-white  action-btn coupon-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
 </div>
+{%if output_data==[] and data1==[] %}
+    <div class="wrap-coupon-img txt-center">
+        <img src="/static/images/coupon.jpg" alt="" width="238">
+        <div class="wrap-newbtn">
+            <a href="/admin/marketing?action=newcouponpage" class="newbtn add-btn  mt6 mr10">+新建优惠券</a>
+        </div>
+    </div
+{% else %}
 <div class="category-list">
     <div class="c999">优惠券<span class="c333">/优惠券管理</span></div>
     <div class="subnav-box group mt30">
@@ -20,9 +28,6 @@
         </div>
     </div>
 </div>
-{%if output_data==[] and data1==[] %}
-<p>this is null </p>
-{%else%}
 <div class="wrap-tb mt30">
     <table class="tb-enty tb-active">
         <colgorup>
@@ -48,10 +53,12 @@
             </tr>
         </thead>
         <tbody>
-        {% for coupon in output_data %}
          {%if output_data==[]%}
-        <p>this is null </p>
+         <tr>
+            <td colspan="7" class="txt-center c999">当前没有优惠券</td>
+        </tr>
         {%else%}
+        {% for coupon in output_data %}
             <tr class="detail-tr {%if coupon['closed']==1%} dis-coupon{%end%}" data-id="{{coupon['coupon_id']}}">
                 <td>{{coupon['from_get_date']}}到{{coupon['to_get_date']}}</td>
                 <td>每人限领{{coupon['get_limit']}}张</td>
@@ -111,10 +118,12 @@
         </tr>
         </thead>
         <tbody>
-        {% for data in data1 %}
         {%if data1==[]%}
-        <p>this is null</p>
+        <tr>
+            <td colspan="7" class="txt-center c999">当前没有优惠券</td>
+        </tr>
         {%else%}
+        {% for data in data1 %}
         <tr class=" detail-tr {%if data['closed']==1%}dis-coupon{%end%}"  data-id="{{data['coupon_id']}}">
              <td>{{data["from_get_date"]}}到{{data["to_get_date"]}}</td>
              <td>充值满{{data["get_rule"]}}元领取</td>
@@ -127,22 +136,17 @@
             <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td>  
             <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td>
         </tr>
-        <!-- <tr class="dis-coupon">
-            <td>{{data["from_get_date"]}}到{{data["to_get_date"]}}</td>
-            <td>每人限领一张</td>
-            <td>任意商品买满金额可用</td>
-            <td>5.00元<br><span class="c999">任意商品买满任意金额可用</span></td>
-            <td>2015-05-06 12:34:33到2015-05-06 12:34:33</td>
-            <td>限商品分组:店铺推荐</td>
-            <td>8/12/10</td>
-            <td class="operate"><a href="javascript:;" class="mr10">详情</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt">停用</a><span class="stop">已停用</span></td>
-        </tr> -->
         {% end %}
         {%end%}
         </tbody>
     </table>
 </div>
 {%end%}
+{% else %}
+<h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
+{% end %}
+{% end %}
+{% block other %}
 <div class="pop-win pop-detail hidden">
     <div class="pop-container">
         <a href="javascript:;" class="close-pop close-tip">x</a>
@@ -166,9 +170,6 @@
         </div>
     </div>
 </div>
-{% else %}
-<h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
-{% end %}
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/admin-coupon.js')}}"></script>

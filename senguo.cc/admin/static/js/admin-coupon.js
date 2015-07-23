@@ -34,15 +34,17 @@ $(document).ready(function () {
         }
     });*/
   var id=parseInt($.getUrlParam("coupon_type"));
-  type = id;
-    $(".current-type").html($(this).html()).attr("data-id",id);
-    if(id==0){
-        $(".chinav li").removeClass("active").eq(id).addClass("active");
-    $(".wrap-tb table").addClass("hidden").eq(id).removeClass("hidden");
-    }else{
-       $(".chinav li").removeClass("active").eq(id).addClass("active");
-    $(".wrap-tb table").addClass("hidden").eq(id).removeClass("hidden");
-    }
+  if(id){
+        type = id;
+        if(id==0){
+            $(".chinav li").removeClass("active").eq(id).addClass("active");
+            $(".wrap-tb table").addClass("hidden").eq(id).removeClass("hidden");
+        }else{
+           $(".chinav li").removeClass("active").eq(id).addClass("active");
+            $(".wrap-tb table").addClass("hidden").eq(id).removeClass("hidden");
+        }
+  }
+    
     $(".er-code-img").each(function(){
         var _this = $(this);
         $(this).empty();

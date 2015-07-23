@@ -1538,7 +1538,7 @@ class Cart(CustomerBaseHandler):
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
 
-		if can_use_coupon==0:
+		if can_use_coupon==0 and coupon_key!='None':
 			return self.send_fail("对不起，你使用的优惠券不满足使用条件，请重新选择")
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -1550,8 +1550,12 @@ class Cart(CustomerBaseHandler):
 		try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
 		except:return self.send_fail("找不到店铺")
 		if self.args["type"] == 2: #按时达
-			if totalPrice+qshop.coupon_money < config.min_charge_on_time:
-				return self.send_fail("订单总价没达到起送价，请再增加商品")
+			if coupon_key=='None':
+				if totalPrice< config.min_charge_on_time:
+					return self.send_fail("订单总价没达到起送价，请再增加商品")
+			else:
+				if totalPrice+qshop.coupon_money < config.min_charge_on_time:
+					return self.send_fail("订单总价没达到起送价，请再增加商品")
 			freight = config.freight_on_time  # 运费
 			totalPrice += freight
 			today=int(self.args["today"])
@@ -1639,6 +1643,10 @@ class Cart(CustomerBaseHandler):
 			order_status = 1
 		if  totalPrice<0:
 			totalPrice=0
+		if qshop:
+			coupon_money=qshop.coupon_money
+		else:
+			coupon_money=0
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -1661,7 +1669,7 @@ class Cart(CustomerBaseHandler):
 							 status  = order_status,
 							 online_type = online_type,
 							 coupon_key=coupon_key,
-							 coupon_money=qshop.coupon_money
+							 coupon_money=coupon_money
 							 )
 
 		try:
@@ -1671,7 +1679,7 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail("订单提交失败")
 		#使用优惠券
 		coupon_key=order.coupon_key
-		if coupon_key!=None:
+		if coupon_key!='None':
 			use_date=int(time.time())
 			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
 			q.update(session=self.session,use_date=use_date,order_id=order.id,coupon_status=2)

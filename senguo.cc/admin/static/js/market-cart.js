@@ -504,6 +504,7 @@ $(document).ready(function(){
     $("#coupon_cmoney").html(money);
     $("#coupon-money").html(money);
     $("#coupon-money").closest('.coupon-text').removeClass("hidden");
+    $(".coupon_cmoney").removeClass("hidden");
     var smoney = 0;
     if(money>=last_money){
         smoney = 0;
