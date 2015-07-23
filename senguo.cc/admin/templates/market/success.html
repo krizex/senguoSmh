@@ -13,7 +13,7 @@
         <p class="f16">{{shop_name}}已成功入驻森果平台</p>
         <p>入驻时间 : {{done_time}}</p>
         <p>负责人 : {{curator}}</p>
-        <a href="http://senguo.cc/{{shop_code}}" class="test-shop">下单测试</a>
+        <a href="{{reverse_url('Market',shop_code)}}" class="test-shop">下单测试</a>
     </div>
 </div>
 {% end %}
