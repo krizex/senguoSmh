@@ -1185,6 +1185,15 @@ class AdminBaseHandler(_AccountBaseHandler):
 		if not admin and not super_admin:
 			return self.redirect(self.reverse_url("ApplyHome"))
 
+		if admin:
+			try:
+				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+				.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+					models.HireLink.active == 1,models.HireLink.work == 9).first()
+			except:
+				shop = None
+			self.current_shop = shop
+
 		if shop_id:
 			self.current_shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 
