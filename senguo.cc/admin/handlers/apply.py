@@ -46,7 +46,7 @@ class Home(CustomerBaseHandler):
 			return self.send_fail("please input your realname")
 		if not check_msg_token(phone=self.args['phone'], code=int(self.args["code"])):
 			return self.send_fail(error_text="验证码过期或者不正确")
-		
+
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
 		self.session.add(models.ShopAdmin(id=self.current_user.id))
@@ -111,7 +111,7 @@ class CreateShop(AdminBaseHandler):
 			args["lon"] = data["lon"]
 			args["shop_code"] = self.make_shop_code()
 			args["create_date_timestamp"] = time.time()
-			
+
 			shop = models.Shop(**args)
 			self.create_shop(shop)
 			self.create_staff(shop)
@@ -153,7 +153,7 @@ class CreateShop(AdminBaseHandler):
 					return self.send_fail("至多还可创建30家店铺")
 
 			spider_shops  = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.id.in_(shop_list)).all()
-		
+
 			for spider_shop in spider_shops:
 				shop = models.Shop(
 					admin_id = _admin_id,
@@ -185,14 +185,16 @@ class CreateShop(AdminBaseHandler):
 
 			return self.send_success()
 
-		
 	def make_shop_code(self):
-		chars = 'abc0123456789'
+		chars = 'abcdefghijklmnopqrstuvwxyz'
+		nums = '0123456789'
 		str = ''
 		random = Random()
-		for i in range(6):
-			str += chars[random.randint(0,len(chars)-1)]
 		while True:
+			for i in range(2):
+				str += chars[random.randint(0,len(chars)-1)]
+			for i in range(6):
+				str += nums[random.randint(0,len(nums)-1)]
 			shop = self.session.query(models.Shop).filter_by(shop_code = str).first()
 			if not shop:
 				break
@@ -223,7 +225,7 @@ class CreateShop(AdminBaseHandler):
 		self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
 		self.session.commit()
 
-		#把管理员同时设为顾客的身份
+		# 把管理员同时设为顾客的身份
 		customer_first = self.session.query(models.Customer).get(shop.admin_id)
 		if customer_first is None:
 			self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))

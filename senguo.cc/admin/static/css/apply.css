@@ -79,8 +79,14 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
     .header-box .title{height: 34px;line-height: 34px;font-size: 16px;padding: 0 0 0 10px;}
     .foot{padding: 10px 0;}
     .foot a{font-size: 12px !important;}
+    .tdl{width: 75px;}
 }
-
+@media screen and (min-width: 801px) {
+    .tab2{padding: 0 100px;}
+    .tab3{padding: 0 100px;}
+    .tdl{width: 40% !important;}
+    .tdr{width: 60% !important;}
+}
 
 
 

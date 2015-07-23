@@ -2403,6 +2403,14 @@ class Goods(AdminBaseHandler):
 
 		return self.send_success()
 
+#商品导入
+class GoodsImport(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action?:str")
+	def get(self):
+			
+		return self.render("admin/goods-import.html",context=dict(subpage="goods")) 
+
 class editorTest(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str")

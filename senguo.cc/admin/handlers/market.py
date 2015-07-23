@@ -321,9 +321,9 @@ class ShopAdminInfo(CustomerBaseHandler):
 		chars = '0123456789'
 		str = ''
 		random = Random()
-		for i in range(6):
-			str += chars[random.randint(0,len(chars)-1)]
 		while True:
+			for i in range(6):
+				str += chars[random.randint(0,len(chars)-1)]
 			shop = self.session.query(models.Shop).filter_by(shop_code = str).first()
 			if not shop:
 				break
