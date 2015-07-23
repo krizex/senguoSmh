@@ -24,7 +24,7 @@
         {% for apply in history %}
         <li data-apply-id="{{apply['id']}}">
             <ul class="shop-attr-lst group">
-                <li>店铺名:<a href="/{{apply['shop_code']}}" target="_blank">{{apply['shop_name']}}</a></li>
+                <li>店铺名：<a href="/{{apply['shop_code']}}" target="_blank">{{apply['shop_name']}}</a></li>
                 <li>认证类型：{% if apply['shop_auth'] == 1 or apply['shop_auth'] == 4%}个人认证{% elif apply['shop_auth'] == 2 or apply['shop_auth'] == 3 %}企业认证{% end %}</li>
                 <li>账户余额：{{apply['shop_balance']}}元</li>
                 <li>提现申请时间：{{apply['create_time']}}</li>

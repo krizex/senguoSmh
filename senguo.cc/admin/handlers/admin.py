@@ -237,6 +237,8 @@ class Realtime(AdminBaseHandler):
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+		if new_order_sum < 0:
+			new_order_sum = 0
 		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum,
 			follower_sum=follower_sum,on_num=on_num)
 
@@ -255,6 +257,8 @@ class Realtime(AdminBaseHandler):
 # 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 # 			not_(models.Order.status.in_([-1,0]))).count()
 # 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+#		if new_order_sum < 0:
+#			new_order_sum = 0
 # 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 # 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 # 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
@@ -289,6 +293,8 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 			not_(models.Order.status.in_([-1,0]))).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+		if new_order_sum < 0:
+			new_order_sum = 0
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
@@ -395,7 +401,6 @@ class SellStatic(AdminBaseHandler):
 				if tpl["fruit_name"] not in list(goods_type_list.keys()):
 					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
 
-
 			# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 			type_total_price_list = []
 			for type_name in shop_all_type_name:
@@ -491,8 +496,6 @@ class SellStatic(AdminBaseHandler):
 			# 按销量排序：
 			total_price_list.sort(key = lambda item:item["total_price"],reverse = True)
 			output_data["name_max"] = total_price_list[0]["fruit_name"]
-
-
 
 			goods_type_list = {}
 			for tpl in total_price_list:
@@ -617,7 +620,6 @@ class SellStatic(AdminBaseHandler):
 			for goods_id in shop_all_goods_id_list:
 				shop_all_goods_id[goods_id[0]] = goods_id[1]
 
-
 			start_date_str = start_date
 			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
 			now = datetime.datetime.now()
@@ -688,7 +690,6 @@ class SellStatic(AdminBaseHandler):
 								if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 									total_price_list[i]['total_price'] += total_price
 
-
 				# print("##",month_price_list)
 				name_list = []
 				for i in range(len(total_price_list)):
@@ -704,8 +705,6 @@ class SellStatic(AdminBaseHandler):
 						total_price_list.append(tmp)
 				# 按销量排序：
 				total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
-
-
 
 				# 查询total_price_list表中所有商品的类目，并存到一个字典中：
 				goods_type_list = {}

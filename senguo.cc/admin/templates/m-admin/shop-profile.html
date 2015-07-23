@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header head_tab">
-    <a href="/madmin/shopset" class="back shop-set"></a>
+    <a href="{{reverse_url('MadminSet')}}" class="back shop-set"></a>
     <span>{{shop.shop_name}}</span>
     <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"><em></em></a>
 </div>

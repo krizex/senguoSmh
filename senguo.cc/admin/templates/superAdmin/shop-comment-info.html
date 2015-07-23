@@ -28,8 +28,8 @@
                 <img src="{{data["headimgurl"] or '/static/images/test-img.jpg'}}" class="pull-left w60">
             </div>
             <div class="col-lg-7 col-md-7">
-                <p> 
-                    <a href="/super/user" target="_blank"> <span class="text-blue tit7">{{data["nickname"]}}</span></a>
+                <p>
+                    <a href="{{reverse_url('superUser')}}" target="_blank"> <span class="text-blue tit7">{{data["nickname"]}}</span></a>
                     <span class="tit6 grey-txt">下单 <span class="create-date">{{data["create_date"]}}</span></span>
                     <span class="grey-txt">评论 <span class="comment-create-date">{{data["comment_create_date"]}}</span></span>
                 </p>
@@ -52,16 +52,16 @@
                 </p>
             </div>
             <div class="col-lg-4 col-md-4">
-                <p>   
-                            <span class="tit7"><span class="grey-txt">店铺：</span><a href="/{{data["shop_code"]}}" target="_blank"><span class="text-blue">{{data["shop_name"]}}</span></a></span>
-                </p>
-                <p class="mt5">            
-                            <span><span class="grey-txt">订单号：</span><span class="text-blue">{{data["order_num"]}}</span></span>
+                <p>
+                    <span class="tit7"><span class="grey-txt">店铺：</span><a href="/{{data["shop_code"]}}" target="_blank"><span class="text-blue">{{data["shop_name"]}}</span></a></span>
                 </p>
                 <p class="mt5">
-                            <span class="tit5"><span class="grey-txt">质量：</span>{{data["commodity_quality"]}}</span>
-                            <span class="tit5"><span class="grey-txt">速度：</span>{{data["send_speed"]}}</span>
-                            <span class="tit5"><span class="grey-txt">服务：</span>{{data["shop_service"]}}</span>
+                    <span><span class="grey-txt">订单号：</span><span class="text-blue">{{data["order_num"]}}</span></span>
+                </p>
+                <p class="mt5">
+                    <span class="tit5"><span class="grey-txt">质量：</span>{{data["commodity_quality"]}}</span>
+                    <span class="tit5"><span class="grey-txt">速度：</span>{{data["send_speed"]}}</span>
+                    <span class="tit5"><span class="grey-txt">服务：</span>{{data["shop_service"]}}</span>
                 </p>
             </div>
         </li>
@@ -76,7 +76,7 @@
             </div>
             <div class="col-lg-7 col-md-7">
                 <p>
-                    <a href="/super/user" target="_blank"> <span class="nickname text-blue tit7">{{data["nickname"]}}</span></a>
+                    <a href="{{reverse_url('superUser')}}" target="_blank"> <span class="nickname text-blue tit7">{{data["nickname"]}}</span></a>
                     <span class="tit6 grey-txt">下单 <span class="create-date">{{data["create_date"]}}</span></span>
                     <span class="grey-txt">评论 <span class="comment-create-date">{{data["comment_create_date"]}}</span></span>
                 </p>
@@ -87,24 +87,23 @@
                     <span class="pull-left"><span class="grey-txt">评论照片：</span></span><br>
                 </p>
                 <p class="comment-image-list mt5 hidden">
-                   
+
                 </p>
                 <p class="mt5">
                     <span class="pull-left"><span class="grey-txt">商家回复：</span><span class="comment-reply">{{data["comment_reply"]}}</span></span>
                 </p>
             </div>
             <div class="col-lg-4 col-md-4">
-                <p>   
-                            <span class="tit7"><span class="grey-txt">店铺：</span><a class="shop-link" href="/{{data["shop_code"]}}" target="_blank"><span class="shop-name text-blue">{{data["shop_name"]}}</span></a></span>
+                <p>
+                    <span class="tit7"><span class="grey-txt">店铺：</span><a class="shop-link" href="/{{data["shop_code"]}}" target="_blank"><span class="shop-name text-blue">{{data["shop_name"]}}</span></a></span>
                 </p>
                 <p class="mt5">
-
-                            <span><span class="grey-txt">订单号：</span><span class="order-num text-blue">{{data["order_num"]}}</span></span>
+                    <span><span class="grey-txt">订单号：</span><span class="order-num text-blue">{{data["order_num"]}}</span></span>
                 </p>
                 <p class="mt5">
-                            <span class="tit5"><span class="grey-txt">质量：</span><span class="commodity-quality">{{data["commodity_quality"]}}</span></span>
-                            <span class="tit5"><span class="grey-txt">速度：</span><span class="send-speed">{{data["send_speed"]}}</span></span>
-                            <span class="tit5"><span class="grey-txt">服务：</span><span class="shop-service">{{data["shop_service"]}}</span></span>
+                    <span class="tit5"><span class="grey-txt">质量：</span><span class="commodity-quality">{{data["commodity_quality"]}}</span></span>
+                    <span class="tit5"><span class="grey-txt">速度：</span><span class="send-speed">{{data["send_speed"]}}</span></span>
+                    <span class="tit5"><span class="grey-txt">服务：</span><span class="shop-service">{{data["shop_service"]}}</span></span>
                 </p>
             </div>
         </li>
