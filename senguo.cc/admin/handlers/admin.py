@@ -348,7 +348,7 @@ class SellStatic(AdminBaseHandler):
 			today_fruits_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
 									  or_(and_(models.Order.create_date.like(now_date_str),models.Order.today == 1),\
 									        and_(models.Order.create_date.like(yesterday_date_str),models.Order.today == 2))).all()
-
+			
 			#每单种水果的销售额
 			total_price_list = []
 			name_list = []
