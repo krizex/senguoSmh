@@ -314,8 +314,17 @@ class SellStatic(AdminBaseHandler):
 		start_date = self.args["start_date"]
 		end_date = self.args["end_date"]
 
+		output_data = {}
 		# 查询店铺所有的水果类目
 		shop_all_type_name = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
+
+		if len(shop_all_type_name) == 0:
+			output_data = {
+				'type_data':[],
+				'name_data':[],
+				'has_goods':0
+			}
+			return self.send_success(output_data = output_data)
 
 		# 查询店铺的所有水果名称：
 		shop_all_goods = self.session.query(models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
@@ -408,7 +417,7 @@ class SellStatic(AdminBaseHandler):
 			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
 			output_data = {
 				'type_data':type_total_price_list,
-				'name_data':total_price_list,
+				'name_data':total_price_list
 			}
 			return self.send_success(output_data = output_data)
 
@@ -714,6 +723,7 @@ class SellStatic(AdminBaseHandler):
 
 				if(count_num == 1):
 					name_item_list = list(tmp["per_name_total_price"].keys())
+					# print("@@@",tmp["per_name_total_price"])
 				name_price_item_list = []
 				for i in range(len(name_item_list)):
 					name_price_item_list.append(tmp["per_name_total_price"][name_item_list[i]])
