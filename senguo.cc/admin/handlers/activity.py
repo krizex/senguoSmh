@@ -486,15 +486,19 @@ class CouponList(AdminBaseHandler):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.current_shop.id
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).order_by(models.CouponsCustomer.get_date).all()
+		now_date=int(time.time())
 		for x in q:
-			effective_time=time.strftime('%Y-%m-%d',time.localtime(x.effective_time))
-			uneffective_time=time.strftime('%Y-%m-%d',time.localtime(x.uneffective_time))
-			get_date=time.strftime('%Y-%m-%d',time.localtime(x.get_date))
-			use_date=time.strftime('%Y-%m-%d',time.localtime(x.use_date))
-			shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
-			q1=self.session.query(models.CouponsShop).filter_by(shop_id=x.shop_id,coupon_id=x.coupon_id).first()
-			x_coupon={"shop_name":shop.shop_name,"shop_code":shop.shop_code,"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":x.coupon_status}
-			data.append(x_coupon)
+			if (now_date-15*24*60*60)>x.uneffective_time and x.coupon_status!=0:
+				pass
+			else:
+				effective_time=time.strftime('%Y-%m-%d',time.localtime(x.effective_time))
+				uneffective_time=time.strftime('%Y-%m-%d',time.localtime(x.uneffective_time))
+				get_date=time.strftime('%Y-%m-%d',time.localtime(x.get_date))
+				use_date=time.strftime('%Y-%m-%d',time.localtime(x.use_date))
+				shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
+				q1=self.session.query(models.CouponsShop).filter_by(shop_id=x.shop_id,coupon_id=x.coupon_id).first()
+				x_coupon={"shop_name":shop.shop_name,"shop_code":shop.shop_code,"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":x.coupon_status}
+				data.append(x_coupon)
 		return None
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?:str","coupon_key?")

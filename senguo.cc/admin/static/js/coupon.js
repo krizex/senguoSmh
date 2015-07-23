@@ -34,7 +34,7 @@ function getCoupon(coupon_id,$obj){
                 var tip="太棒了！你获得了价值"+coupon_money+"元的优惠券一张哦！";
                 Tip(tip);
                 setTimeout(function(){
-                    window.location.href="/coupon/list?action=get_one&coupon_key="+res.coupon_key;
+                    window.location.href="/coupon/detail?action=detail&coupon_key="+res.coupon_key;
                 },2000);
             }else{
                 Tip(res.error_text);
