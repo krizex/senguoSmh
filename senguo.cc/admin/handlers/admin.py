@@ -169,6 +169,8 @@ class Home(AdminBaseHandler):
 class SwitchShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		if self.is_pc_browser()==False:
+			return self.redirect(self.reverse_url("MadminHome"))
 		shop_list = []
 		try:
 			shops = self.current_user.shops
