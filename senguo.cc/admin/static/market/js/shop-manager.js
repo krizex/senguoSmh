@@ -1,15 +1,16 @@
 /**
  * Created by Administrator on 2015/7/6.
  */
-var cur_id = null;
+var cur_id = null,action = "admin";
 $(document).ready(function(){
-    if($.getUrlParam("staff")){
+    if(window.location.href.indexOf("staffinsert")!=-1){
         $("#shop_txt").html("配送员信息");
+        action = "staff";
     }
-    cur_id = $.getUrlParam("id");
+    cur_id = $("#shop_id").val();
     new QRCode($("#big-code2")[0],{
-        width : 150,
-        height : 150
+        width : 300,
+        height : 300
     }).makeCode($("#link").val());
 }).on("click","#save_manager",function(){
     saveAdmin();
@@ -21,11 +22,22 @@ function saveAdmin(){
     if(name=="" || tel==""){
         return Tip("姓名和电话都不能为空");
     }
-    var args = {
-        action:"save",
-        id:cur_id,
-        admin_name:name,
-        admin_phone:tel
+    var args = {};
+    if(action="admin"){
+        url='/market/shopinsert/'+cur_id
+        args = {
+            action:"save",
+            id:cur_id,
+            admin_name:name,
+            admin_phone:tel
+        }
+    }else{
+        url='/market/staffinsert/';
+        args = {
+            shop_id:cur_id,
+            staff_name:name,
+            staff_phone:tel
+        }
     }
     $.postJson(url,args,function(res){
         if(res.success){

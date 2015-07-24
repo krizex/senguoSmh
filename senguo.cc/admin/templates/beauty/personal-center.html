@@ -80,7 +80,7 @@
             <a href="javascript:;" class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none">+添加收货地址</a>
         </button>
         <div class="address-list clearfix" style="display:none;">
-             <ul class="list-group m-b0   clearfix">
+             <ul class="list-group m-b0 clearfix">
             {% for address in current_user.addresses%}
             <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
                 <p class="clearfix m-b0 height20">
@@ -95,7 +95,7 @@
             </li>
             {% end %}
         </ul>
-        </div>   
+        </div>
     </div>
     <div class="box-style bg-white pb0 m-b10 clearfix pr0">
         <button class="title clearfix coupon-manage" id="coupon_btn">

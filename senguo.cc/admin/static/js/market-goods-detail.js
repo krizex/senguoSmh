@@ -146,7 +146,7 @@ $(document).ready(function(){
         great(id,$this);
     }
 }).on('click','.add-cart',function(){
-    var link=$(this).attr('href');
+    var link=$(this).attr('data-href');
     addCart(link);
 });
 //点赞

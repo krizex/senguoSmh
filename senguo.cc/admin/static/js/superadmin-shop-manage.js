@@ -1,4 +1,6 @@
 page_shop=1,inputinfo=$("#inputinfo").val();
+var apply_page = 1;
+var apply_status = "all_temp";
 $(document).ready(function(){
     $('.rejectApply').on('click',function(){$(this).siblings('.reject-box').modal('show');})
     $('.rejectSend').on('click',function(){Reject($(this));});
@@ -119,7 +121,7 @@ $(document).ready(function(){
     $(".head-choose li").removeClass("active");
     $(".apply-list").addClass("active");
     window.location = "/super/comment_apply";
-// 
+//
 });
 
 function insertShop(page){
@@ -145,8 +147,6 @@ function insertShop(page){
                                         $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                     } 
                                     //delete by jyj 2015-6-22    
-                                    //$item.find(".ushop_name").html(shop.shop_name);
-                                    //
 
                                     $item.find(".uauth_type").html(shop.auth_type);
                                     $item.find(".uadmin_nickname").html(shop.admin_nickname);
@@ -167,12 +167,6 @@ function insertShop(page){
                                     // change by jyj 2015-6-22:
                                     $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
                                     $item.find(".ushop_code_link").text(shop.shop_name);
-                                    //
-
-                                    // if(i==0){
-                                    //     // alert($item.find(".ushop_code_link").text());
-                                    //     alert("aaaaaaaaaa")
-                                    // }
                                     $("#list-group").append($item);
                                 }
                          }

@@ -110,7 +110,6 @@ class ShopList(FruitzoneBaseHandler):
 			page_total = int(shop_count /8) if shop_count % 8 == 0 else int(shop_count/8) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			# print("[官网店铺列表]省份不存在")
 			print("[Official]Province not found")
 
 		shoplist = []

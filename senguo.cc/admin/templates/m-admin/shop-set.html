@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="/madmin/shop" class="back">返回</a>
+    <a href="{{reverse_url('MadminShop')}}" class="back">返回</a>
     <span>设置</span>
 </div>
 {% end %}
@@ -13,7 +13,7 @@
     <p class="list-title pt10">店铺设置</p>
     <ul class="data-list">
         <li>
-            <a href="/madmin/shopinfo">
+            <a href="{{reverse_url('MadminInfo')}}">
                 <span class="fr more"></span>
                 <span class="item-left i-info">店铺信息</span>
             </a>
@@ -25,19 +25,19 @@
             </a>
         </li>
         <li>
-            <a href="/madmin/shopattr?action=receipt">
+            <a href="{{reverse_url('MadminSetAttr')}}?action=receipt">
                 <span class="fr more"></span>
                 <span class="item-left i-piao">小票设置</span>
             </a>
         </li>
         <li>
-            <a href="/madmin/shopattr?action=verify">
+            <a href="{{reverse_url('MadminSetAttr')}}?action=verify">
                 <span class="fr more"></span>
                 <span class="item-left i-fmsg">首单短信验证</span>
             </a>
         </li>
         <li>
-            <a href="/madmin/shopattr?action=admin">
+            <a href="{{reverse_url('MadminSetAttr')}}?action=admin">
                 <span class="fr more"></span>
                 <span class="item-left i-gset">管理员设置</span>
             </a>
@@ -46,19 +46,19 @@
     <p class="list-title">商城设置</p>
     <ul class="data-list">
         <li>
-            <a href="/madmin/shopattr?action=template">
+            <a href="{{reverse_url('MadminSetAttr')}}?action=template">
                 <span class="fr more"></span>
                 <span class="item-left i-tpl">商城模版</span>
             </a>
         </li>
         <li>
-            <a href="/madmin/shopattr?action=notice">
+            <a href="{{reverse_url('MadminSetAttr')}}?action=notice">
                 <span class="fr more"></span>
                 <span class="item-left i-report">商城公告</span>
             </a>
         </li>
         <li>
-            <a href="/madmin/shopattr?action=pay">
+            <a href="{{reverse_url('MadminSetAttr')}}?action=pay">
                 <span class="fr more"></span>
                 <span class="item-left i-pay">支付方式</span>
             </a>

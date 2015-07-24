@@ -14,7 +14,7 @@
             <li class="tab-bg"></li>
         </ul>
     </div>
-    <a href="{{reverse_url('MadminSearch')}}" class="head-right search"></a>
+    <a href="{{reverse_url('MadminSearch')}}" class="head-right search"><em></em></a>
 </div>
 {% end %}
 {% block setcontent %}
@@ -33,7 +33,6 @@
         <div class="swiper-wrapper">
             <div class="swiper-slide item">
                 <ul class="order-lists pt10" id="order-not">
-                   
                 </ul>
             </div>
             <div class="swiper-slide item">
@@ -42,17 +41,15 @@
             </div>
             <div class="swiper-slide item">
                 <ul class="order-lists pt10" id="order-already">
-                   
                 </ul>
             </div>
             <div class="swiper-slide item">
                 <ul class="order-lists pt10" id="order-all">
-                   
                 </ul>
             </div>
         </div>
     </div>
-    <p class="no-result mt-100">页面加载中...</p>
+    <p class="no-result">页面加载中...</p>
 </div>
 </div>
 <ul class="hide" id="order-item">

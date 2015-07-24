@@ -53,9 +53,9 @@ class Access(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self):
 		# todo: handle state
-		code =self.args["code"]
+		code = self.args["code"]
 		mode = self.args["mode"]
-		# print("[微信登录]登录模式：", mode , "，返回码：", code)
+		# print("[AdminAccess]LoginMode:",mode,", Code:", code)
 		if mode not in ["mp", "kf"]:
 			return self.send_error(400)
 
@@ -91,7 +91,6 @@ class Home(AdminBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
 			self.current_shop = shop
 			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
-
 
 		if shop_auth in [1,2]:
 			show_balance = True
@@ -169,7 +168,6 @@ class Home(AdminBaseHandler):
 class SwitchShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-
 		shop_list = []
 		try:
 			shops = self.current_user.shops
@@ -239,9 +237,49 @@ class Realtime(AdminBaseHandler):
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+		if new_order_sum < 0:
+			new_order_sum = 0
 		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum,
 			follower_sum=follower_sum,on_num=on_num)
 
+# # websocket 版后台轮询
+# class Realtime(AdminBaseHandler,tornado.websocket.WebSocketHandler):
+
+# 	session = DBSession()
+# 	socket_handlers = set ()
+
+# 	@tornado.web.asynchronous
+# 	def send_data(self):
+# 		import time
+# 		import threading
+# 		print(self)
+# 		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
+# 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+# 			not_(models.Order.status.in_([-1,0]))).count()
+# 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+#		if new_order_sum < 0:
+#			new_order_sum = 0
+# 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+# 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+# 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+# 		data = dict(new_order_sum = new_order_sum , order_sum = order_sum , new_follower_sum = new_follower_sum,
+# 			follower_sum = follower_sum , on_num = on_num)
+# 		self.write_message(json.dumps(data))
+# 		threading.Timer(5.0, self.send_data()).start()
+
+# 	def check_origin(self, origin):
+# 		return True
+
+# 	def open(self):
+# 		print('[AdminRealtimeWebsocket]open')
+# 		Realtime.socket_handlers.add(self.send_data)
+
+# 	def onclose(self):
+# 		print('[AdminRealtimeWebsocket]onclose')
+# 		Realtime.socket_handlers.remove(self.send_data)
+
+# 	def on_message(self,message):
+# 		self.send_data()
 
 # websocket 版后台轮询
 class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
@@ -255,6 +293,8 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 			not_(models.Order.status.in_([-1,0]))).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+		if new_order_sum < 0:
+			new_order_sum = 0
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
@@ -262,6 +302,506 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 			follower_sum = follower_sum , on_num = on_num)
 		return self.write_message(json.dumps(data))
 
+# 销售统计 add by jyj 2015-7-8
+class SellStatic(AdminBaseHandler):
+	def get(self):
+		return self.render("admin/sell-count.html",context=dict(subpage='sellstatic'))
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","start_date:str","end_date:str","type_name?:str","goods_name?:str")
+	def post(self):
+		action = self.args["action"]
+		start_date = self.args["start_date"]
+		end_date = self.args["end_date"]
+
+		output_data = {}
+		# 查询店铺所有的水果类目
+		shop_all_type_name = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
+
+		if len(shop_all_type_name) == 0:
+			output_data = {
+				'type_data':[],
+				'name_data':[],
+				'has_goods':0
+			}
+			return self.send_success(output_data = output_data)
+
+		# 查询店铺的所有水果名称：
+		shop_all_goods = self.session.query(models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
+
+		# 查询店铺所有水果类目中分别有多少种水果：
+		shop_type_num_list = {}
+		for shop_type_name in shop_all_type_name:
+			shop_type_name = shop_type_name[0]
+			shop_type_num_list[shop_type_name] = self.session.query(models.FruitType).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.FruitType.name == shop_type_name).count()
+
+		if action == 'all':
+			now = datetime.datetime.now()
+			now_date = datetime.datetime(now.year,now.month,now.day)
+			now_date = now_date.strftime("%Y-%m-%d")
+			yesterday_date = datetime.datetime(now.year,now.month,now.day-1)
+			yesterday_date = yesterday_date.strftime("%Y-%m-%d")
+
+			# 从order表中查询出一天店铺的所有有效订单（status字段的值大于等于5）的fruits字段：
+			now_date_str = now_date + '%'
+			yesterday_date_str = yesterday_date + '%'
+			today_fruits_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+									  or_(and_(models.Order.create_date.like(now_date_str),models.Order.today == 1),\
+									        and_(models.Order.create_date.like(yesterday_date_str),models.Order.today == 2))).all()
+
+			#每单种水果的销售额
+			total_price_list = []
+			name_list = []
+			for fl in today_fruits_list:
+				fl = eval(fl[0])
+				for key in fl:
+					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+						if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+							continue
+						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+							continue
+					tmp = {}
+					fl_value = fl[key]
+					num = float(fl_value["num"])
+					single_price = float(fl_value["charge"].split('元')[0])
+					total_price = single_price * num
+					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+					tmp["total_price"] = total_price
+					for i in range(len(total_price_list)):
+						name_list.append(total_price_list[i]['fruit_name'])
+					if tmp["fruit_name"] not in name_list:
+						total_price_list.append(tmp)
+					else:
+						for i in range(len(total_price_list)):
+							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
+								total_price_list[i]['total_price'] += total_price
+
+			name_list = []
+			for i in range(len(total_price_list)):
+				name_list.append(total_price_list[i]['fruit_name'])
+
+			for goods in shop_all_goods:
+				if goods[0] not in name_list:
+					tmp = {}
+					fruit_id = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+					tmp["total_price"] = 0
+					total_price_list.append(tmp)
+			# 按销量排序：
+			# if len(total_price_list) == 0:
+
+			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
+			# 查询total_price_list表中所有商品的类目，并存到一个字典中：
+			goods_type_list = {}
+			for tpl in total_price_list:
+				if tpl["fruit_name"] not in list(goods_type_list.keys()):
+					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
+
+			# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
+			type_total_price_list = []
+			for type_name in shop_all_type_name:
+				tmp = {}
+				type_name = type_name[0]
+				tmp["type_name"] = type_name
+				tmp["type_total_price"] = 0.0
+				tmp["per_name_total_price"] = {}
+				for tpl in total_price_list:
+					if goods_type_list[tpl["fruit_name"]] == type_name:
+						tmp["type_total_price"] += tpl["total_price"]
+						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+				type_total_price_list.append(tmp)
+			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
+			output_data = {
+				'type_data':type_total_price_list,
+				'name_data':total_price_list
+			}
+			return self.send_success(output_data = output_data)
+
+		elif action == 'all_single':
+			output_data = {}
+
+			shop_all_type_list = []
+			shop_all_goods_list = []
+			for item in shop_all_type_name:
+				shop_all_type_list.append(item[0])
+			for item in shop_all_goods:
+				shop_all_goods_list.append(item[0])
+
+			output_data["all_type"] = shop_all_type_list
+			output_data["all_goods"] = shop_all_goods_list
+
+			# 从order表中查询出某个日期区间内某个店铺的所有有效订单（status字段的值大于等于5）的fruits字段(比如2015-07-15和2015-07-16两天的)：
+			start_date_str = start_date
+			end_date_str = end_date
+
+			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+			start_date_pre = start_date + datetime.timedelta(days = -1)
+			start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+			start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+			end_date = datetime.datetime.strptime(end_date_str,'%Y-%m-%d')
+			end_date_next = end_date + datetime.timedelta(days = 1)
+			end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+			end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+			fruit_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+
+			#每单种水果的销售额
+			total_price_list = []
+			name_list = []
+			for fl in fruit_list:
+				fl = eval(fl[0])
+				# print("#@#@##@",fl)
+				for key in fl:
+					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+						if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+							continue
+						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+							continue
+					tmp = {}
+					fl_value = fl[key]
+					num = float(fl_value["num"])
+					single_price = float(fl_value["charge"].split('元')[0])
+					total_price = single_price * num
+					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+					tmp["total_price"] = total_price
+					for tpl in total_price_list:
+						name_list.append(tpl['fruit_name'])
+					if tmp["fruit_name"] not in name_list:
+						total_price_list.append(tmp)
+					else:
+						for i in range(len(total_price_list)):
+							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
+								total_price_list[i]['total_price'] += total_price
+			name_list = []
+			for i in range(len(total_price_list)):
+				name_list.append(total_price_list[i]['fruit_name'])
+
+			for goods in shop_all_goods:
+				if goods[0] not in name_list:
+					tmp = {}
+					fruit_id = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+					tmp["total_price"] = 0
+					total_price_list.append(tmp)
+			# 按销量排序：
+			total_price_list.sort(key = lambda item:item["total_price"],reverse = True)
+			output_data["name_max"] = total_price_list[0]["fruit_name"]
+
+			goods_type_list = {}
+			for tpl in total_price_list:
+				if tpl["fruit_name"] not in list(goods_type_list.keys()):
+					goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
+			# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
+			type_total_price_list = []
+			for type_name in shop_all_type_name:
+				tmp = {}
+				type_name = type_name[0]
+				tmp["type_name"] = type_name
+				tmp["type_total_price"] = 0.0
+				tmp["per_name_total_price"] = {}
+				for tpl in total_price_list:
+					if goods_type_list[tpl["fruit_name"]] == type_name:
+						tmp["type_total_price"] += tpl["total_price"]
+						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+				type_total_price_list.append(tmp)
+
+			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=True)
+			output_data["type_max"] = type_total_price_list[0]["type_name"]
+
+			return self.send_success(output_data = output_data)
+
+		elif action == 'type' or action == 'name':
+			# 从order表中查询出某个日期区间内某个店铺的所有有效订单（status字段的值大于等于5）的fruits字段(比如2015-07-15和2015-07-16两天的)：
+			start_date_str = start_date
+			end_date_str = end_date
+
+			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+			start_date_pre = start_date + datetime.timedelta(days = -1)
+			start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+			start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+			end_date = datetime.datetime.strptime(end_date_str,'%Y-%m-%d')
+			end_date_next = end_date + datetime.timedelta(days = 1)
+			end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+			end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+			fruit_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+
+			#每单种水果的销售额
+			total_price_list = []
+			name_list = []
+			for fl in fruit_list:
+				fl = eval(fl[0])
+				for key in fl:
+					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+						if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+							continue
+						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+							continue
+					tmp = {}
+					fl_value = fl[key]
+					num = float(fl_value["num"])
+					single_price = float(fl_value["charge"].split('元')[0])
+					total_price = single_price * num
+
+					# if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()) == 0:
+					# 	fruit_id = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+					tmp["total_price"] = total_price
+					for tpl in total_price_list:
+						name_list.append(tpl['fruit_name'])
+					if tmp["fruit_name"] not in name_list:
+						total_price_list.append(tmp)
+					else:
+						for i in range(len(total_price_list)):
+							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
+								total_price_list[i]['total_price'] += total_price
+
+			name_list = []
+			for i in range(len(total_price_list)):
+				name_list.append(total_price_list[i]['fruit_name'])
+
+			for goods in shop_all_goods:
+				if goods[0] not in name_list:
+					tmp = {}
+					fruit_id = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
+					tmp["fruit_id"] = fruit_id
+					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+					tmp["total_price"] = 0
+					total_price_list.append(tmp)
+			# 按销量排序：
+			total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
+
+			if action == 'type':
+				# 查询total_price_list表中所有商品的类目，并存到一个字典中：
+				goods_type_list = {}
+				for tpl in total_price_list:
+
+					if tpl["fruit_name"] not in list(goods_type_list.keys()):
+						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
+				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
+				type_total_price_list = []
+				for type_name in shop_all_type_name:
+					tmp = {}
+					type_name = type_name[0]
+					tmp["type_name"] = type_name
+					tmp["type_total_price"] = 0.0
+					tmp["per_name_total_price"] = {}
+					for tpl in total_price_list:
+						if goods_type_list[tpl["fruit_name"]] == type_name:
+							tmp["type_total_price"] += tpl["total_price"]
+							tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+					type_total_price_list.append(tmp)
+				type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
+				# print("@@@",type_total_price_list)
+				return self.send_success(output_data = type_total_price_list)
+			else:
+				return self.send_success(output_data = total_price_list)
+		elif action == 'single_type':
+			type_name = self.args["type_name"]
+
+			shop_all_goods_id_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
+
+			shop_all_goods_id = {}
+			for goods_id in shop_all_goods_id_list:
+				shop_all_goods_id[goods_id[0]] = goods_id[1]
+
+			start_date_str = start_date
+			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+			now = datetime.datetime.now()
+			now_date = datetime.datetime(now.year,now.month,now.day)
+			if start_date.month == now.month:
+				flag_date = now_date
+			else:
+				if start_date.month in [1,3,5,7,8,10,12]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,31)
+				elif start_date.month in [4,6,9,11]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,30)
+				elif start_date.month == 2:
+					year = start_date.year
+					if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+						flag_date = datetime.datetime(start_date.year,start_date.month,29)
+					else:
+						flag_date = datetime.datetime(start_date.year,start_date.month,28)
+
+			month_price_list = []
+			name_item_list = []
+			count_num = 1
+
+			while start_date <=flag_date:
+				start_date_str = start_date.strftime('%Y-%m-%d')
+				start_date_pre = start_date + datetime.timedelta(days = -1)
+				start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+				start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+				end_date = start_date
+				end_date_str = start_date_str
+				end_date_next = end_date + datetime.timedelta(days = 1)
+				end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+				end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+
+				fruit_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+							        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+							        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+
+				#每单种水果的销售额
+				total_price_list = []
+				name_list = []
+				goods_id_list = []
+				for fl in fruit_list:
+					fl = eval(fl[0])
+					for key in fl:
+						if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+							if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+								continue
+							aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+							if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+								continue
+						tmp = {}
+						fl_value = fl[key]
+						num = float(fl_value["num"])
+						single_price = float(fl_value["charge"].split('元')[0])
+						total_price = single_price * num
+						fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+						tmp["fruit_id"] = fruit_id
+						tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+						tmp["total_price"] = total_price
+						for tpl in total_price_list:
+							name_list.append(tpl['fruit_name'])
+							goods_id_list.append(fruit_id)
+						if tmp["fruit_name"] not in name_list:
+							total_price_list.append(tmp)
+						else:
+							for i in range(len(total_price_list)):
+								if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
+									total_price_list[i]['total_price'] += total_price
+
+				# print("##",month_price_list)
+				name_list = []
+				for i in range(len(total_price_list)):
+					name_list.append(total_price_list[i]['fruit_name'])
+
+				for key in shop_all_goods_id:
+					if key not in goods_id_list:
+						tmp = {}
+						tmp["fruit_id"] = key
+
+						tmp["fruit_name"] = shop_all_goods_id[key]
+						tmp["total_price"] = 0
+						total_price_list.append(tmp)
+				# 按销量排序：
+				total_price_list.sort(key = lambda item:item["total_price"],reverse = False)
+
+				# 查询total_price_list表中所有商品的类目，并存到一个字典中：
+				goods_type_list = {}
+				for tpl in total_price_list:
+					if tpl["fruit_name"] not in list(goods_type_list.keys()):
+						goods_type_list[tpl["fruit_name"]] = self.session.query(models.FruitType.name).join(models.Fruit).filter(models.Fruit.id == tpl["fruit_id"]).all()[0][0]
+				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
+				type_total_price_list = []
+
+				tmp = {}
+				tmp["date"] = start_date_str
+				tmp["per_name_total_price"] = {}
+				for tpl in total_price_list:
+					if goods_type_list[tpl["fruit_name"]] == type_name:
+						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
+
+				if(count_num == 1):
+					name_item_list = list(tmp["per_name_total_price"].keys())
+					# print("@@@",tmp["per_name_total_price"])
+				name_price_item_list = []
+				for i in range(len(name_item_list)):
+					name_price_item_list.append(tmp["per_name_total_price"][name_item_list[i]])
+
+				month_price_list.append(name_price_item_list)
+				start_date = start_date + datetime.timedelta(days = 1)
+				count_num += 1
+
+			output_data = []
+			output_data.append(name_item_list)
+			output_data.append(month_price_list)
+
+			return self.send_success(output_data = output_data)
+
+		elif action == 'single_name':
+			goods_name = self.args["goods_name"]
+
+			start_date_str = start_date
+			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+			now = datetime.datetime.now()
+			now_date = datetime.datetime(now.year,now.month,now.day)
+			if start_date.month == now.month:
+				flag_date = now_date
+			else:
+				if start_date.month in [1,3,5,7,8,10,12]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,31)
+				elif start_date.month in [4,6,9,11]:
+					flag_date = datetime.datetime(start_date.year,start_date.month,30)
+				elif start_date.month == 2:
+					year = start_date.year
+					if (year % 4 == 0 and year % 100 != 0) or (year % 400 == 0):
+						flag_date = datetime.datetime(start_date.year,start_date.month,29)
+					else:
+						flag_date = datetime.datetime(start_date.year,start_date.month,28)
+
+			month_price_list = []
+			while start_date <= flag_date:
+				start_date_str = start_date.strftime('%Y-%m-%d')
+				start_date_pre = start_date + datetime.timedelta(days = -1)
+				start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+				start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+				end_date = start_date
+				end_date_str = start_date_str
+				end_date_next = end_date + datetime.timedelta(days = 1)
+				end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+				end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+
+				fruit_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+							        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+							        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+
+				#每单种水果每天的销售额
+				total = 0.0
+				for fl in fruit_list:
+					fl = eval(fl[0])
+					for key in fl:
+						if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
+							if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
+								continue
+							aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
+							if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+								continue
+						tmp = {}
+						fl_value = fl[key]
+						fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()[0][0]
+						fruit_name = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+						if fruit_name == goods_name:
+							num = float(fl_value["num"])
+							single_price = float(fl_value["charge"].split('元')[0])
+							total_price = single_price * num
+							total += total_price
+				month_price_list.append(total)
+				start_date = start_date + datetime.timedelta(days = 1)
+			return self.send_success(output_data = month_price_list)
+		else:
+			return self.send_error(404)
+##
 
 # 订单统计
 class OrderStatic(AdminBaseHandler):
@@ -286,7 +826,7 @@ class OrderStatic(AdminBaseHandler):
 	def sum(self):
 		page = self.args["page"]
 		type = self.args["type"]
-		# print(type)
+		# print("[AdminOrderStatic]type:",type)
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
@@ -333,7 +873,7 @@ class OrderStatic(AdminBaseHandler):
 					data[order[1].day][5] += order[2]
 		else:
 			return self.send_error(404)
-		# print(data)
+		# print("[AdminOrderStatic]data:",data)
 		return self.send_success(data=data)
 
 	@AdminBaseHandler.check_arguments("type:int")
@@ -358,7 +898,6 @@ class OrderStatic(AdminBaseHandler):
 		for s in ss:
 			data[s[0]] = s[1]
 		return self.send_success(data=data)
-
 
 	@AdminBaseHandler.check_arguments("type:int")
 	def recive_time(self):
@@ -392,7 +931,7 @@ class OrderStatic(AdminBaseHandler):
 		page_size = 15
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
 		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size-1)
-		# print(start_date , end_date )
+		# print("[AdminOrderStatic]start_date:",start_date,", end_date:",end_date)
 
 		# 日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
@@ -427,14 +966,13 @@ class OrderStatic(AdminBaseHandler):
 			filter(models.Order.create_date <= end_date,
 				   models.Order.customer_id.in_(ids),not_(models.Order.status.in_([-1,0]))).count()
 
-
 		data = []
 		i = 0
 		j = 0
 		# data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额，日老用户订单数，累计老用户订单数]
 		for x in range(0, 15):
 			date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
-			# print(date.strftime('%Y-%m-%d'))
+			# print("[AdminOrderStatic]date:",date.strftime('%Y-%m-%d'))
 			# if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
 			if i < len(s) and (s[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 				if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
@@ -452,7 +990,7 @@ class OrderStatic(AdminBaseHandler):
 					total[0] -= s[i][2]
 					i += 1
 			else:
-				# print(date.strftime('%Y-%m-%d'))
+				# print("[AdminOrderStatic]date:",date.strftime('%Y-%m-%d'))
 				if total[0]:
 					data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, format(float(total[0]),'.2f'), 0, old_total))
 				else:
@@ -466,7 +1004,7 @@ class OrderStatic(AdminBaseHandler):
 			page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 		else:
 			page_sum = 0
-		# print(data)
+		# print("[AdminOrderStatic]data:",data)
 		return self.send_success(page_sum=page_sum, data=data)
 
 	# 老用户的id
@@ -575,16 +1113,16 @@ class Comment(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 10
 		pages=0
-		# print("[用户评价]当前店铺：",self.current_shop)
+		# print("[AdminComment]current_shop:",self.current_shop)
 		if action == "all":
 			comments = self.get_comments(self.current_shop.id, page, page_size)
-			# print("[用户评价]详情：",comments,len(comments))
+			# print("[AdminComment]comments:",comments,len(comments))
 			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
 				models.Order.status == 6).count()
 			self.current_shop.old_msg = all_comments
 			self.session.commit()
 			pages = all_comments/10
-			# print("[用户评价]页数：",pages)
+			# print("[AdminComment]pages:",pages)
 		elif action == "favor":
 			s = self.session.query(models.ShopFavorComment.order_id).\
 				filter(models.ShopFavorComment.shop_id == self.current_shop.id).all()
@@ -600,7 +1138,7 @@ class Comment(AdminBaseHandler):
 										  models.Order.comment_reply).\
 				filter(models.Order.id.in_(order_ids), models.Order.status == 6,models.Order.customer_id == models.Accountinfo.id).count()
 			pages = all_comments/10
-			# print(comments)
+			# print("[AdminComment]comments:",comments)
 		else:
 			return self.send_error(404)
 
@@ -614,7 +1152,7 @@ class Comment(AdminBaseHandler):
 		order_id = self.args["order_id"]
 		data = self.args["data"]
 		if action == "reply":
-			# print('login replay')
+			# print('[AdminComment]login replay')
 			try:
 				order = self.session.query(models.Order).filter_by(id=order_id).one()
 			except:
@@ -630,9 +1168,9 @@ class Comment(AdminBaseHandler):
 			except:
 				return self.send_fail("已收藏成功")
 		# shop_admin apply to delete comment
-		elif action =="apply_delete_comment":
+		elif action == "apply_delete_comment":
 			delete_reason = data["delete_reason"]
-			shop_id  = self.current_shop.id
+			shop_id = self.current_shop.id
 			apply_delete = models.CommentApply(order_id = order_id,delete_reason = delete_reason,has_done\
 				=0,shop_id = shop_id)
 			self.session.add(apply_delete)
@@ -751,7 +1289,7 @@ class Order(AdminBaseHandler):
 			nomore = False
 			if page+1 == page_sum:
 				nomore = True
-			# print("[订单管理]当前店铺：",self.current_shop)
+			# print("[AdminOrder]current_shop:",self.current_shop)
 
 			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
 		if self.is_pc_browser()==False:
@@ -775,6 +1313,7 @@ class Order(AdminBaseHandler):
 		if order_status == 5:
 			# print('login in order_status 5')
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+			# 更新fruit 的 current_saled
 			self.order_done(self.session,order)
 
 	@tornado.web.authenticated
@@ -783,7 +1322,7 @@ class Order(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
-		# print("[订单管理]当前店铺：",self.current_shop)
+		# print("[AdminOrder]current_shop:",self.current_shop)
 		if action == "add_period":
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
 			end_time = datetime.time(data["end_hour"],data["end_minute"])
@@ -791,7 +1330,7 @@ class Order(AdminBaseHandler):
 								   name=data["name"],
 								   start_time=start_time,
 								   end_time=end_time)
-			# print("[订单管理]添加按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
+			# print("[AdminOrder]Add period time, Shop ID:",period.config_id,", Period:",start_time,"-",end_time)
 			self.session.add(period)
 			self.session.commit()
 			return self.send_success(period_id=period.id)
@@ -807,10 +1346,10 @@ class Order(AdminBaseHandler):
 				period.name = data["name"]
 				period.start_time = start_time
 				period.end_time = end_time
-				# print("[订单管理]修改按时达时段，Shop ID：",period.config_id,"，时间段：",start_time,"~",end_time)
+				# print("[AdminOrder]Edit period time, Shop ID:",period.config_id,", Period:",start_time,"-",end_time)
 			elif action == "edit_period_active":
 				period.active = 1 if period.active == 2 else 2
-				# print("[订单管理]按时达时段启用/停用，Shop ID：",period.config_id,"，状态：",period.active)
+				# print("[AdminOrder]On/Off period time, Shop ID:",period.config_id,", On/Off:",period.active)
 			self.session.commit()
 		elif action == "del_period":
 			try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
@@ -842,7 +1381,22 @@ class Order(AdminBaseHandler):
 											start_time_now=start_time, end_time_now=end_time,
 											freight_now=data["freight_now"] or 0,intime_period=data["intime_period"] or 30)
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
-			order = next((x for x in self.current_shop.orders if x.id==int(data["order_id"])), None)
+			try:
+				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).first()
+			except:
+				order = None
+			try:
+				shop = self.session.query(models.Shop).filter_by(id=order.shop_id).first()
+			except:
+				return self.send_error(404)
+			try:
+				HireLink = self.session.query(models.HireLink).filter_by(shop_id=order.shop_id,staff_id=self.current_user.id,work=9,active=1).first()
+			except:
+				pass
+
+			if not shop.admin_id == self.current_user.id and not HireLink:
+				return self.send_fail("您没有查看该订单的权限")
+
 			if not order:
 				return self.send_fail("没找到该订单")
 			if action == "edit_remark":
@@ -854,7 +1408,7 @@ class Order(AdminBaseHandler):
 					return self.send_fail("订单已被取消或删除，不能操作该订单")
 				elif order.status > 4:
 					return self.send_fail("订单已经完成，不能操作该订单")
-				SH2 = next((x for x in self.current_shop.staffs if x.id == int(data["staff_id"])), None)
+				SH2 = next((x for x in shop.staffs if x.id == int(data["staff_id"])), None)
 				if not SH2:
 					return self.send_fail("没找到该送货员")
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
@@ -895,7 +1449,7 @@ class Order(AdminBaseHandler):
 					balance_record = ("%{0}%").format(order.num)
 					old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 					if old_balance_history is None:
-						print('Order: old history not found')
+						print('[AdminOrder]Delete order: old history not found')
 					else:
 						old_balance_history.is_cancel = 1
 						self.session.commit()
@@ -941,7 +1495,7 @@ class Order(AdminBaseHandler):
 					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
 					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
 				except:
-					print("Order: didn't find default staff")
+					print("[AdminOrder]Batch edit order: didn't find default staff")
 				if staff_info:
 					openid = staff_info.wx_openid
 					staff_name = staff_info.nickname
@@ -1279,10 +1833,10 @@ class Goods(AdminBaseHandler):
 
 				if filter_status2 != []:
 					filter_status2 = int(filter_status2)
-					# print(filter_status2)
+					# print("[AdminGoods]filter_status2:",filter_status2)
 					if filter_status2 == -2:
 						goods = goods
-						print(goods.count())
+						print("[AdminGoods]Goods count:",goods.count())
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 
@@ -1605,7 +2159,7 @@ class Goods(AdminBaseHandler):
 				return self.send_error(403)
 
 			if action == "add_charge_type":
-				# print('num',data["num"],data["unit"],data["price"])
+				# print('[AdminGoods]Add charge type, num:',data["num"],data["unit"],data["price"])
 				charge_type = models.ChargeType(fruit_id=goods.id,
 								price=data["price"],
 								unit=data["unit"],
@@ -1720,7 +2274,7 @@ class Goods(AdminBaseHandler):
 						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]))
 					except:
 						return self.send_fail('del_charge_types error')
-					# print(q)
+					# print([AdminGoods]Delete charge type:",q)
 					# q.delete(synchronize_session=False)
 					for charge in q:
 						charge.update(session=self.session,active=0)
@@ -1728,6 +2282,9 @@ class Goods(AdminBaseHandler):
 				detail_describe = data["detail_describe"].replace("script","'/script/'")
 				if (not detail_describe) or detail_describe == "":
 					detail_describe = None
+
+				if "fruit_type_id" in data:
+					fruit_type_id = int(data["fruit_type_id"])
 
 				goods.update(session=self.session,
 						name = data["name"],
@@ -1739,7 +2296,8 @@ class Goods(AdminBaseHandler):
 						limit_num = data["limit_num"],
 						group_id = group_id,
 						detail_describe = detail_describe,
-						tag = int(data["tag"])
+						tag = int(data["tag"]),
+						fruit_type_id = fruit_type_id
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).all()
 				data = self.getGoodsData(_data,"one")
@@ -2051,15 +2609,15 @@ class Staff(AdminBaseHandler):
 				try:staff  = self.session.query(models.ShopStaff).filter_by(id=staff_id).one()
 				except: return self.send_error(404)
 				phone = staff.accountinfo.phone
-				# print(phone)
+				# print("[AdminStaff]phone:",phone)
 				try:
-					# print(self.current_shop.id)
+					# print([AdminStaff]current_shop.id:",self.current_shop.id)
 					hire_forms =self.session.query(models.HireForm).filter_by(status = 2,shop_id=self.current_shop.id).all()
-					# print(len(hire_forms))
+					# print([AdminStaff]hire_forms lenth:",len(hire_forms))
 					temp_phone =[]
 					for temp in hire_forms:
 						temp_phone.append(temp.staff.accountinfo.phone)
-					# print(temp_phone)
+					# print("[AdminStaff]temp_phone:",temp_phone)
 					if phone in temp_phone:
 						return self.send_fail("该电话号码已存在，请换一个")
 				except:return self.send_error(404)
@@ -2090,7 +2648,7 @@ class Staff(AdminBaseHandler):
 				shop = self.session.query(models.Shop).filter_by(id = self.current_shop.id).one()
 				admin_id  =shop.admin.accountinfo.id
 			except :
-				print('Staff: this man is not admin')
+				print('[AdminStaff]Edit staff status: this man is not admin')
 			if hire_link.active==2:
 					hire_link.active = 1
 			else:
@@ -2337,7 +2895,7 @@ class Config(AdminBaseHandler):
 				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
-				return self.send_fail('至多可添加三个管理员')
+				return self.send_fail('最多可添加三个管理员')
 			if self.current_shop.admin.accountinfo.id == _id:
 				return self.send_fail('该用户已经是店铺的管理员')
 			admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
@@ -2521,7 +3079,7 @@ class ShopBalance(AdminBaseHandler):
 			available_balance = format(available_balance,'.2f')
 		else:
 			available_balance = format(0,'.2f')
-		# print(available_balance)
+		# print("[AdminShopBalance]available_balance:",available_balance)
 		try:
 			apply_list = self.session.query(models.ApplyCashHistory).filter_by(shop_id=shop_id)
 			apply_cash = apply_list.order_by(desc(models.ApplyCashHistory.create_time)).first()
@@ -2535,9 +3093,9 @@ class ShopBalance(AdminBaseHandler):
 				apply_value = format(0,'.2f')
 
 		except:
-			print("ShopBalance: no apply_cash found")
+			print("[AdminShopBalance]no apply_cash found")
 
-		if shop_auth in [1,2,3,4]:
+		if shop_auth !=0:
 			show_balance = True
 			return self.render("admin/shop-balance.html",shop_balance = shop_balance,\
 				show_balance = show_balance,has_done=has_done,decline_reason=decline_reason,\
@@ -2561,7 +3119,7 @@ class ShopBalance(AdminBaseHandler):
 		# 提现申请被超级管理员处理后,会产生一条余额变动记录
 		if action == "get_code":
 			phone = self.args['phone']
-			# print("[店铺提现]发送验证码到手机：",phone)
+			# print("[AdminShopBalance]Cash apply, send verify code to phone:",phone)
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
 			admin_phone = self.session.query(models.Shop).filter_by(id = shop_id).first().admin.accountinfo.phone
@@ -2612,7 +3170,7 @@ class ShopBalance(AdminBaseHandler):
 			times = count
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
-			#	print('cash history_list error')
+			#	print('[AdminShopBalance]cash history_list error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -2632,7 +3190,7 @@ class ShopBalance(AdminBaseHandler):
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
-			#	print('get all history error')
+			#	print('[AdminShopBalance]get all history error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -2666,7 +3224,7 @@ class ShopBalance(AdminBaseHandler):
 			left = format(left,'.2f')
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
-			#	print('get all recharge error')
+			#	print('[AdminShopBalance]get all recharge error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -2691,7 +3249,7 @@ class ShopBalance(AdminBaseHandler):
 			total = format(total,'.2f')
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
-			#	print('get all BalanceHistory error')
+			#	print('[AdminShopBalance]get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -2714,7 +3272,7 @@ class ShopBalance(AdminBaseHandler):
 			total = format(total,'.2f')
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
-			#	print('get all BalanceHistory error')
+			#	print('[AdminShopBalance]get all BalanceHistory error')
 			for temp in history_list:
 				create_time = temp.create_time.strftime("%Y-%m-%d %H:%M:%S")
 				shop_totalBalance = temp.shop_totalPrice
@@ -2736,7 +3294,7 @@ class ShopBalance(AdminBaseHandler):
 			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).count()
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
-			#	print('get all BalanceHistory error')
+			#	print('[AdminShopBalance]get all BalanceHistory error')
 			for temp in history_list:
 				create_time = ''
 				if temp.create_time:
@@ -2776,7 +3334,7 @@ class ShopConfig(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
-		# print("aaaaaaaaa",data)
+		# print("[AdminShopConfig]data:",data)
 		shop = self.current_shop
 		if action == "edit_shop_name":
 			shop.shop_name = data["shop_name"]
@@ -2843,7 +3401,7 @@ class ShopAuthenticate(AdminBaseHandler):
 			order_by(desc(models.ShopAuthenticate.id)).first()
 		except:
 			auth_apply = None
-			print('ShopAuthenticate: auth_apply error')
+			print('[AdminShopAuthenticate]auth_apply error')
 		person_auth=False
 		company_auth=False
 		has_done = 0
@@ -2866,16 +3424,16 @@ class ShopAuthenticate(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments('action','data')
 	def post(self):
 		shop_id = self.current_shop.id
-		# print("[店铺认证]当前店铺：",self.current_shop)
+		# print("[AdminShopAuthenticate]current_shop:",self.current_shop)
 		action = self.args["action"]
 		data = self.args["data"]
 		auth_change = self.current_shop.auth_change
 		try:
 			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id)
 		except:
-			print('ShopAuthenticate: shop_auth_apply error')
+			print('[AdminShopAuthenticate]shop_auth_apply error')
 		if action == "get_code":
-			# print("[店铺认证]发送验证码到手机：",data["phone"])
+			# print("[AdminShopAuthenticate]Shop auth, send verify code to phone:,data["phone"])
 			# gen_msg_token(phone=self.args["phone"])
 			# return self.send_success()
 			resault = gen_msg_token(phone=data["phone"])
@@ -3215,7 +3773,7 @@ class Marketing(AdminBaseHandler):
 			current_shop.marketing.confess_notice = self.args["data"]
 		elif action =="confess_type":
 			_type = current_shop.marketing.confess_type
-			# print(_type)
+			# print("[AdminMarketing]_type:",_type)
 			current_shop.marketing.confess_type = 0 if _type == 1 else 1
 		elif action == "confess_only":
 			only = current_shop.marketing.confess_only
@@ -3429,7 +3987,7 @@ class Confession(AdminBaseHandler):
 		elif action == 'hot':
 			q = q.order_by(models.ConfessionWall.great.desc()).offset(page * page_size).limit(page_size)
 		for temp in q:
-			# print(temp.ConfessionWall.id,temp.Accountinfo.id)
+			# print("[AdminConfession]temp.ConfessionWall.id:",temp.ConfessionWall.id,", temp.Accountinfo.id:",temp.Accountinfo.id)
 			datalist.append(dict(
 				id = temp.ConfessionWall.id,
 				user = temp.Accountinfo.nickname,
@@ -3478,7 +4036,7 @@ class Confession(AdminBaseHandler):
 			self.session.commit()
 		return self.send_success()
 
-
+# 店铺设置 - 微信消息
 class MessageManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -3496,14 +4054,14 @@ class MessageManage(AdminBaseHandler):
 				shop_admin = self.session.query(models.ShopAdmin).filter_by(id = self.current_user.id).one()
 			except:
 				return self.send_fail('shop_admin not found')
-			shop.admin.has_mp  = 1   #管理员有自己的平台
+			shop_admin.has_mp  = 1   #管理员有自己的平台
 			shop_admin.mp_name = mp_name
 			shop_admin.mp_appid = mp_appid
 			shop_admin.mp_appsecret = mp_appsecret
 			self.session.commit()
 			return self.send_success()
 
-
+# 无线打印
 class WirelessPrint(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments('action?:str',"data?")
@@ -3511,102 +4069,181 @@ class WirelessPrint(AdminBaseHandler):
 		import hashlib
 		import time
 		import requests
-		if self.args["action"] in ["ylyprint","ylyadd"]:
-			partner='1693' #用户ID
-			apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
-			# partner=6 #用户 ID
-			# apikey='d17d7d6cdaaa77a6dba928b6553c665325a033d5' #API 密钥
-			username='senguo' #用户名
-			mobilephone='15982424080' #打印机内的手机号
-			printname='senguo' #打印机名称
-			timenow=str(int(time.time())) #当前时间戳
-			content="@@2             订单信息\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"订单编号：272000270\r\n"+\
-					"下单时间：2015-07-10 14:32:42\r\n"+\
-					"顾客姓名：森小果\r\n"+\
-					"顾客电话：400-0270-1355\r\n"+\
-					"下单时间：2015-07-10 16:30~17:30\r\n"+\
-					"配送地址：华中科技大学西一区35栋402室\r\n"+\
-					"买家留言：尽快配送！\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"@@2             商品清单\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"1: 美国进口红提 20.50元/2.00kg * 1\r\n"+\
-					"2: 精品红富士 4.00元/1.00斤 * 2\r\n"+\
-					"\r\n"+\
-					"总价：28.05元\r\n"+\
-					"支付方式：货到付款\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"欢迎扫描二维码关注～\r\n"+\
-					"<q>http://senguo.cc/qqtest</q>"
-					#打印内容
+		action=self.args["action"]
+		_data=self.args["data"]
+		print_type = self.current_shop.config.receipt_type
+		wireless_type =  self.current_shop.config.wireless_type
 
-			if self.args["action"] == "ylyprint":
+		if  print_type ==1 :
+			if "order_list_id" in _data:
+				list_id = _data["order_list_id"]
+				orders = self.session.query(models.Order).filter(models.Order.id.in_(list_id)).all()
+			elif "id" in _data:
+				order_id=int(_data["id"])
+				orders  = self.session.query(models.Order).filter_by(id=order_id).all()
+			if action in ["ylyprint","ylyadd"]:
+				partner='1693' #用户ID
+				apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
+				username='senguo' #用户名
+				mobilephone='123456' #打印机内的手机号
+				timenow=str(int(time.time())) #当前时间戳
+				printname='senguo'+timenow #打印机名称
+				if action == "ylyprint" :
+					if wireless_type == 0:
+						self.orderData(orders,"ylyprint")
+					else:
+						return self.send_fail("请设置为易联云无线打印")
+				elif action == "ylyadd":
+					machine_code = _data["num"] #打印机终端号
+					msign = _data["key"]#打印机密钥
+					sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
+					sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
+					data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
+					r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
+
+					print("======WirelessPrint Back======")
+					print("res url        :",r.url)
+					print("res status_code:",r.status_code)
+					print("res text       :",r.text)
+					print("==============================")
+					text = int(r.text)
+					if text ==1:
+						return self.send_success()
+					elif text ==2:
+						return self.send_success()
+						print("打印机重复，请确保此打印机没有添加到其他账号")
+					elif text == 3:
+						return self.send_fail("打印机添加失败")
+					elif text == 4:
+						return self.send_fail("签名错误")
+					elif text == 5:
+						return self.send_fail("用户验证失败")
+					elif text == 6:
+						return self.send_fail("打印机终端号错误")
+					else:
+						return self.send_fail("未知错误")
+
+			elif action in ["fyprint","fyadd"]:
+				import re
+				if action == "fyprint":
+					if wireless_type == 1:
+						self.orderData(orders,"fyprint")
+					else:
+						return self.send_fail("请设置为飞印无线打印")
+				elif action == "fyadd":
+					# s = requests.Session()
+					headers = {"Cookie":"__utmt=1; sessionid=d2e9cb1cd2c64639f4e18019d35343ee; username=; usertype=1; account=7502; key=e506eb41e1c43558a6abd7618321b6aa; __utma=240375839.1986845255.1436857060.1437040538.1437050867.4; __utmb=240375839.5.10.1437050867; __utmc=240375839; __utmz=240375839.1436857060.1.1.utmcsr=(direct)|utmccn=(direct)|utmcmd=(none)","Host":"my.feyin.net","Referer":"http://my.feyin.net/crm/accountIndex","User-Agent":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.89 Safari/537.36","Connection":"keep-alive"}
+					data = {"deviceCode":_data["deviceCode"],"installAddress":"","simCode":"","groupname":""}
+					r = requests.post("http://my.feyin.net/activeDevice",data=data,headers=headers)
+					content = r.content.decode("utf-8")
+					pattern = re.compile('终端编号不存在',re.S)
+					result = re.search(pattern,content)
+					if result:
+						return self.send_fail("终端编号不存在")
+					else:
+						return self.send_success()
+		else:
+			return self.send_fail("您当前的打印模式不是无线打印模式")
+
+	def orderData(self,orders,action):
+		import hashlib
+		import time
+		import requests
+		for order in orders:
+			order_num = order.num
+			order_time = order.create_date.strftime("%Y-%m-%d %H:%M")
+			phone = order.phone
+			receiver = order.receiver
+			address = order.address_text
+			send_time = order.send_time
+			message = order.message
+			fruits = eval(order.fruits)
+			totalPrice = str(order.totalPrice)
+			pay_type = order.pay_type
+			receipt_msg = self.current_shop.config.receipt_msg
+			if not receipt_msg:
+				receipt_msg = ""
+			if not message:
+				message = "无"
+			if pay_type == 1:
+				_type = "货到付款"
+			elif pay_type == 2:
+				_type = "余额支付"
+			elif pay_type == 3:
+				_type = "在线支付"
+			i=1
+			fruit_list = []
+			fruits = sorted(fruits.items(), key=lambda d:d[0])
+			for key in fruits:
+				fruit_list.append(str(i)+":"+key[1]["fruit_name"]+"  "+key[1]["charge"]+" * "+str(key[1]["num"])+"\r\n")
+				i = i +1
+			if action == "ylyprint":
+				content="@@2              订单信息\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"订单编号："+order_num+"\r\n"+\
+						"下单时间："+order_time+"\r\n"+\
+						"顾客姓名："+receiver+"\r\n"+\
+						"顾客电话："+phone+"\r\n"+\
+						"配送时间："+send_time+"\r\n"+\
+						"配送地址："+address+"\r\n"+\
+						"买家留言："+message+"\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"@@2             商品清单\r\n"+\
+						"------------------------------------------------\r\n"+\
+						''.join(fruit_list)+"\r\n"+\
+						"\r\n"+\
+						"总价："+totalPrice+"元\r\n"+\
+						"支付方式："+_type+"\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"\r\n"+receipt_msg
+				partner='1693' #用户ID
+				apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
+				timenow=str(int(time.time())) #当前时间戳
 				machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
 				mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
 				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
-				print("sign str    :",sign)
+				# print("sign str    :",sign)
 				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
-				print("sign str md5:",sign)
+				# print("sign str md5:",sign)
 				data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
-				print("post        :",data)
+				# print("post        :",data)
 				r=requests.post("http://open.10ss.net:8888",data=data)
 
-				print("======返回信息======")
+				print("======WirelessPrint======")
 				print("res url        :",r.url)
 				print("res status_code:",r.status_code)
 				print("res text       :",r.text)
-				print("====================")
+				print("=========================")
 
-			elif self.args["action"] == "ylyadd":
-				print(self.args)
-				machine_code = self.args["data"]["num"] #打印机终端号
-				msign = self.args["data"]["key"]#打印机密钥
-				sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
-				sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
-				data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
-				r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
-
-				print("======返回信息======")
-				print("res url        :",r.url)
-				print("res status_code:",r.status_code)
-				print("res text       :",r.text)
-				print("====================")
-				if int(r.text)==1:
-					return self.send_success()
-				elif int(r.text)==2:
-					return self.send_fail("重复添加")
-
-		elif self.args["action"] == "fyprint":
-			reqTime = int(time.time()*1000)
-			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
-			API_KEY = '47519b0f'
-			deviceNo = '9602292847397158'
-			mode = 2
-			msgDetail = "  <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
-						"-------------------------\n"+\
-						"订单编号：272000270\n"+\
-						"下单时间：2015-07-10 14:32:42\n"+\
-						"顾客姓名：森小果\n"+\
-						"顾客电话：400-0270-1355\n"+\
-						"下单时间：2015-07-10 16:30~17:30\n"+\
-						"配送地址：华中科技大学西一区35栋402室\n"+\
-						"买家留言：尽快配送！\n"+\
-						"-------------------------\n"+\
-						"  <Font# Bold=1 Width=2 Height=2>商品详情</Font#>\n"+\
-						"-------------------------\n"+\
-						"1: 美国进口红提 20.50元/2.00kg * 1\n"+\
-						"2: 精品红富士 4.00元/1.00斤 * 2\n"+\
-						"\n"+\
-						"总价：28.05元\n"+\
-						"支付方式：货到付款\n"+\
-						"-------------------------\n"
-						#打印内容
-			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
-			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
-			data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
-			r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
-			print(r.url)
-			print(r.status_code)
-			print(r.text)
+			elif action == "fyprint":
+				reqTime = int(time.time()*1000)
+				memberCode = 'e6f90e5826b011e5a1b652540008b6e6' #商户编码
+				API_KEY = '47519b0f' #API密钥（ API_KEY ）
+				deviceNo = self.current_shop.config.wireless_print_num #飞印打印机的设备编码 9602292847397158/test
+				mode = 2
+				msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+							"-------------------------\n"+\
+							"订单编号："+order_num+"\n"+\
+							"下单时间："+order_time+"\n"+\
+							"顾客姓名："+receiver+"\n"+\
+							"顾客电话："+phone+"\n"+\
+							"配送时间："+send_time+"\n"+\
+							"配送地址："+address+"\n"+\
+							"买家留言："+message+"\n"+\
+							"-------------------------\n"+\
+							"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
+							"-------------------------\n"+\
+							''.join(fruit_list)+"\r\n"+\
+							"\n"+\
+							"总价："+totalPrice+"元\n"+\
+							"支付方式："+_type+"\n"+\
+							"-------------------------\n"+\
+							"\n"+receipt_msg
+							#打印内容
+				content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
+				securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
+				data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
+				r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
+				# print(r.url)
+				# print(r.status_code)
+				print(r.text)

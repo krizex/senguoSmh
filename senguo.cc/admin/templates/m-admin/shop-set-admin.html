@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="/madmin/shopset" class="back">返回</a>
+    <a href="{{reverse_url('MadminSet')}}" class="back">返回</a>
     <span>管理员设置</span>
 </div>
 {% end %}
@@ -14,7 +14,7 @@
     <ul class="data-list mt15">
         <li class="admin-item">
             <a href="javascript:;">
-                <span class="fr mt18"><span class="switch-btn {% if current_shop.super_temp_active == 1%}switch-abtn{% end %}" data-id="{{current_shop.admin_id}}" data-action="super"><i></i><span>订单提醒{% if current_shop.super_temp_active == 1%}已启用{% else %}未启用{% end %}</span></span></span>
+                <span class="fr mt18"><span class="switch-btn {% if current_shop.super_temp_active == 1%}switch-abtn{% end %}" data-id="{{current_shop.admin_id}}" data-action="super"><i></i><span>订单提醒{% if current_shop.super_temp_active == 1%}开启{% else %}关闭{% end %}</span></span></span>
                 <span class="text-left">
                     <span class="img-border fl"><img src="{{current_shop.admin.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" alt="管理员头像"/></span>
                     <span class="fl ml10 mt6">
@@ -30,7 +30,7 @@
         <li class="admin-item">
             <a href="javascript:;">
                 <span class="fr mt10">
-                    <span class="switch-btn {% if data['temp_active'] == 1%}switch-abtn{% end %}" data-id="{{data['id']}}" data-action="admin"><i></i><span>订单提醒{% if data['temp_active'] == 1%}已启用{% else %}未启用{% end %}</span></span>
+                    <span class="switch-btn {% if data['temp_active'] == 1%}switch-abtn{% end %}" data-id="{{data['id']}}" data-action="admin"><i></i><span>订单提醒{% if data['temp_active'] == 1%}开启{% else %}关闭{% end %}</span></span>
                     <p class="del-admin" data-id="{{data['id']}}">删除</p>
                 </span>
                 <span class="text-left">
@@ -45,7 +45,7 @@
         </li>
     </ul>
     {% end %}
-    <a href="/madmin/shopattr?action=addAdmin" class="create-btn add-admin">+添加管理员</a>
+    <a href="{{reverse_url('MadminSetAttr')}}?action=addAdmin" class="create-btn add-admin">+添加管理员</a>
 </div>
 {% end %}
 {% block fix %}

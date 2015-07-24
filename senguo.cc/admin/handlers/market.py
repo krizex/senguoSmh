@@ -1,4 +1,4 @@
-from handlers.base import AdminBaseHandler,WxOauth2,unblock,get_unblock
+from handlers.base import AdminBaseHandler,WxOauth2,unblock,get_unblock,CustomerBaseHandler
 import dal.models as models
 import tornado.web
 from settings import *
@@ -14,15 +14,15 @@ import decimal
 import json
 from random import Random
 
-#市场推广 - 首页
-class Home(AdminBaseHandler):
+# 市场推广 - 首页
+class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		#return self.send_success()
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		return self.render('market/shop-list.html',logo_img=logo_img)
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('action',"page?:int","lat","lon")
+	@CustomerBaseHandler.check_arguments('action',"page?:int","lat","lon")
 	def post(self):
 		action = self.args['action']
 		page_size = 20
@@ -66,36 +66,35 @@ class Home(AdminBaseHandler):
 			,"curator":shop.curator,"done_time":shop.done_time,"shop_logo":shop.shop_logo,"lat":shop.lat,"lon":shop.lon})
 		return shop_data
 
-#店铺信息
-class Info(AdminBaseHandler):
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id')
+# 市场推广 - 店铺信息录入
+class Info(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments('id')
 
 	def get(self):
 		id = int(self.args['id'])
+		print(id)
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
 			return self.send_fail(' shop not found')
 
 		token = self.get_qiniu_token("Market_cookie",shop.id)
-
+		self.set_secure_cookie("spider_shop", str(id), domain=ROOT_HOST_NAME)
 		shop_logo = shop.shop_logo
 		shop_name = shop.shop_name
 		shop_phone = shop.shop_phone
 		shop_address = shop.shop_address
 		delivery_area = shop.delivery_area
-
+		#shop.curator = self.current_user.accountinfo.nickname
 		shop_auth   = "已录入"  if shop.shop_auth else '未录入'
 		admin_info = shop.admin_info  if shop.admin_info else '未录入'
 		staff_info = shop.staff_info  if shop.staff_info else '未录入'
 		description = shop.description if shop.description else '无备注'
-
+		self.session.commit()
 		return self.render("market/shop-info.html",id =id,shop_logo = shop_logo,shop_name = shop_name,shop_phone=shop_phone,
 			shop_address = shop_address,delivery_area = delivery_area,shop_auth = shop_auth ,
 			admin_info = admin_info , staff_info = staff_info , description = description,token = token)
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
+	@CustomerBaseHandler.check_arguments('id','action','shop_logo?:str','shop_name?:str','shop_phone?:str','deliver_area?:str',
 		'shop_address?:str','description?:str','admin_info?:str','staff_info?:str','shop_auth?:str','data')
 	def post(self):
 		id = int(self.args['id'])
@@ -131,38 +130,39 @@ class Info(AdminBaseHandler):
 
 		self.session.commit()
 		return self.send_success()
-	@AdminBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','wx_nickname')
+	@CustomerBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','wx_nickname')
 	def bing_admin(self):
 		admin_name = self.args.get('admin_name',None)
 		admin_phone = self.args.get('admin_phone',None)
 
-#店长信息
-class ShopAdminInfo(AdminBaseHandler):
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id?','action?:str')
-	def get(self):
-		id = self.args.get('id',None)
-		id = 1
+# 市场推广 - 店长信息录入
+class ShopAdminInfo(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments('action?:str')
+	def get(self,id):
+		print(self.args)
+		#shop_id = int(self.get_secure_cookie("spider_shop"))
+		#shop_id = int(self.args['id'])
+		shop_id = int(id)
 		action = self.args.get('action',None)
-		if id:
-			try:
-				shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
-			except:
-				return self.send_fail('shop not found')
-
-			action = self.args.get('action',None)
+		print(shop_id,'shopinsert hhhhhhhhhhhhh')
+		if shop_id:
+			shop = self.session.query(models.Spider_Shop).filter_by(id = shop_id).first()
+			if not shop:
+				return self.send_fail('shop not found aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
 			print(action,'action',self.args)
 			if action == 'bind':
-				if not self.is_wexin_browser():
-					return self.send_fail("请在微信中执行此从操作!")
-				else:
-					admin_id  =  self.wx_bind()
-					shop_id   =  int(id)
-					shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-					shop.curator = self.current_user.accountinfo.nickname
-					shop_code =  self.add_shop(admin_id,shop_id)
-					self.session.commit()
-					return self.render('market/shop-success.html')
+				#if not self.is_wexin_browser():
+				#	return self.send_fail("请在微信中执行此从操作!")
+				#else:
+				if shop.has_done == 1:
+					return self.send_fail('该店铺已录入！')
+				admin_id  =  self.wx_bind(shop_id)
+				print(admin_id)
+				shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+				#shop.curator = self.current_user.accountinfo.nickname
+				self.session.commit()
+				shop_code =  self.add_shop(admin_id,shop_id)
+				return self.render('market/shop-success.html')
 
 			else:
 				admin_info = shop.admin_info
@@ -170,16 +170,18 @@ class ShopAdminInfo(AdminBaseHandler):
 					admin_name,admin_phone,wx_nickname = admin_info.split('-')
 				else:
 					admin_name = admin_phone = wx_nickname = None
-		else:			
+		else:
 			return self.send_fail('id error')
-		url = "http://i.senguo.cc/market/shopinsert?action=bind&id="+str(id)
-		return self.render("market/shop-manager.html",url=url)
-	
-	@AdminBaseHandler.check_arguments('id?','admin_name?:str','admin_phone?:str','action')
-	def post(self):
+		url = "http://i.senguo.cc/market/shopinsert/%s?action=bind" % (str(shop_id))
+		print(url)
+		return self.render("market/shop-manager.html",url=url,shop_id = shop_id)
+
+	@CustomerBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','action')
+	def post(self,id):
 		action = self.args.get('action',None)
+		print(id)
 		if action == 'save':
-			id = self.args.get('id',None)
+			#id = self.args.get('id',None)
 			if id:
 				try:
 					shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
@@ -191,25 +193,22 @@ class ShopAdminInfo(AdminBaseHandler):
 					wx_info = '微信已绑定'
 				else:
 					wx_info = '微信未绑定'
+				shop.curator = self.current_user.accountinfo.nickname
 				shop.admin_info = "%s-%s-%s" % (admin_name,admin_phone,wx_info)
 				self.session.commit()
 			return self.send_success()
 		else:
 			return self.send_fail('action error')
 
-
-
-
-	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('code')
-	def wx_bind(self):
+	@CustomerBaseHandler.check_arguments('code')
+	def wx_bind(self,shop_id):
 		code = self.args.get('code',None)
 		next_url = self.get_argument('next', '')
 		#next_url = 'http://test123.senguo.cc/market/shopinsert?action=bind'
 		if not code:
 			#print(self.get_wexin_oauth_link2(next_url = next_url))
 			#return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
-			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'.format(MP_APPID,'http://auth.senguo.cc/market/shopinsert?action=bind')
+			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'.format(MP_APPID,'http://auth.senguo.cc/market/shopinsert/%d?action=bind') %(shop_id)
 			print(url)
 			return self.redirect(url)
 		else:
@@ -229,7 +228,7 @@ class ShopAdminInfo(AdminBaseHandler):
 				else:
 					headimgurl = None
 					headimgurl_small = None
-				account_info = Accountinfo(
+				account_info = models.Accountinfo(
 					wx_unionid=wx_userinfo["unionid"],
 					wx_openid=wx_userinfo["openid"],
 					wx_country=wx_userinfo["country"],
@@ -240,24 +239,25 @@ class ShopAdminInfo(AdminBaseHandler):
 					nickname=wx_userinfo["nickname"],
 					sex = wx_userinfo["sex"])
 				try:
-					self.session.add(account_info)
-					u = mode.ShopAdmin()
+					#self.session.add(account_info)
+					u = models.ShopAdmin()
 					u.accountinfo = account_info
+					self.session.add(u)
 					self.session.commit()
 					print('get wx_userinfo success')
 				except:
 					return False
-				return user.id
+				return u.id
 
-	@tornado.web.authenticated
-	def add_shop(self,shop_id,admin_id):
+	# 生成店铺、添加商品
+	def add_shop(self,admin_id,shop_id):
 		print('login in add_shop')
-		try:
-			shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).one()
-		except:
+
+		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+		if not shop_admin:
 
 			return self.send_fail('shop_admin not found')
-		temp_shop = self.session.query(models.Spider_Shop).filter_by(id = 1).first()
+		temp_shop = self.session.query(models.Spider_Shop).filter_by(id = int(shop_id)).first()
 		if not temp_shop:
 			return self.send_fail('temp_shop not found')
 
@@ -270,25 +270,27 @@ class ShopAdminInfo(AdminBaseHandler):
 		config.periods.extend([period1, period2, period3])
 		marketing = models.Marketing()
 		shop_code = self.make_shop_code()
-		print('make  shop_code  success')
+		print('make shop_code success')
 		temp_shop.shop_code = shop_code
 		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
-			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,
-			shop_city = 420100 , shop_address_detail= temp_shop.shop_address,shop_intro = temp_shop.description,shop_code = shop_code)
+			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,shop_auth = 5,
+			shop_city = 420100 , shop_address_detail= temp_shop.shop_address,shop_intro = temp_shop.description,shop_code = shop_code,shop_phone=temp_shop.shop_phone,lat=temp_shop.lat,lon = temp_shop.lon)
 		shop.config = config
 		shop.marketing = marketing
 		shop.shop_start_timestamp = time.time()
+		temp_shop.has_done = 1
 		self.session.add(shop)
 		self.session.commit()
 		print('shop add success')
 
-		#添加商品
+		# 添加商品
 		print('start add goods')
 		spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = temp_shop.shop_id).all()
 		for temp_good in spider_goods:
-			new_good = models.Fruits(shop_id = shop.id , fruit_type_id = 1,name = temp_good.goods_name,
-				storage = 100,unit = 2,img_url = good_img_url ,)
-			new_good.charge_types.append(models.ChargeType(price = new_good.goods_price,unit = 2,num =1,market_price = new_good.goods_price))
+			print(shop.id)
+			new_good = models.Fruit(shop_id = shop.id , fruit_type_id = 999,name = temp_good.goods_name,
+				storage = 100,unit = 2,img_url = temp_good.good_img_url ,)
+			new_good.charge_types.append(models.ChargeType(price = temp_good.goods_price,unit = 2,num =1,market_price = temp_good.goods_price))
 			self.session.add(new_good)
 			self.session.commit()
 		######################################################################################
@@ -314,6 +316,7 @@ class ShopAdminInfo(AdminBaseHandler):
 
 		return shop.shop_code
 
+	# 生成店铺号，格式：whXXXXXX(6位随机数字)
 	def make_shop_code(self):
 		chars = '0123456789'
 		str = ''
@@ -326,32 +329,25 @@ class ShopAdminInfo(AdminBaseHandler):
 				break
 		return 'wh'+ str
 
-
-
-
-
-
-
-
-
-#店铺录入
+# 店铺录入
 # class Insert(AdminBaseHandler):
 # 	@tornado.web.authenticated
 # 	def get(self):
 
-
-#店铺入驻成功
-class Success(AdminBaseHandler):
+# 店铺入驻成功
+class Success(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments('id')
+	@CustomerBaseHandler.check_arguments('id')
 	def get(self):
+		id = self.args['id']
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = int(id)).one()
 		except:
 			return self.send_fail('shop not found')
-		shop_name = shop_name
+		shop_name = shop.shop_name
 		curator = shop.curator
 		done_time = shop.done_time
 		shop_code = shop.shop_code
+		print(self.current_user.accountinfo.nickname)
+		print(shop_code,curator,shop_name)
 		return self.render("market/success.html",curator = curator , done_time = done_time , shop_code = shop_code, shop_name=shop_name)
-

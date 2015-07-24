@@ -24,21 +24,31 @@ $(document).ready(function(){
             searchOrder(id);
         }
     });
+    $("#search-ipt").on("keydown",function(){  //订单搜索
+        if(window.event.keyCode == 13){
+            var id = $("#search-ipt").val();
+            if($.trim(id)=="" || isNaN($.trim(id))){
+                return Tip("请输入只含数字的订单编号");
+            }else{
+                searchOrder(id);
+            }
+        }
+    });
 }).on("click","#order-item>li",function(e){//进入订单详情
     var $this=$(this);
     var num = $this.attr("data-num");
     if($(e.target).closest(".task-staff").size()==0){
-       window.location.href="/madmin/orderDetail/"+num; 
+        window.location.href="/madmin/orderDetail/"+num;
     }
 }).on("click",".order-grade .task-staff",function(e){
-     var $this=$(this);
-     var status=parseInt($this.parents('.order-item').attr('data-status'));
-     if(status==1||status==4){
+    var $this=$(this);
+    var status=parseInt($this.parents('.m-order-item').attr('data-status'));
+    if(status==1||status==4){
         e.stopPropagation();
         curStaff = $(this).closest(".order-grade");
-        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.order-item').attr('data-id'));
-        $(".staff-list").empty().html($this.parents('.order-item').find('.order-staff-list').html());
-     } 
+        $(".pop-staff").removeClass("hide").attr("data-id",$this.parents('.m-order-item').attr('data-id'));
+        $(".staff-list").empty().html($this.parents('.m-order-item').find('.order-staff-list').html());
+    }
 }).on("click",".staff-list>li",function(){
     var index = $(this).index();
     var src = $(this).find("img").attr("src");
@@ -46,7 +56,7 @@ $(document).ready(function(){
     $(".staff-list>li").removeClass("active").eq(index).addClass("active");
 });
 
-var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="order-item" data-id="{{id}}">'+
+var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="m-order-item" data-id="{{id}}">'+
                     '<p class="order-time item">下单时间 : {{create_date}}</p>'+
                     '<ul class="order-content">'+
                         '<li>'+
@@ -100,10 +110,10 @@ function searchOrder(id){
         success:function(res){
             if(res.success){
                 var data = res.data[0];
-                if(data.length==0){
-                    $(".no-result").html("没有查到任何数据").removeClass("hide");
+                if(!data){
+                    $(".no-result").html("没有查到任何订单").removeClass("hide");
                 }else{
-                    console.log(data);
+                    $(".no-result").addClass("hide");
                     var id=data['id'];
                     var order_status=parseInt(data['status']);
                     var order_num=data['num'];
@@ -128,10 +138,10 @@ function searchOrder(id){
                         var staff_phone=data['SH2']['phone'];
                         var sender=data['SH2']['nickname'];
                     }else{
-                        var staff_img='/static/images/TDSG.png';
+                        var staff_img='/static/m-admin/img/sender_holder.png';
                         var staff_phone='';
                         var sender='';
-                    }   
+                    }
                     if(pay_type==1){
                         pay_type = "货到付款";
                     }else if(pay_type==2){
@@ -147,22 +157,22 @@ function searchOrder(id){
                             show='hide';
                             hide='show';
                             break;
-                        case 0:         
+                        case 0:
                             width='order-w0';
                             left='order-l0';
                             hide='hide';
-                            show='show';
+                            show='';
                             if(del_reason){
                                 if(del_reason=='timeout'){
                                     del_status='该订单15分钟未支付，已自动取消';
                                 }else{
                                     del_status='该订单已删除（原因：'+del_reason+')';
-                                }  
+                                }
                             }
                             else{
                                 del_status='该订单已被用户取消';
                             }
-                            
+
                             break;
                         case 1:
                             width='order-w0';
@@ -175,13 +185,13 @@ function searchOrder(id){
                             width='order-w50';
                             left='order-l50';
                             sender_name=sender+'配送中';
-                            tel_show='show';
+                            tel_show='';
                             break;
                         case 5:
                             width='order-w100';
                             left='order-l100';
                             sender_name=sender+'已送达';
-                            tel_show='show';
+                            tel_show='';
                             break;
                         case 6:
                         case 7:

@@ -24,6 +24,7 @@ class MyReal(REAL):
 
 #woody
 class POINT_TYPE:
+	"""积分类型"""
 	TOTALPRICE = 1  # +totalprice
 	FOLLOW     = 2  # +10
 	SIGNIN     = 3  # +1
@@ -99,7 +100,6 @@ class TAG:
 	NEW = 5
 
 ## TODO: 账户支付及账户升级功能
-
 
 class _CommonApi:
 
@@ -177,7 +177,6 @@ class _CommonApi:
 				output_data[rel_prop_name] = out_prop_data
 		return output_data
 
-
 class _AccountApi(_CommonApi):
 	"""
 	a common account access api, should be inherit by every
@@ -240,16 +239,15 @@ class _AccountApi(_CommonApi):
 			session.commit()
 			return u
 
-
 	# 微信注册API（注意）
 	@classmethod
 	def register_with_wx(cls, session, wx_userinfo):
 		# 判断是否在本账户里存在该用户
 		u = cls.login_by_unionid(session, wx_userinfo["unionid"])
-		#print("[微信登录]用户登录，昵称：",wx_userinfo["nickname"])
+		# print("[WxLogin]User login, nickname:",wx_userinfo["nickname"])
 		if u:
 			# 已存在用户，则更新微信信息
-			#print("[微信登录]用户存在，更新用户资料")
+			# print("[WxLogin]User exists, updating user info")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -264,25 +262,26 @@ class _AccountApi(_CommonApi):
 			#####################################################################################
 			# update wx_openid
 			#####################################################################################
-			#print("[微信登录]用户老OpenID：",u.accountinfo.wx_openid)
+			# print("[WxLogin]Old OpenID:",u.accountinfo.wx_openid)
 			old = u.accountinfo.wx_openid
 			old_start = old[0:2]
 			if old_start == "o7":
 				start = wx_userinfo['openid'][0:2]
-				#print("[微信登录]用户新OpenID为",start,"开头")
+				# print("[WxLogin]Now OpenID started with:",start)
 				if start == "o5":
 					u.accountinfo.wx_openid = wx_userinfo["openid"]
-					#print("[微信登录]更新用户OpenID")
-			#print("[微信登录]用户新OpenID：",wx_userinfo["openid"])
+					# print("[WxLogin]User's OpenID Updated")
+			# print("[WxLogin]New OpenID:",wx_userinfo["openid"])
 			session.commit()
 
 			return u
-		# 判断是否在基本信息表里存在该用户
 
+		# 判断是否在基本信息表里存在该用户
 		try:
 			account_info = session.query(Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).one()
 		except NoResultFound:
 			account_info = None
+
 		# 基本账户中存在该账户，直接添加
 		if account_info:
 			u = cls(id=account_info.id)
@@ -292,7 +291,7 @@ class _AccountApi(_CommonApi):
 			return u
 
 		# 基本账户中不存在，先创建基本信息，再添加到该用户账户中去
-		#print("[微信登录]用户不存在，注册为新用户")
+		# print("[WxLogin]User doesn't exist, register as new user")
 		if wx_userinfo["headimgurl"] not in [None,'']:
 			headimgurl = wx_userinfo["headimgurl"]
 			headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
@@ -330,8 +329,8 @@ class _AccountApi(_CommonApi):
 			u = None
 		return u
 
-	#regist by phone
 	# woody
+	# 手机注册
 	@classmethod
 	def regist_by_phone_password(cls,session,phone,password):
 		u = cls.login_by_phone_password(session,phone,password)
@@ -366,15 +365,15 @@ class _AccountApi(_CommonApi):
 		except NoResultFound:
 			u = None
 		return u
-	# * TODO 手机号注册
 
+# 当前微信Access Token
 class AccessToken(MapBase,_CommonApi):
 	__tablename__ = 'access_token'
 	id = Column(Integer,primary_key = True , nullable = False)
 	create_timestamp = Column(Float)
 	access_token = Column(String(200))
 
-#用户的基本信息，每个角色类型都连接到这个表，即一人可能有多个角色，但只有一种基本信息
+# 用户的基本信息，每个角色类型都连接到这个表，即一人可能有多个角色，但只有一种基本信息
 class Accountinfo(MapBase, _CommonApi):
 	__tablename__ = "account_info"
 
@@ -420,8 +419,6 @@ class Accountinfo(MapBase, _CommonApi):
 	subscribe  = Column(Integer,default = 0) #0:not foucus,1:foucus#4.24 yy
 	# mp_openid = Column(String(64))
 
-
-
 # 角色：超级管理员
 class SuperAdmin(MapBase, _AccountApi):
 	__tablename__ = "super_admin"
@@ -429,8 +426,6 @@ class SuperAdmin(MapBase, _AccountApi):
 
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
-
-
 
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
@@ -488,7 +483,6 @@ class ShopTemp(MapBase, _CommonApi):
 
 	admin = relationship("ShopAdmin")
 
-
 # 店铺
 class Shop(MapBase, _CommonApi):
 	# def __init__(self, **kwargs):
@@ -530,15 +524,13 @@ class Shop(MapBase, _CommonApi):
 	area_radius = Column(Integer,default=0) #半径
 	area_list = Column(String(1000)) #区域数组
 
-
-
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
 
 	alipay_account = Column(String(128)) #提现账户 2015-5-06 yy
 	alipay_account_name  = Column(String(32)) #提现账户认证名 2015-5-06 yy
 
-###################################################
+	###################################################
 	#the phone of shop ,   added by woody
 	shop_phone=Column(String(16))
 
@@ -629,6 +621,7 @@ class Shop(MapBase, _CommonApi):
 		print("print mark 4:sucess")
 		return shop_property
 
+# 店铺认证申请
 class ShopAuthenticate(MapBase,_AccountApi):
 	__tablename__ = "shop_auth"
 	id  = Column(Integer,primary_key = True ,nullable = False)
@@ -646,7 +639,6 @@ class ShopAuthenticate(MapBase,_AccountApi):
 	shop = relationship('Shop')
 	create_time = Column(DateTime, default=func.now())
 	# code       = Column(Integer)
-
 
 # 角色：商家，即店铺的管理员
 class ShopAdmin(MapBase, _AccountApi):
@@ -690,8 +682,6 @@ class ShopAdmin(MapBase, _AccountApi):
 
 	access_token = Column(String(64))
 	token_creatime = Column(Integer)
-
-
 
 	def success_orders(self, session):
 		if not hasattr(self, "_success_orders"):
@@ -808,7 +798,6 @@ class HireForm(MapBase):
 	staff = relationship("ShopStaff", uselist=False, join_depth=2)
 	create_time = Column(DateTime, default=func.now()) #5.26
 
-
 # 角色：顾客
 class Customer(MapBase, _AccountApi):
 	__tablename__ = "customer"
@@ -827,7 +816,8 @@ class Customer(MapBase, _AccountApi):
 	points = relationship("Points")
 	shop_new = Column(Integer,default = 0) # 0:new ,1:old
 
-#woody
+# woody
+# 用户积分
 class Points(MapBase,_CommonApi):
 	__tablename__ = "points"
 	id = Column(Integer,ForeignKey(Customer.id) ,primary_key = True ,nullable = False)
@@ -895,9 +885,7 @@ class Points(MapBase,_CommonApi):
 	#         ,point.address_count,point.totalPrice,point.totalCount)
 	#     return totalCount
 
-
 # 用户关注店铺
-
 class CustomerShopFollow(MapBase, _CommonApi):
 	__tablename__ = "customer_shop_follow"
 	customer_id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
@@ -918,7 +906,7 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	remark = Column(String(200))#5.25 customer_remark
 
 
-#商家申请 提现
+# 提现申请
 class ApplyCashHistory(MapBase,_CommonApi):
 	__tablename__ = 'apply_cash'
 	id = Column(Integer,primary_key = True , nullable = False)
@@ -942,7 +930,7 @@ class ApplyCashHistory(MapBase,_CommonApi):
 # 即只有真正实现 支付的地方才用到。而用户 余额消费 只是数值上的变动
 # 用户余额消费也会产生记录，只显示给用户自己看
 ################################################################################
-
+# 余额、在线支付历史
 class BalanceHistory(MapBase,_CommonApi):
 	__tablename__ = 'balancehistory'
 	id = Column(Integer,primary_key = True , nullable = False)
@@ -964,6 +952,7 @@ class BalanceHistory(MapBase,_CommonApi):
 
 	available_balance = Column(Float,default = 0)
 
+# 用户积分历史
 class PointHistory(MapBase,_CommonApi):
 	__tablename__ = 'pointhistory'
 	id = Column(Integer, primary_key=True, nullable=False)
@@ -1049,7 +1038,6 @@ class SystemOrder(MapBase, _CommonApi):
 				 trade_status=nd["trade_status"],
 				 notify_id = nd["notify_id"])
 		return o
-
 
 	# 订单id， 构成如"年月日订单当日编号", 2014110700001
 	order_id = Column(BigInteger, nullable=False, unique=True, primary_key=True)
@@ -1145,7 +1133,6 @@ class Comment(MapBase, _CommonApi):
 	text = Column(String(100))
 	admin = relationship(ShopAdmin, uselist=False)
 
-
 class InfofruitLink(MapBase):
 	"""信息墙的信息的水果种类"""
 	__tablename__ = "info_fruit_link"
@@ -1155,7 +1142,7 @@ class InfofruitLink(MapBase):
 	fruit_id = Column(Integer, ForeignKey("fruit_type.id"), nullable=False)
 #＝＝＝＝信息墙
 
-# 系统自定义水果类型
+# 商品类目
 class FruitType(MapBase,  _CommonApi):
 	__tablename__ = "fruit_type"
 
@@ -1225,6 +1212,7 @@ class AlembicTest(MapBase):
 	id = Column(Integer, primary_key=True, nullable=True)
 	text = Column(Integer)
 
+# 手机验证码
 class _VerifyCode(MapBase):
 	__tablename__ = "__verify_code__"
 
@@ -1235,6 +1223,7 @@ class _VerifyCode(MapBase):
 	create_time = Column(DateTime, default=func.now())
 	count = Column(Integer)              # modify to define whether  code is usefull , if count = 1, code is usefull ,if count =0 or others ,code is useless
 
+# 商品点赞
 class FruitFavour(MapBase):
 	__tablename__ = "__fruit_favour__"
 
@@ -1243,6 +1232,7 @@ class FruitFavour(MapBase):
 	type = Column(TINYINT, primary_key=True, nullable=False)  # 0：fruit，1：mgoods
 	create_date = Column(Date, default=func.curdate())
 
+# 店铺签到
 class ShopSignIn(MapBase):
 	__tablename__ = "__shop_sign_in__"  # 店铺签到表
 
@@ -1251,7 +1241,8 @@ class ShopSignIn(MapBase):
 	keep_days = Column(Integer, default=1)  # 已连续签到天数
 	last_date = Column(Date, default=func.curdate())  # 最后一次签到的日期
 
-#todo :如果水果
+# 订单
+# todo :如果水果
 class Order(MapBase, _CommonApi):
 	__tablename__ = "order"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1289,7 +1280,7 @@ class Order(MapBase, _CommonApi):
 	active = Column(TINYINT, default=1)  # 0删除
 	isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
 
-	fruits = Column(String(1000))
+	fruits = Column(String(2000))
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
 	send_time=Column(String(45))
@@ -1302,9 +1293,12 @@ class Order(MapBase, _CommonApi):
 	online_type       = Column(String(8))
 	send_admin_id =Column(Integer,default=0) #record admin_id when to send the order #5.25
 	finish_admin_id =Column(Integer,default=0) #record admin_id when to finish the order#5.25
+
 	coupon_key=Column(String(128))    #优惠券码
 	coupon_money=Column(Float,default=0)  #优惠金额
 	new_totalprice=Column(Float)
+
+
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
@@ -1327,11 +1321,9 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
-				# print("[订单管理]取消订单，恢复库存数量：",num)
+				# print("[Order]Order Canceled, restore storage:",num)
 		session.commit()
 		return True
-
-
 
 	def get_sendtime(self,session,order_id):
 		try:
@@ -1356,7 +1348,7 @@ class Order(MapBase, _CommonApi):
 			order.start_time.hour, w_start_time_minute,order.end_time.hour, w_end_time_minute)
 		return send_time
 
-
+# 评论删除申请
 class CommentApply(MapBase, _CommonApi):
 	__tablename__ = 'commentapply'
 	id = Column(Integer , primary_key = True , nullable = False ,autoincrement = True)
@@ -1369,7 +1361,7 @@ class CommentApply(MapBase, _CommonApi):
 	shop    = relationship("Shop")
 	decline_reason = Column(String(200)) # when
 
-#水果单品
+# 商品
 class Fruit(MapBase, _CommonApi):
 	__tablename__ = "fruit"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1383,7 +1375,7 @@ class Fruit(MapBase, _CommonApi):
 	storage = Column(Float)
 	cart_storage = Column(Float,default = 0)
 	favour = Column(Integer, default=0)  # 赞
-	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:框 11:包
+	unit = Column(TINYINT)#库存单位,1:个 2：斤 3：份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:筐 11:包
 	tag = Column(TINYINT, default=TAG.NULL) #标签
 	img_url = Column(String(500))
 	intro = Column(String(100))
@@ -1400,7 +1392,7 @@ class Fruit(MapBase, _CommonApi):
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
 
-#水果单品的计价类型
+# 商品计价类型
 class ChargeType(MapBase, _CommonApi):
 	__tablename__ = "charge_type"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1416,6 +1408,7 @@ class ChargeType(MapBase, _CommonApi):
 
 	fruit = relationship("Fruit", uselist=False)
 
+# 商品评论
 class FruitComment(MapBase, _CommonApi):
 	__tablename__ = "fruit_comment" #5.27
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1424,6 +1417,7 @@ class FruitComment(MapBase, _CommonApi):
 	comment = Column(String(500))
 	create_time = Column(DateTime, default=func.now())
 
+# 商品分组
 class GoodsGroup(MapBase, _CommonApi):
 	__tablename__ = "goods_group" #5.27 self define
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1433,6 +1427,7 @@ class GoodsGroup(MapBase, _CommonApi):
 	intro = Column(String(100))
 	create_time = Column(DateTime, default=func.now())
 
+# 商品分组优先级
 class GroupPriority(MapBase, _CommonApi):
 	__tablename__ = "group_priority"
 	__table_args__ = {"extend_existing": True}
@@ -1441,6 +1436,7 @@ class GroupPriority(MapBase, _CommonApi):
 	group_id = Column(Integer)
 	priority = Column(Integer)
 
+# 商品限购
 class GoodsLimit(MapBase, _CommonApi):
 	__tablename__ = "goods_limit"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1452,7 +1448,7 @@ class GoodsLimit(MapBase, _CommonApi):
 	buy_num = Column(Integer)
 	allow_num = Column(Integer)
 
-# 用户自定义的商品类型
+# 用户自定义的商品类型（弃用）
 class Menu(MapBase, _CommonApi):
 	__tablename__ = "menu"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1463,8 +1459,7 @@ class Menu(MapBase, _CommonApi):
 	mgoods = relationship("MGoods", order_by="desc(MGoods.priority)")
 	shop = relationship("Shop", uselist=False)
 
-
-#用户自定义的商品
+# 用户自定义的商品（弃用）
 class MGoods(MapBase, _CommonApi):
 	__tablename__ = "m_goods"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1484,8 +1479,7 @@ class MGoods(MapBase, _CommonApi):
 	mcharge_types = relationship("MChargeType") #支持多种计价方式
 	menu = relationship("Menu", uselist=False)
 
-
-#用户自定义商品的计价类型
+# 用户自定义商品的计价类型（弃用）
 class MChargeType(MapBase, _CommonApi):
 	__tablename__ = "m_charge_type"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1503,7 +1497,7 @@ class Cart(MapBase, _CommonApi):
 	__tablename__ = "cart"
 	id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	fruits = Column(String(1000), default='{}')
+	fruits = Column(String(2000), default='{}')
 	mgoods = Column(String(1000), default='{}')
 
 # 店铺设置
@@ -1540,11 +1534,11 @@ class Config(MapBase, _CommonApi):
 	day_on_time = Column(Integer,default = 0) #按时达 0:all 1:今天 2:明天
 	receipt_type = Column(Integer,default = 0) #0:有线打印 1:无线打印 7.13
 	auto_print =  Column(Integer,default = 0) #0:按需打印  1:自动打印 7.13
-	wireless_type = Column(Integer,default = 0) #打印机品牌 0:易连云  1:飞印 7.13
+	wireless_type = Column(Integer,default = 0) #打印机品牌 0:易联云  1:飞印 7.13
 	wireless_print_num = Column(String(20)) #无线打印机终端号 7.13
 	wireless_print_key = Column(String(20)) #无线打印机密钥 7.13
 
-#店铺营销
+# 店铺营销
 class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
@@ -1553,7 +1547,7 @@ class Marketing(MapBase, _CommonApi):
 	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
 	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
 
-#商城首页的公告
+# 商城首页的公告
 class Notice(MapBase):
 	__tablename__ = "notice"
 
@@ -1564,7 +1558,7 @@ class Notice(MapBase):
 	detail = Column(String(500)) #详情
 	img_url = Column(String(100)) #公告背景
 
-#按时达时间段设置
+# 按时达时间段设置
 class Period(MapBase):
 	__tablename__ = "period"
 
@@ -1575,7 +1569,7 @@ class Period(MapBase):
 	start_time = Column(Time)
 	end_time = Column(Time)
 
-#一级地址:
+# 一级地址
 class Address1(MapBase, _CommonApi):
 	__tablename__ = "address1"
 
@@ -1585,7 +1579,7 @@ class Address1(MapBase, _CommonApi):
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 	address2 = relationship("Address2")
 
-#二级地址
+# 二级地址
 class Address2(MapBase, _CommonApi):
 	__tablename__ = "address2"
 
@@ -1593,7 +1587,6 @@ class Address2(MapBase, _CommonApi):
 	address1_id = Column(Integer, ForeignKey(Address1.id), nullable=False)
 	name = Column(String(50))
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-
 
 # 系统公告
 class SysNotice(MapBase):
@@ -1612,7 +1605,7 @@ class ShopFavorComment(MapBase):
 	order_id = Column(Integer, ForeignKey(Order.id), primary_key=True, nullable=False)
 
 
-#告白墙
+# 告白墙
 class ConfessionWall(MapBase, _CommonApi):
 	__tablename__ = 'confession_wall'
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1630,6 +1623,7 @@ class ConfessionWall(MapBase, _CommonApi):
 	status = Column(Integer,default = 1) #0:删除 1:正常
 	scan = Column(Integer,default = 1) #0:未浏览 1:已浏览
 
+# 告白评论
 class ConfessionComment(MapBase, _CommonApi):
 	__tablename__ = 'confession_comment'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
@@ -1640,6 +1634,7 @@ class ConfessionComment(MapBase, _CommonApi):
 	_type = Column(Integer,default = 0) #0: 评论  1:回复
 	comment_author_id = Column(Integer,default = 0)#评论作者id
 
+# 告白点赞
 class ConfessionGreat(MapBase, _CommonApi):
 	__tablename__ = 'confession_great'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
@@ -1647,7 +1642,7 @@ class ConfessionGreat(MapBase, _CommonApi):
 	wall_id = Column(Integer,ForeignKey(ConfessionWall.id),nullable = False)
 	create_time = Column(DateTime,default = func.now())
 
-#官网文章
+# 社区文章
 class Article(MapBase, _CommonApi):
 	__tablename__ = 'article'
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
@@ -1663,6 +1658,7 @@ class Article(MapBase, _CommonApi):
 	del_reason = Column(String(100)) #删除reason
 	create_time = Column(DateTime,default = func.now())
 
+# 文章评论
 class ArticleComment(MapBase, _CommonApi):
 	__tablename__ = 'article_comment'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
@@ -1678,6 +1674,7 @@ class ArticleComment(MapBase, _CommonApi):
 
 	accountinfo = relationship(Accountinfo)
 
+# 文章点赞
 class ArticleGreat(MapBase, _CommonApi):#文章点赞 收藏 浏览
 	__tablename__ = 'article_great'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
@@ -1688,6 +1685,7 @@ class ArticleGreat(MapBase, _CommonApi):#文章点赞 收藏 浏览
 	scan = Column(Integer,default = 0) #0:未浏览 1:浏览
 	create_time = Column(DateTime,default = func.now())
 
+# 文章评论点赞
 class ArticleCommentGreat(MapBase, _CommonApi):#评论点赞
 	__tablename__ = 'article_comment_great'
 	id = Column(Integer, primary_key = True, nullable = False, autoincrement = True)
@@ -1695,13 +1693,14 @@ class ArticleCommentGreat(MapBase, _CommonApi):#评论点赞
 	comment_id = Column(Integer,ForeignKey(ArticleComment.id),nullable=False)#评论id
 	create_time = Column(DateTime,default = func.now())
 
-
+# url缩短
 class ShortUrl(MapBase,_CommonApi):
 	__tablename__ = 'shorturl'
 	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
 	short_url = Column(String(32),nullable = False)
 	long_url  = Column(String(64),nullable = False)
 
+# 数据库初始化
 def init_db_data():
 	MapBase.metadata.create_all()
 	# add fruittypes to database
@@ -1728,8 +1727,8 @@ def init_db_data():
 	print("init db success")
 	return True
 
-
-#add by jyj 2015-6-18
+# add by jyj 2015-6-18
+# 对账单
 class CheckProfit(MapBase, _CommonApi):
 	__tablename__ = "check_profit"
 
@@ -1754,26 +1753,28 @@ class CheckProfit(MapBase, _CommonApi):
 	total = Column(Float,default = 0)
 	total_count = Column(Integer,default=0)
 
-
 # added by woody 7.11
+#
 class Mp_customer_link(MapBase,_CommonApi):
 	__tablename__ = 'mp_customer_link'
 	id = Column(Integer,primary_key = True,nullable = False , autoincrement = True)
 	admin_id   = Column(Integer)
 	customer_id = Column(Integer)
 	wx_openid   = Column(String(64))
-#added by woody 7.11
+
+# added by woody 7.11
+# 推广系统店铺信息
 class Spider_Shop(MapBase , _CommonApi):
 	__tablename__ = 'spider_shop'
 	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
-	shop_id = Column(Integer,nullable = False)  #  抓取下来的商品的字段 shop_id 是该字段,不是上面那个id....     
+	shop_id = Column(Integer,nullable = False)  #  抓取下来的商品的字段 shop_id 是该字段,不是上面那个id....
 	shop_name = Column(String(64))
 	shop_address = Column(String(128))
 	shop_logo   = Column(String(200))
 	delivery_freight = Column(String(64))
 	shop_link  = Column(String(128))
 	delivery_time = Column(String(128))
-	shop_phone  = Column(String(16))
+	shop_phone  = Column(String(50))
 	delivery_mincharge = Column(String(32))
 	delivery_area   = Column(String(128))
 	shop_notice    = Column(String(200))
@@ -1788,13 +1789,13 @@ class Spider_Shop(MapBase , _CommonApi):
 	admin_info = Column(String(64))
 	staff_info = Column(String(64))
 	shop_auth  = Column(String(128))
-	
+
 	description = Column(String(128))
 
 	shop_code = Column(String(20)) #正式生成后的店铺code
 
-
-#added by woody 7.11
+# added by woody 7.11
+# 推广系统店铺商品信息
 class Spider_Good(MapBase,_CommonApi):
 	__tablename__ = 'spider_good'
 	id = Column(Integer , primary_key = True , nullable = False , autoincrement = True)

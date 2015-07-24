@@ -62,19 +62,19 @@ class ConfessionHome(CustomerBaseHandler):
 					data = self.session.query(models.ConfessionWall).\
 					filter_by(customer_id = customer_id,shop_id=shop_id,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
-					print("haven't public any confession")
+					print("[ConfessionHome]haven't public any confession")
 			elif action == "receive":
 				try:
 					data = self.session.query(models.ConfessionWall).\
 					filter_by(other_phone = self.current_user.accountinfo.phone,shop_id=shop_id,status = 1).order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
-					print("current_user didn't tie the cell phone")
+					print("[ConfessionHome]current_user didn't tie the cell phone")
 			elif action == "comment":
 				try:
 					data = self.session.query(models.ConfessionWall).\
 					join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).filter(models.ConfessionWall.status == 1,models.ConfessionWall.shop_id == shop_id,models.ConfessionComment.customer_id==customer_id).distinct().order_by(models.ConfessionWall.create_time.desc()).offset(page*page_size).limit(page_size).all()
 				except:
-					print("current_user didn't comment any confession")
+					print("[ConfessionHome]current_user didn't comment any confession")
 			for d in data:
 				info = self.session.query(models.Customer).filter_by(id=d.customer_id).first()
 				user = info.accountinfo.nickname
@@ -96,7 +96,7 @@ class ConfessionHome(CustomerBaseHandler):
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("page?:int","action:str","data?")
-	def post(self,shop_code):	
+	def post(self,shop_code):
 		action = self.args["action"]
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
@@ -158,7 +158,7 @@ class ConfessionHome(CustomerBaseHandler):
 			self.session.commit()
 			return self.send_success()
 		elif action == "comment":
-			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["id"]).first() 
+			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["id"]).first()
 			comment =models.ConfessionComment(
 				wall_id = self.args["data"]["id"],
 				customer_id = self.current_user.id,
@@ -232,7 +232,7 @@ class ConfessionComment(CustomerBaseHandler):
 		else :
 			return self.send_fail('shop error')
 		if action == "comment":
-			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["id"]).first() 
+			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["id"]).first()
 			comment =models.ConfessionComment(
 				wall_id = self.args["data"]["id"],
 				customer_id = self.current_user.id,
@@ -257,7 +257,7 @@ class ConfessionComment(CustomerBaseHandler):
 			self.set_cookie('confess_shop_id',str(shop_id))
 			return self.send_success(data=data)
 		elif action =="replay":
-			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["wall_id"]).first() 
+			confession = self.session.query(models.ConfessionWall).filter_by( id = self.args["data"]["wall_id"]).first()
 			comment = self.session.query(models.ConfessionComment).filter_by( id = self.args["data"]["id"]).first()
 			reply =  models.ConfessionComment(
 				wall_id = self.args["data"]["wall_id"],
@@ -322,7 +322,7 @@ class ConfessionPublic(CustomerBaseHandler):
 			shop_id = shop.id
 		else :
 			return self.send_fail('shop error')
-		
+
 		try:
 			floor = self.session.query(models.ConfessionWall).filter_by(shop_id = shop_id).count()
 			floor = floor+1
@@ -359,7 +359,7 @@ class ConfessionPublic(CustomerBaseHandler):
 		self.session.commit()
 		self.set_cookie('confess_new',str(1))
 		self.set_cookie('confess_shop_id',str(shop_id))
-		return self.send_success()	
+		return self.send_success()
 
 # 发现 - 告白墙 - 个人中心
 class ConfessionCenter(CustomerBaseHandler):
@@ -407,19 +407,19 @@ class ConfessionList(CustomerBaseHandler):
 				data = self.session.query(models.ConfessionWall).\
 				filter_by(customer_id = customer_id,shop_id=shop_id).offset(page*page_size).limit(page_size).all()
 			except:
-				print("haven't public any confession")
+				print("[ConfessionList]haven't public any confession")
 		elif action == "receive":
 			try:
 				data = self.session.query(models.ConfessionWall).\
 				filter_by(other_phone = self.current_user.accountinfo.phone).offset(page*page_size).limit(page_size).all()
 			except:
-				print("current_user didn't tie the cell phone")
+				print("[ConfessionList]current_user didn't tie the cell phone")
 		elif action == "comment":
 			try:
 				data = self.session.query(models.ConfessionWall).\
 				join(models.ConfessionComment,models.ConfessionWall.id == models.ConfessionComment.wall_id).offset(page*page_size).limit(page_size).all()
 			except:
-				print("current_user didn't comment any confession")
+				print("[ConfessionList]current_user didn't comment any confession")
 		for d in data:
 			info = self.session.query(models.Customer).filter_by(id=d.customer_id).first()
 			fromwho = info.accountinfo.nickname

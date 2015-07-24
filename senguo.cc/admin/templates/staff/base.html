@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-cn">
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
     <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1,initial-scale=1,user-scalable=no">
     <meta content="yes" name="apple-mobile-web-app-capable">
     <meta content="yes" name="apple-touch-fullscreen">
@@ -14,15 +13,14 @@
     <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="{{static_url('css/staff-global.css')}}" type="text/css" />
     <link rel="shortcut icon" href="/static/images/favicon.ico" type="image/x-icon">
-    <link rel="icon" href="/static/'images/favicon.ico" type="image/x-icon">
     {% block head %}{% end %}
     <script>
         var _hmt = _hmt || [];
         (function() {
-          var hm = document.createElement("script");
-          hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
-          var s = document.getElementsByTagName("script")[0]; 
-          s.parentNode.insertBefore(hm, s);
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?935e8ca3a37798305258305ac7a9f24f";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
         })();
     </script>
 </head>
@@ -57,7 +55,7 @@
         </ul>
     </div>
     <div class="main-container container bg-white" >
-        <button class="header text-center  font16 shop_change btn text-grey3">
+        <button class="header text-center  font16 shop_change btn text-grey3" data-code="{{handler.shop_code}}">
             {{handler.shop_name}}
             <span class="caret"></span>
         </button>

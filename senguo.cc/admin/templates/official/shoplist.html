@@ -5,10 +5,10 @@
 {% block content %}
 {% import json %}
 <script type="text/javascript">
-    window.dataObj.province_count={% raw json.dumps(context['shop_province'])%}
+	window.dataObj.province_count={% raw json.dumps(context['shop_province'])%}
 </script>
 <div class="map_box">
-    <a href="/list" class="more-list" target="_blank">查看所有店铺</a>
+	<a href="{{reverse_url('fruitzoneShopList')}}" class="more-list" target="_blank">查看所有店铺</a>
 	<div class="text-white number_box font36">
 		<span class="pull-left mr20">全国已有</span>
 		<div class="num pull-left text-center"><span class="n num1">0</span><span class="line"></span></div>
@@ -37,8 +37,8 @@
 	</div>
 </div>
 {% end%}
- {% block bottom-js%} 
- <script src="/static/js/echarts.js"></script>
-  <script src="{{static_url('js/area.js')}}"></script>
- <script src="{{static_url('js/official_shop.js')}}"></script>
- {% end %}
+{% block bottom-js%}
+<script src="/static/js/echarts.js"></script>
+<script src="{{static_url('js/area.js')}}"></script>
+<script src="{{static_url('js/official_shop.js')}}"></script>
+{% end %}

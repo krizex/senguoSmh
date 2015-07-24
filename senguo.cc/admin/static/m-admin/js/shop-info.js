@@ -8,8 +8,8 @@ $(document).ready(function(){
     chooseStatus();
     chooseAuth();
     new QRCode($("#big-code2")[0],{
-        width : 150,
-        height : 150
+        width : 300,
+        height : 300
     }).makeCode($("#shop_link").html());
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
@@ -263,8 +263,8 @@ function infoEdit(action_name){
                 Tip("店铺号编辑成功");
                 $("#big-code2").empty();
                 new QRCode($("#big-code2")[0],{
-                    width : 150,
-                    height : 150
+                    width : 300,
+                    height : 300
                 }).makeCode($("#shop_link").html());
             }
             else if(action_name=='intro')

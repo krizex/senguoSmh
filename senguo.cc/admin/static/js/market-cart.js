@@ -399,8 +399,8 @@ $(document).ready(function(){
         $('.send_now').show();
         $('.intime-intro').show();
         $('.now-intro').hide();
-        $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+        $('#freight_money').text(window.dataObj.freigh_now);
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
     }
     if(typeof(intime_on)=='undefined'&&now_on=='True'){
         if(window.dataObj.total_price<window.dataObj.mincharge_now){
@@ -803,7 +803,7 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-            window.location.href= '/notice/success'
+           // window.location.href= '/notice/success'
             var url='/customer/cartback';
             var args={order_id:res.order_id};
             $.postJson(url,args,function(data) {

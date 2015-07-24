@@ -1,11 +1,12 @@
 # 数据库的水果类型初始化，若要增加水果类型，则直接按照已有的格式在后面添加，进程重新启动时会自动插到数据库里
 # 现在只支持新增，若要删除，则自己手动删除数据库的记录，同时修改此文件
-# key value 
-#颜色color number  <red,1> ; <yellow,2>; <green,3> <purple,4><white,5><blue,6>
-#字数 length number 
-#园艺分类  garden  number <仁果类，1> <核果类，2> <浆果类,3> <柑橘类，4> <热带及亚热带类，5>
-#  <什果类，6> <坚果类，7>
-# 属性 nature number  <cold ,1> <hot,2> <middle,3>
+#
+# key value:
+#    颜色    color number  <red,1> ; <yellow,2>; <green,3> <purple,4> <white,5> <blue,6>
+#    字数    length number
+#    园艺分类 garden number <仁果类，1> <核果类，2> <浆果类,3> <柑橘类，4> <热带及亚热带类，5> <什果类，6> <坚果类，7>
+#    属性    nature number <cold ,1> <hot,2> <middle,3>
+#
 fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li','color':2,'length':2,'garden':1,'nature':1},
                {'id': 2, 'name': '西瓜', 'code': 'Xg','color':3,'length':2,'garden':1,'nature':1},
                {'id': 3, 'name': '芒果', 'code': 'Mg','color':2,'length':2,'garden':2,'nature':1},
@@ -77,13 +78,11 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li','color':2,'length':2,'ga
                {'id': 69, 'name': '杏子', 'code':'xingzi','color':2,'length':2,'garden':2,'nature':3},
                {'id': 70, 'name': '毛桃', 'code':'maotao','color':1,'length':2,'garden':2,'nature':2},
 
-
-               
                # 干果类型
-                  # 所有干果的颜色默认为2 yellow 
-                  # 干果长度按照名词长度定 
-                  # 干果的园艺分类方式都为 <坚果类，7>
-                  # 干果的属性都为热性 nature = 2 
+               #    所有干果的颜色默认为 2 yellow
+               #    干果长度按照名词长度定
+               #    干果的园艺分类方式都为 <坚果类，7>
+               #    干果的属性都为热性 nature = 2
                {'id': 1001, 'name': '腰果', 'code': 'yaoguo','color':2,'length':2,'garden':7,'nature':2},
                {'id': 1002, 'name': '杏仁', 'code': 'xingren','color':2,'length':2,'garden':7,'nature':2},
                {'id': 1003, 'name': '板栗', 'code': 'banli','color':2,'length':2,'garden':7,'nature':2},
@@ -108,8 +107,7 @@ fruit_types = [{'id': 1, 'name': '梨子', 'code': 'Li','color':2,'length':2,'ga
                {'id': 1022, 'name': '杏干','code':'xinggan','color':2,'length':2,'garden':7,'nature':2},
                {'id': 1023, 'name': '无花果干','code':'wuhuaguogan','color':2,'length':4,'garden':7,'nature':2},
 
-               
-      #其他 color = 0  length = 2  默认        
+               # 其他 color = 0 length = 2 默认
                {'id': 999, 'name': '其他', 'code':'shuiguoqita','color':0,'length':0,'garden':0,'nature':0},
                {'id': 1999, 'name': '其他', 'code':'ganguoqita','color':0,'length':0,'garden':0,'nature':0},
                {'id': 2000, 'name': '其他','code':'TDSG','color':0,'length':2,'garden':0,'nature':0},

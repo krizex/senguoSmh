@@ -3,7 +3,7 @@
 
 {% block setcontent %}
     {% if _shop_auth ==0 %}
-     <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+    <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
     {% else %}
     <div class="set-description">
         <p>店铺管理员拥有：店铺登录、店铺订单提醒等权限（管理员必须关注森果微信服务号sen-guo） </p>
@@ -20,7 +20,7 @@
             <div class="pull-right mt10">
                 {% set super_temp_active = current_shop.super_temp_active %}
                 <a class="set-super-receive func-mode  font12 w150 text-white" href="javascript:;" data-status="{{super_temp_active}}"><i class="circle"></i><span class="text"></span></a>
-            </div> 
+            </div>
         </li>
     {% for data in datalist %}
         <li class="item clearfix" data-id="{{data['id']}}">
@@ -51,7 +51,6 @@
     	            		<button class="user-search btn bg-green text-white pull-left">搜索</button>
     	            	</div>
     	            	<ul class="user-list">
-    	            		
     	            	</ul>
                 </div>
             </div>

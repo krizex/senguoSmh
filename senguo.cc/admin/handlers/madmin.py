@@ -218,9 +218,23 @@ class OrderDetail(AdminBaseHandler):
 	def get(self,order_num):
 		shop_id = self.current_shop.id
 		try:
-			order = self.session.query(models.Order).filter(models.Order.num==order_num, models.Order.shop_id==shop_id).first()
+			order = self.session.query(models.Order).filter(models.Order.num==order_num).first()
 		except:
 			return self.send_error(404)
+		try:
+			shop = self.session.query(models.Shop).filter_by(id=order.shop_id).first()
+		except:
+			return self.send_error(404)
+		try:
+			HireLink = self.session.query(models.HireLink).filter_by(shop_id=order.shop_id,staff_id=self.current_user.id,work=9,active=1).first()
+		except:
+			pass
+		if not shop.admin_id == self.current_user.id and not HireLink:
+			return self.write("<h1>您没有查看该订单的权限</h1>")
+
+		if shop:
+			self.current_shop = shop
+
 		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 		print(charge_types)
 		if order.pay_type == 1:

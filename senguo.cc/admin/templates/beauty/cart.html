@@ -123,8 +123,8 @@
                                 <a href="javascript:;" class="text-grey clearfix">
                                     <a href="javascript:;" class="pull-right checkbox-btn"></a>
                                     <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
-                             <span class="pull-left ontime-txt">
-                                 <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
+                            <span class="pull-left ontime-txt">
+                                <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
                              </span>
                                     <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                                     <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
@@ -136,7 +136,6 @@
                     <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
                     {% end %}
                     {% end %}
-                    
                 </div>
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
@@ -211,7 +210,7 @@
                         </div>
                     </li>
                    <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
-	           <a href="javascript:;" class="text-grey">
+                        <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
                             <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
                         </a>

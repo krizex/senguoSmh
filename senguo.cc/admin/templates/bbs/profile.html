@@ -35,7 +35,7 @@
             </dt>
             <dd>
                 <p class="title c333 mt4">{{shop.shop_name}}<span class="shop-auth" data-auth="{{shop_auth}}">个人认证</span></p>
-                <p class="c333 mt15">{% if shop.shop_code %}店铺链接 : <a href="http://senguo.cc/{{shop.shop_code}}" class="shop-link">http://senguo.cc/{{shop.shop_code}}</a>{% else %}未设置店铺号 {% end %}</p>
+                <p class="c333 mt15">{% if shop.shop_code %}店铺链接 : <a href="{{reverse_url('Market',shop.shop_code)}}" class="shop-link">http://senguo.cc/{{shop.shop_code}}</a>{% else %}未设置店铺号 {% end %}</p>
             </dd>
         </dl>
     </div>

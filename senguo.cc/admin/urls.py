@@ -39,8 +39,9 @@ handlers = [
 	#市场推广
 	(r"/market/home", handlers.market.Home, {}, "MarketHome"),
 	(r"/market/shopinfo", handlers.market.Info, {}, "MarketInfo"),
-	(r"/market/shopinsert", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
+	(r"/market/shopinsert/(\w+)", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
 	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
+	#(r'/market/staffinsert',handlers.market.StaffInsert,{},"staffinsert"),
 
 
 	#优惠券
@@ -214,6 +215,11 @@ handlers = [
 	(r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
 	(r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
 	(r"/admin/home", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
+
+	# add by jyj 2015-7-8
+	(r"/admin/sstatic", handlers.admin.SellStatic, {}, "adminSellStatic"),
+	##
+
 	(r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
 	(r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
 	(r"/admin/order", handlers.admin.Order, {}, "adminOrder"),

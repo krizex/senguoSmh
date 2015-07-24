@@ -1,14 +1,18 @@
 $(document).ready(function(){
     if(window.location.href.indexOf("?next")!=-1){
-	SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
+	    SetCookie("next_url",$("#phoneLogin").attr('data-next'),1);
     }else{
-        
     }
-
 }).on('click','#phoneLogin',function(){
 	var $this=$(this);
 	$this.attr({'disabled':true});
 	login($this);
+}).on('keydown','#password',function(){
+    if(window.event.keyCode == 13){
+        var $this=$(this);
+        $this.attr({'disabled':true});
+        login($this);
+    }
 });
 
 function login(target){
@@ -18,14 +22,6 @@ function login(target){
 	var regPhone=/^(1)\d{10}$/;
 	var next=target.attr('data-next');
     	if(!regPhone.test(phone)){
-    		target.removeAttr('disabled');
-    		return noticeBox("手机号貌似有错o(╯□╰)o");
-    	}
-    	if(phone.length<11){
-    		target.removeAttr('disabled');
-    		return noticeBox("手机号貌似有错o(╯□╰)o");
-    	}
-    	if(phone.length > 11){
     		target.removeAttr('disabled');
     		return noticeBox("手机号貌似有错o(╯□╰)o");
     	}
@@ -51,7 +47,7 @@ function login(target){
 				window.location.href='/list';
 			}
 			else{
-				window.location.href=next;	
+				window.location.href=next;
 			}
 			target.removeAttr('disabled');
 		}
@@ -59,7 +55,7 @@ function login(target){
 			target.removeAttr('disabled');
 			return noticeBox(res.error_text);
 		}
-	}, 
+	},
 	function(){
 		target.removeAttr('disabled');
 		return noticeBox('网络好像不给力呢~ ( >O< ) ~');
@@ -69,5 +65,5 @@ function login(target){
 		return noticeBox('服务器貌似出错了~ ( >O< ) ~');
 	}
 	);
-	
+
 }

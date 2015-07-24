@@ -265,7 +265,7 @@ class ShopManage(SuperBaseHandler):
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
-		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
@@ -299,7 +299,8 @@ class ShopManage(SuperBaseHandler):
 			output_data = []
 			for shop in shops:
 				data = {}
-				##############################################################################
+				##########################################        </li>
+####################################
 				# user's subscribe
 				##############################################################################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
@@ -366,7 +367,8 @@ class ShopManage(SuperBaseHandler):
 
 				#chang by jyj 2015-6-16
 				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
-				##
+				##        </li>
+
 
 				data["shop_property"] = shop.shop_property
 
@@ -903,11 +905,10 @@ class OrderStatic(SuperBaseHandler):
 
 	@SuperBaseHandler.check_arguments("type:int")
 	def order_time(self):
+
 		type = self.args["type"]
 		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 				filter(not_(models.Order.status.in_([-1,0])))
-		#q = self.session.query(models.Order.create_date).\
-		#		filter(not_(models.Order.status.in_([-1,0])))
 		if type == 1:  # 累计数据
 			pass
 		elif type == 2:  # 昨天数据
@@ -929,7 +930,6 @@ class OrderStatic(SuperBaseHandler):
 					data[0] += 1
 				else:
 					data[e[0]] += 1
-
 		return self.send_success(data=data)
 
 	@SuperBaseHandler.check_arguments("type:int")
@@ -948,18 +948,19 @@ class OrderStatic(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 
-		#stop_range = self.current_shop.config.stop_range
 
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				data[order[1].hour + (order[1].minute+order[3])//60] += 1
+				if order[1].hour + (order[1].minute+order[3])//60 == 24:
+					data[0] += 1
+				else:
+					data[order[1].hour + (order[1].minute+order[3])//60] += 1
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
 
-		#print(data)
 		return self.send_success(data=data)
 ##
 
@@ -1040,7 +1041,7 @@ class Comment(SuperBaseHandler):
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
-		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
@@ -1087,9 +1088,9 @@ class CommentInfo(SuperBaseHandler):
 		page = 0
 		ajaxFlag = self.args["ajaxFlag"]
 
-		order_list =  self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		order_list =  self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
 
-		all_comment_order = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
+		all_comment_order = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
 		all_count = all_comment_order.count()
 		full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
 		img_count = all_comment_order.filter(models.Order.comment_imgUrl.like('http:%')).count()
@@ -1173,7 +1174,7 @@ class CommentInfo(SuperBaseHandler):
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
-		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
@@ -1197,7 +1198,7 @@ class CommentInfo(SuperBaseHandler):
 		output_data_tmp = []
 		output_data = []
 
-		order_list_data = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).order_by(desc(models.Order.comment_create_date))
+		order_list_data = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
 
 		if action == 'all':
 			order_list = order_list_data.offset(page*page_size).limit(page_size).all()
@@ -1444,13 +1445,14 @@ class ShopAuthenticate(SuperBaseHandler):
 	def get(self):
 		page=int(self.args["page"])
 		page_size = 10
-		page_area =page*page_size
+		page_area = page*page_size
 
 		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
-		comment = self.session.query(models.Order).filter(models.Order.status.in_([6,7])).count()
+		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
+
 		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 
 		count = {
@@ -1499,7 +1501,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			self.session.commit()
 			#发送短消息提醒
 			if shop.shop_phone:
-				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				# print("店铺没有预留电话！")
 				print("no phone")
@@ -1514,7 +1516,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			self.session.commit()
 			#发送短消息提醒
 			if shop.shop_phone:
-				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.name)
+				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				# print("店铺没有预留电话！")
 				print("no phone")
@@ -2002,6 +2004,8 @@ class ShopBalanceDetail(SuperBaseHandler):
 			shop_totalBalance = format(shop_totalBalance,'.2f')
 
 			history.append({'shop_name':shop_name,'balance':shop_totalBalance,'cash_applying':cash_applying})
+
+
 		return self.render("superAdmin/shop-balance-detail.html",history = history,context=dict())
 
 	@tornado.web.authenticated

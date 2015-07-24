@@ -79,7 +79,7 @@
                         </a>
                     </button>
                     {% end %}
-                     {% if config.now_on == True%}
+                    {% if config.now_on == True%}
                     <ul class="send_now list-group">
                         <div class="arrow-top left82"></div>
                         <!-- <li class="list-group-item clearfix bg-grey2">
@@ -123,9 +123,9 @@
                                 <a href="javascript:;" class="text-grey clearfix">
                                     <a href="javascript:;" class="pull-right checkbox-btn"></a>
                                     <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
-                             <span class="pull-left ontime-txt">
-                                 <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
-                             </span>
+                            <span class="pull-left ontime-txt">
+                                <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
+                            </span>
                                     <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                                     <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
                                 </a>
@@ -192,7 +192,7 @@
                         </a>
                     </li>
                     <li>
-                         <div class="group"></div>
+                        <div class="group"></div>
                         <div class="wrap-online-lst">
                             <div class="arrow-top"></div>
                             <ul class="online-lsts check-lst">
@@ -210,7 +210,7 @@
                         </div>
                     </li>
                    <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
-	                    <a href="javascript:;" class="text-grey">
+                        <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
                             <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
                         </a>
@@ -250,6 +250,10 @@
                 <span class="pull-left">第一次下单?</span>
                 <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
             </div>
+
+            {% else %}
+            <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt20 clearfix sure_btn">提交订单</button>
+
             {% end %}
         </div>
         <div class="bottom-line"></div>

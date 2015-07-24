@@ -39,7 +39,7 @@
 .area_list li .name{display:inline-block;width:80px;height:20px;overflow:hidden;}
 .whole_country{display:inline-block;width:100%;height:35px;line-height:28px;padding:10px;}
 .whole_country .arrow{margin-top:8px !important;}
-.province_list{width:50%;position:absolute;left:0;z-index:10;overflow:hidden;height:350px;overflow-y:scroll;}
+.province_list{width:50%;position:absolute;left:0;z-index:10;overflow:hidden;height:350px;overflow-y:auto;-webkit-overflow-scrolling:touch;}
 .province_list .arrow{display:inline-block;width:7px;height:14px;margin-top:5px;background:url('/static/images/arrow_right.png') no-repeat;background-size:7px;}
 .province_list li{height:35px;line-height:20px;padding:8px 10px;cursor:pointer;}
 .province_list li:hover{background-color: #dcede5;color: #88c393;}
