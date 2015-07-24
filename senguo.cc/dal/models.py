@@ -1304,6 +1304,7 @@ class Order(MapBase, _CommonApi):
 	finish_admin_id =Column(Integer,default=0) #record admin_id when to finish the order#5.25
 	coupon_key=Column(String(128))    #优惠券码
 	coupon_money=Column(Float,default=0)  #优惠金额
+	new_totalprice=Column(Float)
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
