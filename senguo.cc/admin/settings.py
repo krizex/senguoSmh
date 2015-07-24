@@ -6,7 +6,7 @@ APP_OAUTH_CALLBACK_URL = "http://auth.senguo.cc"
 
 # 森果服务号公众平台
 MP_APPID = "wx0ed17cdc9020a96e"
-MP_APPSECRET = "6ecd60383b7e26a09d51a12e75649b3e"
+MP_APPSECRET = "cef2c4c6a59e6d0ae8b5a3f741a9c788"
 
 # mysql数据库相关
 MYSQL_DRIVER = "mysqlconnector"
