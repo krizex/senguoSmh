@@ -71,8 +71,6 @@ $(document).ready(function(){
 }).on("click",".plant-list li",function(){
     var index = $(this).index();
     $(".plant-list li").removeClass("active").eq(index).addClass("active");
-}).on("click",".last-choose",function(){
-    $(this).children("i").toggleClass("checked-btn");
 }).on("click",".shop-list li",function(){
     var num=parseInt($(".shop-number").text());
     console.log($(this).hasClass("active"));
@@ -85,15 +83,20 @@ $(document).ready(function(){
     $(this).toggleClass("active");
 }).on("click",".last-choose",function(){
     var $this=$(this);
-    if($this.attr("data-status")=="on"){
-        $(this).attr({"data-status":""});
-        $(".shop-list li").removeClass("active");
-        $(".shop-number").text(0);
-    }else{
-        $(this).attr({"data-status":"on"});
-        $(".shop-list li").addClass("active");
-        $(".shop-number").text($(".shop-list .active").length);
+    if($(".shop-list .active").length==0){
+        $this.find(".checkbox-btn").removeClass("checked-btn");
+        return Tip("请选择您要导入的店铺");
     }
+    $(this).addClass("active").children("i").toggleClass("checked-btn");
+    // if($this.attr("data-status")=="on"){
+    //     $(this).attr({"data-status":""});
+    //     $(".shop-list li").removeClass("active");
+    //     $(".shop-number").text(0);
+    // }else{
+    //     $(this).attr({"data-status":"on"});
+    //     $(".shop-list li").addClass("active");
+    //     $(".shop-number").text($(".shop-list .active").length);
+    // }
 }).on("click",".search-btn",function(){
     var shop_name=$("#shop_name").val().trim();
     if(!shop_name){
@@ -136,7 +139,12 @@ $(document).ready(function(){
     if(type==0){//手动创建
         commitHand($(this));
     }else if(type==1){
-        importShop($(this));
+        if($(".last-choose").hasClass("active")){
+            importShop($(this));
+        }else{
+            return Tip("请确认认领以上店铺");
+        }
+        
     }else{
 
     }
