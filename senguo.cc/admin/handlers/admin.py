@@ -3082,6 +3082,9 @@ class Config(AdminBaseHandler):
 		elif action=="auto_print_set":
 			self.current_shop.config.auto_print = 0 if self.current_shop.config.auto_print == 1 else 1
 			self.session.commit()
+		elif action=="concel_auto_print":
+			self.current_shop.config.concel_auto_print = 0 if self.current_shop.config.concel_auto_print == 1 else 1
+			self.session.commit()
 		elif action=="console_set":
 			_type = int(self.args["data"]["type"])
 			num = self.args["data"]["num"]
