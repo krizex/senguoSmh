@@ -16,16 +16,16 @@
         {% for coupon in output_data %}
         <li>
             <a href="/coupon/detail?action=detail&coupon_key={{coupon['coupon_key']}}" data-id="{{coupon['coupon_status']}}">
-                <div class="get-coupon {% if coupon['coupon_status']==1 %}{% else %}coupon-used已过期{% end %}">
+                <div class="get-coupon {% if coupon['coupon_status']==1 %}{% else %}coupon-used{% end %}">
                     <p class="f12 mt8">使用期限</p>
                     <p class="f12">{{coupon['effective_time']}}</p>
                     <p class="f12">{{coupon['uneffective_time']}}</p>
                     <p class="f16 bold">{% if coupon['coupon_status']==1 %}未消费{% elif coupon['coupon_status']==2 %}已消费{% else %}已过期{% end %}</p>
                 </div>
                 <div class="coupon-lprice">
-                    <i class="gap gap1-right"></i>
+                    {% if coupon['coupon_status']==1 %}<i class="gap gap1-right"></i>{% else %}<i class="gap gap2-right"></i>{% end %}
                     <p class="price-stxt {% if coupon['coupon_status']==1 %}{% else %}c9f{% end %}"><span class="f16">￥</span><span class="f32">{{coupon['coupon_money']}}</span></p>
-                    <p class="{% if coupon['coupon_status']==1 %}c333{% else %}c666{% end %}">订单满{{coupon['use_rule']}}元即可使用（含运费）</p>
+                    <p class="{% if coupon['coupon_status']==1 %}c333{% else %}c666{% end %}">{{coupon['use_goods_group']}}:{{coupon['use_goods']}}满{{coupon['use_rule']}}元即可使用（含运费）</p>
                 </div>
             </a>
         </li>
@@ -44,7 +44,7 @@
             <div class="coupon-lprice">
                 <i class="gap gap1-right"></i>
                 <p class="price-stxt"><span class="f16">￥</span><span class="f32 coupon-money"></span></p>
-                <p class="c333">订单满<span class="used-rule"></span>元即可使用（含运费）</p>
+                <p class="c333"><span class="used-group"></span>:<span class="used-goods"></span>满<span class="used-rule"></span>元即可使用（含运费）</p>
             </div>
         </a>
     </li>

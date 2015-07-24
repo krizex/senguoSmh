@@ -3503,7 +3503,7 @@ class Marketing(AdminBaseHandler):
 				q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
 				use_goods_group=q1.name
 			if x.use_goods==-1:
-				use_goods="所有分组"
+				use_goods="所有商品"
 			else:
 				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
 				use_goods=q1.name

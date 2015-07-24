@@ -329,7 +329,7 @@ class Home(CustomerBaseHandler):
 				count[5] += 1
 			elif order.status == 10:
 				count[6] += 1
-		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id).count()
+		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			a=a,show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
@@ -1511,11 +1511,14 @@ class Cart(CustomerBaseHandler):
 					for x in m_fruit_goods:
 						m_index=m_fruit_goods.index(x)
 						if x==fruit.id:
+							print(m_price[m_index],'ccccccccccccccccc')
 							m_price[m_index]+=singlemoney
+							break
 						else:
 							m_fruit_goods.append(fruit.id)
 							m_fruit_group.append(fruit.group_id)
 							m_price.append(singlemoney)
+							break
 
 
 				###使用优惠券
@@ -1670,20 +1673,22 @@ class Cart(CustomerBaseHandler):
 			order_status = 1
 
 		##########
+		
 		if qshop:
-			if qshop.use_goods_group==-2  and qshop.use_goods==-1 and totalPrice>=qshop.coupon_money :
+			if qshop.use_goods_group==-2  and qshop.use_goods==-1 and totalPrice>=qshop.use_rule :
 				can_use_coupon=1
 				
 			for x in m_fruit_goods:
 				m_index=m_fruit_goods.index(x)
-				if qshop.use_goods_group==m_fruit_group[m_index] and qshop.use_goods==x and m_price[m_index]>=qshop.coupon_money:
+				if qshop.use_goods_group==m_fruit_group[m_index] and qshop.use_goods==x and m_price[m_index]>=qshop.use_rule:
 					can_use_coupon=1
 			group_money=0
-			for x in m_fruit_group:
-				m_index=m_fruit_group.index(x)
-				if  qshop.use_goods_group==x and qshop.use_goods==-1:
-					group_money+=m_price[m_index]
-			if group_money>=qshop.coupon_money:
+			if  qshop.use_goods==-1:
+				for x in range(0,len(m_fruit_group)):
+					if  qshop.use_goods_group==m_fruit_group[x]:
+						group_money+=m_price[x]
+						print(m_price[x],'gggggggggggg')
+			if group_money>=qshop.use_rule:
 				can_use_coupon=1
 		 	
 		if can_use_coupon==0 and coupon_key!='None':
@@ -2087,16 +2092,14 @@ class Order(CustomerBaseHandler):
 				self.order_cancel_msg(order,cancel_time,None)
 			#使用优惠券
 			coupon_key=order.coupon_key
-			print(coupon_key,'ggggggggggggggggggg')
 			if coupon_key!='None':
-				use_date=int(time.time())
 				q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
-				q.update(session=self.session,use_date=use_date,order_id=order.id,coupon_status=2)
+				q.update(session=self.session,use_date=None,order_id=None,coupon_status=1)
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
-				use_number=qq.use_number+1
+				use_number=qq.use_number-1
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
-				return self.send_success()
+			return self.send_success()
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)

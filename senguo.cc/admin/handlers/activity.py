@@ -466,7 +466,7 @@ class CouponProfile(AdminBaseHandler):
 						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
 						use_goods_group=q1.name
 					if x.use_goods==-1:
-						use_goods="所有分组"
+						use_goods="所有商品"
 					else:
 						q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
 						use_goods=q1.name
@@ -485,7 +485,7 @@ class CouponList(AdminBaseHandler):
 	def getcoupon(self,coupon_status,data):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.current_shop.id
-		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).order_by(models.CouponsCustomer.get_date).all()
+		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).order_by(models.CouponsCustomer.get_date.desc()).all()
 		now_date=int(time.time())
 		for x in q:
 			if (now_date-15*24*60*60)>x.uneffective_time and x.coupon_status!=0:
@@ -497,7 +497,23 @@ class CouponList(AdminBaseHandler):
 				use_date=time.strftime('%Y-%m-%d',time.localtime(x.use_date))
 				shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
 				q1=self.session.query(models.CouponsShop).filter_by(shop_id=x.shop_id,coupon_id=x.coupon_id).first()
-				x_coupon={"shop_name":shop.shop_name,"shop_code":shop.shop_code,"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":x.coupon_status}
+				use_goods_group=None
+				use_goods=None
+				if q1.use_goods_group==0:
+					use_goods_group="默认分组"
+				elif q1.use_goods_group==-1:
+					use_goods_group="店铺推荐"
+				elif q1.use_goods_group==-2:
+					use_goods_group="所有分组"
+				else:
+					q2=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=q1.use_goods_group).first()
+					use_goods_group=q2.name
+				if q1.use_goods==-1:
+					use_goods="所有商品"
+				else:
+					q2=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=q1.use_goods).first()
+					use_goods=q2.name
+				x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":x.coupon_status}
 				data.append(x_coupon)
 		return None
 	@tornado.web.authenticated
@@ -592,7 +608,23 @@ class CouponDetail(AdminBaseHandler):
 					get_number=qq.get_number+1
 					qq.update(session=self.session,get_number=get_number)
 					self.session.commit()
-					x_coupon={"shop_name":shop.shop_name,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":mcoupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
+					use_goods_group=None
+					use_goods=None
+					if qq.use_goods_group==0:
+						use_goods_group="默认分组"
+					elif qq.use_goods_group==-1:
+						use_goods_group="店铺推荐"
+					elif qq.use_goods_group==-2:
+						use_goods_group="所有分组"
+					else:
+						q2=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=qq.use_goods_group).first()
+						use_goods_group=q2.name
+					if qq.use_goods==-1:
+						use_goods="所有商品"
+					else:
+						q2=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=qq.use_goods).first()
+						use_goods=q2.name
+					x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"shop_name":shop.shop_name,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":mcoupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
 					return self.send_success(output_data=x_coupon)
 
 class CouponCustomer(AdminBaseHandler):	

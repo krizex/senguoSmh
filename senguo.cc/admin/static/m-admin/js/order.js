@@ -185,7 +185,7 @@ var getOrder=function(page){
                     var color="c999";
 
                     if(data[i]['SH2']){
-                        var staff_img=data[i]['SH2']['headimgurl'];
+                        var staff_img=data[i]['SH2']['headimgurl'] || '/static/images/TDSG.png';
                         var staff_phone=data[i]['SH2']['phone'];
                         var sender=data[i]['SH2']['nickname'];
                     }else{

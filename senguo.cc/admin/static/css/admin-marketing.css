@@ -73,6 +73,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .newbtn{background-color: #44b549;}
 .tb-enty td{text-align: center;color: #333;}
 .tb-enty tbody tr{border:1px solid #e7e7eb;cursor: pointer;}
+.tb-enty tbody tr:hover{background-color: #eee; }
 .thead{background-color: #f4f5f9;}
 .thead>td{height: 40px;line-height: 40px;font-weight:bold;}
 .tb-enty tbody td{padding: 15px 5px;-webkit-box-sizing: border-box;vertical-align: middle;font-size: 12px;}

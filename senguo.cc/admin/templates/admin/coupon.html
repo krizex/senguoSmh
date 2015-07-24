@@ -67,7 +67,7 @@
                 <td>{%if coupon["valid_way"]==0%}{{coupon['from_valid_date']}}到{{coupon['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{coupon["last_day"]}}天{%end%}</td>
                 <td>{{coupon['use_number']}}/{{coupon['get_number']}}/{{coupon['total_number']}}</td>
                 <td class="operate">
-                    <a href="/admin/marketing?action=editcouponpage&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
+                    <a href="/admin/marketing?action=editcouponpage&coupon_type=0&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
                     <a href="javascript:;" class="mr10 spread-btn">推广</a>
                     <a href="javascript:;" class="red-txt close_one" data-id="{{coupon['coupon_id']}}">停用</a>
                     <span class="stop">已停用</span>
@@ -134,7 +134,7 @@
               <td>{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</td>
               <td>{{data['coupon_money']}}元<br>{% if data['use_goods_group'] == -2 %}所有商品{% else %}{{data['use_goods_group']}}:{{data['use_goods']}}{% end %}买满{{data["use_rule"]}}元可用</td>
             <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td>  
-            <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td>
+            <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td>
         </tr>
         {% end %}
         {%end%}

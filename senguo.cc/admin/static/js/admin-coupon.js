@@ -12,7 +12,6 @@ $(document).ready(function () {
     });
     goods_list=eval($("#goods").val());
     if($("#coupon_detail").size()>0){//详情
-        console.log(3333);
         $(".copy-coupon-code").zclip({
                 path: "/static/js/third/ZeroClipboard.swf",
                 copy: function(){
@@ -108,7 +107,6 @@ $(document).ready(function () {
     var $this = $(this);
     var coupon_id = $(this).attr("data-id");
     var url = '';
-    console.log(coupon_id);
     var action = "close_one";
     var args = {
         action: action,coupon_id:coupon_id
@@ -142,8 +140,6 @@ $(document).ready(function () {
     var coupon_id=$(this).attr("data-id");
     var type=$(this).attr("data-type");
     var edit_status=$(this).attr("data-flag");
-    console.log(type);
-    console.log(edit_status);
     editCoupon(type,coupon_id,edit_status);
 }).on("click",".radio-list .radio",function(){
     if($(this).hasClass("forbidden-btn")){
@@ -193,7 +189,6 @@ $(document).ready(function () {
 
 function getGoods(index,$obj){
     $obj.empty();
-    console.log(goods_list);
     var goods = goods_list[index];
     var lis = '';
     for(var i=0; i<goods.length; i++){
@@ -282,7 +277,6 @@ function insertcoupon(selected_status){
                                                     +'<td>已失效</td>'
                                                     +'<td>已失效:<a href="javascript:;">无</a></td>'
                                                 +'</tr>';
-                                            console.log(coupon.coupon_key);
                                             var render=template.compile(trow);
                                             temp=render({
                                                 coupon_money:coupon.coupon_money,
@@ -291,7 +285,6 @@ function insertcoupon(selected_status){
                                 }
                                 $("#list-coupons").append(temp);
                                 if($("#coupon_detail").size()>0){//详情
-                                            console.log(3333);
                                             $(".copy-coupon-code").zclip({
                                                     path: "/static/js/third/ZeroClipboard.swf",
                                                     copy: function(){
@@ -491,7 +484,7 @@ function addCoupon(type){
             if(res.success){
                 Tip('新建优惠券成功!');
                 setTimeout(function(){
-                    window.location.href="/admin/marketing?action=coupon&coupon_type=0";
+                    window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
                 },1500);
             }else{
                 Tip(res.error_text);
@@ -757,15 +750,10 @@ else if(type==1&&edit_status==1){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                if (edit_status==null) {
-                     Tip('新建优惠券成功!');
-                 }
-                 else
-                     Tip('编辑优惠券成功!');
-               
+                Tip('编辑优惠券成功!');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+res.coupon_type;
-                },2000);
+                },1500);
             }else{
                 Tip(res.error_text);
             }

@@ -58,6 +58,8 @@ function searchKey(key){
                 $item.find(".used-rule").html(coupon.use_rule);
                 $item.find(".start-time").html(coupon.effective_time);
                 $item.find(".end-time").html(coupon.uneffective_time);
+                $item.find(".used-group").html(coupon.use_goods_group);
+                $item.find(".used-goods").html(coupon.use_goods);
                 var str = "未消费";
                 if(coupon.coupon_status == 2){
                     str="已消费";
