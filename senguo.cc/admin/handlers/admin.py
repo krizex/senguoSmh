@@ -30,8 +30,7 @@ class Access(AdminBaseHandler):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("admin/login.html",
-								 context=dict(next_url=next_url))
+			return self.render("admin/login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.clear_current_user()
@@ -228,7 +227,6 @@ class SwitchShop(AdminBaseHandler):
 			shop.address = self.code_to_text("shop_city",shop.shop_city) +" " + shop.shop_address_detail
 			shop_list.append(shop.safe_props())
 		return shop_list
-
 
 # 后台轮询
 class Realtime(AdminBaseHandler):
@@ -1332,7 +1330,7 @@ class Order(AdminBaseHandler):
 			orders = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).all()
 		except:
 			orders = None
-		if orders:		
+		if orders:
 			for order in orders:
 				count[order.type*10+5] += 1
 				if order.status == 0:
@@ -2466,7 +2464,7 @@ class GoodsImport(AdminBaseHandler):
 			shop_list += self.getshop(shops)
 		if other_shops:
 			shop_list += self.getshop(other_shops)
-		return self.render("admin/goods-import.html",context=dict(subpage="goods"),shop_list=shop_list) 
+		return self.render("admin/goods-import.html",context=dict(subpage="goods"),shop_list=shop_list)
 
 	def getshop(self,shops):
 		shop_list = []
