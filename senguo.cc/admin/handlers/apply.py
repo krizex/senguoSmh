@@ -94,7 +94,7 @@ class CreateShop(AdminBaseHandler):
 					return self.send_fail("最多可创建30个店铺")
 
 		if self.current_shop:
-				_admin_id = self.current_shop.admin_id
+			_admin_id = self.current_shop.admin_id
 		else:
 			_admin_id = self.current_user.id
 
@@ -123,6 +123,7 @@ class CreateShop(AdminBaseHandler):
 				shops = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.shop_name.like("%%%s%%" %shop_name)).all()
 			except:
 				shops = None
+				print("[CreateShop]Shop search error")
 
 			data=[]
 			if shops:

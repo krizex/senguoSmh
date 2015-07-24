@@ -53,13 +53,13 @@ $(document).ready(function(){
     $("#city_list").addClass("hide");
 }).on("click",".province",function(){
     if($(this).hasClass("forbidden")){
-        return Tip("当前只有湖北省范围");
+        return Tip("当前只支持湖北省范围");
     }
     $(".choose-title").html("选择省份");
     $(".pop-bwin").removeClass("hide");
 }).on("click",".city",function(){
     if($(this).hasClass("forbidden")){
-        return Tip("当前只有武汉市范围");
+        return Tip("当前只支持武汉市范围");
     }
     $(".choose-title").html("选择省份");
     $(".pop-bwin").removeClass("hide");
@@ -87,7 +87,7 @@ $(document).ready(function(){
     var $this=$(this);
     if($this.attr("data-status")=="on"){
         $(this).attr({"data-status":""});
-        $(".shop-list li").removeClass("active"); 
+        $(".shop-list li").removeClass("active");
         $(".shop-number").text(0);
     }else{
         $(this).attr({"data-status":"on"});
@@ -127,7 +127,7 @@ $(document).ready(function(){
                     shop_name:shop.shop_name
                 });
                 $(".shop-list").append(content);
-            }  
+            }
         }else{
             Tip(res.error_text);
         }
@@ -219,7 +219,7 @@ function importShop($btn){
     var url="";
     var args={action:"import",data:data};
     $btn.attr("data-flag","off");
-    $.postJson(url,args,function(res){       
+    $.postJson(url,args,function(res){
         if(res.success) {
             window.location.href="/admin";
         }else{
