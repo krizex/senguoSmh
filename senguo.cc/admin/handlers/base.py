@@ -872,9 +872,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 						"总价："+totalPrice+"元\r\n"+\
 						"支付方式："+_type+"\r\n"+\
 						"------------------------------------------------\r\n"+\
-						"\r\n"+receipt_msg
+						"\r\n"+receipt_msg+"\r\n"
 			elif action == "ylyprint_concel":
-				content="@@2       订单："+order_num+"已取消\r\n"+\
+				content="------------------------------------------------\r\n"+\
+						"@@2 订单"+order_num+"已取消\r\n"+\
 						"------------------------------------------------\r\n"
 			# print(content)
 			machine_code=current_shop.config.wireless_print_num #打印机终端号 520
@@ -916,10 +917,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							"总价："+totalPrice+"元\n"+\
 							"支付方式："+_type+"\n"+\
 							"-------------------------\n"+\
-							"\n"+receipt_msg
+							"\n"+receipt_msg+"\n"
 							#打印内容
 			elif action == "fyprint_concel":
-				msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单"+order_num+"已取消</Font#>\n"
+				msgDetail = "-------------------------\n"+\
+							"<Font# Bold=1 Width=2 Height=2>订单"+order_num+"已取消</Font#>\n"+\
+							"-------------------------\n"
 			# print(msgDetail)
 			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
 			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()

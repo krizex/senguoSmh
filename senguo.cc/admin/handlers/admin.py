@@ -3928,7 +3928,7 @@ class WirelessPrint(AdminBaseHandler):
 						"总价："+totalPrice+"元\r\n"+\
 						"支付方式："+_type+"\r\n"+\
 						"------------------------------------------------\r\n"+\
-						"\r\n"+receipt_msg
+						"\r\n"+receipt_msg+"\r\n"
 				partner='1693' #用户ID
 				apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
 				timenow=str(int(time.time())) #当前时间戳
@@ -3971,7 +3971,7 @@ class WirelessPrint(AdminBaseHandler):
 							"总价："+totalPrice+"元\n"+\
 							"支付方式："+_type+"\n"+\
 							"-------------------------\n"+\
-							"\n"+receipt_msg
+							"\n"+receipt_msg+"\n"
 							#打印内容
 				content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
 				securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
