@@ -329,12 +329,6 @@ class SellStatic(AdminBaseHandler):
 		# 查询店铺的所有水果名称：
 		shop_all_goods = self.session.query(models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
 
-		# 查询店铺所有水果类目中分别有多少种水果：
-		shop_type_num_list = {}
-		for shop_type_name in shop_all_type_name:
-			shop_type_name = shop_type_name[0]
-			shop_type_num_list[shop_type_name] = self.session.query(models.FruitType).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id,models.FruitType.name == shop_type_name).count()
-
 		if action == 'all':
 			now = datetime.datetime.now()
 			now_date = datetime.datetime(now.year,now.month,now.day)
@@ -538,10 +532,14 @@ class SellStatic(AdminBaseHandler):
 						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
 						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
 
+			# print("#@",type(fruit_list))
 			#每单种水果的销售额
 			total_price_list = []
 			name_list = []
+			sum_time = 0
+		
 			for fl in fruit_list:
+				start = time.clock()
 				fl = eval(fl[0])
 				for key in fl:
 					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
@@ -549,7 +547,12 @@ class SellStatic(AdminBaseHandler):
 							continue
 						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
 						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
+							print("@@@@",key," : ",fl[key])
 							continue
+
+					end = time.clock()
+					sum_time += end - start
+
 					tmp = {}
 					fl_value = fl[key]
 					num = float(fl_value["num"])
@@ -561,15 +564,25 @@ class SellStatic(AdminBaseHandler):
 					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()[0][0]
 					tmp["fruit_id"] = fruit_id
 					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+
+					# print("#########",tmp["fruit_name"],key)
+
+
 					tmp["total_price"] = total_price
 					for tpl in total_price_list:
 						name_list.append(tpl['fruit_name'])
+
 					if tmp["fruit_name"] not in name_list:
 						total_price_list.append(tmp)
 					else:
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
+
+				
+
+			
+			print(("所用时间为：%.3fms") % (sum_time*1000))
 
 			name_list = []
 			for i in range(len(total_price_list)):
@@ -641,7 +654,7 @@ class SellStatic(AdminBaseHandler):
 			month_price_list = []
 			name_item_list = []
 			count_num = 1
-
+			sum_time = 0
 			while start_date <=flag_date:
 				start_date_str = start_date.strftime('%Y-%m-%d')
 				start_date_pre = start_date + datetime.timedelta(days = -1)
@@ -658,6 +671,7 @@ class SellStatic(AdminBaseHandler):
 							        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
 							        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
 
+				start = time.clock()
 				#每单种水果的销售额
 				total_price_list = []
 				name_list = []
@@ -690,6 +704,7 @@ class SellStatic(AdminBaseHandler):
 								if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 									total_price_list[i]['total_price'] += total_price
 
+				
 				# print("##",month_price_list)
 				name_list = []
 				for i in range(len(total_price_list)):
@@ -731,6 +746,12 @@ class SellStatic(AdminBaseHandler):
 				month_price_list.append(name_price_item_list)
 				start_date = start_date + datetime.timedelta(days = 1)
 				count_num += 1
+
+				end = time.clock()
+				# print(count_num,("所用时间为：%.3fms") % ((end - start)*1000))
+				sum_time += (end - start)*1000
+
+			# print(count_num,("total时间为：%.3fms") % (sum_time))
 
 			output_data = []
 			output_data.append(name_item_list)
