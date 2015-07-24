@@ -3584,19 +3584,8 @@ class Marketing(AdminBaseHandler):
 			coupon_id=int(self.args["coupon_id"])
 			coupon_type=int(self.args["coupon_type"])
 			data=[]
-			page=int(self.args["page"])
-			max_item=12
-			start=max_item*(page-1)
-			if start<0:
-				start=0
-			end=max_item*page
 			qget=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).filter(models.CouponsCustomer.coupon_status!=0).all()
 			qnoget=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=0).all()
-			import time
-			print(time.time())
-			qgetc=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).filter(models.CouponsCustomer.coupon_status!=0).count()
-			qnogetc=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=0).count()
-			print(time.time())
 			for x in qget:
 				customer_id=None
 				get_date=None
@@ -3669,7 +3658,6 @@ class Marketing(AdminBaseHandler):
 				d2=q1.filter_by(coupon_status=0).count()
 				d=d1+d2
 			data1={"a":q.total_number,"b":q.get_number,"c":q.use_number,"d":d}
-			data=data[start:end]
 			return self.render("admin/details.html",output_data=data,data1=data1,context=dict(subpage='marketing'))
 		elif action=="newcouponpage":
 			data=[]
