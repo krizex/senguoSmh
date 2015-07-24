@@ -1258,6 +1258,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# 	else:
 		# 		self.current_shop = shop
 	def if_current_shops(self):
+		print("oh ~ no")
 		if not self.current_user.shops:
 			try:
 				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
