@@ -1,3 +1,4 @@
+#coding:utf-8
 from handlers.base import CustomerBaseHandler,WxOauth2
 from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
 import dal.models as models
@@ -21,7 +22,7 @@ class QrWxpay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
-		totalPrice = order.totalPrice
+		totalPrice = order.new_totalprice
 
 class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -31,8 +32,10 @@ class OnlineWxPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
-		totalPrice = order.totalPrice
+		totalPrice = 1
 		wxPrice =int(totalPrice * 100)
+
+		print(totalPrice,'ffdfdfdfdfdfdfdf',wxPrice)
 
 		# print("[微信支付]full_url：",self.request.full_url())
 		path_url = self.request.full_url()
@@ -136,11 +139,13 @@ class OnlineWxPay(CustomerBaseHandler):
 		return
 
 	def _qrwxpay(self):
+		import chardet
 		order_id = self.get_cookie("order_id")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
-		totalPrice = order.totalPrice
+		totalPrice = order.new_totalprice
+		print(totalPrice)
 		wxPrice =int(totalPrice * 100)
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
@@ -148,7 +153,13 @@ class OnlineWxPay(CustomerBaseHandler):
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
-		res = unifiedOrder.postXml().decode('utf-8')
+		res = unifiedOrder.postXml()
+		if isinstance(res,bytes):
+			bianma = chardet.detect(res)['encoding']
+			print(bianma)
+			res = res.decode(bianma)
+		else:
+			print(type(res))
 		res_dict = unifiedOrder.xmlToArray(res)
 		# print(res,type(res_dict))
 		if 'code_url' in res_dict:
@@ -191,7 +202,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				return self.send_fail('order not found')
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
-			totalPrice  = order.totalPrice
+			totalPrice  = order.new_totalprice
 
 			order.status = 1  #修改订单状态
 
@@ -279,7 +290,7 @@ class wxpayCallBack(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
-		totalPrice = order.totalPrice
+		totalPrice = order.new_totalprice
 		wxPrice =int(totalPrice * 100)
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
@@ -344,7 +355,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			order = self.session.query(models.Order).filter_by(id = order_id).first()
 			if not order:
 				return self.send_fail('order not found')
-			totalPrice = order.totalPrice
+			totalPrice = order.new_totalprice
 			alipayUrl =  self.handle_onAlipay(order.num)
 			self.order_num = order.num
 			# print("[支付宝支付]alipayUrl：",alipayUrl)
@@ -416,7 +427,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		#else:
 		#	print("[支付宝支付]order：",order)
 		order_id = order.id
-		price    = order.totalPrice
+		price    = order.new_totalprice
 
 		try:
 			url = self.create_alipay_url(price,order_id)
@@ -474,7 +485,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		##############################################################
 		customer_id = order.customer_id
 		shop_id     = order.shop_id
-		totalPrice  = order.totalPrice
+		totalPrice  = order.new_totalprice
 
 		order.status = 1  #修改订单状态
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
@@ -562,7 +573,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		##############################################################
 		customer_id = order.customer_id
 		shop_id     = order.shop_id
-		totalPrice  = order.totalPrice
+		totalPrice  = order.new_totalprice
 
 		order.status = 1  #修改订单状态
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\

@@ -1678,8 +1678,10 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail("对不起，你使用的优惠券不满足使用条件，请重新选择")
 		if can_use_coupon:
 			new_totalprice=totalPrice-qshop.coupon_money
+		else:
+			new_totalprice=totalPrice
 		if  new_totalprice<0:
-			new_totalprice=0
+			new_totalprice=0.01
 		if qshop:
 			coupon_money=qshop.coupon_money
 		else:
@@ -2018,7 +2020,7 @@ class Order(CustomerBaseHandler):
 				except:
 					return self.send_fail('shop_follow error')
 				if shop_follow:
-					shop_follow.shop_balance += order.totalPrice
+					shop_follow.shop_balance += order.new_totalprice
 				shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 				if not shop:
 					return self.send_fail('shop not found')
@@ -2036,7 +2038,7 @@ class Order(CustomerBaseHandler):
 					self.session.commit()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
-						balance_value = order.totalPrice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
+						balance_value = order.new_totalprice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance)
 				self.session.add(balance_history)
