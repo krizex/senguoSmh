@@ -496,22 +496,30 @@ $(document).ready(function(){
     $(this).children("a").addClass("checkboxed");
 }).on("click",".coupon_type li",function(){//优惠券
     var index = $(this).index();
-    $(".coupon_type").find(".checkbox-btn").removeClass("checkboxed");
-    $(".coupon_type li").removeClass("active").eq(index).addClass("active");
-    $(this).children("a").addClass("checkboxed");
-    var money = parseFloat($(this).children('.coupon-bg').attr("data-money"));
-    var last_money = parseFloat($("#final_price").html());
-    $("#coupon_cmoney").html(money);
-    $("#coupon-money").html(money);
-    $("#coupon-money").closest('.coupon-text').removeClass("hidden");
-    $(".coupon_cmoney").removeClass("hidden");
-    var smoney = 0;
-    if(money>=last_money){
-        smoney = 0;
+    if($(this).hasClass("active")){
+        $(this).removeClass("active");
+        $(this).children("a").removeClass("checkboxed");
+        $("#coupon-money").closest('.coupon-text').addClass("hidden");
+        $(".coupon_cmoney").addClass("hidden");
+        $("#total_price").html($("#final_price").html());
     }else{
-        smoney = last_money - money;
-    }
-    $("#total_price").html(smoney);
+        $(".coupon_type").find(".checkbox-btn").removeClass("checkboxed");
+        $(".coupon_type li").removeClass("active").eq(index).addClass("active");
+        $(this).children("a").addClass("checkboxed");
+        var money = parseFloat($(this).children('.coupon-bg').attr("data-money"));
+        var last_money = parseFloat($("#final_price").html());
+        $("#coupon_cmoney").html(money);
+        $("#coupon-money").html(money);
+        $("#coupon-money").closest('.coupon-text').removeClass("hidden");
+        $(".coupon_cmoney").removeClass("hidden");
+        var smoney = 0;
+        if(money>=last_money){
+            smoney = 0;
+        }else{
+            smoney = last_money - money;
+        }
+        $("#total_price").html(smoney);
+    }   
 });
 
 window.dataObj.price_list=[];

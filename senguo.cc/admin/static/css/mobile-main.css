@@ -181,6 +181,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .qrcode{margin: 0 auto;width:140px;height:140px;margin-top:10px;}
 .wrap-qrcode p{color:#333;text-align:center;}
 
+.recharge-roll{padding-left: 12px;position: relative;}
+.recharge-roll>i{width: 6px;height: 6px;background-color: #ccc;border-radius: 50%;top: 5px;left:0px;position: absolute;}
 
 
 
