@@ -3315,15 +3315,10 @@ class Marketing(AdminBaseHandler):
 				last_day=data["last_day"]
 			else:
 				pass
-			#  注意这里获得coupon_id的过程 相当的曲折 ，这里的a 识query类型  而a[0]识 result 类型 只有a[0][0]才是int类型
+			#  注意这里获得coupon_id的过程 相当的曲折 ，这里的a 识query类型  而a[0]识 result 类型 只有a[0][0]才是int类型 这里是大傻逼
 			now_date=int(time.time())
 			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).first()
 			if now_date<q.from_get_date:
-				# if total_number<q.total_number:
-				# 	pass
-				# elif total_number>q.total_number:
-				# 	pass
-				# else:
 				q.update(self.session,coupon_money=coupon_money,from_get_date=from_get_date,to_get_date=to_get_date,use_goods_group=use_goods_group,use_goods=use_goods,use_rule=use_rule,\
 				total_number=total_number,valid_way=valid_way,from_valid_date=from_valid_date,\
 				to_valid_date=to_valid_date,start_day=start_day,last_day=last_day,get_limit=get_limit,closed=0,get_rule=get_rule)
