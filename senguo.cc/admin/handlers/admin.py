@@ -14,7 +14,7 @@ import decimal
 import json
 # add by cm 2015.5.15
 import string
-import random
+import random  
 
 import tornado.websocket
 from dal.db_configs import DBSession
