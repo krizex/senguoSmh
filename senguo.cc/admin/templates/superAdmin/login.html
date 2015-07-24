@@ -4,28 +4,28 @@
 <div class="container center-style">
     <div class="login-box">
         <form method="POST" id="submit-form">
-          <h1>森果后台管理系统</h1>
-          <div class="login-info">
-              <label class="w1 pull-left">用户名：</label>
-              <input name="username" class="pull-right">
-          </div>
-           <div class="login-info">
-              <label class="w1 pull-left">密码：</label>
-              <input name="password" type="password" class="pull-right">
-           </div>
-                <input type="submit" id="submit-btn" class="btn login-btn">
-        {% module xsrf_form_html()%}
+            <h1>森果后台管理系统</h1>
+            <div class="login-info">
+                <label class="w1 pull-left">用户名：</label>
+                <input name="username" class="pull-right">
+            </div>
+            <div class="login-info">
+                <label class="w1 pull-left">密码：</label>
+                <input name="password" type="password" class="pull-right">
+            </div>
+            <input type="submit" id="submit-btn" class="btn login-btn">
+            {% module xsrf_form_html()%}
         </form>
     </div>
 </div>
 
 <script>
- $("#submit-btn").click(function(evt){
-   evt.preventDefault();
-   var form = $("#submit-form")[0]
-   form["password"].value = CryptoJS.SHA256(form["password"].value).toString();
-   form.submit();
- });
+$("#submit-btn").click(function(evt){
+    evt.preventDefault();
+    var form = $("#submit-form")[0]
+    form["password"].value = CryptoJS.SHA256(form["password"].value).toString();
+    form.submit();
+});
 </script>
 {% end %}
 {% block bottom %}

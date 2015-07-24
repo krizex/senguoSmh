@@ -299,7 +299,8 @@ class ShopManage(SuperBaseHandler):
 			output_data = []
 			for shop in shops:
 				data = {}
-				##############################################################################
+				##########################################        </li>
+####################################
 				# user's subscribe
 				##############################################################################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
@@ -366,7 +367,8 @@ class ShopManage(SuperBaseHandler):
 
 				#chang by jyj 2015-6-16
 				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
-				##
+				##        </li>
+
 
 				data["shop_property"] = shop.shop_property
 
@@ -2002,6 +2004,8 @@ class ShopBalanceDetail(SuperBaseHandler):
 			shop_totalBalance = format(shop_totalBalance,'.2f')
 
 			history.append({'shop_name':shop_name,'balance':shop_totalBalance,'cash_applying':cash_applying})
+
+
 		return self.render("superAdmin/shop-balance-detail.html",history = history,context=dict())
 
 	@tornado.web.authenticated

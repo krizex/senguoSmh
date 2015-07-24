@@ -16,7 +16,7 @@
         </li>
     </ul>
 
-    <ul class="shop-list  item-list list-group">
+    <ul class="shop-list item-list list-group">
     {% for shop in context["shops"]%}
         <li class="row shop-list-item list-group-item line-height1" data-shopid="{{shop.id}}" data-status="{{shop.shop_status}}">
             <p>
@@ -44,7 +44,7 @@
                     <img src="{{shop.admin.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="w60"/>
                 </span>
                 <div class="tit1 ml10">
-                    <a href="/super/user" target="_blank"><p class="text-blue">{{shop.admin.accountinfo.nickname}}</p></a>
+                    <a href="{{reverse_url('superUser')}}" target="_blank"><p class="text-blue">{{shop.admin.accountinfo.nickname}}</p></a>
                     <p>{{shop.admin.accountinfo.wx_province}}  {{shop.admin.accountinfo.wx_city}}</p>
                 </div>
                 <div class="tit1 ml10">
@@ -53,18 +53,18 @@
                     </p>
                     <p>
                         <span class="tit2">微信：{{shop.admin.accountinfo.wx_username}}</span>
-                    </p>   
+                    </p>
                 </div>
                 <div class="tit1 ml10">
                     <p>
-                        &nbsp
+                        &nbsp;
                     </p>
                     <p>
                         <span class="tit2">手机：{{shop.admin.accountinfo.phone}}</span>
                     </p>
                 </div>
             </div>
-            
+
             <hr class="clearfix"/>
             {% if shop.shop_status==models.SHOP_STATUS.APPLYING %}
             <div class="action-box center-block">
@@ -84,9 +84,9 @@
                 </div>
             </div>
             <!--change by jyj (debug) 2015-6-15-->
-             {% end %}
-             <!---->
-   
+            {% end %}
+            <!---->
+
     <div class="hide-info clearfix">
         {% if shop.shop_status==models.SHOP_STATUS.DECLINED%}
         <div class="row" id="declineReason">

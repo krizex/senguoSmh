@@ -1,7 +1,7 @@
 {% extends 'shop-comment-base.html'%}
 <!-- change and add by jyj 2015-7-5 -->
 {% block apply %}
-    
+
 <div class="wrap-comment2">
         <div class="users-pagination list-pagination">
             <ul>
@@ -50,7 +50,7 @@
                      {% set hide2='hide' %}
                 {% end %}
                 <div class="btn-group txt-ac action-box {{hide1}}" data-id="{{data[6]}}">
-                    <a href="javascript:;" class="blue-btn cancel-btn  reject-del">拒绝删除</a>
+                    <a href="javascript:;" class="blue-btn cancel-btn reject-del">拒绝删除</a>
                     <a href="javascript:;" class="grey-btn ok-btn {{hide1}}">确认删除</a>
                 </div>
                  <div class="btn-group {{hide2}}">
@@ -75,19 +75,18 @@
                 <a href="javascript:;" class="grey-btn cancel-pop">取消</a>
             </div>
         </div>
-    </div> 
+    </div>
     <div class="users-pagination list-pagination mb5">
-            <ul>
-                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
-                <li>
-                    <span class="page-now">1</span>/<span class="page-total">1</span>
-                </li>
-                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
-                <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
-                <li><a href="javascript:;" class="jump-to">跳转</a></li>
-            </ul>
-        </div>
-    
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now">1</span>/<span class="page-total">1</span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
 </div>
 {% end %}
 {% block bottom %}

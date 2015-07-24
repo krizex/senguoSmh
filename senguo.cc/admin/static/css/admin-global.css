@@ -295,7 +295,7 @@ input{color:#333;text-indent:5px;}
 .left-arr>span{width: 20px;height: 0;border-top: 1px solid #ccc;display: inline-block;position: absolute;right: -3px;}
 .left-arr .line1{-webkit-transform:rotate(-45deg);top: 6px;}
 .left-arr .line2{-webkit-transform:rotate(45deg);top: 20px;}
-.po-list{top: 18px;left: 216px;}
+.po-list{top: 18px;left: 262px;}
 .top-arr{position: absolute;width: 28px;height: 26px;background-color: #fff;top: -26px;right: 30%;}
 .top-arr>span{width: 20px;height: 0;border-top: 1px solid #eee;display: inline-block;position: absolute;right: -3px;}
 .top-arr .line1{-webkit-transform:rotate(-45deg);top: auto;left: -2px;right: auto;bottom: 7px;}

@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="/madmin/shopset" class="back">返回</a>
+    <a href="{{reverse_url('MadminSet')}}" class="back">返回</a>
     <span>管理员设置</span>
 </div>
 {% end %}
@@ -45,7 +45,7 @@
         </li>
     </ul>
     {% end %}
-    <a href="/madmin/shopattr?action=addAdmin" class="create-btn add-admin">+添加管理员</a>
+    <a href="{{reverse_url('MadminSetAttr')}}?action=addAdmin" class="create-btn add-admin">+添加管理员</a>
 </div>
 {% end %}
 {% block fix %}

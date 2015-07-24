@@ -4,9 +4,9 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="/madmin/shopset" class="back">返回</a>
+    <a href="{{reverse_url('MadminSet')}}" class="back">返回</a>
     <span>店铺信息</span>
-    <a href="/madmin" class="head-right spread-list">切换店铺</a>
+    <a href="{{reverse_url('MadminHome')}}" class="head-right spread-list">切换店铺</a>
 </div>
 {% end %}
 {% block content %}
@@ -78,7 +78,7 @@
             </a>
         </li>
         <li>
-            <a href="/madmin/shopaddress?province={{province}}&city={{city}}&detail={{current_shop.shop_address_detail or ''}}&code={{current_shop.shop_city or ''}}" class="">
+            <a href="{{reverse_url('MadminAddress')}}?province={{province}}&city={{city}}&detail={{current_shop.shop_address_detail or ''}}&code={{current_shop.shop_city or ''}}" class="">
                 <span class="fr c333 more">{{address}}</span>
                 <span class="text-left">店铺地址</span>
             </a>

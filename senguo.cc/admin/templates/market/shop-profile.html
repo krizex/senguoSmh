@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header head_tab">
-    <a href="/madmin/shopset" class="back shop-set"></a>
+    <a href="{{reverse_url('MadminSet')}}" class="back shop-set"></a>
     <span>{{shop.shop_name}}</span>
     <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"></a>
 </div>
@@ -94,7 +94,7 @@
                     <p class="num"><span class="tip-num">{{intime_count}}</span></p>
                 </li>
             </a>
-             <a href="{{reverse_url('MadminOrder')}}">
+            <a href="{{reverse_url('MadminOrder')}}">
                 <li>
                     <p class="name">按时达</p>
                     <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
@@ -147,7 +147,6 @@
 </div>
 <div class="wrap-main pm80 main_tab hide">
     <ul class="atical-list">
-
     </ul>
     <p class="loading txt-center c999 mt10"></p>
 </div>

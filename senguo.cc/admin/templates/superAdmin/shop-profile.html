@@ -3,97 +3,96 @@
 {% block content %}
 {% import dal.models as models %}
 {% set shop=context['shop']%}
-    <div class="col-md-2"></div>
-    <div class="admin-shop-right col-md-8 center-block">
-        <h3 class="admin-title">店铺信息</h3>
-        <div class="admin-profile-detail">
-            <ul class="list-group">
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">头像</span>
-                    <img src="/static/images/anoa-1-md.gif" class="pull-right"/>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">店铺名：</span>
-                    <span class="pull-right">{{shop.shop_name}}</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">城市：</span>
-                    <span class="pull-right">{{handler.code_to_text("shop_city",shop.shop_city)}}</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">详细地址：</span>
-                    <span class="pull-right">{{shop.shop_address_detail}}</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">服务区域：</span>
-                    <span class="pull-right">{{handler.code_to_text("service_area",shop.shop_service_area)}}</span>
-                </li>
-                <li class="list-group-item clearfix"><a href="{{shop.shop_url}}">商家链接</a></li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">是否有实体店：</span>
-                    <span class="pull-right have-entity" data-real="{{shop.have_offline_entity}}">{{shop.shop_address_detail}}</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">运营时间：</span>
-                    <span class="pull-right">
-                        {% import time %}
-                        {% if shop.shop_start_timestamp%}
-                            {{int((time.time() - (shop.shop_start_timestamp))/(30*24*3600)) }}
-                        {% else %}
-                             0
-                        {% end %}
-                        个月
-                    </span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">总用户数：</span>
-                    <span class="pull-right">{{shop.total_users or '0'}}</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">平均日销量：</span>
-                    <span class="pull-right">{{shop.daily_sales or '0'}}元</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">单次采购量：</span>
-                    <span class="pull-right">{{shop.single_stock_size or '0'}}元</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">店铺简介：</span>
-                    <span class="pull-right">{{shop.shop_intro or '无'}}</span>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">在售水果：</span>
-                    <div class="pull-right">
-                        {% for fruit in context['shop'].onsale_fruits%}
-                        <span class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</span>
-                        {% end %}
-                    </div>
-                </li>
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">求购水果：</span>
-                    <div class="pull-right">
-                        {% for fruit in context['shop'].demand_fruits%}
-                        <span  class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</span>
-                        {% end %}
-                    </div>
-                </li>
-                {% if shop.shop_status==models.SHOP_STATUS.DECLINED%}
-                <li id="declineReason"  class="list-group-item clearfix">
-                    span class="title pull-left">被拒理由：</span>
-                    <span class="pull-right">{{shop.declined_reason}}</span>
-                </li>
-                {% end %}
-                <li class="list-group-item clearfix">
-                    <span class="title pull-left">单次采购量：</span>
-                    <span class="pull-right">{{shop.single_stock_size or '0'}}元</span>
-                </li>
-             </ul>
-        </div>
-        <nav>
-            <ul class="pager">
-                <li><a href="javascript:;" onclick="history.back(-1)">&larr; 返回</a></li>
-            </ul>
-        </nav>
-     </div>
-
+<div class="col-md-2"></div>
+<div class="admin-shop-right col-md-8 center-block">
+    <h3 class="admin-title">店铺信息</h3>
+    <div class="admin-profile-detail">
+        <ul class="list-group">
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">头像</span>
+                <img src="/static/images/anoa-1-md.gif" class="pull-right"/>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">店铺名：</span>
+                <span class="pull-right">{{shop.shop_name}}</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">城市：</span>
+                <span class="pull-right">{{handler.code_to_text("shop_city",shop.shop_city)}}</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">详细地址：</span>
+                <span class="pull-right">{{shop.shop_address_detail}}</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">服务区域：</span>
+                <span class="pull-right">{{handler.code_to_text("service_area",shop.shop_service_area)}}</span>
+            </li>
+            <li class="list-group-item clearfix"><a href="{{shop.shop_url}}">商家链接</a></li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">是否有实体店：</span>
+                <span class="pull-right have-entity" data-real="{{shop.have_offline_entity}}">{{shop.shop_address_detail}}</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">运营时间：</span>
+                <span class="pull-right">
+                    {% import time %}
+                    {% if shop.shop_start_timestamp%}
+                        {{int((time.time() - (shop.shop_start_timestamp))/(30*24*3600)) }}
+                    {% else %}
+                         0
+                    {% end %}
+                    个月
+                </span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">总用户数：</span>
+                <span class="pull-right">{{shop.total_users or '0'}}</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">平均日销量：</span>
+                <span class="pull-right">{{shop.daily_sales or '0'}}元</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">单次采购量：</span>
+                <span class="pull-right">{{shop.single_stock_size or '0'}}元</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">店铺简介：</span>
+                <span class="pull-right">{{shop.shop_intro or '无'}}</span>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">在售水果：</span>
+                <div class="pull-right">
+                    {% for fruit in context['shop'].onsale_fruits%}
+                    <span class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</span>
+                    {% end %}
+                </div>
+            </li>
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">求购水果：</span>
+                <div class="pull-right">
+                    {% for fruit in context['shop'].demand_fruits%}
+                    <span class="fruitsty" data-code="{{fruit.id}}">{{fruit.name}}</span>
+                    {% end %}
+                </div>
+            </li>
+            {% if shop.shop_status==models.SHOP_STATUS.DECLINED%}
+            <li id="declineReason" class="list-group-item clearfix">
+                span class="title pull-left">被拒理由：</span>
+                <span class="pull-right">{{shop.declined_reason}}</span>
+            </li>
+            {% end %}
+            <li class="list-group-item clearfix">
+                <span class="title pull-left">单次采购量：</span>
+                <span class="pull-right">{{shop.single_stock_size or '0'}}元</span>
+            </li>
+         </ul>
+    </div>
+    <nav>
+        <ul class="pager">
+            <li><a href="javascript:;" onclick="history.back(-1)">&larr; 返回</a></li>
+        </ul>
+    </nav>
+</div>
 {% end %}

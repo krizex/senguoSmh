@@ -1,5 +1,7 @@
 // created by jyj 2015-7-8
 
+var has_no_goods = 0;
+
 //获取当前日期
 var CurrentDate=new Date();
 var current_year=CurrentDate.getFullYear();
@@ -392,6 +394,18 @@ $(document).ready(function(){
 	var start_date = new Date(choose_year4,choose_month4-1,1);
 	var end_date = new Date(choose_year4,choose_month4-1,getLastDayOfMonth(choose_month4,choose_year4))
 	show_chart('single_name',start_date,end_date,first_name);
+}).on("click","#btn_type_bigchart",function(){
+	$("#type_bigchart_bg").removeClass("invisiable");
+	$("#type_bigchart").removeClass("invisiable");
+}).on("click","#btn_type_bigchart_close",function(){
+	$("#type_bigchart_bg").addClass("invisiable");
+	$("#type_bigchart").addClass("invisiable");
+}).on("click","#btn_name_bigchart",function(){
+	$("#name_bigchart_bg").removeClass("invisiable");
+	$("#name_bigchart").removeClass("invisiable");
+}).on("click","#btn_name_bigchart_close",function(){
+	$("#name_bigchart_bg").addClass("invisiable");
+	$("#name_bigchart").addClass("invisiable");
 });
 
 // 实时更新函数
@@ -430,10 +444,10 @@ function initCharts(){
 		$this.find("li").eq(0).addClass("active");
 	});
 	show_all_chart(CurrentDate,CurrentDate);
-
 	var start_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),1);
 	var end_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),getLastDayOfMonth(CurrentDate.getMonth()+1,CurrentDate.getFullYear()))
 	show_all_single_chart(start_date,end_date);
+
 }
 
 // 获取当前日期的前后N天日期(返回值为Date类型)(N<=28):
@@ -644,6 +658,17 @@ function show_all_single_chart(start_date,end_date){
 			if(res.success){
 
 				var output_data = res.output_data;
+
+				if(output_data["has_goods"] == 0){
+					$(".has_no_goods").removeClass("hidden");
+					$("#single_name").removeClass("mb50");
+					$(".hr3").removeClass("mt50");
+					$("#btn_name_bigchart").addClass("hidden");
+					$("#btn_type_bigchart").addClass("hidden");
+					has_no_goods = 1;
+					return ;
+				}
+
 				var type_max = output_data["type_max"];
 				var name_max = output_data["name_max"];
 				var all_type = output_data["all_type"];
@@ -728,12 +753,32 @@ function show_all_chart(start_date,end_date){
 		start_date:getDateStr(start_date),
 		end_date:getDateStr(end_date)
 	};
+
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
+
+				if(output_data["has_goods"] == 0){
+					$(".has_no_goods").removeClass("hidden");
+					$("#single_name").removeClass("mb50");
+					$(".hr3").removeClass("mt50");
+					$(".change-box").empty();
+
+					$(".pre-item").addClass("hidden");
+					$(".next-item").addClass("hidden");
+					for(var i = 2;i <= 4;i++){
+						$(".pre-item"+i).addClass("hidden");
+						$(".next-item"+i).addClass("hidden");
+					}
+					has_no_goods = 1;
+					return ;
+				}
+
 				$("#goods_type").css("height",output_data["type_data"].length*40+105 + "px");
+				$("#goods_type_big").css("height",output_data["type_data"].length*35+130 + "px");
 				$("#goods_name").css("height",output_data["name_data"].length*40+105 + "px");
+				$("#goods_name_big").css("height",output_data["name_data"].length*35+130 + "px");
 				require.config({
 				       	paths: {
 				            		echarts:'/static/js'
@@ -749,10 +794,15 @@ function show_all_chart(start_date,end_date){
 				              //按商品类目排序
 			        		function (ec) {
 			            		            var myChart1 = ec.init(document.getElementById('goods_type'));
+			            		            var myChart11 = ec.init(document.getElementById('goods_type_big'));
 			            		            myChart1.showLoading({
 			                	            		text: '正在努力的读取数据中...'
 			            			});
-			            			myChart1.hideLoading();
+			            			
+			            			myChart11.showLoading({
+			                	            		text: '正在努力的读取数据中...'
+			            			});
+			            			
 			            			var options = {
 			            				    title : {
 							        	        subtext: '数值单位：元',
@@ -762,6 +812,90 @@ function show_all_chart(start_date,end_date){
 								        }
 							    },
 							    tooltip : {
+
+								        trigger: 'axis',
+								        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+		
+						           			 type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+								        }
+							    },
+							    toolbox: {
+								        show : true,
+								        feature : {
+								            mark : {show: true},
+								            magicType : {show: true, type: []},
+								            restore : {show: true},
+								            saveAsImage : {show: true}
+								        }
+							    },
+							    calculable : true,
+							    xAxis : [
+								        {
+								            show : false,
+								            type : 'value'
+								        }
+							    ],
+							    yAxis : [
+								        {
+								            show : true,
+								            type : 'category'
+								        }
+							    ],
+							    series : [
+								        {
+								            name:'销售额',
+								            type:'bar',
+								            stack: '总量',
+								            itemStyle : {
+								            		normal: {
+								            			label :
+								            			{
+								            				show: true,
+								            				position: 'right',
+								            				textStyle : {
+											                            fontWeight : 'bold'
+											             }
+								            			}
+								            		}
+								            	}
+								        }
+							    ],
+							    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+							                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+							                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+							                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+						};
+						getCount("type",options,myChart1,output_data["type_data"]);
+						myChart1.hideLoading();
+						
+
+						myChart11.refresh();
+						myChart11.setOption(options);
+						myChart11.hideLoading();
+
+
+						var myChart2 = ec.init(document.getElementById('goods_name'));
+			            		             myChart2.showLoading({
+			                	            		text: '正在努力的读取数据中...'
+			            			});
+			            			
+
+			            			var myChart22 = ec.init(document.getElementById('goods_name_big'));
+			            		             myChart22.showLoading({
+			                	            		text: '正在努力的读取数据中...'
+			            			});
+
+
+			            			var options2 = {
+			            				    title : {
+							        	        subtext: '数值单位：元',
+							        	        x:'center',
+							        	        subtextStyle: {
+								            		color: '#000'          // 副标题文字颜色
+								        }
+							    },
+							    tooltip : {
+
 								        trigger: 'axis',
 								        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
 								            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
@@ -813,14 +947,13 @@ function show_all_chart(start_date,end_date){
 							                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
 							                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
 						};
-						getCount("type",options,myChart1,output_data["type_data"]);
 
-						var myChart2 = ec.init(document.getElementById('goods_name'));
-			            		             myChart2.showLoading({
-			                	            		text: '正在努力的读取数据中...'
-			            			});
+			            			getCount("name",options2,myChart2,output_data["name_data"]);
 			            			myChart2.hideLoading();
-			            			getCount("name",options,myChart2,output_data["name_data"]);
+
+			            			myChart22.refresh();
+						myChart22.setOption(options2);
+						myChart22.hideLoading();
 
 					}
 
@@ -842,8 +975,20 @@ function show_chart(action,start_date,end_date,name){
 		name = "";
 	}
 
+	var myChartType = null;
+	var TypeOptions = null;
+
+	var myChartName2 = null;
+	var myChartType2 = null;
+
+	var myChartName = null;
+	var NameOptions = null;
+
 	var myChartSingleType = null;
 	var SingleTypeOptions = null;
+
+	var myChartSingleName = null;
+	var SingleNameOptions = null;
 	if(action == 'single_type'){
 
 		$("#single_type").css("height","400px");
@@ -859,11 +1004,14 @@ function show_chart(action,start_date,end_date,name){
 			            'echarts/chart/line',
 			            'echarts/chart/pie'
 		             ],
+
 	        		function (ec) {
 	            		            myChartSingleType = ec.init(document.getElementById('single_type'));
 	            		            myChartSingleType.showLoading({
-	                	            		text: '正在努力的读取数据中...'
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
 	            			});
+
 	            			SingleTypeOptions = {
 	            				   title : {
 					        	        subtext: '数值单位：元',
@@ -895,7 +1043,10 @@ function show_chart(action,start_date,end_date,name){
 						     },
 					    calculable : true,
 					    legend:{
-					    	show:false,
+					    	show:true,
+					    	x:'center',
+					    	y:'top',
+					    	// padding:30,
 					    	data:[]
 					    },
 					    xAxis : [
@@ -909,14 +1060,293 @@ function show_chart(action,start_date,end_date,name){
 					        		name: '增长趋势',
 					            		type : 'value',
 					            		axisLabel: {
-	            									formatter: '{value}元'
-	       									 }
+	            						   formatter: '{value}元'
+	       						}
 					        	}
 					    ],
 					    series : [
 
 					    ],
 					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+					                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+					                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+					                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				};
+
+			}
+		);
+	}
+	else if (action == 'type'){
+		// $(".goods_type").css("height","400px");
+		require.config({
+		       	paths: {
+		            		echarts:'/static/js'
+		        	}
+		});
+		require(
+		             [
+			            'echarts',
+			            'echarts/chart/bar',
+			            'echarts/chart/line',
+			            'echarts/chart/pie'
+		             ],
+		              //按商品类目排序
+	        		function (ec) {
+	            		            myChartType = ec.init(document.getElementById('goods_type'));
+	            		            myChartType.showLoading({
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
+	            			});
+
+	            		            myChartType2 = ec.init(document.getElementById('goods_type_big'));
+	            		            myChartType2.showLoading({
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
+	            			});
+	            			TypeOptions = {
+	            				    title : {
+					        	        subtext: '数值单位：元',
+					        	        x:'center',
+					        	        subtextStyle: {
+						            		color: '#000'          // 副标题文字颜色
+						        }
+					    },
+					    tooltip : {
+						        trigger: 'axis',
+						        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+						            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						        }
+						        
+					    },
+
+					    toolbox: {
+						        show : true,
+						        feature : {
+						            mark : {show: true},
+						            magicType : {show: true, type: []},
+						            restore : {show: true},
+						            saveAsImage : {show: true}
+						        }
+					    },
+					    calculable : true,
+					    xAxis : [
+						        {
+						            show : false,	
+						            type : 'value'
+						        }
+					    ],
+					    yAxis : [
+						        {
+						            type : 'category'
+						        }
+					    ],
+					    series : [
+						        {
+						            name:'销售额',
+						            type:'bar',
+						            stack: '总量',
+						            itemStyle : { 
+						            		normal: {
+						            			label : 
+						            			{
+						            				show: true, 
+						            				position: 'right',
+						            				textStyle : {
+									                            fontWeight : 'bold'
+									             }
+						            			}
+						            		}
+						            	}
+						        }
+						       
+					    ],
+					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+				                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+				                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+				                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				};
+			}	
+
+		);
+	}
+	else if(action == 'name'){
+		require.config({
+		       	paths: {
+		            		echarts:'/static/js'
+		        	}
+		});
+		require(
+		             [
+			            'echarts',
+			            'echarts/chart/bar',
+			            'echarts/chart/line',
+			            'echarts/chart/pie'
+		             ],
+		              //按商品类目排序
+	        		function (ec) {
+	            		            myChartName = ec.init(document.getElementById('goods_name'));
+	            		            myChartName.showLoading({
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
+	            			});
+
+	            		             myChartName2 = ec.init(document.getElementById('goods_name_big'));
+	            		            myChartName2.showLoading({
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
+	            			});
+	            			// myChartName.hideLoading();
+	            			NameOptions = {
+	            				    title : {
+					        	        subtext: '数值单位：元',
+					        	        x:'center',
+					        	        subtextStyle: {
+						            		color: '#000'          // 副标题文字颜色
+						        }
+					    },
+					    
+					    tooltip : {
+						        trigger: 'axis',
+						        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+						            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						        }
+					    },
+					    toolbox: {
+						        show : true,
+						        feature : {
+						            mark : {show: true},
+						            magicType : {show: true, type: []},
+						            restore : {show: true},
+						            saveAsImage : {show: true}
+						        }
+					    },
+					    calculable : true,
+					    xAxis : [
+						        {
+						            show : false,	
+						            type : 'value'
+						        }
+					    ],
+					    yAxis : [
+						        {
+						            type : 'category'
+						        }
+					    ],
+					    series : [
+						        {
+						            name:'销售额',
+						            type:'bar',
+						            stack: '总量',
+						            itemStyle : { 
+						            		normal: {
+						            			label : 
+						            			{
+						            				show: true, 
+						            				position: 'right',
+						            				textStyle : {
+									                            fontWeight : 'bold'
+									             }
+						            			}
+						            		}
+						            	}
+						        }
+					    ],
+					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+				                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+				                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+				                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				};
+			}	
+
+		);
+	}
+	else if(action == 'single_name'){
+		$("#single_name").css("height","400px");
+		require.config({
+		       	paths: {
+		            		echarts:'/static/js'
+		        	}
+		});
+		require(
+		             [
+			            'echarts',
+			            'echarts/chart/bar',
+			            'echarts/chart/line',
+			            'echarts/chart/pie'
+		             ],
+	        		function (ec) {
+	            		            myChartSingleName = ec.init(document.getElementById('single_name'));
+	            		            myChartSingleName.showLoading({
+	                	            		text: '正在努力的读取数据中...',
+	                	            		y:150
+	            			});
+	            			// myChartSingleName.hideLoading();
+	            			SingleNameOptions = {
+					     title : {
+					        	        subtext: '数值单位：元',
+					        	        x:'center',
+					        	        subtextStyle: {
+						            		color: '#000'          // 副标题文字颜色
+						        }
+					    },
+					    tooltip : {
+					        	        trigger: 'axis'
+					    },
+					    toolbox: {
+					        		show : true,
+					       		 feature : {
+					            			mark : {show: true},
+					            			dataZoom : {show: true},
+					            			dataView : {show: false, readOnly: false},
+					            			magicType : {show: true, type: ['line', 'bar']},
+					            			restore : {show: true},
+					            			saveAsImage : {show: true}
+					       		 }
+					    },
+					    dataZoom: {
+					       	show: true,
+					       	handleSize:20,
+					       	realtime : true
+								 
+						     },
+					    calculable : true,
+					   
+					    xAxis : [
+					        	{
+					            		type : 'category',
+					            		boundaryGap: false,
+					            		data : []
+					        	}
+					    ],
+					    yAxis : [
+					        	{
+					        		name: '增长趋势',
+					            		type : 'value',
+					            		axisLabel: {
+                									formatter: '{value}元'
+           									 }
+					        	}
+					    ],
+					    series : [
+					        	       {
+					            		name:'销售额',
+					            		type:'line',
+					            		data:[],
+					            		markPoint : {
+					                		data : [
+					                    			{type : 'max', name: '最大值'},
+					                    			{type : 'min', name: '最小值'}
+					                		]
+					            		},
+					            		markLine : {
+						                data : [
+						                    {type : 'average', name : '平均值'}
+						                ]
+						            }
+					        	        }
+					        	        
+					   	 ],
+					   	 color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
 					                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
 					                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
 					                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
@@ -939,274 +1369,46 @@ function show_chart(action,start_date,end_date,name){
 			if(res.success){
 				var output_data = res.output_data;
 
+				if(output_data["has_goods"] == 0){
+					$(".has_no_goods").removeClass("hidden");
+					$("#single_name").removeClass("mb50");
+					$(".hr3").removeClass("mt50");
+					$("#btn_name_bigchart").addClass("hidden");
+					$("#btn_type_bigchart").addClass("hidden");
+					myChartSingleType.hideLoading();
+					myChartSingleName.hideLoading();
+					$("#single_type").css("height","0px");
+					$("#single_name").css("height","0px");
+					has_no_goods = 1;
+					return ;
+				}
 				if(action == 'type'){
+					myChartType.hideLoading();
 					$("#goods_type").css("height",output_data.length*40+105 + "px");
-					require.config({
-					       	paths: {
-					            		echarts:'/static/js'
-					        	}
-					});
-					require(
-					             [
-						            'echarts',
-						            'echarts/chart/bar',
-						            'echarts/chart/line',
-						            'echarts/chart/pie'
-					             ],
-					              //按商品类目排序
-				        		function (ec) {
-				            		            var myChart1 = ec.init(document.getElementById('goods_type'));
-				            		            myChart1.showLoading({
-				                	            		text: '正在努力的读取数据中...'
-				            			});
-				            			myChart1.hideLoading();
-				            			var options = {
-				            				    title : {
-								        	        subtext: '数值单位：元',
-								        	        x:'center',
-								        	        subtextStyle: {
-									            		color: '#000'          // 副标题文字颜色
-									        }
-								    },
-								    tooltip : {
-									        trigger: 'axis',
-									        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-									            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-									        }
-								    },
+					$("#goods_type_big").css("height",output_data.length*35+105 + "px");
+					getCount("type",TypeOptions,myChartType,output_data);
 
-								    toolbox: {
-									        show : true,
-									        feature : {
-									            mark : {show: true},
-									            magicType : {show: true, type: []},
-									            restore : {show: true},
-									            saveAsImage : {show: true}
-									        }
-								    },
-								    calculable : true,
-								    xAxis : [
-									        {
-									            show : false,
-									            type : 'value'
-									        }
-								    ],
-								    yAxis : [
-									        {
-									            type : 'category'
-									        }
-								    ],
-								    series : [
-									        {
-									            name:'销售额',
-									            type:'bar',
-									            stack: '总量',
-									            itemStyle : {
-									            		normal: {
-									            			label :
-									            			{
-									            				show: true,
-									            				position: 'right',
-									            				textStyle : {
-												                            fontWeight : 'bold'
-												             }
-									            			}
-									            		}
-									            	}
-									        }
-								    ],
-								    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
-							                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
-							                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
-							                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
-							};
-							getCount("type",options,myChart1,output_data);
-						}
-
-					);
+					myChartType2.refresh();
+					myChartType2.setOption(TypeOptions);
+					myChartType2.hideLoading();
 				}
 				else if(action == 'name'){
+					myChartName.hideLoading();
+					myChartName2.hideLoading();
 					$("#goods_name").css("height",output_data.length*40+105 + "px");
-					require.config({
-					       	paths: {
-					            		echarts:'/static/js'
-					        	}
-					});
-					require(
-					             [
-						            'echarts',
-						            'echarts/chart/bar',
-						            'echarts/chart/line',
-						            'echarts/chart/pie'
-					             ],
-					              //按商品类目排序
-				        		function (ec) {
-				            		            var myChart2 = ec.init(document.getElementById('goods_name'));
-				            		            myChart2.showLoading({
-				                	            		text: '正在努力的读取数据中...'
-				            			});
-				            			myChart2.hideLoading();
-				            			var options = {
-				            				    title : {
-								        	        subtext: '数值单位：元',
-								        	        x:'center',
-								        	        subtextStyle: {
-									            		color: '#000'          // 副标题文字颜色
-									        }
-								    },
+					$("#goods_name_big").css("height",output_data.length*35+105 + "px");
+					getCount("name",NameOptions,myChartName,output_data);
 
-								    tooltip : {
-									        trigger: 'axis',
-									        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
-									            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
-									        }
-								    },
-								    toolbox: {
-									        show : true,
-									        feature : {
-									            mark : {show: true},
-									            magicType : {show: true, type: []},
-									            restore : {show: true},
-									            saveAsImage : {show: true}
-									        }
-								    },
-								    calculable : true,
-								    xAxis : [
-									        {
-									            show : false,
-									            type : 'value'
-									        }
-								    ],
-								    yAxis : [
-									        {
-									            type : 'category'
-									        }
-								    ],
-								    series : [
-									        {
-									            name:'销售额',
-									            type:'bar',
-									            stack: '总量',
-									            itemStyle : {
-									            		normal: {
-									            			label :
-									            			{
-									            				show: true,
-									            				position: 'right',
-									            				textStyle : {
-												                            fontWeight : 'bold'
-												             }
-									            			}
-									            		}
-									            	}
-									        }
-								    ],
-								    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
-							                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
-							                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
-							                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
-							};
-							getCount("name",options,myChart2,output_data);
-						}
-					);
+					myChartName2.refresh();
+					myChartName2.setOption(NameOptions);
 				}
 				else if(action == 'single_type'){
 					myChartSingleType.hideLoading();
 					getCount("single_type",SingleTypeOptions,myChartSingleType,output_data);
 				}
 				else if(action == 'single_name'){
-					$("#single_name").css("height","400px");
-					require.config({
-					       	paths: {
-					            		echarts:'/static/js'
-					        	}
-					});
-					require(
-					             [
-						            'echarts',
-						            'echarts/chart/bar',
-						            'echarts/chart/line',
-						            'echarts/chart/pie'
-					             ],
-				        		function (ec) {
-				            		            var myChart = ec.init(document.getElementById('single_name'));
-				            		            myChart.showLoading({
-				                	            		text: '正在努力的读取数据中...'
-				            			});
-				            			myChart.hideLoading();
-				            			var options = {
-								     title : {
-								        	        subtext: '数值单位：元',
-								        	        x:'center',
-								        	        subtextStyle: {
-									            		color: '#000'          // 副标题文字颜色
-									        }
-								    },
-								    tooltip : {
-								        	        trigger: 'axis'
-								    },
-								    toolbox: {
-								        		show : true,
-								       		 feature : {
-								            			mark : {show: true},
-								            			dataZoom : {show: true},
-								            			dataView : {show: false, readOnly: false},
-								            			magicType : {show: true, type: ['line', 'bar']},
-								            			restore : {show: true},
-								            			saveAsImage : {show: true}
-								       		 }
-								    },
-								    dataZoom: {
-								       	show: true,
-								       	handleSize:20,
-								       	realtime : true
-
-   								     },
-								    calculable : true,
-
-								    xAxis : [
-								        	{
-								            		type : 'category',
-								            		boundaryGap: false,
-								            		data : []
-								        	}
-								    ],
-								    yAxis : [
-								        	{
-								        		name: '增长趋势',
-								            		type : 'value',
-								            		axisLabel: {
-                            									formatter: '{value}元'
-                       									 }
-								        	}
-								    ],
-								    series : [
-								        	       {
-								            		name:'销售额',
-								            		type:'line',
-								            		data:[],
-								            		markPoint : {
-								                		data : [
-								                    			{type : 'max', name: '最大值'},
-								                    			{type : 'min', name: '最小值'}
-								                		]
-								            		},
-								            		markLine : {
-									                data : [
-									                    {type : 'average', name : '平均值'}
-									                ]
-									            }
-								        	        }
-
-								   	 ],
-								   	 color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
-								                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
-								                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
-								                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
-							};
-							getCount("single_name",options,myChart,output_data);
-						}
-					);
+					myChartSingleName.hideLoading();
+					getCount("single_name",SingleNameOptions,myChartSingleName,output_data);
 				}
 				else{
 					return Tip(res.error_text);
@@ -1236,11 +1438,40 @@ function getCount(action,options,myChart,output_data){
 	myChart.clear();
 	if(action == "type"){
 		options.series[0].data = [];
+		options.series.push( {
+		        	name:"type",
+		        	type:"bar",
+		        	stack:"tmp",
+		        	barWidth:0.000000001,
+		        	data:[]
+		});
+		options.series[1].data = [];
 		for(var i = 0;i < output_data.length;i++){
 			var data = output_data[i];
 			var price = parseFloat(data["type_total_price"]).toFixed(2);
 			options.yAxis[0].data.push(data["type_name"]);
 			options.series[0].data.push(price);
+
+			var type_detail = "";
+			var count_num = 0;
+			for(var key in data["per_name_total_price"]){
+				count_num++;
+				type_detail += key + "，";
+				if(count_num % 3 == 0){
+					type_detail += "<br/>";
+				}
+			}
+			type_detail = type_detail.substr(0,type_detail.length-1);
+			options.series[1].data.push(type_detail);
+			options.tooltip.formatter = 
+				function(params,ticket,callback){
+				        	var res = "单类目销售情况<br/>" + params[0].name + "：";
+				        	res += params[0].data + "<br/>";
+				        	res += "包含商品：<br/>" + params[1].data;
+				        	setTimeout(function (){
+				                callback(ticket, res);
+				            }, 0)
+				};
 		}
 	}
 	else if(action == "name"){
@@ -1255,15 +1486,27 @@ function getCount(action,options,myChart,output_data){
 	else if(action == "single_type"){
 		options.series = [];
 
-		for(var i = 0;i < output_data[0].length;i++){
+		var i;
+		for(i = 0;i < output_data[0].length;i++){
 			options.series.push({name:output_data[0][i],stack:'总量',type:'bar',data:[]});
+
+			if(i < 3){
+				options.legend.data.push(output_data[0][i]);
+			}
+			else if(i==3){
+				options.legend.data.push("...");
+			}
+			else{
+				options.legend.data.push("");
+			}
 
 		}
 
-		for(var i = 0;i < output_data[1].length;i++){
+		for(i = 0;i < output_data[1].length;i++){
 			var n = 0;
 			for (var j = 0;j < output_data[1][i].length;j++){
 				options.series[n].data.push(output_data[1][i][j]);
+
 				n++;
 			}
 			options.xAxis[0].data.push(i+1+"号");
