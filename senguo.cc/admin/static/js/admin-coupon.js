@@ -142,6 +142,8 @@ $(document).ready(function () {
     var coupon_id=$(this).attr("data-id");
     var type=$(this).attr("data-type");
     var edit_status=$(this).attr("data-flag");
+    console.log(type);
+    console.log(edit_status);
     editCoupon(type,coupon_id,edit_status);
 }).on("click",".radio-list .radio",function(){
     if($(this).hasClass("forbidden-btn")){
@@ -303,7 +305,9 @@ function insertcoupon(selected_status){
                             }
                         }
                          else{
-                                temp='没有相关查询的优惠券信心呢～（O.O）～'
+                                temp= '<tr>'
+                                            +'<td colspan="7" class="txt-center c999">当前没有优惠券</td>'
+                                             +'</tr>';
                                 // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
                                 $("#list-coupons").append(temp);
                                 }
@@ -339,13 +343,16 @@ function addCoupon(type){
             get_limit=1;
         }
         else{
-             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||get_limit==0){
+             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||parseInt(get_limit)==0){
                   return Tip("领取限制应该为正整数");
                    }
         }
         var total_number = $(".total_number").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||total_number==0){
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||parseInt(total_number)==0){
             return Tip("库存应该不为空且为正整数");
+        }
+        if (parseInt(get_limit)>parseInt(total_number)) {
+            return Tip("领取限制数量不能大于库存量");
         }
         var use_rule = $(".use_rule").val();
         if(use_rule==''){
@@ -357,7 +364,7 @@ function addCoupon(type){
         }
         }
         var coupon_money = $(".coupon_money").val();
-        if(isNaN(coupon_money)||coupon_money==''||coupon_money==0){
+        if(isNaN(coupon_money)||coupon_money==''||parseFloat(coupon_money)==0){
             return Tip("优惠金额应该不为空也不为0且为数字类型");
         }
         var use_goods_group = $(".use_goods_group").attr("data-id");
@@ -381,9 +388,9 @@ function addCoupon(type){
             }
         }else{
                 var last_day = $(".last_day").val();
-                if(isNaN(last_day)||last_day==''||last_day==0){
-                    return Tip("有效天数不为空且为正整数");
-                 }
+                if(isNaN(last_day)||last_day==''||parseInt(last_day)==0){
+                     return Tip("有效天数不为空且为正整数");
+             }
         }
     }else{
          var from_get_date = $(".from_get_dates").val();
@@ -401,7 +408,7 @@ function addCoupon(type){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
         var get_rule = $('.get_rules').val();
-         if(isNaN(get_rule) ||get_rule==0){
+         if(isNaN(get_rule) ||parseFloat(get_rule)==0){
                   return Tip("领取条件应该不为0且为数字类型");
                }
         var get_limit = $(".get_limits").val();
@@ -409,13 +416,16 @@ function addCoupon(type){
             get_limit=-1;
         }
         else{
-             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||get_limit==0){
+             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||parseInt(get_limit)==0){
                   return Tip("领取限制应该为正整数");
                    }
         }
         var total_number = $(".total_numbers").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||total_number==0){
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||parseInt(total_number)==0){
             return Tip("库存应该不为空且为正整数");
+        }
+        if (parseInt(get_limit)>parseInt(total_number)) {
+            return Tip("领取限制数量不能大于库存量");
         }
         var use_rule = $(".use_rules").val();
         if(use_rule==''){
@@ -427,7 +437,7 @@ function addCoupon(type){
         }
         }
         var coupon_money = $(".coupon_moneys").val();
-        if(isNaN(coupon_money)||coupon_money==''||coupon_money==0){
+        if(isNaN(coupon_money)||coupon_money==''||parseFloat(coupon_money)==0){
             return Tip("优惠金额应该不为空也不为0且为数字类型");
         }
         var use_goods_group = $(".use_goods_groups").attr("data-id");
@@ -451,7 +461,7 @@ function addCoupon(type){
             }
         }else{
                 var last_day = $(".last_days").val();
-                if(isNaN(last_day)||last_day==''||last_day==0){
+                if(isNaN(last_day)||last_day==''||parseInt(last_day)==0){
             return Tip("有效天数不为空且为正整数");
              }
         }
@@ -514,17 +524,20 @@ function editCoupon(type,coupon_id,edit_status){
             get_limit=1;
         }
         else{
-             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||get_limit==0){
+             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||parseInt(get_limit)==0){
                   return Tip("领取限制应该为正整数");
                    }
         }
         var total_number = $(".total_number").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||total_number==0){
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||parseInt(total_number)==0){
             return Tip("库存应该不为空且为正整数");
         }
+        if (parseInt(get_limit)>parseInt(total_number) ){
+            return Tip("领取限制数量不能大于库存量");
+        }
         var old_totalnumber=$(".total_number").attr("total-id");
-        if(total_number<old_totalnumber){
-             $('.total_number').value(old_totalnumber);
+        if(parseInt(total_number)<parseInt(old_totalnumber)){
+             $('.total_number').val(old_totalnumber);
              return Tip("库存应该不小于原来的库存！");
         }
         var use_rule = $(".use_rule").val();
@@ -537,7 +550,7 @@ function editCoupon(type,coupon_id,edit_status){
         }
         }
         var coupon_money = $(".coupon_money").val();
-        if(isNaN(coupon_money)||coupon_money==''||coupon_money==0){
+        if(isNaN(coupon_money)||coupon_money==''||parseFloat(coupon_money)==0){
             return Tip("优惠金额应该不为空也不为0且为数字类型");
         }
         var use_goods_group = $(".use_goods_group").attr("data-id");
@@ -561,7 +574,7 @@ function editCoupon(type,coupon_id,edit_status){
             }
         }else{
                 var last_day = $(".last_day").val();
-                if(isNaN(last_day)||last_day==''||last_day==0){
+                if(isNaN(last_day)||last_day==''||parseInt(last_day)==0){
             return Tip("有效天数不为空且为正整数");
              }
         }
@@ -579,18 +592,21 @@ function editCoupon(type,coupon_id,edit_status){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
          var total_number = $(".total_number").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||total_number==0){
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||parseInt(total_number==0)){
             return Tip("库存应该不为空且为正整数");
         }
         var old_totalnumber=$(".total_number").attr("total-id");
-        if(total_number<old_totalnumber){
-             $('.total_number').value(old_totalnumber);
+        if(parseInt(total_number)<parseInt(old_totalnumber)){
+             $('.total_number').val(old_totalnumber);
              return Tip("库存应该不小于原来的库存！");
         }
         var get_rule = $(".get_rule").val();
         var coupon_money = $(".coupon_money").val();
         var use_rule = $(".use_rule").val();
         var get_limit = $(".get_limit").val();
+        if (parseInt(get_limit)>parseInt(total_number)) {
+            return Tip("领取限制数量不能大于库存量");
+        }
         var use_goods_group = $(".use_goods_group").attr("data-id");
         var use_goods = $(".use_goods").attr("data-id");
          var valid_way = $(".radio-list1").find(".radio-active").attr('data-id');
@@ -614,7 +630,7 @@ function editCoupon(type,coupon_id,edit_status){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
         var get_rule = $('.get_rules').val();
-         if(isNaN(get_rule) || get_rule.indexOf(".")!=-1||get_rule==0){
+         if(isNaN(get_rule) || get_rule.indexOf(".")!=-1||parseFloat(get_rule)==0){
                   return Tip("领取条件应该不为0且为数字类型");
                }
         var get_limit = $(".get_limits").val();
@@ -622,17 +638,20 @@ function editCoupon(type,coupon_id,edit_status){
             get_limit=-1;
         }
         else{
-             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||get_limit==0){
+             if(isNaN(get_limit) || get_limit.indexOf(".")!=-1||parseInt(get_limit==0)){
                   return Tip("领取限制应该为正整数");
                    }
         }
         var total_number = $(".total_numbers").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||total_number==0){
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||parseInt(total_number)==0){
             return Tip("库存应该不为空且为正整数");
         }
+        if (parseInt(get_limit)>parseInt(total_number) ){
+            return Tip("领取限制数量不能大于库存量");
+        }
         var old_totalnumber=$(".total_numbers").attr("total-id");
-        if(total_number<old_totalnumber){
-             $('.total_number').value(old_totalnumber);
+        if(parseInt(total_number)<parseInt(old_totalnumber)){
+             $('.total_number').val(old_totalnumber);
              return Tip("库存应该不小于原来的库存！");
         }
         var use_rule = $(".use_rules").val();
@@ -645,7 +664,7 @@ function editCoupon(type,coupon_id,edit_status){
         }
         }
         var coupon_money = $(".coupon_moneys").val();
-        if(isNaN(coupon_money)||coupon_money==''||coupon_money==0){
+        if(isNaN(coupon_money)||coupon_money==''||parseFloat(coupon_money)==0){
             return Tip("优惠金额应该不为空也不为0且为数字类型");
         }
         var use_goods_group = $(".use_goods_groups").attr("data-id");
@@ -669,7 +688,7 @@ function editCoupon(type,coupon_id,edit_status){
             }
         }else{
                 var last_day = $(".last_days").val();
-                if(isNaN(last_day)||last_day==''||last_day==0){
+                if(isNaN(last_day)||last_day==''||parseInt(last_day==0)){
             return Tip("有效天数不为空且为正整数");
              }
         }
@@ -687,11 +706,11 @@ else if(type==1&&edit_status==1){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
          var total_number = $(".total_numbers").val();
-        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||total_number==0){
+        if(isNaN(total_number) || total_number.indexOf(".")!=-1||total_number==''||parseInt(total_number)==0){
             return Tip("库存应该不为空且为正整数");
         }
         var old_totalnumber=$(".total_numbers").attr("total-id");
-        if(total_number<old_totalnumber){
+        if(parseInt(total_number)<parseInt(old_totalnumber)){
              $('.total_numbers').text(old_totalnumber);
              return Tip("库存应该不小于原来的库存！");
         }
@@ -699,6 +718,9 @@ else if(type==1&&edit_status==1){
         var coupon_money = $(".coupon_moneys").val();
         var use_rule = $(".use_rules").val();
         var get_limit = $(".get_limits").val();
+        if (parseInt(get_limit)>parseInt(total_number) ){
+            return Tip("领取限制数量不能大于库存量");
+        }
         var use_goods_group = $(".use_goods_groups").attr("data-id");
         var use_goods = $(".use_goodss").attr("data-id");
        var valid_way = $(".radio-list2").find(".radio-active").attr('data-id');
@@ -766,15 +788,15 @@ function getNowFormatDate() {
     if (strDate >= 0 && strDate <= 9) {
         strDate = "0" + strDate;
     }
-   currentdate = year + seperator1 + month + seperator1 + strDate
+   var currentdate = year + seperator1 + month + seperator1 + strDate
             + " " + date.getHours() + seperator2 + date.getMinutes()
             + seperator2 + date.getSeconds();
     return currentdate;
 }
 
 function todate(str_time){
-//格式2014-03-11 12:00
-var dateArr = str_time.substring(0,10).split('-');
-var timeArr = str_time.substring(11,16).split(':');
-return new Date(parseInt(dateArr[0]),parseInt(dateArr[1]) - 1,parseInt(dateArr[2]),parseInt(timeArr[0]),parseInt(timeArr[1]));
+    //格式2014-03-11 12:00
+    var dateArr = str_time.substring(0,10).split('-');
+    var timeArr = str_time.substring(11,16).split(':');
+    return new Date(parseInt(dateArr[0]),parseInt(dateArr[1]) - 1,parseInt(dateArr[2]),parseInt(timeArr[0]),parseInt(timeArr[1]));
 }

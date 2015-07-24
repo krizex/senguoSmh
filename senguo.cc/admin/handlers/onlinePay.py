@@ -218,16 +218,6 @@ class OnlineWxPay(CustomerBaseHandler):
 				name = customer.accountinfo.nickname
 			else:
 				return self.send_fail('customer not found')
-			# #使用优惠券
-			# coupon_key=order.coupon_key
-			# if coupon_key!=None:
-			# 	use_date=time.mktime(time.strptime(order.create_date,'%Y-%m-%d %H:%M:%S'))
-			# 	q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
-			# 	q.update(session=self.session,use_date=use_date,order_id=order.id,coupon_status=2)
-			# 	qq=self.session.query(models.CouponsShop)(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
-			# 	use_number=qq.use_number+1
-			# 	qq.update(self.session,use_number=use_number)
-			# 	self.session.commit()
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
@@ -506,17 +496,6 @@ class OnlineAliPay(CustomerBaseHandler):
 			name = customer.accountinfo.nickname
 		else:
 			return self.send_fail('customer not found')
-
-		#使用优惠券
-		coupon_key=order.coupon_key
-		if coupon_key!=None:
-			use_date=time.mktime(time.strptime(order.create_date,'%Y-%m-%d %H:%M:%S'))
-			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
-			q.update(session=self.session,use_date=use_date,order_id=order.id,coupon_status=2)
-			qq=self.session.query(models.CouponsShop)(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
-			use_number=qq.use_number+1
-			qq.update(self.session,use_number=use_number)
-			self.session.commit()
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no)
@@ -605,17 +584,6 @@ class OnlineAliPay(CustomerBaseHandler):
 			name = customer.accountinfo.nickname
 		else:
 			return self.send_fail('customer not found')
-
-		# #使用优惠券
-		# coupon_key=order.coupon_key
-		# if coupon_key!=None:
-		# 	use_date=time.mktime(time.strptime(order.create_date,'%Y-%m-%d %H:%M:%S'))
-		# 	q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
-		# 	q.update(session=self.session,use_date=use_date,order_id=order.id,coupon_status=2)
-		# 	qq=self.session.query(models.CouponsShop)(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
-		# 	use_number=qq.use_number+1
-		# 	qq.update(self.session,use_number=use_number)
-		# 	self.session.commit()
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no)

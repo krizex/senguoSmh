@@ -980,19 +980,35 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
 
-		# # 充值送优惠券
-		# self.updatecoupon()
-		# CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).with_lockmode('update').all()
-		# for x in CouponsShops:
-		# 	CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
-		# 	if CouponsCustomers==None:
-		# 		pass
-		# 	else:
-		# 		now_date=int(time.time())
-		# 		CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
-		# 		self.session.commit()
-		# 		break
-		# self.session.commit()
+		# 充值送优惠券
+		self.updatecoupon()
+		CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
+		for x in CouponsShops:
+			if  totalPrice>=x.get_rule:
+				qhave=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,customer_id=customer_id).count()
+				if  x.get_limit!=-1:
+					if  qhave>=x.get_limit:
+						pass
+					else:
+						CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
+						if CouponsCustomers==None:
+							pass
+						else:
+							now_date=int(time.time())
+							CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+							self.session.commit()
+							break
+						self.session.commit()
+				else:
+					CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
+					if CouponsCustomers==None:
+						pass
+					else:
+						now_date=int(time.time())
+						CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+						self.session.commit()
+						break
+					self.session.commit()
 		return self.write("success")
 
 
@@ -1104,18 +1120,35 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
 
-		# # 充值送优惠券
-		# self.updatecoupon()
-		# CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).with_lockmode('update').all()
-		# for x in CouponsShops:
-		# 	CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
-		# 	if CouponsCustomers==None:
-		# 		pass
-		# 	else:
-		# 		now_date=int(time.time())
-		# 		CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
-		# 		self.session.commit()
-		# 		break
-		# self.session.commit()
+		# 充值送优惠券
+		self.updatecoupon()
+		CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
+		for x in CouponsShops:
+			if  totalPrice>=x.get_rule:
+				qhave=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,customer_id=customer_id).count()
+				if  x.get_limit!=-1:
+					if  qhave>=x.get_limit:
+						pass
+					else:
+						CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
+						if CouponsCustomers==None:
+							pass
+						else:
+							now_date=int(time.time())
+							CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+							self.session.commit()
+							break
+						self.session.commit()
+				else:
+					CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
+					if CouponsCustomers==None:
+						pass
+					else:
+						now_date=int(time.time())
+						CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+						self.session.commit()
+						break
+					self.session.commit()
+		self.session.commit()
 		# return self.send_success(text = 'success')
 		return self.redirect(self.reverse_url("customerBalance"))

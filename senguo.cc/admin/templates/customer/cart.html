@@ -232,11 +232,10 @@
                 </p>
                 <div class="wrap-coupontype">
                     <ul id="couponType" class="coupon_type">
-                    {%else%}
                     {%for data in output_data%}
                         <li data-id="{{data['coupon_key']}}" class="">
                             <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
-                            <span class="coupon-bg" data-money="{{data["coupon_money"]}}">￥{{data["coupon_money"]}}</span>
+                            <span class="coupon-bg" data-money="{{data['coupon_money']}}">￥{{data["coupon_money"]}}</span>
                             <span class="coupon-detail">{{data["use_goods_group"]}}:{{data["use_goods"]}}满{{data["use_rule"]}}元<br>可使用（含运费）</span>
                         </li>
                        {%end%}

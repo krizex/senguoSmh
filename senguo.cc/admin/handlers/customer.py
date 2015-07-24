@@ -390,7 +390,15 @@ class Discover(CustomerBaseHandler):
 		for x in q :
 			if now_date>=x.from_get_date:
 				a+=1
-		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a)
+		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=1).all()
+		b=0
+		now_date=int(time.time())
+		for x in q :
+			if now_date>=x.from_get_date:
+				qq=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,coupon_id=x.coupon_id,coupon_status=0).first()
+				if qq!=None:
+					b+=1
+		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -2546,10 +2554,21 @@ class payTest(CustomerBaseHandler):
 			self.updatecoupon()
 			CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
 			for x in CouponsShops:
-				qhave=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,customer_id=customer_id).count()
-				if  x.get_limit!=-1:
-					if  qhave>=x.get_limit:
-						pass
+				if  totalPrice>=x.get_rule:
+					qhave=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,customer_id=customer_id).count()
+					if  x.get_limit!=-1:
+						if  qhave>=x.get_limit:
+							pass
+						else:
+							CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
+							if CouponsCustomers==None:
+								pass
+							else:
+								now_date=int(time.time())
+								CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+								self.session.commit()
+								break
+							self.session.commit()
 					else:
 						CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
 						if CouponsCustomers==None:
