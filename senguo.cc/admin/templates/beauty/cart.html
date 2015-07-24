@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}【{{shop_name}}】一家不错的O2O店铺，快来关注吧~{% end %}
 {% block head %}
-<link rel="stylesheet" href="{{static_url('css/beauty/cart.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{handler.shop_code}}"></span>
-    <div class="rainshed2 bg_change fix-title"></div>
+    <div class="rainshed bg_change fix-title"></div>
     <div class="bg-box mt42">
         <p class="text-left text-grey9 font14  pl10 cart-titles">商品列表</p>
         <ul class="cart-list set-w100-fle m-b0">
@@ -40,18 +40,18 @@
                 </div>
             </li>
             {% end %}
-        <div class="clearfix font14 p010">
-            <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
-            <span class="tit">配送费</span>
-        </div>
-        </ul>
-        <div class="bg-width center-block text-grey bg-white hidden">
             <div class="clearfix font14 p010">
+                <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
+                <span class="tit">配送费</span>
+            </div>
+        </ul>
+        <div class="bg-width center-block text-grey bg-white">
+            <div class="clearfix font14 p010 hidden">
                 <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
                 <span class="pull-right tit text-right">商品金额：</span>
             </div>
             <div class="clearfix m-b10 font14 p010 text-grey3 hidden">
-                <span class="pull-right tit2 text-right"><span class="final_price"></span>元</span>
+                <span class="pull-right tit2 text-right"><span id="final_price" class="final_price" data-money=""></span>元</span>
                 <span class="pull-right tit text-right">实付金额：</span>
             </div>
             <p class="text-center text-pink mincharge_intime mincharge" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“按时达”起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
@@ -61,15 +61,15 @@
                 {% set active=''%}
                 {% set unactive=''%}
                 {% if periods %}
-                {% set active='active'%}
-                {% set unactive=''%}
-                {% else %}
                 {% set active=''%}
+                {% set unactive='active'%}
+                {% else %}
+                {% set active='active'%}
                 {% set unactive='active'%}
                 {% end %}
                 <div id="sendType" class="send_type list-group">
-                {% if config.now_on == True%}
-                    <button data-id="1" class="{{active}} send-now list-group-item item height50" data-config="{{config.now_on}}" >
+                    {% if config.now_on == True%}
+                    <button data-id="1" class="{{unactive}} send-now list-group-item item height50" data-config="{{config.now_on}}" >
                         <a href="javascript:;" class="bg-white text-grey" id="sendNow" data-period="{{config.intime_period or 0}}">
                             <span class="pull-left title set-inl-blo font14 line50">立即送</span>
                             <p class="text-grey9 title-right">
@@ -80,7 +80,7 @@
                     </button>
                     {% end %}
                     {% if config.now_on == True%}
-                    <ul class="send_now list-group" style="display:none">
+                    <ul class="send_now list-group">
                         <div class="arrow-top left82"></div>
                         <!-- <li class="list-group-item clearfix bg-grey2">
                              <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
@@ -98,7 +98,7 @@
                     </ul>
                     {% end %}
                     {% if config.ontime_on == True%}
-                    <button data-id="2" class="{{unactive}} send-intime  list-group-item item height50" data-config="{{config.ontime_on}}">
+                    <button data-id="2" class="{{active}} send-intime  list-group-item item height50" data-config="{{config.ontime_on}}">
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
                             <span class="pull-left title set-inl-blo font14 line50">按时达</span>
                             <p class="text-grey9 title-right">
@@ -110,10 +110,10 @@
                     {% end %}
                     {% if config.ontime_on == True%}
                     {% if periods %}
-                    <div id="sendPeriod" class="send_period list-group font14" style="display:none">
+                    <div id="sendPeriod" class="send_period list-group font14" style="display:none;">
                         <div class="arrow-top left70"></div>
                         <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10">
-                           {% set day=config.day_on_time %}
+                            {% set day=config.day_on_time %}
                             <li data-id="1" class="{% if day == 0 or day==1 %}active{% end %} {% if day==2 %}hidden{% end %} pull-left item" id="send_today"><a href="javascript:;" class="text-green">今天</a></li>
                             <li data-id="2" id="send_tomorrow" class="{% if day==2 %}active{% end %} {% if day==1 %}hidden{% end %} pull-left item"><a href="javascript:;" class="text-green">明天</a></li>
                         </ul>
@@ -125,7 +125,7 @@
                                     <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
                             <span class="pull-left ontime-txt">
                                 <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
-                             </span>
+                            </span>
                                     <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                                     <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
                                 </a>
@@ -192,7 +192,7 @@
                         </a>
                     </li>
                     <li>
-                         <div class="group"></div>
+                        <div class="group"></div>
                         <div class="wrap-online-lst">
                             <div class="arrow-top"></div>
                             <ul class="online-lsts check-lst">
@@ -232,24 +232,28 @@
                 </p>
                 <div class="wrap-coupontype">
                     <ul id="couponType" class="coupon_type">
-                        {%else%}
-                        {%for data in output_data%}
+                    {%for data in output_data%}
                         <li data-id="{{data['coupon_key']}}" class="">
-                        <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
-                        <span class="coupon-bg" data-money="{{data["coupon_money"]}}">￥{{data["coupon_money"]}}</span>
-                        <span class="coupon-detail">{{data["use_goods_group"]}}:{{data["use_goods"]}}满{{data["use_rule"]}}元<br>可使用（含运费）</span>
+                            <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
+                            <span class="coupon-bg" data-money="{{data['coupon_money']}}">￥{{data["coupon_money"]}}</span>
+                            <span class="coupon-detail">{{data["use_goods_group"]}}:{{data["use_goods"]}}满{{data["use_rule"]}}元<br>可使用（含运费）</span>
                         </li>
-                        {%end%}
+                       {%end%}
                     </ul>
                 </div>
             </div>
             {%end%}
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
             {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
+            <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
             <div class="first_notice center-block clearfix mt10">
                 <span class="pull-left">第一次下单?</span>
                 <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
             </div>
+
+            {% else %}
+            <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt20 clearfix sure_btn">提交订单</button>
+
             {% end %}
         </div>
         <div class="bottom-line"></div>
@@ -283,7 +287,7 @@
             <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>
