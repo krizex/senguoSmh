@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% block title %}森果后台登录{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-index.css')}}"/>{% end %}
+{% block content %}
+{% set shop = handler.current_shop %}
+<div class="index-title">
+    <div class="pull-left title-style">
+        <div class="pull-left title-style2 new-item">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1">
+                <span class="new-order"><i></i><b id="new_order_sum">{{new_order_sum}}</b></span>
+                <p>新增订单</p>
+            </a>
+        </div>
+        <div class="pull-right title-style2  new-item">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">
+                <span class="new-user"><i></i><b id="new_follower_sum">{{new_follower_sum}}</b></span>
+                <p>新增用户</p>
+            </a>
+        </div>
+        <div class="line"></div>
+    </div>
+    <div class="pull-right title-style">
+        <div class="pull-left title-style2 item">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1">
+                <span class="total-order"><i></i><b id="order_sum">{{order_sum}}</b></span>
+                <p>总订单数</p>
+            </a>
+        </div>
+        <div class="pull-right title-style2 item">
+            <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">
+                <span class="total-user"><i></i><b id="follower_sum">{{follower_sum}}</b></span>
+                <p>总用户数</p>
+            </a>
+        </div>
+        <div class="line"></div>
+    </div>
+</div>
+ <ul class="bar-list clearfix">
+    <li>
+        <ul class="text-list">
+            <div class="title">官方公告<a class="pull-right font12 text-grey" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official">更多>></a></div>
+            {% for a in article_list["notice"]%}
+            <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+            {% end %}
+        </ul>
+    </li>
+    <li>
+        <ul class="text-list">
+            <div class="title">产品更新<a class="pull-right font12 text-grey" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update">更多>></a></div>
+            {% for a in article_list["update"]%}
+            <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+            {% end %}
+        </ul>
+    </li>
+    <li>
+        <ul class="text-list">
+            <div class="title">运营干货<a class="pull-right font12 text-grey" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry">更多>></a></div>
+           {% for a in article_list["dry"]%}
+            <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
+            {% end %}
+        </ul>
+    </li>
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-realtime.js')}}"></script>
+{% end %}

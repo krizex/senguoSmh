@@ -1,0 +1,66 @@
+{% extends 'base.html'%}
+{% block title %}信息发布{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/infowall-infoissue.css')}}"/>{% end %}
+
+{% block content %}
+{% if "fruit_types" in context%}
+{% import json%}
+<script>
+    window.dataObj.fruit_types = {% raw json.dumps(context["fruit_types"]) %}
+</script>
+{% end %}
+<header class="title-box2">
+    <a href="{{reverse_url('infowallHomeSupply')}}" class="return-btn"></a>
+    <span class="title">新信息发布</span>
+</header>
+<div class="info-content">
+    <!--<ul class="type-choose select-list">
+        <span>版块选择：</span>
+        <li data-type="1" class="active white-color typeItem"><a href="javascript:;" class="text-green">供应</a></li>
+        <li data-type="2" class="white-color typeItem"><a href="javascript:;" class="text-green">求购</a></li>
+        <li data-type="3" class="white-color otherType"><a href="javascript:;" class="text-green">其他</a></li>
+    </ul>-->
+    <textarea placeholder="写下您的信息发布内容详情" id="infoEdit" class="infoBox line bg-white"></textarea>
+   <input type="text" placeholder="填写您的地址信息" class="addressBox line bg-white" id="addressEdit" style="display:none"/>
+    <div class="fruit-choose white-color bg-white" style="display:none">
+        <p>选择水果种类：</p>
+        <ul id="fruitChooseList" class="fruit-list-box">
+            <a href="javascript:;" class="add-fruit" data-toggle="modal" data-target="#fruitBox">+</a>
+        </ul>
+    </div>
+    <div class="upload-box bg-white">
+        <p>上传图片(*最多可上传五张图片<small class="text-red">部分手机浏览器会出现图像无法上传，建议更换浏览器或使用电脑上传！</small>)</p>
+        <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+        <a href="javascript:;" class="upload-btn">+</a>
+    </div>
+    <div class="bg-white" id="imgPreview">
+        <p>图片预览(*点击图片即可删除该图片)</p>
+
+    </div>
+    <div class="public-btn">
+        <a href="javascript:;" id="infoPublic" class="btn btn-green">发布</a>
+    </div>
+</div>
+<div class="modal fade fruit-box" id="fruitBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <ul class="fruit-list">
+
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
+                <button type="button" class="btn pull-right sure-btn green-color" data-dismiss="modal" id="fruitChoose">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/jquery.uploadifive.min.js"></script>
+<script src="{{static_url('js/infowall-infoissue.js')}}"></script>
+{% end %}

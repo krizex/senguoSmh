@@ -1,0 +1,59 @@
+{% extends 'shop-set-base.html' %}
+{% block title%}微信通知{% end %}
+{% block setcontent %}
+	{% if _shop_auth ==0 %}
+	 <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+	{% else %}
+	<div class="set-description">
+	    <p>如果您有已认证的微信服务号，则可开通订单微信通知。开通后的公众号具有订单模板消息通知功能。</p>
+	    <p>订单微信通知包括：管理员新订单通知、用户已下单通知、配送员新订单通知等。</p>
+	</div>
+	<ul class="info-set-list mt20 font14">
+	    <li class="item clearfix">
+	    	<a href="{{reverse_url('BbsDetail',21)}}" target="_blank" class="pull-right mt30">查看模板添加详细教程</a>
+	    	<div class="clearfix">
+	      		<p class="tit">第一步：进入微信公众平台后台，从模板库添加以下模板：</p>
+	      		<p class="text-grey2 ml40">编号：OPENTM200746866 标题：订单提交成功通知</p>
+	      		<p class="text-grey2 ml40">编号：TM00351 标题：新订单通知</p>
+	      		<p class="text-grey2 ml40">编号：OPENTM202521011 标题：订单完成通知</p>
+	      	</div>
+	    </li>
+	     <li class="item clearfix">
+	    	<a href="javascript:;" class="wx-edit pull-right mt30">编辑</a>
+	    	<div class="clearfix">
+	      		<p class="tit">第二步：提交微信公众平台相关信息</p>
+	      		<p class="text-grey2 ml40">微信公众号名称：<span class="name">{{current_shop.admin.mp_name}}</span></p>
+	      		<p class="text-grey2 ml40">AppID:<span class="id">{{current_shop.admin.mp_appid}}</span></p>
+	      		<p class="text-grey2 ml40">AppSecret:<span class="secret">{{current_shop.admin.mp_appsecret}}</span></p>
+	      	</div>
+	    </li>
+	</ul>
+	<div class="modal wx-edit-box" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body font14">
+                   <ul>
+                   		<li class="clearfix">
+                   			<input type="text" class="pull-right" id="AppName"/>
+                   			公众号名称
+                   		</li>
+                   		<li class="clearfix">
+                   			<input type="text" class="pull-right" id="AppID"/>
+                   			AppID
+                   		</li>
+                   		<li class="clearfix">
+                   			<input type="text" class="pull-right" id="AppSecret"/>
+                   			AppSecret
+                   		</li>
+                   </ul>
+                </div>
+                <div class="modal-footer text-center">
+                     <button class="btn bg-green wx-sure text-white">确定</button>
+                     <button class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+	{% end %}
+{% end %}
+{% block setbottom %}<script src="{{static_url('js/admin-set.js')}}"></script>{% end %}

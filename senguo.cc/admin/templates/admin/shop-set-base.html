@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-shop-set.css')}}"/>{% end %}
+
+{% block content %}
+{% set shopSubPage = context.get('shopSubPage') %}
+
+{% set delivery_active = ''%}
+{% set receipt_active = ''%}
+{% set info_active = ''%}
+{% set cert_active ='' %}
+{% set phone_active ='' %}
+{% set admin_active= ''%}
+{% set wx_active='' %}
+
+
+{% if shopSubPage == 'delivery_set'  %}
+    {% set delivery_active ='active' %}
+{% elif shopSubPage == 'info_set' %}
+    {% set info_active ='active' %}
+{% elif shopSubPage == 'cert_set' %}
+    {% set cert_active ='active' %}
+{% elif shopSubPage =='phone_set' %}
+    {% set phone_active ='active' %}
+{% elif shopSubPage =='admin_set' %}
+    {% set admin_active ='active' %}
+{% elif shopSubPage =='wx_set' %}
+    {% set wx_active ='active' %}
+{% else %}
+    {% set receipt_active ='active' %}
+{% end %}
+{% set shop_code =current_shop.shop_code %}
+<span class="right-title">店铺设置<span class="shop-link ml20">当前店铺：{% if shop_code and shop_code!='not set' %}<a href="{{reverse_url('Market',shop_code)}}" target="_blank">{{current_shop.shop_name}}</a></span>{% else %}<span class="shop-link">{{current_shop.shop_name}} (请设置店铺号)</span></span>{% end %}<a href="{{reverse_url('switchshop')}}" class="add-btn switch">　 切换店铺 / 多店铺管理</a></span>
+<div class="subnav-box">
+    <ul class="subnav group">
+        <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">配送设置</a></li>-->
+        <li class="{{info_active}}" id="infoSet"><a href="{{reverse_url('adminShopConfig')}}">店铺信息</a></li>
+        <li class="{{cert_active}}" id=""><a href="{{reverse_url('adminShopAuth')}}">店铺认证</a></li>
+        <li class="{{receipt_active}}" id="receiptSet"><a href="{{reverse_url('adminConfig')}}?action=receipt">订单小票</a></li>
+        <li class="{{phone_active}}"><a href="{{reverse_url('adminConfig')}}?action=phone"  class="{{no_auth}}">首单短信验证</a></li>
+        <li class="{{admin_active}}"><a href="{{reverse_url('adminConfig')}}?action=admin"  class="{{no_auth}}">管理员设置</a></li>
+<!--         <li class="{{wx_active}}"><a href="{{reverse_url('adminMessageManage')}}">微信通知</a></li>
+ -->        <!--<li class="{{delivery_active}}" id="deliverySet"><a href="{{reverse_url('adminConfig')}}?action=delivery">短信通知</a></li>-->
+    </ul>
+</div>
+{% block setcontent %}{% end %}
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-set.js')}}"></script>
+{% block setbottom %}{% end %}
+{% end %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% block title %}商城公告{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="{{reverse_url('MadminSet')}}" class="back goback">返回</a>
+    <span>商城公告</span>
+</div>
+{% end %}
+{% block content %}
+{% set arrNum = ['一','二','三','四','五','六','七','八','九','十','十一','十二','十三','十四','十五','十六','十七','十八','十九','二十'] %}
+<div class="wrap-shop-set pb45">
+    {% for index,notice in enumerate(notices) %}
+    <ul class="notice-list mt15">
+        <li class="notice-title">
+            <div class="fr">
+                <span class="switch-btn {% if notice.active==1 %}switch-abtn{% end %} switch-notice"  data-id="{{notice.id}}"><i></i><span>{% if notice.active==1 %}已启用{% else %}未启用{% end %}</span></span>
+                <span class="del-notice ml10 c666 hide"  data-id="{{notice.id}}">删除</span>
+                <a href="{{reverse_url('MadminSetAttr')}}?action=addNotice&id={{notice.id}}" class="ml10 c666">编辑</a>
+            </div>
+            <span class="dgreen">公告{% if arrNum[index] %}{{arrNum[index]}}{% end %}</span>
+        </li>
+        <li class="group">
+            <span class="notice-left">摘要</span>
+            <div class="notice-text fr">
+                {{notice.summary or '未设置'}}
+            </div>
+        </li>
+        <li class="group">
+            <span class="notice-left">详情</span>
+            <div class="notice-text fr">
+                {{notice.detail or '未设置'}}
+            </div>
+        </li>
+        <li class="group">
+            <span class="notice-img-left">图片</span>
+            <div class="notice-img fr">
+                <img src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" alt="公告图片"/>
+            </div>
+        </li>
+    </ul>
+    {% end %}
+    <a href="{{reverse_url('MadminSetAttr')}}?action=addNotice" class="create-btn add-notice">+添加新公告</a>
+</div>
+{% end %}
+{% block fix %}
+<div class="qa-btn" id="qa">?</div>
+<div class="pop-bwin pop-qa hide">
+    <ul class="shop-qalist">
+        <li class="title">说明</li>
+        <li>
+            <span class="roll-left"></span>编辑和修改商城水果公告栏的内容
+        </li>
+        <li>
+            <span class="roll-left"></span>摘要为公告栏直接显示的内容，用户可点击查看详情。
+        </li>
+    </ul>
+    <a href="javascript:;" class="close-pop" id="close-pop"></a>
+</div>
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 id="b_title" class="txt-center">是否确认删除该公告？</h3>
+        <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="del_notice">确认</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set.js')}}"></script>
+{% end %}

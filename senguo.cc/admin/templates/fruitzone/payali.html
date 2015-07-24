@@ -1,0 +1,114 @@
+{% extends '../customer/detail-base.html' %}
+{% block title %}我的订单{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+{% end %}
+{% block top %}订单详情{% end %}
+{% block content %}
+{% set fruits=eval(order.fruits)%}
+
+<div class="container mb50" id="container">
+    <div class="order-grade">
+        <div class="order-line">
+            <div class="order-line-grade"></div>
+            <div class="order-wawa">
+                <a href="tel:{{order.phone}}">
+                    {% if order.status == -1%}
+                    <img src="/static/images/TDSG.png" alt="配送员头像"/>
+                    {% else %}
+                    <img src="{{order.sender_img or '/static/images/TDSG.png'}}" alt="配送员头像"/>
+                    {% end %}
+                </a>
+            </div>
+            <div class="order-status-txt">
+                <span id="status-txt" data-id="{{order.status}}">配送中</span><a class="tel-btn" href="tel:{{order.phone}}">拨号</a>
+            </div>
+        </div>
+    </div>
+    <div class="order-item">
+        <h4 class="top-title"><a href="/{{shop_code}}"><span class="black-txt">{{shopName}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系客服</a></a></h4>
+        <ul class="goods-lst">
+           {% if order.fruits %}
+                {% set fruits = eval(order.fruits) %}
+                {% for key in fruits %}
+                    {% set price1 = "" %}
+                    {% for i in range(fruits[key]['charge'].index("元")) %}
+                        {% set price1 += fruits[key]['charge'][i] %}
+                    {% end %}
+                    {% set code = "TDSG" %}
+                    {% set imgurl = "/static/design_img/TDSG.png" %}
+                    {% for charge_type in charge_types %}
+                        {% if key == charge_type.id %}
+                            {% set code = charge_type.fruit.fruit_type.code %}
+                            {% if charge_type.fruit.img_url %}
+                            {% set imgurl = charge_type.fruit.img_url.split(';')[0] +"?imageView2/1/w/170/h/170" %}
+                            {% end %}
+                        {% end %}
+                    {% end %}
+                    <li class="group {{code}}">
+                        <dl class="goods-item group">
+                            <dd>
+                                <img src="{{imgurl}}" alt="商品图片"/>
+                            </dd>
+                            <dt class="bg">
+                                <p class="color">{{fruits[key]['fruit_name']}}</p>
+                                <p class="color txt-ar"><span class="big">{{fruits[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[key]['num'], 2)}}</span>元</p>
+                                <p class="color">{{fruits[key]['charge']}}</p>
+                            </dt>
+                        </dl>
+                    </li>
+                {% end %}
+            {% end %}
+            {% if order.mgoods %}
+                {% set mgoods = eval(order.mgoods)%}
+                {% for key in mgoods %}
+                    {% set price2 = "" %}
+                    {% for i in range(mgoods[key]['charge'].index("元")) %}
+                        {% set price2 += mgoods[key]['charge'][i] %}
+                    {% end %}
+                    <li class="group TDSG">
+                        <dl class="goods-item group">
+                            <dd>
+                                <img src="/static/design_img/TDSG.png" alt="商品图片"/>
+                            </dd>
+                            <dt class="bg">
+                                <p class="color">{{mgoods[key]['mgoods_name']}}</p>
+                                <p class="color txt-ar"><span class="big">{{mgoods[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price2)*mgoods[key]['num'], 2)}}</span>元</p>
+                                <p class="color">{{mgoods[key]['charge']}}</p>
+                            </dt>
+                        </dl>
+                    </li>
+                {% end %}
+            {% end %}
+          
+        </ul>
+        <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
+        <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
+        <p class="dash-bt group"><span class="fr black-txt">应付款：<span class="text-red3">{{order.totalPrice}}元</span></span></p>
+    </div>
+    <div class="order-item pt10">
+        <p class="text-black">订单编号：<span class="order-id" data-id="{{order.id}}">{{order.num}}</span></p>
+        <p>下单时间：<span>{{order.create_date}}</span></p>
+        <p>收货人：<span>{{order.receiver}}</span></p>
+        <p>联系电话：<span>{{order.phone}}</span></p>
+        <p>收货地址：<span>{{order.address_text}}</span></p>
+        <p>配送时间：<span class="send_date m-r10">今天</span><span>{{order.send_time}}</span></p>
+        <p>订单备注：<span>{{order.message or '无'}}</span></p>
+        <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
+    </div>
+</div>
+<div class="wrap-bm-btn" id="nav">
+    <a class="fr add-comment red-btn" href="javascript:;" data-url="{{alipayUrl}}" id="go-alipay">去支付</a>
+    <a class="fr white-btn" href="javascript:;" data-id="{{order.id}}" id="cancel-order">取消订单</a>
+</div>
+<input type="hidden" value="{{order.create_date}}" class="create_time"/>
+<input type="hidden" value="{{order.create_date.year}}" class="create_year"/>
+<input type="hidden" value="{{order.create_date.month}}" class="create_month"/>
+<input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
+<input type="hidden" value="{{order.today}}" class="send_day"/>
+<input type="hidden" value="{{order.id}}" id="order-id"/>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/market-pay-detail.js')}}"></script>
+{% end %}

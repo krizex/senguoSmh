@@ -1,0 +1,60 @@
+{% extends 'shop-set-base.html' %}
+{% block title%}管理员设置{% end %}
+
+{% block setcontent %}
+    {% if _shop_auth ==0 %}
+    <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+    {% else %}
+    <div class="set-description">
+        <p>店铺管理员拥有：店铺登录、店铺订单提醒等权限（管理员必须关注森果微信服务号sen-guo） </p>
+        <p>超级管理员可以添加多个管理员来同时管理店铺，至多只能添加三个管理员。</p>
+        <p>除超级管理员外只能设置一个管理员同时接收订单消息，超级管理员可以关闭自己的订单提醒</p>
+    </div>
+    <ul class="admin-set-list mt10">
+        <li class="item clearfix">
+            <span class="w1 pull-left set-inl-blo"><img src="{{current_shop.admin.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="img"/></span>
+            <div class="w2 pull-left">
+                <span class="info_show name">{{current_shop.admin.accountinfo.nickname}}</span>
+                <span>超级管理员</span>
+            </div>
+            <div class="pull-right mt10">
+                {% set super_temp_active = current_shop.super_temp_active %}
+                <a class="set-super-receive func-mode  font12 w150 text-white" href="javascript:;" data-status="{{super_temp_active}}"><i class="circle"></i><span class="text"></span></a>
+            </div>
+        </li>
+    {% for data in datalist %}
+        <li class="item clearfix" data-id="{{data['id']}}">
+            <span class="w1 pull-left set-inl-blo"><img src="{{data['imgurl'] or '/static/images/TDSG.png'}}" class="img"/></span>
+            <div class="w2 pull-left">
+                <span class="info_show name">{{data['nickname']}}</span>
+                <span>管理员</span>
+                <span class="ml10">用户ID : {{data['id']}}</span>
+            </div>
+            <div class="pull-right mt10">
+                <a class="set-receive pull-right ml20 func-mode font12 w150 text-white" href="javascript:;" data-status="{{data['temp_active']}}"><i class="circle"></i><span class="text"></span></a>
+                <a class="delete-admin pull-right mt10" href="javascript:;">删除</a>
+            </div>
+        </li>
+        {% end %}
+     </ul>
+     <a href="javascript:;" class="add-admin add-btn-sty mt10" data-notice="{{notice}}">+添加管理员</a>
+     <div class="modal fade set-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content bg-white">
+                <div class="modal-header clearfix">
+                    <span class="title pull-left" id="myModalLabel">添加管理员</span>
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                </div>
+                <div class="modal-body">
+                		<div class="search-box clearfix">
+    	            		<input type="text" class="search-user pull-left" placeholder="请输入欲添加为管理员的用户ID，用户ID可在商城个人中心查看"/>
+    	            		<button class="user-search btn bg-green text-white pull-left">搜索</button>
+    	            	</div>
+    	            	<ul class="user-list">
+    	            	</ul>
+                </div>
+            </div>
+        </div>
+     </div>
+     {% end %}
+{% end %}

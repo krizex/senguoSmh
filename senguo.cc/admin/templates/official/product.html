@@ -1,0 +1,95 @@
+{% extends 'base.html'%}
+{% block head-css%}<link href="{{static_url('css/official_product.css')}}" rel="stylesheet">{% end %}
+{% block content%}
+<div class="wrap-content">
+    <div class="wrap-slide">
+        <div class="slide-box">
+            <div class="phonebg"></div>
+            <ul class="slide-list group" id="slide-list">
+                <li class="s1 anima"><img src="/static/official_img/temp.png" alt=""/></li>
+                <li class="s1 anima"><img src="/static/official_img/2.png" alt=""/></li>
+                <li class="s1 anima"><img src="/static/official_img/2.png" alt=""/></li>
+                <li class="s2 anima"><img src="/static/official_img/temp.png" alt=""/></li>
+                <li class="s2 anima"><img src="/static/official_img/2.png" alt=""/></li>
+                <li class="s2 anima"><img src="/static/official_img/2.png" alt=""/></li>
+            </ul>
+        </div>
+        <div class="slide-text">
+            <p class="f16">丰富的商城模版</p>
+            <p class="mt15">界面即能勾起食欲，从设计上吸引用户购买</p>
+        </div>
+    </div>
+    <div class="wrap-computer">
+        <div class="wrap-cimg">
+            <img src="/static/official_img/computer.png" alt="森果全方位数据统计"/>
+        </div>
+        <div class="wrap-data-text">
+            <p class="f16">全方位数据统计</p>
+            <p class="mt15">库存、销量、用户、订单、营业额全部帮你细致分析</p>
+        </div>
+    </div>
+    <div class="wrap-paytype">
+        <div class="roll-box">
+            <i class="ali"></i>
+            <i class="wx"></i>
+            <i class="weibo"></i>
+            <i class="qq"></i>
+            <div class="big-roll">
+                <div class="s-roll ani-border"></div>
+            </div>
+        </div>
+        <div class="phone-bg">
+            <img src="/static/official_img/temp.png" alt="森果登录页"/>
+        </div>
+        <div class="login-text">
+            <p class="f16">多种登录方式</p>
+            <p class="mt15">微信、QQ、支付宝、微博、手机号任意选择。
+            营销，不仅限于微信</p>
+        </div>
+    </div>
+    <div class="wrap-play">
+        <i class="r1"></i>
+        <i class="r2"></i>
+        <i class="r3"></i>
+        <i class="r4"></i>
+        <div class="phone-bg">
+            <img src="/static/official_img/temp.png" alt="森果登录页"/>
+        </div>
+        <div class="wrap-data-text">
+            <p class="f16">多种营销和玩法</p>
+            <p class="mt15">告白墙、签到、代金券、团购、秒杀、大转盘应有尽有</p>
+        </div>
+    </div>
+    <div class="wrap-feature">
+        <ul class="feature-list group">
+            <li>
+                <div class="feature-item mul-shop">
+                    <p class="f16">多店铺管理</p>
+                    <p class="mt15">不同店铺之间自由切换</p>
+                </div>
+            </li>
+            <li>
+                <div class="feature-item lbs">
+                    <p class="f16">lbs地理位置定位</p>
+                    <p class="mt15">店铺位置与配送区域接入地图功能，直观的门店导航 </p>
+                </div>
+            </li>
+            <li>
+                <div class="feature-item staff">
+                    <p class="f16">实用的员工系统</p>
+                    <p class="mt15">分配订单、处理订单，工资结算等提供店铺运作效率</p>
+                </div>
+            </li>
+            <li>
+                <div class="feature-item stype">
+                    <p class="f16">支持多重经营模式</p>
+                    <p class="mt15">到店自提、按时达、立即送、周期购、预售自由选择</p>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+{% end %}
+{% block bottom-js%}
+<script src="{{static_url('js/official_product.js')}}"></script>
+{% end %}
