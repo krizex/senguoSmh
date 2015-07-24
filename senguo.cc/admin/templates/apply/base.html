@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content ="IE=edge,chrome=1"/>
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1,initial-scale=1,user-scalable=no">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta name="format-detection" content="telephone=no">
+    <meta charset="UTF-8"/>
+    <meta name="keywords" content="森果,水果商城,水果O2O,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
+    <meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
+    <title>{% block title%}森果O2O商城{% end %}</title>
+    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/static/m-admin/css/reset.css"/>
+    <link rel="stylesheet" href="/static/css/apply.css"/>
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+    {% block head %}{% end %}
+</head>
+<body>
+<header class="head-box">
+    <div class="w1200 header-box">
+        <a href="{{reverse_url('adminHome')}}" class="logo-box">
+            <img src="/static/images/logo.png"/>
+        </a>
+        <span class="title" id="title">后台管理系统</span>
+        <span class="beta" id="beta">beta 2.3</span>
+    </div>
+</header>
+    <div class="container">
+        {% block content %}{% end %}
+    </div>
+    {% block other %}{% end %}
+<div class="foot" id="footer">
+    <ul class="links ft">
+        <li class="links_item no_extra ">
+            <a href="{{reverse_url('OfficialHome')}}" target="_blank">森果官网</a>
+        </li>
+        <li class="links_item">
+            <a href="{{reverse_url('OfficialProduct')}}" target="_blank">产品介绍</a>
+        </li>
+        <li class="links_item">
+            <a href="#">服务协议</a>
+        </li>
+        <li class="links_item">
+            <a href="{{reverse_url('OfficialAbout')}}" target="_blank">关于森果</a>
+        </li>
+        <li class="links_item">
+            <a href="mailto:wolf@senguo.cc">联系邮箱</a>
+        </li>
+    </ul>
+    <p class="copyright mt6">Copyright © 2014-2015 Senguo.cc</p>
+</div>
+    <script src="/static/js/zepto.min.js"></script>
+    <script src="/static/m-admin/js/util.js"></script>
+    <script src="/static/js/template.js"></script>
+    <script src="{{static_url('js/apply-public.js')}}"></script>
+    {% block bottom %}{% end %}
+</body>
+</html>
+
