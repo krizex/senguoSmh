@@ -1511,7 +1511,6 @@ class Cart(CustomerBaseHandler):
 					for x in m_fruit_goods:
 						m_index=m_fruit_goods.index(x)
 						if x==fruit.id:
-							print(m_price[m_index],'ccccccccccccccccc')
 							m_price[m_index]+=singlemoney
 							break
 						else:
@@ -1687,7 +1686,6 @@ class Cart(CustomerBaseHandler):
 				for x in range(0,len(m_fruit_group)):
 					if  qshop.use_goods_group==m_fruit_group[x]:
 						group_money+=m_price[x]
-						print(m_price[x],'gggggggggggg')
 			if group_money>=qshop.use_rule:
 				can_use_coupon=1
 		 	
@@ -1797,7 +1795,7 @@ class Cart(CustomerBaseHandler):
 
 		#	print("[定时任务]订单取消错误，该订单已完成支付或已被店家删除：",order.num)
 		coupon_key=order.coupon_key
-		if coupon_key!=None:
+		if coupon_key!='None':
 			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
 			q.update(session=self.session,use_date=None,order_id=None,coupon_status=1)
 			qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()

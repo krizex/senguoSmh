@@ -3499,7 +3499,6 @@ class Marketing(AdminBaseHandler):
 			elif x.use_goods_group==-2:
 				use_goods_group="所有分组"
 			else:
-				print(x.use_goods_group)
 				q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
 				use_goods_group=q1.name
 			if x.use_goods==-1:
@@ -3648,7 +3647,6 @@ class Marketing(AdminBaseHandler):
 				"get_date":get_date,"use_date":use_date,"order_id":order_id,"coupon_key":x.coupon_key}
 				data.append(x_coupon)
 			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=coupon_type,coupon_id=coupon_id).first()
-			print(coupon_type,coupon_id,'ggggggggggg')
 			d=0
 			q1=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id)
 			if q.closed==0:
@@ -3813,7 +3811,6 @@ class Marketing(AdminBaseHandler):
 			use_goods_group=int(data["use_goods_group"])
 			use_goods=int(data["use_goods"])
 			get_rule = float(data["get_rule"])
-			print(get_rule,'ggggggggggggggggg')
 			valid_way=int(data["valid_way"])
 			from_valid_date=None
 			to_valid_date=None
@@ -3856,7 +3853,6 @@ class Marketing(AdminBaseHandler):
 			use_goods_group=int(data["use_goods_group"])
 			use_goods=int(data["use_goods"])
 			get_rule = float(data["get_rule"])
-			print(data["valid_way"])
 			valid_way=int(data["valid_way"])
 			coupon_id=int(data["coupon_id"])
 			edit_status=int(data["edit_status"])
@@ -3945,7 +3941,6 @@ class Marketing(AdminBaseHandler):
 		elif action=="close_one":
 			data=self.args["data"]
 			coupon_id=int(self.args["coupon_id"])
-			print(coupon_id)
 			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).first()
 			q.closed=1
 			self.session.commit()
