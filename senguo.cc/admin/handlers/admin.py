@@ -15,6 +15,8 @@ import json
 # add by cm 2015.5.15
 import string
 import random
+import codecs
+codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None)
 
 import tornado.websocket
 from dal.db_configs import DBSession
@@ -3526,7 +3528,7 @@ class Marketing(AdminBaseHandler):
 			"get_number":x.get_number,"total_number":x.total_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"from_get_date":from_get_date,"to_get_date":to_get_date,"get_rule":x.get_rule,"closed":x.closed}
 			data.append(x_coupon)
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int")
+	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int","page?")
 	def get(self):
 		action = self.args["action"]
 		current_shop_id=self.current_shop.id
@@ -3544,7 +3546,7 @@ class Marketing(AdminBaseHandler):
 			q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0).order_by(models.CouponsShop.create_date.desc()).all()
 			q2=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=1).order_by(models.CouponsShop.create_date.desc()).all()
 			self.getcoupon(q1,data)
-			self.getcoupon(q2,data)	
+			self.getcoupon(q2,data)
 			q1=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.create_date.desc()).all()
 			q2=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=1).order_by(models.CouponsShop.create_date.desc()).all()
 			self.getcoupon(q1,data1)
@@ -3582,8 +3584,19 @@ class Marketing(AdminBaseHandler):
 			coupon_id=int(self.args["coupon_id"])
 			coupon_type=int(self.args["coupon_type"])
 			data=[]
+			page=int(self.args["page"])
+			max_item=12
+			start=max_item*(page-1)
+			if start<0:
+				start=0
+			end=max_item*page
 			qget=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).filter(models.CouponsCustomer.coupon_status!=0).all()
 			qnoget=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=0).all()
+			import time
+			print(time.time())
+			qgetc=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type).filter(models.CouponsCustomer.coupon_status!=0).count()
+			qnogetc=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=coupon_type,coupon_status=0).count()
+			print(time.time())
 			for x in qget:
 				customer_id=None
 				get_date=None
@@ -3656,6 +3669,7 @@ class Marketing(AdminBaseHandler):
 				d2=q1.filter_by(coupon_status=0).count()
 				d=d1+d2
 			data1={"a":q.total_number,"b":q.get_number,"c":q.use_number,"d":d}
+			data=data[start:end]
 			return self.render("admin/details.html",output_data=data,data1=data1,context=dict(subpage='marketing'))
 		elif action=="newcouponpage":
 			data=[]
@@ -3757,7 +3771,7 @@ class Marketing(AdminBaseHandler):
 			q.closed=1
 			self.session.commit()
 			return self.send_success()
-		
+
 	@AdminBaseHandler.check_arguments("action:str","data?","coupon_id?:int","select_rule?:int","coupon_type?:int")
 	def post(self):
 		action = self.args["action"]
@@ -3776,7 +3790,7 @@ class Marketing(AdminBaseHandler):
 		elif action == "confess_only":
 			only = current_shop.marketing.confess_only
 			current_shop.marketing.confess_only = 0 if only == 1 else 1
-		
+
 		elif action=="newpage":
 			data=[]
 			q=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
@@ -3807,6 +3821,8 @@ class Marketing(AdminBaseHandler):
 			coupon_money=float(data["coupon_money"])
 			use_rule=float(data["use_rule"])
 			total_number=int(data["total_number"])
+			if total_number>1000:
+				return self.send_fail("您输入的库存量不能大于1000，请核对后提交！")
 			get_limit=int(data["get_limit"])
 			use_goods_group=int(data["use_goods_group"])
 			use_goods=int(data["use_goods"])
@@ -3832,7 +3848,7 @@ class Marketing(AdminBaseHandler):
 				to_valid_date=to_valid_date,start_day=start_day,last_day=last_day,get_limit=get_limit,closed=0,get_rule=get_rule,create_date=create_date)
 			self.session.add(new_coupon)
 			for i in range(0,total_number):
-				chars=string.digits+string.ascii_letters
+				chars='0123456789abcdefghijklmnopqrstuvwxyz'
 				chars=''.join(random.sample(chars*10,4))
 				chars=chars+str(coupon_id)+'C'+str(i)+'M'+str(current_shop_id)
 				new_coupon=models.CouponsCustomer(shop_id=current_shop_id,coupon_id=coupon_id,coupon_key=chars,coupon_type=coupon_type,coupon_status=0)
@@ -3849,6 +3865,8 @@ class Marketing(AdminBaseHandler):
 			coupon_money=float(data["coupon_money"])
 			use_rule=float(data["use_rule"])
 			total_number=int(data["total_number"])
+			if total_number>1000:
+				return self.send_fail("您输入的库存量不能大于1000，请核对后提交！")
 			get_limit=int(data["get_limit"])
 			use_goods_group=int(data["use_goods_group"])
 			use_goods=int(data["use_goods"])
@@ -3895,7 +3913,7 @@ class Marketing(AdminBaseHandler):
 			q=[]
 			qget=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=1).all()
 			quse=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=2).all()
-			qvalid=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=3).all()	
+			qvalid=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_status=3).all()
 			if select_rule==0:
 				q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id).all()
 			elif select_rule==1:
@@ -3937,7 +3955,7 @@ class Marketing(AdminBaseHandler):
 				x_coupon={"coupon_key":x.coupon_key,"coupon_id":x.coupon_id,"coupon_money":qq.coupon_money,"customer_id":customer_id,\
 				"nickname":nickname,"get_date":get_date,"use_date":use_date,"order_id":order_id,"coupon_status":x.coupon_status,"close":qq.closed}
 				data.append(x_coupon)
-			return self.send_success(output_data=data,context=dict(subpage='coupon')) 
+			return self.send_success(output_data=data,context=dict(subpage='coupon'))
 		elif action=="close_one":
 			data=self.args["data"]
 			coupon_id=int(self.args["coupon_id"])
