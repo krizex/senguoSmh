@@ -855,6 +855,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			i = i +1
 		if action in ["ylyprint","ylyprint_concel"]:
 			if action == "ylyprint":
+				#打印内容
 				content="@@2              订单信息\r\n"+\
 						"------------------------------------------------\r\n"+\
 						"订单编号："+order_num+"\r\n"+\
@@ -881,18 +882,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			machine_code=current_shop.config.wireless_print_num #打印机终端号 520
 			mkey=current_shop.config.wireless_print_key#打印机密钥 110110
 			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
-			print("sign str    :",sign)
+			# print("sign str    :",sign)
 			sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
-			print("sign str md5:",sign)
+			# print("sign str md5:",sign)
 			data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
 			# print("post        :",data)
 			r=requests.post("http://open.10ss.net:8888",data=data)
 
-			print("======WirelessPrint======")
-			print("res url        :",r.url)
-			print("res status_code:",r.status_code)
-			print("res text       :",r.text)
-			print("=========================")
+			# print("======WirelessPrint======")
+			# print("res url        :",r.url)
+			# print("res status_code:",r.status_code)
+			# print("res text       :",r.text)
+			# print("=========================")
+
 		elif action in ["fyprint","fyprint_concel"]:
 			reqTime = int(time.time()*1000)
 			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
@@ -900,6 +902,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			deviceNo = current_shop.config.wireless_print_num #'9602292847397158'
 			mode = 2
 			if action == "fyprint":
+				#打印内容
 				msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
 							"-------------------------\n"+\
 							"订单编号："+order_num+"\n"+\
@@ -918,7 +921,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							"支付方式："+_type+"\n"+\
 							"-------------------------\n"+\
 							"\n"+receipt_msg+"\n"
-							#打印内容
+
 			elif action == "fyprint_concel":
 				msgDetail = "-------------------------\n"+\
 							"<Font# Bold=1 Width=2 Height=2>订单"+order_num+"已取消</Font#>\n"+\
@@ -930,7 +933,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
 			# print(r.url)
 			# print(r.status_code)
-			print(r.text)
+			# print(r.text)
 
 	# 获取绑定的微信第三方服务号 Access Token
 	@classmethod
