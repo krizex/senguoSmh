@@ -11,7 +11,7 @@ from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
 import decimal
-import json
+import json 
 # add by cm 2015.5.15
 import string
 import random  
@@ -21,7 +21,7 @@ from dal.db_configs import DBSession
 
 # 登录处理
 class Access(AdminBaseHandler):
-	def initialize(self, action):
+	def initialize(self, action): 
 		self._action = action
 	def prepare(self):
 		"""prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
@@ -515,6 +515,37 @@ class SellStatic(AdminBaseHandler):
 			return self.send_success(output_data = output_data)
 
 		elif action == 'type' or action == 'name':
+			shop_all_goods = {}
+			shop_all_fruit = {}
+			shop_all_mgoods = {}
+
+			shop_fruit_id_name_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
+			shop_charge_type_fruit_dict = {}
+			shop_charge_type_list = []
+			for item in shop_fruit_id_name_list:
+				charge_type_id = self.session.query(models.ChargeType.id).filter(models.ChargeType.fruit_id == item[0]).all()[0][0]
+				shop_charge_type_fruit_dict[str(charge_type_id)] = [item[0],item[1]]
+				shop_charge_type_list.append(charge_type_id)
+				shop_all_fruit[str(item[0])] = item[1]
+
+			shop_mgoods_id_name_list = self.session.query(models.MGoods.id,models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id).all()
+			shop_mcharge_type_mgoods_dict = {}
+			shop_mcharge_type_list = []
+			for item in shop_mgoods_id_name_list:
+				mcharge_type_id = self.session.query(models.MChargeType.id).filter(models.MChargeType.mgoods_id == item[0]).all()[0][0]
+				shop_mcharge_type_mgoods_dict[str(mcharge_type_id)] = [item[0],item[1]]
+				shop_mcharge_type_list.append(mcharge_type_id)
+				shop_all_mgoods[str(item[0])] = item[1]
+
+			shop_all_goods = shop_all_fruit.copy()
+			shop_all_goods.update(shop_all_mgoods)
+
+			shop_charge_type_goods_dict = shop_charge_type_fruit_dict.copy()
+			shop_charge_type_goods_dict.update(shop_mcharge_type_mgoods_dict)
+			shop_charge_type_list = shop_charge_type_list + shop_mcharge_type_list
+			shop_goods_id_name_list = shop_fruit_id_name_list + shop_mgoods_id_name_list
+
+
 			# 从order表中查询出某个日期区间内某个店铺的所有有效订单（status字段的值大于等于5）的fruits字段(比如2015-07-15和2015-07-16两天的)：
 			start_date_str = start_date
 			end_date_str = end_date
@@ -528,45 +559,43 @@ class SellStatic(AdminBaseHandler):
 			end_date_next = end_date + datetime.timedelta(days = 1)
 			end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
 			end_date_next_str = end_date_next.strftime('%Y-%m-%d')
-			fruit_list = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+			fruit_list_query = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+			mgoods_list_query = self.session.query(models.Order.mgoods).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
 						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
 						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
 
-			# print("#@",type(fruit_list))
-			#每单种水果的销售额
+			fruit_list = []
+			mgoods_list = []
+
+			for item in fruit_list_query:
+				if item[0] != '{}' and item[0] != None:
+					fruit_list.append(item[0])
+
+			for item in mgoods_list_query:
+				if item[0] != '{}' and item[0] != None:
+					mgoods_list.append(item[0])
+			goods_list = fruit_list + mgoods_list
+
+
+			
 			total_price_list = []
 			name_list = []
-			sum_time = 0
-		
-			for fl in fruit_list:
-				start = time.clock()
-				fl = eval(fl[0])
+
+			for fl in goods_list:
+				fl = eval(fl)
 				for key in fl:
-					if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()) == 0:
-						if len(self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()) == 0:
-							continue
-						aa = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
-						if len(self.session.query(models.MGoods.name).join(models.Menu).filter(models.Menu.shop_id == self.current_shop.id,models.MGoods.id == aa).all()) == 0:
-							print("@@@@",key," : ",fl[key])
-							continue
-
-					end = time.clock()
-					sum_time += end - start
-
+					if key not in shop_charge_type_list:
+						continue
 					tmp = {}
 					fl_value = fl[key]
 					num = float(fl_value["num"])
 					single_price = float(fl_value["charge"].split('元')[0])
 					total_price = single_price * num
 
-					# if len(self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == int(key)).all()) == 0:
-					# 	fruit_id = self.session.query(models.MGoods.id).join(models.MChargeType).filter(models.MChargeType.id == int(key)).all()[0][0]
-					fruit_id = self.session.query(models.Fruit.id).join(models.ChargeType).filter(models.ChargeType.id == key).all()[0][0]
-					tmp["fruit_id"] = fruit_id
-					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
-
-					# print("#########",tmp["fruit_name"],key)
-
+					tmp["fruit_id"] = shop_charge_type_goods_dict[str(key)][0]
+					tmp["fruit_name"] = shop_charge_type_goods_dict[str(key)][1]
 
 					tmp["total_price"] = total_price
 					for tpl in total_price_list:
@@ -578,22 +607,19 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-
-				
-
 			
-			print(("所用时间为：%.3fms") % (sum_time*1000))
+			# print(("所用时间为：%.3fms") % (sum_time*1000))
 
-			name_list = []
+			id_list = []
 			for i in range(len(total_price_list)):
-				name_list.append(total_price_list[i]['fruit_name'])
+				id_list.append(str(total_price_list[i]['fruit_id']))
+			# print("@@@@@@@@",name_list)
 
-			for goods in shop_all_goods:
-				if goods[0] not in name_list:
+			for id_item in list(shop_all_goods.keys()):
+				if id_item not in id_list:
 					tmp = {}
-					fruit_id = self.session.query(models.Fruit.id).filter(models.Fruit.name == goods[0]).all()[0][0]
-					tmp["fruit_id"] = fruit_id
-					tmp["fruit_name"] = self.session.query(models.Fruit.name).filter(models.Fruit.id == fruit_id).all()[0][0]
+					tmp["fruit_id"] = id_item
+					tmp["fruit_name"] = shop_all_goods[id_item]
 					tmp["total_price"] = 0
 					total_price_list.append(tmp)
 			# 按销量排序：
