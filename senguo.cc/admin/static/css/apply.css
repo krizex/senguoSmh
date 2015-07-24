@@ -41,7 +41,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .pt0{padding: 0 !important;}
 .choose-title{font-size: 14px;color: #333;text-align: center;line-height: 30px;height: 30px;}
 .wrap-address-list{width:100%;max-width:800px;-webkit-box-sizing:border-box;position: absolute;bottom:0;left:50%;-webkit-transform:translate(-50%,0);background-color: #fff;padding: 10px;height: 70%;overflow: auto;font-size: 12px !important;}
-.address-list>li{height: 34px;line-height: 34px;color: #666;font-size: 14px;border-bottom: 1px solid #e7e7e7;}
+.address-list>li{height: 36px;line-height: 36px;color: #666;font-size: 14px;border-bottom: 1px solid #e7e7e7;}
 .address-list>li:hover{cursor:pointer;color:#333;}
 .checkbox-btn{background-image: url('/static/images/check_uncheck.png');width: 20px;height: 20px;margin-top: 14px;background-repeat: no-repeat;background-size: 20px 20px;border-radius: 2px;}
 .search-btn{margin-left: -4px;height: 28px;margin-top: 3px;}
