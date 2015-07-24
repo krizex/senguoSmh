@@ -1944,9 +1944,9 @@ class Order(CustomerBaseHandler):
 			self.session.commit()
 			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 			if order.shop.admin.has_mp:
-				self.order_cancel_msg(order,cancel_time)
+				self.order_cancel_msg(self.session,order,cancel_time)
 			else:
-				self.order_cancel_msg(order,cancel_time,None)
+				self.order_cancel_msg(self.session,order,cancel_time,None)
 			return self.send_success()
 		elif action == "comment_point":
 			data = self.args["data"]
