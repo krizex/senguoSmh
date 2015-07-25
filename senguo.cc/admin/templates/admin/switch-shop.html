@@ -63,7 +63,7 @@
                 </div>
                 <p class="er-text">店铺导航链接</p>
                 <div class="wrap-ipt">
-                    <input type="text" class="sw-link-txt" value="{{reverse_url('fruitzoneShopList')}}?action=shop&&id={{current_shop.admin_id}}" disabled/>
+                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list?action=shop&&id={{current_shop.admin_id}}" disabled/>
                     <input type="button" class="sw-link-copy"  id="sw-link-copy" value="复制链接"/>
                 </div>
                 <div class="wrap-er group">
@@ -81,7 +81,7 @@
         </div>
         <div class="sw-bm">
             <ul class="sw-list group">
-            {% for shop in  context['shop_list']%}
+            {% for shop in context['shop_list']%}
                 <li class="da" data-id="{{shop['id']}}" data-code="{{shop['shop_code']}}">
                     {% if shop['shop_code'] !=None and shop['shop_code'] !='not set' %}
                     <div class="sw-tip shopping" data-status="{{shop['status']}}"></div>
@@ -141,6 +141,28 @@
         </div>
     </div>
 </main>
+<div class="foot" id="footer">
+    <ul class="links ft">
+        <li class="links_item no_extra">
+            <a href="{{reverse_url('OfficialHome')}}" target="_blank">森果官网</a>
+        </li>
+        <li class="links_item">
+            <a href="{{reverse_url('OfficialProduct')}}" target="_blank">产品介绍</a>
+        </li>
+        <li class="links_item">
+            <a href="#">服务协议</a>
+        </li>
+        <li class="links_item">
+            <a href="{{reverse_url('OfficialAbout')}}" target="_blank">关于森果</a>
+        </li>
+        <li class="links_item">
+            <a href="mailto:wolf@senguo.cc">联系邮箱</a>
+        </li>
+        <li class="links_item">
+            <p class="copyright">Copyright © 2014-2015 Senguo.cc. All Rights Reserved.</p>
+        </li>
+    </ul>
+</div>
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/template.js"></script>
