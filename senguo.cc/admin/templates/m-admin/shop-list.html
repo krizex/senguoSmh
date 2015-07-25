@@ -6,7 +6,7 @@
 <div class="header">
     <a href="javascript:;" class="back goback">返回</a>
     <span>店铺列表</span>
-    {% if handler.current_shop.admin_id == current_user.id %}<a href="javascrpt:;" class="head-right spread-list">分享店铺</a>{% end %}
+    {% if handler.current_shop and handler.current_shop.admin_id == current_user.id %}<a href="javascrpt:;" class="head-right spread-list">分享店铺</a>{% end %}
 
 </div>
 {% end %}
@@ -40,7 +40,7 @@
         {% end %}
         {% end %}
     </ul>
-    <a href="/apply" class="create-btn create-shop">+创建店铺</a>
+    <a href="{{reverse_url('CreateShop')}}" class="create-btn create-shop">+创建店铺</a>
 </div>
 {% end %}
 {% block fix %}
