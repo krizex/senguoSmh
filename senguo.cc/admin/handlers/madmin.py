@@ -16,6 +16,8 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		if self.is_pc_browser()==True:
+			return self.redirect(self.reverse_url("switchshop"))
 		shop_list = []
 		try:
 			shops = self.current_user.shops
