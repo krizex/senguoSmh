@@ -1,6 +1,6 @@
 // created by jyj 2015-7-8
 
-var has_no_goods = 0;
+var is_has_no_goods = 0;
 
 //获取当前日期
 var CurrentDate=new Date();
@@ -665,7 +665,7 @@ function show_all_single_chart(start_date,end_date){
 					$(".hr3").removeClass("mt50");
 					$("#btn_name_bigchart").addClass("hidden");
 					$("#btn_type_bigchart").addClass("hidden");
-					has_no_goods = 1;
+					is_has_no_goods = 1;
 					return ;
 				}
 
@@ -771,7 +771,7 @@ function show_all_chart(start_date,end_date){
 						$(".pre-item"+i).addClass("hidden");
 						$(".next-item"+i).addClass("hidden");
 					}
-					has_no_goods = 1;
+					is_has_no_goods = 1;
 					return ;
 				}
 
@@ -1379,7 +1379,7 @@ function show_chart(action,start_date,end_date,name){
 					myChartSingleName.hideLoading();
 					$("#single_type").css("height","0px");
 					$("#single_name").css("height","0px");
-					has_no_goods = 1;
+					is_has_no_goods = 1;
 					return ;
 				}
 				if(action == 'type'){
