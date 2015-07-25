@@ -13,6 +13,14 @@ import base64
 import decimal
 import json
 from random import Random
+from libs.utils import Logger
+import hashlib
+import chardet
+
+try:
+	import xml.etree.cElementTree as ET
+except:
+	import xml.etree.ElementTree as ET
 
 #woody
 #扫码获取用户openid
