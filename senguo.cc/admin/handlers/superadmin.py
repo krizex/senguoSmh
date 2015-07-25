@@ -1782,7 +1782,7 @@ class CheckCash(SuperBaseHandler):
 		
 		shop_id_list = []
 		shop_id_name_dict = {}
-
+		
 		for item in shop_list_query:
 			shop_id_list.append(item[0])
 			shop_id_name_dict[str(item[0])] = item[1]
@@ -1790,8 +1790,9 @@ class CheckCash(SuperBaseHandler):
 		for id_item in shop_id_name_dict:
 			shop_id = int(id_item)
 			shop_balance_history_query = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_id == shop_id).all()
-		# print("@@@@@",shop_id_list,len(shop_id_list))
-		# print("@@@@@",shop_id_name_dict)
+
+
+		# print("@@@@@",shop_order.shop.shop_name)
 
 		####################
 
