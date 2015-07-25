@@ -17,7 +17,8 @@
             <span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
         </a>
     </li>
-    {%coupon_active_cm==0%}
+    {% end %}
+    {% if coupon_active_cm==1%}
     {% if a or b %}
     <li class="title clearfix bg-white font14 coupon">
         <a href="{% if a==0%}/coupon/profile?action=get_one&coupon_id=-1{% else %}/coupon/profile?action=get_all{% end %}" class="text-grey3 confess-wall">
@@ -29,9 +30,8 @@
     </li>
     {%else%}
     {% end %}
-    {%end%}
 {% end %}
-{% end %}
+{%end%}
 </ul>
 {% end %}
 {% block bottom %}

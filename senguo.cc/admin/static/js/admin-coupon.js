@@ -104,6 +104,12 @@ tip_info="开启优惠券即可使用优惠券功能，你确定要开启优惠�
         $.postJson(url, args,
             function (res) {
                 if (res.success) {
+                    if(status==0){
+                        $(".coupon_hidden").removeClass("hidden");
+                    }
+                    else{
+                         $(".coupon_hidden").addClass("hidden");
+                    }
                     $this.attr("data-flag", "off");
                     if (status == 1) {
                         $this.attr({'data-status': 0}).addClass('bg-green').removeClass('bg-pink').text('启用');

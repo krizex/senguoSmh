@@ -330,9 +330,8 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
-		coupon_active=self.session.query(models.Marketing).filter_by(id=shop_id).first().coupon_active
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
-			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,coupon_active_cm=coupon_active,\
+			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
 			a=a,show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
@@ -405,7 +404,8 @@ class Discover(CustomerBaseHandler):
 					b+=1
 		print(a)
 		print(b)
-		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b)
+		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
+		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):

@@ -4008,13 +4008,13 @@ class Marketing(AdminBaseHandler):
 			self.session.commit()
 			return self.send_success()
 		elif action=="close_all":
-			# q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
-			# for x in q:
-			# 	if  x.closed==1:
-			# 		pass
-			# 	else:
-			# 		x.closed=1
-			# self.session.commit()
+			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
+			for x in q:
+				if  x.closed==1:
+					pass
+				else:
+					x.closed=1
+			self.session.commit()
 			q=self.session.query(models.Marketing).filter_by(id=current_shop_id).first()
 			if q.coupon_active==0:
 				q.coupon_active=1
