@@ -730,12 +730,6 @@ class SellStatic(AdminBaseHandler):
 
 			type_name = self.args["type_name"]
 
-			shop_all_goods_id_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == self.current_shop.id).all()
-
-			shop_all_goods_id = {}
-			for goods_id in shop_all_goods_id_list:
-				shop_all_goods_id[goods_id[0]] = goods_id[1]
-
 			start_date_str = start_date
 			start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
 			now = datetime.datetime.now()
@@ -770,6 +764,7 @@ class SellStatic(AdminBaseHandler):
 				end_date_next = end_date + datetime.timedelta(days = 1)
 				end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
 				end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+
 
 				fruit_list_query = self.session.query(models.Order.fruits).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
 							        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
@@ -849,7 +844,10 @@ class SellStatic(AdminBaseHandler):
 						elif tpl["fruit_id"] in shop_mgoods_id_list:
 							goods_type_list[tpl["fruit_name"]] = self.session.query(models.Menu.name).join(models.MGoods).filter(models.MGoods.id == tpl["fruit_id"]).all()[0][0]
 						else:
-							goods_type_list[tpl["fruit_name"]] = "其他"
+							# goods_type_list[tpl["fruit_name"]] = "其他"
+							pass
+				
+
 				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 				type_total_price_list = []
 
@@ -864,6 +862,9 @@ class SellStatic(AdminBaseHandler):
 					name_item_list = list(tmp["per_name_total_price"].keys())
 				name_price_item_list = []
 				for i in range(len(name_item_list)):
+					if name_item_list[i] not in list(tmp["per_name_total_price"].keys()):
+						name_price_item_list.append(0.0)
+						continue
 					name_price_item_list.append(tmp["per_name_total_price"][name_item_list[i]])
 
 				month_price_list.append(name_price_item_list)
