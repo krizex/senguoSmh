@@ -65,6 +65,9 @@ $(document).ready(function(){
     $(".pop-bwin").removeClass("hide");
 }).on("click",".tab-list li",function(){
     var index = $(this).index();
+    if(index==2){
+        return Tip("该功能还在开发中");
+    }
     $(".tab-list li").removeClass("active").eq(index).addClass("active");
     $(".tab-content .tab-item").addClass("hide").eq(index).removeClass("hide");
     type = index;
@@ -144,7 +147,7 @@ $(document).ready(function(){
         }else{
             return Tip("请确认认领以上店铺");
         }
-        
+
     }else{
 
     }
