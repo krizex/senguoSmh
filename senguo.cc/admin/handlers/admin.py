@@ -11,17 +11,17 @@ from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
 import decimal
-import json 
+import json
 # add by cm 2015.5.15
 import string
-import random  
+import random
 
 import tornado.websocket
 from dal.db_configs import DBSession
 
 # 登录处理
 class Access(AdminBaseHandler):
-	def initialize(self, action): 
+	def initialize(self, action):
 		self._action = action
 	def prepare(self):
 		"""prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
@@ -320,7 +320,7 @@ class SellStatic(AdminBaseHandler):
 		# 查询店铺所有的水果类目
 		shop_all_fruit_type_query = self.session.query(models.FruitType.id,models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
 		shop_all_mgoods_type_query = self.session.query(models.Menu.id,models.Menu.name).filter(models.Menu.shop_id == self.current_shop.id).all()
-		
+
 		if len(shop_all_fruit_type_query) == 0 and len(shop_all_mgoods_type_query) == 0:
 			output_data = {
 				'type_data':[],
@@ -404,7 +404,7 @@ class SellStatic(AdminBaseHandler):
 			today_mgoods_list_query = self.session.query(models.Order.mgoods).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
 						       			or_(and_(models.Order.create_date.like(now_date_str),models.Order.today == 1),\
 									        and_(models.Order.create_date.like(yesterday_date_str),models.Order.today == 2))).all()
-			
+
 			fruit_list = []
 			mgoods_list = []
 
@@ -444,7 +444,7 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-			
+
 			id_list = []
 			for i in range(len(total_price_list)):
 				id_list.append(str(total_price_list[i]['fruit_id']))
@@ -488,7 +488,7 @@ class SellStatic(AdminBaseHandler):
 						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
 				type_total_price_list.append(tmp)
 			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
-			
+
 			output_data = {
 				'type_data':type_total_price_list,
 				'name_data':total_price_list
@@ -536,7 +536,7 @@ class SellStatic(AdminBaseHandler):
 			order_goods_list = fruit_list + mgoods_list
 
 
-			
+
 			total_price_list = []
 			name_list = []
 
@@ -564,7 +564,7 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-			
+
 			id_list = []
 			for i in range(len(total_price_list)):
 				id_list.append(str(total_price_list[i]['fruit_id']))
@@ -650,7 +650,7 @@ class SellStatic(AdminBaseHandler):
 			order_goods_list = fruit_list + mgoods_list
 
 
-			
+
 			total_price_list = []
 			name_list = []
 
@@ -678,7 +678,7 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-			
+
 			id_list = []
 			for i in range(len(total_price_list)):
 				id_list.append(str(total_price_list[i]['fruit_id']))
@@ -787,7 +787,7 @@ class SellStatic(AdminBaseHandler):
 				order_goods_list = fruit_list + mgoods_list
 
 
-				
+
 				total_price_list = []
 				name_list = []
 
@@ -815,7 +815,7 @@ class SellStatic(AdminBaseHandler):
 							for i in range(len(total_price_list)):
 								if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 									total_price_list[i]['total_price'] += total_price
-				
+
 				id_list = []
 				for i in range(len(total_price_list)):
 					id_list.append(str(total_price_list[i]['fruit_id']))
@@ -848,7 +848,7 @@ class SellStatic(AdminBaseHandler):
 						else:
 							# goods_type_list[tpl["fruit_name"]] = "其他"
 							pass
-				
+
 
 				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 				type_total_price_list = []
@@ -3979,7 +3979,7 @@ class WirelessPrint(AdminBaseHandler):
 				elif action == "ylyadd":
 					machine_code = _data["num"] #打印机终端号
 					msign = _data["key"]#打印机密钥
-					sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
+					sign=apikey+'partner'+partner+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
 					sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 					data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
 					r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
