@@ -45,7 +45,7 @@ $(document).ready(function () {
             $(".wrap-tb table").addClass("hidden").eq(id).removeClass("hidden");
         }
   }
-    
+
     $(".er-code-img").each(function(){
         var _this = $(this);
         $(this).empty();
@@ -258,6 +258,8 @@ tip_info="开启优惠券即可使用优惠券功能，你确定要开启优惠�
         $('.page-now').text(inputpage);
         insertcoupon(select_rule,inputpage);
      }
+}).on("click",".back-coupon",function(){
+    // window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
 });
 
 function getGoods(index,$obj){
@@ -436,7 +438,7 @@ function addCoupon(type){
         }
         var use_goods_group = $(".use_goods_group").attr("data-id");
         var use_goods = $(".use_goods").attr("data-id");
-        
+
          var valid_way = $(".radio-list1").find(".radio-active").attr('data-id');
         var from_valid_date = $(".from_valid_date").val();
         var to_valid_date = $(".to_valid_date").val();
@@ -509,7 +511,7 @@ function addCoupon(type){
         }
         var use_goods_group = $(".use_goods_groups").attr("data-id");
         var use_goods = $(".use_goodss").attr("data-id");
-        
+
          var valid_way = $(".radio-list2").find(".radio-active").attr('data-id');
         var from_valid_date = $(".from_valid_dates").val();
         var to_valid_date = $(".to_valid_dates").val();
@@ -622,7 +624,7 @@ function editCoupon(type,coupon_id,edit_status){
         }
         var use_goods_group = $(".use_goods_group").attr("data-id");
         var use_goods = $(".use_goods").attr("data-id");
-        
+
          var valid_way = $(".radio-list1").find(".radio-active").attr('data-id');
         var from_valid_date = $(".from_valid_date").val();
         var to_valid_date = $(".to_valid_date").val();
@@ -736,7 +738,7 @@ function editCoupon(type,coupon_id,edit_status){
         }
         var use_goods_group = $(".use_goods_groups").attr("data-id");
         var use_goods = $(".use_goodss").attr("data-id");
-        
+
         var valid_way = $(".radio-list2").find(".radio-active").attr('data-id');
         var from_valid_date = $(".from_valid_dates").val();
         var to_valid_date = $(".to_valid_dates").val();
