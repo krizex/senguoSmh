@@ -50,7 +50,7 @@
         <div class="b-close"></div>
         <img class="code2-logo" src="/static/images/admin_logo1.png" alt="森果logo"/>
         <p class="c666 mt15">列表链接(长按链接复制到剪切板)</p>
-        <p class="dgreen mt10" id="shop_list_link">http://senguo.cc/list?action=shop&id={{handler.current_shop.admin_id}}</p>
+        <p class="dgreen mt10" id="shop_list_link">{%if handler.current_shop%}http://senguo.cc/list?action=shop&id={{handler.current_shop.admin_id}}{% end %}</p>
         <p class="c666 mt10">列表二维码(长按二维码复制到剪切板)</p>
         <div class="big-code2 mt10" id="big-code2">
         </div>
