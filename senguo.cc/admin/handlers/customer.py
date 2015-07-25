@@ -2292,6 +2292,13 @@ class Recharge(CustomerBaseHandler):
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url )
 
+class RechargeAliPay(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments('alipayUrl:str')
+	def get(self):
+		alipayUrl=self.args["alipayUrl"]
+		print(alipayUrl)
+		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl)
+
 # 我的 - 我的订单 - 评价订单
 class OrderComment(CustomerBaseHandler):
 	@tornado.web.authenticated

@@ -114,6 +114,7 @@ handlers = [
 	(r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
 	(r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
 	(r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
+	(r"/customer/recharge/AliPay", handlers.customer.RechargeAliPay, {}, "customerRechargeAliPay"),
 	(r"/customer/search", handlers.customer.GoodsSearch, {}, "customerGoodsSearch"),
 	(r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
 	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
