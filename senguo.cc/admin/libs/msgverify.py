@@ -174,10 +174,6 @@ def check_msg_token(phone, code):
 		return True
 	return False
 
-
-def test_abc():
-	pass
-
 # 管理员新订单短信提醒
 def order_new_msg(mobile,admin_name,shop_name):
 	message_content ='管理员{0}您好，店铺{1}有一笔新的订单，请及时登录后台http://senguo.cc/admin处理订单。'.format(
