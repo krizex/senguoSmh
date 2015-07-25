@@ -1,4 +1,4 @@
-.container{padding-top: 0;margin: 0 auto;max-width: 1200px;min-width: 320px;margin-top: 100px;margin-bottom: 80px;border: 1px solid #d9dadc;padding: 0 !important;-webkit-box-sizing: border-box;box-sizing: border-box;}
+.container{padding-top: 0;margin: 0 auto;max-width: 1200px;min-width: 320px;margin-top: 100px;margin-bottom: 80px;-webkit-box-sizing: border-box;box-sizing: border-box;}
 .head-box{position:fixed;top:0;left:0;width:100%;z-index:988;height: 65px;-webkit-box-sizing:border-box;padding-top:4px;background-color: #fff;box-shadow:1px 1px 5px #d9dadc;border-bottom:1px solid #d9dadc;border-top:4px solid #44b549;}
 .w1200{width: 1200px;margin: 0 auto;}
 .logo-box{height: 45px;margin-left: 10px;margin-right:10px;display: inline-block;}
@@ -94,3 +94,9 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 /*override reset.css*/
 body{font-family:"Helvetica Neue","Hiragino Sans GB","Microsoft YaHei","\9ED1\4F53",Arial,sans-serif;color:#222;background:#e7e8eb;-webkit-font-smoothing:antialiased;overflow-x: hidden;}
 .f14{font-size: 14px;}
+
+/*login*/
+#footer{position:fixed;bottom:0;width:100%;}
+.wx-notice{border-radius:3px;text-align:center;margin:0 auto;color:#585858;width:252px;padding:15px 10px;background-color:#eee;margin-top:15px;}
+.wx-qrcode-inner{border-radius:6px;-webkit-border-radius:6px;overflow:hidden;width:280px;position:relative;margin:90px auto 0;padding:30px 125px;border:1px solid #c9ccd0;background-color:#fafafa;}
+#qrcode{width:250px;height:250px;margin:0 auto;border:1px solid #dcdcdc;border-radius:5px;-webkit-border-radius:5px;padding:10px;}

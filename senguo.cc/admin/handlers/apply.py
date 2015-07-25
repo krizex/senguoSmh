@@ -14,10 +14,143 @@ import decimal
 import json
 from random import Random
 
+#woody
+#扫码获取用户openid
+class Login(CustomerBaseHandler):
+	def get(self):
+		if self.current_user:
+			return self.redirect(self.reverse_url('ApplyHome'))
+		if self.is_wexin_browser():
+			return self.redirect(self.get_weixin_login_url())
+		ticket_url , scene_id = self.get_ticket_url()
+		return self.render("apply/wx-login.html",ticket_url=ticket_url,scene_id=scene_id)
+	@CustomerBaseHandler.check_arguments('scene_id')
+	def post(self):
+		scene_id = int(self.args['scene_id'])
+		print(scene_id,'scene_id')
+		scene_openid = self.session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
+		if scene_openid:
+			openid = scene_openid.openid
+			print(openid,'openid')
+			accountinfo = self.session.query(models.Accountinfo).filter_by(wx_openid = openid).first()
+			if accountinfo:
+				print(accountinfo)
+				customer = self.session.query(models.Customer).filter_by(id = accountinfo.id).first()
+				if customer:
+					print(customer)
+					self.set_current_user(customer)
+			print(True)
+			return self.send_success(login=True)
+		else:
+			print(False)
+			return self.send_success(login=False)
+
+#微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
+
+class WxMessage(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments('signature?:str','timestamp?','nonce?','echostr')
+	def get(self):
+		signature = self.args['signature']
+		timestamp = self.args['timestamp']
+		nonce     = self.args['nonce']
+		echostr   = self.args['echostr']
+		if self.check_signature(signature,timestamp,nonce):
+			return self.write(echostr)
+		else:
+			print('the message is not from weixin')
+			return self.write(echostr)
+
+	@CustomerBaseHandler.check_arguments('ToUserName?:str','FromUserName?:str','CreateTime?','MsgType?','Event?','EventKey?','Ticket?')
+	def post(self):
+		try:
+			import xml.etree.cElementTree as ET
+		except:
+			import xml.etree.ElementTree as ET
+		raw_data = self.request.body
+		data = self.xmlToDic(raw_data) 
+		print(raw_data)
+		openid = data.get('FromUserName',None)
+		event  = data.get('Event',None)
+		eventkey = data.get('EventKey',None)
+		print(openid,event,eventkey)
+		if event == 'subscribe' or 'scan' or 'SCAN':
+			if event == 'subscribe':
+				scene_id = int(eventkey.split('_')[1])
+			elif event == 'scan' or 'SCAN':
+				scene_id = int(eventkey)
+			else:
+				return self.send_success(error_text = 'error')
+			if openid:
+				#将openid 和scene_id 存在数据库表里，方便前端轮询
+				scene_openid = models.Scene_Openid(scene_id=scene_id,openid=openid)
+				self.session.add(scene_openid)
+				self.session.commit()
+				print(scene_openid.id,scene_openid.scene_id,scene_openid.openid)
+
+				customer = self.session.query(models.Accountinfo).filter_by(wx_openid=openid).first()
+				if customer:
+					print('customer exit')
+				else:
+					print('add new customer')
+					access_token = WxOauth2.get_client_access_token()
+					url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
+					r = requests.get(url)
+					wx_userinfo = json.loads(r.text)
+					print(wx_userinfo)
+					if wx_userinfo["headimgurl"] not in [None,'']:
+						headimgurl = wx_userinfo.get("headimgurl",None)
+						headimgurl_small = wx_userinfo.get("headimgurl",None)[0:-1] + "132"
+					else:
+						headimgurl = None
+						headimgurl_small = None
+					account_info = models.Accountinfo(
+						wx_unionid=wx_userinfo.get("unionid",None),
+						wx_openid=wx_userinfo.get("openid",None),
+						wx_country=wx_userinfo.get("country",None),
+						wx_province=wx_userinfo.get("province",None),
+						wx_city=wx_userinfo.get("city",None),
+						headimgurl=headimgurl,
+						headimgurl_small = headimgurl_small,
+						nickname=wx_userinfo.get("nickname",None),
+						sex = wx_userinfo.get("sex",None))
+					u = models.Customer()
+					u.accountinfo = account_info
+					self.session.add(u)
+					self.session.commit()
+
+	@classmethod
+	def check_signature(self,signature,timestamp,nonce):
+		token = 'senguotest123'
+		L = [timestamp,nonce,token]
+		L.sort()
+		s = L[0]+L[1]+L[2]
+		if isinstance(s,str):
+			s = s.encode('utf-8')
+		return hashlib.sha1(s).hexdigest() == signature
+
+	def check_xsrf_cookie(self):
+		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		pass
+		return
+	@classmethod
+	def xmlToDic(self,xmlstr):
+		if isinstance(xmlstr,bytes):
+			xmlstr = xmlstr.decode('utf-8')
+		else:
+			xmlstr = xmlstr
+		data = {}
+		tree = ET.fromstring(xmlstr)
+		for child in tree:
+			data[child.tag] = child.text
+		return data	
+
+
 # 店铺申请 - 首页 成为卖家
 class Home(CustomerBaseHandler):
-	@tornado.web.authenticated
+	# @tornado.web.authenticated
 	def get(self):
+		if not self.current_user:
+			return self.redirect(self.reverse_url("ApplyLogin"))
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
 		except:

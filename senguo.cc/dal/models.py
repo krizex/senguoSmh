@@ -1811,6 +1811,13 @@ class Spider_Good(MapBase,_CommonApi):
 	shop_id  =Column(Integer,nullable = False)
 	sales = Column(Integer)
 
+
+class Scene_Openid(MapBase,_CommonApi):
+	__tablename__ = 'scecne_openid'
+	id = Column(Integer,primary_key=True,nullable=False,autoincrement=True)
+	scene_id = Column(Integer)
+	openid   = Column(String(64))
+
 '''
 # add by cm 2015.6.15
 # 商家优惠券

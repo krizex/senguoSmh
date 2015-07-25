@@ -25,6 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
 import chardet
+import random
 
 
 # 非阻塞
@@ -1078,6 +1079,31 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.each_point = totalprice
 				session.add(point_history)
 		session.commit()
+
+	#woody 7.23
+	#生成是否关注微信公众号的二维码
+	@classmethod
+	def get_ticket_url(self):
+		access_token = WxOauth2.get_client_access_token()
+		print(access_token,'access_token')
+		scene_id = self.make_scene_id()
+		print(scene_id)
+		url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={0}'.format(access_token)
+		data = {"action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": scene_id}}}
+		r = requests.post(url,data = json.dumps(data))
+		result = json.loads(r.text)
+		print(result)
+		ticket_url = result.get('url',None)
+		return ticket_url,scene_id
+
+	def make_scene_id():
+		session = models.DBSession()
+		while True:
+			scene_id = random.randint(1,2**20)
+			scene_openid = session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
+			if not scene_openid:
+				break
+		return scene_id
 
 # 超级管理员基类方法
 class SuperBaseHandler(_AccountBaseHandler):
