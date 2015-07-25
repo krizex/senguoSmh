@@ -168,6 +168,8 @@ class Home(AdminBaseHandler):
 class SwitchShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		if self.is_pc_browser()==False:
+			return self.redirect(self.reverse_url("MadminHome"))
 		shop_list = []
 		try:
 			shops = self.current_user.shops
@@ -2971,6 +2973,9 @@ class Config(AdminBaseHandler):
 		elif action=="auto_print_set":
 			self.current_shop.config.auto_print = 0 if self.current_shop.config.auto_print == 1 else 1
 			self.session.commit()
+		elif action=="concel_auto_print":
+			self.current_shop.config.concel_auto_print = 0 if self.current_shop.config.concel_auto_print == 1 else 1
+			self.session.commit()
 		elif action=="console_set":
 			_type = int(self.args["data"]["type"])
 			num = self.args["data"]["num"]
@@ -3829,11 +3834,11 @@ class WirelessPrint(AdminBaseHandler):
 					data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
 					r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
 
-					print("======WirelessPrint Back======")
-					print("res url        :",r.url)
-					print("res status_code:",r.status_code)
-					print("res text       :",r.text)
-					print("==============================")
+					# print("======WirelessPrint Back======")
+					# print("res url        :",r.url)
+					# print("res status_code:",r.status_code)
+					# print("res text       :",r.text)
+					# print("==============================")
 					text = int(r.text)
 					if text ==1:
 						return self.send_success()
@@ -3906,6 +3911,7 @@ class WirelessPrint(AdminBaseHandler):
 				fruit_list.append(str(i)+":"+key[1]["fruit_name"]+"  "+key[1]["charge"]+" * "+str(key[1]["num"])+"\r\n")
 				i = i +1
 			if action == "ylyprint":
+				#打印内容
 				content="@@2              订单信息\r\n"+\
 						"------------------------------------------------\r\n"+\
 						"订单编号："+order_num+"\r\n"+\
@@ -3923,7 +3929,7 @@ class WirelessPrint(AdminBaseHandler):
 						"总价："+totalPrice+"元\r\n"+\
 						"支付方式："+_type+"\r\n"+\
 						"------------------------------------------------\r\n"+\
-						"\r\n"+receipt_msg
+						"\r\n"+receipt_msg+"\r\n"
 				partner='1693' #用户ID
 				apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
 				timenow=str(int(time.time())) #当前时间戳
@@ -3937,11 +3943,11 @@ class WirelessPrint(AdminBaseHandler):
 				# print("post        :",data)
 				r=requests.post("http://open.10ss.net:8888",data=data)
 
-				print("======WirelessPrint======")
-				print("res url        :",r.url)
-				print("res status_code:",r.status_code)
-				print("res text       :",r.text)
-				print("=========================")
+				# print("======WirelessPrint======")
+				# print("res url        :",r.url)
+				# print("res status_code:",r.status_code)
+				# print("res text       :",r.text)
+				# print("=========================")
 
 			elif action == "fyprint":
 				reqTime = int(time.time()*1000)
@@ -3949,6 +3955,7 @@ class WirelessPrint(AdminBaseHandler):
 				API_KEY = '47519b0f' #API密钥（ API_KEY ）
 				deviceNo = self.current_shop.config.wireless_print_num #飞印打印机的设备编码 9602292847397158/test
 				mode = 2
+				#打印内容
 				msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
 							"-------------------------\n"+\
 							"订单编号："+order_num+"\n"+\
@@ -3966,12 +3973,12 @@ class WirelessPrint(AdminBaseHandler):
 							"总价："+totalPrice+"元\n"+\
 							"支付方式："+_type+"\n"+\
 							"-------------------------\n"+\
-							"\n"+receipt_msg
-							#打印内容
+							"\n"+receipt_msg+"\n"
+
 				content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
 				securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
 				data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
 				r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
 				# print(r.url)
 				# print(r.status_code)
-				print(r.text)
+				# print(r.text)
