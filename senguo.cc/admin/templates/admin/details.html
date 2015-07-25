@@ -10,26 +10,26 @@
             <span class="mr10 ver7">筛选:</span>
             <div class="dropdown slide-down-select w130 mr10">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                    <em class="pull-left c333 use_goods_group" data-id="0">所有({{data1['a']}})</em>
+                    <em class="pull-left c333 use_goods_group" data-id="0" >所有({{data1['a']}})</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right w130 coupon-items" role="menu" aria-labelledby="dropdownMenu18">
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="0">所有({{data1['a']}})</a>
+                        <a class="item" href="javascript:;" data-id="0" data-num={{data1['a']}}>所有({{data1['a']}})</a>
                     </li>
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="1">已领取({{data1['b']}})</a>
+                        <a class="item" href="javascript:;" data-id="1" data-num={{data1['b']}}>已领取({{data1['b']}})</a>
                     </li>
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="2">已消费({{data1['c']}})</a>
+                        <a class="item" href="javascript:;" data-id="2" data-num={{data1['c']}}>已消费({{data1['c']}})</a>
                     </li>
                     <li class="presentation" role="presentation">
-                        <a class="item" href="javascript:;" data-id="3">已失效({{data1['d']}})</a>
+                        <a class="item" href="javascript:;" data-id="3" data-num={{data1['d']}}>已失效({{data1['d']}})</a>
                     </li>
                 </ul>
             </div>
         </div>
-        <a href="javasript:;" class="c999 cancel-add-goods goback">优惠券</a>
+        <a href="/admin/marketing?action=coupon&coupon_type={{coupon_type}}" class="c999 cancel-add-goods ">优惠券</a>
         <span class="c333"> / 优惠券详情</span>
     </div>
 </div>
@@ -78,6 +78,17 @@
         {% end %}
         </tbody>
     </table>
+ <div class="users-pagination list-pagination group pull-right mt0 cm_jump">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">{{data1["total"]}}</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
+                <li><a href="javascript:;" class="jump-to">跳转</a></li>
+            </ul>
+        </div>
 </div>
 <div id="noresult">
     <h4 class="text-center" id="text"></h4>

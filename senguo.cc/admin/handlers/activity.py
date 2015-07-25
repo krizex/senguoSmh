@@ -444,7 +444,7 @@ class Coupon(AdminBaseHandler):
 #我的优惠券		
 class CouponProfile(AdminBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action?:str","coupon_key?")
+	@CustomerBaseHandler.check_arguments("action?:str","coupon_id?")
 	def get(self):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.current_shop.id
@@ -479,7 +479,32 @@ class CouponProfile(AdminBaseHandler):
 					pass
 			return self.render("coupon/coupon-profile.html",output_data=data)
 		elif action=="get_one":
-			pass
+			now_date=int(time.time())
+			data=[]
+			coupon_id=self.args["coupon_id"]
+			x=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0,coupon_id=coupon_id).first()
+			if x:
+				if x.from_get_date<now_date and x.to_get_date>now_date:
+					if x.use_goods_group==0:
+						use_goods_group="默认分组"
+					elif x.use_goods_group==-1:
+						use_goods_group="店铺推荐"
+					elif x.use_goods_group==-2:
+						use_goods_group="所有分组"
+					else:
+						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
+						use_goods_group=q1.name
+					if x.use_goods==-1:
+						use_goods="所有商品"
+					else:
+						q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
+						use_goods=q1.name
+					from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
+					to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
+					x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
+						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day}
+					data.append(x_coupon)
+			return self.render("coupon/coupon-profile.html",output_data=data)
 #优惠券列表		
 class CouponList(AdminBaseHandler):
 	def getcoupon(self,coupon_status,data):

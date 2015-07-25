@@ -76,7 +76,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .tb-enty tbody tr:hover{background-color: #eee; }
 .thead{background-color: #f4f5f9;}
 .thead>td{height: 40px;line-height: 40px;font-weight:bold;}
-.tb-enty tbody td{padding: 15px 5px;-webkit-box-sizing: border-box;vertical-align: middle;font-size: 12px;}
+.tb-enty tbody td{padding: 9px 5px;-webkit-box-sizing: border-box;vertical-align: middle;font-size: 12px;}
 .tb-enty .dis-coupon>td{color: #999;}
 .tb-enty .dis-coupon a{display: none;}
 .operate .stop{display: none;}
@@ -99,8 +99,8 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .choose-detail-type{margin-left: 10px;margin-right: 170px;}
 .copy-coupon-code{color:#428bca;margin-left: 5px; }
 .disabled{color:#999;background-color: #ddd;}
-
-
+.cm-background{background: #f4f5f9;}
+.cm_jump{padding-top: 40px;}
 
 
 

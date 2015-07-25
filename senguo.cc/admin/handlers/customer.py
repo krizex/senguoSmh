@@ -330,8 +330,9 @@ class Home(CustomerBaseHandler):
 			elif order.status == 10:
 				count[6] += 1
 		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
+		coupon_active=self.session.query(models.Marketing).filter_by(id=shop_id).first().coupon_active
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
-			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
+			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,coupon_active_cm=coupon_active,\
 			a=a,show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
@@ -402,6 +403,8 @@ class Discover(CustomerBaseHandler):
 				qq=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,coupon_id=x.coupon_id,coupon_status=0).first()
 				if qq!=None:
 					b+=1
+		print(a)
+		print(b)
 		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b)
 
 # 店铺 - 店铺地图
@@ -2095,6 +2098,7 @@ class Order(CustomerBaseHandler):
 				q.update(session=self.session,use_date=None,order_id=None,coupon_status=1)
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
 				use_number=qq.use_number-1
+				print(use_number,'cccccccccccc')
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
 			return self.send_success()

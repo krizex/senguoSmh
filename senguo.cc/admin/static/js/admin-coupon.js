@@ -22,6 +22,18 @@ $(document).ready(function () {
                 }
             });
         }
+        /*if (true) {
+            $(".sw-link-copy").zclip({
+                path: "/static/js/third/ZeroClipboard.swf",
+                copy: function(){
+                    return $(this).prev('input').html();
+                },
+                afterCopy:function(){
+                    Tip("优惠券码已经复制到剪切板");
+                }
+            });
+        }*/
+        
   var id=parseInt($.getUrlParam("coupon_type"));
   if(id){
         type = id;
@@ -60,19 +72,30 @@ $(document).ready(function () {
     var id = $(this).attr("data-id");
     var type = $(this).attr("data-type");
     window.location.href="/admin/marketing?action=editcouponpage&coupon_type="+type+"&coupon_id="+id;
+}).on("click",".back-coupon",function(){
+    window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
+    return false;
 }).on("click",".detail-tr",function(e){//点击看详情
     if($(e.target).closest(".sw-er-tip").size()>0){
          return false;
     }
     var id = $(this).attr("data-id");
-    window.location.href="/admin/marketing?action=details&coupon_type="+type+"&coupon_id="+id;
+    window.location.href="/admin/marketing?action=details&coupon_type="+type+"&coupon_id="+id+"&page=1";
 }).on('click', '.coupon-active', function(){
-    var $this = $(this);
+    var status = parseInt($(this).attr('data-status'));
+    tip_info='';
+    if (status==0){
+tip_info="开启优惠券即可使用优惠券功能，你确定要开启优惠券吗？";
+    }
+    else{
+        tip_info="优惠券一旦关闭将不能重新开启,你确定要关闭所有优惠券吗？";
+    }
+    if(confirm(tip_info)){
+            var $this = $(this);
         $this.attr("data-flag", "on");
         if($this.attr("data-flag")=="off"){
                 return false;
         }
-        var status = Int($this.attr('data-status'));
         var url = '';
         var action = "close_all";
         var args = {
@@ -84,11 +107,11 @@ $(document).ready(function () {
                     $this.attr("data-flag", "off");
                     if (status == 1) {
                         $this.attr({'data-status': 0}).addClass('bg-green').removeClass('bg-pink').text('启用');
-                        $(".coupon-show-txt").children("span").html('启用');
+                        $(".coupon-show-txt").children("span").html('停用');
                     }
                     else if (status == 0) {
                         $this.attr({'data-status': 1}).removeClass('bg-green').addClass('bg-pink').text('停用');
-                        $(".coupon-show-txt").children("span").html('停用');
+                        $(".coupon-show-txt").children("span").html('启用');
                     }
                 }
                 else {
@@ -101,6 +124,9 @@ $(document).ready(function () {
                 Tip('网络好像不给力呢~ ( >O< ) ~');
             }
         );
+
+
+    }
 }).on('click', '.close_one', function(e){
         e.stopPropagation();
     if(confirm('你确定要关闭该优惠券吗？')){
@@ -131,8 +157,13 @@ $(document).ready(function () {
     type = index;
     $(".chinav li").removeClass("active").eq(index).addClass("active");
     $(".wrap-tb table").addClass("hidden").eq(index).removeClass("hidden");
-}).on("click",'.goback',function(){
-    window.history.back();
+}).on("click",'.goback',function(e){
+    e.stopPropagation();
+    if (confirm("当前编辑的优惠券还没有保存，你确定退出编辑吗？")){
+        window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
+    }
+}).on("click",'.cm_edit_cancel',function(){
+   window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
 }).on('click','.ok-coupon',function(){
     var type=$('.current-type').attr("data-id");
     addCoupon(type);
@@ -149,7 +180,8 @@ $(document).ready(function () {
     $(this).addClass("radio-active");
 }).on('click','#selected_status',function(){ //详情类型切换
     var coupon_id=$.getUrlParam("coupon_id");
-    insertcoupon(coupon_id);
+    var page=1;
+    insertcoupon(coupon_id,page);
 }).on("click",'.coupon-types .item',function(){//优惠券类型
     var id = parseInt($(this).attr("data-id"));
     type = id;
@@ -180,11 +212,52 @@ $(document).ready(function () {
     var id = parseInt($(this).attr("data-id"));
     $(".use_goodss").html($(this).html()).attr("data-id",id);
 }).on('click','.coupon-items .item',function(){ //dd
+   
     var selected_status=$(this).attr("data-id");
-    $(".coupon-items em").text($(this).text());
-    insertcoupon(selected_status);
-}).on("click",".back-coupon",function(){
-    window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
+    $(".use_goods_group").text($(this).text());
+    var page_total=parseInt($(this).attr("data-num"));
+    page_total=parseInt(page_total/12);
+    if (page_total==0){
+        page_total=1;
+    }
+    $(".page-total").text(page_total);
+    var page=1;
+    $(".page-now").text(1);
+    insertcoupon(selected_status,page);
+}).on('click','.cm_new_coupon',function(){
+    window.location.href="/admin/marketing?action=newcouponpage&coupon_type="+type;
+}).on('click','.pre-page',function(){
+    var pagenow=parseInt($('.page-now').text());
+    var selected_status=$(".use_goods_group").attr("data-id");
+    if (pagenow==1){
+        Tip("当前已经是第一页，不能再向前翻页");
+    }
+    else {
+        $(".page-now").text(pagenow-1);
+        insertcoupon(selected_status,pagenow-1);
+    }
+}).on('click','.next-page',function(){
+     var pagenow=parseInt($('.page-now').text());
+     var pagetotal=parseInt($('.page-total').text());
+     var select_rule=$(".use_goods_group").attr("data-id");
+     if (pagenow==pagetotal){
+        Tip("当前已经是最后一页，不能再向后翻页");
+     }
+     else{
+        $('.page-now').text(pagenow+1);
+        insertcoupon(select_rule,pagenow+1);
+     }
+}).on("click",".jump-to",function(){
+    var inputpage=parseInt($(".input-page").val())
+     var pagetotal=parseInt($('.page-total').text());
+     var select_rule=$(".use_goods_group").attr("data-id");
+     if (inputpage<1 || inputpage>pagetotal ||isNaN(inputpage)){
+        Tip("输入的页码值不符合要求");
+     }
+     else{
+        $('.page-now').text(inputpage);
+        insertcoupon(select_rule,inputpage);
+     }
 });
 
 function getGoods(index,$obj){
@@ -196,12 +269,13 @@ function getGoods(index,$obj){
     }
     $obj.append(lis);
 }
-function insertcoupon(selected_status){
+function insertcoupon(selected_status,page){
     var coupon_id=$.getUrlParam("coupon_id");
+    var coupon_type=$.getUrlParam("coupon_type");
     var url='';
-    var action="details"
+    var action="details";
     var data={
-        select_rule:selected_status,coupon_id:coupon_id
+   action:action,coupon_type:coupon_type,coupon_id:coupon_id,page:page,select_rule:selected_status
     }
     var  args={
         action:action,data:data
@@ -299,7 +373,7 @@ function insertcoupon(selected_status){
                         }
                          else{
                                 temp= '<tr>'
-                                            +'<td colspan="7" class="txt-center c999">当前没有优惠券</td>'
+                                            +'<td colspan="6" class="txt-center c999">当前没有优惠券</td>'
                                              +'</tr>';
                                 // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
                                 $("#list-coupons").append(temp);
@@ -401,8 +475,8 @@ function addCoupon(type){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
         var get_rule = $('.get_rules').val();
-         if(isNaN(get_rule) ||parseFloat(get_rule)==0){
-                  return Tip("领取条件应该不为0且为数字类型");
+         if(isNaN(get_rule) || get_rule.indexOf(".")!=-1||parseFloat(get_rule)==0 ||get_rule==''){
+                  return Tip("领取条件应该不为0不能为空且为数字类型");
                }
         var get_limit = $(".get_limits").val();
         if (get_limit=='') {
@@ -593,7 +667,7 @@ function editCoupon(type,coupon_id,edit_status){
              $('.total_number').val(old_totalnumber);
              return Tip("库存应该不小于原来的库存！");
         }
-        var get_rule = $(".get_rule").val();
+        var get_rule = 0;
         var coupon_money = $(".coupon_money").val();
         var use_rule = $(".use_rule").val();
         var get_limit = $(".get_limit").val();
@@ -623,8 +697,8 @@ function editCoupon(type,coupon_id,edit_status){
             return Tip("领取时间的开始时间不能大于结束时间");
         }
         var get_rule = $('.get_rules').val();
-         if(isNaN(get_rule) || get_rule.indexOf(".")!=-1||parseFloat(get_rule)==0){
-                  return Tip("领取条件应该不为0且为数字类型");
+         if(isNaN(get_rule) || get_rule.indexOf(".")!=-1||parseFloat(get_rule)==0||get_rule==''){
+                  return Tip("领取条件应该不为0不能为空且为数字类型");
                }
         var get_limit = $(".get_limits").val();
         if (get_limit=='') {
@@ -787,4 +861,22 @@ function todate(str_time){
     var dateArr = str_time.substring(0,10).split('-');
     var timeArr = str_time.substring(11,16).split(':');
     return new Date(parseInt(dateArr[0]),parseInt(dateArr[1]) - 1,parseInt(dateArr[2]),parseInt(timeArr[0]),parseInt(timeArr[1]));
+}
+
+function  jumppage(page){
+    var coupon_id=$(this).getUrlParam("coupon_id");
+    var coupon_type=$(this).getUrlParam("coupon-type");
+    var select_rule=$(".use_goods_group").attr(data-id);
+    var url='';
+    var args={
+   action:"details",coupon_type:coupon_type,coupon_id:coupon_id,page:page,select_rule:select_rule
+    }
+    $.postJson(url,args,function(res){
+        if(res.success){
+
+        }
+        else{
+            Tip(res.error_text);
+        }
+    },function(){ Tip('网络好像不给力呢~ ( >O< ) ~');});
 }

@@ -17,16 +17,19 @@
             <span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
         </a>
     </li>
-     {% if a or b %}
+    {%coupon_active_cm==0%}
+    {% if a or b %}
     <li class="title clearfix bg-white font14 coupon">
-        <a href="{% if a== 0%}javascript:;{% else %}/coupon/profile?action=get_all{% end %}" class="text-grey3 confess-wall">
+        <a href="{% if a==0%}/coupon/profile?action=get_one&coupon_id=-1{% else %}/coupon/profile?action=get_all{% end %}" class="text-grey3 confess-wall">
             <span class="pull-right imore"></span>
             <i class="pull-left"></i>
-            <span class="pull-left confess-text">优惠券<br><span class="font12 text-grey">{% if a== 0%}该店铺暂无优惠券{% else %}{{a}}批优惠券等你来抢{% end %}</span></span>
+            <span class="pull-left confess-text">优惠券<br><span class="font12 text-grey">{% if a== 0%}该店铺暂无活动优惠券,充值即可领取众多优惠券哦{% else %}{{a}}批优惠券等你来抢{% end %}</span></span>
             <span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
         </a>
     </li>
+    {%else%}
     {% end %}
+    {%end%}
 {% end %}
 {% end %}
 </ul>

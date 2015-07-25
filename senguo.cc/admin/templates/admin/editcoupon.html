@@ -58,15 +58,15 @@
                 </tr>
                 <tr>
                     <td class="ver-top" ><span class="ver-5">库存</span></td>
-                    <td><input type="text" class="  {%if  pre_coupon["edit_status"]==2 %} disabled {%end%}  {%if  pre_coupon["edit_status"]==2 %} disabled {%end%} mr10 total_number {%if  pre_coupon["edit_status"]==2%}disabled="disabled"{%end%}" value="{{pre_coupon["total_number"]}}" total-id="{{pre_coupon["total_number"]}}" />张<p class="mt6 f12 red-txt">只能为整数,且库存量必须大于原库存</p></td>
+                    <td><input type="text" class="  {%if  pre_coupon["edit_status"]==2 %} disabled {%end%}   mr10 total_number {%if  pre_coupon["edit_status"]==2%}disabled="disabled"{%end%}" value="{{pre_coupon["total_number"]}}" total-id="{{pre_coupon["total_number"]}}" />张<p class="mt6 f12 red-txt">只能为整数,且库存量必须不小于原库存,且新建张数不能大于1000</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
                     <td>
                         <div class="iblock">
                             <span class=" mr10 ver7">选择商品分组:</span>
-                            <div class="{%if  pre_coupon["edit_status"]!=0 %} disabled {%end%}  dropdown slide-down-select w130 mr10">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn {%end%}" type="button" data-toggle="dropdown">
+                            <div class="{%if  pre_coupon["edit_status"]!=0 %} disabled {%end%}  dropdown slide-down-select w130 mr10 ">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn disabled {%end%}" type="button" data-toggle="dropdown">
                                     <em class=" pull-left c333 use_goods_group" data-id="-2">{{pre_coupon["use_goods_group"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
@@ -79,7 +79,7 @@
                                 </ul>
                             </div>
                             <div class="{%if  pre_coupon["edit_status"]!=0 %} disabled {%end%}  dropdown slide-down-select w130">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn {%end%}" type="button" data-toggle="dropdown">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0%}forbidden-btn disabled {%end%}" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 use_goods" data-id="-1">{{pre_coupon["use_goods"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
@@ -133,7 +133,7 @@
                 </tr>
                 <tr>
                     <td class="ver-top" ><span class="ver-5">库存</span></td>
-                    <td><input type="text" class=" {%if  pre_coupon["edit_status"]==2 %} disabled {%end%} mr10 total_numbers {%if  pre_coupon["edit_status"]==2%}disabled="disabled"{%end%}" value="{{pre_coupon["total_number"]}}" total-id="{{pre_coupon["total_number"]}}" {%if  pre_coupon["edit_status"]==2 %}disabled="disabled"{%end%} />张<p class="mt6 f12 red-txt">只能为整数,且库存量必须大于原库存</p></td>
+                    <td><input type="text" class=" {%if  pre_coupon["edit_status"]==2 %} disabled {%end%} mr10 total_numbers {%if  pre_coupon["edit_status"]==2%}disabled="disabled"{%end%}" value="{{pre_coupon["total_number"]}}" total-id="{{pre_coupon["total_number"]}}" {%if  pre_coupon["edit_status"]==2 %}disabled="disabled"{%end%} />张<p class="mt6 f12 red-txt">只能为整数,且库存量必须不小于原库存,且新建张数不能大于1000</p></td>
                 </tr>
                 <tr>
                     <td class="ver-top"><span class="ver-5">优惠条件<br><span class="c999 ml10">(选填)</span></span></td>
@@ -141,7 +141,7 @@
                         <div class="iblock">
                             <span class="mr10 ver7">选择商品分组:</span>
                             <div class="{%if  pre_coupon["edit_status"]!=0 %} disabled {%end%}  dropdown slide-down-select w130 mr10">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" type="button" data-toggle="dropdown">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn disabled {%end%}" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 use_goods_groups" data-id="-2">所有分组</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
@@ -154,7 +154,7 @@
                                 </ul>
                             </div>
                             <div class="{%if  pre_coupon["edit_status"]!=0 %} disabled {%end%}  dropdown slide-down-select w130">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" type="button" data-toggle="dropdown">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn disabled {%end%}" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 use_goodss" data-id="-1">所有商品</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
@@ -193,7 +193,7 @@
     </div>
     <div class="wrap-pop-btn wrap-edit-item">
         <a href="javascript:;" class="ok-btn ok-editcoupon" data-id="{{pre_coupon["coupon_id"]}}" data-flag="{{pre_coupon["edit_status"]}}" data-type="{{pre_coupon["coupon_type"]}}">确定</a>
-        <a href="/admin/marketing?action=coupon&coupon_type={{pre_coupon["coupon_type"]}}" class="cancel-btn cancel-edit-goods">取消</a>
+        <a href="javascript:;" class="cancel-btn cancel-edit-goods goback">取消</a>
     </div>
 </div>
 {% end %}

@@ -47,7 +47,7 @@ handlers = [
 	#优惠券
 	#(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
 	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
-	(r"/coupon/grub", handlers.activity.CouponCustomer, {}, "CouponDetail"),
+	(r"/coupon/grub", handlers.activity.CouponCustomer, {}, "CouponGrub"),
 	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
 	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
 	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),

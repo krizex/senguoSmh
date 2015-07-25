@@ -3,12 +3,15 @@
 {% block setcontent %}
 {% if shop_code and shop_code!='not set' %}
 <div class="clearfix top-box">
-    <p class="c333 f16 coupon-show-txt">已<span>开启</span>优惠券<a href="javascript:;" class="ml10 f16 show-detail">查看详情</a></p>
+    <p class="c333 f16 coupon-show-txt">已<span>{%if coupon_active_cm==0 %}停用{% else %}启用{%end%}</span>优惠券<a href="javascript:;" class="ml10 f16 show-detail">查看详情</a></p>
     <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
     <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
-     <button class="btn text-white  action-btn coupon-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
+     <button class="btn text-white  action-btn coupon-active" data-status="{{coupon_active_cm}}" data-flag="on">{%if coupon_active_cm==0%}启用{%else%}停用{%end%}</button>
 </div>
-{%if output_data==[] and data1==[] %}
+{%if coupon_active_cm==0%}
+{%else%}
+<div>
+    {%if output_data==[] and data1==[] %}
     <div class="wrap-coupon-img txt-center">
         <img src="/static/images/coupon.jpg" alt="" width="238">
         <div class="wrap-newbtn">
@@ -24,7 +27,7 @@
             <li class="txt-center" data-type="charge"><a href="javascript:;">充值优惠券</a></li>
         </ul>
         <div class="wrap-newbtn fr">
-            <a href="/admin/marketing?action=newcouponpage" class="newbtn add-btn  mt6 mr10">+新建优惠券</a>
+            <a href="javascript:;" class="newbtn add-btn  mt6 mr10 cm_new_coupon">+新建优惠券</a>
         </div>
     </div>
 </div>
@@ -78,7 +81,7 @@
                         </div>
                         <p class="er-text">优惠券链接</p>
                         <div class="wrap-ipt">
-                            <input type="text" class="sw-link-txt" value="http://senguo.cc/coupon/profile?coupon_id={{coupon['coupon_id']}}" disabled="">
+                            <input type="text" class="sw-link-txt" value="http://senguo.cc/coupon/profile?action=get_one&coupon_id={{coupon['coupon_id']}}" disabled="">
                             <input type="button" class="sw-link-copy" value="复制链接">
                             <div class="zclip" id="zclip-ZeroClipboardMovie_1" style="position: absolute; left: 220px; top: 45px; width: 80px; height: 30px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="/static/js/third/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="80" height="30" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=80&amp;height=30" wmode="transparent"></div></div>
                         <div class="wrap-er group">
@@ -133,14 +136,39 @@
              {%end%}
               <td>{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</td>
               <td>{{data['coupon_money']}}元<br>{% if data['use_goods_group'] == -2 %}所有商品{% else %}{{data['use_goods_group']}}:{{data['use_goods']}}{% end %}买满{{data["use_rule"]}}元可用</td>
-            <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td>  
-            <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td>
+            <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td> 
+            <td class="operate">
+                    <a href="/admin/marketing?action=editcouponpage&coupon_type=0&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
+                    <a href="javascript:;" class="mr10 spread-btn">推广</a>
+                    <a href="javascript:;" class="red-txt close_one" data-id="{{coupon['coupon_id']}}">停用</a>
+                    <span class="stop">已停用</span>
+                    <div class="sw-er-tip all-position invisible">
+                        <div class="top-arr">
+                            <span class="line1"></span>
+                            <span class="line2"></span>
+                        </div>
+                        <p class="er-text">优惠券链接</p>
+                        <div class="wrap-ipt">
+                            <input type="text" class="sw-link-txt" value="http://senguo.cc/coupon/profile?action=get_one&coupon_id={{coupon['coupon_id']}}" disabled="">
+                            <input type="button" class="sw-link-copy" value="复制链接">
+                            <div class="zclip" id="zclip-ZeroClipboardMovie_1" style="position: absolute; left: 220px; top: 45px; width: 80px; height: 30px; z-index: 99;"><embed id="ZeroClipboardMovie_1" src="/static/js/third/ZeroClipboard.swf" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="80" height="30" name="ZeroClipboardMovie_1" align="middle" allowscriptaccess="always" allowfullscreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="id=1&amp;width=80&amp;height=30" wmode="transparent"></div></div>
+                        <div class="wrap-er group">
+                            <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                            <div class="er-text lh80 fl">链接二维码</div>
+                            <div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>
+                        </div>
+                    </div>
+                </td> 
+            <!-- <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td> -->
         </tr>
         {% end %}
         {%end%}
         </tbody>
     </table>
 </div>
+</div>
+{%end%}
+
 {%end%}
 {% else %}
 <h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
