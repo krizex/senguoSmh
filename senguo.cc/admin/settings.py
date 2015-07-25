@@ -19,7 +19,7 @@ DB_CHARSET = "utf8mb4"
 QQ_APPID = '101221864'
 QQ_APPKEY = '23060ad64493f81c2a2619f1c56c9c0e'
 
-# 手机短信验证的设置
+#的 手机短信验证的设置
 content = "您的验证码是：【{code}】。请不要把验证码泄露给其他人。"
 account = "cf_senguocc"
 password = "sg201404"
