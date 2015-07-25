@@ -41,7 +41,10 @@ $(document).ready(function(){
                 data:{price:money,_xsrf:window.dataObj._xsrf},
                 type:"post",
                 success:function(res){
-                    window.location.href=res.url;
+                    if(res.success){
+                       window.location.href="/customer/recharge/AliPay?alipayUrl="+res.url; 
+                    }
+                    
                 }
             })
         }else{
