@@ -6,7 +6,7 @@ $(document).ready(function(){
     $(".container").css("minHeight",height-60+"px");
     $(".wrap-create").css("minHeight",height-60+"px");
     if($(".home-top").size()>0){
-        $("#title").html("店铺申请");
+        $("#title").html("卖家入驻申请");
         $("#beta").hide();
         if($("#tel").val()!=""){
             $("#tel").attr("disabled","disabled").addClass("bgd");
