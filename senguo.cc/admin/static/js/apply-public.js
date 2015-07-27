@@ -3,7 +3,7 @@ $(document).ready(function(){
     FastClick.attach(document.body);
     //商品单位转换
     var height = $(window).height();
-    $(".container").css("minHeight",height-243+"px");
+    $(".container").css("minHeight",height-245+"px");
     if($(".home-top").size()>0){
         $("#title").html("卖家入驻申请");
         $("#beta").hide();

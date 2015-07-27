@@ -6,6 +6,7 @@ $(document).ready(function(){
         document.write ('<body style="zoom: 75%">');
     var height = $(window).height();
     $(".container").css("minHeight",height-245+"px");
+    $(".container-right").css("minHeight",$(".container").height()+"px");
     $('.developing').on('click',function(){
         Tip('此功能暂未开放！');
     });
