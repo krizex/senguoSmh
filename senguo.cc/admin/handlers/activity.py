@@ -597,17 +597,17 @@ class CouponDetail(AdminBaseHandler):
 			return self.render("coupon/coupon-detail.html",output_data=x_coupon)
 		elif action=="exchange":
 			self.updatecoupon()
-			qused=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0,coupon_status=1).first()
+			qused=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0).filter(models.CouponsCustomer.coupon_status!=0).first()
 			if qused:
-				return send_fail("Sorry，该优惠券已经被领取了哦~")
+				return self.send_fail("Sorry，该优惠券已经被领取了哦~")
 			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0,coupon_status=0).first()
 			if q==None:
-				return self.send_fail("对不起，您的优惠券码有错误！")
+				return self.send_fail("对不起，您的优惠券码有误！")
 			else:
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,coupon_type=0,closed=0).first()
 				qnum=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,customer_id=current_customer_id).count()
 				if qq==None:
-					return self.send_fail("对不起，您的优惠券码对应优惠券已经被停用！")
+					return self.send_fail("对不起，该优惠券已经不存在！")
 				elif qnum>=qq.get_limit:
 					return self.send_fail("对不起，您的领取次数已经超过了领取数量限制！")
 				else:

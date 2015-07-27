@@ -8,14 +8,12 @@
     <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
      <button class="btn text-white  action-btn coupon-active" data-status="{{coupon_active_cm}}" data-flag="on">{%if coupon_active_cm==0%}启用{%else%}停用{%end%}</button>
 </div>
-{%if coupon_active_cm==0%}
-{%else%}
-<div class="coupon_hidden hidden">
+<div class="{%if coupon_active_cm==0%}hidden{%end%}" id="coupon_hidden">
     {%if output_data==[] and data1==[] %}
     <div class="wrap-coupon-img txt-center">
         <img src="/static/images/coupon.jpg" alt="" width="238">
         <div class="wrap-newbtn">
-            <a href="/admin/marketing?action=newcouponpage" class="newbtn add-btn  mt6 mr10">+新建优惠券</a>
+            <a href="/admin/marketing?action=newcouponpage&coupon_type=0" class="newbtn add-btn  mt6 mr10">+新建优惠券</a>
         </div>
     </div
 {% else %}
@@ -30,7 +28,6 @@
             <a href="javascript:;" class="newbtn add-btn  mt6 mr10 cm_new_coupon">+新建优惠券</a>
         </div>
     </div>
-</div>
 <div class="wrap-tb mt30">
     <table class="tb-enty tb-active">
         <colgorup>
@@ -138,7 +135,7 @@
               <td>{{data['coupon_money']}}元<br>{% if data['use_goods_group'] == -2 %}所有商品{% else %}{{data['use_goods_group']}}:{{data['use_goods']}}{% end %}买满{{data["use_rule"]}}元可用</td>
             <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td> 
             <td class="operate">
-                    <a href="/admin/marketing?action=editcouponpage&coupon_type=0&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
+                    <a href="/admin/marketing?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
                     <a href="javascript:;" class="mr10 spread-btn">推广</a>
                     <a href="javascript:;" class="red-txt close_one" data-id="{{coupon['coupon_id']}}">停用</a>
                     <span class="stop">已停用</span>
@@ -167,8 +164,7 @@
     </table>
 </div>
 </div>
-{%end%}
-
+</div>
 {%end%}
 {% else %}
 <h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>

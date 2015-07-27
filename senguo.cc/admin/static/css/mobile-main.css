@@ -53,7 +53,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .bal-cz{width: 65px;}
 .bal-cz>a{display: block;height: 34px;line-height: 34px;text-align: center;margin-top:4px;color: #f98080;background-color:#fff;font-size: 14px;border-radius: 5px;border:1px solid #FF7BAC;}
 .wrap-bal-ma{padding: 15px 20px 5px 20px;}
-.bal-balbox{border-radius: 5px;border: 1px solid #e6e6e6;padding: 10px;background-color: #fff;color: #999;line-height: 140%;}
+.bal-balbox{border: 1px solid #e6e6e6;padding: 10px;background-color: #fff;color: #999;line-height: 140%;}
 .bal-balbox>h3{font-size: 16px;font-weight: normal;}
 .bal-balbox>p{font-size: 14px;}
 .bal-balbm>h3{color: #666;font-size: 16px;margin: 10px 0;font-weight: normal;}

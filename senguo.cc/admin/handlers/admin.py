@@ -4022,7 +4022,7 @@ class Marketing(AdminBaseHandler):
 				q.coupon_active=0
 			coupon_active=q.coupon_active
 			self.session.commit()
-			return self.send_success(coupon_active=coupon_active)
+			return self.send_success(coupon_active_cm=coupon_active)
 		else:
 			return self.send_fail('something must wrong')
 		self.session.commit()
