@@ -2,7 +2,10 @@
 {% block title %}森果后台-商品管理{% end %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods.css')}}"/>{% block css %}{% end %}{% end %}
 {% block content %}
-<span class="right-title c222">商品管理<a href="javascript:;" class="add-goods add-btn" id="add-goods">+添加新商品</a></span>
+<span class="right-title c222">商品管理
+    <a href="javascript:;" class="add-goods add-btn" id="add-goods">+添加新商品</a>
+    <a href="/admin/import" class="import-btn pull-right">一键导入商品数据</a>
+</span>
 <div class="subnav-box clearfix">
     <ul class="subnav pull-left order-type">
          <li class="text-center aall"><a href="{{reverse_url('adminGoods')}}">所有商品</a></li>

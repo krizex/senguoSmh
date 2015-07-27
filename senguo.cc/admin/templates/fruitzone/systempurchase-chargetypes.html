@@ -16,7 +16,7 @@
   <p class="proper-padding bg-warning">你的信息不完整，为了方便我们联系您，请先绑定你的必要个人信息（邮箱、手机号和微信)：<a href="{{reverse_url('fruitzoneAdminProfile')}}">个人信息补全。</a></p>
   {% end %}
   {% if not len(current_user.shops)%}
-  <p class="proper-padding bg-warning">你还未创建店铺，请先创建店铺：<a href="{{reverse_url('fruitzoneShopApply')}}">创建店铺。</a></p>
+  <p class="proper-padding bg-warning">你还未创建店铺，请先创建店铺：<a href="{{reverse_url('ApplyHome')}}">创建店铺。</a></p>
   {% end %}
   
   <br />

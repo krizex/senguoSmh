@@ -273,7 +273,7 @@ input{color:#333;text-indent:5px;}
 .sw-listr .auth{display: inline-block;color: #52b43f;line-height:18px;border: 1px solid #52b43f;font-size: 14px;border-radius: 16px;width: 76px;height: 19px;text-align: center;margin-left: 2px;-webkit-transform: scale(0.8);}
 .sw-attr{margin-top: 4px;width: 80%;}
 .sw-attr>li{font-size: 12px;color: #999;width: 33.3%;white-space: nowrap;float: left;line-height: 20px;}
-.sw-addre{line-height: 20px;margin-top: 2px;}
+.sw-addre{line-height: 20px;margin-top: 2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
 .sw-tip{position: absolute;width: 0;height: 0;border:30px solid transparent;top:0;right:0;}
 .shopping{border-top-color: #52b43f;border-right-color: #52b43f;}
 .waiting{border-top-color: #76b8f2;border-right-color: #76b8f2;}

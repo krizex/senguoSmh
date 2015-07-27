@@ -346,6 +346,7 @@ class ApplySuccess(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("fruitzone/apply-success.html")
 
+
 # 店铺申请
 class ShopApply(FruitzoneBaseHandler):
 	MAX_APPLY_COUNT = 150
@@ -406,7 +407,6 @@ class ShopApply(FruitzoneBaseHandler):
 		"shop_intro", "realname:str", "wx_username:str", "code:int","lat","lon")
 	def post(self):
 		#* todo 检查合法性
-
 		if self._action == "apply":
 			account_id = self.current_user.accountinfo.id
 			#判断申请店铺的微信是否已是某店铺的管理员身份
@@ -767,6 +767,12 @@ class PhoneVerify(_AccountBaseHandler):
 	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
+		if a:
+			if a != self.current_user.accountinfo:
+				return self.send_fail(error_text="手机号已经绑定其他账号")
+			else:
+				return self.send_fail(error_text="手机号已绑定，无需重复绑定")
 		# print("[店铺申请]发送证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
