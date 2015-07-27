@@ -81,14 +81,41 @@ class WxMessage(CustomerBaseHandler):
 		event  = data.get('Event',None)
 		eventkey = data.get('EventKey',None)
 		print(openid,event,eventkey)
+
+		openid = data.get('FromUserName',None)
+		event  = data.get('Event',None)
+		eventkey = data.get('EventKey',None)
+		MsgType = data.get('MsgType',None)
+		Content = data.get('Content',None)
+		if MsgType == 'text':
+			ToUserName = data.get('ToUserName',None) #开发者微信号
+			FromUserName = data.get('FromUserName',None) # 发送方openid
+			CreateTime  = data.get('CreateTime',None) #接受消息时间
+			Content    = data.get('Content',None)
+			MsgId = data.get('Content',None)
+			CreateTime = str(int(time.time()))
+			if Content == '1':
+				reply_message = '大西瓜'
+			elif Content == '2':
+				reply_message = 'http://i.senguo.cc'
+			elif Content == '3':
+				reply_message = 'success'
+
+			else:
+				reply_message = '不要调皮，请输入1-3'
+			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
+			reply = ET.tostring(reply,encoding='utf8',method='xml')
+			print(reply)
+			self.write(reply)
+
 		if event == 'subscribe' or 'scan' or 'SCAN':
 			if event == 'subscribe':
-				scene_id = int(eventkey.split('_')[1])
+				scene_id = int(eventkey.split('_')[1]) if eventkey and eventkey.find('qrscene') !=-1 else None
 			elif event == 'scan' or 'SCAN':
-				scene_id = int(eventkey)
+				scene_id = int(eventkey)  if eventkey else None
 			else:
 				return self.send_success(error_text = 'error')
-			if openid:
+			if openid  and scene_id:
 				#将openid 和scene_id 存在数据库表里，方便前端轮询
 				scene_openid = models.Scene_Openid(scene_id=scene_id,openid=openid)
 				self.session.add(scene_openid)
@@ -128,6 +155,24 @@ class WxMessage(CustomerBaseHandler):
 					admin.accountinfo = account_info
 					self.session.add(admin)
 					self.session.commit()
+
+	@classmethod
+	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content):
+		root = ET.Element('xml')
+		first = ET.Element('ToUserName')
+		first.text = ToUserName
+		second = ET.Element('FromUserName')
+		second.text = FromUserName
+		third = ET.Element('CreateTime')
+		third.text=CreateTime
+		forth = ET.Element('CreateTime')
+		forth.text = CreateTime
+		fifth = ET.Element('MsgType')
+		fifth.text = MsgType
+		sixth = ET.Element('Content')
+		sixth.text = Content
+		root.extend((first,second,third,forth,fifth,sixth))
+		return root
 
 	@classmethod
 	def check_signature(self,signature,timestamp,nonce):
