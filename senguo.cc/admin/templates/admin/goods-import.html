@@ -1,7 +1,7 @@
 {% extends 'goods-set-base.html' %}
 {% block setcontent %}
 <div class="wrap-goods-groups">
-    <p class="c333 mt10 choose-text"><a href="javasript:;" class="c999 cancel-add-goods">商品管理</a><span class="c333"> / 添加新商品</span></p>
+    <p class="c333 mt10 choose-text"><a href="{{reverse_url('adminGoods')}}" class="c999 cancel-add-goods">商品管理</a><span class="c333"> / 添加新商品</span></p>
     <div class="subnav-box clearfix mt20">
         <ul class="subnav pull-left import-type">
             <li class="text-center active"><a href="javascript:;">从其他店铺导入</a></li>
