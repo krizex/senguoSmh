@@ -1778,48 +1778,43 @@ class CheckCash(SuperBaseHandler):
 
 		####################
 		#借用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
-		# shop_list_query = self.session.query(models.Shop.id,models.Shop.shop_name).filter(models.Shop.shop_status == 2).all()
+		shop_list_query = self.session.query(models.Shop.id,models.Shop.shop_name).filter(models.Shop.shop_status == 2).all()
 		
-		# shop_id_list = []
-		# shop_id_name_dict = {}
+		shop_id_list = []
+		shop_id_name_dict = {}
 		
-		# for item in shop_list_query:
-		# 	shop_id_list.append(item[0])
-		# 	shop_id_name_dict[str(item[0])] = item[1]
+		for item in shop_list_query:
+			shop_id_list.append(item[0])
+			shop_id_name_dict[str(item[0])] = item[1]
 
-		# for id_item in shop_id_name_dict:
-		# 	shop_id = int(id_item)
-		# 	shop_balance_history_query = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_id == shop_id).all()
+		for id_item in list(shop_id_name_dict.keys()):
+			shop_id = int(id_item)
+			# print(shop_id,shop_id_name_dict[id_item])
+			shop_balance_history_query = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_id == shop_id)
+			
 
-
-		# str0 = "可提现额度入账：订单1234002379121完成"
-		# i = -1
-		# while i < len(str0):
-		# 	i += 1
-		# 	if  str0[i].isdigit():
-		# 		break
-		# print(str0[-(len(str0) - i) : -2])
 
 		# balance_type_1_3 = []
-		# balance_type_6_7 = []
-		# query_list = self.session.query(models.BalanceHistory.create_time,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([1,3])).all()
+		# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([1,3])).all()
 		# for item in query_list:
-		# 	for i in range(1,7):
-
-		# 	for i in range(len(item[1])):
-		# 		# print("@@@@",i,item[1])
-		# 		if item[1][i].isdigit():
+		# 	for i in range(len(item[0])):
+		# 		if item[0][i].isdigit():
 		# 			break
+		# 	balance_type_1_3.append(item[0][i : len(item[0])])
 
-		# 	balance_type_1_3.append(item[1][i : len(item[1])])
+		# pay_type_2_3 = []
+		# query_list = self.session.query(models.Order.shop_id,models.Order.num).filter(models.Order.status.in_([5,6,7,10]),models.Order.pay_type.in_([2,3])).all()
+		# # print("@@@@",len(query_list))
 
 
+		# balance_type_6_7 = []
 		# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7])).all()
 		# for item in query_list:
-		# 	balance_type_6_7.append(item[0])
+		# 	for i in range(len(item[0])):
+		# 		if item[0][i].isdigit():
+		# 			break
+		# 	balance_type_6_7.append(item[0][i : len(item[0])-2])
 
-		# print("@@@@@",balance_type_1_3)
-		# print("@@@@@",len(balance_type_1_3))
 
 		####################
 		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
