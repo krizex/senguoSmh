@@ -100,9 +100,26 @@ class WxMessage(CustomerBaseHandler):
 				reply_message = 'http://i.senguo.cc'
 			elif Content == '3':
 				reply_message = 'success'
-
+			elif Content == '挑选':
+				reply_message = 'senguo.cc/bbs/detail/7'
+			elif Content == '加工':
+				reply_message = 'senguo.cc/bbs/detail/13'
+			elif Content == '包装':
+				reply_message = 'senguo.cc/bbs/detail/15'
+			elif Content == '工具':
+				reply_message = 'senguo.cc/bbs/detail/14'
+			elif Content == '配送':
+				reply_message = 'senguo.cc/bbs/detail/12'
+			elif Content == '储存':
+				reply_message = 'senguo.cc/bbs/detail/10'
+			elif Content == '521':
+				reply_message = 'senguo.cc/bbs/detail/17'
+			elif Content == '活动':
+				reply_message = 'senguo.cc/bbs/detail/18'
+			elif Content == '打印机':
+				reply_message = 'senguo.cc/bbs/detail/8'
 			else:
-				reply_message = '不要调皮，请输入1-3'
+				reply_message = '不要调皮，请输入有效关键字'
 			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 			reply = ET.tostring(reply,encoding='utf8',method='xml')
 			print(reply)
