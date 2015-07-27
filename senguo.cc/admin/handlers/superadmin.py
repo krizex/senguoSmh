@@ -1775,6 +1775,26 @@ class ApplyCash(SuperBaseHandler):
 class CheckCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+
+		####################
+		#借用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
+		shop_list_query = self.session.query(models.Shop.id,models.Shop.shop_name).filter(models.Shop.shop_status == 2).all()
+		
+		shop_id_list = []
+		shop_id_name_dict = {}
+
+		for item in shop_list_query:
+			shop_id_list.append(item[0])
+			shop_id_name_dict[str(item[0])] = item[1]
+
+		for id_item in shop_id_name_dict:
+			shop_id = int(id_item)
+			shop_balance_history_query = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_id == shop_id).all()
+		# print("@@@@@",shop_id_list,len(shop_id_list))
+		# print("@@@@@",shop_id_name_dict)
+
+		####################
+
 		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
 
 	@tornado.web.authenticated
