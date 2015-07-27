@@ -883,7 +883,7 @@ function show_all_chart(start_date,end_date){
 
 						myChart11.refresh();
 						myChart11.setOption(options);
-						// myChart11.hideLoading();
+						myChart11.hideLoading();
 
 
 						var myChart2 = ec.init(document.getElementById('goods_name'));
@@ -1409,7 +1409,6 @@ function show_chart(action,start_date,end_date,name){
 			}
 		);
 	}
-
 	var url = "";
 	var args = {
 		action:action,
@@ -1444,7 +1443,7 @@ function show_chart(action,start_date,end_date,name){
 
 					myChartType2.refresh();
 					myChartType2.setOption(TypeOptions);
-					// myChartType2.hideLoading();
+					myChartType2.hideLoading();
 				}
 				else if(action == 'name'){
 					myChartName.hideLoading();
