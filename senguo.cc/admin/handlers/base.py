@@ -25,6 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
 import chardet
+import random
 
 
 # 非阻塞
@@ -524,7 +525,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			# print("[_AccountBaseHandler]get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				print("[_AccountBaseHandler]get_current_user: self._user not found")
+				print("[_AccountBaseHandler]get_current_user: self._user not found2333333")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -1079,6 +1080,31 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				session.add(point_history)
 		session.commit()
 
+	#woody 7.23
+	#生成是否关注微信公众号的二维码
+	@classmethod
+	def get_ticket_url(self):
+		access_token = WxOauth2.get_client_access_token()
+		print(access_token,'access_token')
+		scene_id = self.make_scene_id()
+		print(scene_id)
+		url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={0}'.format(access_token)
+		data = {"action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": scene_id}}}
+		r = requests.post(url,data = json.dumps(data))
+		result = json.loads(r.text)
+		print(result)
+		ticket_url = result.get('url',None)
+		return ticket_url,scene_id
+
+	def make_scene_id():
+		session = models.DBSession()
+		while True:
+			scene_id = random.randint(1,2**20)
+			scene_openid = session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
+			if not scene_openid:
+				break
+		return scene_id
+
 # 超级管理员基类方法
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
@@ -1194,46 +1220,88 @@ class AdminBaseHandler(_AccountBaseHandler):
 	@tornado.web.authenticated
 	def prepare(self):
 		"""这个函数在get、post等函数运行前运行"""
-		shop_id = self.get_secure_cookie("shop_id") or b'0'
+		shop_id = self.get_secure_cookie("shop_id") or b'0'         
 		shop_id = int(shop_id.decode())
 		try:
 			admin = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.accountinfo.id,active=1,work=9).first()
 		except:
 			admin = None
 
-		if not self.current_user.shops:
-			if admin:
+		try:
+			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			super_admin = None
+
+
+		if not admin and not super_admin:
+			return self.redirect(self.reverse_url("ApplyHome"))
+
+		if admin:
+			if shop_id:
 				try:
-					one_shop = self.session.query(models.Shop).filter_by(id = admin.shop_id).first()
+					shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+					.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+						models.HireLink.active == 1,models.HireLink.work == 9).first()
 				except:
-					return self.finish("您还不是任何店铺的管理员，请先申请")
-				if not shop_id:
-					self.current_shop = one_shop
-					self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
-				else:
-					try:
-						shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
-						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
-							models.HireLink.active == 1,models.HireLink.work == 9).first()
-					except:
-						shop = None
-					self.current_shop = shop
+					shop = None
 			else:
-				return self.finish("你还没有店铺，请先申请")
-		else:
-			if admin:
-				shop = next((x for x in self.current_user.shops if x.id == shop_id), \
-					self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
-						.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
-							models.HireLink.active == 1,models.HireLink.work == 9).first())
-			else:
-				shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
-			if not shop_id or not shop:#初次登录，默认选择一个店铺
-				self.current_shop = self.current_user.shops[0]
-				self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
-				return
-			else:
+				try:
+					shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+					.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+						models.HireLink.active == 1,models.HireLink.work == 9).first()
+				except:
+					shop = None
+			self.current_shop = shop
+
+		if shop_id:
+			self.current_shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+
+		# if not self.current_user.shops:
+		# 	if admin:
+		# 		try:
+		# 			one_shop = self.session.query(models.Shop).filter_by(id = admin.shop_id).first()
+		# 		except:
+		# 			return self.finish("您还不是任何店铺的管理员，请先申请")
+		# 		if not shop_id:
+		# 			self.current_shop = one_shop
+		# 			self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+		# 		else:
+		# 			try:
+		# 				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+		# 				.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+		# 					models.HireLink.active == 1,models.HireLink.work == 9).first()
+		# 			except:
+		# 				shop = None
+		# 			self.current_shop = shop
+		# 	else:
+		# 		return self.finish("你还没有店铺，请先申请")
+		# else:
+		# 	if admin:
+		# 		shop = next((x for x in self.current_user.shops if x.id == shop_id), \
+		# 			self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+		# 				.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+		# 					models.HireLink.active == 1,models.HireLink.work == 9).first())
+		# 	else:
+		# 		shop = next((x for x in self.current_user.shops if x.id == shop_id), None)
+		# 	if not shop_id or not shop:#初次登录，默认选择一个店铺
+		# 		self.current_shop = self.current_user.shops[0]
+		# 		self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
+		# 		return
+		# 	else:
+		# 		self.current_shop = shop
+	def if_current_shops(self):
+		print("oh ~ no")
+		if not self.current_user.shops:
+			try:
+				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+				.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+					models.HireLink.active == 1,models.HireLink.work == 9).first()
+			except:
+				shop = None
+			if shop:
 				self.current_shop = shop
+			else:
+				return self.redirect(self.reverse_url("switchshop"))
 
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())

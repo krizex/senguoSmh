@@ -13,10 +13,13 @@ $(document).ready(function(){
         $('.container').removeClass('mt80');
         $('.backstage-header').removeClass('header-fix');
     }
-    getRealData();
-    setInterval(function(){
+    var current_link=window.location.href;
+    if(current_link.substr(current_link.length-6)!="/admin"){
         getRealData();
-    },30000);
+        setInterval(function(){
+            getRealData();
+        },30000);
+    }
     setInterval(function(){
         var title = document.title;
         if(notice){
