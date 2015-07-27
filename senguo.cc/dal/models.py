@@ -1789,6 +1789,16 @@ class Spider_Shop(MapBase , _CommonApi):
 	description = Column(String(128))
 
 	shop_code = Column(String(20)) #正式生成后的店铺code
+	shop_province = Column(Integer)
+	shop_city = Column(Integer)
+
+# 角色：市场推广
+class SpreadMember(MapBase, _AccountApi):
+	__tablename__ = "spread_member"
+	__relationship_props__ = ["accountinfo"]
+	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
+	accountinfo = relationship(Accountinfo)
+	code = Column(String(30))
 
 # added by woody 7.11
 # 推广系统店铺商品信息
@@ -1800,6 +1810,13 @@ class Spider_Good(MapBase,_CommonApi):
 	goods_price = Column(Float)
 	shop_id  =Column(Integer,nullable = False)
 	sales = Column(Integer)
+
+
+class Scene_Openid(MapBase,_CommonApi):
+	__tablename__ = 'scecne_openid'
+	id = Column(Integer,primary_key=True,nullable=False,autoincrement=True)
+	scene_id = Column(Integer)
+	openid   = Column(String(64))
 
 '''
 # add by cm 2015.6.15

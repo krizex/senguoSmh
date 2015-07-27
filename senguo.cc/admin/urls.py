@@ -9,6 +9,7 @@ import handlers.onlinePay
 import handlers.activity
 import handlers.madmin
 import handlers.market
+import handlers.apply
 import handlers.bbs
 from dal import models
 #todo:handlers太大会不会影响性能？
@@ -43,7 +44,6 @@ handlers = [
 	(r"/market/shopinsert/(\w+)", handlers.market.ShopAdminInfo, {}, "MarketInsert"),
 	(r"/market/success", handlers.market.Success, {}, "MarketSuccess"),
 	#(r'/market/staffinsert',handlers.market.StaffInsert,{},"staffinsert"),
-
 
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
@@ -114,6 +114,7 @@ handlers = [
 	(r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
 	(r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
 	(r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
+	(r"/customer/recharge/AliPay", handlers.customer.RechargeAliPay, {}, "customerRechargeAliPay"),
 	(r"/customer/search", handlers.customer.GoodsSearch, {}, "customerGoodsSearch"),
 	(r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
 	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
@@ -246,6 +247,7 @@ handlers = [
 	(r"/admin/editorCallback", handlers.admin.editorCallback, {}, "admineditorCallback"),
 	(r"/admin/MessageManage", handlers.admin.MessageManage, {}, "adminMessageManage"),
 	(r"/admin/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
+	(r"/admin/import", handlers.admin.GoodsImport, {}, "GoodsImport"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
@@ -283,7 +285,11 @@ handlers = [
 	# (r"/fruitzone/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
 	# (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
 	# (r"/fruitzone/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
-	(r"/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
+	(r"/apply", handlers.apply.Home, {}, "ApplyHome"),
+	(r"/apply/login", handlers.apply.Login, {}, "ApplyLogin"),
+	(r"/wxmessage",handlers.apply.WxMessage,{},'wxmessage'),
+	(r"/admin/create", handlers.apply.CreateShop, {}, "CreateShop"),
+	
 	(r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
 	(r"/apply/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
 	(r"/apply/success", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),

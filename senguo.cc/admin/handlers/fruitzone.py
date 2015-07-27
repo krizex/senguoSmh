@@ -346,6 +346,7 @@ class ApplySuccess(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("fruitzone/apply-success.html")
 
+
 # 店铺申请
 class ShopApply(FruitzoneBaseHandler):
 	MAX_APPLY_COUNT = 150
@@ -406,7 +407,6 @@ class ShopApply(FruitzoneBaseHandler):
 		"shop_intro", "realname:str", "wx_username:str", "code:int","lat","lon")
 	def post(self):
 		#* todo 检查合法性
-
 		if self._action == "apply":
 			account_id = self.current_user.accountinfo.id
 			#判断申请店铺的微信是否已是某店铺的管理员身份
@@ -767,6 +767,12 @@ class PhoneVerify(_AccountBaseHandler):
 	@run_on_executor
 	@FruitzoneBaseHandler.check_arguments("phone:str")
 	def handle_gencode_shop_apply(self):
+		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
+		if a:
+			if a != self.current_user.accountinfo:
+				return self.send_fail(error_text="手机号已经绑定其他账号")
+			else:
+				return self.send_fail(error_text="手机号已绑定，无需重复绑定")
 		# print("[店铺申请]发送证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
@@ -867,6 +873,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments('price:str')
 	def handle_alipaytest(self):
+		from urllib.parse import quote
 		shop_id = self.get_cookie("market_shop_id")
 		customer_id = self.current_user.id
 		# print(shop_id,customer_id,'idddddddddddddddddddddd')
@@ -877,7 +884,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			url = self.test_create_tmporder_url(price,shop_id,customer_id)
 		except Exception as e:
 			return self.send_fail('ca')
-		return self.send_success(url = url)
+		return self.send_success(url = quote(url))
 
 	@FruitzoneBaseHandler.check_arguments("charge_type:int", "pay_type")
 	def handle_confirm_payment(self):
@@ -1010,7 +1017,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			# call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealFinishedCallback")),
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("fruitzoneSystemPurchaseAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseAliNotify")),
-			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
+			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("customerProfile"))
 		)
 		print(self.reverse_url("fruitzoneSystemPurchaseAliNotify"),'urlllllllllllllllllllll')
 		return authed_url

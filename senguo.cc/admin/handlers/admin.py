@@ -11,17 +11,17 @@ from libs.msgverify import gen_msg_token,check_msg_token
 import requests
 import base64
 import decimal
-import json 
+import json
 # add by cm 2015.5.15
 import string
-import random  
+import random
 
 import tornado.websocket
 from dal.db_configs import DBSession
 
 # 登录处理
 class Access(AdminBaseHandler):
-	def initialize(self, action): 
+	def initialize(self, action):
 		self._action = action
 	def prepare(self):
 		"""prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
@@ -30,8 +30,7 @@ class Access(AdminBaseHandler):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
-			return self.render("admin/login.html",
-								 context=dict(next_url=next_url))
+			return self.render("admin/login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.clear_current_user()
@@ -72,6 +71,7 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminHome"))
 
@@ -149,6 +149,7 @@ class Home(AdminBaseHandler):
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.current_shop = shop
 			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
+			print(self.current_shop)
 			return self.send_success()
 		elif action == 'other_shop':
 			shoplist=[]
@@ -180,6 +181,7 @@ class SwitchShop(AdminBaseHandler):
 		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
 		except:
 			other_shops = None
+
 		if shops:
 			shop_list += self.getshop(shops)
 		if other_shops:
@@ -233,14 +235,15 @@ class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
-		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
-			not_(models.Order.status.in_([-1,0]))).count()
-		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
-		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
-		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
-		on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
-		if new_order_sum < 0:
-			new_order_sum = 0
+		if self.current_shop.orders:
+			order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+				not_(models.Order.status.in_([-1,0]))).count()
+			new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+			follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+			new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+			on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+			if new_order_sum < 0:
+				new_order_sum = 0
 		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum,
 			follower_sum=follower_sum,on_num=on_num)
 
@@ -307,6 +310,7 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 # 销售统计 add by jyj 2015-7-8
 class SellStatic(AdminBaseHandler):
 	def get(self):
+		self.if_current_shops()
 		return self.render("admin/sell-count.html",context=dict(subpage='sellstatic'))
 
 	@tornado.web.authenticated
@@ -320,7 +324,7 @@ class SellStatic(AdminBaseHandler):
 		# 查询店铺所有的水果类目
 		shop_all_fruit_type_query = self.session.query(models.FruitType.id,models.FruitType.name).join(models.Fruit).filter(models.Fruit.shop_id == self.current_shop.id).distinct(models.Fruit.fruit_type_id).all()
 		shop_all_mgoods_type_query = self.session.query(models.Menu.id,models.Menu.name).filter(models.Menu.shop_id == self.current_shop.id).all()
-		
+
 		if len(shop_all_fruit_type_query) == 0 and len(shop_all_mgoods_type_query) == 0:
 			output_data = {
 				'type_data':[],
@@ -404,7 +408,7 @@ class SellStatic(AdminBaseHandler):
 			today_mgoods_list_query = self.session.query(models.Order.mgoods).filter(models.Order.shop_id == self.current_shop.id,models.Order.status >= 5,\
 						       			or_(and_(models.Order.create_date.like(now_date_str),models.Order.today == 1),\
 									        and_(models.Order.create_date.like(yesterday_date_str),models.Order.today == 2))).all()
-			
+
 			fruit_list = []
 			mgoods_list = []
 
@@ -444,7 +448,7 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-			
+
 			id_list = []
 			for i in range(len(total_price_list)):
 				id_list.append(str(total_price_list[i]['fruit_id']))
@@ -488,7 +492,7 @@ class SellStatic(AdminBaseHandler):
 						tmp["per_name_total_price"][tpl["fruit_name"]] = tpl["total_price"]
 				type_total_price_list.append(tmp)
 			type_total_price_list.sort(key = lambda item:item["type_total_price"],reverse=False)
-			
+
 			output_data = {
 				'type_data':type_total_price_list,
 				'name_data':total_price_list
@@ -536,7 +540,7 @@ class SellStatic(AdminBaseHandler):
 			order_goods_list = fruit_list + mgoods_list
 
 
-			
+
 			total_price_list = []
 			name_list = []
 
@@ -564,7 +568,7 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-			
+
 			id_list = []
 			for i in range(len(total_price_list)):
 				id_list.append(str(total_price_list[i]['fruit_id']))
@@ -650,7 +654,7 @@ class SellStatic(AdminBaseHandler):
 			order_goods_list = fruit_list + mgoods_list
 
 
-			
+
 			total_price_list = []
 			name_list = []
 
@@ -678,7 +682,7 @@ class SellStatic(AdminBaseHandler):
 						for i in range(len(total_price_list)):
 							if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 								total_price_list[i]['total_price'] += total_price
-			
+
 			id_list = []
 			for i in range(len(total_price_list)):
 				id_list.append(str(total_price_list[i]['fruit_id']))
@@ -787,7 +791,7 @@ class SellStatic(AdminBaseHandler):
 				order_goods_list = fruit_list + mgoods_list
 
 
-				
+
 				total_price_list = []
 				name_list = []
 
@@ -815,7 +819,7 @@ class SellStatic(AdminBaseHandler):
 							for i in range(len(total_price_list)):
 								if total_price_list[i]["fruit_name"] == tmp["fruit_name"]:
 									total_price_list[i]['total_price'] += total_price
-				
+
 				id_list = []
 				for i in range(len(total_price_list)):
 					id_list.append(str(total_price_list[i]['fruit_id']))
@@ -848,7 +852,7 @@ class SellStatic(AdminBaseHandler):
 						else:
 							# goods_type_list[tpl["fruit_name"]] = "其他"
 							pass
-				
+
 
 				# 每一个类目的总销售额(内部包含该类目下的所有种类的商品的名称及销售额):
 				type_total_price_list = []
@@ -957,8 +961,8 @@ class SellStatic(AdminBaseHandler):
 
 # 订单统计
 class OrderStatic(AdminBaseHandler):
-
 	def get(self):
+		self.if_current_shops()
 		return self.render("admin/order-count.html",context=dict(subpage='orderstatic'))
 
 	@tornado.web.authenticated
@@ -1172,6 +1176,7 @@ class OrderStatic(AdminBaseHandler):
 class FollowerStatic(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("admin/user-count.html",context=dict(subpage='userstatic'))
 
 	@tornado.web.authenticated
@@ -1261,6 +1266,7 @@ class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "page:int")
 	def get(self):
+		self.if_current_shops()
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 10
@@ -1341,6 +1347,7 @@ class Order(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
+		self.if_current_shops()
 		order_type = self.args["order_type"]
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
 			atonce,ontime,new_order_sum = 0,0,0
@@ -1467,6 +1474,28 @@ class Order(AdminBaseHandler):
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
 			self.order_done(self.session,order)
+
+	def _count(self):
+		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
+				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0}
+		try:
+			orders = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).all()
+		except:
+			orders = None
+		if orders:
+			for order in orders:
+				count[order.type*10+5] += 1
+				if order.status == 0:
+					count[order.type*10] += 1
+				elif order.status == 1:
+					count[order.type*10+1] += 1
+				elif order.status in (2, 3, 4):
+					count[order.type*10+2] += 1
+				elif order.status in (5, 6, 7):
+					count[order.type*10+3] += 1
+				elif order.status == 10:
+					count[order.type*10+4] += 1
+		return count
 
 	@tornado.web.authenticated
 	@unblock
@@ -1668,29 +1697,13 @@ class Order(AdminBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
-	def _count(self):
-		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
-				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0}
-		for order in self.current_shop.orders:
-			count[order.type*10+5] += 1
-			if order.status == 0:
-				count[order.type*10] += 1
-			elif order.status == 1:
-				count[order.type*10+1] += 1
-			elif order.status in (2, 3, 4):
-				count[order.type*10+2] += 1
-			elif order.status in (5, 6, 7):
-				count[order.type*10+3] += 1
-			elif order.status == 10:
-				count[order.type*10+4] += 1
-		return count
 
 # 商品管理（老）
 class Shelf(AdminBaseHandler):
-
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "id:int")
 	def get(self):
+		self.if_current_shops()
 		action = self.args["action"]
 
 		fruit_type_d = {}
@@ -1907,6 +1920,7 @@ class Goods(AdminBaseHandler):
 
 	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
 	def get(self):
+		self.if_current_shops()
 		action = self._action
 		_id = str(time.time())
 		current_shop = self.current_shop
@@ -2576,15 +2590,108 @@ class Goods(AdminBaseHandler):
 				return self.send_fail('没有该商品分类')
 			types = self.getClass(fruit_types)
 			return self.send_success(data=types)
+
 		else:
 			return self.send_error(404)
 
 		return self.send_success()
 
+#商品导入
+class GoodsImport(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action?:str")
+	def get(self):
+		shop_list = []
+		try:
+			shops = self.current_user.shops
+		except:
+			shops = None
+		try:
+			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
+		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+		except:
+			other_shops = None
+
+		if shops:
+			shop_list += self.getshop(shops)
+		if other_shops:
+			shop_list += self.getshop(other_shops)
+		return self.render("admin/goods-import.html",context=dict(subpage="goods"),shop_list=shop_list)
+
+	def getshop(self,shops):
+		shop_list = []
+		for shop in shops:
+			shop_list.append({"id":shop.id,"name":shop.shop_name})
+		return shop_list
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		current_shop = self.current_shop
+		if action == "get_goods":
+			shop_id = int(data["id"])
+			try:
+				shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			except:
+				shop = None
+			if not shop:
+				return self.send_fail("该店铺不存在")
+			if shop not in self.current_shop.admin.shops:
+				return self.send_fail("该店铺不属于您，无法获取数据")
+			goods_list = []
+			for fruit in shop.fruits:
+				charge_types = []
+				for charge in fruit.charge_types:
+					charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
+				img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
+				goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
+			return self.send_success(goods_list=goods_list)
+
+		elif action == "import_goods":
+			fruit_list  = data["fruit_list"]
+			if len(self.current_shop.fruits) + len(fruit_list) >200:
+				return self.send_fail("一家店铺至多可添加200种商品")
+			fruits = self.session.query(models.Fruit).filter(models.Fruit.id.in_(fruit_list)).all()
+			for fruit in fruits:
+				_fruit = models.Fruit(
+					shop_id=self.current_shop.id,
+					fruit_type_id=fruit.fruit_type_id,
+					name=fruit.name,
+					storage=0,
+					unit=fruit.unit,
+					tag=fruit.tag,
+					img_url=fruit.img_url,
+					intro=fruit.intro,
+					classify=fruit.classify,
+					detail_describe=fruit.detail_describe,
+				)
+				self.session.add(_fruit)
+				self.session.commit()
+				if not fruit.charge_types:
+					continue
+				for charge in fruit.charge_types:
+					_charge=models.ChargeType(
+						fruit_id = _fruit.id,
+						price = charge.price,
+						unit = charge.unit,
+						num = charge.num,
+						unit_num = charge.unit_num,
+						active = charge.active,
+						market_price = charge.market_price,
+						select_num = charge.select_num,
+						relate = charge.relate
+					)
+					self.session.add(_charge)
+					self.session.commit()
+			return self.send_success()
+
 class editorTest(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str")
 	def get(self):
+		self.if_current_shops()
 		if "action" in self.args:
 			if self.args["action"] == "editor" :
 				shop_id = self.current_shop.id
@@ -2615,6 +2722,7 @@ class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
 	def get(self):
+		self.if_current_shops()
 		# if self.is_pc_browser()==False:
 		# 	return self.redirect(self.reverse_url("MadminComment"))
 		action = self.args["action"]
@@ -2712,6 +2820,7 @@ class Staff(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action")
 	def get(self):
+		self.if_current_shops()
 		action = self.args["action"]
 		staffs = self.current_shop.staffs
 		if action == "hire":
@@ -2841,6 +2950,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "id:int","page?:int")
 	def get(self):
+		self.if_current_shops()
 		action = self.args["action"]
 		subpage=''
 		if action == 'customer_order':
@@ -2877,6 +2987,7 @@ class Config(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action",'status?')
 	def get(self):
+		self.if_current_shops()
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action = self.args["action"]
@@ -3148,6 +3259,7 @@ class AdminAuth(AdminBaseHandler):
 	def initialize(self, action):
 		self._action = action
 	def get(self):
+		self.if_current_shops()
 		next_url = self.get_argument('next', '')
 		if self._action == 'wxauth':
 			if self.is_pc_browser():
@@ -3218,6 +3330,7 @@ class AdminAuth(AdminBaseHandler):
 class ShopBalance(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		subpage = 'shopBlance'
 		shop = self.current_shop
 		shop.is_balance = 0
@@ -3468,6 +3581,7 @@ class ShopBalance(AdminBaseHandler):
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
@@ -3549,6 +3663,7 @@ class ShopAuthenticate(AdminBaseHandler):
 	@tornado.web.authenticated
 	# @AdminBaseHandler.check_arguments()
 	def get(self):
+		self.if_current_shops()
 		shop_id = self.current_shop.id
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
 		try:
@@ -3645,6 +3760,7 @@ class Marketing(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int")
 	def get(self):
+		self.if_current_shops()
 		action = self.args["action"]
 		# current_shop_id=self.current_shop.id
 		if action == "lovewall":
@@ -3851,6 +3967,7 @@ class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str", "page?:int")
 	def get(self):
+		self.if_current_shops()
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 10
@@ -3923,6 +4040,7 @@ class Confession(AdminBaseHandler):
 class MessageManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render('admin/shop-wx-set.html',context=dict(subpage='shop_set',shopSubPage='wx_set'))
 
 	@tornado.web.authenticated
@@ -3979,7 +4097,7 @@ class WirelessPrint(AdminBaseHandler):
 				elif action == "ylyadd":
 					machine_code = _data["num"] #打印机终端号
 					msign = _data["key"]#打印机密钥
-					sign=apikey+'partner'+str(partner)+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
+					sign=apikey+'partner'+partner+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
 					sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
 					data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
 					r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)

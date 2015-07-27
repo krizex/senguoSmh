@@ -72,11 +72,11 @@ $(document).ready(function(){
                 var args={action:'shop_change',data:data};
                 $.postJson(url,args,function(res){
                     if(res.success){
-                         if(shop_code!="not set" && typeof(shop_code) != undefined){
+                        if(shop_code!="not set" && typeof(shop_code) != undefined){
                                 window.location.href='/admin/home';
-                            }else{
-                            window.location.href="/admin/config/shop";
-                            }
+                        }else{
+                        window.location.href="/admin/config/shop";
+                        }
 
                     }
                 });
