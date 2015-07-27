@@ -97,5 +97,5 @@ body{font-family:"Helvetica Neue","Hiragino Sans GB","Microsoft YaHei","\9ED1\4F
 
 /*login*/
 .wx-notice{border-radius:3px;text-align:center;margin:0 auto;color:#585858;width:252px;padding:15px 10px;background-color:#eee;margin-top:15px;}
-.wx-qrcode-inner{border-radius:6px;-webkit-border-radius:6px;overflow:hidden;width:280px;position:relative;margin:90px auto 0;padding:30px 125px;border:1px solid #c9ccd0;background-color:#fafafa;}
-#qrcode{width:250px;height:250px;margin:0 auto;border:1px solid #dcdcdc;border-radius:5px;-webkit-border-radius:5px;padding:10px;}
+.wx-qrcode-inner{border-radius:6px;-webkit-border-radius:6px;overflow:hidden;width:280px;position:relative;margin:90px auto 0;padding:50px 125px;border:1px solid #c9ccd0;background-color:#fafafa;}
+#qrcode{width:220px;height:220px;margin:0 auto;border:1px solid #dcdcdc;border-radius:5px;-webkit-border-radius:5px;padding:15px;}
