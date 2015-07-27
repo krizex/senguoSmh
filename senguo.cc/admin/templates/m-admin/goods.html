@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% block title %}商品管理{% end %}
+{% block head %}
+
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="{{reverse_url('MadminShop')}}" class="back">返回</a>
+    <div class="wrap-order-tab">
+        <ul class="group order-type-list goods-all-list">
+            <li class="active item" data-id="1">所有商品</li>
+            <li class="item" data-id="2">商品分组</li>
+            <li class="item" data-id="3">商品类目</li>
+            <li class="tab-bg"></li>
+        </ul>
+    </div>
+    <a href="{{reverse_url('MadminSearch')}}" class="head-right search"><em></em></a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container pt70 pm80">
+<div class="second-tab">
+    <ul class="second-tab-list group pt0">
+        <li class="goods_status dgreen" data-id="1">已上架<i class="imenu"></i></li>
+        <li class="gitem active" data-id="2">添加时间<i class="turn"></i></li>
+        <li class="gitem" data-id="3">库存<i class="turn"></i></li>
+        <li class="gitem" data-id="5">销量<i class="turn"></i></li>
+        <li class="tab-line l25"></li>
+    </ul>
+    <div class="wrap-menu-list wrap-goods-menu hide">
+        <ul class="menu-list goods-menu-list">
+            <li data-id="all">所有</li>
+            <li data-id="on">已上架</li>
+            <li data-id="off">已下架</li>
+            <li data-id="sold_out">已售完</li>
+            <li data-id="current_sell">待成交</li>
+        </ul>
+    </div>
+</div>
+<div class="order-list-box hide">
+    <div class="goods-item item">
+        <ul class="order-lists pt10" id="goods_status">
+             <li class="mb8">
+                 <p class="c999 goods-time">添加时间 : 2015-01-23 10:29:22</p>
+                 <a href="javascript:;">
+                     <div class="goods-row">
+                         <dl class="gdl">
+                             <dt>
+                                 <img src="/static/images/TDSG.png" alt="商品图片"/>
+                             </dt>
+                             <dd>
+                                 <i class="more"></i>
+                                 <span class="switch-btn switch-abtn switch-goods"  data-id=""><i></i><span>已启用</span></span>
+                                 <p class="dgreen clip goods-name">
+                                     <span>广东山竹好好好吃啊哈哈哈哈哈哈哈</span>
+                                 </p>
+                                 <p class="c666 mt4 clip">
+                                     <span class="mr10"><span class="yellow">￥</span>15.00元/斤</span>
+                                     <span class="mr10"><span class="yellow">￥</span>150.00元/箱</span>
+                                 </p>
+                                 <p class="mt4 c999 clip">
+                                     <span class="mr10">库存500斤</span>
+                                     <span class="mr10">待成交500斤</span>
+                                     <span class="mr10">销量500斤</span>
+                                 </p>
+                             </dd>
+                         </dl>
+                     </div>
+                 </a>
+             </li>
+            <li class="mb8">
+                <p class="c999 goods-time">添加时间 : 2015-01-23 10:29:22</p>
+                <a href="javascript:;">
+                    <div class="goods-row">
+                        <dl class="gdl">
+                            <dt>
+                                <img src="/static/images/TDSG.png" alt="商品图片"/>
+                            </dt>
+                            <dd>
+                                <i class="more"></i>
+                                <span class="switch-btn switch-abtn switch-goods"  data-id=""><i></i><span>已启用</span></span>
+                                <p class="dgreen clip goods-name">
+                                    <span>广东山竹好好好吃啊哈哈哈哈哈哈哈</span>
+                                </p>
+                                <p class="c666 mt4 clip">
+                                    <span class="mr10"><span class="yellow">￥</span>15.00元/斤</span>
+                                    <span class="mr10"><span class="yellow">￥</span>150.00元/箱</span>
+                                </p>
+                                <p class="mt4 c999 clip">
+                                    <span class="mr10">库存500斤</span>
+                                    <span class="mr10">待成交500斤</span>
+                                    <span class="mr10">销量500斤</span>
+                                </p>
+                            </dd>
+                        </dl>
+                    </div>
+                </a>
+            </li>
+        </ul>
+    </div>
+    <div class="goods-item item hide">
+        <ul class="order-lists pt10" id="goods_time">
+        </ul>
+    </div>
+    <div class="goods-item item hide">
+        <ul class="order-lists pt10" id="goods_storage">
+        </ul>
+    </div>
+    <div class="goods-item item hide">
+        <ul class="order-lists pt10" id="goods_sales">
+        </ul>
+    </div>
+    <div class="no-result">页面加载中...</div>
+</div>
+<div class="wrap-goods-group mt10">
+    <ul class="group-list">
+        <li>
+            <a href="javascript:;">
+                <div class="goods-row">
+                    <dl class="godl">
+                        <dt>
+                            <div class="wrap-gi tuijian"></div>
+                        </dt>
+                        <dd>
+                            <p class="c333">店铺推荐(19)</p>
+                            <p class="c666 mt6">该分组最多加入6个商品，分组排序优先级最高</p>
+                        </dd>
+                    </dl>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <div class="goods-row">
+                    <dl class="godl">
+                        <dt>
+                            <div class="wrap-gi default"></div>
+                        </dt>
+                        <dd>
+                            <p class="c333">默认分组(19)</p>
+                            <p class="c666 mt6">若不设置分组，商品会默认进入该分组</p>
+                        </dd>
+                    </dl>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <div class="goods-row">
+                    <dl class="godl">
+                        <dt>
+                            <div class="wrap-gi default"></div>
+                        </dt>
+                        <dd>
+                            <p class="c333">国外分组(19)</p>
+                            <p class="c666 mt6 clip">若不设置分组，商品会默认进入该分组该分组该分组</p>
+                        </dd>
+                    </dl>
+                </div>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <div class="goods-row">
+                    <dl class="godl">
+                        <dt>
+                            <div class="wrap-gi"><span class="group-text">水</span></div>
+                        </dt>
+                        <dd>
+                            <i class="more"></i>
+                            <p class="c333">水果拼盘(19)</p>
+                            <p class="c666 mt6 clip">清凉一夏！可口美味的水果拼盘来了</p>
+                        </dd>
+                    </dl>
+                </div>
+            </a>
+        </li>
+    </ul>
+</div>
+</div>
+<ul class="hide" id="order-item">
+
+</ul>
+{% end %}
+{% block fix %}
+<div class="qa-btn bm60" id="qa">?</div>
+<div class="pop-bwin pop-qa hide">
+    <ul class="shop-qalist">
+        <li class="title">说明</li>
+        <li>
+            <span class="roll-left"></span>建立商品分组可以帮助您更好地对水果进行管理和进行促销活动
+        </li>
+        <li>
+            <span class="roll-left"></span>分组信息展示在店铺中，便于用户购买商品
+        </li>
+        <li>
+            <span class="roll-left"></span>分组删除数据后，该分组的商品会进入默认分组
+        </li>
+    </ul>
+    <a href="javascript:;" class="close-pop bm60" id="close-pop"></a>
+</div>
+<div class="wrap-bm-btns">
+    <ul class="btns-list group hide">
+        <li>
+            <a href="javascritp:;" class="bm-btn add-goods">添加新商品</a>
+        </li>
+    </ul>
+    <ul class="btns-list group">
+        <li>
+            <a href="javascritp:;" class="bm-btn add-goods">添加新商品</a>
+        </li>
+        <li>
+            <a href="javascritp:;" class="bm-btn manage-group">分组管理</a>
+        </li>
+    </ul>
+</div>
+<div class="pop-win pop-staff hide">
+    <div class="pop-content">
+
+    </div>
+</div>
+<div class="wrap-loading-box hide">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/template.js"></script>
+<script src="{{static_url('m-admin/js/goods.js')}}"></script>
+{% end %}

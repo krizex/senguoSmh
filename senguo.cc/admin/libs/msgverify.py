@@ -17,7 +17,7 @@ url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
 #get access_token
 #############################################
 def get_access_token():
-	AppSecret = '6ecd60383b7e26a09d51a12e75649b3e'
+	AppSecret = 'cef2c4c6a59e6d0ae8b5a3f741a9c788'
 	AppID = 'wx0ed17cdc9020a96e'
 	grant_type = 'client_credential'
 	url = 'https://api.weixin.qq.com/cgi-bin/token?grant_type={0}&appid={1}&secret={2}'.format(grant_type,AppID,AppSecret)
@@ -173,10 +173,6 @@ def check_msg_token(phone, code):
 		s.close()
 		return True
 	return False
-
-
-def test_abc():
-	pass
 
 # 管理员新订单短信提醒
 def order_new_msg(mobile,admin_name,shop_name):

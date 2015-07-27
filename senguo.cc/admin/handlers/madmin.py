@@ -320,3 +320,47 @@ class Comment(AdminBaseHandler):
 			return self.render("m-admin/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
 				shop_service = shop_service,commodity_quality=commodity_quality,shop_code=shop_code)
 		return self.send_success(date_list=date_list,nomore=nomore)
+
+# 商品管理
+class Goods(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/goods.html")
+#商品搜索
+class GoodsSearch(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/goods-search.html")
+#商品新建
+class GoodsAdd(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/goods-add.html")
+#商品编辑
+class GoodsEdit(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/goods-edit.html")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

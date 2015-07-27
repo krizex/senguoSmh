@@ -22,7 +22,7 @@ from dal import models
 # ]
 
 handlers = [
-	
+
 	#告白墙
 	(r"/lovewall/public/(\w+)", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
 	(r"/lovewall/center/(\w+)", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
@@ -48,7 +48,7 @@ handlers = [
 	#优惠券
 	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
 	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
-	
+
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
 	(r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
@@ -65,7 +65,7 @@ handlers = [
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
 	(r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
-	
+
 	(r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
 	(r"/customer/wxauth", handlers.customer.WxBind, {"action":"wx_auth"}, "customerwxAuth"),
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
@@ -114,6 +114,7 @@ handlers = [
 	(r"/customer/points", handlers.customer.Points, {}, "customerPoints"),
 	(r"/customer/balance", handlers.customer.Balance, {}, "customerBalance"),
 	(r"/customer/recharge", handlers.customer.Recharge, {}, "customerRecharge"),
+	(r"/customer/recharge/AliPay", handlers.customer.RechargeAliPay, {}, "customerRechargeAliPay"),
 	(r"/customer/search", handlers.customer.GoodsSearch, {}, "customerGoodsSearch"),
 	(r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
 	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
@@ -125,8 +126,8 @@ handlers = [
 	(r"/customer/(\w+)", handlers.customer.Home, {}, "customerHome"),
 	#店铺地图
 	(r"/shoparea/(\w+)",handlers.customer.ShopArea,{},"shoparea"),
-	
-	
+
+
 	(r"/super/oauth", handlers.superadmin.Access,{
 		"action":"oauth"}, "superOauth"),
 	(r"/super/logout", handlers.superadmin.Access,{
@@ -206,7 +207,7 @@ handlers = [
 
 
 	# (r"/super/notice/", handlers.superadmin.Notice),
-	
+
 	(r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
 	(r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
 	(r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
@@ -247,6 +248,7 @@ handlers = [
 	(r"/admin/MessageManage", handlers.admin.MessageManage, {}, "adminMessageManage"),
 	(r"/admin/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
 	(r"/admin/import", handlers.admin.GoodsImport, {}, "GoodsImport"),
+
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
 	# (r"/admin/finance", handlers.admin.Finance, {}, "adminFinance"),
@@ -263,9 +265,11 @@ handlers = [
 	(r"/madmin/shopinfo", handlers.madmin.Info, {}, "MadminInfo"),
 	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
 	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
+	(r"/madmin/goods", handlers.madmin.Goods, {}, "MadminGoods"),
+	(r"/madmin/gsearch", handlers.madmin.GoodsSearch, {}, "MadminGoodsSearch"),
+	(r"/madmin/goodsAdd", handlers.madmin.GoodsAdd, {}, "MadminGoodsAdd"),
+	(r"/madmin/goodsEdit", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
 
-	
-	# 水果圈子
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
@@ -276,7 +280,7 @@ handlers = [
 	(r"/fruitzone/admin/profile", handlers.fruitzone.AdminProfile, {}, "fruitzoneAdminProfile"),
 	(r"/fruitzone/paytest",handlers.customer.payTest,{},"fruitzonePayTest"),
 	(r"/fruitzone/searchlist",handlers.fruitzone.SearchList,{},"searchlist"),
-	#to remove  
+	#to remove
 	#woody
 	(r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),
 	# (r"/fruitzone/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
@@ -307,7 +311,7 @@ handlers = [
 
 	(r"/fruitzone/phoneVerify", handlers.fruitzone.PhoneVerify, {
 		"action":"admin"}, "fruitzonePhoneVerify"),
-	
+
 
 	#信息墙
 	(r"/infowall/supply", handlers.infowall.Home, {"action": "supply"}, "infowallHomeSupply"),
@@ -352,7 +356,5 @@ handlers = [
 	(r"/fruitzone/imgcallback", handlers.fruitzone.QiniuCallback, {"action":"shop" }, "imgCallback"),
 	(r"/fruitzone/shopImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_shop_img"}, "fruitzoneshopImgCallback"),
 	(r"/fruitzone/InfoImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_info_img"}, "fruitzoneInfoImgCallback"),
-	(r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback,
-	 {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
+	(r"/admin/shelf/fruitImgCallback", handlers.fruitzone.QiniuCallback, {"action": "edit_fruit_img"}, "adminShelfFruitImgCallback"),
 ]
-
