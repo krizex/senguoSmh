@@ -22,17 +22,15 @@ $(document).ready(function () {
                 }
             });
         }
-        /*if (true) {
-            $(".sw-link-copy").zclip({
-                path: "/static/js/third/ZeroClipboard.swf",
-                copy: function(){
-                    return $(this).prev('input').html();
-                },
-                afterCopy:function(){
-                    Tip("优惠券码已经复制到剪切板");
-                }
-            });
-        }*/
+        $(".sw-link-copy").zclip({
+            path: "/static/js/third/ZeroClipboard.swf",
+            copy: function(){
+                return $(this).prev('input').val();
+            },
+            afterCopy:function(){
+                Tip("优惠券链接已经复制到剪切板");
+            }
+        });
         
   var id=parseInt($.getUrlParam("coupon_type"));
   if(id){
