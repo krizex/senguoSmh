@@ -39,7 +39,21 @@ class Access(CustomerBaseHandler):
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			if self.current_user:
-				return self.redirect(self.reverse_url("customerProfile"))
+				if next_url != "/admin" :
+					return self.redirect(self.reverse_url("customerProfile"))
+				else:
+					try:
+						admin = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.accountinfo.id,active=1,work=9).first()
+					except:
+						admin = None
+
+					try:
+						super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+					except:
+						super_admin = None
+
+					if not admin and not super_admin:
+						return self.redirect(self.reverse_url("ApplyHome"))
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
@@ -298,7 +312,8 @@ class Home(CustomerBaseHandler):
 			# print(shop,shop.shop_auth)
 		else:
 			# print("[个人中心]店铺不存在：",shop_code)
-			return self.send_fail('shop not found')
+			return self.write("店铺不存在")
+			# return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id",str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
@@ -889,8 +904,8 @@ class Market(CustomerBaseHandler):
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
-			# return self.write('您访问的店铺不存在')
-			return self.send_fail('shop not found')
+			return self.write('您访问的店铺不存在')
+			# return self.send_fail('shop not found')
 		print(shop.admin.id)
 
 		if shop.admin.has_mp:
@@ -2530,7 +2545,8 @@ class InsertData(CustomerBaseHandler):
 				temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
 					shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
 					delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],lon = shop['lon'])
+					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
+					lon = shop['lon'],shop_province = 420000,shop_city = 420100)
 				self.session.add(temp_shop)
 		self.session.commit()
 

@@ -13,8 +13,9 @@ $(document).ready(function(){
         $("#add-goods").addClass("hidden");
         $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
         $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+        cur_type = "add";
         if(localStorage.getItem("add")=='1'){
-            window.location.href="/admin/goods/all";
+            //window.location.href="/admin/goods/all";
         }else{
             localStorage.setItem("add",'1');
         }

@@ -1,0 +1,73 @@
+{% extends 'goods-set-base.html' %}
+{% block setcontent %}
+<div class="wrap-goods-groups">
+    <p class="c333 mt10 choose-text"><a href="javasript:;" class="c999 cancel-add-goods">商品管理</a><span class="c333"> / 添加新商品</span></p>
+    <div class="subnav-box clearfix mt20">
+        <ul class="subnav pull-left import-type">
+            <li class="text-center active"><a href="javascript:;">从其他店铺导入</a></li>
+            <li class="text-center"><a href="javascript:;">从其他平台导入</a></li>
+        </ul>
+    </div>
+    <div class="wrap-tabcont">
+        <div class="tab-item tab1">
+            <p class="c666 mt20">可以将同一卖家帐号下多店铺管理中心里其他店铺的商品数据导入进来，省去新建商品的麻烦</p>
+            <div class="mt20 group">
+                <div class="cate-title mt2 c333">选择店铺 : </div>
+                <div class="dropdown slide-down-select pull-left mt2 import-drop-down">
+                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                        <em title="" class="pull-left shop_name" data-id="{{shop_list[0]['id']}}">{{shop_list[0]['name']}}</em>
+                        <span class="caret pull-right no-margin-left rotate0"></span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-right shop_profile_list" role="menu" aria-labelledby="dropdownMenu110">
+                        {% for shop in shop_list%}
+                        <li role="presentation">
+                            <a class="item" href="javascript:;" data-id="{{shop['id']}}">{{shop["name"]}}</a>
+                        </li>
+                        {% end %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="tab-item tab2 hidden">
+            <p class="mt20 c666">可以将淘点点、有赞、饿了么等其他平台的数据导入进来</p>
+            <div class="wrap-url mt20">
+                <span class="c333">输入URL : </span>
+                <input type="text" class="create-ipt" id="shop_url" placeholder="请输入其他平台店铺地址"/>
+                <input type="button" class="get-code" value="开始导入"/>
+            </div>
+        </div>
+        <div class="">
+            <p class="c333 mt20">选择商品 : </p>
+            <div class="wrap-shop-goods mt10">
+                <ul class="shop-list group">
+                    <li>
+                        <i class="checkbox-btn"></i>
+                        <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
+                        <div class="shop-item">
+                            <p class="c333" title="水果太太水果太太水果太太">水果太太水果太太水果太太</p>
+                            <p class="c666">价格3元/份</p>
+                        </div>
+                    </li>
+                </ul>
+                <div class="last-choose mt10 ml5">
+                    <span class="all-choose fl">
+                        <i class="checkbox-btn fl"></i>
+                        <span class="f12 fl ml10">全选</span>
+                    </span>
+                   <!--  <div class="page-switch">
+                        <a href="javascript:;" class="prev-page">上一页</a>
+                        <span class="page-num"><span id="cur_page">1</span>/<span id="total_page">3</span></span>
+                        <a href="javascript:;" class="next-page">下一页</a>
+                    </div> -->
+                </div>
+            </div>
+            <p class="mt10 show-choose-txt">已选 <span class="green-txt" id="choose_txt">0</span> 种商品</p>
+            <a href="javascript:;" id="commit" class="go-btn commit-btn">一键导入</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block js %}
+
+<script src="{{static_url('js/admin-goods-import.js')}}"></script>
+{% end %}

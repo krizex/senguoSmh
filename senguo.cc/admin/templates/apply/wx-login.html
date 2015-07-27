@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% block title %}登录{% end %}
+{% block head %}
+{% end %}
+{% block head_title %}<span class="title" id="title">登录</span>{% end %}
+{% block content %}
+	<input type="hidden" id="qr_url" value="{{ticket_url}}"/>
+	<input type="hidden" id="qr_id" value="{{scene_id}}"/>
+	<div class="wx-qrcode-inner">
+		<div class="" id="qrcode">
+		</div>
+		<div class="wx-notice">请使用微信“扫一扫”扫描二维码以登录</div>
+	</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
+<script type="text/javascript">
+	var i=0;
+    $(document).ready(function(){
+        new QRCode(document.getElementById('qrcode'), {
+            width : 250,//设置宽高
+            height : 250,
+            colorDark : "#433943",
+            colorLight : "#f5f5f5"
+        }).makeCode($("#qr_url").val());
+        if(i>=30){
+        	return Tip("页面已过期，请刷新页面");
+        }
+        get_login();
+        setInterval(function (){
+        	get_login();
+        	i++;
+        },8000);
+        function get_login(){
+        	var scene_id=$("#qr_id").val();
+        	var args={scene_id:scene_id}
+        	$.ajax({
+		        url:"",
+		        type:"post",
+		        data:JSON.stringify(args),
+		        contentType:"application/json; charset=UTF-8",
+		        success:function(res){
+		            if(res.success) {
+		                var if_login = res.login;
+		                if(if_login==true){
+		                	window.location.href="/apply";
+		                }
+		               
+		            }else{
+		               
+		            }
+		        }
+		    });
+        }
+    });
+</script>
+{% end %}
