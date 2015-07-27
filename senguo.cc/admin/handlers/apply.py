@@ -43,10 +43,10 @@ class Login(CustomerBaseHandler):
 			accountinfo = self.session.query(models.Accountinfo).filter_by(wx_openid = openid).first()
 			if accountinfo:
 				print(accountinfo)
-				customer = self.session.query(models.Customer).filter_by(id = accountinfo.id).first()
+				customer = self.session.query(models.ShopAdmin).filter_by(id = accountinfo.id).first()
 				if customer:
 					print(customer)
-					self.set_current_user(customer)
+					self.set_current_user(customer,domain=ROOT_HOST_NAME)
 			print(True)
 			return self.send_success(login=True)
 		else:
@@ -124,6 +124,9 @@ class WxMessage(CustomerBaseHandler):
 					u = models.Customer()
 					u.accountinfo = account_info
 					self.session.add(u)
+					admin = models.ShopAdmin()
+					admin.accountinfo = account_info
+					self.session.add(admin)
 					self.session.commit()
 
 	@classmethod
@@ -210,16 +213,17 @@ class CreateShop(AdminBaseHandler):
 			return self.send_error(403)
 
 		#权限检查,目前仅超级管理员可以创建店铺
-		if self.current_shop:
-			if self.current_shop.admin_id != self.current_user.id :
-				return self.send_fail("您不是卖家，无法创建新的店铺")
-		else:
-			try:
-				super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
-			except:
-				super_admin = None
-			if not super_admin:
-				return self.send_fail("您不是卖家，无法创建新的店铺")
+		#if self.current_shop:
+		#	print(self.current_shop)
+		#	if self.current_shop.admin_id != self.current_user.id :
+		#		return self.send_fail("您不是卖家，无法创建新的店铺1111111")
+		#else:
+		try:
+			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
+		except:
+			super_admin = None
+		if not super_admin:
+			return self.send_fail("您不是卖家，无法创建新的店铺")
 
 		#检查申请店铺数量
 		try:
