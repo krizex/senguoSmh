@@ -7,7 +7,7 @@ $(document).ready(function(){
             $(".area_box").css("padding-top","40px");
             var shops=$('.shoplist').attr('data-shop');
             var id=$.getUrlParam('id');
-            shopsList(0,id,'admin_shop');
+            return shopsList(0,id,'admin_shop');
         }
     }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
@@ -69,7 +69,7 @@ $(document).ready(function(){
                     for(var code in city){
                         var $item=$('<li><span class="name"></span><span class="num"></span></li>');
                         $item.attr({'data-code':code}).find('.name').text(city[code]['name']);
-                         $('.citylist').append($item);
+                        $('.citylist').append($item);
                     }
                 }
             }
