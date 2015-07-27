@@ -31,7 +31,6 @@ $(document).ready(function () {
                 Tip("优惠券链接已经复制到剪切板");
             }
         });
-        
   var id=parseInt($.getUrlParam("coupon_type"));
   if(id){
         type = id;
@@ -56,7 +55,8 @@ $(document).ready(function () {
         if($(e.target).closest(".sw-er-tip").size()==0){
             $(".sw-er-tip").addClass("invisible");
         }
-    });
+    });  
+
     $(".forbidden-btn").unbind("click").off("click");
 }).on("click",".show-detail",function(){
     $(".pop-detail").removeClass("hidden");
@@ -81,9 +81,9 @@ $(document).ready(function () {
     window.location.href="/admin/marketing?action=details&coupon_type="+type+"&coupon_id="+id+"&page=1";
 }).on('click', '.coupon-active', function(){
     var status = parseInt($(this).attr('data-status'));
-    tip_info='';
+    var tip_info='';
     if (status==0){
-tip_info="开启优惠券即可使用优惠券功能，你确定要开启优惠券吗？";
+        tip_info="开启优惠券即可使用优惠券功能，你确定要开启优惠券吗？";
     }
     else{
         tip_info="优惠券一旦关闭将不能重新开启,你确定要关闭所有优惠券吗？";
@@ -378,9 +378,7 @@ function insertcoupon(selected_status,page){
                             }
                         }
                          else{
-                                temp= '<tr>'
-                                            +'<td colspan="6" class="txt-center c999">当前没有优惠券</td>'
-                                             +'</tr>';
+                                temp= '<tr><td colspan="6" class="txt-center c999">当前没有优惠券</td></tr>';
                                 // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
                                 $("#list-coupons").append(temp);
                                 }
