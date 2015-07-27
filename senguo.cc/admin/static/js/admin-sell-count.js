@@ -1,6 +1,6 @@
 // created by jyj 2015-7-8
 
-var has_no_goods = 0;
+var is_has_no_goods = 0;
 
 //获取当前日期
 var CurrentDate=new Date();
@@ -665,7 +665,7 @@ function show_all_single_chart(start_date,end_date){
 					$(".hr3").removeClass("mt50");
 					$("#btn_name_bigchart").addClass("hidden");
 					$("#btn_type_bigchart").addClass("hidden");
-					has_no_goods = 1;
+					is_has_no_goods = 1;
 					return ;
 				}
 
@@ -771,7 +771,7 @@ function show_all_chart(start_date,end_date){
 						$(".pre-item"+i).addClass("hidden");
 						$(".next-item"+i).addClass("hidden");
 					}
-					has_no_goods = 1;
+					is_has_no_goods = 1;
 					return ;
 				}
 
@@ -796,11 +796,23 @@ function show_all_chart(start_date,end_date){
 			            		            var myChart1 = ec.init(document.getElementById('goods_type'));
 			            		            var myChart11 = ec.init(document.getElementById('goods_type_big'));
 			            		            myChart1.showLoading({
-			                	            		text: '正在努力的读取数据中...'
+			                	            		text: '数据加载中...',
+			                	            		y:200,
+		    					effect : "ring",
+		    					textStyle:{
+		    						baseline:'middle',
+		    						fontSize:16
+		    					}
 			            			});
 			            			
 			            			myChart11.showLoading({
-			                	            		text: '正在努力的读取数据中...'
+			                	            		text: '数据加载中...',
+			                	            		y:200,
+		    					effect : "ring",
+		    					textStyle:{
+		    						baseline:'middle',
+		    						fontSize:16
+		    					}
 			            			});
 			            			
 			            			var options = {
@@ -871,18 +883,30 @@ function show_all_chart(start_date,end_date){
 
 						myChart11.refresh();
 						myChart11.setOption(options);
-						myChart11.hideLoading();
+						// myChart11.hideLoading();
 
 
 						var myChart2 = ec.init(document.getElementById('goods_name'));
 			            		             myChart2.showLoading({
-			                	            		text: '正在努力的读取数据中...'
+			                	            		text: '数据加载中...',
+			                	            		y:200,
+		    					effect : "ring",
+		    					textStyle:{
+		    						baseline:'middle',
+		    						fontSize:16
+		    					}
 			            			});
 			            			
 
 			            			var myChart22 = ec.init(document.getElementById('goods_name_big'));
 			            		             myChart22.showLoading({
-			                	            		text: '正在努力的读取数据中...'
+			                	            		text: '数据加载中...',
+			                	            		y:200,
+		    					effect : "ring",
+		    					textStyle:{
+		    						baseline:'middle',
+		    						fontSize:16
+		    					}
 			            			});
 
 
@@ -1008,8 +1032,13 @@ function show_chart(action,start_date,end_date,name){
 	        		function (ec) {
 	            		            myChartSingleType = ec.init(document.getElementById('single_type'));
 	            		            myChartSingleType.showLoading({
-	                	            		text: '正在努力的读取数据中...',
-	                	            		y:150
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
 	            			});
 
 	            			SingleTypeOptions = {
@@ -1094,14 +1123,24 @@ function show_chart(action,start_date,end_date,name){
 	        		function (ec) {
 	            		            myChartType = ec.init(document.getElementById('goods_type'));
 	            		            myChartType.showLoading({
-	                	            		text: '正在努力的读取数据中...',
-	                	            		y:150
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
 	            			});
 
 	            		            myChartType2 = ec.init(document.getElementById('goods_type_big'));
 	            		            myChartType2.showLoading({
-	                	            		text: '正在努力的读取数据中...',
-	                	            		y:150
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
 	            			});
 	            			TypeOptions = {
 	            				    title : {
@@ -1186,14 +1225,24 @@ function show_chart(action,start_date,end_date,name){
 	        		function (ec) {
 	            		            myChartName = ec.init(document.getElementById('goods_name'));
 	            		            myChartName.showLoading({
-	                	            		text: '正在努力的读取数据中...',
-	                	            		y:150
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
 	            			});
 
 	            		             myChartName2 = ec.init(document.getElementById('goods_name_big'));
 	            		            myChartName2.showLoading({
-	                	            		text: '正在努力的读取数据中...',
-	                	            		y:150
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
 	            			});
 	            			// myChartName.hideLoading();
 	            			NameOptions = {
@@ -1277,8 +1326,13 @@ function show_chart(action,start_date,end_date,name){
 	        		function (ec) {
 	            		            myChartSingleName = ec.init(document.getElementById('single_name'));
 	            		            myChartSingleName.showLoading({
-	                	            		text: '正在努力的读取数据中...',
-	                	            		y:150
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
 	            			});
 	            			// myChartSingleName.hideLoading();
 	            			SingleNameOptions = {
@@ -1379,7 +1433,7 @@ function show_chart(action,start_date,end_date,name){
 					myChartSingleName.hideLoading();
 					$("#single_type").css("height","0px");
 					$("#single_name").css("height","0px");
-					has_no_goods = 1;
+					is_has_no_goods = 1;
 					return ;
 				}
 				if(action == 'type'){
@@ -1390,7 +1444,7 @@ function show_chart(action,start_date,end_date,name){
 
 					myChartType2.refresh();
 					myChartType2.setOption(TypeOptions);
-					myChartType2.hideLoading();
+					// myChartType2.hideLoading();
 				}
 				else if(action == 'name'){
 					myChartName.hideLoading();

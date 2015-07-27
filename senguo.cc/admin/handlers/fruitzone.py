@@ -867,6 +867,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments('price:str')
 	def handle_alipaytest(self):
+		from urllib.parse import quote
 		shop_id = self.get_cookie("market_shop_id")
 		customer_id = self.current_user.id
 		# print(shop_id,customer_id,'idddddddddddddddddddddd')
@@ -877,7 +878,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			url = self.test_create_tmporder_url(price,shop_id,customer_id)
 		except Exception as e:
 			return self.send_fail('ca')
-		return self.send_success(url = url)
+		return self.send_success(url = quote(url))
 
 	@FruitzoneBaseHandler.check_arguments("charge_type:int", "pay_type")
 	def handle_confirm_payment(self):
@@ -1039,7 +1040,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			# call_back_url= "%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseDealFinishedCallback")),
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("fruitzoneSystemPurchaseAlipayFishedCallback")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseAliNotify")),
-			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseChargeTypes"))
+			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("customerProfile"))
 		)
 		print(self.reverse_url("fruitzoneSystemPurchaseAliNotify"),'urlllllllllllllllllllll')
 		return authed_url

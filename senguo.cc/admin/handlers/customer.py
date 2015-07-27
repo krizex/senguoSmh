@@ -2088,7 +2088,7 @@ class Order(CustomerBaseHandler):
 			self.session.commit()
 			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 			if order.shop.admin.has_mp:
-				self.order_cancel_msg(order,cancel_time)
+				self.order_cancel_msg(self.session,order,cancel_time)
 			else:
 				self.order_cancel_msg(order,cancel_time,None)
 			#使用优惠券
@@ -2101,6 +2101,9 @@ class Order(CustomerBaseHandler):
 				print(use_number,'cccccccccccc')
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
+
+				self.order_cancel_msg(self.session,order,cancel_time,None)
+
 			return self.send_success()
 		elif action == "comment_point":
 			data = self.args["data"]
@@ -2459,6 +2462,13 @@ class Recharge(CustomerBaseHandler):
 				# return self.redirect(url)
 			return self.send_success(url = url)
 		return self.render("customer/recharge.html",code = code,url=url ,output_data=data)
+
+class RechargeAliPay(CustomerBaseHandler):
+	@CustomerBaseHandler.check_arguments('alipayUrl:str')
+	def get(self):
+		alipayUrl=self.args["alipayUrl"]
+		print(alipayUrl)
+		return self.render("customer/alipay-tip.html",alipayUrl = alipayUrl)
 
 # 我的 - 我的订单 - 评价订单
 class OrderComment(CustomerBaseHandler):

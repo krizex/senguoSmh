@@ -814,13 +814,22 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	# 发送订单取消模版消息给管理员
 	@classmethod
-	def order_cancel_msg(self,order,cancel_time,other_access_token = None):
+	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
 		shop_name = order.shop.shop_name
 		cancel_time = cancel_time
 		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,access_token)
+		concel_auto_print = order.shop.config.concel_auto_print
+		print_type = order.shop.config.receipt_type
+		wireless_type = order.shop.config.wireless_type
+		if concel_auto_print == 1 and print_type == 1:
+			if wireless_type == 0:
+				_action = "ylyprint_concel"
+			elif wireless_type == 1:
+				_action = "fyprint_concel"
+			self.autoPrint(session,order.id,order.shop,_action)
 
 	# 无线打印订单
 	@classmethod
@@ -860,72 +869,87 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		for key in fruits:
 			fruit_list.append(str(i)+":"+key[1]["fruit_name"]+"  "+key[1]["charge"]+" * "+str(key[1]["num"])+"\r\n")
 			i = i +1
-		if action == "ylyprint":
-			content="@@2              订单信息\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"订单编号："+order_num+"\r\n"+\
-					"下单时间："+order_time+"\r\n"+\
-					"顾客姓名："+receiver+"\r\n"+\
-					"顾客电话："+phone+"\r\n"+\
-					"配送时间："+send_time+"\r\n"+\
-					"配送地址："+address+"\r\n"+\
-					"买家留言："+message+"\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"@@2             商品清单\r\n"+\
-					"------------------------------------------------\r\n"+\
-					''.join(fruit_list)+"\r\n"+\
-					"\r\n"+\
-					"总价："+totalPrice+"元\r\n"+\
-					"支付方式："+_type+"\r\n"+\
-					"------------------------------------------------\r\n"+\
-					"\r\n"+receipt_msg
+		if action in ["ylyprint","ylyprint_concel"]:
+			if action == "ylyprint":
+				#打印内容
+				content="@@2              订单信息\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"订单编号："+order_num+"\r\n"+\
+						"下单时间："+order_time+"\r\n"+\
+						"顾客姓名："+receiver+"\r\n"+\
+						"顾客电话："+phone+"\r\n"+\
+						"配送时间："+send_time+"\r\n"+\
+						"配送地址："+address+"\r\n"+\
+						"买家留言："+message+"\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"@@2             商品清单\r\n"+\
+						"------------------------------------------------\r\n"+\
+						''.join(fruit_list)+"\r\n"+\
+						"\r\n"+\
+						"总价："+totalPrice+"元\r\n"+\
+						"支付方式："+_type+"\r\n"+\
+						"------------------------------------------------\r\n"+\
+						"\r\n"+receipt_msg+"\r\n"
+			elif action == "ylyprint_concel":
+				content="------------------------------------------------\r\n"+\
+						"@@2 订单"+order_num+"已取消\r\n"+\
+						"------------------------------------------------\r\n"
+			# print(content)
 			machine_code=current_shop.config.wireless_print_num #打印机终端号 520
 			mkey=current_shop.config.wireless_print_key#打印机密钥 110110
 			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
-			print("sign str    :",sign)
+			# print("sign str    :",sign)
 			sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
-			print("sign str md5:",sign)
+			# print("sign str md5:",sign)
 			data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
 			# print("post        :",data)
 			r=requests.post("http://open.10ss.net:8888",data=data)
 
-			print("======WirelessPrint======")
-			print("res url        :",r.url)
-			print("res status_code:",r.status_code)
-			print("res text       :",r.text)
-			print("=========================")
-		elif action == "fyprint":
+			# print("======WirelessPrint======")
+			# print("res url        :",r.url)
+			# print("res status_code:",r.status_code)
+			# print("res text       :",r.text)
+			# print("=========================")
+
+		elif action in ["fyprint","fyprint_concel"]:
 			reqTime = int(time.time()*1000)
 			memberCode = 'e6f90e5826b011e5a1b652540008b6e6'
 			API_KEY = '47519b0f'
 			deviceNo = current_shop.config.wireless_print_num #'9602292847397158'
 			mode = 2
-			msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
-						"-------------------------\n"+\
-						"订单编号："+order_num+"\n"+\
-						"下单时间："+order_time+"\n"+\
-						"顾客姓名："+receiver+"\n"+\
-						"顾客电话："+phone+"\n"+\
-						"配送时间："+send_time+"\n"+\
-						"配送地址："+address+"\n"+\
-						"买家留言："+message+"\n"+\
-						"-------------------------\n"+\
-						"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
-						"-------------------------\n"+\
-						''.join(fruit_list)+"\r\n"+\
-						"\n"+\
-						"总价："+totalPrice+"元\n"+\
-						"支付方式："+_type+"\n"+\
-						"-------------------------\n"+\
-						"\n"+receipt_msg
-						#打印内容
+			if action == "fyprint":
+				#打印内容
+				msgDetail = "        <Font# Bold=1 Width=2 Height=2>订单信息</Font#>\n"+\
+							"-------------------------\n"+\
+							"订单编号："+order_num+"\n"+\
+							"下单时间："+order_time+"\n"+\
+							"顾客姓名："+receiver+"\n"+\
+							"顾客电话："+phone+"\n"+\
+							"配送时间："+send_time+"\n"+\
+							"配送地址："+address+"\n"+\
+							"买家留言："+message+"\n"+\
+							"-------------------------\n"+\
+							"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
+							"-------------------------\n"+\
+							''.join(fruit_list)+"\r\n"+\
+							"\n"+\
+							"总价："+totalPrice+"元\n"+\
+							"支付方式："+_type+"\n"+\
+							"-------------------------\n"+\
+							"\n"+receipt_msg+"\n"
+
+			elif action == "fyprint_concel":
+				msgDetail = "-------------------------\n"+\
+							"<Font# Bold=1 Width=2 Height=2>订单"+order_num+"已取消</Font#>\n"+\
+							"-------------------------\n"
+			# print(msgDetail)
 			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
 			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
 			data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
 			r=requests.post("http://my.feyin.net/api/sendMsg",data=data)
 			# print(r.url)
 			# print(r.status_code)
-			print(r.text)
+			# print(r.text)
 
 	# 获取绑定的微信第三方服务号 Access Token
 	@classmethod

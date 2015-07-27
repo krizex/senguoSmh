@@ -82,7 +82,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		qr_url=""
 		if not self.is_wexin_browser():
 			qr_url = self._qrwxpay()
-			print(qr_url,'onlinewxpay not in weixin')
+			# print(qr_url,'onlinewxpay not in weixin')
 			return self.render('customer/online-qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
@@ -93,33 +93,33 @@ class OnlineWxPay(CustomerBaseHandler):
 		code = self.args.get('code',None)
 		if len(code) is 2:
 			url = jsApi.createOauthUrlForCode(path)
-			# print("[微信支付]获取code的url：",url)
+			# print("code url：",url)
 			return self.redirect(url)
 		else:
 			jsApi.setCode(code)
 			openid = jsApi.getOpenid()
-			# print("[微信支付]当前code：",code)
+			# print("[current code：",code)
 			if not openid:
 				# print("[微信支付]OpenID未获取到")
 				print("[WeixinPay]OpenID not found")
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
-			# print("[微信支付]totalPrice：",totalPrice)
+			print("totalPrice：",totalPrice)
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
 			# orderPriceSplite = (order.price) * 100
 			wxPrice =int(totalPrice * 100)
-			# print("[微信支付]wxPrice：",wxPrice)
+			# print("wxPrice：",wxPrice)
 			unifiedOrder.setParameter('total_fee',wxPrice)
 			unifiedOrder.setParameter('trade_type',"JSAPI")
 			prepay_id = unifiedOrder.getPrepayId()
-			# print("[微信支付]prepay_id：",prepay_id)
+			# print("prepay_id：",prepay_id)
 			jsApi.setPrepayId(prepay_id)
 			renderPayParams = jsApi.getParameters()
-			# print("[微信支付]renderPayParams：",renderPayParams)
+			# print("renderPayParams：",renderPayParams)
 			noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
 			timestamp = datetime.datetime.now().timestamp()
 			wxappid = 'wx0ed17cdc9020a96e'

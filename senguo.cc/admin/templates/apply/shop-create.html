@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% block title %}店铺申请{% end %}
+{% block head %}
+{% end %}
+{% block content %}
+<input type="hidden" id="token" value="{{token}}"/>
+<div class="wrap-create">
+    <p class="c333 choose-text">
+        <a href="{{reverse_url('switchshop')}}" class="c999 cancel-add-goods">多店铺管理中心</a>
+        <span class="c333"> / 创建店铺</span>
+    </p>
+    <ul class="tab-list create-list group mt20">
+        <li class="active first"><span>手动创建店铺</span></li>
+        <li class="second"><span>导入本地商户数据创建店铺</span></li>
+        <li class="third"><span>导入第三方数据创建店铺</span></li>
+    </ul>
+    <div class="tab-content create-content">
+        <div class="tab-item tab1">
+            <table class="tb-craete">
+                <tr>
+                    <td class="txt-ar c333 tdl">店铺名称</td>
+                    <td class="tdr"><input type="text" class="create-ipt ml10 shop_name" placeholder="请输入店铺名称"/></td>
+                </tr>
+                <tr>
+                    <td class="txt-ar c333 tdl">店铺Logo</td>
+                    <td class="tdr"><div class="add-logo ml10" id="logo_area"><img id="add_logo" src="/static/images/comment_addimg.png" url="" alt="添加logo"/></div></td>
+                </tr>
+                <tr>
+                    <td class="txt-ar c333 tdl">店铺联系电话</td>
+                    <td class="tdr"><input type="tel" class="create-ipt ml10 shop_phone" placeholder="请输入店铺联系电话"/></td>
+                </tr>
+                <tr>
+                    <td class="vtop txt-ar c333 tdl">店铺地址</td>
+                    <td class="tdr">
+                        <div class="drop-select ml10">
+                            <span class="select-ipt province" id="province">选择省份</span>
+                            <i class="i-cert"></i>
+                        </div>
+                        <div class="drop-select ml10">
+                            <span class="select-ipt city" id="city">选择城市</span>
+                            <i class="i-cert"></i>
+                        </div><br>
+                        <input type="text" class="create-ipt mt4 ml10 address" id="address" placeholder="请输入详细地址"/>
+                        <p class="mt10">
+                            <a href="javascript:;" class="get-address f12 ml10" id="get_point">获取店铺地图坐标</a>
+                            <span class="f12 c999 ml10 choose-tip">若定位有误，请在地图上点击选择正确位置</span>
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="pt0" colspan="2">
+                        <div class="wrap-map" id="bmap">
+                        </div>
+                    </td>
+                </tr>
+                <tr class="hide">
+                    <td class="vtop txt-ar c333">邀请码</td>
+                    <td><input type="text" class="create-ipt ml10" placeholder="输入邀请码，无需审核立即创建店铺"/></td>
+                </tr>
+            </table>
+        </div>
+        <div class="tab-item tab2 hide">
+            <div class="wrap-tab2">
+                <p class="c333 f12">搜一搜您的店铺是否在本地商户列表中，可直接认领生成店铺</p>
+                <div class="choose-address mt10">
+                    <div class="drop-select">
+                        <span class="select-ipt province forbidden" id="province2">湖北省</span>
+                        <i class="i-cert"></i>
+                    </div>
+                    <div class="drop-select ml10">
+                        <span class="select-ipt city forbidden" id="city2">武汉市</span>
+                        <i class="i-cert"></i>
+                    </div><br>
+                    <input type="text" class="create-ipt mt4 address" id="shop_name" placeholder="请输入店铺名称进行搜索"/>
+                    <input type="button" class="get-code search-btn" value="搜索"/>
+                </div>
+                <div class="wrap-shop-list mt10">
+                    <ul class="shop-list">
+                       <li>请搜索您希望导入的店铺</li>
+                       <!--  <li>
+                            <i class="checkbox-btn"></i>
+                            <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
+                            <div class="shop-item">
+                                <p class="c333">水果太太</p>
+                                <p class="c666">洪山区珞瑜路888号剑桥春天小区</p>
+                            </div>
+                        </li> -->
+                    </ul>
+                </div>
+                <div class="last-choose mt10 ml5">
+                    <i class="checkbox-btn fl"></i>
+                    <span class="f12 fl ml10">我是以上店铺的主人，且认领以上所选<span class="shop-number">0</span>店铺</span>
+                </div>
+                <div class="marketer mt10">
+                    <span>森果市场人员ID：</span>
+                    <input type="text" class="create-ipt sgipt" placeholder="为确保认领的真实性，请输入森果市场人员ID"/>
+                </div>
+                <p class="mt10 c666 f12">如有疑问，可以联系森果客服4000270135，或添加客服微信号senguocc100</p>
+            </div>
+        </div>
+        <div class="tab-item tab3 hide">
+            <p class="c666 f12">您可以将其他平台上的数据导入过来并创建店铺</p>
+            <div class="choose-plant mt10">
+                <span class="f12 c333">选择平台导入</span>
+                <ul class="plant-list group">
+                    <li class="active" data-id="1">淘点点</li>
+                    <li data-id="2">饿了么</li>
+                    <li data-id="3">美团外卖</li>
+                    <li data-id="4">有赞（口袋通）</li>
+                    <li data-id="5">乐外卖</li>
+                </ul>
+            </div>
+            <p class="mt10 f12">输入第三方平台用户名和密码：</p>
+            <input type="text" class="create-ipt mt6" placeholder="输入用户名"/><br>
+            <input type="text" class="create-ipt mt6" placeholder="输入密码"/><br>
+            <input type="button" class="get-code mt10 sure-btn" value="确认帐号并验证"/>
+            <p class="f12 choose-tip mt10">
+                <span class="c333"><span class="green-txt">√ 第三方平台绑定完成，</span>选择您要导入的店铺</span><br>
+                <span class="red-txt"><span class="f16">×</span> 帐号密码错误，请重新输入并验证</span>
+            </p>
+            <div class="wrap-shop-list mt10">
+                <ul class="shop-list">
+                    <li>
+                        <i class="checkbox-btn"></i>
+                        <img class="shop-img" src="/static/images/TDSG.png" alt="店铺logo"/>
+                        <div class="shop-item">
+                            <p class="c333">水果太太</p>
+                            <p class="c666">洪山区珞瑜路888号剑桥春天小区</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="last-choose mt10 ml5">
+                <i class="checkbox-btn fl"></i>
+                <span class="f12 fl ml10">确认导入以上所选店铺</span>
+            </div>
+        </div>
+    </div>
+    <div class="txt-center mt20">
+        <a href="javascript:;" class="go-btn commit-btn" id="commit_shop">提交</a>
+    </div>
+</div>
+{% end %}
+{% block other %}
+<div class="pop-bwin hide">
+    <div class="wrap-address-list">
+        <p class="choose-title">选择省份</p>
+        <ul class="address-list" id="privince_list">
+        </ul>
+        <ul class="address-list hide" id="city_list">
+        </ul>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
+<script src="/static/js/exif.min.js"></script>
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script src="{{static_url('js/area.js')}}"></script>
+<script src="{{static_url('js/apply-create.js')}}"></script>
+{% end %}

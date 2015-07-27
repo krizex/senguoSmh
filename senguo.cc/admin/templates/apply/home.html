@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block title %}店铺申请{% end %}
+{% block head %}
+{% end %}
+{% block content %}
+<div class="wrap-home">
+    <div class="home-top">
+        <div class="img-border">
+            <img class="home-img" src="{{logo_img or '/static/images/TDSG.png'}}" alt="用户头像"/>
+        </div>
+        <p class="txt-center cfff mt10">{{nickname}}</p>
+    </div>
+    <div class="wrap-tb">
+        <table class="tb-home">
+            <colgroup>
+                <col width="26%"/>
+            </colgroup>
+            <tr>
+                <td class="txt-ar c333">真实姓名</td><br>
+                <td><input type="text" class="home-ipt ml10" id="name" placeholder="请输入真实姓名" value="{{realname or ''}}" /></td>
+            </tr>
+            <tr>
+                <td class="txt-ar c333">手机号</td>
+                <td>
+                    <input type="tel" class="home-ipt ml10" id="tel" placeholder="请输入手机号" value="{{phone or ''}}" />
+                    <input type="button" class="get-code" id="get_code" value="获取验证码"/>
+                </td>
+            </tr>
+            <tr>
+                <td class="txt-ar c333">短信验证码</td>
+                <td><input type="tel" class="home-ipt ml10" id="code"/></td>
+            </tr>
+        </table>
+        <div class="txt-center mt40">
+            <a href="javascript:;" class="go-btn be-shoper" id="commit">成为卖家</a><br>
+            <a href="/customer/profile" class="f12 mt10 iblock hide" id="update_tel">修改手机号请点击这里</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+{% end %}
