@@ -313,7 +313,8 @@ class CreateShop(AdminBaseHandler):
 					shop_code = self.make_shop_code(),
 					shop_phone = spider_shop.shop_phone,
 					lat = spider_shop.lat,
-					lon = spider_shop.lon
+					lon = spider_shop.lon,
+					spread_member_code = data["code"]
 				)
 				self.create_shop(shop)
 				# 添加商品
