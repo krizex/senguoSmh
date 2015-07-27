@@ -4,6 +4,8 @@ $(document).ready(function(){
         document.write ('<body style="zoom: 55%">');
     else if (window.screen.width=='800')
         document.write ('<body style="zoom: 75%">');
+    var height = $(window).height();
+    $(".container").css("minHeight",height-245+"px");
     $('.developing').on('click',function(){
         Tip('此功能暂未开放！');
     });
