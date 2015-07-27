@@ -22,18 +22,19 @@ $(document).ready(function () {
                 }
             });
         }
-        /*if (true) {
-            $(".sw-link-copy").zclip({
+    if($(".show-detail").size()>0){
+        $(".sw-link-copy").zclip({
                 path: "/static/js/third/ZeroClipboard.swf",
                 copy: function(){
-                    return $(this).prev('input').html();
+                    return $(this).prev('.sw-link-txt').val();
                 },
                 afterCopy:function(){
-                    Tip("优惠券码已经复制到剪切板");
+                    Tip("分享链接已经复制到剪切板");
                 }
-            });
-        }*/
-        
+            });  
+    }
+            
+ 
   var id=parseInt($.getUrlParam("coupon_type"));
   if(id){
         type = id;
@@ -58,7 +59,8 @@ $(document).ready(function () {
         if($(e.target).closest(".sw-er-tip").size()==0){
             $(".sw-er-tip").addClass("invisible");
         }
-    });
+    });  
+
     $(".forbidden-btn").unbind("click").off("click");
 }).on("click",".show-detail",function(){
     $(".pop-detail").removeClass("hidden");
@@ -380,9 +382,7 @@ function insertcoupon(selected_status,page){
                             }
                         }
                          else{
-                                temp= '<tr>'
-                                            +'<td colspan="6" class="txt-center c999">当前没有优惠券</td>'
-                                             +'</tr>';
+                                temp= '<tr><td colspan="6" class="txt-center c999">当前没有优惠券</td></tr>';
                                 // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
                                 $("#list-coupons").append(temp);
                                 }
