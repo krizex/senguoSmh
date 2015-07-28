@@ -898,9 +898,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			# print(content)
 			machine_code=current_shop.config.wireless_print_num #打印机终端号 520
 			mkey=current_shop.config.wireless_print_key#打印机密钥 110110
-			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
+			if machine_code and mkey:
+				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
 			# print("sign str    :",sign)
-			sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+			else:
+				print('sign error')
+				sign = None
 			# print("sign str md5:",sign)
 			data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
 			# print("post        :",data)
