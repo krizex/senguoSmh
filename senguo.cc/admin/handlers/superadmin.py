@@ -384,10 +384,10 @@ class ShopManage(SuperBaseHandler):
 				output_data.append(data)
 
 			if flag==1:
-				print("@@@@@@@@@")
+				# print("@@@@@@@@@")
 				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
 			else :
-				print("###########")
+				# print("###########")
 				return self.send_success(output_data=output_data,output_data_count=output_data_count)
 
 		else:
@@ -1778,42 +1778,75 @@ class CheckCash(SuperBaseHandler):
 
 		####################
 		#借用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
-		shop_list_query = self.session.query(models.Shop.id,models.Shop.shop_name).filter(models.Shop.shop_status == 2).all()
+		shop_list_query = self.session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
 		
 		shop_id_list = []
 		shop_id_name_dict = {}
 		
 		for item in shop_list_query:
 			shop_id_list.append(item[0])
-			shop_id_name_dict[str(item[0])] = item[1]
 
-		for id_item in list(shop_id_name_dict.keys()):
-			shop_id = int(id_item)
-			# print(shop_id,shop_id_name_dict[id_item])
-			shop_balance_history_query = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_id == shop_id)
-			
+		for shop_id in [4]:
+			shop_totalprice_history = {}
+			query_list = self.session.query(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d %H:%i:%S"),models.BalanceHistory.shop_totalPrice).\
+						   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,1,2,3,4,5])).\
+						   order_by(models.BalanceHistory.create_time.desc()).offset(0).limit(1).all()
+			if len(query_list) != 0:
+				query_list = query_list[0]
+			else:
+				query_list = ()
+			shop_totalprice_history[str(shop_id)] = query_list
+
+			shop_available_balance_history = {}
+			query_list = self.session.query(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d %H:%i:%S"),models.BalanceHistory.available_balance).\
+						   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([2,6,7])).\
+						   order_by(models.BalanceHistory.create_time.desc()).offset(0).limit(1).all()
+			if len(query_list) != 0:
+				query_list = query_list[0]
+			else:
+				query_list = ()
+			shop_available_balance_history[str(shop_id)] = query_list
+
+			shop_totalprice_available_balance = {}
+			query_list = self.session.query(models.Shop.shop_balance,models.Shop.available_balance).filter_by(id = shop_id).all()
+			if len(query_list) != 0:
+				query_list = query_list[0]
+			else:
+				query_list = ()
+			shop_totalprice_available_balance[str(shop_id)] = query_list
+			for key in shop_totalprice_available_balance:
+				if shop_totalprice_available_balance[key][0] != shop_totalprice_history[key][1]:
+					print("totalprice:",key,shop_totalprice_available_balance[key][0],shop_totalprice_history[key][1])
+				
+				if len(shop_available_balance_history[key]) != 0:
+					if shop_totalprice_available_balance[key][1] != shop_available_balance_history[key][1]:
+						print("available_balance:",key,shop_totalprice_available_balance[key][1],shop_available_balance_history[key][1])
+				else:
+					if shop_totalprice_available_balance[key][1] != 0:
+						print("available_balance:",key,shop_totalprice_available_balance[key][1],0)
+
+			balance_type_1_3 = []
+			query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([1,3]),models.BalanceHistory.shop_id == shop_id).all()
+			for item in query_list:
+				for i in range(len(item[0])):
+					if item[0][i].isdigit():
+						break
+				balance_type_1_3.append(item[0][i : len(item[0])])
+			print(len(balance_type_1_3))
+			print(len())
+
+			# pay_type_2_3 = []
+			# query_list = self.session.query(models.Order.shop_id,models.Order.num).filter(models.Order.status.in_([5,6,7,10]),models.Order.pay_type.in_([2,3])).all()
+			# # print("@@@@",len(query_list))
 
 
-		# balance_type_1_3 = []
-		# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([1,3])).all()
-		# for item in query_list:
-		# 	for i in range(len(item[0])):
-		# 		if item[0][i].isdigit():
-		# 			break
-		# 	balance_type_1_3.append(item[0][i : len(item[0])])
-
-		# pay_type_2_3 = []
-		# query_list = self.session.query(models.Order.shop_id,models.Order.num).filter(models.Order.status.in_([5,6,7,10]),models.Order.pay_type.in_([2,3])).all()
-		# # print("@@@@",len(query_list))
-
-
-		# balance_type_6_7 = []
-		# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7])).all()
-		# for item in query_list:
-		# 	for i in range(len(item[0])):
-		# 		if item[0][i].isdigit():
-		# 			break
-		# 	balance_type_6_7.append(item[0][i : len(item[0])-2])
+			# balance_type_6_7 = []
+			# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7])).all()
+			# for item in query_list:
+			# 	for i in range(len(item[0])):
+			# 		if item[0][i].isdigit():
+			# 			break
+			# 	balance_type_6_7.append(item[0][i : len(item[0])-2])
 
 
 		####################
