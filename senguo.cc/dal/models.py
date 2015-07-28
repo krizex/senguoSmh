@@ -585,6 +585,7 @@ class Shop(MapBase, _CommonApi):
 	shop_property = Column(Float,default = 0,nullable = False)
 
 	shop_tpl = Column(Integer,default = 0) #6-17 shop template 0:customer 1:beauty
+	spread_member_code = Column(String(30)) #7.27
 
 
 	def __repr__(self):

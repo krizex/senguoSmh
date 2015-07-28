@@ -224,7 +224,7 @@ function importShop($btn){
     }
     var member_code=$(".sgipt").val().trim();
     if(!member_code){
-        return Tip("请输入森果市场人员ID");
+        return Tip("请输入森果市场人员推广代码");
     }
     var data={"code":member_code,"shop_list":list_id};
     var url="";

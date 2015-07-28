@@ -2791,7 +2791,7 @@ class InsertData(CustomerBaseHandler):
 		c = f.read()
 		s = eval(c)
 		# print(type(s))
-		i = 0
+		i = self.session.query(models.Spider_Shop).count()-1
 		for key in s:
 				temp = s.get(key,None)
 				if temp:

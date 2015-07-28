@@ -188,7 +188,7 @@ class Order(StaffBaseHandler):
 
 		return self.render("staff/orders.html", orders=orders, page=page)
 
-	@tornado.web.authenticated
+	@tornado.web.authenticated 
 	@StaffBaseHandler.check_arguments("action", "order_id:int", "data")
 	def post(self):
 		action = self.args["action"]
