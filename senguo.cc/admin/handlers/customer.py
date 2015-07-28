@@ -1713,7 +1713,7 @@ class Cart(CustomerBaseHandler):
 			new_totalprice=totalPrice-qshop.coupon_money
 		else:
 			new_totalprice=totalPrice
-		if  new_totalprice<0:
+		if  new_totalprice<=0:
 			new_totalprice=0.01
 		if qshop:
 			coupon_money=qshop.coupon_money
@@ -1755,7 +1755,7 @@ class Cart(CustomerBaseHandler):
 		if coupon_key!='None':
 			use_date=int(time.time())
 			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
-			q.update(session=self.session,use_date=use_date,order_id=order.id,coupon_status=2)
+			q.update(session=self.session,use_date=use_date,order_id=order.num,coupon_status=2)
 			qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
 			use_number=qq.use_number+1
 			qq.update(self.session,use_number=use_number)
@@ -1841,7 +1841,7 @@ class CartCallback(CustomerBaseHandler):
 		if not order:
 			print("[CartCallback]order not found")
 			return self.send_fail("[CartCallback]order not found")
-		totalPrice = order.totalPrice
+		totalPrice = order.new_totalprice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
@@ -2113,7 +2113,6 @@ class Order(CustomerBaseHandler):
 				q.update(session=self.session,use_date=None,order_id=None,coupon_status=1)
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
 				use_number=qq.use_number-1
-				print(use_number,'cccccccccccc')
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
 

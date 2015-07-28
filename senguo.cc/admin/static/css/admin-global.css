@@ -22,6 +22,7 @@ a:focus{text-decoration:none;outline:none;}
 .dropdown-menu{min-width:0;border-radius:1px;width:104px;border-color:#ddd;box-shadow:none;-webkit-box-shadow:none;border-top:none;padding:0;top:25px;left:-1px;margin:0;overflow: hidden;}
 .dropdown-menu li a{display:block;line-height:20px;}
 .dropdown-menu li a:hover{}
+.caret{color:#c6c6c6;}
 .row{margin:0;}
 .show{display: block !important;}
 textarea{resize:none;}

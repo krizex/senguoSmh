@@ -32,7 +32,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
-		totalPrice = 1
+		totalPrice = order.new_totalprice
 		wxPrice =int(totalPrice * 100)
 
 		print(totalPrice,'ffdfdfdfdfdfdfdf',wxPrice)

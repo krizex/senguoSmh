@@ -3,10 +3,10 @@
 {% block setcontent %}
 {% if shop_code and shop_code!='not set' %}
 <div class="clearfix top-box">
-    <p class="c333 f16 coupon-show-txt">已<span>{%if coupon_active_cm==0 %}停用{% else %}启用{%end%}</span>优惠券<a href="javascript:;" class="ml10 f16 show-detail">查看详情</a></p>
+    <p class="c333 f14 coupon-show-txt">已<span>{%if coupon_active_cm==0 %}停用{% else %}启用{%end%}</span>优惠券<a href="javascript:;" class="ml10 f14 show-detail">查看详情</a></p>
     <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
     <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
-     <button class="btn text-white  action-btn coupon-active" data-status="{{coupon_active_cm}}" data-flag="on">{%if coupon_active_cm==0%}启用{%else%}停用{%end%}</button>
+    <button class="btn text-white  action-btn coupon-active" data-status="{{coupon_active_cm}}" data-flag="on">{%if coupon_active_cm==0%}启用{%else%}停用{%end%}</button>
 </div>
 <div class="{%if coupon_active_cm==0%}hidden{%end%}" id="coupon_hidden">
     {%if output_data==[] and data1==[] %}
@@ -18,8 +18,8 @@
     </div>
 {% else %}
 <div class="category-list">
-    <div class="c999">优惠券<span class="c333">/优惠券管理</span></div>
-    <div class="subnav-box group mt30">
+    <div class="c999">优惠券<span class="c333"> / 优惠券管理</span></div>
+    <div class="subnav-box group mt20">
         <ul class="subnav chinav pull-left furit-type">
             <li class="txt-center active" data-type="active"><a href="javascript:;">活动优惠券</a></li>
             <li class="txt-center" data-type="charge"><a href="javascript:;">充值优惠券</a></li>
@@ -30,7 +30,7 @@
     </div>
 <div class="wrap-tb mt30">
     <table class="tb-enty tb-active">
-        <colgorup>
+        <colgroup>
             <col width="18%"/>
             <col width="8%"/>
             <col width="10%"/>
@@ -39,7 +39,7 @@
             <!-- <col width="10%"/> -->
             <col width="12%"/>
             <col width="16%"/>
-        </colgorup>
+        </colgroup>
         <thead>
             <tr class="thead">
                 <td>领取时间</td>
@@ -95,7 +95,7 @@
     </table>
             <input type="hidden" value="{{data1}}">
     <table class="tb-enty tb-charge hidden">
-        <colgorup>
+        <colgroup>
             <col width="18%"/>
             <col width="8%"/>
             <col width="10%"/>
@@ -104,7 +104,7 @@
             <!-- <col width="10%"/> -->
             <col width="12%"/>
             <col width="16%"/>
-        </colgorup>
+        </colgroup>
         <thead>
         <tr class="thead">
             <td>领取时间</td>
@@ -178,9 +178,9 @@
         <div class="pop-top">
             <p class="detail-title">提示</p>
         </div>
-        <div class="pop-cont">
-            <p class="f16">优惠券发放规则</p>
-            <p class="mt6">1、商家可通过新建两种类型的优惠券进行促销、充值活动。</p>
+        <div class="pop-cont c666">
+            <p class="f16 c333">优惠券发放规则</p>
+            <p class="mt10">1、商家可通过新建两种类型的优惠券进行促销、充值活动。</p>
             <p>2、在领取时间内，优惠券将发放至商城的发现列表中，供用户领取；商家也可通过发
                 放兑换码，供用在商城中我的优惠券列表中领取。</p>
             <p>3、每笔订单仅限使用一张优惠券，不可找零、叠加、拆分使⽤用。</p>
