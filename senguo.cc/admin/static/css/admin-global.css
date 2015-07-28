@@ -22,6 +22,7 @@ a:focus{text-decoration:none;outline:none;}
 .dropdown-menu{min-width:0;border-radius:1px;width:104px;border-color:#ddd;box-shadow:none;-webkit-box-shadow:none;border-top:none;padding:0;top:25px;left:-1px;margin:0;overflow: hidden;}
 .dropdown-menu li a{display:block;line-height:20px;}
 .dropdown-menu li a:hover{}
+.caret{color:#c6c6c6;}
 .row{margin:0;}
 .show{display: block !important;}
 textarea{resize:none;}
@@ -109,7 +110,7 @@ img{border:none;}
 .red-toll1{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;left: 175px;top:15px;}
 
 /*右侧公共样式*/
-.container-right{width:82.5%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:800px;}
+.container-right{width:82.5%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:750px;}
 .container-right .right-title{font-size:16px;display:block;margin-bottom:10px;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;height:77px;}
 

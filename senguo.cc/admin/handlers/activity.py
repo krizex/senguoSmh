@@ -447,7 +447,7 @@ class CouponProfile(AdminBaseHandler):
 	@CustomerBaseHandler.check_arguments("action?:str","coupon_id?")
 	def get(self):
 		current_customer_id=self.current_user.id
-		current_shop_id=self.current_shop.id
+		current_shop_id=self.get_cookie("market_shop_id")
 		self.updatecoupon()
 		action=self.args["action"]
 		if action=="get_all":
@@ -509,7 +509,7 @@ class CouponProfile(AdminBaseHandler):
 class CouponList(AdminBaseHandler):
 	def getcoupon(self,coupon_status,data):
 		current_customer_id=self.current_user.id
-		current_shop_id=self.current_shop.id
+		current_shop_id=self.get_cookie("market_shop_id")
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).order_by(models.CouponsCustomer.get_date.desc()).all()
 		now_date=int(time.time())
 		for x in q:
@@ -546,7 +546,7 @@ class CouponList(AdminBaseHandler):
 	def get(self):
 		action=self.args["action"]
 		current_customer_id=self.current_user.id
-		current_shop_id=self.current_shop.id
+		current_shop_id=self.get_cookie("market_shop_id")
 		self.updatecoupon()
 		if action=="get_all":
 			data=[]
@@ -579,7 +579,7 @@ class CouponDetail(AdminBaseHandler):
 	def get(self):
 		action=self.args["action"]
 		current_customer_id=self.current_user.id
-		current_shop_id=self.current_shop.id
+		current_shop_id=self.get_cookie("market_shop_id")
 		mcoupon_key=self.args["coupon_key"]
 		self.updatecoupon()
 		if action=="detail":
@@ -658,7 +658,7 @@ class CouponCustomer(AdminBaseHandler):
 	def get(self):
 		action=self.args["action"]
 		current_customer_id=self.current_user.id
-		current_shop_id=self.current_shop.id
+		current_shop_id=self.get_cookie("market_shop_id")
 		self.updatecoupon()
 		if action=="get_coupon":
 			coupon_id=self.args["coupon_id"]
