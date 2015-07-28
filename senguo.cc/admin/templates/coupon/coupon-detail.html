@@ -6,7 +6,7 @@
 </div>
 {% end %}
 {% block content %}
-<div class="wrap-user-coupon">
+<div class="wrap-user-coupon pm20">
     <div class="coupon-bg-box">
         <div class="wrap-coupon-ubg">
             <div class="coupon-ubg">
@@ -30,7 +30,7 @@
                         <p class="rule-text">订单满{{output_data['use_rule']}}（含运费）即可使用</p>
                     </div>
                 </div>
-                <p class="coupon-date f12">有效日期 : {{output_data['effective_time']}}  至  {{output_data['uneffective_time']}}</p>
+                <p class="coupon-date f12">有效日期 : {{output_data['effective_time']}}  至<br>  {{output_data['uneffective_time']}}</p>
                 <div class="go-link" data-url="/{{output_data['shop_code']}}">
                     <i class="gap gap-top"></i>
                     {% if output_data['coupon_status']==1 %}

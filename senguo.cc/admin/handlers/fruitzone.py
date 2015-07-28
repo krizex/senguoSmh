@@ -999,6 +999,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 						else:
 							now_date=int(time.time())
 							CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+							get_number=x.get_number+1
+							x.update(self.session,get_number=get_number)
 							self.session.commit()
 							break
 						self.session.commit()
@@ -1009,6 +1011,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 					else:
 						now_date=int(time.time())
 						CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+						get_number=x.get_number+1
+						x.update(self.session,get_number=get_number)
 						self.session.commit()
 						break
 					self.session.commit()
@@ -1137,6 +1141,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 						else:
 							now_date=int(time.time())
 							CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+							get_number=x.get_number+1
+							x.update(self.session,get_number=get_number)
 							self.session.commit()
 							break
 						self.session.commit()
@@ -1147,6 +1153,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 					else:
 						now_date=int(time.time())
 						CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+						get_number=x.get_number+1
+						x.update(self.session,get_number=get_number)
 						self.session.commit()
 						break
 					self.session.commit()
