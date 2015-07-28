@@ -13,7 +13,7 @@
     <div class="wrap-coupon-img txt-center">
         <img src="/static/images/coupon.jpg" alt="" width="238">
         <div class="wrap-newbtn">
-            <a href="/admin/marketing?action=newcouponpage&coupon_type=0" class="newbtn add-btn  mt6 mr10">+新建优惠券</a>
+            <a href="{{reverse_url("adminMarketing")}}?action=newcouponpage&coupon_type=0" class="newbtn add-btn  mt6 mr10">+新建优惠券</a>
         </div>
     </div>
 {% else %}
@@ -47,14 +47,14 @@
                 <td>优惠条件</td>
                 <td>优惠金额</td>
                 <td>优惠券有效期</td>
-             <!--    <td>可消费商品</td> -->
+                <!-- <td>可消费商品</td> -->
                 <td>使用/领取/库存</td>
                 <td>操作</td>
             </tr>
         </thead>
         <tbody>
-         {%if output_data==[]%}
-         <tr>
+        {%if output_data==[]%}
+        <tr>
             <td colspan="7" class="txt-center c999">当前没有优惠券</td>
         </tr>
         {%else%}
@@ -67,7 +67,7 @@
                 <td>{%if coupon["valid_way"]==0%}{{coupon['from_valid_date']}}到{{coupon['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{coupon["last_day"]}}天{%end%}</td>
                 <td>{{coupon['use_number']}}/{{coupon['get_number']}}/{{coupon['total_number']}}</td>
                 <td class="operate">
-                    <a href="/admin/marketing?action=editcouponpage&coupon_type=0&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon['coupon_id']}}">编辑</a>
+                    <a href="{{reverse_url("adminMarketing")}}?action=editcouponpage&coupon_type=0&coupon_id={{coupon['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon['coupon_id']}}">编辑</a>
                     <a href="javascript:;" class="mr10 spread-btn">推广</a>
                     <a href="javascript:;" class="red-txt close_one" data-id="{{coupon['coupon_id']}}">停用</a>
                     <span class="stop">已停用</span>
@@ -125,19 +125,19 @@
         {%else%}
         {% for data in data1 %}
         <tr class=" detail-tr {%if data['closed']==1%}dis-coupon{%end%}"  data-id="{{data['coupon_id']}}">
-             <td>{{data["from_get_date"]}}到{{data["to_get_date"]}}</td>
-             <td>充值满{{data["get_rule"]}}元领取</td>
-             {%if data["get_limit"]!=-1%}<td>每人限领{{data["get_limit"]}}张</td>
-             {%else%}
-             <td>多充多送</td>
-             {%end%}
-              <td>{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</td>
-              <td>{{data['coupon_money']}}元<br>{% if data['use_goods_group'] == -2 %}所有商品{% else %}{{data['use_goods_group']}}:{{data['use_goods']}}{% end %}买满{{data["use_rule"]}}元可用</td>
+            <td>{{data["from_get_date"]}}到{{data["to_get_date"]}}</td>
+            <td>充值满{{data["get_rule"]}}元领取</td>
+            {%if data["get_limit"]!=-1%}<td>每人限领{{data["get_limit"]}}张</td>
+            {%else%}
+            <td>多充多送</td>
+            {%end%}
+            <td>{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</td>
+            <td>{{data['coupon_money']}}元<br>{% if data['use_goods_group'] == -2 %}所有商品{% else %}{{data['use_goods_group']}}:{{data['use_goods']}}{% end %}买满{{data["use_rule"]}}元可用</td>
             <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td> 
             <td class="operate">
-                    <a href="/admin/marketing?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{coupon["coupon_id"]}}">编辑</a>
+                    <a href="{{reverse_url("adminMarketing")}}?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a>
                     <a href="javascript:;" class="mr10 spread-btn">推广</a>
-                    <a href="javascript:;" class="red-txt close_one" data-id="{{coupon['coupon_id']}}">停用</a>
+                    <a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a>
                     <span class="stop">已停用</span>
                     <div class="sw-er-tip all-position invisible">
                         <div class="top-arr">
@@ -146,7 +146,7 @@
                         </div>
                         <p class="er-text">优惠券链接</p>
                         <div class="wrap-ipt">
-                            <input type="text" class="sw-link-txt" value="http://senguo.cc/coupon/profile?action=get_one&coupon_id={{coupon['coupon_id']}}" disabled="">
+                            <input type="text" class="sw-link-txt" value="http://senguo.cc/coupon/profile?action=get_one&coupon_id={{data['coupon_id']}}" disabled="">
                             <input type="button" class="sw-link-copy" value="复制链接">
                         </div>
                         <div class="wrap-er group">
@@ -156,7 +156,7 @@
                         </div>
                     </div>
                 </td> 
-            <!-- <td class="operate"><a href="/admin/marketing?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td> -->
+            <!-- <td class="operate"><a href="{{reverse_url("adminMarketing")}}?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a><a href="javascript:;" class="mr10">推广</a><a href="javascript:;" class="red-txt close_one" data-id="{{data['coupon_id']}}">停用</a><span class="stop">已停用</span></td> -->
         </tr>
         {% end %}
         {%end%}
