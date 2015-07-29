@@ -238,7 +238,7 @@ class OrderDetail(AdminBaseHandler):
 			self.current_shop = shop
 
 		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		print(charge_types)
+		print("[MadminOrderDetail]charge_types:",charge_types)
 		if order.pay_type == 1:
 			order.pay_type_con = "货到付款"
 		elif order.pay_type == 2:
