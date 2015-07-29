@@ -131,9 +131,9 @@ class GlobalBaseHandler(BaseHandler):
 				if now_date>qq.to_get_date:
 					qq.closed=1
 				if x.coupon_status>0:
-					if now_date>x.uneffective_time :
+					if now_date>x.uneffective_time:
 						x.update(coupon_status=3)
-				self.session.commit()	
+				self.session.commit()
 		self.session.commit()
 		return None
 

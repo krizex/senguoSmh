@@ -2738,7 +2738,16 @@ class payTest(CustomerBaseHandler):
 								pass
 							else:
 								now_date=int(time.time())
-								CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+								if x.valid_way==0:
+									uneffective_time=x.to_valid_date
+									effective_time=x.from_valid_date
+								elif x.valid_way==1:
+									all_days=x.start_day+x.last_day
+									uneffective_time=get_date+all_days*60*60*24
+									effective_time=get_date+x.start_day*24*60*60
+								else:
+									pass
+								CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date,effective_time=effective_time,uneffective_time=uneffective_time)
 								get_number=x.get_number+1
 								x.update(self.session,get_number=get_number)
 								self.session.commit()
@@ -2751,7 +2760,16 @@ class payTest(CustomerBaseHandler):
 							pass
 						else:
 							now_date=int(time.time())
-							CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+							if x.valid_way==0:
+								uneffective_time=x.to_valid_date
+								effective_time=x.from_valid_date
+							elif x.valid_way==1:
+								all_days=x.start_day+x.last_day
+								uneffective_time=get_date+all_days*60*60*24
+								effective_time=get_date+x.start_day*24*60*60
+							else:
+								pass
+							CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date,effective_time=effective_time,uneffective_time=uneffective_time)
 							get_number=x.get_number+1
 							x.update(self.session,get_number=get_number)
 							self.session.commit()
