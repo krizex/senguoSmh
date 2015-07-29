@@ -3831,31 +3831,6 @@ class Marketing(AdminBaseHandler):
 			return self.render("admin/coupon.html",output_data=data,data1=data1,coupon_active_cm=coupon_active,context=dict(subpage='marketing',subpage2='coupon'))
 		elif action=="newcoupon":
 			pass
-			# @AdminBaseHandler.check_arguments("action:str","coupon_money:int","use_rule:float","total_num:int",\
-			# 	"get_limitnum:int","used_for:int","valid_way:int","uneffictive_time:date","day_start:int","last_day:int")
-			# data=self.args["data"]
-			# data = json.loads(data)
-			# coupon_money=data["coupon_money"]
-			# use_rule=data["use_rule"]
-			# total_num=data["total_num"]
-			# get_limitnum=data["get_limitnum"]
-			# used_for=data["used_for"]
-			# valid_way=data["valid_way"]
-			# uneffictive_time=data["uneffictive_time"]
-			# day_start=data["day_start"]
-			# last_day=data["last_day"]
-			# coupons_id=self.session.query(models.CouponsShop).filter_by(shop_id=self.curent_shop_id).count()+1
-			# for i in range(total_num):
-			# 	chars=string.digits+string.ascii_letters
-			# 	chars=''.join(random.sample(chars*10,4))
-			# 	chars=chars+str(i)+'M'+str(current_shop_id)
-			# 	new_coupon=models.CouponsShop(shop_id=self.curent_shop_id,coupon_id=coupons_id,coupon_key=chars,\
-			# 		coupon_money=coupon_money,coupon_totalnum=total_num,coupon_remainnum=total_num,valid_way=valid_way,\
-			# 		day_start=day_start,last_day=last_day,\
-			# 		get_limitnum=get_limitnum,used_for=used_for,use_rule=use_rule)
-			# 	session.add(new_coupon)
-			# session.commit()
-			# return self.render("admin/newcoupon.html",context=dict(subpage='marketing'))
 		elif action=="details":
 			coupon_type=self.args["coupon_type"]
 			max_item=12
@@ -4078,19 +4053,6 @@ class Marketing(AdminBaseHandler):
 				x_goodsgroup={"group_id":x.id,"group_name":x.name}
 				data.append(x_goodsgroup)
 			return self.render("admin/newcoupon.html",output_data=data,context=dict(subpage='coupon'))
-		#elif action=="coupon":
-			# coupons=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).all()
-			# m=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id).count()
-			# data=[]
-			# a=self.session.query(func.max(models.CouponsShop.coupon_id)).filter_by(shop_id=current_shop_id)
-			# for x in range(1,a[0][0]+1):
-			# 	q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=x).first()
-			# 	get_num=self.session.query(models.CouponsShop).filter(shop_id==current_shop_id,coupon_id==x,customer_id!=None).count()
-
-			# 	x_coupon={"coupon_id":q.coupon_id,"coupon_money":q.coupon_money,"get_limitnum":q.get_limitnum,"use_rule":q.use_rule,"use_for":q.used_for,"coupon_usenum":q.coupon_usenum,\
-			# 		"uneffective_time":q.uneffective_time,"coupon_getnum":get_num,"coupon_totalnum":q.coupon_totalnum}
-			# 	data.append(x_coupon)
-			# return self.render("admin/coupon.html",output_data=data,context=dict(subpage='coupon'))
 		elif action=="newcoupon":
 			data=self.args["data"]
 			coupon_type=int(data["coupon_type"])
@@ -4339,28 +4301,7 @@ class Confession(AdminBaseHandler):
 				sex   = temp.Accountinfo.sex,
 				address= temp.ConfessionWall.other_address,
 				phone = temp.ConfessionWall.other_phone))
-		# return self.send_success(data = datalist)
-
-
-		# if action == "all":
-		# 	# 我开始的时候用的识filter 但是后台报错 我使用了 filter_by之后错误解决 为什么呢？？？
-		# 	q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.create_time.desc())
-		# elif action == "hot":
-		# 	q = self.session.query(models.ConfessionWall).filter_by( shop_id = self.current_shop.id,status = 1).order_by(models.ConfessionWall.great.desc())
-		# else:
-		# 	return self.send_error(404)
-		# confession = q.offset(page*page_size).limit(page_size).all()
-		# count = q.count()
-		# pages = count/page_size
-		# for data in confession:
-		# 	info = self.session.query(models.Customer).filter_by(id=data.customer_id).first()
-		# 	user = info.accountinfo.nickname
-		# 	imgurl = info.accountinfo.headimgurl_small
-		# 	sex = info.accountinfo.sex
-		# 	time = data.create_time.strftime('%Y-%m-%d %H:%M:%S')
-		# 	datalist.append({'id':data.id,'user':user,'imgurl':imgurl,'time':time,'name':data.other_name,\
-		# 		'type':data.confession_type,'confession':data.confession,'great':data.great,\
-		# 		'comment':data.comment,'floor':data.floor,'sex':sex,'address':data.other_address,'phone':data.other_phone})
+		
 		return self.render("admin/confession.html", action = action, datalist=datalist, pages=pages,context=dict(subpage='marketing'))
 
 	@AdminBaseHandler.check_arguments("action:str", "data")
