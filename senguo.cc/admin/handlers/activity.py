@@ -436,13 +436,13 @@ class ConfessionList(CustomerBaseHandler):
 			return self.send_success(datalist = datalist,nomore=nomore)
 
 # 发现 - 优惠券
-class Coupon(AdminBaseHandler):
+class Coupon(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("coupon/coupon.html")
 
 #我的优惠券		
-class CouponProfile(AdminBaseHandler):
+class CouponProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?:str","coupon_id?")
 	def get(self):
@@ -506,7 +506,7 @@ class CouponProfile(AdminBaseHandler):
 					data.append(x_coupon)
 			return self.render("coupon/coupon-profile.html",output_data=data)
 #优惠券列表		
-class CouponList(AdminBaseHandler):
+class CouponList(CustomerBaseHandler):
 	def getcoupon(self,coupon_status,data):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.get_cookie("market_shop_id")
@@ -568,12 +568,12 @@ class CouponList(AdminBaseHandler):
 			return self.render("coupon/coupon-list.html",output_data=data)
 
 #优惠券状态
-class CouponStatus(AdminBaseHandler):
+class CouponStatus(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("coupon/coupon-status.html")
 
-class CouponDetail(AdminBaseHandler):	
+class CouponDetail(CustomerBaseHandler):	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_key:str")
 	def get(self):
@@ -652,7 +652,7 @@ class CouponDetail(AdminBaseHandler):
 					x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"shop_name":shop.shop_name,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":mcoupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
 					return self.send_success(output_data=x_coupon)
 
-class CouponCustomer(AdminBaseHandler):	
+class CouponCustomer(CustomerBaseHandler):	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_id?:int")
 	def get(self):
