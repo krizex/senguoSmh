@@ -516,7 +516,7 @@ $(document).ready(function(){
         if(money>=last_money){
             smoney = 0;
         }else{
-            smoney = (last_money - money).tofixed(2);
+            smoney = parseFloat(last_money - money).tofixed(2);
         }
         $("#total_price").html(smoney);
     }   
@@ -852,7 +852,7 @@ function time(evt) {
         setTimeout(function() {
                 time(evt)
             },
-            1000)
+            1000);
     }
 }
 //获取手机验证码
@@ -874,8 +874,8 @@ function Vrify(phone){
             }
             else return noticeBox(res.error_text);
         },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~');},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
     );
 }
 //手机绑定
@@ -904,7 +904,7 @@ function TiePhone(evt){
             }
             else noticeBox(res.error_text);
         },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~');},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
     );
 }
