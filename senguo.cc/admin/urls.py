@@ -288,6 +288,8 @@ handlers = [
 	# (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
 	# (r"/fruitzone/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
 	(r"/apply", handlers.apply.Home, {}, "ApplyHome"),
+	(r"/apply/login", handlers.apply.Login, {}, "ApplyLogin"),
+	(r"/wxmessage",handlers.apply.WxMessage,{},'wxmessage'),
 	(r"/admin/create", handlers.apply.CreateShop, {}, "CreateShop"),
 	
 	(r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传

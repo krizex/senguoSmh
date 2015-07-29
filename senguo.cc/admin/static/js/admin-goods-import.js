@@ -8,6 +8,9 @@ $(document).ready(function(){
     getGoods(parseInt($(".shop_name").attr("data-id")));
 }).on("click",".import-type li",function(){
     var index = $(this).index();
+    if(index==1){
+        return Tip("该功能还在开发中");
+    }
     type = index;
     $(".import-type li").removeClass("active").eq(index).addClass("active");
     $(".wrap-tabcont .tab-item").addClass("hidden").eq(index).removeClass("hidden");
@@ -81,7 +84,7 @@ function getGoods(shop_id){
             return Tip(res.error_text);
          }
     });
-}   
+}
 
 function importGoods($btn){
     if($btn.attr("data-flag")=="off"){

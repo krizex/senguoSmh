@@ -585,6 +585,7 @@ class Shop(MapBase, _CommonApi):
 	shop_property = Column(Float,default = 0,nullable = False)
 
 	shop_tpl = Column(Integer,default = 0) #6-17 shop template 0:customer 1:beauty
+	spread_member_code = Column(String(30)) #7.27
 
 
 	def __repr__(self):
@@ -1810,6 +1811,13 @@ class Spider_Good(MapBase,_CommonApi):
 	goods_price = Column(Float)
 	shop_id  =Column(Integer,nullable = False)
 	sales = Column(Integer)
+
+
+class Scene_Openid(MapBase,_CommonApi):
+	__tablename__ = 'scecne_openid'
+	id = Column(Integer,primary_key=True,nullable=False,autoincrement=True)
+	scene_id = Column(Integer)
+	openid   = Column(String(64))
 
 '''
 # add by cm 2015.6.15

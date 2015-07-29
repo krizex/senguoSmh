@@ -771,8 +771,8 @@ class PhoneVerify(_AccountBaseHandler):
 		if a:
 			if a != self.current_user.accountinfo:
 				return self.send_fail(error_text="手机号已经绑定其他账号")
-			else:
-				return self.send_fail(error_text="手机号已绑定，无需重复绑定")
+			# else:
+			# 	return self.send_fail(error_text="手机号已绑定，无需重复绑定")
 		# print("[店铺申请]发送证码到手机：",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
