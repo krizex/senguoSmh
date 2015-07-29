@@ -516,7 +516,7 @@ $(document).ready(function(){
         if(money>=last_money){
             smoney = 0;
         }else{
-            smoney = last_money - money;
+            smoney = (last_money - money).tofixed(2);
         }
         $("#total_price").html(smoney);
     }   
