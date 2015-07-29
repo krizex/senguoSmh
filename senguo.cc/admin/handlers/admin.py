@@ -154,7 +154,6 @@ class Home(AdminBaseHandler):
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
 			self.current_shop = shop
 			self.set_secure_cookie("shop_id", str(shop.id), domain=ROOT_HOST_NAME)
-			print(self.current_shop)
 			return self.send_success()
 		elif action == 'other_shop':
 			shoplist=[]
