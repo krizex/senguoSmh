@@ -1775,18 +1775,30 @@ class ApplyCash(SuperBaseHandler):
 class CheckCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-
 		####################
 		#借用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
-		shop_list_query = self.session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
-		
-		shop_id_list = []
-		shop_id_name_dict = {}
-		
-		for item in shop_list_query:
-			shop_id_list.append(item[0])
 
-		for shop_id in [4]:
+		# *将balancehistory表中的所有店铺id查出来存放在列表shop_list_query1中
+		# *将系统中的所有status > -1的订单的数量不为0店铺的id查询出来存在一个列表shop_list_query2中
+		# *然后从列表shop_list_query2中除去shop_list_query1中的id 
+		shop_list_query1 = self.session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
+		
+		shop_id_list1 = []
+		for item in shop_list_query1:
+			shop_id_list1.append(item[0])
+
+		# shop_list_query2可以先不考虑
+		# shop_list_query2 = self.session.query(models.Order.shop_id).filter(models.Order.status > -1,models.Order.pay_type.in_([2,3])).distinct(models.Order.shop_id).all()	
+		# shop_id_list2 = []
+		# for item in shop_list_query2:
+		# 	if item[0] not in shop_id_list1:
+		# 		shop_id_list2.append(item[0])
+
+		# *遍历shop_id_list1每一个shop的id
+		# if 1 == 2:
+		for shop_id in [1080]:
+		# for shop_id in shop_id_list1:
+			# *查询店铺号在balancehistory中对应的shop_totalprice最新记录		                        	
 			shop_totalprice_history = {}
 			query_list = self.session.query(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d %H:%i:%S"),models.BalanceHistory.shop_totalPrice).\
 						   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,1,2,3,4,5])).\
@@ -1797,6 +1809,7 @@ class CheckCash(SuperBaseHandler):
 				query_list = ()
 			shop_totalprice_history[str(shop_id)] = query_list
 
+			# *查询店铺号在balancehistory中对应的available_balance最新记录
 			shop_available_balance_history = {}
 			query_list = self.session.query(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d %H:%i:%S"),models.BalanceHistory.available_balance).\
 						   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([2,6,7])).\
@@ -1807,6 +1820,7 @@ class CheckCash(SuperBaseHandler):
 				query_list = ()
 			shop_available_balance_history[str(shop_id)] = query_list
 
+			# *查询店铺号在shop表中对应的shop_totalprice和available_balance字段值
 			shop_totalprice_available_balance = {}
 			query_list = self.session.query(models.Shop.shop_balance,models.Shop.available_balance).filter_by(id = shop_id).all()
 			if len(query_list) != 0:
@@ -1814,6 +1828,8 @@ class CheckCash(SuperBaseHandler):
 			else:
 				query_list = ()
 			shop_totalprice_available_balance[str(shop_id)] = query_list
+
+			# *判断shop表和balancehistory表两表中的shop_totalPrice和available_balance两个字段是否分别一致
 			for key in shop_totalprice_available_balance:
 				if shop_totalprice_available_balance[key][0] != shop_totalprice_history[key][1]:
 					print("totalprice:",key,shop_totalprice_available_balance[key][0],shop_totalprice_history[key][1])
@@ -1825,30 +1841,113 @@ class CheckCash(SuperBaseHandler):
 					if shop_totalprice_available_balance[key][1] != 0:
 						print("available_balance:",key,shop_totalprice_available_balance[key][1],0)
 
-			balance_type_1_3 = []
-			query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([1,3]),models.BalanceHistory.shop_id == shop_id).all()
-			for item in query_list:
-				for i in range(len(item[0])):
-					if item[0][i].isdigit():
-						break
-				balance_type_1_3.append(item[0][i : len(item[0])])
-			print(len(balance_type_1_3))
-			print(len())
+			# *查询balancehistory表中的所有余额支付（balance_type = 1）的记录的订单号并存到列表balance_type_1中
+			balance_type_1 = []
+			query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type == 1,models.BalanceHistory.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					for i in range(len(item[0])):
+						if item[0][i].isdigit():
+							break
+					balance_type_1.append(item[0][i : len(item[0])])
 
-			# pay_type_2_3 = []
-			# query_list = self.session.query(models.Order.shop_id,models.Order.num).filter(models.Order.status.in_([5,6,7,10]),models.Order.pay_type.in_([2,3])).all()
-			# # print("@@@@",len(query_list))
+			# *查询order表中的所有余额支付（pay_type = 2）的记录的订单号并存到列表pay_type_2中
+			pay_type_2 = []
+			query_list = self.session.query(models.Order.num).filter(models.Order.status >= 0,models.Order.pay_type == 2,models.Order.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					pay_type_2.append(item[0])
 
+				# *判断pay_type_2的长度是否大于balance_type_1，若大于，则说明order表中肯定有余额支付的订单记录没有插入到balancehistory表中，这时就要把相关记录插入到balancehistory表中
+				if len(pay_type_2) > len(balance_type_1):
+					# print("!!@@@11111111111111",shop_id)
+					# print("@@@@",len(pay_type_2))
+					# print(len(balance_type_1))
+					insert_order_num = [i for i in pay_type_2 if i not in balance_type_1]
+					insert_list = self.session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s')).\
+						       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
+					# print(insert_list)
+					# [(48338, 1080, 'Maybe', 11.0, '1080000332', '2015-06-19 20:34:00')
+					for i in range(len(insert_list)):
+						shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
+						if not shop_follow:
+							return self.send_fail('shop_follow not found')
+						shop_follow.shop_balance += insert_list[i][3]   #用户对应 店铺余额减少 ，单位：元
+						self.session.commit()
+
+						insert_list[i] = list(insert_list[i])
+						insert_list[i][4] = '余额支付：订单' + insert_list[i][4]
+						balance_history = models.BalanceHistory(customer_id = insert_list[i][0],shop_id = insert_list[i][1] ,name = insert_list[i][2],balance_value = insert_list[i][3] ,\
+											   balance_record = insert_list[i][4],create_time = insert_list[i][5],balance_type = 1)
+						self.session.add(balance_history)
+						self.session.commit()
+
+
+				else:
+					pass
 
 			# balance_type_6_7 = []
-			# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7])).all()
-			# for item in query_list:
-			# 	for i in range(len(item[0])):
-			# 		if item[0][i].isdigit():
-			# 			break
-			# 	balance_type_6_7.append(item[0][i : len(item[0])-2])
+			# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7]),models.BalanceHistory.shop_id == shop_id).all()
+			# if len(query_list) != 0:
+			# 	for item in query_list:
+			# 		for i in range(len(item[0])):
+			# 			if item[0][i].isdigit():
+			# 				break
+			# 		balance_type_6_7.append(item[0][i : len(item[0])-2])
 
+			# pay_type_2_3_done = []
+			# query_list = self.session.query(models.Order.num).filter(models.Order.status >= 5,models.Order.pay_type.in_([2,3]),models.Order.shop_id == shop_id).all()
+			# if len(query_list) != 0:
+			# 	for item in query_list:
+			# 		pay_type_2_3_done.append(item[0])
+			# 	if len(pay_type_2_3_done) < len(balance_type_6_7):
+			# 		print("!!@@@2222222222222",shop_id)
+			# 		print("@@@@",len(pay_type_2_3_done))
+			# 		print(len(balance_type_6_7))
+			# 	elif len(pay_type_2_3_done) > len(balance_type_6_7):
+			# 		print("!!@@@3333333333333",shop_id)
+			# 		print("@@@@",len(pay_type_2_3_done))
+			# 		print(len(balance_type_6_7))
+			# 	else:
+			# 		pass
 
+			# pay_type_2_delete = []
+			# query_list = self.session.query(models.Order.num).filter(models.Order.status == 0,models.Order.pay_type == 2,models.Order.shop_id == shop_id).all()
+			# if len(query_list) != 0:
+			# 	for item in query_list:
+			# 		pay_type_2_delete.append(item[0])
+
+			# balance_type_4_5 = []
+			# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([4,5]),models.BalanceHistory.shop_id == shop_id).all()
+			# if len(query_list) != 0:
+			# 	for item in query_list:
+			# 		for i in range(len(item[0])):
+			# 			if item[0][i].isdigit():
+			# 				break
+			# 		balance_type_4_5.append(item[0][i : len(item[0])-2])
+			# 	if len(pay_type_2_delete) < len(balance_type_4_5):
+			# 		pass
+			# 	elif len(pay_type_2_delete) > len(balance_type_4_5):
+			# 		pass
+			# else:
+			# 	if len(pay_type_2_delete) != 0:
+			# 		print("@@@44444444444444",shop_id)
+
+		# query_list = self.session.query(models.Shop.id,models.Shop.shop_balance,models.Shop.available_balance).\
+		# 	       filter(or_(models.Shop.shop_balance == 0,models.Shop.available_balance == 0),models.Shop.id.in_(shop_id_list2)).\
+		# 	       order_by(models.Shop.id).all()
+		# query_list = self.session.query(models.Order.shop_id,models.Order.num).\
+		# 	       filter(models.Order.pay_type.in_([2]),models.Order.status == 0,models.Order.shop_id.in_(shop_id_list2)).\
+		# 	       order_by(models.Order.shop_id).all()
+
+		# print(query_list)
+		# for shop_id in shop_id_list2: 
+		# 	print("@@@",shop_id)
+
+			# pay_type_2_3 = []
+			# query_list = self.session.query(models.Order.num).filter(models.Order.status > 0,models.Order.pay_type.in_([2,3]),models.Order.shop_id == shop_id).all()
+			# if len(query_list) != 0:
+			# 	pass
 		####################
 		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
 
