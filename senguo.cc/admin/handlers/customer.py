@@ -1657,7 +1657,70 @@ class Cart(CustomerBaseHandler):
 		# 执行后续的记录修改
 		print('[Cart]before callback')
 
+		self.cart_callback(order.id)
+
+
 		return self.send_success(order_id = order.id)
+
+	def cart_callback(self,order_id):
+		print(order_id)
+		# try:
+		# 	order_id = int(self.args['order_id'])
+		# except:
+		# 	Logger.error("CartCallback: get order_id error")
+		# 	return self.send_fail("CartCallback: get order_id error")
+		order = self.session.query(models.Order).filter_by(id = int(order_id)).first()
+		if not order:
+			Logger.warn("CartCallback: order not found")
+			return self.send_fail("CartCallback: order not found")
+		totalPrice = order.totalPrice
+		shop_id = order.shop_id
+		customer_id = order.customer_id
+		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
+		shop    =  self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop or not customer:
+			Logger.warn("CartCallback: shop/customer not found")
+			return self.send_fail('CartCallback: shop/customer not found')
+		# 送货地址处理
+		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
+		# if not address:
+		# 	return self.send_fail("没找到地址", 404)
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
+			print(shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+		else:
+			access_token = None
+
+		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
+		if order.pay_type != 3:
+			print(access_token,'access_token')
+			self.send_admin_message(self.session,order,access_token)
+
+
+		####################################################
+		# 订单提交成功后 ，用户余额减少，
+		# 同时生成余额变动记录,
+		# 订单完成后 店铺冻结资产相应转入 店铺可提现余额
+		# woody 4.29
+		####################################################
+		# print(self.args['pay_type'],'好难过')
+		if order.pay_type == 2:
+			shop_follow = self.session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
+				shop_id = shop_id).first()
+			if not shop_follow:
+				return self.send_fail('shop_follow not found')
+			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
+			self.session.commit()
+			#生成一条余额交易记录
+			balance_record = '余额支付：订单' + order.num
+			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
+				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
+				balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
+				customer_totalPrice = shop_follow.shop_balance)
+			self.session.add(balance_history)
+			self.session.commit()
+
+		return True
 
 	@classmethod
 	def order_cancel_auto(self,session,order_id):
@@ -1688,64 +1751,64 @@ class CartCallback(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
-		print('[CartCallback]login callback')
-		try:
-			order_id = int(self.args['order_id'])
-			# print("[CartCallback]order_id:",order_id)
-		except:
-			print("[CartCallback]get order_id error")
-			return self.send_fail("[CartCallback]get order_id error")
-		order = self.session.query(models.Order).filter_by(id = order_id).first()
-		if not order:
-			print("[CartCallback]order not found")
-			return self.send_fail("[CartCallback]order not found")
-		totalPrice = order.totalPrice
-		shop_id = order.shop_id
-		customer_id = order.customer_id
-		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-		shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop or not customer:
-			print("[CartCallback]shop/customer not found")
-			return self.send_fail('[CartCallback]shop/customer not found')
-		# 送货地址处理
-		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
-		# if not address:
-		# 	return self.send_fail("没找到地址", 404)
-		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
-			print(shop.admin.mp_appsecret,shop.admin.mp_appid)
-			access_token = self.get_other_accessToken(self.session,shop.admin.id)
-		else:
-			print(None)
-			access_token = None
-		print('lalalalalallalal')
+		# print('[CartCallback]login callback')
+		# try:
+		# 	order_id = int(self.args['order_id'])
+		# 	# print("[CartCallback]order_id:",order_id)
+		# except:
+		# 	print("[CartCallback]get order_id error")
+		# 	return self.send_fail("[CartCallback]get order_id error")
+		# order = self.session.query(models.Order).filter_by(id = order_id).first()
+		# if not order:
+		# 	print("[CartCallback]order not found")
+		# 	return self.send_fail("[CartCallback]order not found")
+		# totalPrice = order.totalPrice
+		# shop_id = order.shop_id
+		# customer_id = order.customer_id
+		# customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
+		# shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		# if not shop or not customer:
+		# 	print("[CartCallback]shop/customer not found")
+		# 	return self.send_fail('[CartCallback]shop/customer not found')
+		# # 送货地址处理
+		# # address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
+		# # if not address:
+		# # 	return self.send_fail("没找到地址", 404)
+		# if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
+		# 	print(shop.admin.mp_appsecret,shop.admin.mp_appid)
+		# 	access_token = self.get_other_accessToken(self.session,shop.admin.id)
+		# else:
+		# 	print(None)
+		# 	access_token = None
+		# print('lalalalalallalal')
 
-		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
-		if order.pay_type != 3:
-			print(access_token,'access_token')
-			self.send_admin_message(self.session,order)
+		# # 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
+		# if order.pay_type != 3:
+		# 	print(access_token,'access_token')
+		# 	self.send_admin_message(self.session,order)
 
-		####################################################
-		# 订单提交成功后 ，用户余额减少，
-		# 同时生成余额变动记录,
-		# 订单完成后 店铺冻结资产相应转入 店铺可提现余额
-		# woody 4.29
-		####################################################
-		# print(self.args['pay_type'],'好难过')
-		if order.pay_type == 2:
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
-				shop_id = shop_id).first()
-			if not shop_follow:
-				return self.send_fail('shop_follow not found')
-			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-			self.session.commit()
-			#生成一条余额交易记录
-			balance_record = '余额支付：订单' + order.num
-			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
-				balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
-				customer_totalPrice = shop_follow.shop_balance)
-			self.session.add(balance_history)
-			self.session.commit()
+		# ####################################################
+		# # 订单提交成功后 ，用户余额减少，
+		# # 同时生成余额变动记录,
+		# # 订单完成后 店铺冻结资产相应转入 店铺可提现余额
+		# # woody 4.29
+		# ####################################################
+		# # print(self.args['pay_type'],'好难过')
+		# if order.pay_type == 2:
+		# 	shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
+		# 		shop_id = shop_id).first()
+		# 	if not shop_follow:
+		# 		return self.send_fail('shop_follow not found')
+		# 	shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
+		# 	self.session.commit()
+		# 	#生成一条余额交易记录
+		# 	balance_record = '余额支付：订单' + order.num
+		# 	balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
+		# 		shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
+		# 		balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
+		# 		customer_totalPrice = shop_follow.shop_balance)
+		# 	self.session.add(balance_history)
+		# 	self.session.commit()
 
 		return self.send_success()
 
