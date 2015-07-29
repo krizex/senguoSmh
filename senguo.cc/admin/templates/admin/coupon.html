@@ -133,7 +133,7 @@
             {%end%}
             <td>{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</td>
             <td>{{data['coupon_money']}}元<br>{% if data['use_goods_group'] == -2 %}所有商品{% else %}{{data['use_goods_group']}}:{{data['use_goods']}}{% end %}买满{{data["use_rule"]}}元可用</td>
-            <td>{{data["get_number"]}}/{{data["use_number"]}}/{{data["total_number"]}}</td> 
+            <td>{{data["use_number"]}}/{{data["get_number"]}}/{{data["total_number"]}}</td> 
             <td class="operate">
                     <a href="{{reverse_url("adminMarketing")}}?action=editcouponpage&coupon_type=1&coupon_id={{data['coupon_id']}}" class="mr10 coupon-edit" data-id="{{data["coupon_id"]}}">编辑</a>
                     <a href="javascript:;" class="mr10 spread-btn">推广</a>
