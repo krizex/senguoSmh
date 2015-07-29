@@ -1644,51 +1644,6 @@ class Cart(CustomerBaseHandler):
 		if not address:
 			return self.send_fail("没找到地址", 404)
 
-		# 已支付、付款类型、余额、积分处理
-		money_paid = False
-		pay_type = 1
-
-		####################################################
-		#  当订单 选择余额付款时 ，应判断 用户在 当前店铺的余额是否大于订单总额
-		####################################################
-		pay_type = self.args['pay_type']
-		if pay_type == 2:
-			if current_shop.shop_auth == 0:
-				return self.send_fail('当前店铺未认证，余额支付不可用')
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
-				shop_id = shop_id).first()
-			if not shop_follow:
-				return self.send_fail('您没有关注该店铺，请进入店铺首页进行关注')
-			if shop_follow.shop_balance < totalPrice:
-				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
-			self.session.commit()
-
-		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
-		num = str(shop_id) + '%06d' % count
-		########################################################################
-		# add default sender
-		# 3.11
-		# woody
-		########################################################################
-		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		default_staff=[]
-		try:
-			default_staff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
-		except:
-			print('[Cart]this shop has no default staff')
-		if default_staff:
-			w_SH2_id =default_staff.staff_id
-		else:
-			if w_admin is not None:
-					w_SH2_id = w_admin.admin.id
-		if self.args['pay_type'] == 3:
-			if current_shop.shop_auth == 0:
-				return self.send_fail('当前店铺未认证，在线支付不可用')
-			order_status = -1
-			online_type = self.args['online_type']
-		else:
-			order_status = 1
-
 		##########
 		
 		if qshop:
@@ -1719,6 +1674,52 @@ class Cart(CustomerBaseHandler):
 			coupon_money=qshop.coupon_money
 		else:
 			coupon_money=0
+
+		# 已支付、付款类型、余额、积分处理
+		money_paid = False
+		pay_type = 1
+
+		####################################################
+		#  当订单 选择余额付款时 ，应判断 用户在 当前店铺的余额是否大于订单总额
+		####################################################
+		pay_type = self.args['pay_type']
+		if pay_type == 2:
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，余额支付不可用')
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
+				shop_id = shop_id).first()
+			if not shop_follow:
+				return self.send_fail('您没有关注该店铺，请进入店铺首页进行关注')
+			if shop_follow.shop_balance < new_totalprice:
+				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
+			self.session.commit()
+
+		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
+		num = str(shop_id) + '%06d' % count
+		########################################################################
+		# add default sender
+		# 3.11
+		# woody
+		########################################################################
+		w_admin = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		default_staff=[]
+		try:
+			default_staff = self.session.query(models.HireLink).filter_by( shop_id =shop_id,default_staff=1).first()
+		except:
+			print('[Cart]this shop has no default staff')
+		if default_staff:
+			w_SH2_id =default_staff.staff_id
+		else:
+			if w_admin is not None:
+					w_SH2_id = w_admin.admin.id
+		if self.args['pay_type'] == 3:
+			if current_shop.shop_auth == 0:
+				return self.send_fail('当前店铺未认证，在线支付不可用')
+			order_status = -1
+			online_type = self.args['online_type']
+		else:
+			order_status = 1
+
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
