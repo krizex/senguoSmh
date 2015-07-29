@@ -4,18 +4,52 @@ $(document).ready(function(){
     $(".order-lists").css({minHeight:minheight+"px"});
 
 }).on("click",".goods_status",function(){
-    $(".wrap-goods-menu").toggleClass("hide");
-}).on("click",".goods-menu-list li",function(){
+    $(".wrap_goods_menu").toggleClass("hide");
+}).on("click",".goods_menu_list li",function(){
     var id = $(this).attr("data-id");
-    $(".wrap-goods-menu").toggleClass("hide");
-}).on("click",".goods-all-list li",function(){
-    var index = $(this).index();
+    $(".wrap_goods_menu").toggleClass("hide");
+}).on("click",".goods-all-list li",function(){//大类切换
+    var index = parseInt($(this).index());
+    if(index==0){//所有商品
+        $(".container").addClass("pt70");
+        $(".second-tab").addClass("hide");
+        $(".goods_tab").removeClass("hide");
+        $("#qa").addClass("hide");
+        $(".btns-list").addClass("hide");
+        $("#add_goods").removeClass("hide");
+    }else if(index==1){
+        $(".container").removeClass("pt70");
+        $(".second-tab").addClass("hide");
+        $("#qa").removeClass("hide");
+        $(".btns-list").addClass("hide");
+        $("#group_manage").removeClass("hide");
+    }else{
+        $(".container").addClass("pt70");
+        $(".second-tab").addClass("hide");
+        $(".class_tab").removeClass("hide");
+        $("#qa").addClass("hide");
+        $(".btns-list").addClass("hide");
+    }
+    $(".boxs").addClass("hide").eq(index).removeClass("hide");
     var _type=parseInt($(this).attr('data-id'));
     $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
-    //$(".order-lists").eq().empty();
     _page=0;
     $(".order-type-list .tab-bg").css("left",33.3*index+"%");
-}).on("click",".second-tab-list .gitem",function(){
+}).on("click",".goods_list .gitem",function(){
+    var index = $(this).index();
+    if($(this).hasClass("active")){//切换排序方式
+        $(this).children(".turn").toggleClass("rotate-img2");
+    }else{
+        $(".second-tab-list").find(".turn").removeClass("rotate-img2");
+        $(".second-tab-list li").removeClass("active").eq(index).addClass("active");
+        $(".second-tab-list .tab-line").css("left",25*index+"%");
+    }
+}).on("click",".class_status",function(){
+    $(".wrap_class_menu").toggleClass("hide");
+}).on("click",".class_menu_list li",function(){
+    var id = $(this).attr("data-id");
+    $(".wrap_class_menu").toggleClass("hide");
+}).on("click",".class_list .gitem",function(){
     var index = $(this).index();
     if($(this).hasClass("active")){//切换排序方式
         $(this).children(".turn").toggleClass("rotate-img2");
@@ -30,8 +64,38 @@ $(document).ready(function(){
 }).on("click","#close-pop",function(){
     $("#qa").removeClass("hide");
     $(".pop-qa").addClass("hide");
+}).on("click",".share-group",function(){
+    var url = $(this).attr("data-url");
+    $("#big-code2").empty();
+    new QRCode($("#big-code2")[0],{
+        width : 300,
+        height : 300
+    }).makeCode(url);
+    $(".pop-code2").removeClass("hide");
+}).on("click",".b-close",function(){
+    $(".pop-code2").addClass("hide");
+}).on("click",".edit-group",function(){
+    curGoods = $(this).closest("li");
+    $("#group_name").val(curGoods.find(".go-name").html());
+    $("#group_info").val(curGoods.find(".go-info").html());
+    $(".pop-name").removeClass("hide");
+    $("#group_name").focus();
+}).on("click",".cancel-bbtn",function(){
+    $(this).closest(".pop-bwin").addClass("hide");
+}).on("click",".del-group",function(){
+    $(".pop-del").removeClass("hide");
+}).on("click",".manage-group",function(){
+    $(".wrap-operates").removeClass("hide");
+    $(".wrap-bm-btns .btns-list").addClass("hide");
+    $("#finish_group").removeClass("hide");
+}).on("click",".finish-group",function(){
+    $(".wrap-operates").addClass("hide");
+    $(".wrap-bm-btns .btns-list").addClass("hide");
+    $("#group_manage").removeClass("hide");
+}).on("click",".slide-class",function(){
+    $(this).toggleClass("arrow-up");
+    $(this).closest(".class-row").next(".class-lst").toggleClass("hide");
 });
-
 
 function scrollLoading(){
     $('.swiper-slide').scroll(function(){
