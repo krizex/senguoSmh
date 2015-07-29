@@ -105,7 +105,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
-			print("totalPrice：",totalPrice)
+			# print("totalPrice：",totalPrice)
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
