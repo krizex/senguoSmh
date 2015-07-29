@@ -820,14 +820,14 @@ class ShopStatic(SuperBaseHandler):
 
 		elif action == "province":
 			provinces = self.session.query(models.Shop.shop_province, func.count()).\
-				group_by(models.Shop.shop_province).all()
+				group_by(models.Shop.shop_province).order_by(func.count().desc()).all()
 			data = []
 			for province in provinces:
 				data.append((dis_dict[province[0]]["name"], province[1]))
 
 		elif action == "city":
 			cities = self.session.query(models.Shop.shop_city, func.count()).\
-				group_by(models.Shop.shop_city).all()
+				group_by(models.Shop.shop_city).order_by(func.count().desc()).all()
 			data = []
 			for city in cities:
 				code = city[0]
@@ -873,13 +873,25 @@ class ShopStatic(SuperBaseHandler):
 		date = end_date
 		# data的封装格式为：[日期，日，日订单数，累计订单数，日订单总金额，累计订单总金额]
 		while 1:
+			try:
+				_date = date.strftime('%Y-%m-%d')
+			except:
+				_date = ""
+			try:
+				data6 = format(total[0],'.2f')
+			except:
+				data6 = format(0,'.2f')
 			if i < len(s) and s[i][0].date() == date.date():
-				data.append((date.strftime('%Y-%m-%d'), date.day, s[i][1], total[1], format(s[i][2],'.2f'), format(total[0],'.2f')))
+				try:
+					data5 = format(s[i][2],'.2f')
+				except:
+					data5 = format(0,'.2f')
+				data.append((_date, date.day, s[i][1], total[1], data5,data6))
 				total[1] -= s[i][1]
 				total[0] -= s[i][2]
 				i += 1
 			else:
-				data.append((date.strftime('%Y-%m-%d'), date.day, 0, total[1], format(0,'.2f'), format(total[0],'.2f')))
+				data.append((_date, date.day, 0, total[1], format(0,'.2f'),data6))
 			date -= datetime.timedelta(1)
 			if date <= start_date:
 				break
