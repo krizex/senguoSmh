@@ -983,8 +983,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
 
-		# 充值送优惠券
-		self.updatecoupon()
+		self.updatecoupon(customer_id)
 		CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
 		for x in CouponsShops:
 			if  totalPrice>=x.get_rule:
@@ -1002,7 +1001,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 							get_number=x.get_number+1
 							x.update(self.session,get_number=get_number)
 							self.session.commit()
-							break
+							success_message="恭喜你获得一张"+x.coupon_money+"元的优惠券，请到“我的优惠券”查看"
+							return self.send_success(success_message)
 						self.session.commit()
 				else:
 					CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
@@ -1011,10 +1011,13 @@ class SystemPurchase(FruitzoneBaseHandler):
 					else:
 						now_date=int(time.time())
 						CouponsCustomers.update(self.session,customer_id=customer_id,coupon_status=1,get_date=now_date)
+						get_number=x.get_number+1
+						x.update(self.session,get_number=get_number)
 						self.session.commit()
-						break
+						success_message="恭喜你获得一张"+x.coupon_money+"元的优惠券，请到“我的优惠券”查看"
+						return self.send_success(success_message)
 					self.session.commit()
-		return self.write("success")
+		self.session.commit()
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 	def _create_tmporder_url(self, charge_data):
@@ -1123,8 +1126,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print(balance_history , '钱没有白充吧？！')
 		self.session.commit()
 
-		# 充值送优惠券
-		self.updatecoupon()
+		self.updatecoupon(customer_id)
 		CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
 		for x in CouponsShops:
 			if  totalPrice>=x.get_rule:
@@ -1142,7 +1144,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 							get_number=x.get_number+1
 							x.update(self.session,get_number=get_number)
 							self.session.commit()
-							break
+							success_message="恭喜你获得一张"+x.coupon_money+"元的优惠券，请到“我的优惠券”查看"
+							return self.send_success(success_message)
 						self.session.commit()
 				else:
 					CouponsCustomers=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,coupon_status=0).with_lockmode('update').first()
@@ -1154,7 +1157,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 						get_number=x.get_number+1
 						x.update(self.session,get_number=get_number)
 						self.session.commit()
-						break
+						success_message="恭喜你获得一张"+x.coupon_money+"元的优惠券，请到“我的优惠券”查看"
+						return self.send_success(success_message)
 					self.session.commit()
 		self.session.commit()
 		# return self.send_success(text = 'success')

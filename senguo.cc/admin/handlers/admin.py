@@ -3807,7 +3807,8 @@ class Marketing(AdminBaseHandler):
 		action = self.args["action"]
 		current_shop_id=self.current_shop.id
 		current_shop=self.current_shop
-		self.updatecoupon()
+		current_customer_id=self.current_user.id
+		self.updatecoupon(current_customer_id)
 		if action == "lovewall":
 			return self.render("admin/lovewall.html",context=dict(subpage='marketing',subpage2='love_wall'))
 		elif action=="coupon":
@@ -4056,7 +4057,8 @@ class Marketing(AdminBaseHandler):
 		action = self.args["action"]
 		current_shop_id = self.current_shop.id
 		current_shop=self.current_shop
-		self.updatecoupon()
+		current_customer_id=self.current_user.id
+		self.updatecoupon(current_customer_id)
 		if action == "confess_active":
 			active = current_shop.marketing.confess_active
 			current_shop.marketing.confess_active = 0 if active == 1 else 1

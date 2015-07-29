@@ -25,7 +25,7 @@
                 <div class="coupon-lprice">
                     {% if coupon['coupon_status']==1 %}<i class="gap gap1-right"></i>{% else %}<i class="gap gap2-right"></i>{% end %}
                     <p class="price-stxt {% if coupon['coupon_status']==1 %}{% else %}c9f{% end %}"><span class="f16">￥</span><span class="f32">{{coupon['coupon_money']}}</span></p>
-                    <p class="{% if coupon['coupon_status']==1 %}c333{% else %}c666{% end %}">{{coupon['use_goods_group']}}:{{coupon['use_goods']}}满{{coupon['use_rule']}}元即可使用（含运费）</p>
+                    <p class="clip {% if coupon['coupon_status']==1 %}c333{% else %}c666{% end %}">{{coupon['use_goods_group']}}:{{coupon['use_goods']}}满{{coupon['use_rule']}}元即可使用（含运费）</p>
                 </div>
             </a>
         </li>

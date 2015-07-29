@@ -448,7 +448,7 @@ class CouponProfile(AdminBaseHandler):
 	def get(self):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.get_cookie("market_shop_id")
-		self.updatecoupon()
+		self.updatecoupon(current_customer_id)
 		action=self.args["action"]
 		if action=="get_all":
 			now_date=int(time.time())
@@ -547,7 +547,7 @@ class CouponList(AdminBaseHandler):
 		action=self.args["action"]
 		current_customer_id=self.current_user.id
 		current_shop_id=self.get_cookie("market_shop_id")
-		self.updatecoupon()
+		self.updatecoupon(current_customer_id)
 		if action=="get_all":
 			data=[]
 			for x in range(1,3):
@@ -581,7 +581,7 @@ class CouponDetail(AdminBaseHandler):
 		current_customer_id=self.current_user.id
 		current_shop_id=self.get_cookie("market_shop_id")
 		mcoupon_key=self.args["coupon_key"]
-		self.updatecoupon()
+		self.updatecoupon(current_customer_id)
 		if action=="detail":
 			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_key=mcoupon_key).first()
 			x_coupon={}
@@ -596,7 +596,7 @@ class CouponDetail(AdminBaseHandler):
 				x_coupon={"shop_code":shop.shop_code,"shop_logo":q2.headimgurl,"shop_name":shop.shop_name,"effective_time":effective_time,"use_rule":q3.use_rule,"coupon_key":mcoupon_key,"coupon_money":q3.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":q.coupon_status}
 			return self.render("coupon/coupon-detail.html",output_data=x_coupon)
 		elif action=="exchange":
-			self.updatecoupon()
+			self.updatecoupon(current_customer_id)
 			qused=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0).filter(models.CouponsCustomer.coupon_status!=0).first()
 			if qused:
 				return self.send_fail("Sorry，该优惠券已经被领取了哦~")
@@ -659,7 +659,7 @@ class CouponCustomer(AdminBaseHandler):
 		action=self.args["action"]
 		current_customer_id=self.current_user.id
 		current_shop_id=self.get_cookie("market_shop_id")
-		self.updatecoupon()
+		self.updatecoupon(current_customer_id)
 		if action=="get_coupon":
 			coupon_id=self.args["coupon_id"]
 			x_coupon={}
