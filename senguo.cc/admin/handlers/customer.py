@@ -35,7 +35,7 @@ class Access(CustomerBaseHandler):
 
 	def get(self):
 		next_url = self.get_argument('next', '')
-		# print("[用户登录]跳转URL：",next_url)
+		# print("[CustomerAccess]Redirect URL:",next_url)
 		if self._action == "login":
 			next_url = self.get_argument("next", "")
 			if self.current_user:
@@ -79,8 +79,8 @@ class Access(CustomerBaseHandler):
 		password = self.args['password']
 
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
-		# print("[手机登录]用户ID：",u.id)
-		# print("[手机登录]手机号码：",phone,"，密码：",password)
+		# print("[PhoneLogin]Customer ID:",u.id)
+		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
@@ -212,10 +212,10 @@ class RegistByPhone(CustomerBaseHandler):
 		a=self.session.query(models.Accountinfo).filter(models.Accountinfo.phone==self.args["phone"]).first()
 		if a:
 			return self.send_fail(error_text="手机号已经绑定其他账号")
-		# print("[手机注册]发送验证码到手机：",self.args["phone"])
+		# print("[PhoneReg]Send verify code to phone:",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		if resault == True:
-			# print("[手机注册]向手机号",phone,"发送短信验证",resault,"成功")
+			# print("[PhoneReg]Send verify code to phone success")
 			return self.send_success()
 		else:
 			return self.send_fail(resault)
@@ -241,7 +241,7 @@ class RegistByPhone(CustomerBaseHandler):
 			# 	self.session.add(u)
 			# 	self.session.commit()
 			self.set_current_user(u, domain=ROOT_HOST_NAME)
-			# print("[手机注册]手机号",phone,"注册成功，用户ID为：",u.id)
+			# print("[PhoneReg]Phone number",phone,"regist success, customer ID:",u.id)
 			return self.send_success()
 
 # 重置密码
@@ -288,15 +288,14 @@ class Home(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		# shop_id = self.shop_id
-		# print("[个人中心]店铺号：",shop_code)
+		# print("[CustomerHome]shop_code:",shop_code)
 
 		# 用于标识 是否现实 用户余额 ，当 店铺 认证 通过之后 为 True ，否则为False
 		show_balance = False
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
-			return self.send_fail('shop error')
-		# print(shop.shop_code)
+			return self.send_fail('[CustomerHome]shop code error')
 		if shop is not None:
 			shop_name = shop.shop_name
 			shop_id   = shop.id
@@ -309,11 +308,9 @@ class Home(CustomerBaseHandler):
 				shop_marketing = 0
 			if shop_auth !=0:
 				show_balance = True
-			# print(shop,shop.shop_auth)
 		else:
-			# print("[个人中心]店铺不存在：",shop_code)
+			# print("[CustomerHome]Shop not found:",shop_code)
 			return self.write("店铺不存在")
-			# return self.send_fail('shop not found')
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id",str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
@@ -417,8 +414,6 @@ class Discover(CustomerBaseHandler):
 				qq=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,coupon_id=x.coupon_id,coupon_status=0).first()
 				if qq!=None:
 					b+=1
-		print(a)
-		print(b)
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
 		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b)
 
@@ -465,12 +460,10 @@ class CustomerProfile(CustomerBaseHandler):
 		try:
 			follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id).order_by(models.CustomerShopFollow.create_time.desc()).limit(3).all()
 		except:
-			# print('[个人中心]该用户未关注任何店铺')
 			print('[PersonalCenter]Current_user have not followed any shop')
 		for shopfollow in follow:
 			shop=self.session.query(models.Shop).filter_by(id = shopfollow.shop_id).first()
 			shop_info.append({'logo':shop.shop_trademark_url,'shop_code':shop.shop_code})
-		# print(self.current_shop,self.current_shop.shop_auth)
 
 		third=[]
 		accountinfo =self.session.query(models.Accountinfo).filter_by(id = self.current_user.accountinfo.id).first()
@@ -500,23 +493,21 @@ class CustomerProfile(CustomerBaseHandler):
 			except ValueError as e:
 				return self.send_fail("请填写正确的年月日格式")
 			self.current_user.accountinfo.update(session=self.session, birthday=time.mktime(birthday.timetuple()))
-			#time_tuple = time.localtime(birthday)
-			#print(type(time_tuple))
 			birthday = birthday.strftime("%Y-%m-%d")
 			return self.send_success(birthday=birthday)
 		elif action == 'add_password':
 			self.current_user.accountinfo.update(session = self.session , password = data)
-			# print("[设置密码]设置成功，密码：",data)
+			# print("[AddPassword]Add success, password:",data)
 		elif action == 'modify_password':
 			old_password = self.args['old_password']
-			# print("[更改密码]输入老密码：",old_password)
-			# print("[更改密码]验证老密码：",self.current_user.accountinfo.password)
+			# print("[ModifyPassword]Entered old_password:",old_password)
+			# print("[ModifyPassword]Real old_password:",self.current_user.accountinfo.password)
 			if old_password != self.current_user.accountinfo.password:
-				# print("[更改密码]密码验证错误")
+				# print("[ModifyPassword]Password verify error")
 				return self.send_fail("密码错误")
 			else:
 				self.current_user.accountinfo.update(session = self.session ,password = data)
-				# print("[更改密码]更改成功，新密码：",data)
+				# print("[ModifyPassword]Modify success:",data)
 		elif action =='wx_bind':
 			wx_bind = False
 			if self.current_user.accountinfo.wx_unionid:
@@ -563,13 +554,12 @@ class WxBind(CustomerBaseHandler):
 		try:
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 		except:
-			# print("[微信绑定]微信不存在")
 			print("[WeixinBind]Weixin unionid not found")
 		if user:
 			return self.redirect('/customer/profile?action=wxbinded')
 			# return self.render('notice/bind-notice.html',title='该微信账号已被绑定，请更换其它微信账号')
 		if u:
-			# print("[微信绑定]更新用户资料")
+			# print("[WeixinBind]Update user info")
 			u.accountinfo.wx_country=wx_userinfo["country"]
 			u.accountinfo.wx_province=wx_userinfo["province"]
 			u.accountinfo.wx_city=wx_userinfo["city"]
@@ -587,7 +577,6 @@ class WxBind(CustomerBaseHandler):
 			self.session.commit()
 			return self.redirect('/customer/profile?action=wxsuccess')
 		else:
-			# print('[微信绑定]微信绑定错误')
 			print("[WeixinBind]Bind Error")
 
 # 店铺
@@ -599,7 +588,7 @@ class ShopProfile(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop not found')
 		if not shop:
-			# print("[访问店铺]店铺不存在：",shop_code)
+			# print("[CustomerShopProfile]Shop not found:",shop_code)
 			return self.send_error(404)
 		shop_id = shop.id
 		shop_name = shop.shop_name
@@ -695,27 +684,18 @@ class ShopProfile(CustomerBaseHandler):
 				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id\
 					,shop_id = shop_id).first()
 			except:
-				# print("[访问店铺]店铺关注出错")
+				# print("[CustomerShopProfile]shop_follow error")
 				self.send_fail("shop_follow error")
 			if signin:
-
-
 
 				if signin.last_date == datetime.date.today():
 					return self.send_fail("亲，你今天已经签到了，一天只能签到一次哦")
 				else:  # 今天没签到
-					# signIN_count add by one
-					# woody
-					# if point is not None:
-					#     print("before sign:",point.signIn_count)
-					#     point.signIn_count += 1
-					#     print("after sign:",point.signIn_count)
-					#	  point.count += 1
 					point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop_id)
 					if point_history:
 						point_history.each_point = 1
 						point_history.point_type = models.POINT_TYPE.SIGNIN
-						# print("point_history",point_history.each_point)
+						# print("[CustomerShopProfile]point_history:",point_history.each_point)
 						self.session.add(point_history)
 						self.session.commit()
 
@@ -724,7 +704,7 @@ class ShopProfile(CustomerBaseHandler):
 					if shop_follow is not None:
 						if shop_follow.shop_point is not None:
 							shop_follow.shop_point += 1
-							# print("sigin success")
+							# print("[CustomerShopProfile]signin success")
 							self.session.commit()
 
 					else:
@@ -732,7 +712,7 @@ class ShopProfile(CustomerBaseHandler):
 						shop_follow.shop_point = 1
 						self.session.add(shop_follow)
 						self.session.commit()
-						# print("new shop_follow",shop_follow.shop_point)
+						# print("[CustomerShopProfile]new shop_follow",shop_follow.shop_point)
 					if datetime.date.today() - signin.last_date == datetime.timedelta(1):  # 判断是否连续签到
 						self.current_user.credits += signin.keep_days
 						signin.keep_days += 1
@@ -767,7 +747,7 @@ class ShopProfile(CustomerBaseHandler):
 				if point_history:
 					point_history.each_point = 1
 					point_history.point_type = models.POINT_TYPE.SIGNIN
-					# print("point_history",point_history.each_point)
+					# print("[CustomerShopProfile]point_history",point_history.each_point)
 					self.session.add(point_history)
 					self.session.commit()
 				#shop_point add by one
@@ -775,13 +755,13 @@ class ShopProfile(CustomerBaseHandler):
 				if shop_follow is not None:
 					if shop_follow.shop_point is not None:
 						shop_follow.shop_point += 1
-						# print("sigin success")
+						# print("[CustomerShopProfile]signin success")
 						self.session.commit()
 
 
 				# if point:
 				#     point.signIn_count += 1
-				#     print("new signin:",point.signIn_count)
+				#     print("[CustomerShopProfile]new signin:",point.signIn_count)
 			self.session.commit()
 		return self.send_success(notice='签到成功，积分+1')
 
@@ -793,7 +773,7 @@ class Members(CustomerBaseHandler):
 			shop_id = int(self.get_cookie("market_shop_id"))
 		except:
 			return self.send_fail("您访问的店铺有错，请返回后刷新重新访问")
-		# print("[店铺成员]当前店铺ID：",shop_id)
+		# print("[CustomerMember]Shop ID:",shop_id)
 		admin_id = self.session.query(models.Shop.admin_id).filter_by(id=shop_id).first()
 		if not admin_id:
 			return self.send_error(404)
@@ -802,7 +782,7 @@ class Members(CustomerBaseHandler):
 			models.HireLink.shop_id == shop_id,models.HireLink.active==1, or_(models.Accountinfo.id == models.HireLink.staff_id,
 			models.Accountinfo.id == admin_id)).all()
 		member_list = []
-		# print(members)
+		# print("[CustomerMember]members:",members)
 		def work(id, w):
 			if id == admin_id:
 				return "店长"
@@ -820,7 +800,7 @@ class Members(CustomerBaseHandler):
 									"work":work(member[0].id,member[1]),
 									"phone":member[0].phone,
 									"wx_username":member[0].wx_username})
-		# print(member_list)
+		# print("[CustomerMember]member_list:",member_list)
 		return self.render("customer/shop-staff.html", member_list=member_list)
 
 # 店铺 - 店铺评价
@@ -912,7 +892,7 @@ class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @get_unblock
 	def get(self, shop_code):
-		# print('login in ')
+		# print('[CustomerMarket]login in')
 		w_follow = True
 		# fruits=''
 		# page_size = 10
@@ -922,22 +902,22 @@ class Market(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
-			# return self.send_fail('shop not found')
-		print(shop.admin.id)
+			# return self.send_fail('[CustomerMarket]shop not found')
+		print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 
 		if shop.admin.has_mp:
-			print('haaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+			print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
 			admin_id    = shop.admin.id
 			wx_openid   = self.session.query(models.Mp_customer_link).first()
 			if wx_openid:
-				print('whatttttttttttttttt')
+				print('[CustomerMarket]whatttttttttttttttt')
 			else:
 				#生成wx_openid
 				if self.is_wexin_browser():
-					print('weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+					print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 					wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
 					print(wx_openid,appid,appsecret)
 					if wx_openid:
@@ -945,15 +925,15 @@ class Market(CustomerBaseHandler):
 						self.session.add(admin_customer_openid)
 						self.session.commit()
 					else:
-						print('获取openid失败')
+						print('[CustomerMarket]get openid failed')
 				else:
-					print('haahahahah')
+					print('[CustomerMarket]haahahahah')
 		else:
 			pass
-		print('success??????????????????????????????????')
+		print('[CustomerMarket]success??????????????????????????????????')
 
 		# self.current_shop = shop
-		# print(self,self.current_shop)
+		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
@@ -979,7 +959,7 @@ class Market(CustomerBaseHandler):
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
 					now = datetime.datetime.now()
-					# print(now,shop_follow.shop_point,'follow')
+					# print("[CustomerMarket]add follow point:",now,shop_follow.shop_point)
 				else:
 					shop_follow.shop_point = 10
 			if shop_follow.bing_add_point == 0:
@@ -987,7 +967,7 @@ class Market(CustomerBaseHandler):
 					shop_follow.shop_point += 10
 					shop_follow.bing_add_point = 1
 					now = datetime.datetime.now()
-					# print(now,shop_follow.shop_point,'phone')
+					# print("[CustomerMarket]add phone point:",now,shop_follow.shop_point,'phone')
 
 			self.session.add(shop_follow)
 			self.session.commit()
@@ -996,13 +976,12 @@ class Market(CustomerBaseHandler):
 			if point_history:
 				point_history.each_point = 10
 				point_history.point_type = models.POINT_TYPE.FOLLOW
-				# print("point_history",point_history,point_history.each_point)
+				# print("[CustomerMarket]point_history:",point_history,point_history.each_point)
 
 			self.session.add(point_history)
-			  # 添加关注
 			self.session.commit()
 
-		# print('login in second ')
+		# print('[CustomerMarket]login in second')
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -1010,10 +989,10 @@ class Market(CustomerBaseHandler):
 		cart_count = len(cart_f)
 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
-		# print(cart_fs)
+		# print("[CustomerMarket]cart_fs:",cart_fs)
 		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
-		# print(notices)
+		# print("[CustomerMarket]notices:",notices)
 
 		group_list=[]
 
@@ -1391,7 +1370,7 @@ class Cart(CustomerBaseHandler):
 		if self.get_cookie("market_shop_code") != shop_code:
 			print("[Cart]present market_shop_code doesn't exist in cookie" )
 
-		# print("[Cart]Current shop：",shop)
+		# print("[Cart]Current shop:",shop)
 		if shop.shop_auth !=0 :
 			show_balance = True
 
@@ -2036,8 +2015,8 @@ class Order(CustomerBaseHandler):
 			orders.sort(key = lambda order:order.send_time)
 			total_count = len(orders)
 			total_page  =  int(total_count/page_size) if (total_count % page_size == 0) else int(total_count/page_size) + 1
-			# print("[Order]Scoll load offset：",offset)
-			# print("[Order]Scoll load total：",total_count)
+			# print("[Order]Scoll load offset:",offset)
+			# print("[Order]Scoll load total:",total_count)
 			if offset + page_size <= total_count:
 				orders = orders[offset:offset + page_size]
 			elif offset < total_count and offset + page_size >= total_count:
@@ -2508,7 +2487,6 @@ class Recharge(CustomerBaseHandler):
 			if qq!=None:
 				data0={"get_rule":x.get_rule,"coupon_money":x.coupon_money,"get_limit":x.get_limit}
 				data.append(data0)
-		# print("[微信充值]next_url：",next_url)
 
 		# print("[WxCharge]next_url:",next_url)
 
@@ -2521,7 +2499,7 @@ class Recharge(CustomerBaseHandler):
 			# print("[WxCharge]redirect_uri:",path)
 			# print(self.args['code'],'sorry i dont know')
 			code = self.args.get('code',None)
-			# print("[WxCharge]Corrent code：",code)
+			# print("[WxCharge]Corrent code:",code)
 			if len(code) is 2:
 				url = jsApi.createOauthUrlForCode(path)
 				# print("[WxCharge]Get code, url:",url)
