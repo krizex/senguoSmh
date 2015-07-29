@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back"></a>
+    <span>优惠券</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-mycoupon">
+    {% if output_data %}
+    <ul class="my-coupon-list">
+    {%for data in output_data%}
+        <li>
+            <div class="get-coupon" data-id="{{data['coupon_id']}}" data-flag="on">
+                <span>点击<br>领取</span>
+            </div>
+            <div class="coupon-lprice">
+                <i class="gap gap1-right"></i>
+                <p class="price-txt"><span class="f16">￥</span><span class="f26">{{data["coupon_money"]}}</span></p>
+                <div class="price-info">
+                    <p class="f14 green-txt">仅剩{{data["remain_number"]}}张</p>
+                    <p class="f12 c333">满{{data["use_rule"]}}元即可使用</p>
+                    <p class="f12 c999">{%if data["valid_way"]==0%}{{data['from_valid_date']}}到{{data['to_valid_date']}}{%else%} 领取即生效，有效期天数为{{data["last_day"]}}天{%end%}</p>
+                </div>
+            </div>
+        </li>
+        {%end%}
+    </ul>
+    {% else %}
+    <div class="coupon-status">
+        <i class="gap gap-bm"></i>
+        <div class="wrap-chbox txt-center">
+            <img class="chbox-img" src="/static/images/coupon_charge.png" alt="充值获取优惠券"/>
+            <p class="status-txt mt18">充值即可获得买水果送优惠券机会<br>充多送更多！</p>
+        </div>
+        <a href="/customer/recharge" class="go-next mt10">前往充值</a>
+    </div>
+    {% end %}
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/coupon-profile.js')}}"></script>
+{% end %}

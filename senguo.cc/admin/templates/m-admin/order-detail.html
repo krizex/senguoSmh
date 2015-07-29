@@ -99,7 +99,8 @@
         </ul>
         <p>商品总价<span class="fr"><span class="red-txt">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="red-txt">{{order.freight}}元</span></span></p>
-        <p class="dash-bt group"><span class="fr c000">应付款：<span class="red-txt">{{order.totalPrice}}元</span></span></p>
+        <p>优惠券金额：<span class="fr"><span class="red-txt">{{order.coupon_money}}元</span></span></p>
+        <p class="dash-bt group"><span class="fr black-txt">应付款：<span class="text-red3">{{order.new_totalprice}}元</span></span></p>
     </div>
 </div>
 <div class="wrap-bm-btn" id="nav" style="display:none;">

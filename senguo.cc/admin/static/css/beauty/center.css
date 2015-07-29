@@ -42,6 +42,8 @@ hr{margin-top:0 !important;;margin-bottom:0 !important;margin-left:24px;}
 .height20{height:20px;line-height:20px;}
 .address-manage{width:100%;background:#fff;border:1px solid #fff;}
 .address-manage:focus{outline:none;}
+.coupon-manage{width:100%;background:#fff;border:1px solid #fff;}
+.coupon-manage:focus{outline:none;}
 .add-address{background:#fff;border:1px solid #fff;}
 .add-address:focus{outline:none;}
 
@@ -52,4 +54,8 @@ hr{margin-top:0 !important;;margin-bottom:0 !important;margin-left:24px;}
 .confess i{display:inline-block;width:18px;height:18px;background:url('/static/images/beauty/icon_list.png') -122px -48px;background-size:140px;margin:14px 15px 0 15px;}
 .coupon i{display:inline-block;width:20px;height:20px;background:url('/static/images/coupon.png') left center;background-size:20px;margin:14px 15px 0 15px;}
 
-.arr-right{background-image: url('/static/images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:16px;}
+.arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:16px;}
+.confess-text{line-height: 18px;padding-top: 5px;}
+.imore{display:inline-block;width:12px;height:100%;background: url('/static/images/arr-right.png') no-repeat;background-size:8px 14px;background-position: right center;margin-right: 10px;}
+.tip-text{display: inline-block;width: 16px;height: 16px;color: #fff;text-align: center;line-height: 16px;background-color: #ff6563!important;border-radius: 50%;margin-top: 14px;margin-right: 4px;}
+.coupon-icon{width:20px;height:20px;background:url('/static/images/i_coupon.png') left center;margin-right:10px;background-size:20px;margin-top:13px;}
