@@ -1407,7 +1407,15 @@ class Cart(CustomerBaseHandler):
 			fruit_storage = fruit.storage
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
-		periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1).all()
+		try:
+			ontime_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=0).all()
+		except:
+			ontime_periods = []
+		try:
+			self_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=1 ).all()
+		except:
+			self_periods= []
+		print(self_periods)
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
 		coupon_number=0
@@ -1440,15 +1448,22 @@ class Cart(CustomerBaseHandler):
 				x_coupon={"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,\
 				"uneffective_time":uneffective_time,"coupon_status":x.coupon_status,"use_goods_group":use_goods_group,"use_goods":use_goods}
 				data.append(x_coupon)
+		self_address_list=[]
+		try:
+			self_address=self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,active=1).all()
+		except:
+			self_address=None
+		if self_address:
+			self_address_list=[x for x in self_address]
 		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
-						   periods=periods,phone=phone, storages = storages,show_balance = show_balance,\
+						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
-						   shop_new=shop_new,shop_status=shop_status,context=dict(subpage='cart'))
+						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
-										 "today:int",'online_type?:str',"coupon_key?:str")
+										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int")
 	def post(self,shop_code):#提交订单
 		# print("[CustomerCart]pay_type:",self.args['pay_type'])
 		shop_id = self.shop_id
@@ -1467,7 +1482,7 @@ class Cart(CustomerBaseHandler):
 			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
 			now_date=int(time.time())
 			if now_date>q.uneffective_time:
-				return self.send_fail("下单失败，因为该优惠券已经过期！")
+				return self.send_fail("下单失败，该优惠券已经过期！")
 		if shop_status == 0:
 			return self.send_fail('该店铺已关闭，暂不能下单(っ´▽`)っ')
 		elif shop_status == 2:
@@ -1577,6 +1592,7 @@ class Cart(CustomerBaseHandler):
 		freight = 0
 		tip = 0
 		send_time = 0
+		self_address_id = 0
 		now = datetime.datetime.now()
 		try:config = self.session.query(models.Config).filter_by(id=shop_id).one()
 		except:return self.send_fail("找不到该店铺")
@@ -1587,7 +1603,7 @@ class Cart(CustomerBaseHandler):
 			freight = config.freight_on_time  # 运费
 			totalPrice += freight
 			today=int(self.args["today"])
-			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"]).one()
+			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=0).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
@@ -1599,6 +1615,22 @@ class Cart(CustomerBaseHandler):
 				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			start_time = period.start_time
 			end_time = period.end_time
+
+		elif self.args["type"] == 3: #自提
+			today=int(self.args["today"])
+			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=1).one()
+			except:return self.send_fail("找不到该时间段")
+			if today == 1:
+				if period.start_time.hour*60 + period.start_time.minute - \
+					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
+					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择其他时间段")
+				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
+			elif today == 2:
+				tomorrow = now + datetime.timedelta(days = 1)
+				send_time = (tomorrow).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
+			start_time = period.start_time
+			end_time = period.end_time
+			self_address_id = int(self.args["self_address_id"])
 
 		elif self.args["type"] == 1:#立即送
 			if totalPrice < config.min_charge_now:
@@ -1618,10 +1650,20 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('该店铺已把“按时达”关闭，请选择“立即送”')
 		if config.now_on == False and self.args["type"] == 1:
 			return self.send_fail('该店铺已把“立即送”关闭，请选择“按时达”')
+		if config.self_on == False and self.args["type"] == 3:
+			return self.send_fail('该店铺已把“自提”关闭，请选择“按时达,立即送”')
 		#送货地址处理
 		address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		if not address:
 			return self.send_fail("没找到地址", 404)
+		if self.args["type"] == 3:
+			self_address = next((x for x in config.self_addresses if x.id == self.args["self_address_id"]), None)
+			if not self_address:
+				return self.send_fail("没找到自提点", 404)
+			_order_address = self_address.address
+		else:
+			_order_address = address.address_text
+		
 
 		##########
 		
@@ -1699,12 +1741,13 @@ class Cart(CustomerBaseHandler):
 		else:
 			order_status = 1
 
+
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
 							 phone=address.phone,
 							 receiver=address.receiver,
-							 address_text = address.address_text,
+							 address_text = _order_address,
 							 message=self.args["message"],
 							 type=self.args["type"],
 							 freight=freight,
@@ -1722,7 +1765,8 @@ class Cart(CustomerBaseHandler):
 							 status  = order_status,
 							 online_type = online_type,
 							 coupon_key=coupon_key,
-							 coupon_money=coupon_money
+							 coupon_money=coupon_money,
+							 self_address_id=self_address_id
 							 )
 
 		try:

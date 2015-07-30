@@ -1546,13 +1546,14 @@ class Config(MapBase, _CommonApi):
 	self_on = Column(Integer,default = 1) #0:自提停用 1:自提启用 7.30
 	day_self = Column(Integer,default = 0) #自提 0:all 1:今天 2:明天 7.30
 	self_end_time = Column(Integer,default = 0) #自提下单截止时间 7.30
+	self_addresses = relationship("SelfAddress")
 
 
 #自提地址 7.30 max10
 class SelfAddress(MapBase,_CommonApi):
 	 __tablename__ = "self_address"
 	 id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
-	 shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	 config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
 	 address = Column(String(1024), nullable=False)
 	 active = Column(Integer,default = 1) #0:delete 1:on 2:off
 	 if_default = Column(Integer,default = 0) #0:not default 1:default

@@ -1488,7 +1488,9 @@ class Order(AdminBaseHandler):
 
 	def _count(self):
 		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
-				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0}
+				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0,
+				 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0,
+				 }
 		try:
 			orders = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).all()
 		except:
@@ -1593,7 +1595,7 @@ class Order(AdminBaseHandler):
 			self.session.commit()
 		elif action == "add_self_address": #7.30
 			try:
-				self_address_count = self.session.query(models.SelfAddress).filter_by(shop_id=self.current_shop.id)\
+				self_address_count = self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id)\
 				.filter(models.SelfAddress.active!=0).count()
 			except:
 				self_address_count = 0
@@ -1605,7 +1607,7 @@ class Order(AdminBaseHandler):
 			lat = data["lat"] or 0
 			lon = data["lon"] or 0
 			self_address = models.SelfAddress(
-							shop_id = self.current_shop.id,
+							config_id = self.current_shop.config.id,
 							address = address,
 							lat = lat,
 							lon = lon
@@ -1617,7 +1619,7 @@ class Order(AdminBaseHandler):
 				return self.send_fail(403)
 			address_id = int(data["address_id"])
 			try:
-				self_address = self.session.query(models.SelfAddress).filter_by(id=address_id,shop_id=self.current_shop.id).first()
+				self_address = self.session.query(models.SelfAddress).filter_by(id=address_id,config_id=self.current_shop.config.id).first()
 			except:
 				return self.send_fail(404)
 			if action == "edit_self_address":
