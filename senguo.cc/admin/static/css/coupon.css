@@ -39,10 +39,10 @@ body{background-color: #f5f5f5;}
 .coupon-info{border-top:1px dashed #fff;padding: 10px 0 16px 0;}
 .coupon-info>p{width: 240px;display: block;margin: 0 auto;}
 /*用户优惠券*/
-.wrap-user-coupon{background:-webkit-linear-gradient(#70DB94,#34CC67);background:linear-gradient(#70DB94,#34CC67);overflow-x: hidden;}
-.coupon-bg-box{width: 80.3%;margin: 25px auto 0 auto;position: relative;padding-bottom: 60px;}
+.wrap-user-coupon{background:-webkit-linear-gradient(#70DB94,#34CC67);background:linear-gradient(#70DB94,#34CC67);}
+.coupon-bg-box{width: 80.3%;margin: 0 auto;position: relative;padding-bottom: 60px;}
 .coupon-bg{width: 149.2%;z-index:1;}
-.wrap-coupon-ubg{position: absolute;width:100%;top: 0;left:0;z-index:10;}
+.wrap-coupon-ubg{position: absolute;width:100%;top: 25px;left:0;z-index:10;}
 .coupon-ubg{background-color: #fff;border-radius: 5px;padding-top: 20px;}
 /*.coupon-ubg:after{display: block;content:'';position: absolute;width: 154%;height: 52%;z-index:-1;left:-6%;top:35%;border-radius:10px;-webkit-transform:skew(40deg) rotate(-20deg);transform:skew(40deg) rotate(-20deg);background:linear-gradient(to bottom,rgba(88,165,110,0.6) 0%,rgba(88,165,110,0) 50%,rgba(88,165,110,0)) 100%;}*/
 .wrap-coupon-ubg:before{display: block;content:'';position: absolute;width: 100%;height: 100%;z-index:-1;border-radius:10px;-webkit-transform:skew(40deg);-webkit-transform-origin:left top;background:linear-gradient(to left,rgba(88,165,110,0.6) 0%,rgba(88,165,110,0) 50%,rgba(88,165,110,0)) 100%;}
