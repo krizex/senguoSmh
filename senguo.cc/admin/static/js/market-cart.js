@@ -489,11 +489,37 @@ $(document).ready(function(){
         noticeBox("当前店铺已关闭余额支付，此功能暂不可用");
         return false;
     }
-}).on("click",".online-lst li",function(){   //选择在线支付方式
-    $(".online-lst").find(".checkbox-btn").removeClass("checkboxed");
+}).on("click",".online-lsts li",function(){   //选择在线支付方式
+    $(".online-lsts").find(".checkbox-btn").removeClass("checkboxed");
     $("#online-pay").attr("data-type",$(this).attr("data-type"));
     pulse($(this));
     $(this).children("a").addClass("checkboxed");
+}).on("click",".coupon_type li",function(){//优惠券
+    var index = $(this).index();
+    if($(this).hasClass("active")){
+        $(this).removeClass("active");
+        $(this).children("a").removeClass("checkboxed");
+        $("#coupon-money").closest('.coupon-text').addClass("hidden");
+        $(".coupon_cmoney").addClass("hidden");
+        $("#total_price").html($("#final_price").html());
+    }else{
+        $(".coupon_type").find(".checkbox-btn").removeClass("checkboxed");
+        $(".coupon_type li").removeClass("active").eq(index).addClass("active");
+        $(this).children("a").addClass("checkboxed");
+        var money = parseFloat($(this).children('.coupon-bg').attr("data-money"));
+        var last_money = parseFloat($("#final_price").html());
+        $("#coupon_cmoney").html(money);
+        $("#coupon-money").html(money);
+        $("#coupon-money").closest('.coupon-text').removeClass("hidden");
+        $(".coupon_cmoney").removeClass("hidden");
+        var smoney = 0;
+        if(money>=last_money){
+            smoney = 0;
+        }else{
+            smoney = parseFloat(last_money - money).toFixed(2);
+        }
+        $("#total_price").html(smoney);
+    }   
 });
 
 window.dataObj.price_list=[];
@@ -730,6 +756,10 @@ function orderSubmit(target){
     var mincharge_intime=Number($('.mincharge_intime .mincharge').text());
     var mincharge_now=Number($('.mincharge_now .mincharge').text());
     var tip=$('.tip-list').find('.active').data('id');
+    var coupon_key=$(".coupon_type").find(".active").attr("data-id");
+    if (coupon_key==undefined){
+        coupon_key=null;
+    }
     if(pay_type == 3){
         online_type = $("#online-pay").attr("data-type");
     }
@@ -764,6 +794,7 @@ function orderSubmit(target){
     $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
+        coupon_key:coupon_key,
         mgoods:mgoods,
         type:type,
         today:today,
@@ -821,7 +852,7 @@ function time(evt) {
         setTimeout(function() {
                 time(evt)
             },
-            1000)
+            1000);
     }
 }
 //获取手机验证码
@@ -843,8 +874,8 @@ function Vrify(phone){
             }
             else return noticeBox(res.error_text);
         },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~');},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
     );
 }
 //手机绑定
@@ -873,7 +904,7 @@ function TiePhone(evt){
             }
             else noticeBox(res.error_text);
         },
-        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~');},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~');}
     );
 }

@@ -168,7 +168,7 @@ var getOrder=function(page){
                     var order_status=parseInt(data[i]['status']);
                     var order_num=data[i]['num'];
                     var create_date=data[i]['create_date'];
-                    var totalPrice=data[i]['totalPrice'];
+                    var totalPrice=data[i]['new_totalprice'];
                     var pay_type=data[i]['pay_type'];
                     var send_time=data[i]['send_time'];
                     var send_address=data[i]['address_text'];
@@ -185,7 +185,7 @@ var getOrder=function(page){
                     var color="c999";
 
                     if(data[i]['SH2']){
-                        var staff_img=data[i]['SH2']['headimgurl'];
+                        var staff_img=data[i]['SH2']['headimgurl'] || '/static/images/TDSG.png';
                         var staff_phone=data[i]['SH2']['phone'];
                         var sender=data[i]['SH2']['nickname'];
                     }else{

@@ -1,4 +1,4 @@
-from handlers.base import CustomerBaseHandler,WxOauth2
+from handlers.base import CustomerBaseHandler,AdminBaseHandler,WxOauth2
 import dal.models as models
 import tornado.web
 from settings import *
@@ -438,45 +438,262 @@ class ConfessionList(CustomerBaseHandler):
 # 发现 - 优惠券
 class Coupon(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action?:str")
 	def get(self):
-		#action=self.args["action"]
-		#customer_id=self.current_user.id
-		#data=[]
-		#q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id).all()
-		#for x in q:
-		#	x_coupon={"coupon_money":x.coupon_money,"get_date":x.get_date,"uneffective_time":x.uneffective_time,"if_used":x.if_used}
-		#	data.append(x_coupon)
-		#return self.render("coupon/coupon.html",output_data=data)
 		return self.render("coupon/coupon.html")
 
-# 发现 - 优惠券 - 详情
-class CouponDetail(CustomerBaseHandler):
+#我的优惠券		
+class CouponProfile(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action?:str","coupon_id?")
+	def get(self):
+		current_customer_id=self.current_user.id
+		current_shop_id=self.get_cookie("market_shop_id")
+		self.updatecoupon(current_customer_id)
+		action=self.args["action"]
+		if action=="get_all":
+			now_date=int(time.time())
+			data=[]
+			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0).all()
+			for x in q:
+				if x.from_get_date<now_date and x.to_get_date>now_date:
+					if x.use_goods_group==0:
+						use_goods_group="默认分组"
+					elif x.use_goods_group==-1:
+						use_goods_group="店铺推荐"
+					elif x.use_goods_group==-2:
+						use_goods_group="所有分组"
+					else:
+						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
+						use_goods_group=q1.name
+					if x.use_goods==-1:
+						use_goods="所有商品"
+					else:
+						q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
+						use_goods=q1.name
+					from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
+					to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
+					x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
+						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day}
+					data.append(x_coupon)
+				else:
+					pass
+			return self.render("coupon/coupon-profile.html",output_data=data)
+		elif action=="get_one":
+			now_date=int(time.time())
+			data=[]
+			coupon_id=self.args["coupon_id"]
+			x=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0,coupon_id=coupon_id).first()
+			if x:
+				if x.from_get_date<now_date and x.to_get_date>now_date:
+					if x.use_goods_group==0:
+						use_goods_group="默认分组"
+					elif x.use_goods_group==-1:
+						use_goods_group="店铺推荐"
+					elif x.use_goods_group==-2:
+						use_goods_group="所有分组"
+					else:
+						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
+						use_goods_group=q1.name
+					if x.use_goods==-1:
+						use_goods="所有商品"
+					else:
+						q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
+						use_goods=q1.name
+					from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
+					to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
+					x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
+						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day}
+					data.append(x_coupon)
+			return self.render("coupon/coupon-profile.html",output_data=data)
+#优惠券列表		
+class CouponList(CustomerBaseHandler):
+	def getcoupon(self,coupon_status,data):
+		current_customer_id=self.current_user.id
+		current_shop_id=self.get_cookie("market_shop_id")
+		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_status=coupon_status).order_by(models.CouponsCustomer.get_date.desc()).all()
+		now_date=int(time.time())
+		for x in q:
+			if (now_date-15*24*60*60)>x.uneffective_time and x.coupon_status!=0:
+				pass
+			else:
+				effective_time=time.strftime('%Y-%m-%d',time.localtime(x.effective_time))
+				uneffective_time=time.strftime('%Y-%m-%d',time.localtime(x.uneffective_time))
+				get_date=time.strftime('%Y-%m-%d',time.localtime(x.get_date))
+				use_date=time.strftime('%Y-%m-%d',time.localtime(x.use_date))
+				shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
+				q1=self.session.query(models.CouponsShop).filter_by(shop_id=x.shop_id,coupon_id=x.coupon_id).first()
+				use_goods_group=None
+				use_goods=None
+				if q1.use_goods_group==0:
+					use_goods_group="默认分组"
+				elif q1.use_goods_group==-1:
+					use_goods_group="店铺推荐"
+				elif q1.use_goods_group==-2:
+					use_goods_group="所有分组"
+				else:
+					q2=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=q1.use_goods_group).first()
+					use_goods_group=q2.name
+				if q1.use_goods==-1:
+					use_goods="所有商品"
+				else:
+					q2=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=q1.use_goods).first()
+					use_goods=q2.name
+				x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":x.coupon_status}
+				data.append(x_coupon)
+		return None
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action?:str","coupon_key?")
+	def get(self):
+		action=self.args["action"]
+		current_customer_id=self.current_user.id
+		current_shop_id=self.get_cookie("market_shop_id")
+		self.updatecoupon(current_customer_id)
+		if action=="get_all":
+			data=[]
+			for x in range(1,3):
+				self.getcoupon(x,data)
+			return self.render("coupon/coupon-list.html",output_data=data)
+		elif action=="get_one":
+			coupon_key=self.args["coupon_key"]
+			data=[]
+			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).first()
+			x=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id).first()
+			effective_time=time.strftime('%Y-%m-%d',time.localtime(q.effective_time))
+			uneffective_time=time.strftime('%Y-%m-%d',time.localtime(q.uneffective_time))
+			get_date=time.strftime('%Y-%m-%d',time.localtime(q.get_date))
+			use_date=time.strftime('%Y-%m-%d',time.localtime(q.use_date))
+			shop=self.session.query(models.Shop).filter_by(id=x.shop_id).first()
+			x_coupon={"shop_name":shop.shop_name,"shop_code":shop.shop_code,"effective_time":effective_time,"use_rule":x.use_rule,"coupon_key":q.coupon_key,"coupon_money":x.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":q.coupon_status}
+			data.append(x_coupon)
+			return self.render("coupon/coupon-list.html",output_data=data)
+
+#优惠券状态
+class CouponStatus(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("coupon/coupon-status.html")
+
+class CouponDetail(CustomerBaseHandler):	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_key:str")
 	def get(self):
 		action=self.args["action"]
-		customer_id=self.current_user.id
-		print(self.args)
+		current_customer_id=self.current_user.id
+		current_shop_id=self.get_cookie("market_shop_id")
 		mcoupon_key=self.args["coupon_key"]
-		print(mcoupon_key)
-		data=[]
+		self.updatecoupon(current_customer_id)
 		if action=="detail":
-			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,coupon_key=mcoupon_key).first()
+			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=current_customer_id,coupon_key=mcoupon_key).first()
+			x_coupon={}
 			if q!=None:
-				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
-				data.append(x_coupon)
-			return self.render("coupon/coupon-detail.html",output_data=data)
-		elif action=="search":
-			url=self.reverse_url("CouponDetail")+'?action=detail&coupon_key='+mcoupon_key
-			print(url)
-			# return self.render("coupon/detail.html")
-			return self.redirect(url)
-		elif action=="":
-			q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,coupon_key=mcoupon_key)
+				effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.effective_time))
+				uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.uneffective_time))
+				get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.get_date))
+				use_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.use_date))
+				# q2=self.session.query(models.Accountinfo).filter_by(id=current_customer_id).first()
+				shop=self.session.query(models.Shop).filter_by(id=q.shop_id).first()
+				q3=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
+				x_coupon={"shop_code":shop.shop_code,"shop_logo":shop.shop_trademark_url,"shop_name":shop.shop_name,"effective_time":effective_time,"use_rule":q3.use_rule,"coupon_key":mcoupon_key,"coupon_money":q3.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":q.coupon_status}
+			return self.render("coupon/coupon-detail.html",output_data=x_coupon)
+		elif action=="exchange":
+			self.updatecoupon(current_customer_id)
+			qused=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0).filter(models.CouponsCustomer.coupon_status!=0).first()
+			if qused:
+				return self.send_fail("Sorry，该优惠券已经被领取了哦~")
+			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=mcoupon_key,coupon_type=0,coupon_status=0).first()
+			if q==None:
+				return self.send_fail("对不起，您的优惠券码有误！")
+			else:
+				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,coupon_type=0,closed=0).first()
+				qnum=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,customer_id=current_customer_id).count()
+				if qq==None:
+					return self.send_fail("对不起，该优惠券已经不存在！")
+				elif qnum>=qq.get_limit:
+					return self.send_fail("对不起，您的领取次数已经超过了领取数量限制！")
+				else:
+					shop=self.session.query(models.Shop).filter_by(id=q.shop_id).first()
+					effective_time=None
+					uneffective_time=None
+					get_date=int(time.time())
+					m_effective_time=None
+					m_uneffective_time=None
+					m_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(get_date))
+					if qq.valid_way==0:
+						uneffective_time=qq.to_valid_date
+						effective_time=qq.from_valid_date
+						m_effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(effective_time))
+						m_uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(uneffective_time))
+					elif qq.valid_way==1:
+						all_days=qq.start_day+qq.last_day
+						uneffective_time=get_date+all_days*60*60*24
+						effective_time=get_date+qq.start_day*24*60*60
+					else :
+						pass
+					q.update(session=self.session,effective_time=effective_time,uneffective_time=uneffective_time,get_date=get_date,customer_id=current_customer_id,coupon_status=1)
+					get_number=qq.get_number+1
+					qq.update(session=self.session,get_number=get_number)
+					self.session.commit()
+					use_goods_group=None
+					use_goods=None
+					if qq.use_goods_group==0:
+						use_goods_group="默认分组"
+					elif qq.use_goods_group==-1:
+						use_goods_group="店铺推荐"
+					elif qq.use_goods_group==-2:
+						use_goods_group="所有分组"
+					else:
+						q2=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=qq.use_goods_group).first()
+						use_goods_group=q2.name
+					if qq.use_goods==-1:
+						use_goods="所有商品"
+					else:
+						q2=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=qq.use_goods).first()
+						use_goods=q2.name
+					x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"shop_name":shop.shop_name,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":mcoupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
+					return self.send_success(output_data=x_coupon)
+
+class CouponCustomer(CustomerBaseHandler):	
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action:str","coupon_id?:int")
+	def get(self):
+		action=self.args["action"]
+		current_customer_id=self.current_user.id
+		current_shop_id=self.get_cookie("market_shop_id")
+		self.updatecoupon(current_customer_id)
+		if action=="get_coupon":
+			coupon_id=self.args["coupon_id"]
+			x_coupon={}
+			q=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=coupon_id,coupon_type=0,coupon_status=0).with_lockmode("update").first()
 			if q!=None:
-				x_coupon={"coupon_money":q.coupon_money,"get_date":q.get_date,"uneffective_time":q.uneffective_time,"if_used":q.if_used}
-				data.append(x_coupon)
-			return self.render("coupon/detail.html",output_data=data)
-		elif action=="grab":
-			pass
+				qnum=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id,customer_id=current_customer_id).count()
+				qq=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_id=q.coupon_id).first()
+				if qnum>=qq.get_limit:
+					return self.send_fail("对不起，您的领取次数已经超过了领取数量限制！")
+				shop=self.session.query(models.Shop).filter_by(id=q.shop_id).first()
+				effective_time=None
+				uneffective_time=None
+				get_date=int(time.time())
+				m_effective_time=None
+				m_uneffective_time=None
+				m_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(get_date))
+				if qq.valid_way==0:
+					uneffective_time=qq.to_valid_date
+					effective_time=qq.from_valid_date
+					m_effective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(effective_time))
+					m_uneffective_time=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(uneffective_time))
+				elif qq.valid_way==1:
+					all_days=qq.start_day+qq.last_day
+					uneffective_time=get_date+all_days*60*60*24
+					effective_time=get_date+qq.start_day*24*60*60
+				else :
+					pass
+				q.update(session=self.session,effective_time=effective_time,uneffective_time=uneffective_time,get_date=get_date,customer_id=current_customer_id,coupon_status=1)
+				get_number=qq.get_number+1
+				qq.update(self.session,get_number=get_number)
+				self.session.commit()
+				x_coupon={"shop_code":shop.shop_code,"shop_name":shop.shop_name,"shop_logo":shop.shop_trademark_url,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":q.coupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
+				return self.send_success(coupon_money=qq.coupon_money,coupon_key=q.coupon_key)
+			else:
+				return self.send_fail("对不起，这批优惠券已经被抢空了，下次再来哦！")
+
+
