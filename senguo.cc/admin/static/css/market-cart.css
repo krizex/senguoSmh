@@ -64,7 +64,7 @@
 .pay_type .active .title{color:#33CC66 !important;}
 
 .send_now{position: relative;margin-top: -1px;padding:0px !important;clear:both;margin-bottom:0;}
-.send_now>li{padding-left: 14px;border:1px solid #f0f4f0;border-left:2px solid #33CC66;border-top:none;background-color: #f0f4f0;}
+.send_now>li{padding-left: 14px;border:1px solid #f0f4f0;border-top:none;background-color: #f0f4f0;}
 
 .address-box .tit{width:15%;min-width:45px;line-height:30px;}
 .send-address-choose input{width:80%;height:30px;-ms-line-height:30px;text-indent:10px;margin-bottom:5px;}

@@ -216,10 +216,6 @@ $(document).ready(function(){
         });
         $('.send_period .item').first().addClass('active').siblings().removeClass('active');
     });
-    //按时达/立即送模式/自提选择
-    var intime_on=$('.send-intime').attr('data-config');
-    var now_on=$('.send-now').attr('data-config'); 
-    var self_on=$('.send-self').attr('data-config'); 
     // if(intime_on=='False'||typeof(intime_on)=='undefined'){ //立即送被关闭情况
     //     $('.send-intime').removeClass('active').find('p').addClass('text-grey3');
     //     $('.send-now').addClass('active');
@@ -459,6 +455,32 @@ $(document).ready(function(){
      }else if(shop_status==0){
         $('#submitOrder').text('店铺已关闭');
      }
+
+//按时达/立即送模式/自提选择
+    var intime_on=$('.send-intime').attr('data-config');
+    var now_on=$('.send-now').attr('data-config'); 
+    var self_on=$('.send-self').attr('data-config'); 
+    if(intime_on){
+        $('#freight_money').text(window.dataObj.freigh_ontime);
+    }
+}).on("click",".send_type_item",function(){
+    var $this=$(this);
+    var _type=$this.attr("data-type");
+    $this.addClass("active").next(".item_period").show().siblings(".item_period").hide();
+    $this.siblings(".send_type_item").removeClass("active");
+    if(_type=="ontime" || _type == "self"){
+        if(_type=="ontime"){
+             $('#freight_money').text(window.dataObj.freigh_ontime);
+             $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+        }else{
+            $('#freight_money').text(0);
+            $('.final_price').text(mathFloat(window.dataObj.total_price));
+        }
+    }else if(_type="now"){
+        $('#freight_money').text(window.dataObj.freigh_now);
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+    }
+
 }).on("click",".pay_type .item",function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
@@ -522,19 +544,6 @@ $(document).ready(function(){
         }
         $("#total_price").html(smoney);
     }   
-}).on("click",".send_type_item",function(){
-    var $this=$(this);
-    var _type=$this.attr("data-type");
-    $this.addClass("active").next(".item_period").show().siblings(".item_period").hide();
-    $this.siblings(".send_type_item").removeClass("active");
-    if(_type=="intime" || _type == "self"){
-        if(_type=="intime"){
-            
-        }
-    }else if(_type="now"){
-        $('#freight_money').text(window.dataObj.freigh_now);
-        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
-    }
 });
 
 window.dataObj.price_list=[];

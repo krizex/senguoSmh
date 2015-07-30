@@ -16,7 +16,7 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
+		# self.if_current_shops()
 		if self.is_pc_browser()==True:
 			return self.redirect(self.reverse_url("switchshop"))
 		shop_list = []
@@ -30,9 +30,9 @@ class Home(AdminBaseHandler):
 		except:
 			other_shops = None
 		if shops:
-			shop_list += self.getshop(shops)
+			shop_list = self.getshop(shops)
 		if other_shops:
-			shop_list += self.getshop(other_shops)
+			shop_list = self.getshop(other_shops)
 		return self.render("m-admin/shop-list.html", context=dict(shop_list=shop_list))
 	def getshop(self,shops):
 		shop_list = []
