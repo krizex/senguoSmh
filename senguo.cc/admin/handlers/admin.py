@@ -2524,6 +2524,10 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			args["name"] = data["name"]
 			args["intro"] = data["intro"]
+			id_list = data["id_list"]
+			index_list = data["index_list"]
+			if "name" not in data or "id_list" not in data or "index_list" not in data:
+				return self.send_error(403)
 			try:
 				groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
 			except:
@@ -2540,8 +2544,6 @@ class Goods(AdminBaseHandler):
 
 			new_group_id = _group.id
 
-			id_list = data["id_list"]
-			index_list = data["index_list"]
 			try:
 				priority_old = self.session.query(models.GroupPriority).filter_by(shop_id=shop_id)
 			except:
