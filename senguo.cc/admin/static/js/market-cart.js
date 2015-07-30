@@ -183,13 +183,13 @@ $(document).ready(function(){
     }else{
         $('.send_period .list-group-item').first().addClass("active");
     }
-        $('.send_period .item').on('click',function(){
-            var $this=$(this);
-            if($this.hasClass('available')) {
-                pulse($this);
-                $this.addClass('active').siblings().removeClass('active');
-            }
-        });
+    $('.send_period .item').on('click',function(){
+        var $this=$(this);
+        if($this.hasClass('available')) {
+            pulse($this);
+            $this.addClass('active').siblings().removeClass('active');
+        }
+    });
     //按时达选择今天
     $('#send_today').on('click',function(){
         $('.send_period .item').each(function(){
@@ -216,198 +216,200 @@ $(document).ready(function(){
         });
         $('.send_period .item').first().addClass('active').siblings().removeClass('active');
     });
-    //按时达/立即送模式选择
-    var intime_on=$('.send-intime').data('config');
-    var now_on=$('.send-now').data('config'); 
-    if(intime_on=='False'||typeof(intime_on)=='undefined'){ //立即送被关闭情况
-        $('.send-intime').removeClass('active').find('p').addClass('text-grey3');
-        $('.send-now').addClass('active');
-        $('.send_day').remove();
-        $('.send_period').remove();
-        $('.send_now').show();
-        $('.intime-intro').hide();
-        $('.now-intro').show();
-        $('#freight_money').text(window.dataObj.freigh_now);
-        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
-        $('.send-intime').on('click',function(){
-            $(this).removeClass('active');
-            if(now_on=='True'){
-                pulse($(this));
-                $('.send-now').addClass('active');
-                $('.send_now').show();
-                $('.intime-intro').hide();
-                $('.now-intro').show();
-            }
-            else noticeBox('按时达模式已关闭，请选择立即送模式！',$(this));
-        })
-    }
-    else{
-        $('.intime-intro').show();
-        $('.now-intro').hide();
-        $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
-        //按时达模式选择
-        $('#sendInTime').on('click',function(){
-            var $this=$(this);
-            pulse($this.parents('.item'));
-            $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
-            $('.send_period').show();
-            $('.send_day').show();
-            $('.send_now').hide();
-            $('.mincharge_now').hide();
-            $('.intime-intro').show();
-            $('.now-intro').hide();
-            window.dataObj.total_price=mathFloat($list_total_price.text());
-            $('#freight_money').text(window.dataObj.freigh_ontime);
-            $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
-            if(window.dataObj.total_price<window.dataObj.mincharge_intime){
-                $('.mincharge_intime').show();
-            }
-        });
-    }
-    if(now_on=='False'||typeof(now_on)=='undefined'){//立即送被关闭情况
-        $('.send-now').removeClass('active').find('p').addClass('text-grey3');
-        $('.send-intime').addClass('active');
-        $('.send_day').show();
-        $('.send_period').show();
-        $('.send_now').remove();
-        $('.intime-intro').show();
-        $('.now-intro').hide();
-        $('#freight_money').text(window.dataObj.freigh_ontime);
-        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
-        $('.send-now').on('click',function(){
-            $(this).removeClass('active');
-            if(intime_on=='True'){
-                pulse($(this));
-                $('.send-intime').addClass('active');
-                $('.send_day').show();
-                $('.send_period').show();
-                $('.intime-intro').show();
-                $('.now-intro').hide();
-            }
-            else $('.send-intime').removeClass('active');
-            noticeBox('立即送模式已关闭，请选择按时达模式！',$this);
-        })
-    }
-    else{
-        $('.send_now').show();
-        $('.intime-intro').hide();
-        $('.now-intro').show();
-        $('#freight_money').text(window.dataObj.freigh_now);
-        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
-        //立即送模式选择/立即送最低起送金额提示
-        var end_time=$('.now_endtime').text();
-        var period=Int($('#sendNow').attr('data-period'));
-        var n=period/60;
-        var stop_time;
-        if(n<1){
-            if(time.getMinutes()+period<60){
-                stop_time=checkTime(time.getHours())+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
-            }
-            else{
-                stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
-            }
-        }
-        else if(1<=n<=2){
-            period=period-60
-             if(time.getMinutes()+period<60){
-                stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
-            }
-            else{
-                stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
-            }
-        }
-        if(stop_time<=end_time)
-        {
-            //pulse($('#sendNow').parents('.item'));
-            $('#sendNow').parents('.item').addClass('active').siblings('.item').removeClass('active');
-            $('.send_period').hide();
-            $('.send_day').hide();
-            $('.send_now').show();
-            $('.intime-intro').hide();
-            $('.now-intro').show();
-            window.dataObj.total_price=mathFloat($list_total_price.text());
-            $('#freight_money').text(window.dataObj.freigh_now);
-            $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
-            if(window.dataObj.total_price<window.dataObj.mincharge_now){
-                $('.mincharge_now').show();
-                $('.mincharge_intime').hide();
-            }
-        }
-        else {
-            $('#sendNow').parents('.item').removeClass('active').siblings('.item').addClass('active');
-            $('.send_period').show();
-            $('.send_day').show();
-            $('.send_now').addClass('hidden');
-        }
-        $('#sendNow').on('click',function(){  
-            var $this=$(this);
-            var end_time=$('.now_endtime').text();
-            var period=Int($this.attr('data-period'));
-            var n=period/60;
-            var stop_time;
-            if(n<1){
-                if(time.getMinutes()+period<60){
-                    stop_time=checkTime(time.getHours())+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
-                }
-                else{
-                    stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
-                }
-            }
-            else if(1<=n<=2){
-                period=period-60
-                if(time.getMinutes()+period<60){
-                    stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
-                }
-                else{
-                    stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
-                }
-            }
-            if(stop_time<=end_time)
-            {
-                pulse($this.parents('.item'));
-                $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
-                $('.send_period').hide();
-                $('.send_day').hide();
-                $('.send_now').show();
-                $('.intime-intro').hide();
-                $('.now-intro').show();
-                window.dataObj.total_price=mathFloat($list_total_price.text());
-                $('#freight_money').text(window.dataObj.freigh_now);
-                $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
-                if(window.dataObj.total_price<window.dataObj.mincharge_now){
-                    $('.mincharge_now').show();
-                    $('.mincharge_intime').hide();
-                }
-            }
-            else {
-                $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
-                return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
-            }
-        });
-    }
-    if(intime_on=='False'&&now_on=='False'){
-        $('.send-now').removeClass('active');
-        $('.send-intime').removeClass('active');
-        $('#freight_money').text(0);
-        $('.final_price').text(0);
-        $('.send_now').hide();
-        $('.intime-intro').hide();
-        $('.now-intro').hide();
-    }
-    if(intime_on=='True'&&now_on=='True'){
-        $('.send_now').show();
-        $('.intime-intro').show();
-        $('.now-intro').hide();
-        $('#freight_money').text(window.dataObj.freigh_now);
-        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
-    }
-    if(typeof(intime_on)=='undefined'&&now_on=='True'){
-        if(window.dataObj.total_price<window.dataObj.mincharge_now){
-            $('.mincharge_now').show();
-            $('.mincharge_intime').hide();
-        }
-    }
+    //按时达/立即送模式/自提选择
+    var intime_on=$('.send-intime').attr('data-config');
+    var now_on=$('.send-now').attr('data-config'); 
+    var self_on=$('.send-self').attr('data-config'); 
+    // if(intime_on=='False'||typeof(intime_on)=='undefined'){ //立即送被关闭情况
+    //     $('.send-intime').removeClass('active').find('p').addClass('text-grey3');
+    //     $('.send-now').addClass('active');
+    //     $('.send_day').remove();
+    //     $('.send_period').remove();
+    //     $('.send_now').show();
+    //     $('.intime-intro').hide();
+    //     $('.now-intro').show();
+    //     $('#freight_money').text(window.dataObj.freigh_now);
+    //     $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+    //     $('.send-intime').on('click',function(){
+    //         $(this).removeClass('active');
+    //         if(now_on=='True'){
+    //             pulse($(this));
+    //             $('.send-now').addClass('active');
+    //             $('.send_now').show();
+    //             $('.intime-intro').hide();
+    //             $(".self_period").hide();
+    //             $('.now-intro').show();
+    //         }
+    //         else noticeBox('按时达模式已关闭，请选择立即送模式！',$(this));
+    //     })
+    // }
+    // else{
+    //     $('.intime-intro').show();
+    //     $('.now-intro').hide();
+    //     $('#freight_money').text(window.dataObj.freigh_ontime);
+    //     $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+    //     //按时达模式选择
+    //     $('#sendInTime').on('click',function(){
+    //         var $this=$(this);
+    //         pulse($this.parents('.item'));
+    //         $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
+    //         $('.send_period').show();
+    //         $('.send_day').show();
+    //         $('.send_now').hide();
+    //         $('.mincharge_now').hide();
+    //         $('.intime-intro').show();
+    //         $('.now-intro').hide();
+    //         window.dataObj.total_price=mathFloat($list_total_price.text());
+    //         $('#freight_money').text(window.dataObj.freigh_ontime);
+    //         $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+    //         if(window.dataObj.total_price<window.dataObj.mincharge_intime){
+    //             $('.mincharge_intime').show();
+    //         }
+    //     });
+    // }
+    // if(now_on=='False'||typeof(now_on)=='undefined'){//立即送被关闭情况
+    //     $('.send-now').removeClass('active').find('p').addClass('text-grey3');
+    //     $('.send-intime').addClass('active');
+    //     $('.send_day').show();
+    //     $('.send_period').show();
+    //     $('.send_now').remove();
+    //     $('.intime-intro').show();
+    //     $('.now-intro').hide();
+    //     $('#freight_money').text(window.dataObj.freigh_ontime);
+    //     $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_ontime));
+    //     $('.send-now').on('click',function(){
+    //         $(this).removeClass('active');
+    //         if(intime_on=='True'){
+    //             pulse($(this));
+    //             $('.send-intime').addClass('active');
+    //             $('.send_day').show();
+    //             $('.send_period').show();
+    //             $('.intime-intro').show();
+    //             $('.now-intro').hide();
+    //         }
+    //         else $('.send-intime').removeClass('active');
+    //         noticeBox('立即送模式已关闭，请选择按时达模式！',$this);
+    //     })
+    // }
+    // else{
+    //     $('.send_now').show();
+    //     $('.intime-intro').hide();
+    //     $('.now-intro').show();
+    //     $('#freight_money').text(window.dataObj.freigh_now);
+    //     $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+    //     //立即送模式选择/立即送最低起送金额提示
+    //     var end_time=$('.now_endtime').text();
+    //     var period=Int($('#sendNow').attr('data-period'));
+    //     var n=period/60;
+    //     var stop_time;
+    //     if(n<1){
+    //         if(time.getMinutes()+period<60){
+    //             stop_time=checkTime(time.getHours())+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+    //         }
+    //         else{
+    //             stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+    //         }
+    //     }
+    //     else if(1<=n<=2){
+    //         period=period-60
+    //          if(time.getMinutes()+period<60){
+    //             stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+    //         }
+    //         else{
+    //             stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+    //         }
+    //     }
+    //     if(stop_time<=end_time)
+    //     {
+    //         //pulse($('#sendNow').parents('.item'));
+    //         $('#sendNow').parents('.item').addClass('active').siblings('.item').removeClass('active');
+    //         $('.send_period').hide();
+    //         $('.send_day').hide();
+    //         $('.send_now').show();
+    //         $('.intime-intro').hide();
+    //         $('.now-intro').show();
+    //         window.dataObj.total_price=mathFloat($list_total_price.text());
+    //         $('#freight_money').text(window.dataObj.freigh_now);
+    //         $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+    //         if(window.dataObj.total_price<window.dataObj.mincharge_now){
+    //             $('.mincharge_now').show();
+    //             $('.mincharge_intime').hide();
+    //         }
+    //     }
+    //     else {
+    //         $('#sendNow').parents('.item').removeClass('active').siblings('.item').addClass('active');
+    //         $('.send_period').show();
+    //         $('.send_day').show();
+    //         $('.send_now').addClass('hidden');
+    //     }
+    //     $('#sendNow').on('click',function(){  
+    //         var $this=$(this);
+    //         var end_time=$('.now_endtime').text();
+    //         var period=Int($this.attr('data-period'));
+    //         var n=period/60;
+    //         var stop_time;
+    //         if(n<1){
+    //             if(time.getMinutes()+period<60){
+    //                 stop_time=checkTime(time.getHours())+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+    //             }
+    //             else{
+    //                 stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+    //             }
+    //         }
+    //         else if(1<=n<=2){
+    //             period=period-60
+    //             if(time.getMinutes()+period<60){
+    //                 stop_time=checkTime(time.getHours()+1)+':'+checkTime(time.getMinutes()+period)+':'+checkTime(time.getSeconds());
+    //             }
+    //             else{
+    //                 stop_time=checkTime(time.getHours()+2)+':'+checkTime(time.getMinutes()+(period-60))+':'+checkTime(time.getSeconds());
+    //             }
+    //         }
+    //         if(stop_time<=end_time)
+    //         {
+    //             pulse($this.parents('.item'));
+    //             $this.parents('.item').addClass('active').siblings('.item').removeClass('active');
+    //             $('.send_period').hide();
+    //             $('.send_day').hide();
+    //             $('.send_now').show();
+    //             $('.intime-intro').hide();
+    //             $('.now-intro').show();
+    //             window.dataObj.total_price=mathFloat($list_total_price.text());
+    //             $('#freight_money').text(window.dataObj.freigh_now);
+    //             $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+    //             if(window.dataObj.total_price<window.dataObj.mincharge_now){
+    //                 $('.mincharge_now').show();
+    //                 $('.mincharge_intime').hide();
+    //             }
+    //         }
+    //         else {
+    //             $this.parents('.item').removeClass('active').siblings('.item').addClass('active');
+    //             return noticeBox('不小心超过了“立即送”的送货时间呢，请选择“按时达”时间段！',$this)
+    //         }
+    //     });
+    // }
+    // if(intime_on=='False'&&now_on=='False'){
+    //     $('.send-now').removeClass('active');
+    //     $('.send-intime').removeClass('active');
+    //     $('#freight_money').text(0);
+    //     $('.final_price').text(0);
+    //     $('.send_now').hide();
+    //     $('.intime-intro').hide();
+    //     $('.now-intro').hide();
+    // }
+    // if(intime_on=='True'&&now_on=='True'){
+    //     $('.send_now').show();
+    //     $('.intime-intro').show();
+    //     $('.now-intro').hide();
+    //     $('#freight_money').text(window.dataObj.freigh_now);
+    //     $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+    // }
+    // if(typeof(intime_on)=='undefined'&&now_on=='True'){
+    //     if(window.dataObj.total_price<window.dataObj.mincharge_now){
+    //         $('.mincharge_now').show();
+    //         $('.mincharge_intime').hide();
+    //     }
+    // }
     //打赏小费
     $('.tip-list .item').on('click',function(){
         var $this=$(this);
@@ -520,6 +522,19 @@ $(document).ready(function(){
         }
         $("#total_price").html(smoney);
     }   
+}).on("click",".send_type_item",function(){
+    var $this=$(this);
+    var _type=$this.attr("data-type");
+    $this.addClass("active").next(".item_period").show().siblings(".item_period").hide();
+    $this.siblings(".send_type_item").removeClass("active");
+    if(_type=="intime" || _type == "self"){
+        if(_type=="intime"){
+            
+        }
+    }else if(_type="now"){
+        $('#freight_money').text(window.dataObj.freigh_now);
+        $('.final_price').text(mathFloat(window.dataObj.total_price+window.dataObj.freigh_now));
+    }
 });
 
 window.dataObj.price_list=[];

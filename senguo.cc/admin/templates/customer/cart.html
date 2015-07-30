@@ -69,7 +69,7 @@
                 {% end %}
                 <div id="sendType" class="send_type list-group">
                     {% if config.now_on == True%}
-                    <button data-id="1" class="{{unactive}} send-now list-group-item item height50" data-config="{{config.now_on}}" >
+                    <button data-id="1" class="{{unactive}} send-now list-group-item item height50 send_type_item" data-config="{{config.now_on}}"  data-type="now">
                         <a href="javascript:;" class="bg-white text-grey" id="sendNow" data-period="{{config.intime_period or 0}}">
                             <span class="pull-left title set-inl-blo font14 line50">立即送</span>
                             <p class="text-grey9 title-right">
@@ -80,7 +80,7 @@
                     </button>
                     {% end %}
                     {% if config.now_on == True%}
-                    <ul class="send_now list-group">
+                    <ul class="send_now list-group item_period">
                         <div class="arrow-top left82"></div>
                         <!-- <li class="list-group-item clearfix bg-grey2">
                              <p class="text-center text-pink">送货员太辛苦，打赏点小费吧\(╯▼╰)/ </p>
@@ -98,7 +98,7 @@
                     </ul>
                     {% end %}
                     {% if config.ontime_on == True%}
-                    <button data-id="2" class="{{active}} send-intime  list-group-item item height50" data-config="{{config.ontime_on}}">
+                    <button data-id="2" class="{{active}} send-intime  list-group-item item height50 send_type_item" data-config="{{config.ontime_on}}" data-type="ontime">
                         <a href="javascript:;" class="bg-white text-grey" id="sendInTime">
                             <span class="pull-left title set-inl-blo font14 line50">按时达</span>
                             <p class="text-grey9 title-right">
@@ -110,7 +110,7 @@
                     {% end %}
                     {% if config.ontime_on == True%}
                     {% if periods %}
-                    <div id="sendPeriod" class="send_period list-group font14" style="display:none;">
+                    <div id="sendPeriod" class="send_period list-group font14 item_period" style="display:none;">
                         <div class="arrow-top left70"></div>
                         <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10">
                             {% set day=config.day_on_time %}
@@ -121,11 +121,11 @@
                         {% for period in periods%}
                             <button data-id="{{period.id}}" class="list-group-item clearfix available line50 height50 item">
                                 <a href="javascript:;" class="text-grey clearfix">
-                                    <a href="javascript:;" class="pull-right checkbox-btn"></a>
-                                    <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
-                            <span class="pull-left ontime-txt">
-                                <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
-                            </span>
+                                <a href="javascript:;" class="pull-right checkbox-btn"></a>
+                                <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
+                                <span class="pull-left ontime-txt">
+                                    <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
+                                </span>
                                     <input type="hidden" class="intime_startHour" value="{{period.start_time.hour}}"/>
                                     <input type="hidden" class="intime_startMin" value="{{period.start_time.minute}}"/>
                                 </a>
@@ -134,6 +134,45 @@
                         </div>
                     </div>
                     <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
+                    {% end %}
+                    {% end %}
+                     {% if config.self_on == True%}
+                    <button data-id="2" class="{{active}} send-self  list-group-item item height50 send_type_item" data-config="{{config.self_on}}"  data-type="self">
+                        <a href="javascript:;" class="bg-white text-grey" id="sendSelf">
+                            <span class="pull-left title set-inl-blo font14 line50">自提</span>
+                            <p class="text-grey9 title-right">
+                                <span class="text-grey3">起送价：0元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_ontime">0</span>元</span>
+                                <span class="mt3">根据选择的自提点自行拿货</span>
+                            </p>
+                        </a>
+                    </button>
+                    {% end %}
+                    {% if config.self_on == True%}
+                    {% if periods %}
+                    <div id="selfPeriod" class="self_period list-group font14 item_period" style="display:none;">
+                        <div class="arrow-top left70"></div>
+                        <ul id="sendDay" class="send_day nav-pills clearfix text-center type-choose m-b10 font14 mt10">
+                            {% set day_self=config.day_self %}
+                            <li data-id="1" class="{% if day_self == 0 or day_self==1 %}active{% end %} {% if day_self==2 %}hidden{% end %} pull-left item" id="send_today"><a href="javascript:;" class="text-green">今天</a></li>
+                            <li data-id="2" id="send_tomorrow" class="{% if day_self==2 %}active{% end %} {% if day_self==1 %}hidden{% end %} pull-left item"><a href="javascript:;" class="text-green">明天</a></li>
+                        </ul>
+                        <div id="selfPerTime" class="">
+                        {% for period in periods%}
+                            <button data-id="{{period.id}}" class="list-group-item clearfix available line50 height50 item">
+                                <a href="javascript:;" class="text-grey clearfix">
+                                    <a href="javascript:;" class="pull-right checkbox-btn"></a>
+                                    <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
+                            <span class="pull-left ontime-txt">
+                                <span class="check-time ontime-txt">{{period.start_time.hour}}</span> : <span class="check-time ontime-txt">{{period.start_time.minute}}</span> ~ <span class="intime_endtime ontime-txt"><span class="check-time ontime-txt">{{period.end_time.hour}}</span> : <span class="check-time ontime-txt">{{period.end_time.minute}}</span></span>
+                            </span>
+                                    <input type="hidden" class="self_startHour" value="{{period.start_time.hour}}"/>
+                                    <input type="hidden" class="self_startMin" value="{{period.start_time.minute}}"/>
+                                </a>
+                            </button>
+                        {% end %}
+                        </div>
+                    </div>
+                    <input type="hidden" class="self_end_time" value="{{config.self_end_time}}"/>
                     {% end %}
                     {% end %}
                 </div>

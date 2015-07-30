@@ -1578,6 +1578,9 @@ class Order(AdminBaseHandler):
 			self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
 											start_time_now=start_time, end_time_now=end_time,
 											freight_now=data["freight_now"] or 0,intime_period=data["intime_period"] or 30)
+		elif action == "edit_self_on":
+			self.current_shop.config.self_on = not self.current_shop.config.self_on
+			self.session.commit()
 		elif action == "edit_day_self": #7.30
 			if "day" not in data:
 				return self.send_error(403)

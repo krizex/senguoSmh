@@ -51,13 +51,13 @@
 .send_day .active{border: none;}
 .send_day li.active a{background:#33CC66 !important;border-radius:2px;color:#fff !important;}
 
-.send_period{float: left;width: 100%;padding-left: 0 !important;background-color: #f0f4f0;position: relative;border-left:2px solid #33CC66;margin-bottom: 0;}
-.send_period .list-group-item{border:none;background-color: #f0f4f0;padding-right: 5px;}
-.send_period .list-group-item:hover{border:none;background: none;}
-.send_period .list-group-item .active:hover{border: none;background: none;}
-.send_period .active .period_name,.send_period .active .ontime-txt{color:#33CC66 !important;}
-.send_period .active .checkbox-btn{background-image: url('/static/images/check_checked.png');}
-.send_period p{margin:0;}
+.item_period{float: left;width: 100%;padding-left: 0 !important;background-color: #f0f4f0;position: relative;border-left:2px solid #33CC66;margin-bottom: 0;}
+.item_period .list-group-item{border:none;background-color: #f0f4f0;padding-right: 5px;}
+.item_period .list-group-item:hover{border:none;background: none;}
+.item_period .list-group-item .active:hover{border: none;background: none;}
+.item_period .active .period_name,.item_period .active .ontime-txt{color:#33CC66 !important;}
+.item_period .active .checkbox-btn{background-image: url('/static/images/check_checked.png');}
+.item_period p{margin:0;}
 .period_name{min-width:90px;}
 
 .pay_type .title{width:90px;}
