@@ -614,7 +614,7 @@ class QiniuCallback(FruitzoneBaseHandler):
 			try:
 				shop = self.session.query(models.Shop).filter_by(id=id).one()
 			except:
-				print("QiniuCallback: not found shop")
+				print("[QiniuCallback]shop not found")
 				return self.send_error(404)
 			shop_trademark_url = shop.shop_trademark_url  # 要先跟新图片url，防止删除旧图片时出错
 			shop.update(session=self.session, shop_trademark_url=SHOP_IMG_HOST+key)
@@ -771,9 +771,9 @@ class PhoneVerify(_AccountBaseHandler):
 		if a:
 			if a != self.current_user.accountinfo:
 				return self.send_fail(error_text="手机号已经绑定其他账号")
-			else:
-				return self.send_fail(error_text="手机号已绑定，无需重复绑定")
-		# print("[店铺申请]发送证码到手机：",self.args["phone"])
+		#	else:
+		#		return self.send_fail(error_text="手机号已绑定，无需重复绑定")
+		# print("[PhoneVerify]Sent verify code to phone:",self.args["phone"])
 		resault = gen_msg_token(phone=self.args["phone"])
 		# print("handle_gencode_shop_apply" + self.current_user.accountinfo.wx_unionid)
 		if resault == True:
@@ -855,7 +855,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	def post(self):
 		if self._action == "dealNotify":
-			# print("原来你也没有被调用么")
+			# print("nothing")
 			return self.handle_deal_notify()
 		elif self._action == "aliyNotify":
 			# print('aliyNotify aaaaaaaaaaaaaaa')
@@ -927,16 +927,16 @@ class SystemPurchase(FruitzoneBaseHandler):
 
 	@FruitzoneBaseHandler.check_arguments("service", "v","sec_id","sign","notify_data")
 	def handle_alipay_notify(self):
-		print("login handler_alipay_notify")
+		print("[AliCharge]login handler_alipay_notify")
 		sign = self.args.pop("sign")
 		signmethod = self._alipay.getSignMethod(**self.args)
 		if signmethod(self.args) != sign:
 			return self.send_error(403)
-		print(self.args['notify_data'])
+		print("[AliCharge]notify_data:",self.args['notify_data'])
 		notify_data = xmltodict.parse(self.args["notify_data"])["notify"]
 		orderId = notify_data["out_trade_no"]
 		ali_trade_no=notify_data["trade_no"]
-		print(ali_trade_no,'hehehehehe')
+		print("[AliCharge]ali_trade_no:",ali_trade_no)
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
 			return self.send_success()
@@ -945,7 +945,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# shop_id = self.get_cookie('market_shop_id')
 		shop_id = int(data[1])
 		customer_id = int(data[2])
-		print(totalPrice,shop_id ,customer_id,'ididid')
+		print("[AliCharge]totalPrice:",totalPrice,", shop_id:",shop_id,", customer_id:",customer_id)
 		# code = self.args['code']
 		# path_url = self.request.full_url()
 		# totalPrice =float( self.get_cookie('money'))
@@ -958,7 +958,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后，用户对应店铺 余额 增1加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
-		# print(customer_id, shop_id,'没充到别家店铺去吧')
+		# print("[AliCharge]customer_id:",customer_id,", shop_id:",shop_id)
 		if not shop_follow:
 			return self.send_fail('shop_follow not found')
 		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
@@ -969,7 +969,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
-		# print(shop.shop_balance ,'充值后 商店 总额')
+		# print("[AliCharge]shop_balance after charge:",shop.shop_balance)
 		customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		if not customer:
 			return self.send_fail("customer not found")
@@ -980,7 +980,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
-		# print(balance_history , '钱没有白充吧？！')
+		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()
 
 		self.updatecoupon(customer_id)
@@ -1059,7 +1059,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# tmp_order = self.current_user.add_tmp_order(self.session, charge_data)
 		data = str(price) +'a'+str(shop_id)+'a'+str(customer_id)
 		# url = '/fruitzone/alipaynotify?data={0}'.format(data)
-		# print(url,'url')
+		# print("[AliCharge]url:",url)
 
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+ str(customer_id)  + 'a'+ str(int(time.time())),
@@ -1071,12 +1071,12 @@ class SystemPurchase(FruitzoneBaseHandler):
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("fruitzoneSystemPurchaseAliNotify")),
 			merchant_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("customerProfile"))
 		)
-		print(self.reverse_url("fruitzoneSystemPurchaseAliNotify"),'urlllllllllllllllllllll')
+		print("[AliCharge]url:",self.reverse_url("fruitzoneSystemPurchaseAliNotify"))
 		return authed_url
 
 	def check_xsrf_cookie(self):
 		if self._action == "dealNotify" or self._action == "aliyNotify":
-			Logger.info("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
+			print("SystemPurchase: it's a notify post from alipay, pass xsrf cookie check")
 			return True
 		return super().check_xsrf_cookie()
 
@@ -1091,7 +1091,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments("sign", "result", "out_trade_no","trade_no", "request_token")
 	def handle_alipay_finished_callback(self):
 		# data = self.args['data']
-		print('login',self)
+		print('[AliCharge]login handle_alipay_finished_callback')
 		sign = self.args.pop("sign")
 		signmethod = self._alipay.getSignMethod()
 		if signmethod(self.args) != sign:
@@ -1103,13 +1103,13 @@ class SystemPurchase(FruitzoneBaseHandler):
 		if old_balance_history:
 			return self.redirect(self.reverse_url("customerBalance"))
 
-		print(order_id,ali_trade_no,'hhhhhhhhhhhhhhhhhhhh')
+		print("[AliCharge]order_id:",order_id,"ali_trade_no:",ali_trade_no)
 		data = order_id.split('a')
 		totalPrice = float(data[0])/100
 		# shop_id = self.get_cookie('market_shop_id')
 		shop_id = int(data[1])
 		customer_id = self.current_user.id
-		print(totalPrice,shop_id ,customer_id,'ididid')
+		print("[AliCharge]totalPrice:",totalPrice,", shop_id:",shop_id,", customer_id:",customer_id)
 		# code = self.args['code']
 		# path_url = self.request.full_url()
 		# totalPrice =float( self.get_cookie('money'))
@@ -1122,18 +1122,18 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后，用户对应店铺 余额 增1加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
-		# print(customer_id, self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
+		# print("[AliCharge]customer_id:",customer_id,", shop_id:",self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
 		if not shop_follow:
-			return self.send_fail('shop_follow not found')
+			return self.send_fail('[AliCharge]shop_follow not found')
 		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
 		self.session.commit()
 
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop:
-			return self.send_fail('shop not found')
+			return self.send_fail('[AliCharge]shop not found')
 		shop.shop_balance += totalPrice
 		self.session.commit()
-		# print(shop.shop_balance ,'充值后 商店 总额')
+		# print("[AliCharge]shop_balance after charge:",shop.shop_balance)
 
 		# 支付成功后  生成一条余额支付记录
 		name = self.current_user.accountinfo.nickname
@@ -1141,7 +1141,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
 		self.session.add(balance_history)
-		# print(balance_history , '钱没有白充吧？！')
+		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()
 
 		self.updatecoupon(customer_id)

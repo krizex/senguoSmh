@@ -70,7 +70,7 @@ class ShopList(FruitzoneBaseHandler):
 			# try:
 			# 	order_count = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			# except:
-			# 	print("[官网店铺列表]错误")
+			# 	print("[OfficialShopList]Error")
 			# 	return self.send_fail('order_count error')
 			# if order_count:
 			# 	shop.order_count = order_count
@@ -98,19 +98,19 @@ class ShopList(FruitzoneBaseHandler):
 		# if "city" in self.args:
 		#     q = q.filter_by(shop_city=self.args["city"])
 		#     shop_count = q.count()
-		#     #print('shop_count',shop_count)
+		#     #print('[OfficialShopList]shop_count:',shop_count)
 		#     page_total = int(shop_count /10) if shop_count % 10 == 0 else int(shop_count/10) +1
-		#     #print('page_total',page_total)
+		#     #print('[OfficialShopList]page_total:',page_total)
 		#     q = q.offset(page * _page_count).limit(_page_count).all()
 
 		if "province" in self.args:
-			# print('province')
+			# print('[OfficialShopList]province')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
 			page_total = int(shop_count /8) if shop_count % 8 == 0 else int(shop_count/8) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 		else:
-			print("[Official]Province not found")
+			print("[OfficialShopList]Province not found")
 
 		shoplist = []
 		for shop in q:

@@ -56,6 +56,6 @@ hr{margin-top:0 !important;;margin-bottom:0 !important;margin-left:24px;}
 
 .arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:16px;}
 .confess-text{line-height: 18px;padding-top: 5px;}
-.imore{display:inline-block;width:12px;height:100%;background: url('/static/images/arr-right.png') no-repeat;background-size:8px 12px;background-position: right center;margin-right: 10px;}
+.imore{display:inline-block;width:12px;height:100%;background: url('/static/images/arr-right.png') no-repeat;background-size:8px 14px;background-position: right center;margin-right: 10px;}
 .tip-text{display: inline-block;width: 16px;height: 16px;color: #fff;text-align: center;line-height: 16px;background-color: #ff6563!important;border-radius: 50%;margin-top: 14px;margin-right: 4px;}
 .coupon-icon{width:20px;height:20px;background:url('/static/images/i_coupon.png') left center;margin-right:10px;background-size:20px;margin-top:13px;}
