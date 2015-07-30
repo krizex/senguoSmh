@@ -2477,7 +2477,7 @@ class Recharge(CustomerBaseHandler):
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
 
-		current_shop_id=shop_id = int(self.get_cookie("market_shop_id"))
+		current_shop_id=self.get_cookie("market_shop_id")
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).all()
 		get_rule=0
 		coupon_money=0

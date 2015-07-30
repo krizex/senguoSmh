@@ -441,21 +441,21 @@ class Coupon(CustomerBaseHandler):
 	def get(self):
 		return self.render("coupon/coupon.html")
 
-#我的优惠券		
+		
 class CouponProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("action?:str","coupon_id?")
+	@CustomerBaseHandler.check_arguments("action?:str","coupon_id?","shop_id?")
 	def get(self):
 		current_customer_id=self.current_user.id
-		current_shop_id=self.get_cookie("market_shop_id")
-		self.updatecoupon(current_customer_id)
 		action=self.args["action"]
 		if action=="get_all":
+			current_shop_id=self.get_cookie("market_shop_id")
+			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]
 			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0).all()
 			for x in q:
-				if x.from_get_date<now_date and x.to_get_date>now_date:
+				if  x.to_get_date>now_date:
 					if x.use_goods_group==0:
 						use_goods_group="默认分组"
 					elif x.use_goods_group==-1:
@@ -472,19 +472,30 @@ class CouponProfile(CustomerBaseHandler):
 						use_goods=q1.name
 					from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
 					to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
-					x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
-						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day}
+					from_get_date=time.strftime('%Y-%m-%d ',time.localtime(x.from_get_date))
+					to_get_date=time.strftime('%Y-%m-%d ',time.localtime(x.to_get_date))
+					get_able=0
+					if x.from_get_date<now_date:
+						get_able=1
+					x_coupon={"get_able":get_able,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
+						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day,\
+						"from_get_date":from_get_date,"to_get_date":to_get_date}
 					data.append(x_coupon)
 				else:
 					pass
 			return self.render("coupon/coupon-profile.html",output_data=data)
 		elif action=="get_one":
+			market_shop_id=self.args["shop_id"]
+			self.set_cookie("market_shop_id",market_shop_id)
+			current_shop_id=self.get_cookie("market_shop_id")
+			print(current_shop_id,"ggggggg")
+			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]
 			coupon_id=self.args["coupon_id"]
 			x=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0,coupon_id=coupon_id).first()
 			if x:
-				if x.from_get_date<now_date and x.to_get_date>now_date:
+				if  x.to_get_date>now_date:
 					if x.use_goods_group==0:
 						use_goods_group="默认分组"
 					elif x.use_goods_group==-1:
@@ -501,8 +512,14 @@ class CouponProfile(CustomerBaseHandler):
 						use_goods=q1.name
 					from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
 					to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
-					x_coupon={"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
-						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day}
+					from_get_date=time.strftime('%Y-%m-%d ',time.localtime(x.from_get_date))
+					to_get_date=time.strftime('%Y-%m-%d ',time.localtime(x.to_get_date))
+					get_able=0
+					if x.from_get_date<now_date:
+						get_able=1
+					x_coupon={"get_able":get_able,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"valid_way":x.valid_way,\
+						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day,\
+						"from_get_date":from_get_date,"to_get_date":to_get_date}
 					data.append(x_coupon)
 			return self.render("coupon/coupon-profile.html",output_data=data)
 #优惠券列表		
@@ -673,6 +690,10 @@ class CouponCustomer(CustomerBaseHandler):
 				effective_time=None
 				uneffective_time=None
 				get_date=int(time.time())
+				if get_date<qq.from_get_date:
+					return self.send_fail("对不起，该优惠券还没有到领取时间")
+				elif get_date>qq.to_get_date:
+					return self.send_fail(" 对不起，该优惠券已过了领取时间")
 				m_effective_time=None
 				m_uneffective_time=None
 				m_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(get_date))
