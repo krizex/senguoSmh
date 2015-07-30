@@ -2526,7 +2526,7 @@ class Goods(AdminBaseHandler):
 			args["intro"] = data["intro"]
 			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
 			group_count = groups.count
-			if group_count == 5:
+			if group_count >= 5:
 				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
 				return self.send_fail('请填写相应分组信息')
