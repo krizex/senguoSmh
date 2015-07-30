@@ -6,7 +6,7 @@ body{background-color: #f5f5f5;}
 .f42{font-size: 42px !important;}
 .f32{font-size: 32px !important;}
 .header{background-color: #33CC66;max-width: 800px;min-width: 320px;left: 50%;-webkit-transform:translate(-50%,0);}
-.container{background-color: #fff;margin: 0 auto;max-width: 800px;min-width: 320px;overflow-x: hidden;-webkit-box-sizing: border-box;}
+.container{background-color: #fff;margin: 0 auto;max-width: 800px;min-width: 320px;-webkit-box-sizing: border-box;}
 .coupon-box{padding: 20px 10px;}
 .wrap-coupon-ipt{position: relative;padding-right: 70px;padding-left: 10px;padding-top: 10px;}
 .coupon-ipt{width: 100%;font-size: 14px;height: 30px;border: 1px solid #ccc;color: #999;border-radius: 2px;padding: 0 10px;-webkit-box-sizing: border-box;}
