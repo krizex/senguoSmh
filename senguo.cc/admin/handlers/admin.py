@@ -2524,8 +2524,14 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			args["name"] = data["name"]
 			args["intro"] = data["intro"]
-			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
-			group_count = groups.count
+			if "name" not in data:
+				return self.send_error(403)
+			try:
+				groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
+			except:
+				groups = None
+			if groups:
+				group_count = groups.count()
 			if group_count >= 5:
 				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
@@ -2533,8 +2539,12 @@ class Goods(AdminBaseHandler):
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
 			self.session.commit()
-			_id=groups.filter_by(status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
-			return self.send_success(id=_id)
+
+			new_group_id = _group.id
+			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count-1))
+			self.session.add(group_priority)
+			self.session.commit()
+			return self.send_success(id=new_group_id)
 
 		elif action in["delete_group","edit_group"]:
 			_id = data["id"]
@@ -3799,7 +3809,7 @@ class Marketing(AdminBaseHandler):
 				last_day=x.last_day
 			from_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_get_date))
 			to_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_get_date))
-			x_coupon={"last_day":last_day,"valid_way":x.valid_way,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
+			x_coupon={"shop_id":current_shop_id,"last_day":last_day,"valid_way":x.valid_way,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
 			"get_number":x.get_number,"total_number":x.total_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"from_get_date":from_get_date,"to_get_date":to_get_date,"get_rule":x.get_rule,"closed":x.closed}
 			data.append(x_coupon)
 	@tornado.web.authenticated

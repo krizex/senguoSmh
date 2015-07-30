@@ -122,6 +122,15 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
+		# elif self._action=="weixinphone":
+		# 	user_info=self.args["user_info"]
+		# 	wx_unionid=user_info["wx_unionid"]
+		# 	q=self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_unionid).first()
+		# 	if  q==None:
+		# 		u = models.Customer.register_with_qq(self.session,userinfo)
+		# 		self.set_current_user(u,domain = ROOT_HOST_NAME)
+		# 	self.set_current_user(q,domain = ROOT_HOST_NAME)
+		# 	return self.redirect(self.reverse_url("customerProfile"))
 
 # 商品详情
 class customerGoods(CustomerBaseHandler):
@@ -2475,8 +2484,9 @@ class Recharge(CustomerBaseHandler):
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
-
-		current_shop_id=shop_id = int(self.get_cookie("market_shop_id"))
+		current_shop_id=self.get_cookie("market_shop_id")
+		current_customer_id=self.current_user.id
+		self.updatecoupon(current_customer_id)
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).all()
 		get_rule=0
 		coupon_money=0
