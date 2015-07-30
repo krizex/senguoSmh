@@ -71,7 +71,7 @@ body{background-color: #f5f5f5;}
 .wrap-mycoupon{background-color: #f5f5f5;}
 .my-coupon-list{padding: 15px 10px;}
 .f26{font-size: 26px;}
-.my-coupon-list>li{background-color: #fff;position: relative;height: 80px;margin-bottom: 10px;border-left:1px solid #d6d7d6;border-bottom:1px solid #a1a2a1;}
+.my-coupon-list>li{background-color: #fff;position: relative;height: 80px;margin-bottom: 10px;box-shadow: 0px 2px 2px #ccc;}
 .get-coupon{position: absolute;right: 0;top: 0;background-color: #34cc67;color: #fff;width:65px;height: 80px;text-align: center;cursor: pointer;z-index:888;}
 .get-coupon>span{font-size: 22px;margin-top: 18px;display: inline-block;line-height: 1;}
 .gap1-right{background-image: url('/static/images/gap1.png');width: 4px;height:100%;background-repeat: repeat-y;right:65px;}
