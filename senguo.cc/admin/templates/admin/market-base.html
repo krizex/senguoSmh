@@ -1,19 +1,30 @@
 {% extends 'base.html' %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>{% end %}
-
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-reset.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
 {% block content %}
+
+{% set subpage2 = context.get("subpage2") %}
+{% set love_wall_active = '' %}
+{% set coupon_active = '' %}
+
+{% if subpage2 == 'love_wall'%}
+	{% set love_wall_active = 'active' %}
+{% else %}
+	{% set coupon_active = 'active' %}
+{% end %}
 {% set shop_code = current_shop.shop_code %}
 <span class="right-title">营销和玩法</span>
 <div class="subnav-box">
 <ul class="subnav  group">
-    <li class="active {{no_auth}}" id="infoSet"><a href="{{reverse_url('adminMarketing')}}?action=lovewall">告白墙</a></li>
-    <!-- <li class="{{no_auth}}" id="coupon"><a href="{{reverse_url('adminMarketing')}}?action=coupon">优惠券</a></li>
-    <li class="{{no_auth}}" id="noticeSet"><a href="#">商品预售</a></li>
-    <li class="{{no_auth}}" id="receiptSet"><a href="#">商品秒杀</a></li> -->
+    <li class="{{love_wall_active}}" id="infoSet"><a href="{{reverse_url('adminMarketing')}}?action=lovewall">告白墙</a></li>
+    <li class="{{coupon_active}}" id="coupon"><a href="{{reverse_url('adminMarketing')}}?action=coupon&coupon_type=0"><b class="red-toll1" id="is_balance"></b>优惠券</a></li>
+    <!-- <li class="{{no_auth}}" id="noticeSet"><a href="#">商品预售</a></li> -->
+    <!-- <li class="{{no_auth}}" id="receiptSet"><a href="#">商品秒杀</a></li> -->
 </ul>
 </div>
 {% block setcontent %}{% end %}
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/admin-marketing.js')}}"></script>
 {% end %}

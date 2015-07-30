@@ -7,8 +7,9 @@
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{handler.shop_code}}"></span>
     <div class="rainshed bg_change fix-title"></div>
-    <div class="bg-box">
-        <ul class="cart-list set-w100-fle mt42 m-b0">
+    <div class="bg-box mt42">
+        <p class="text-left text-grey9 font14  pl10 cart-titles">商品列表</p>
+        <ul class="cart-list set-w100-fle m-b0">
             {% for key in cart_f %}
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
                 <div class="box bg set-w100-fle">
@@ -39,18 +40,18 @@
                 </div>
             </li>
             {% end %}
+            <div class="clearfix font14 p010">
+                <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
+                <span class="tit">配送费</span>
+            </div>
         </ul>
         <div class="bg-width center-block text-grey bg-white">
-            <div class="clearfix font14 p010">
+            <div class="clearfix font14 p010 hidden">
                 <span class="pull-right tit2 text-right"><span id="list_total_price"></span>元</span>
                 <span class="pull-right tit text-right">商品金额：</span>
             </div>
-            <div class="clearfix font14 p010">
-                <span class="pull-right tit2 text-right"><span id="freight_money">{{config.freight_on_time}}</span>元</span>
-                <span class="pull-right tit text-right">配送费：</span>
-            </div>
-            <div class="clearfix m-b10 font14 p010 text-grey3">
-                <span class="pull-right tit2 text-right"><span id="final_price" class="final_price"></span>元</span>
+            <div class="clearfix m-b10 font14 p010 text-grey3 hidden">
+                <span class="pull-right tit2 text-right"><span id="final_price" class="final_price" data-money=""></span>元</span>
                 <span class="pull-right tit text-right">实付金额：</span>
             </div>
             <p class="text-center text-pink mincharge_intime mincharge" style="display:none">┑(￣▽ ￣)┍ 您的商品总金额未达到“按时达”起送价金额<span class="mincharge">{{config.min_charge_on_time}}</span>元</p>
@@ -194,7 +195,7 @@
                         <div class="group"></div>
                         <div class="wrap-online-lst">
                             <div class="arrow-top"></div>
-                            <ul class="online-lst">
+                            <ul class="online-lsts check-lst">
                                 <li class="group" data-type="wx">
                                     <a href="javascript:;" class="pull-right checkbox-btn checkboxed"></a>
                                     <span class="pull-left w90"><img src="/static/images/wx_l.png" class="third-img" alt="微信支付"/></span>
@@ -222,6 +223,26 @@
                     </li>
                 </ul>
             </div>
+            {%if output_data!=[]%}
+            <div class="send-address-choose clearfix center-block bg-white box-style">
+                <p class="group">
+                    <span class="pull-left text-grey9 font14 m-b5 pl10">我的优惠券</span>
+                    <span class="has-coupon pull-left">{{coupon_number}}张优惠券可使用</span>
+                    <span class="pull-right mr10 coupon_cmoney hidden"><span id="coupon_cmoney">0</span>元</span>
+                </p>
+                <div class="wrap-coupontype">
+                    <ul id="couponType" class="coupon_type">
+                    {%for data in output_data%}
+                        <li data-id="{{data['coupon_key']}}" class="">
+                            <a href="javascript:;" class="pull-right checkbox-btn mr8"></a>
+                            <span class="coupon-bg" data-money="{{data['coupon_money']}}">￥{{data["coupon_money"]}}</span>
+                            <span class="coupon-detail">{{data["use_goods_group"]}}:{{data["use_goods"]}}满{{data["use_rule"]}}元<br>可使用（含运费）</span>
+                        </li>
+                       {%end%}
+                    </ul>
+                </div>
+            </div>
+            {%end%}
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
             {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
             <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
@@ -230,10 +251,14 @@
                 <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
             </div>
             {% else %}
-            <button id="submitOrder" class="sub-btn w-per6 bg-green text-white text-center center-block btn mt20 clearfix sure_btn">提交订单</button>
             {% end %}
         </div>
         <div class="bottom-line"></div>
+    </div>
+    <div class="pay-bill">
+        <span class="pull-left coupon-text hidden">已优惠 ￥<span id="coupon-money"></span></span>
+        <span class="yellow-text">总计：<span class="yellow-text">￥<span class="final_price yellow-text" id="total_price"></span></span> 元</span>
+        <a id="submitOrder" class="sub-btn sure_btn order-submit" href="javascript:;">提交订单</a>
     </div>
 {% end %}
 {% block bottom %}

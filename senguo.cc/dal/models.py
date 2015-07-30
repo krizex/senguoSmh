@@ -1295,6 +1295,11 @@ class Order(MapBase, _CommonApi):
 	send_admin_id =Column(Integer,default=0) #record admin_id when to send the order #5.25
 	finish_admin_id =Column(Integer,default=0) #record admin_id when to finish the order#5.25
 
+	coupon_key=Column(String(128))    #优惠券码
+	coupon_money=Column(Float,default=0)  #优惠金额
+	new_totalprice=Column(Float)
+
+
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
@@ -1540,6 +1545,7 @@ class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	confess_active = Column(Integer,default = 1) #1:告白墙开启 0:告白墙关闭
+	coupon_active=Column(Integer,default=0)  #0:开启 1:关闭
 	confess_notice = Column(String(500))
 	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
 	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
@@ -1813,56 +1819,54 @@ class Spider_Good(MapBase,_CommonApi):
 	sales = Column(Integer)
 
 
+
 class Scene_Openid(MapBase,_CommonApi):
 	__tablename__ = 'scecne_openid'
 	id = Column(Integer,primary_key=True,nullable=False,autoincrement=True)
 	scene_id = Column(Integer)
 	openid   = Column(String(64))
 
-'''
+
 # add by cm 2015.6.15
 # 商家优惠券
+
 class CouponsShop(MapBase, _CommonApi):
  	__tablename__='coupon_shop'
- 	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
- 	shop_name=Column(String)
+ 	id=Column(Integer,autoincrement=True,primary_key=True)
+ 	shop_id=Column(Integer,nullable=False)
  	coupon_id=Column(Integer,nullable=False)
- 	customer_id=Column(Integer,ForeignKey(Customer.id))
- 	coupon_key=Column(String,primary_key=True,nullable=False)
- 	coupon_money=Column(Float,nullable=False)
- 	coupon_totalnum=Column(Integer,nullable=False)
- 	coupon_usenum=Column(Integer,default=0)
- 	coupon_remainnum=Column(Integer,nullable=False)
+ 	coupon_type=Column(Integer,default=0)
+ 	coupon_money=Column(Float)
+ 	from_get_date=Column(Integer)
+ 	to_get_date=Column(Integer)
+ 	use_goods_group=Column(Integer)
+ 	use_goods=Column(Integer)
+ 	use_rule=Column(Float)
+ 	total_number=Column(Integer)
+ 	get_number=Column(Integer)
+ 	use_number=Column(Integer)
  	#优惠方式  0：固定日期  1：领取后生效
- 	valid_way=Column(Integer,default=0,nullable=False)
- 	uneffective_time=Column(Date,default=func.now())
- 	get_date=Column(Date)
- 	use_date=Column(Date)
- 	if_used=Column(Integer,default=0)
- 	if_uneffective=Column(Integer,default=0)
- 	order_id=Column(Integer)
- 	day_start=Column(Integer,default=0,nullable=False)
- 	last_day=Column(Integer,nullable=False)
- 	get_limitnum=Column(Integer,nullable=False,default=1)
- 	used_for=Column(Integer,default=0)
- 	use_rule=Column(Float,nullable=False)
-
-
+ 	valid_way=Column(Integer,default=0)
+ 	from_valid_date=Column(Integer)
+ 	to_valid_date=Column(Integer)
+ 	start_day=Column(Integer)
+ 	last_day=Column(Integer)
+ 	get_limit=Column(Integer)
+ 	closed=Column(Integer,default=0)
+ 	get_rule=Column(Float,default=0)
+ 	create_date=Column(Integer)
+ 		 	
 # 用户优惠券
 class CouponsCustomer(MapBase, _CommonApi):
 	__tablename__='coupon_customer'
-	coupon_id=Column(String(11),nullable=False)
-	coupon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
-	customer_id=Column(Integer,ForeignKey(Customer.id),primary_key=True,nullable=False)
-	shop_name=Column(String)
-	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id))
-	get_date=Column(Date,default=func.now())
-	use_date=Column(Date)
-	uneffective_time=Column(Date)
-	if_used=Column(Integer,default=0)
-	if_uneffective=Column(Integer,default=0)
-	order_id=Column(Integer,nullable=False)
-	used_for=Column(Integer,default=0)
-	use_rule=Column(Float,nullable=False)
-'''
-
+	coupon_type=Column(Integer,default=0)
+	coupon_id=Column(Integer,nullable=False)
+	coupon_key=Column(String(128),nullable=False,primary_key=True)
+	customer_id=Column(Integer)
+	shop_id=Column(Integer,nullable=False)
+	get_date=Column(Integer)
+	use_date=Column(Integer)
+	effective_time=Column(Integer)
+	uneffective_time=Column(Integer)
+	coupon_status=Column(Integer,default=0)
+	order_id=Column(Integer)

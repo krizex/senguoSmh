@@ -21,8 +21,8 @@ var link = "/admin/config";
 function noticeAdd(){
     var url=link;
     var action="add_notice";
-    var summary=$('.new-notice-title').val();
-    var detail=$('.new-notice-detail').val();
+    var summary= $.trim($('.new-notice-title').val());
+    var detail=$.trim($('.new-notice-detail').val());
     var img_url=$("#notice_img").attr("url");
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}

@@ -22,8 +22,8 @@ try:
 except:
 	import xml.etree.ElementTree as ET
 
-#woody
-#扫码获取用户openid
+# woody
+# 扫码获取用户openid
 class Login(CustomerBaseHandler):
 	def get(self):
 		if self.current_user:
@@ -35,26 +35,25 @@ class Login(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('scene_id')
 	def post(self):
 		scene_id = int(self.args['scene_id'])
-		print(scene_id,'scene_id')
+		print("[ApplyLogin]scene_id:",scene_id)
 		scene_openid = self.session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
 		if scene_openid:
 			openid = scene_openid.openid
-			print(openid,'openid')
+			print("[ApplyLogin]openid:",openid)
 			accountinfo = self.session.query(models.Accountinfo).filter_by(wx_openid = openid).first()
 			if accountinfo:
-				print(accountinfo)
+				print("[ApplyLogin]accountinfo:",accountinfo)
 				customer = self.session.query(models.ShopAdmin).filter_by(id = accountinfo.id).first()
 				if customer:
-					print(customer)
+					print("[ApplyLogin]customer:",customer)
 					self.set_current_user(customer,domain=ROOT_HOST_NAME)
-			print(True)
+			print("[ApplyLogin]True")
 			return self.send_success(login=True)
 		else:
-			print(False)
+			print("[ApplyLogin]False")
 			return self.send_success(login=False)
 
-#微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
-
+# 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
 class WxMessage(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('signature?:str','timestamp?','nonce?','echostr')
 	def get(self):
@@ -65,7 +64,7 @@ class WxMessage(CustomerBaseHandler):
 		if self.check_signature(signature,timestamp,nonce):
 			return self.write(echostr)
 		else:
-			print('the message is not from weixin')
+			print('[ApplyWxMessage]the message is not from weixin')
 			return self.write(echostr)
 
 	@CustomerBaseHandler.check_arguments('ToUserName?:str','FromUserName?:str','CreateTime?','MsgType?','Event?','EventKey?','Ticket?')
@@ -76,11 +75,11 @@ class WxMessage(CustomerBaseHandler):
 			import xml.etree.ElementTree as ET
 		raw_data = self.request.body
 		data = self.xmlToDic(raw_data) 
-		print(raw_data)
+		print('[ApplyWxMessage]raw_data:',raw_data)
 		openid = data.get('FromUserName',None)
 		event  = data.get('Event',None)
 		eventkey = data.get('EventKey',None)
-		print(openid,event,eventkey)
+		print('[ApplyWxMessage]openid:',openid,', event:',event,', eventkey:',eventkey)
 
 		openid = data.get('FromUserName',None)
 		event  = data.get('Event',None)
@@ -94,13 +93,7 @@ class WxMessage(CustomerBaseHandler):
 			Content    = data.get('Content',None)
 			MsgId = data.get('Content',None)
 			CreateTime = str(int(time.time()))
-			if Content == '1':
-				reply_message = '大西瓜'
-			elif Content == '2':
-				reply_message = 'http://i.senguo.cc'
-			elif Content == '3':
-				reply_message = 'success'
-			elif Content == '挑选':
+			if Content == '挑选':
 				reply_message = 'senguo.cc/bbs/detail/7'
 			elif Content == '加工':
 				reply_message = 'senguo.cc/bbs/detail/13'
@@ -119,10 +112,10 @@ class WxMessage(CustomerBaseHandler):
 			elif Content == '打印机':
 				reply_message = 'senguo.cc/bbs/detail/8'
 			else:
-				reply_message = '不要调皮，请输入有效关键字'
+				reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
 			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 			reply = ET.tostring(reply,encoding='utf8',method='xml')
-			print(reply)
+			print("[ApplyWxMessage]reply:",reply)
 			self.write(reply)
 
 		if event == 'subscribe' or 'scan' or 'SCAN':
@@ -132,23 +125,23 @@ class WxMessage(CustomerBaseHandler):
 				scene_id = int(eventkey)  if eventkey else None
 			else:
 				return self.send_success(error_text = 'error')
-			if openid  and scene_id:
-				#将openid 和scene_id 存在数据库表里，方便前端轮询
+			if openid and scene_id:
+				# 将openid 和scene_id 存在数据库表里，方便前端轮询
 				scene_openid = models.Scene_Openid(scene_id=scene_id,openid=openid)
 				self.session.add(scene_openid)
 				self.session.commit()
-				print(scene_openid.id,scene_openid.scene_id,scene_openid.openid)
+				print("[ApplyWxMessage]scene_openid.id:",scene_openid.id,", scene_openid.scene_id:",scene_openid.scene_id,", scene_openid.openid:",scene_openid.openid)
 
 				customer = self.session.query(models.Accountinfo).filter_by(wx_openid=openid).first()
 				if customer:
-					print('customer exit')
+					print('[ApplyWxMessage]customer exists')
 				else:
-					print('add new customer')
+					print('[ApplyWxMessage]add new customer')
 					access_token = WxOauth2.get_client_access_token()
 					url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
 					r = requests.get(url)
 					wx_userinfo = json.loads(r.text)
-					print(wx_userinfo)
+					print("[ApplyWxMessage]wx_userinfo:",wx_userinfo)
 					if wx_userinfo["headimgurl"] not in [None,'']:
 						headimgurl = wx_userinfo.get("headimgurl",None)
 						headimgurl_small = wx_userinfo.get("headimgurl",None)[0:-1] + "132"
@@ -259,7 +252,7 @@ class Home(CustomerBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
-#创建店铺
+# 创建店铺
 class CreateShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -275,12 +268,6 @@ class CreateShop(AdminBaseHandler):
 		if not action or not data:
 			return self.send_error(403)
 
-		#权限检查,目前仅超级管理员可以创建店铺
-		#if self.current_shop:
-		#	print(self.current_shop)
-		#	if self.current_shop.admin_id != self.current_user.id :
-		#		return self.send_fail("您不是卖家，无法创建新的店铺1111111")
-		#else:
 		try:
 			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
 		except:
@@ -331,7 +318,7 @@ class CreateShop(AdminBaseHandler):
 				shops = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.shop_name.like("%%%s%%" %shop_name)).all()
 			except:
 				shops = None
-				print("[CreateShop]Shop search error")
+				print("[AdminCreateShop]Shop search error")
 
 			data=[]
 			if shops:
@@ -440,5 +427,3 @@ class CreateShop(AdminBaseHandler):
 		if customer_first is None:
 			self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
 			self.session.commit()
-
-

@@ -55,13 +55,11 @@ def gen_msg_token(phone):
 	h.close()
 	root = ElementTree.fromstring(res.body.decode())
 	if not root[0].text == '2':
-		# print("[验证短信]发送错误：",root[0].text,root[1].text)
+		# print("[VerifyMsg]Send error:",root[0].text,root[1].text)
 		return root[1].text
 	else:
 		try:
-			# print("[验证短信]验证码",code,"已发送到手机：",phone)
 			print("[VerifyMsg]VerifyCode",code,"have sent to phone:",phone)
-			# print("[验证短信]wx_id：",wx_id)
 			q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
 		except:
 			q = None
