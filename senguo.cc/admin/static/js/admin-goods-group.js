@@ -93,35 +93,30 @@ $(document).ready(function(){
 }).on("click",".ok-add-group",function(){
     var $this = $(this);
     if ($this.attr("data-flag") == "off") return false;
-    $this.attr("data-flag", "off");
     var group_name = $("#group-name").val();
     var group_info = $("#group-info").val();
     var _action =$this.attr('data-action');
     if($('.gropu-list li').length==7){
-        $this.attr("data-flag", "on");
         Tip("至多可添加五中自定义分组！");
         return false;
     }
     if($.trim(group_name)==""){
-        $this.attr("data-flag", "on");
         Tip("分组名字不能为空！");
         return false;
     }
     if($.trim(group_info)==""){
-        $this.attr("data-flag", "on");
         Tip("分组介绍不能为空！");
         return false;
     }
     if(group_name.length>10){
-        $this.attr("data-flag", "on");
         Tip("分组名称请不要超过10个字！");
         return false;
     }
     if(group_info.length>50){
-        $this.attr("data-flag", "on");
         Tip("分组介绍请不要超过50个字！");
         return false;
     }
+    $this.attr("data-flag", "off");
     var url = '';
     var action;
     var data={
@@ -134,17 +129,6 @@ $(document).ready(function(){
     }
     else if(_action=="add"){
         action="add_group";
-        var _id=[];
-        var _index=[];
-        for(var i=0;i<$('.item').length;i++){
-            var item=$('.item').eq(i);
-            var id=item.attr("data-id");
-            var index=item.attr("data-index");
-            _id.push(id);
-            _index.push(index);
-        }
-        data.id_list=_id;
-        data.index_list=_index;
     }
     var args = {
         action:action,
@@ -153,11 +137,11 @@ $(document).ready(function(){
     $.postJson(url, args,
         function (res) {
             if (res.success) {
-                $this.attr("data-flag", "on");
                 if(_action=='edit'){
                     curGroup.find('.group-name').text(group_name);
                     curGroup.find('.group-intro').text(group_info);
                     $("#new-win").modal('hide');
+                    $this.attr("data-flag", "on");
                 }else if(_action=="add"){
                     //priority("add",res.id);
                     window.location.reload(true);

@@ -2524,9 +2524,7 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			args["name"] = data["name"]
 			args["intro"] = data["intro"]
-			id_list = data["id_list"]
-			index_list = data["index_list"]
-			if "name" not in data or "id_list" not in data or "index_list" not in data:
+			if "name" not in data:
 				return self.send_error(403)
 			try:
 				groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
@@ -2543,24 +2541,8 @@ class Goods(AdminBaseHandler):
 			self.session.commit()
 
 			new_group_id = _group.id
-
-			try:
-				priority_old = self.session.query(models.GroupPriority).filter_by(shop_id=shop_id)
-			except:
-				priority_old = None
-			if priority_old:
-				priority_old.delete()
-			id_list.append(new_group_id)
-			index_list.append(len(id_list)-1)
-			for index,val in enumerate(index_list):
-				_id = id_list[index]
-				if _id !=0:
-					try:
-						group = groups.filter_by(id=_id).first()
-					except:
-						return self.send_fail('该分组不存在')
-					group_priority = models.GroupPriority(shop_id=shop_id,group_id=int(_id),priority=int(val))
-					self.session.add(group_priority)
+			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count-1))
+			self.session.add(group_priority)
 			self.session.commit()
 			return self.send_success(id=new_group_id)
 
