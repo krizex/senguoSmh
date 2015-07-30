@@ -115,7 +115,6 @@ class Access(CustomerBaseHandler):
 		return self.redirect(next_url)
 
 # 第三方登录
-# @CustomerBaseHandler.check_arguments("user_info?")
 class Third(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
