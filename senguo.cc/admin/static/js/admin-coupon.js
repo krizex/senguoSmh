@@ -179,6 +179,10 @@ $(document).ready(function () {
     var coupon_id=$(this).attr("data-id");
     var type=$(this).attr("data-type");
     var edit_status=$(this).attr("data-flag");
+    if ($(this).attr("data-config")=="off"){
+        return;
+    }
+    $(this).attr("data-config","off");
     editCoupon(type,coupon_id,edit_status);
 }).on("click",".radio-list .radio",function(){
     if($(this).hasClass("forbidden-btn")){
@@ -839,6 +843,7 @@ function editCoupon(type,coupon_id,edit_status){
                 Tip('编辑优惠券成功!');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+res.coupon_type;
+                    $(".ok-editcoupon").attr("data-config","on");
                 },1500);
             }else{
                 Tip(res.error_text);
