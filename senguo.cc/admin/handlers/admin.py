@@ -2532,7 +2532,7 @@ class Goods(AdminBaseHandler):
 				groups = None
 			if groups:
 				group_count = groups.count()
-			if group_count == 5:
+			if group_count >= 5:
 				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
 				return self.send_fail('请填写相应分组信息')

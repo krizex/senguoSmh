@@ -224,27 +224,22 @@ class OrderDetail(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,order_num):
 		self.if_current_shops()
+		# 根据url传入的订单号查询店铺
 		try:
 			order = self.session.query(models.Order).filter(models.Order.num==order_num).first()
-		except:
-			return self.send_error(404)
-		try:
-			shop_id = self.current_shop.id
-		except:
-			shop_id = order.shop_id
-		try:
 			shop = self.session.query(models.Shop).filter_by(id=order.shop_id).first()
+			HireLink = self.session.query(models.HireLink).filter_by(shop_id=shop.id,staff_id=self.current_user.id,work=9,active=1).first()
 		except:
 			return self.send_error(404)
-		try:
-			HireLink = self.session.query(models.HireLink).filter_by(shop_id=order.shop_id,staff_id=self.current_user.id,work=9,active=1).first()
-		except:
-			HireLink = None
+		# 身份验证：
+		# 如果当前用户不是订单所在店铺的管理员，则返回权限错误信息
 		if not shop.admin_id == self.current_user.id and not HireLink:
-			return self.write("<h1>您没有查看该订单的权限</h1>")
-
-		if shop:
+			return self.write("<h1 style=\"text-align:center;\">您没有查看该订单的权限</h1>")
+		# 如果当前用户是订单店铺管理员，则将当前店铺切换到订单所在店铺
+		else:
 			self.current_shop = shop
+			shop_id = self.current_shop.id
+			self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 
 		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 		# print("[MadminOrderDetail]charge_types:",charge_types)
