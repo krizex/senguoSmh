@@ -1300,6 +1300,8 @@ class Order(MapBase, _CommonApi):
 	coupon_money=Column(Float,default=0)  #优惠金额
 	new_totalprice=Column(Float)
 
+	self_address_id = Column(Integer,default=0) #自提点id 7.30
+
 
 	def get_num(self,session,order_id):
 		try:

@@ -1348,11 +1348,15 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 	@tornado.web.authenticated
 	#@get_unblock
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		self.if_current_shops()
 		order_type = self.args["order_type"]
+		if "self_id" in self.args:
+			self_address_id = int(self.args["self_address_id"])
+		else:
+			self_address_id = 0
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
 			atonce,ontime,new_order_sum = 0,0,0
 			count = self._count()
@@ -1408,21 +1412,21 @@ class Order(AdminBaseHandler):
 				self.current_shop.new_order_sum = order_sum
 				self.session.commit()
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status == 1]
+					orders = [x for x in order_list if x.type == order_type and x.status == 1 and x.self_address_id == self_address_id]
 
 			elif order_status == 2:#unfinish
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
+					orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4] and x.self_address_id == self_address_id]
 
 			elif order_status == 3:
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
+					orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7) and x.self_address_id == self_address_id]
 
 			elif order_status == 4:
 				pass
 			elif order_status == 5:#all
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type]
+					orders = [x for x in order_list if x.type == order_type and x.self_address_id == self_address_id]
 			else:
 				return self.send.send_error(404)
 
@@ -1511,17 +1515,23 @@ class Order(AdminBaseHandler):
 		action = self.args["action"]
 		data = self.args["data"]
 		# print("[AdminOrder]current_shop:",self.current_shop)
-		if action == "add_period":
+		if action in ("add_period","add_self_period"):
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
 			end_time = datetime.time(data["end_hour"],data["end_minute"])
+			if action == "add_period":
+				config_type = 0
+			elif action == "add_self_period":
+				config_type = 1
 			period = models.Period(config_id=self.current_shop.id,
 								   name=data["name"],
 								   start_time=start_time,
-								   end_time=end_time)
+								   end_time=end_time,
+								   config_type=config_type)
 			# print("[AdminOrder]Add period time, Shop ID:",period.config_id,", Period:",start_time,"-",end_time)
 			self.session.add(period)
 			self.session.commit()
 			return self.send_success(period_id=period.id)
+
 		elif action in ("edit_period", "edit_period_active"):
 			period = next((x for x in self.current_shop.config.periods if x.id == data["period_id"]), None)
 			if not period:
@@ -1568,6 +1578,58 @@ class Order(AdminBaseHandler):
 			self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
 											start_time_now=start_time, end_time_now=end_time,
 											freight_now=data["freight_now"] or 0,intime_period=data["intime_period"] or 30)
+		elif action == "edit_day_self": #7.30
+			if "day" not in data:
+				return self.send_error(403)
+			self.current_shop.config.day_self = int(data["day"])
+			self.session.commit()
+		elif action == "edit_end_self": #7.30
+			if "end_self" not in data:
+				return self.send_error(403)
+			self.current_shop.config.self_end_time = int(data["end_self"])
+			self.session.commit()
+		elif action == "add_self_address": #7.30
+			try:
+				self_address_count = self.session.query(models.SelfAddress).filter_by(shop_id=self.current_shop.id)\
+				.filter(models.SelfAddress.active!=0).count()
+			except:
+				self_address_count = 0
+			if self_address_count >= 10:
+				return self.send_fail("至多只能添加10个自提点")
+			if "self_address" not in data:
+				return self.send_error(403)
+			address = data["self_address"]
+			lat = data["lat"] or 0
+			lon = data["lon"] or 0
+			self_address = models.SelfAddress(
+							shop_id = self.current_shop.id,
+							address = address,
+							lat = lat,
+							lon = lon
+							)
+			self.session.commit()
+			return self.send_success(address_id=self_address.id)
+		elif action in ("edit_self_address","del_self_address","set_self_address"):
+			if "address_id" not in data:
+				return self.send_fail(403)
+			address_id = int(data["address_id"])
+			try:
+				self_address = self.session.query(models.SelfAddress).filter_by(id=address_id,shop_id=self.current_shop.id).first()
+			except:
+				return self.send_fail(404)
+			if action == "edit_self_address":
+				self_address.address = data["address"] or ''
+				self_address.lat = data["lat"] or ''
+				self_address.lon = data["lon"] or ''
+			elif action == "del_self_address":
+				self_address.active = 0
+				self_address.if_default = 0
+			elif action == "set_self_address":
+				self_address.active = 0 if self_address.active == 1 else 1
+			elif action == "set_self_default":
+				self_address.if_default = 1
+			self.session.commit()
+
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
 			try:
 				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).first()
