@@ -1787,6 +1787,9 @@ class CheckCash(SuperBaseHandler):
 		for item in shop_list_query1:
 			shop_id_list1.append(item[0])
 
+		# *设定一个change_shop_id列表,把balancehistory表中修改过的店铺的id都存进去.
+		change_shop_id = []
+
 		# shop_list_query2可以先不考虑
 		# shop_list_query2 = self.session.query(models.Order.shop_id).filter(models.Order.status > -1,models.Order.pay_type.in_([2,3])).distinct(models.Order.shop_id).all()	
 		# shop_id_list2 = []
@@ -1796,7 +1799,7 @@ class CheckCash(SuperBaseHandler):
 
 		# *遍历shop_id_list1每一个shop的id
 		# if 1 == 2:
-		for shop_id in [1080]:
+		for shop_id in [4]:
 		# for shop_id in shop_id_list1:
 			# *查询店铺号在balancehistory中对应的shop_totalprice最新记录		                        	
 			shop_totalprice_history = {}
@@ -1828,18 +1831,22 @@ class CheckCash(SuperBaseHandler):
 			else:
 				query_list = ()
 			shop_totalprice_available_balance[str(shop_id)] = query_list
+			# print(shop_id,"@@",shop_totalprice_available_balance)
 
 			# *判断shop表和balancehistory表两表中的shop_totalPrice和available_balance两个字段是否分别一致
-			for key in shop_totalprice_available_balance:
-				if shop_totalprice_available_balance[key][0] != shop_totalprice_history[key][1]:
-					print("totalprice:",key,shop_totalprice_available_balance[key][0],shop_totalprice_history[key][1])
-				
-				if len(shop_available_balance_history[key]) != 0:
-					if shop_totalprice_available_balance[key][1] != shop_available_balance_history[key][1]:
-						print("available_balance:",key,shop_totalprice_available_balance[key][1],shop_available_balance_history[key][1])
-				else:
-					if shop_totalprice_available_balance[key][1] != 0:
-						print("available_balance:",key,shop_totalprice_available_balance[key][1],0)
+			# for key in shop_totalprice_available_balance:
+			# 	if len(shop_available_balance_history[key]) != 0:
+			# 		if shop_totalprice_available_balance[key][0] != shop_totalprice_history[key][1]:
+			# 			print("totalprice:",key,shop_totalprice_available_balance[key][0],shop_totalprice_history[key][1])
+			# 		if shop_totalprice_available_balance[key][1] != shop_available_balance_history[key][1]:
+			# 			print("available_balance:",key,shop_totalprice_available_balance[key][1],shop_available_balance_history[key][1])
+			# 	else:
+			# 		if shop_totalprice_available_balance[key][0] != 0:
+			# 			print("totalprice:",key,shop_totalprice_available_balance[key][0],0)
+			# 		if shop_totalprice_available_balance[key][1] != 0:
+			# 			print("available_balance:",key,shop_totalprice_available_balance[key][1],0)
+
+
 
 			# *查询balancehistory表中的所有余额支付（balance_type = 1）的记录的订单号并存到列表balance_type_1中
 			balance_type_1 = []
@@ -1866,88 +1873,246 @@ class CheckCash(SuperBaseHandler):
 					insert_order_num = [i for i in pay_type_2 if i not in balance_type_1]
 					insert_list = self.session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s')).\
 						       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
-					# print(insert_list)
-					# [(48338, 1080, 'Maybe', 11.0, '1080000332', '2015-06-19 20:34:00')
 					for i in range(len(insert_list)):
 						shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
 						if not shop_follow:
 							return self.send_fail('shop_follow not found')
-						shop_follow.shop_balance += insert_list[i][3]   #用户对应 店铺余额减少 ，单位：元
+						shop_follow.shop_balance -= insert_list[i][3]   #用户对应 店铺余额减少 ，单位：元
 						self.session.commit()
 
 						insert_list[i] = list(insert_list[i])
+						create_time = datetime.datetime.strptime(insert_list[i][5],'%Y-%m-%d %H:%M:%S')
 						insert_list[i][4] = '余额支付：订单' + insert_list[i][4]
 						balance_history = models.BalanceHistory(customer_id = insert_list[i][0],shop_id = insert_list[i][1] ,name = insert_list[i][2],balance_value = insert_list[i][3] ,\
-											   balance_record = insert_list[i][4],create_time = insert_list[i][5],balance_type = 1)
+											   balance_record = insert_list[i][4],create_time = create_time,balance_type = 1,is_cancel = 99999)
 						self.session.add(balance_history)
 						self.session.commit()
-
-
+						change_shop_id.append(shop_id)
+				elif len(pay_type_2)< len(balance_type_1):
+					print("@@@@@@@@1",len(pay_type_2),len(balance_type_1))
 				else:
 					pass
 
-			# balance_type_6_7 = []
-			# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7]),models.BalanceHistory.shop_id == shop_id).all()
-			# if len(query_list) != 0:
-			# 	for item in query_list:
-			# 		for i in range(len(item[0])):
-			# 			if item[0][i].isdigit():
-			# 				break
-			# 		balance_type_6_7.append(item[0][i : len(item[0])-2])
+			balance_type_3 = []
+			query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type == 3,models.BalanceHistory.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					for i in range(len(item[0])):
+						if item[0][i].isdigit():
+							break
+					balance_type_3.append(item[0][i : len(item[0])])
 
-			# pay_type_2_3_done = []
-			# query_list = self.session.query(models.Order.num).filter(models.Order.status >= 5,models.Order.pay_type.in_([2,3]),models.Order.shop_id == shop_id).all()
-			# if len(query_list) != 0:
-			# 	for item in query_list:
-			# 		pay_type_2_3_done.append(item[0])
-			# 	if len(pay_type_2_3_done) < len(balance_type_6_7):
-			# 		print("!!@@@2222222222222",shop_id)
-			# 		print("@@@@",len(pay_type_2_3_done))
-			# 		print(len(balance_type_6_7))
-			# 	elif len(pay_type_2_3_done) > len(balance_type_6_7):
-			# 		print("!!@@@3333333333333",shop_id)
-			# 		print("@@@@",len(pay_type_2_3_done))
-			# 		print(len(balance_type_6_7))
-			# 	else:
-			# 		pass
+			pay_type_3 = []
+			query_list = self.session.query(models.Order.num).filter(models.Order.status > 0,models.Order.pay_type == 3,models.Order.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					pay_type_3.append(item[0])
 
-			# pay_type_2_delete = []
-			# query_list = self.session.query(models.Order.num).filter(models.Order.status == 0,models.Order.pay_type == 2,models.Order.shop_id == shop_id).all()
-			# if len(query_list) != 0:
-			# 	for item in query_list:
-			# 		pay_type_2_delete.append(item[0])
+				# *判断pay_type_3的长度是否大于balance_type_3，若大于，则说明order表中肯定有在线支付的订单记录没有插入到balancehistory表中，这时就要把相关记录插入到balancehistory表中
+				if len(pay_type_3) > len(balance_type_3):
+					# print("!!@@@11111111111111",shop_id)
+					# print("@@@@",len(pay_type_3))
+					# print(len(balance_type_3))
+					insert_order_num = [i for i in pay_type_3 if i not in balance_type_3]
+					insert_list = self.session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.online_type).\
+						       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
+					for i in range(len(insert_list)):
+						shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+						if not shop:
+							return self.send_fail('shop not found')
+						shop.shop_balance += insert_list[i][3]
+						self.session.commit()
 
-			# balance_type_4_5 = []
-			# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([4,5]),models.BalanceHistory.shop_id == shop_id).all()
-			# if len(query_list) != 0:
-			# 	for item in query_list:
-			# 		for i in range(len(item[0])):
-			# 			if item[0][i].isdigit():
-			# 				break
-			# 		balance_type_4_5.append(item[0][i : len(item[0])-2])
-			# 	if len(pay_type_2_delete) < len(balance_type_4_5):
-			# 		pass
-			# 	elif len(pay_type_2_delete) > len(balance_type_4_5):
-			# 		pass
-			# else:
-			# 	if len(pay_type_2_delete) != 0:
-			# 		print("@@@44444444444444",shop_id)
+						insert_list[i] = list(insert_list[i])
+						create_time = datetime.datetime.strptime(insert_list[i][5],'%Y-%m-%d %H:%M:%S')
+						if insert_list[i][6] == 'wx':
+							insert_list[i][4] = '在线支付(微信)：订单' + insert_list[i][4]
+						elif insert_list[i][6] == 'alipay':
+							insert_list[i][4] = '在线支付(支付宝)：订单' + insert_list[i][4]
+						balance_history = models.BalanceHistory(customer_id = insert_list[i][0],shop_id = insert_list[i][1] ,name = insert_list[i][2],balance_value = insert_list[i][3] ,\
+											   balance_record = insert_list[i][4],create_time = create_time,balance_type = 3,is_cancel = 99999)
+						self.session.add(balance_history)
+						self.session.commit()
+						change_shop_id.append(shop_id)
+				elif len(pay_type_3) < len(balance_type_3):
+					print("@@@@@@@@2",len(pay_type_3),len(balance_type_3))
+				else:
+					pass
 
-		# query_list = self.session.query(models.Shop.id,models.Shop.shop_balance,models.Shop.available_balance).\
-		# 	       filter(or_(models.Shop.shop_balance == 0,models.Shop.available_balance == 0),models.Shop.id.in_(shop_id_list2)).\
-		# 	       order_by(models.Shop.id).all()
-		# query_list = self.session.query(models.Order.shop_id,models.Order.num).\
-		# 	       filter(models.Order.pay_type.in_([2]),models.Order.status == 0,models.Order.shop_id.in_(shop_id_list2)).\
-		# 	       order_by(models.Order.shop_id).all()
+			balance_type_4_5 = []
+			query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([4,5]),models.BalanceHistory.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					for i in range(len(item[0])):
+						if item[0][i].isdigit():
+							break
+					balance_type_4_5.append(item[0][i : len(item[0])-2])
 
-		# print(query_list)
-		# for shop_id in shop_id_list2: 
-		# 	print("@@@",shop_id)
+			pay_type_2_delete = []
+			query_list = self.session.query(models.Order.num).filter(models.Order.status == 0,models.Order.pay_type == 2,models.Order.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					pay_type_2_delete.append(item[0])
 
-			# pay_type_2_3 = []
-			# query_list = self.session.query(models.Order.num).filter(models.Order.status > 0,models.Order.pay_type.in_([2,3]),models.Order.shop_id == shop_id).all()
-			# if len(query_list) != 0:
-			# 	pass
+				# *判断pay_type_2_delete的长度是否大于balance_type_4_5，若大于，则说明order表中肯定有余额支付的订单记录没有插入到balancehistory表中，这时就要把相关记录插入到balancehistory表中
+				if len(pay_type_2_delete) > len(balance_type_4_5):
+					# print("!!@@@11111111111111",shop_id)
+					# print("@@@@",len(pay_type_2_delete))
+					# print(len(balance_type_4_5))
+					insert_order_num = [i for i in pay_type_2_delete if i not in balance_type_4_5]
+					insert_list = self.session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.del_reason).\
+						       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
+					for i in range(len(insert_list)):
+						shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
+						if not shop_follow:
+							return self.send_fail('shop_follow not found')
+						shop_follow.shop_balance += insert_list[i][3]   #用户对应 店铺余额增加 ，单位：元
+						self.session.commit()
+
+						insert_list[i] = list(insert_list[i])
+						create_time = datetime.datetime.strptime(insert_list[i][5],'%Y-%m-%d %H:%M:%S')
+						delete_time = create_time + datetime.timedelta(minutes = 15)
+						if insert_list[i][6] == None:
+							insert_list[i][4] = '余额退款：订单' + insert_list[i][4] + '取消'
+							balance_type = 5
+						elif insert_list[i][6] != None and insert_list[i][6] != 'timeout':
+							insert_list[i][4] = '余额退款：订单' + insert_list[i][4] + '删除'
+							balance_type = 4
+						balance_history = models.BalanceHistory(customer_id = insert_list[i][0],shop_id = insert_list[i][1] ,name = insert_list[i][2],balance_value = insert_list[i][3] ,\
+											   balance_record = insert_list[i][4],create_time = delete_time,balance_type = balance_type,is_cancel = 99999)
+						self.session.add(balance_history)
+						self.session.commit()
+						change_shop_id.append(shop_id)
+				elif len(pay_type_2_delete)< len(balance_type_4_5):
+					print("@@@@@@@@3",len(pay_type_2_delete),len(balance_type_4_5))
+				else:
+					pass
+
+			balance_type_6_7 = []
+			query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7]),models.BalanceHistory.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					for i in range(len(item[0])):
+						if item[0][i].isdigit():
+							break
+					balance_type_6_7.append(item[0][i : len(item[0])-2])
+
+			pay_type_2_3_done = []
+			query_list = self.session.query(models.Order.num).filter(models.Order.status >= 5,models.Order.pay_type.in_([2,3]),models.Order.shop_id == shop_id).all()
+			if len(query_list) != 0:
+				for item in query_list:
+					pay_type_2_3_done.append(item[0])
+
+				# *判断pay_type_2_3_done的长度是否大于balance_type_6_7，若大于，则说明order表中肯定有余额支付完成或在线支付完成的订单记录没有插入到balancehistory表中，这时就要把相关记录插入到balancehistory表中
+				if len(pay_type_2_3_done) > len(balance_type_6_7):
+					# print("!!@@@11111111111111",shop_id)
+					# print("@@@@",len(pay_type_2_3_done))
+					# print(len(balance_type_6_7))
+					insert_order_num = [i for i in pay_type_2_3_done if i not in balance_type_6_7]
+					insert_list = self.session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),\
+						       models.Order.arrival_day,models.Order.arrival_time,models.Order.pay_type,models.Order.today,models.Order.end_time).\
+						       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
+					
+					for i in range(len(insert_list)):
+						shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
+						if not shop_follow:
+							return self.send_fail('shop_follow not found')
+
+						if shop_follow.shop_new == 0:
+							shop_follow.shop_new = 1
+
+						order_count = 0
+						try:
+							order_count = self.session.query(models.Order).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).count()
+						except:
+							self.send_fail("[_AccountBaseHandler]order_done: find order by customer_id and shop_id error")
+						#首单 积分 加5 
+						if order_count==1:
+							if shop_follow.shop_point == None:
+								shop_follow.shop_point =0
+							shop_follow.shop_point += 5
+							try:
+								point_history = models.PointHistory(customer_id = insert_list[i][0],shop_id = shop_id)
+							except NoResultFound:
+								self.send_fail("[_AccountBaseHandler]order_done: point_history error, First_order")
+							if point_history:
+								point_history.point_type = models.POINT_TYPE.FIRST_ORDER
+								point_history.each_point = 5
+								self.session.add(point_history)
+
+						insert_list[i] = list(insert_list[i])
+						if insert_list[i][8] == 2:
+							if shop_follow.shop_point == None:
+								shop_follow.shop_point =0
+								shop_follow.shop_point += 2
+							try:
+								point_history = models.PointHistory(customer_id = insert_list[i][0],shop_id = shop_id)
+							except:
+								self.send_fail("[_AccountBaseHandler]order_done: point_history error, PREPARE_PAY")
+							if point_history:
+								point_history.point_type = models.POINT_TYPE.PREPARE_PAY
+								point_history.each_point = 2
+								self.session.add(point_history)
+
+							# 订单完成后，将相应店铺可提现 余额相应增加
+							cur_shop = self.session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
+							cur_shop.available_balance += insert_list[i][3]
+							self.session.commit()
+							
+							if insert_list[i][6] == None or insert_list[i][7] == None:
+								end_date = insert_list[i][5]
+								end_date = datetime.datetime.strptime(end_date,'%Y-%m-%d %H:%M:%S')
+								if insert_list[i][9] == 2:
+									end_date = end_date + datetime.timedelta(days = 1)
+								insert_list[i][10] = str(insert_list[i][10])
+								hh = int(insert_list[i][10][0:2])
+								mm = int(insert_list[i][10][3:5])
+								ss = int(insert_list[i][10][6:8])
+								create_time = datetime.datetime(end_date.year,end_date.month,end_date.day,hh,mm,ss)
+							else:
+								create_time = insert_list[i][6] + " " + insert_list[i][7] + ":00"
+								create_time = datetime.datetime.strptime(create_time,'%Y-%m-%d %H:%M:%S')
+							insert_list[i][4] = "可提现额度入账：订单" + insert_list[i][4] + "完成"
+
+							balance_history = models.BalanceHistory(customer_id = insert_list[i][0],shop_id = insert_list[i][1] ,name = insert_list[i][2],balance_value = insert_list[i][3] ,\
+												   balance_record = insert_list[i][4],create_time = create_time,balance_type = 6,is_cancel = 99999)
+							self.session.add(balance_history)
+							self.session.commit()
+							change_shop_id.append(shop_id)
+
+						if insert_list[i][8] == 3:
+							# 订单完成后，将相应店铺可提现 余额相应增加
+							cur_shop = self.session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
+							cur_shop.available_balance += insert_list[i][3]
+							self.session.commit()
+
+							if insert_list[i][6] == None or insert_list[i][7] == None:
+								end_date = insert_list[i][5]
+								end_date = datetime.datetime.strptime(end_date,'%Y-%m-%d %H:%M:%S')
+								if insert_list[i][9] == 2:
+									end_date = end_date + datetime.timedelta(days = 1)
+								insert_list[i][10] = str(insert_list[i][10])
+								hh = int(insert_list[i][10][0:2])
+								mm = int(insert_list[i][10][3:5])
+								ss = int(insert_list[i][10][6:8])
+								create_time = datetime.datetime(end_date.year,end_date.month,end_date.day,hh,mm,ss)
+							else:
+								create_time = insert_list[i][6] + " " + insert_list[i][7] + ":00"
+								create_time = datetime.datetime.strptime(create_time,'%Y-%m-%d %H:%M:%S')
+							insert_list[i][4] = "可提现额度入账：订单" + insert_list[i][4] + "完成"
+
+							balance_history = models.BalanceHistory(customer_id = insert_list[i][0],shop_id = insert_list[i][1] ,name = insert_list[i][2],balance_value = insert_list[i][3] ,\
+												   balance_record = insert_list[i][4],create_time = create_time,balance_type = 7,is_cancel = 99999)
+							self.session.add(balance_history)
+							self.session.commit()
+							change_shop_id.append(shop_id)
+				elif len(pay_type_2_3_done)< len(balance_type_6_7):
+					print("@@@@@@@@4",len(pay_type_2_3_done),len(balance_type_6_7))
+					pass
+				else:
+					pass
+			
+		# print(change_shop_id)
 		####################
 		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
 
