@@ -115,7 +115,7 @@ class Access(CustomerBaseHandler):
 		return self.redirect(next_url)
 
 # 第三方登录
-@CustomerBaseHandler.check_arguments("user_info?")
+# @CustomerBaseHandler.check_arguments("user_info?")
 class Third(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
@@ -123,15 +123,15 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
-		elif self._action=="weixinphone":
-			user_info=self.args["user_info"]
-			wx_unionid=user_info["wx_unionid"]
-			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_unionid).first()
-			if  q==None:
-				u = models.Customer.register_with_qq(self.session,userinfo)
-				self.set_current_user(u,domain = ROOT_HOST_NAME)
-			self.set_current_user(q,domain = ROOT_HOST_NAME)
-			return self.redirect(self.reverse_url("customerProfile"))
+		# elif self._action=="weixinphone":
+		# 	user_info=self.args["user_info"]
+		# 	wx_unionid=user_info["wx_unionid"]
+		# 	q=self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_unionid).first()
+		# 	if  q==None:
+		# 		u = models.Customer.register_with_qq(self.session,userinfo)
+		# 		self.set_current_user(u,domain = ROOT_HOST_NAME)
+		# 	self.set_current_user(q,domain = ROOT_HOST_NAME)
+		# 	return self.redirect(self.reverse_url("customerProfile"))
 
 # 商品详情
 class customerGoods(CustomerBaseHandler):
