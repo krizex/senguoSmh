@@ -170,6 +170,10 @@ $(document).ready(function () {
    window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
 }).on('click','.ok-coupon',function(){
     var type=$('.current-type').attr("data-id");
+    if ($(this).attr("data-flag")=="off"){
+        return;
+    }
+    $(this).attr("data-flag","off");
     addCoupon(type);
 }).on('click','.ok-editcoupon',function(){
     var coupon_id=$(this).attr("data-id");
@@ -558,12 +562,14 @@ function addCoupon(type){
     var action="newcoupon";
     var args={action:action,data:data};
     var url='';
+
     $.postJson(url,args,
         function(res){
             if(res.success){
                 Tip('新建优惠券成功!');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
+                    $(".ok-coupon").attr("data-flag","on");
                 },1500);
             }else{
                 Tip(res.error_text);
