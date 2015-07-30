@@ -263,6 +263,7 @@ class Home(CustomerBaseHandler):
 class CreateShop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		token = self.get_qiniu_token("Market_cookie","apply")
 		return self.render("apply/shop-create.html",token = token)
 

@@ -16,6 +16,7 @@ import decimal
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		if self.is_pc_browser()==True:
 			return self.redirect(self.reverse_url("switchshop"))
 		shop_list = []
@@ -80,6 +81,7 @@ class Home(AdminBaseHandler):
 class Shop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		if self.is_pc_browser()==True:
 			return self.redirect(self.reverse_url("adminHome"))
 		if self.get_secure_cookie("shop_id"):
@@ -131,6 +133,7 @@ class Shop(AdminBaseHandler):
 class Set(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/shop-set.html")
 
 # 移动后台 - 设置
@@ -138,6 +141,7 @@ class SetAttr(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action","id?:int")
 	def get(self):
+		self.if_current_shops()
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action= self.args["action"]
@@ -185,12 +189,14 @@ class SetAttr(AdminBaseHandler):
 class Address(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/shop-address.html")
 
 # 移动后台 - 店铺信息
 class Info(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
@@ -212,13 +218,18 @@ class Info(AdminBaseHandler):
 class Order(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/order.html")
 
 # 移动后台 - 订单详情
 class OrderDetail(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,order_num):
-		shop_id = self.current_shop.id
+		self.if_current_shops()
+		try:
+			shop_id = self.current_shop.id
+		except:
+			return self.send_error(404)
 		try:
 			order = self.session.query(models.Order).filter(models.Order.num==order_num).first()
 		except:
@@ -238,7 +249,7 @@ class OrderDetail(AdminBaseHandler):
 			self.current_shop = shop
 
 		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		print(charge_types)
+		# print(charge_types)
 		if order.pay_type == 1:
 			order.pay_type_con = "货到付款"
 		elif order.pay_type == 2:
@@ -273,6 +284,7 @@ class OrderDetail(AdminBaseHandler):
 class OrderSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/order-search.html")
 
 # 移动后台 - 评论
@@ -280,6 +292,7 @@ class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("page?:int")
 	def get(self):
+		self.if_current_shops()
 		customer_id = self.current_user.id
 		shop_id     = self.get_secure_cookie("shop_id")
 		shop_code = self.session.query(models.Shop).filter_by(id=shop_id).one().shop_code
