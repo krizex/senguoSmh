@@ -227,13 +227,13 @@ class OrderDetail(AdminBaseHandler):
 	def get(self,order_num):
 		self.if_current_shops()
 		try:
-			shop_id = self.current_shop.id
-		except:
-			return self.send_error(404)
-		try:
 			order = self.session.query(models.Order).filter(models.Order.num==order_num).first()
 		except:
 			return self.send_error(404)
+		try:
+			shop_id = self.current_shop.id
+		except:
+			shop_id = order.shop_id
 		try:
 			shop = self.session.query(models.Shop).filter_by(id=order.shop_id).first()
 		except:
@@ -241,7 +241,7 @@ class OrderDetail(AdminBaseHandler):
 		try:
 			HireLink = self.session.query(models.HireLink).filter_by(shop_id=order.shop_id,staff_id=self.current_user.id,work=9,active=1).first()
 		except:
-			pass
+			HireLink = None
 		if not shop.admin_id == self.current_user.id and not HireLink:
 			return self.write("<h1>您没有查看该订单的权限</h1>")
 
