@@ -11,11 +11,20 @@
     <ul class="my-coupon-list">
     {%for data in output_data%}
         <li>
+        {%if data["get_able"]==1%}
             <div class="get-coupon" data-id="{{data['coupon_id']}}" data-flag="on">
                 <span>点击<br>领取</span>
             </div>
+            {%else%}
+           <div class="get-coupon coupon-used" data-id="{{data['coupon_id']}}" data-flag="on">
+                    <p class="f12 mt8">领取期限</p>
+                    <p class="f12">{{data["from_get_date"]}}</p>
+                    <p class="f12">{{data["to_get_date"]}}</p>
+                    <p class="f12 bold">还不能领取</p>
+            </div>
+            {%end%}
             <div class="coupon-lprice">
-                <i class="gap gap1-right"></i>
+                {%if data["get_able"]==1%}<i class="gap gap1-right"></i>{%else%}<i class="gap gap2-right"></i>{%end%}
                 <p class="price-txt"><span class="f16">￥</span><span class="f26">{{data["coupon_money"]}}</span></p>
                 <div class="price-info">
                     <p class="f14 green-txt">仅剩{{data["remain_number"]}}张</p>
