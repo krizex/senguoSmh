@@ -90,6 +90,7 @@ class ORDER_TYPE:
 	"""订单类型"""
 	NOW = 1
 	ON_TIME = 2
+	SELF = 3
 
 class TAG:
 	"""商品标签"""
@@ -1252,11 +1253,11 @@ class Order(MapBase, _CommonApi):
 	num = Column(String(15), nullable=False)  # 订单编号
 	phone = Column(String(30), nullable=False)
 	receiver = Column(String(64), nullable=False)
-	address_text = Column(String(1024), nullable=False)
+	address_text = Column(String(1024), nullable=False) #if type is 3,this column is self_address
 	message = Column(String(100)) #用户留言
 	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:未付款 = －1, 已删除 = 0, 未处理 = 1, JH = 2, SH1 = 3
 														    # SH2 = 4, 已收货 = 5, 用户评价 = 6, 自动评价 = 7, AFTER_SALE = 10
-	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
+	type = Column(TINYINT) #订单类型 1:立即送 2：按时达 3:自提
 	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费
 	tip = Column(SMALLINT, default=0)  # 小费（暂时只有立即送可提供运费）
@@ -1540,6 +1541,22 @@ class Config(MapBase, _CommonApi):
 	wireless_print_num = Column(String(20)) #无线打印机终端号 7.13
 	wireless_print_key = Column(String(20)) #无线打印机密钥 7.13
 
+	self_on = Column(Integer,default = 1) #0:自提停用 1:自提启用 7.30
+	day_self = Column(Integer,default = 0) #自提 0:all 1:今天 2:明天 7.30
+	self_end_time = Column(Integer,default = 0) #自提下单截止时间 7.30
+
+
+#自提地址 7.30 max10
+class SelfAddress(MapBase,_CommonApi):
+	 __tablename__ = "self_address"
+	 id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	 shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
+	 address = Column(String(1024), nullable=False)
+	 active = Column(Integer,default = 1) #0:delete 1:on 2:off
+	 if_default = Column(Integer,default = 0) #0:not default 1:default
+	 lat    = Column(MyReal,default = 0)  #纬度
+	 lon    = Column(MyReal,default = 0)  #经度
+
 # 店铺营销
 class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
@@ -1571,6 +1588,7 @@ class Period(MapBase):
 	name = Column(String(20))
 	start_time = Column(Time)
 	end_time = Column(Time)
+	config_type = Column(Integer,default = 0) #0:按时达 1:自提 #7.30
 
 # 一级地址
 class Address1(MapBase, _CommonApi):
