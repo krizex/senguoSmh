@@ -485,10 +485,13 @@ class CouponProfile(CustomerBaseHandler):
 					pass
 			return self.render("coupon/coupon-profile.html",output_data=data)
 		elif action=="get_one":
-			market_shop_id=self.args["shop_id"]
-			self.set_cookie("market_shop_id",market_shop_id)
-			current_shop_id=self.get_cookie("market_shop_id")
-			print(current_shop_id,"ggggggg")
+			try:
+				market_shop_id=self.args["shop_id"]
+				shop = self.session.query(models.Shop).filter_by(id=market_shop_id).first()
+				current_shop_id=shop.id
+				self.set_cookie("market_shop_id",str(current_shop_id))
+			except:
+				return self.send_error(404)
 			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]

@@ -2524,17 +2524,27 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			args["name"] = data["name"]
 			args["intro"] = data["intro"]
-			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
-			group_count = groups.count
-			if group_count == 5:
+			if "name" not in data:
+				return self.send_error(403)
+			try:
+				groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
+			except:
+				groups = None
+			if groups:
+				group_count = groups.count()
+			if group_count >= 5:
 				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
 				return self.send_fail('请填写相应分组信息')
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
 			self.session.commit()
-			_id=groups.filter_by(status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
-			return self.send_success(id=_id)
+
+			new_group_id = _group.id
+			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count-1))
+			self.session.add(group_priority)
+			self.session.commit()
+			return self.send_success(id=new_group_id)
 
 		elif action in["delete_group","edit_group"]:
 			_id = data["id"]
