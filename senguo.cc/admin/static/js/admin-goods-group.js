@@ -134,8 +134,18 @@ $(document).ready(function(){
     }
     else if(_action=="add"){
         action="add_group";
+        var _id=[];
+        var _index=[];
+        for(var i=0;i<$('.item').length;i++){
+            var item=$('.item').eq(i);
+            var id=item.attr("data-id");
+            var index=item.attr("data-index");
+            _id.push(id);
+            _index.push(index);
+        }
+        data.id_list=_id;
+        data.index_list=_index;
     }
-
     var args = {
         action:action,
         data:data
@@ -144,14 +154,14 @@ $(document).ready(function(){
         function (res) {
             if (res.success) {
                 $this.attr("data-flag", "on");
-                  if(_action=='edit'){
-                        curGroup.find('.group-name').text(group_name);
-                        curGroup.find('.group-intro').text(group_info);
-                        $("#new-win").modal('hide');
-                    }
-                    else if(_action=="add"){
-                        priority("add",res.id);
-                    }
+                if(_action=='edit'){
+                    curGroup.find('.group-name').text(group_name);
+                    curGroup.find('.group-intro').text(group_info);
+                    $("#new-win").modal('hide');
+                }else if(_action=="add"){
+                    //priority("add",res.id);
+                    window.location.reload(true);
+                }
             }
             else {
                  $this.attr("data-flag", "on");

@@ -2586,8 +2586,16 @@ class Goods(AdminBaseHandler):
 			args["shop_id"] = shop_id
 			args["name"] = data["name"]
 			args["intro"] = data["intro"]
-			groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
-			group_count = groups.count
+			id_list = data["id_list"]
+			index_list = data["index_list"]
+			if "name" not in data or "id_list" not in data or "index_list" not in data:
+				return self.send_error(403)
+			try:
+				groups = self.session.query(models.GoodsGroup).filter_by(shop_id = shop_id,status = 1)
+			except:
+				groups = None
+			if groups:
+				group_count = groups.count()
 			if group_count == 5:
 				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
@@ -2595,8 +2603,28 @@ class Goods(AdminBaseHandler):
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
 			self.session.commit()
-			_id=groups.filter_by(status = 1).order_by(models.GoodsGroup.create_time.desc()).first().id
-			return self.send_success(id=_id)
+
+			new_group_id = _group.id
+
+			try:
+				priority_old = self.session.query(models.GroupPriority).filter_by(shop_id=shop_id)
+			except:
+				priority_old = None
+			if priority_old:
+				priority_old.delete()
+			id_list.append(new_group_id)
+			index_list.append(len(id_list)-1)
+			for index,val in enumerate(index_list):
+				_id = id_list[index]
+				if _id !=0:
+					try:
+						group = groups.filter_by(id=_id).first()
+					except:
+						return self.send_fail('该分组不存在')
+					group_priority = models.GroupPriority(shop_id=shop_id,group_id=int(_id),priority=int(val))
+					self.session.add(group_priority)
+			self.session.commit()
+			return self.send_success(id=new_group_id)
 
 		elif action in["delete_group","edit_group"]:
 			_id = data["id"]
