@@ -1626,7 +1626,7 @@ class Order(AdminBaseHandler):
 			self.session.add(self_address)
 			self.session.commit()
 			return self.send_success(address_id=self_address.id)
-		elif action in ("edit_self_address","del_self_address","set_self_address"):
+		elif action in ("edit_self_address","del_self_address","set_self_address","set_self_default"):
 			if "address_id" not in data:
 				return self.send_fail(403)
 			address_id = int(data["address_id"])
@@ -1645,6 +1645,14 @@ class Order(AdminBaseHandler):
 				self_address.active = 0 if self_address.active == 1 else 1
 			elif action == "set_self_default":
 				self_address.if_default = 1
+				try:
+					 address_lsit = self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id).all()
+				except:
+					 address_lsit = None
+				if address_lsit:
+					for address in address_lsit:
+						if address.id != address_id:
+							self_address.if_default = 0
 			self.session.commit()
 
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):

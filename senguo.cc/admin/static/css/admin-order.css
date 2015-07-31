@@ -126,7 +126,7 @@
 .add-period .tit{margin-left:0;}
 .sure-btn{font-size:12px;width:35px;height:28px;background:#44b549;color:#fff;text-align:center;border:none;margin-right:10px;line-height:28px;}
 .concel-btn{display:inline-block;font-size:12px;width:35px;height:28px;color:#fff;background:#999;border:none;line-height:28px;}
-.period-name{border:1px solid #ccc;padding:3px 0;margin:0 10px;width:50px;height:28px;ms-line-height:28px;}
+.period-name{border:1px solid #ccc;padding:3px 0;margin:0 10px;width:70px;height:28px;ms-line-height:28px;}
 
 .select-btn .concel-btn{font-size:12px;}
 .add-period .period-name{width:80px;}
@@ -218,7 +218,7 @@
 .set-default{height: 28px;line-height: 28px;font-size: 14px;margin-left: 15px;}
 .address-text{display: inline-block;vertical-align: middle;max-width: 320px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
 .pt20{padding-top: 20px !important;}
-
+.w700{width: 700px !important;}
 
 
 

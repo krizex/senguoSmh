@@ -46,7 +46,7 @@
         </li>
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{self_active}}">
             <a href="{{reverse_url('adminOrder')}}?order_type=3" class="text-grey3">自提</a>
-            <span class="number">8</span>
+            <span class="number" id="selfPoint"></span>
         </li>
     </ul>
     <div class="search-input input-group pull-right">
@@ -260,7 +260,7 @@
     </div>
 </div>
 <div class="{% if order_type ==1 %}sendNowBox{% else %}sendIntimeBox{% end %} modal fade" id="SetBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog {% if order_type ==3 %}w700{% end %}">
         <div class="modal-content">
             <div class="modal-header set-width-float">
                 <span class="title pull-left">
@@ -445,7 +445,8 @@
                     <p class="tit clearfix">自提时间：</p>
                     <div class="send-time w550 center-block">
                         <ul class="time-list">
-                            {% for period in current_shop.config.periods%}
+                            {% set self_periods = [x for x in current_shop.config.periods if x.config_type == 1]%}
+                            {% for period in self_periods %}
                             <li class="time-list-item set-width-float time-period to-edit-item edit_item_box omg_item" data-id="{{period.id}}">
                                 <div class="staff-work-mode action-mode pull-left period-action" data-id="{{period.active}}">
                                     <a class="work-mode" href="javascript:;" style="display:none">已启用</a>
@@ -507,9 +508,9 @@
                 <div class="w550 center-block clearfix">
                     <div class="end-time clearfix to-edit-item edit_item_box omg_item">
                         <span class="pull-left tit">下单截止时间：</span>
-                        <span class="show_item pull-left show_value tit">{{current_shop.config.stop_range or 0}}</span>
+                        <span class="show_item pull-left show_value tit">{{current_shop.config.self_end_time or 0}}</span>
                         <div class="input-group-btn pull-left edit_item hidden">
-                            <input type="text" id="stopMinite" placeholder="请输入整数"/>
+                            <input type="text" id="endSelf" placeholder="请输入整数"/>
                         </div>
                         <span class="pull-left tit set-left10">分钟</span>
                         <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
@@ -524,35 +525,39 @@
                         <span class="text-grey9">（添加、编辑、启用、停用自提点，设置自提点位置）</span>
                     </p>
                     <ul class="self-address-list">
-                        <li class="group hidden">
+                    {% set arrNum = ['一','二','三','四','五','六','七','八','九','十'] %}
+                    {% set self_addresses = [ x for x in handler.current_shop.config.self_addresses if x.active != 0]%}
+                    {% for index,self_address in enumerate(self_addresses) %}
+                        <li class="group" data-id="{{self_address.id}}" data-lat="{{self_address.lat}}" data-lng="{{self_address.lon}}">
                             <div class="wrap-operate pull-right">
                                 <a href="javascript:;" class="pull-right set-default">设为默认</a>
                                 <a href="javascript:;" class="delete pull-right set-inl-blo"></a>
                                 <a href="javascript:;" class="edit pull-right set-inl-blo to-edit"></a>
                             </div>
-                            <a href="javascript:;" class="switch-abtn switch-abtn-active"><span class="a_on">已</span><span class="a_off">未</span>启用</a>
+                            <a href="javascript:;" class="switch-abtn {% if self_address.active == 1 %}switch-abtn-active{% end %}"><span class="a_on">已</span><span class="a_off">未</span>启用</a>
                             <a href="javascript:;" class="cur_loc"></a>
-                            <span class="text-grey3  address-text"><span>自提点<span class="self-index"></span> : <span class="self-addr">点击右方修改设置</span></span>
-                            <span class="default-address dgreen hidden">（默认自提点）</span></span>
+                            <span class="text-grey3  address-text"><span>自提点<span class="self-index">{{arrNum[index]}}</span> : <span class="self-addr">{{self_address.address}}</span></span>
+                            <span class="default-address dgreen {% if self_address.if_default == 0 %}hidden{% end %}">（默认自提点）</span></span>
                         </li>
+                       {% end %}
                     </ul>
                     <div class="wrap-shop-address mt10 group">
                         <div class="pull-right">
-                            <input type="hidden" value="0" id="lat">
-                            <input type="hidden" value="0" id="lon">
+                            <input type="hidden" value="{{shop_lat}}" id="lat">
+                            <input type="hidden" value="{{shop_lon}}" id="lon">
                             <a class="info_sure address-sure" href="javascript:;" data-id="address" id="save-lbs">保存</a>
                         </div>
                         <div class="w2 pull-left">
                             <div class="info_hide group">
                                 <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
                                     <button class="btn btn-default dropdown-toggle self-dropdown" type="button">
-                                        <span id="provinceAddress" data-code="420000" class="reProvince">湖北省</span>
+                                        <span id="provinceAddress" class="reProvince">{{shop_province}}</span>
                                         <span class="caret"></span>
                                     </button>
                                 </div>
                                 <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
                                     <button class="btn btn-default dropdown-toggle self-dropdown" type="button">
-                                        <span id="cityAddress" data-code="420100" class="reCity">武汉市</span>
+                                        <span id="cityAddress" class="reCity">{{shop_city}}</span>
                                         <span class="caret"></span>
                                     </button>
                                 </div>

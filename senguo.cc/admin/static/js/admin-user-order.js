@@ -152,8 +152,9 @@ $(document).ready(function(){
     orderItem(_page);
 }).on("click","#add_self",function(){//添加自提点
     if(edit_flag) return Tip("请先保存正在编辑的自提点");
-    edit_flag = true;
     var index = $(".self-address-list").children("li").size();
+    if(index==10) return Tip("最多只能新建10个自提点");
+    edit_flag = true;
     var $item = $('<li class="group"><div class="wrap-operate pull-right">'+
         '<a href="javascript:;" class="pull-right set-default">设为默认</a>'+
         '<a href="javascript:;" class="delete pull-right set-inl-blo"></a>'+
@@ -164,6 +165,7 @@ $(document).ready(function(){
         '<span class="default-address dgreen hidden">（默认自提点）</span></span></li>');
     $(".self-address-list").append($item);
     $("#addressDetail").removeAttr("disabled").val("").focus();
+    $("#save-lbs").attr("data-type","add");
     cur_address = $item;
 }).on("click",".wrap-operate .edit",function(){
     if(edit_flag) return Tip("请先保存正在编辑的自提点");
@@ -177,17 +179,11 @@ $(document).ready(function(){
     }else{
         $("#addressDetail").val(text).focus();
     }
+    $("#save-lbs").attr("data-type","edit");
 }).on("click",".switch-abtn",function(){
-    if($(this).hasClass("switch-abtn-active")){
-        $(this).removeClass("switch-abtn-active");
-        $(this).closest("li").attr("data-start","off");
-    }else{
-        $(this).addClass("switch-abtn-active");
-        $(this).closest("li").attr("data-start","on");
-    }
+    operateSelf("set",$(this).closest("li"));
 }).on("click",".wrap-operate .set-default",function(){
-    $(".self-address-list").find(".default-address").addClass("hidden");
-    $(this).closest("li").find(".default-address").removeClass("hidden");
+    operateSelf("default",$(this).closest("li"));
 });
 
 var cur_address = null,edit_flag=false;
@@ -199,7 +195,7 @@ var $staff_item;
 var order_link='/admin/order';
 var _page=0;
 var _page_total;
-function getOrder(url){
+function getOrder(){
     $.getItem('/static/items/admin/order-item.html?v=20150613',function(data){
             $list_item=data;
             //商品列表item
@@ -225,9 +221,6 @@ var getStaffItem=function(url){
 }
 function orderItem(page){
     var order_type = parseInt($.getUrlParam('order_type'));
-    if(order_type==3){
-        return false;
-    }
     $(".wrap-loading-box").removeClass("hidden");
     var action=$.getUrlParam('action');
     var url;
@@ -255,7 +248,7 @@ function orderItem(page){
                 $('.page-total').text(parseInt(res.page_sum));
                 _page_total=parseInt(res.page_sum);
                 if(res.count){
-                     _count=res.count;
+                    var _count=res.count;
                     var type=parseInt($.getUrlParam("order_type"));
                     $('.order-status li').each(function(){
                         var $this=$(this);
@@ -265,6 +258,7 @@ function orderItem(page){
                     });
                     $('#atonce').text(_count[11]);
                     $('#ontime').text(_count[21]);
+                    $("#selfPoint").text(_count[31]);
                 }
                  if(_page_total <=1){
                     $('.list-pagination').hide();
@@ -822,31 +816,45 @@ function operateSelf(type,$obj){
             }
         };
     }else if(type=="edit"){
-        var id = $obj.attr("ata-id");
+        var id = $obj.attr("data-id");
         action="edit_self_address";
         args = {
             action:action,
             data:{
-                id:id,
+                address_id:id,
                 lat:lat,
                 lon:lon,
-                self_address:address
+                address:address
             }
         };
+    }else if(type=="set"){
+        var id = $obj.attr("data-id");
+        if(id || id=="0"){
+            action="set_self_address";
+            args = {
+                action:action,
+                data:{
+                    address_id:id
+                }
+            };
+        }
+    }else if(type=="default"){
+        var id = $obj.attr("data-id");
+        if(id || id=="0"){
+            action="set_self_default";
+            args = {
+                action:action,
+                data:{
+                    address_id:id
+                }
+            };
+        }
     }else{
-        var id = $obj.attr("ata-id");
-        action="del_self_address";
-        args = {
-            action:action,
-            data:{
-                id:id,
-                lat:lat,
-                lon:lon,
-                self_address:address
-            }
-        };
+        $("#save-lbs").removeClass("forhidden");
+        return false;
     }
     $.postJson(url,args,function(res){
+            $("#save-lbs").removeClass("forhidden");
             if(res.success){
                 if(type=="add"){
                     var id = res.address_id;
@@ -856,40 +864,50 @@ function operateSelf(type,$obj){
                     edit_flag = false;
                     Tip("自提点添加成功");
                 }else if(type=="edit"){
+                    $obj.find(".self-addr").html(address);
+                    $("#addressDetail").attr("disabled","true");
+                    edit_flag = false;
                     Tip("自提点编辑成功");
-                }else{
-                    Tip("自提点删除成功");
+                }else if(type=="set"){
+                    var $this = $obj.find(".switch-abtn");
+                    if($this.hasClass("switch-abtn-active")){
+                        $this.removeClass("switch-abtn-active");
+                    }else{
+                        $this.addClass("switch-abtn-active");
+                    }
+                }else if(type=="default"){
+                    $(".self-address-list").find(".default-address").addClass("hidden");
+                    $obj.find(".default-address").removeClass("hidden");
                 }
             }
             else return Tip(res.error_text);
         },
         function(){return Tip('网络错误')}
-    )
+    );
 }
 //初始化百度地图
 function initBmap(){
     var map = new BMap.Map("bmap",{enableMapClick:false});          // 创建地图实例
     var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)});  // 创建比例尺
     map.addControl(scaleControl);  // 显示比例尺
-    //var lat = parseFloat($("#lat").val());
-    //var lon = parseFloat($("#lon").val());
-    var lat = 116.3345;
-    var lon = 39.3455;
+    var lat = parseFloat($("#lat").val());
+    var lon = parseFloat($("#lon").val());
     var marker = null;
     map.enableScrollWheelZoom();
     var myGeo = new BMap.Geocoder();
-    var point = new BMap.Point(lat, lon);  // 创建点坐标
-    map.centerAndZoom(point, 15);
-    var marker1 = new BMap.Marker(point);
+    var spoint = new BMap.Point(lat, lon);  // 创建点坐标
+    map.centerAndZoom(spoint, 15);
+    var marker1 = new BMap.Marker(spoint);
     var slabel = new BMap.Label("店铺位置",{offset:new BMap.Size(-20,-20)});
     slabel.setStyle({
         border:"none",
-        fontWeight:"bold",
-        color:"red"
+        color:"#ff6666",
+        fontWeight:"bold"
     });
     marker1.setLabel(slabel);
     map.addOverlay(marker1);
     initMarker();//初始化自提点
+    map.centerAndZoom(new BMap.Point(lat-0.016,lon+0.01), 15);
     $("#addressDetail").on("keydown",function(ev){
         if(ev.keyCode==13){
             if(edit_flag == false) return false;
@@ -913,7 +931,10 @@ function initBmap(){
         getPointByName(map, myGeo, address,false);
     });
     $("#save-lbs").on("click",function(){//保存自提点
-        if(edit_flag == false) return Tip("请先点击编辑按钮");
+        if(edit_flag == false) return Tip("请先点击编辑或添加按钮");
+        if($(this).hasClass("forhidden")){
+            return false;
+        }
         var text = $.trim($("#addressDetail").val());
         if(text=="" || text.length>30){
             Tip("详细地址不能为空且不能超过30个字符");
@@ -921,7 +942,8 @@ function initBmap(){
         }
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
         getPointByName(map, myGeo, address,true);
-        operateSelf("add",cur_address);
+        $(this).addClass("forhidden");
+        operateSelf($(this).attr("data-type"),cur_address);
     });
     $(document).on("click",".cur_loc",function(){
         var $item = $(this).closest("li");
@@ -940,10 +962,26 @@ function initBmap(){
         }
     });
     $(document).on("click",".wrap-operate .delete",function(){
+        var $this = $(this);
         if(confirm("确认删除该自提点吗？")){
-            var key = "自提点"+cur_address.find(".self-index").html();
-            deleteMarker(key);
-            $(this).closest("li").remove();
+            var id = $this.closest("li").attr("data-id");
+            var args = {
+                action:"set_self_address",
+                data:{
+                    address_id:id
+                }
+            };
+            $.postJson(order_link,args,function(res){
+                    if(res.success){
+                        var key = "自提点"+$this.closest("li").find(".self-index").html();
+                        deleteMarker(key);
+                        $this.closest("li").remove();
+                        Tip("自提点删除成功");
+                    }
+                    else return Tip(res.error_text);
+                },
+                function(){return Tip('网络错误')}
+            );
         }
     });
     function getPointByName(map, myGeo, address,flag){
@@ -991,6 +1029,7 @@ function initBmap(){
         var label = new BMap.Label("自提点"+cur_address.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
         label.setStyle({
             border:"none",
+            color:"#333333",
             fontWeight:"bold"
         });
         marker.setLabel(label);
@@ -1009,12 +1048,13 @@ function initBmap(){
             var $item = $list.eq(i);
             var lng = parseFloat($item.attr("data-lng"));
             var lat = parseFloat($item.attr("data-lat"));
-            var mar = new BMap.Marker(point);
+            var mar = new BMap.Marker(new BMap.Point(lng,lat));
             map.addOverlay(mar);
             mar.addEventListener("dragend",attribute);
             var label = new BMap.Label("自提点"+$item.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
             label.setStyle({
                 border:"none",
+                color:"#333333",
                 fontWeight:"bold"
             });
             mar.setLabel(label);
@@ -1027,21 +1067,4 @@ function initBmap(){
             }
         }
     }
-}
-//根据省市名称获取code
-function initProviceAndCityCode(p, c){
-    $.each(window.dataObj.area,function(name,value){
-        if(value.name==p){
-            $("#provinceAddress").attr("data-code",name);
-            if(value['city']){
-                $.each(value.city,function(i,n){
-                    if(n.name==c){
-                        $("#provinceAddress").attr("data-code",i);
-                        return false;
-                    }
-                })
-            }
-            return false;
-        }
-    })
 }
