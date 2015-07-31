@@ -427,6 +427,10 @@ class SuperAdmin(MapBase, _AccountApi):
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
 
+	# added by woody
+	level   = Column(Integer,default=0)  #0代表森果内部员工，1代表省级代理
+	province  = Column(Integer)          #如果是省级代理，则该字段表示该省的code
+
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
 

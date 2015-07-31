@@ -280,6 +280,7 @@ class CreateShop(AdminBaseHandler):
 		#	if self.current_shop.admin_id != self.current_user.id :
 		#		return self.send_fail("您不是卖家，无法创建新的店铺1111111")
 		#else:
+		
 		try:
 			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
 		except:
