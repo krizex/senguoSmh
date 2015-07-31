@@ -77,6 +77,12 @@ $(document).ready(function(){
     name_box.modal('show');
 }).on("click","#nameSure",function(){
     nameEdit($("#realnameEdit").val());
+}).on("click","#userNickname",function(){
+    $("#name-ipt").val("");
+    var name_box=new Modal('nicknameBox');
+    name_box.modal('show');
+}).on("click","#nicknameSure",function(){
+    nicknameEdit($("#nicknameEdit").val());
 }).on("click","#userBirthday",function(){
     //birthEdit();
     $(".birth-ipt").val('');
@@ -243,6 +249,27 @@ function nameEdit(name){
                 var name_box=new Modal('nameBox');
                 name_box.modal('hide');
                 $('#userName').text(name);
+            }
+            else noticeBox(res.error_txt);
+        },
+        function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
+        function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
+    );
+}
+function nicknameEdit(name){
+    if(name.length>10){
+        warnNotice("昵称请不要超过10个字");
+        return false;
+    }
+    var action = "edit_nickname";
+    var url="";
+    var args={action: action, data: name};
+    $.postJson(url,args,
+        function (res) {
+            if (res.success) {
+                var name_box=new Modal('nicknameBox');
+                name_box.modal('hide');
+                $('#usernickName').text(name);
             }
             else noticeBox(res.error_txt);
         },
