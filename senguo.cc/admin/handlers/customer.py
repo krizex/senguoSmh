@@ -126,23 +126,14 @@ class Third(CustomerBaseHandler):
 			return self.redirect(self.get_weixin_login_url())
 		
 		elif self._action=="weixinphone":
-			print("success send message")
 			openid=str(self.args["openid"])
-			print(openid)
-			unionid=str(self.args["openid"])
-			print(unionid)
+			unionid=str(self.args["unionid"])
 			country=str(self.args["country"])
-			print(country)
 			province=str(self.args["province"])
-			print(province)
 			city=str(self.args["city"])
-			print(city)
 			headimgurl=str(self.args["headimgurl"])
-			print(headimgurl)
 			nickname=str(self.args["nickname"])
-			print(nickname)
 			sex=int(self.args["sex"])
-			print(sex)
 			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
 			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
 			if  q==None:
