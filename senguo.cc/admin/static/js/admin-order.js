@@ -210,7 +210,12 @@ $(document).ready(function(){
     $this.addClass("active").siblings(".btn").removeClass("active");
     var day=parseInt($this.attr("data-id"));
     var url="";
-    var action="edit_send_day";
+    var action="";
+    if(self_type==3){
+        action="edit_day_self";
+    }else{
+        action="edit_send_day";
+    }
     var data={day:day};
     var args={
         action:action,

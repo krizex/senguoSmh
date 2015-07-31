@@ -436,7 +436,7 @@
                     <div class="self-day mt20 group">
                         <span class="tit pull-left t1"> 今天明天：</span>
                         <div class="send-day clearfix to-edit-item edit_item_box omg_item">
-                            {% set day=current_shop.config.day_on_time %}
+                            {% set day=current_shop.config.day_self %}
                             <button class="btn btn-default {% if day ==0 %}active{% end %}" data-id="0">全部</button>
                             <button class="btn btn-default {% if day ==1 %}active{% end %}" data-id="1">今天</button>
                             <button class="btn btn-default {% if day ==2 %}active{% end %}" data-id="2">明天</button>
