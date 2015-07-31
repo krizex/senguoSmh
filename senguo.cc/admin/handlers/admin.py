@@ -1461,7 +1461,18 @@ class Order(AdminBaseHandler):
 			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminOrder"))
-		return self.render("admin/orders.html",order_type=order_type, context=dict(subpage='order'))
+
+		shop_city,shop_province,shop_lat,shop_lon="","",0,0
+		try:
+			shop_city = self.code_to_text("city", self.current_shop.shop_city)
+			shop_province = self.code_to_text("province", self.current_shop.shop_province)
+			shop_lat = self.current_shop.lon
+			shop_lon = self.current_shop.lat
+		except:
+			shop_city,shop_province,shop_lat,shop_lon="","",0,0
+
+		return self.render("admin/orders.html",order_type=order_type,shop_city=shop_city,shop_province=shop_province,\
+			shop_lat=shop_lat,shop_lon=shop_lon,context=dict(subpage='order'))
 
 
 	def edit_status(self,order,order_status,send_message=True):
@@ -1612,6 +1623,7 @@ class Order(AdminBaseHandler):
 							lat = lat,
 							lon = lon
 							)
+			self.session.add(self_address)
 			self.session.commit()
 			return self.send_success(address_id=self_address.id)
 		elif action in ("edit_self_address","del_self_address","set_self_address"):
