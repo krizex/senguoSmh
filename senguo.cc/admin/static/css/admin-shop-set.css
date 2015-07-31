@@ -127,8 +127,14 @@
 @keyframes spin {0% { -webkit-transform: rotate(0deg);tranform: rotate(0deg);}100% {-webkit-transform: rotate(360deg);tranform: rotate(360deg);}}
 .mt20{margin-top:20px;}
 
-.shop_status-list{width:90px;top:28px;left:0;}
-.shop_status-list li{font-size:12px;width:88px;height:30px;line-height:30px;}
+.shop_status-list{width:90px;top:28px;left:0;cursor:pointer;}
+.shop_status-list li{width:88px;height:30px;line-height:30px;}
+.shop_status-list li:hover{color:#fff;background-color:#6ba4ef;}
+
+#dropdownMenu1{width:61px;}
+.offline_entity-list{width:61px;top:28px;left:0;cursor:pointer;}
+.offline_entity-list li{width:59px;height:30px;line-height:30px;}
+.offline_entity-list li:hover{color:#fff;background-color:#6ba4ef;}
 
 .admin-set-list{}
 .admin-set-list{border:1px solid #eee;border-bottom:none;}

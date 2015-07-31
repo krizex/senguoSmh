@@ -1567,7 +1567,7 @@ class Cart(CustomerBaseHandler):
 						else:    #之前没有限购记录
 							goods_limit = models.GoodsLimit(charge_type_id = charge_type.id,customer_id = customer_id,limit_num=limit_num,buy_num=buy_num,allow_num = allow_num)
 							self.session.add(goods_limit)
-					self.session.commit()
+					self.session.flush()
 
 				charge_type.fruit.storage -= num  # 更新库存
 				if charge_type.fruit.saled:
@@ -1682,7 +1682,7 @@ class Cart(CustomerBaseHandler):
 				return self.send_fail('您没有关注该店铺，请进入店铺首页进行关注')
 			if shop_follow.shop_balance < new_totalprice:
 				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
-			self.session.commit()
+			self.session.flush()
 
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
@@ -1738,7 +1738,7 @@ class Cart(CustomerBaseHandler):
 
 		try:
 			self.session.add(order)
-			self.session.commit()
+			self.session.flush()
 		except:
 			return self.send_fail("您的订单提交失败，请保证网络通畅，重新提交")
 		#使用优惠券
@@ -1750,7 +1750,7 @@ class Cart(CustomerBaseHandler):
 			qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
 			use_number=qq.use_number+1
 			qq.update(self.session,use_number=use_number)
-			self.session.commit()
+			self.session.flush()
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
@@ -1778,9 +1778,7 @@ class Cart(CustomerBaseHandler):
 
 		# 执行后续的记录修改
 		print('[CustomerCart]before callback')
-
 		self.cart_callback(order.id)
-
 		return self.send_success(order_id = order.id)
 
 	def cart_callback(self,order_id):
@@ -1817,7 +1815,6 @@ class Cart(CustomerBaseHandler):
 			print("[CustomerCart]cart_callback: access_token:",access_token)
 			self.send_admin_message(self.session,order,access_token)
 
-
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
 		# 同时生成余额变动记录,
@@ -1831,7 +1828,7 @@ class Cart(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('[CustomerCart]cart_callback: shop_follow not found')
 			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-			self.session.commit()
+			self.session.flush()
 			#生成一条余额交易记录
 			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
@@ -1839,8 +1836,8 @@ class Cart(CustomerBaseHandler):
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
-			self.session.commit()
-
+			self.session.flush()
+		self.session.commit()
 		return True
 
 	@classmethod
@@ -1861,10 +1858,10 @@ class Cart(CustomerBaseHandler):
 				for s in ss:
 					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 					s[0].current_saled -= num
+			session.commit()
 			print("[CustomerCart]Order auto cancel: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
-
 
 # 购物篮 - 订单提交回调
 class CartCallback(CustomerBaseHandler):

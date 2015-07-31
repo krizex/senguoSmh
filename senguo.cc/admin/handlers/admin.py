@@ -1471,7 +1471,6 @@ class Order(AdminBaseHandler):
 		if order_status == 4:
 			# print('[AdminOrder]edit_status: login in order_status 4')
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
-
 			# 发送订单模版消息给送货员
 			if send_message:
 				self.send_staff_message(self.session,order)
