@@ -1362,9 +1362,10 @@ class Order(AdminBaseHandler):
 			count = self._count()
 			atonce = count[11]
 			ontime = count[21]
+			selfPoint = count[31]
 			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 				not_(models.Order.status.in_([-1,0]))).count() -(self.current_shop.new_order_sum or 0)
-			return self.send_success(atonce=atonce,ontime=ontime,new_order_sum=new_order_sum)
+			return self.send_success(atonce=atonce,ontime=ontime,new_order_sum=new_order_sum,selfPoint=selfPoint)
 		elif self.args['action'] == "allreal": #全局实时更新变量
 			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
 			count = self._count()

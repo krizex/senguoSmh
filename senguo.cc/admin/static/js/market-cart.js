@@ -193,7 +193,6 @@ $(document).ready(function(){
     var intime_on=$('.send-intime').attr('data-config');
     var now_on=$('.send-now').attr('data-config'); 
     var self_on=parseInt($('.send-self').attr('data-config')); 
-    console.log(intime_on,now_on,self_on);
     if(now_on!=undefined){
         $('#freight_money').text(_freigh_now);
         $('.final_price').text(mathFloat(_total_price+_freigh_now));
@@ -293,14 +292,17 @@ $(document).ready(function(){
     }
 }).on('click',".type-today",function(){
     var _item=$(this).parents(".type-choose").siblings(".period-choose").find(".item");
-    var time=new Date();
-    var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
+    var _time=new Date();
+    var time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
     var stop_range=Int($(this).parents(".type-choose").siblings('.stop-range').val().trim());
     _item.each(function(){
         var $this=$(this);
         var intime_startHour=Int($this.find('.time_startHour').val());
         var intime_startMin=Int($this.find('.time_startMin').val());
         var time;
+        if(intime_startMin==0){
+            intime_startHour=intime_startHour-1;
+        }
         if(stop_range<=intime_startMin){
             time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
         }
@@ -312,7 +314,20 @@ $(document).ready(function(){
     });
     if($(".send-intime").hasClass("active")){
         if($(".send-now").hasClass("available")){
-        $(".send-now").addClass("active")
+            var stop_now_time=$(".now_startMin").val();
+            var stop_now=parseInt($(".now_stop").val());
+            var _time_now;
+            if(_time.getMinutes()+stop_now>=60){
+                _time_now=checkTime(_time.getHours()+1)+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+            }else{
+                _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+
+            }
+            if(stop_now_time>_time_now){
+                $(".send-now").addClass("active");
+            }else{
+                $(".send-now").removeClass("active").addClass("not_available");
+            }  
         }else{
             var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
             available.addClass('active').siblings().removeClass('active');  
@@ -406,21 +421,25 @@ function todayChoose(){
     $(".send_day ").each(function(){
         var send_item=$(this);
         var stop_range=Int(send_item.siblings('.stop-range').val().trim());
+        console.log(stop_range,23333);
         var now_on=$('.send-now').attr('data-config');
         if(send_item.parents(".item_period").prev(".send_type_item").hasClass("active")){
             var _type=send_item.parents(".item_period").prev(".send_type_item").attr("data-type");  
         }else{
-            _type = ""
+            _type = "";
         }
         var today=send_item.find('.active').data('id');
-        var time=new Date();
-        var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
+        var _time=new Date();
+        var time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
         if(today==1) {
             send_item.siblings(".period-choose").find(".item").each(function(){
                 var $this=$(this);
                 var intime_startHour=Int($this.find('.time_startHour').val());
                 var intime_startMin=Int($this.find('.time_startMin').val());
                 var time;
+                if(intime_startMin==0){
+                    intime_startHour=intime_startHour-1;
+                }
                 if(stop_range<=intime_startMin){
                     time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
                 }
@@ -448,11 +467,20 @@ function todayChoose(){
                     available.addClass('active').siblings().removeClass('active');
                 }else{
                     var stop_now_time=$(".now_startMin").val();
-                    if(stop_now_time>time_now){
+                    var stop_now=parseInt($(".now_stop").val());
+                    var _time_now;
+                    if(_time.getMinutes()+stop_now>=60){
+                        _time_now=checkTime(_time.getHours()+1)+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+                    }else{
+                        _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+ 
+                    }
+                    if(stop_now_time>_time_now){
                         $(".send-now").addClass("active");
                     }else{
                         var available=send_item.siblings(".period-choose").find(".available").first();
                         available.addClass('active').siblings().removeClass('active');
+                        $(".send-now").removeClass("active").addClass("not_available");
                     }  
                 }
                
@@ -705,7 +733,6 @@ function orderSubmit(target){
         period_id=$('.self-period-choose').find('.active').attr('data-id');
         self_address_id=$('.self-address-list').find('.active').attr('data-id');
     }
-    console.log(type);
     var address_id=$('#addressType').find('.active').attr('data-id');
     var pay_type=$('#payType').find('.active').attr('data-id');
     var message=$('#messageCon').val();

@@ -84,6 +84,7 @@
                                 <span class="pull-left set-inl-blo">下单{{config.intime_period or 0}}分钟内送达<span class="font12 text-greyc ml10">( {{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}} )</span></span>
                                 <input type="hidden" class="now_startHour" value="{{config.start_time_now}}"/>
                                 <input type="hidden" class="now_startMin" value="{{config.end_time_now}}"/>
+                                <input type="hidden" class="now_stop" value="{{config.intime_period}}"/>
                             </li>
                             {% end %}
                         </ul>
