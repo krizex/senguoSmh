@@ -67,7 +67,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .bg-white{background-color: #fff !important;}
 /*字体*/
 .f12{font-size: 12px !important;}
-.f14{font-size: 16px !important;}
+.f14{font-size: 14px !important;}
 .f16{font-size: 16px !important;}
 /*盒模型*/
 .pl10{padding-left: 10px;}
@@ -88,6 +88,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .mt2{margin-top: 2px;}
 .mt4{margin-top: 4px;}
 .mt6{margin-top: 6px;}
+.mt8{margin-top: 8px;}
 .mt15{margin-top: 15px;}
 .mt16{margin-top: 16px;}
 .mt44{margin-top: 44px;}
@@ -106,7 +107,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 /*高度*/
 .h0{height: 0 !important;overflow: hidden;}
 /*提示框*/
-.zb-tip{width: 70%;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
+.zb-tip{width: 70%;max-width:700px;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
 /*页面头部*/
 .header{position: fixed;top: 0;left: 0;z-index:999;width: 100%;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;}
 .back{display: inline-block;height: 40px;min-width:40px;line-height:2.9em;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 12px;top: 0;background-position: left center;}

@@ -22,7 +22,6 @@ from dal import models
 # ]
 
 handlers = [
-
 	#告白墙
 	(r"/lovewall/public/(\w+)", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
 	(r"/lovewall/center/(\w+)", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
@@ -46,9 +45,13 @@ handlers = [
 	#(r'/market/staffinsert',handlers.market.StaffInsert,{},"staffinsert"),
 
 	#优惠券
-	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
+	#(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
 	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
-
+	(r"/coupon/grub", handlers.activity.CouponCustomer, {}, "CouponGrub"),
+	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
+	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
+	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
+	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
 	(r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),

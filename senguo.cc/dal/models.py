@@ -90,6 +90,7 @@ class ORDER_TYPE:
 	"""订单类型"""
 	NOW = 1
 	ON_TIME = 2
+	SELF = 3
 
 class TAG:
 	"""商品标签"""
@@ -1252,11 +1253,11 @@ class Order(MapBase, _CommonApi):
 	num = Column(String(15), nullable=False)  # 订单编号
 	phone = Column(String(30), nullable=False)
 	receiver = Column(String(64), nullable=False)
-	address_text = Column(String(1024), nullable=False)
+	address_text = Column(String(1024), nullable=False) #if type is 3,this column is self_address
 	message = Column(String(100)) #用户留言
 	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态:未付款 = －1, 已删除 = 0, 未处理 = 1, JH = 2, SH1 = 3
 														    # SH2 = 4, 已收货 = 5, 用户评价 = 6, 自动评价 = 7, AFTER_SALE = 10
-	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
+	type = Column(TINYINT) #订单类型 1:立即送 2：按时达 3:自提
 	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费
 	tip = Column(SMALLINT, default=0)  # 小费（暂时只有立即送可提供运费）
@@ -1294,6 +1295,13 @@ class Order(MapBase, _CommonApi):
 	online_type       = Column(String(8))
 	send_admin_id =Column(Integer,default=0) #record admin_id when to send the order #5.25
 	finish_admin_id =Column(Integer,default=0) #record admin_id when to finish the order#5.25
+
+	coupon_key=Column(String(128))    #优惠券码
+	coupon_money=Column(Float,default=0)  #优惠金额
+	new_totalprice=Column(Float)
+
+	self_address_id = Column(Integer,default=0) #自提点id 7.30
+
 
 	def get_num(self,session,order_id):
 		try:
@@ -1535,11 +1543,29 @@ class Config(MapBase, _CommonApi):
 	wireless_print_num = Column(String(20)) #无线打印机终端号 7.13
 	wireless_print_key = Column(String(20)) #无线打印机密钥 7.13
 
+	self_on = Column(Integer,default = 1) #0:自提停用 1:自提启用 7.30
+	day_self = Column(Integer,default = 0) #自提 0:all 1:今天 2:明天 7.30
+	self_end_time = Column(Integer,default = 0) #自提下单截止时间 7.30
+	self_addresses = relationship("SelfAddress")
+
+
+#自提地址 7.30 max10
+class SelfAddress(MapBase,_CommonApi):
+	 __tablename__ = "self_address"
+	 id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	 config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
+	 address = Column(String(1024), nullable=False)
+	 active = Column(Integer,default = 1) #0:delete 1:on 2:off
+	 if_default = Column(Integer,default = 0) #0:not default 1:default
+	 lat    = Column(MyReal,default = 0)  #纬度
+	 lon    = Column(MyReal,default = 0)  #经度
+
 # 店铺营销
 class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	confess_active = Column(Integer,default = 1) #1:告白墙开启 0:告白墙关闭
+	coupon_active=Column(Integer,default=0)  #0:开启 1:关闭
 	confess_notice = Column(String(500))
 	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
 	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
@@ -1565,6 +1591,7 @@ class Period(MapBase):
 	name = Column(String(20))
 	start_time = Column(Time)
 	end_time = Column(Time)
+	config_type = Column(Integer,default = 0) #0:按时达 1:自提 #7.30
 
 # 一级地址
 class Address1(MapBase, _CommonApi):
@@ -1813,56 +1840,54 @@ class Spider_Good(MapBase,_CommonApi):
 	sales = Column(Integer)
 
 
+
 class Scene_Openid(MapBase,_CommonApi):
 	__tablename__ = 'scecne_openid'
 	id = Column(Integer,primary_key=True,nullable=False,autoincrement=True)
 	scene_id = Column(Integer)
 	openid   = Column(String(64))
 
-'''
+
 # add by cm 2015.6.15
 # 商家优惠券
+
 class CouponsShop(MapBase, _CommonApi):
  	__tablename__='coupon_shop'
- 	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
- 	shop_name=Column(String)
+ 	id=Column(Integer,autoincrement=True,primary_key=True)
+ 	shop_id=Column(Integer,nullable=False)
  	coupon_id=Column(Integer,nullable=False)
- 	customer_id=Column(Integer,ForeignKey(Customer.id))
- 	coupon_key=Column(String,primary_key=True,nullable=False)
- 	coupon_money=Column(Float,nullable=False)
- 	coupon_totalnum=Column(Integer,nullable=False)
- 	coupon_usenum=Column(Integer,default=0)
- 	coupon_remainnum=Column(Integer,nullable=False)
+ 	coupon_type=Column(Integer,default=0)
+ 	coupon_money=Column(Float)
+ 	from_get_date=Column(Integer)
+ 	to_get_date=Column(Integer)
+ 	use_goods_group=Column(Integer)
+ 	use_goods=Column(Integer)
+ 	use_rule=Column(Float)
+ 	total_number=Column(Integer)
+ 	get_number=Column(Integer)
+ 	use_number=Column(Integer)
  	#优惠方式  0：固定日期  1：领取后生效
- 	valid_way=Column(Integer,default=0,nullable=False)
- 	uneffective_time=Column(Date,default=func.now())
- 	get_date=Column(Date)
- 	use_date=Column(Date)
- 	if_used=Column(Integer,default=0)
- 	if_uneffective=Column(Integer,default=0)
- 	order_id=Column(Integer)
- 	day_start=Column(Integer,default=0,nullable=False)
- 	last_day=Column(Integer,nullable=False)
- 	get_limitnum=Column(Integer,nullable=False,default=1)
- 	used_for=Column(Integer,default=0)
- 	use_rule=Column(Float,nullable=False)
-
-
+ 	valid_way=Column(Integer,default=0)
+ 	from_valid_date=Column(Integer)
+ 	to_valid_date=Column(Integer)
+ 	start_day=Column(Integer)
+ 	last_day=Column(Integer)
+ 	get_limit=Column(Integer)
+ 	closed=Column(Integer,default=0)
+ 	get_rule=Column(Float,default=0)
+ 	create_date=Column(Integer)
+ 		 	
 # 用户优惠券
 class CouponsCustomer(MapBase, _CommonApi):
 	__tablename__='coupon_customer'
-	coupon_id=Column(String(11),nullable=False)
-	coupon_key=Column(String(11),ForeignKey(CouponsShop.coupon_key),nullable=False)
-	customer_id=Column(Integer,ForeignKey(Customer.id),primary_key=True,nullable=False)
-	shop_name=Column(String)
-	shop_id=Column(Integer,ForeignKey(CouponsShop.shop_id))
-	get_date=Column(Date,default=func.now())
-	use_date=Column(Date)
-	uneffective_time=Column(Date)
-	if_used=Column(Integer,default=0)
-	if_uneffective=Column(Integer,default=0)
-	order_id=Column(Integer,nullable=False)
-	used_for=Column(Integer,default=0)
-	use_rule=Column(Float,nullable=False)
-'''
-
+	coupon_type=Column(Integer,default=0)
+	coupon_id=Column(Integer,nullable=False)
+	coupon_key=Column(String(128),nullable=False,primary_key=True)
+	customer_id=Column(Integer)
+	shop_id=Column(Integer,nullable=False)
+	get_date=Column(Integer)
+	use_date=Column(Integer)
+	effective_time=Column(Integer)
+	uneffective_time=Column(Integer)
+	coupon_status=Column(Integer,default=0)
+	order_id=Column(Integer)

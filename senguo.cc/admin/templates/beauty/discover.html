@@ -10,23 +10,28 @@
 {% if shop_auth != 0%}
 {% if confess_active == 1%}
     <li class="title clearfix bg-white font14 confess">
-	    <a href="{{reverse_url('ConfessionHome',handler.shop_code)}}" class="text-grey3 confess-wall">
-	    	<i class="pull-left"></i>
-	    	<span class="pull-left">告白墙</span>
-	    	<span class="pull-left ml10 text-grey9">看看果友们的真情告白</span>
-	    	<span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
-	    </a>
-    </li>
-    <li class="title clearfix bg-white font14 coupon hidden">
-        <a href="/coupon" class="text-grey3 confess-wall">
+        <a href="{{reverse_url('ConfessionHome',handler.shop_code)}}" class="text-grey3 confess-wall">
+            <span class="pull-right imore"></span>
             <i class="pull-left"></i>
-            <span class="pull-left">优惠券</span>
-            <span class="pull-left ml10 text-grey9"></span>
+            <span class="pull-left confess-text">告白墙<br><span class="font12 text-grey">看看果友们的真情告白</span></span>
             <span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
         </a>
     </li>
+    {% end %}
+    {% if coupon_active_cm==1%}
+    {% if a or b %}
+    <li class="title clearfix bg-white font14 coupon">
+        <a href="{% if a==0%}/coupon/profile?action=get_one&coupon_id=-1{% else %}/coupon/profile?action=get_all{% end %}" class="text-grey3 confess-wall">
+            <span class="pull-right imore"></span>
+            <i class="pull-left"></i>
+            <span class="pull-left confess-text">优惠券<br><span class="font12 text-grey">{% if a== 0%}更多优惠券等你来抢{% else %}{{a}}批优惠券等你来抢{% end %}</span></span>
+            <span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
+        </a>
+    </li>
+    {%else%}
+    {% end %}
 {% end %}
-{% end %}
+{%end%}
 </ul>
 {% end %}
 {% block bottom %}

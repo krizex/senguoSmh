@@ -8,7 +8,6 @@
     <meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
     <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="{{static_url('css/admin-global.css')}}"/>
-    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     {% block head %}{% end %}
     <script>
@@ -199,6 +198,7 @@
     {% block content %}{% end %}
     </div>
 </main>
+{% block other %}{% end %}
 <div class="foot" id="footer">
     <ul class="links ft">
         <li class="links_item no_extra">
@@ -229,6 +229,7 @@
 <script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/bootstrap.min.js"></script>
 <script src="/static/js/template.js"></script>
+<script src="/static/js/third/qrcode.min.js"></script>
 <script src="{{static_url('js/global.js')}}"></script>
 <script src="{{static_url('js/admin-public.js')}}"></script>
 {% block bottom %}{% end %}

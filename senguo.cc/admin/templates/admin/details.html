@@ -1,64 +1,100 @@
 {% extends 'base.html' %}
-{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>{% end %}
-
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
 {% block content %}
 {% set shop_code = current_shop.shop_code %}
-<div class="row">
-    <a href="/admin/marketing?action=coupon"><button class="button clearfix">返回</button></a>
-   <span class="mytitle">优惠券/优惠券详情</span>
+<input type="hidden" id="coupon_detail">
+<div class="wrap-coupontitle">
+    <div class="c333 mt10 choose-text">
+        <div class="iblock pull-right choose-detail-type">
+            <span class="mr10 ver7">筛选：</span>
+            <div class="dropdown slide-down-select w130 mr10">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                    <em class="pull-left c333 use_goods_group" data-id="0" >所有 ({{data1['a']}})</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 coupon-items" role="menu" aria-labelledby="dropdownMenu18">
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="0" data-num={{data1['a']}}>所有 ({{data1['a']}})</a>
+                    </li>
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="1" data-num={{data1['b']}}>已领取 ({{data1['b']}})</a>
+                    </li>
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="2" data-num={{data1['c']}}>已消费 ({{data1['c']}})</a>
+                    </li>
+                    <li class="presentation" role="presentation">
+                        <a class="item" href="javascript:;" data-id="3" data-num={{data1['d']}}>已失效 ({{data1['d']}})</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <a href="/admin/marketing?action=coupon&coupon_type={{coupon_type}}" class="c999 cancel-add-goods ">优惠券</a>
+        <span class="c333"> / 优惠券详情</span>
+    </div>
 </div>
-
-<div class="row div2 div0">
-    <div class="col-lg-2">
-       优惠码
-    </div>
-    <div class="col-lg-2">
-     优惠金额
-    </div>
-    <div class="col-lg-2">
-       用户
-    </div>
-    <div class="col-lg-2">
-    领取时间
-    </div>
-    <div class="col-lg-2">
-    使用时间
-    </div>
-    <div class="col-lg-2">
-      消费记录
-    </div>
-</div>
-
-<div class="div1">
-    <ul>
-    {% for data in output_data %}
-        <li class="top-box row details">
-            <div class="col-lg-2">
-                <p class="tit1">{{data["coupon_key"]}}</p>
-                <button class="copy">复制</button>
-            </div>
-            <div>
-                <div class="col-lg-2">
-                
-                <p class="tit2">{{data["coupon_money"]}}</p>
-            </div>
-            <div class="col-lg-2">
-                {{data["customer_id"]}}
-            </div>
-            <div class="col-lg-2">
-                {{data["get_date"]}}
-            </div>
-            <div class="col-lg-2">
-                {{data["use_date"]}}
-            </div>
-            <div class="col-lg-2 tit3">
-                {{data["order_id"]}}</div>
-            </div>
-        </li>
+<div class="wrap-newcoupon mt20">
+    <table class="tb-enty tb-active">
+        <thead>
+            <tr class="thead">
+                <td>优惠码</td>
+                <td>优惠金额</td>
+                <td>用户</td>
+                <td>领取时间</td>
+                <td>使用时间</td>
+                <td>消费记录</td>
+            </tr>
+        </thead>
+        <tbody id="list-coupons">
+        {% for data in output_data %}
+        {% if data["coupon_status"]==2 %}
+        <tr>
+            <td class="relative"><span>{{data["coupon_key"]}}</span></span><span class="copy-coupon-code">复制</span></td>
+            <td>{{data["coupon_money"]}}</td>
+            <td>{{data["nickname"]}}<br>ID:{{data["customer_id"]}}</td>
+            <td>{{data["get_date"]}}</td>
+            <td>{{data["use_date"]}}</td>
+            <td>订单号:<a href="{{reverse_url("adminSearchOrder")}}?action=order&&id={{data["order_id"]}}">{{data["order_id"] or '无'}}</a></td>
+        </tr>
+        {% elif  data["coupon_status"]==0 %}
+        <tr class=" ">
+            <td class="relative"><span>{{data["coupon_key"]}}</span><span class="copy-coupon-code">复制</span></td>
+            <td>{{data["coupon_money"]}}</td>
+            <td>未领取</td>
+            <td>未领取</td>
+            <td>未领取</td>
+            <td>无</td>
+        </tr>
+        {% elif  data["coupon_status"]==1  %}
+        <tr class=" dis-coupon">
+            <td class="relative"><span>{{data["coupon_key"]}}</span><span class="copy-coupon-code">复制</span></td>
+            <td>{{data["coupon_money"]}}</td>
+            <td>{{data["nickname"]}}<br>ID:{{data["customer_id"]}}</td>
+            <td>{{data["get_date"]}}</td>
+            <td>未使用</td>
+            <td>无</td>
+        </tr>
         {% end %}
-    </ul>
+        {% end %}
+        </tbody>
+    </table>
+    <div class="users-pagination list-pagination group pull-right mt0 cm_jump">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">{{data1["total"]}}</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
+                <li><a href="javascript:;" class="jump-to">跳转</a></li>
+            </ul>
+        </div>
+</div>
+<div id="noresult">
+    <h4 class="text-center" id="text"></h4>
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('js/admin-marketing.js')}}"></script>
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="{{static_url('js/admin-coupon.js')}}"></script>
 {% end %}
