@@ -1,4 +1,4 @@
-.dropdown-menu{left:0 !important;margin-top:-1px;}
+.dropdown-menu.user-order-by{width:82px;left:-1px !important;}
 .dropdown-menu li a{padding:3px 0;}
 
 .group-select{width:74px;height:26px;color:#666;}

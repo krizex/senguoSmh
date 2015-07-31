@@ -78,8 +78,8 @@
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
-        <!--<p>店铺优惠：<span class="fr"><span>0</span>元</span></p>-->
-        <p class="dash-bt group"><span class="fr black-txt">应付款：<span class="text-red3">{{order.totalPrice}}元</span></span></p>
+        <p>优惠券金额：<span class="fr"><span class="text-red3">{{order.coupon_money}}元</span></span></p>
+        <p class="dash-bt group"><span class="fr black-txt">应付款：<span class="text-red3">{{order.new_totalprice}}元</span></span></p>
     </div>
     <div class="order-item pt10">
         <p class="text-black">订单编号：<span class="order-id" data-id="{{order.id}}">{{order.num}}</span></p>

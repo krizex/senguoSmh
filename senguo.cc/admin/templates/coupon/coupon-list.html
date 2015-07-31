@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back"></a>
+    <span>我的优惠券</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-mycoupon">
+    <div class="wrap-coupon-ipt">
+        <input type="text" class="coupon-ipt" placeholder="输入代金券/优惠券码"/>
+        <a href="javascrpipt:;" class="convert-btn" id="convert-btn">兑换</a>
+    </div>
+    <ul class="my-coupon-list" id="coupon-list">
+        <!--0未领取 1已领取 2已消费 3已过期-->
+        {% for coupon in output_data %}
+        <li>
+            <a href="/coupon/detail?action=detail&coupon_key={{coupon['coupon_key']}}" data-id="{{coupon['coupon_status']}}">
+                <div class="get-coupon {% if coupon['coupon_status']==1 %}{% else %}coupon-used{% end %}">
+                    <p class="f12 mt8">使用期限</p>
+                    <p class="f12">{{coupon['effective_time']}}</p>
+                    <p class="f12">{{coupon['uneffective_time']}}</p>
+                    <p class="f16 bold">{% if coupon['coupon_status']==1 %}未消费{% elif coupon['coupon_status']==2 %}已消费{% else %}已过期{% end %}</p>
+                </div>
+                <div class="coupon-lprice">
+                    {% if coupon['coupon_status']==1 %}<i class="gap gap1-right"></i>{% else %}<i class="gap gap2-right"></i>{% end %}
+                    <p class="price-stxt {% if coupon['coupon_status']==1 %}{% else %}c9f{% end %}"><span class="f22">￥</span><span class="f32 ml5">{{coupon['coupon_money']}}</span></p>
+                    <p class="f12 clip {% if coupon['coupon_status']==1 %}c333{% else %}c666{% end %}">{{coupon['use_goods_group']}}:{{coupon['use_goods']}}满{{coupon['use_rule']}}元即可使用（含运费）</p>
+                </div>
+            </a>
+        </li>
+        {% end %}
+    </ul>
+</div>
+<ul class="hide" id="coupon-item">
+    <li>
+        <a href="" class="coupo-link">
+            <div class="get-coupon">
+                <p class="f12 mt8">使用期限</p>
+                <p class="f12 start-time"></p>
+                <p class="f12 end-time"></p>
+                <p class="f16 bold is_used"></p>
+            </div>
+            <div class="coupon-lprice">
+                <i class="gap gap1-right"></i>
+                <p class="price-stxt"><span class="f16">￥</span><span class="f32 coupon-money"></span></p>
+                <p class="c333"><span class="used-group"></span>:<span class="used-goods"></span>满<span class="used-rule"></span>元即可使用（含运费）</p>
+            </div>
+        </a>
+    </li>
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/coupon-profile.js')}}"></script>
+{% end %}

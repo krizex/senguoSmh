@@ -29,9 +29,9 @@ class Home(AdminBaseHandler):
 		except:
 			other_shops = None
 		if shops:
-			shop_list += self.getshop(shops)
+			shop_list = self.getshop(shops)
 		if other_shops:
-			shop_list += self.getshop(other_shops)
+			shop_list = self.getshop(other_shops)
 		return self.render("m-admin/shop-list.html", context=dict(shop_list=shop_list))
 	def getshop(self,shops):
 		shop_list = []
@@ -131,6 +131,7 @@ class Shop(AdminBaseHandler):
 class Set(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/shop-set.html")
 
 # 移动后台 - 设置
@@ -138,6 +139,7 @@ class SetAttr(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action","id?:int")
 	def get(self):
+		self.if_current_shops()
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action= self.args["action"]
@@ -185,12 +187,14 @@ class SetAttr(AdminBaseHandler):
 class Address(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/shop-address.html")
 
 # 移动后台 - 店铺信息
 class Info(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
@@ -212,33 +216,33 @@ class Info(AdminBaseHandler):
 class Order(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/order.html")
 
 # 移动后台 - 订单详情
 class OrderDetail(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,order_num):
-		shop_id = self.current_shop.id
+		self.if_current_shops()
+		# 根据url传入的订单号查询店铺
 		try:
 			order = self.session.query(models.Order).filter(models.Order.num==order_num).first()
-		except:
-			return self.send_error(404)
-		try:
 			shop = self.session.query(models.Shop).filter_by(id=order.shop_id).first()
+			HireLink = self.session.query(models.HireLink).filter_by(shop_id=shop.id,staff_id=self.current_user.id,work=9,active=1).first()
 		except:
 			return self.send_error(404)
-		try:
-			HireLink = self.session.query(models.HireLink).filter_by(shop_id=order.shop_id,staff_id=self.current_user.id,work=9,active=1).first()
-		except:
-			pass
+		# 身份验证：
+		# 如果当前用户不是订单所在店铺的管理员，则返回权限错误信息
 		if not shop.admin_id == self.current_user.id and not HireLink:
-			return self.write("<h1>您没有查看该订单的权限</h1>")
-
-		if shop:
+			return self.write("<h1 style=\"text-align:center;\">您没有查看该订单的权限</h1>")
+		# 如果当前用户是订单店铺管理员，则将当前店铺切换到订单所在店铺
+		else:
 			self.current_shop = shop
+			shop_id = self.current_shop.id
+			self.set_secure_cookie("shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 
 		charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
-		print(charge_types)
+		# print("[MadminOrderDetail]charge_types:",charge_types)
 		if order.pay_type == 1:
 			order.pay_type_con = "货到付款"
 		elif order.pay_type == 2:
@@ -273,6 +277,7 @@ class OrderDetail(AdminBaseHandler):
 class OrderSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		self.if_current_shops()
 		return self.render("m-admin/order-search.html")
 
 # 移动后台 - 评论
@@ -280,6 +285,7 @@ class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("page?:int")
 	def get(self):
+		self.if_current_shops()
 		customer_id = self.current_user.id
 		shop_id     = self.get_secure_cookie("shop_id")
 		shop_code = self.session.query(models.Shop).filter_by(id=shop_id).one().shop_code
@@ -304,7 +310,7 @@ class Comment(AdminBaseHandler):
 		except:
 			page = 0
 		page_size = 20
-		comments = self.get_comments(shop_id, page, page_size)
+		comments = self.get_comments(shop_id, page, page_size, False)
 		date_list = []
 		nomore = False
 		for comment in comments:
