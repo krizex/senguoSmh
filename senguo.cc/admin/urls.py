@@ -268,9 +268,11 @@ handlers = [
 	(r"/madmin/shopinfo", handlers.madmin.Info, {}, "MadminInfo"),
 	(r"/madmin/shopaddress", handlers.madmin.Address, {}, "MadminAddress"),
 	(r"/madmin/shopattr", handlers.madmin.SetAttr, {}, "MadminSetAttr"),
+	(r"/madmin/goods", handlers.madmin.Goods, {}, "MadminGoods"),
+	(r"/madmin/gsearch", handlers.madmin.GoodsSearch, {}, "MadminGoodsSearch"),
+	(r"/madmin/goodsAdd", handlers.madmin.GoodsAdd, {}, "MadminGoodsAdd"),
+	(r"/madmin/goodsEdit", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
 
-
-	# 水果圈子
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
