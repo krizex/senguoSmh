@@ -151,6 +151,8 @@ $(document).ready(function(){
     $(this).closest("ul").prev("button").children("em").html($(this).text()).attr("data-id",$(this).find('a').attr("data-id"));
     orderItem(_page);
 }).on("click","#add_self",function(){//添加自提点
+    if(edit_flag) return Tip("请先保存正在编辑的自提点");
+    edit_flag = true;
     var index = $(".self-address-list").children("li").size();
     var $item = $('<li class="group"><div class="wrap-operate pull-right">'+
         '<a href="javascript:;" class="pull-right set-default">设为默认</a>'+
@@ -161,8 +163,10 @@ $(document).ready(function(){
         '<span>自提点<span class="self-index">'+num_arr[index]+'</span> : <span class="self-addr">点击右方修改设置</span></span>' +
         '<span class="default-address dgreen hidden">（默认自提点）</span></span></li>');
     $(".self-address-list").append($item);
+    $("#addressDetail").removeAttr("disabled").val("").focus();
+    cur_address = $item;
 }).on("click",".wrap-operate .edit",function(){
-    if(edit_flag==true) return Tip("请先保存正在编辑的自提点");
+    if(edit_flag) return Tip("请先保存正在编辑的自提点");
     edit_flag = true;
     var $item = $(this).closest("li");
     cur_address = $item;
@@ -800,14 +804,77 @@ function orderEdit(target,action,content){
         function(){return Tip('网络错误')}
     )
 }
+
+function operateSelf(type,$obj){
+    var lat = $obj.attr("data-lat");
+    var lon = $obj.attr("data-lng");
+    var address = $.trim($("#addressDetail").val());
+    var action = "",url=order_link;
+    var args={};
+    if(type=="add"){
+        action="add_self_address";
+        args = {
+            action:action,
+            data:{
+                lat:lat,
+                lon:lon,
+                self_address:address
+            }
+        };
+    }else if(type=="edit"){
+        var id = $obj.attr("ata-id");
+        action="edit_self_address";
+        args = {
+            action:action,
+            data:{
+                id:id,
+                lat:lat,
+                lon:lon,
+                self_address:address
+            }
+        };
+    }else{
+        var id = $obj.attr("ata-id");
+        action="del_self_address";
+        args = {
+            action:action,
+            data:{
+                id:id,
+                lat:lat,
+                lon:lon,
+                self_address:address
+            }
+        };
+    }
+    $.postJson(url,args,function(res){
+            if(res.success){
+                if(type=="add"){
+                    var id = res.address_id;
+                    $obj.attr("data-id",id);
+                    $obj.find(".self-addr").html(address);
+                    $("#addressDetail").attr("disabled","true");
+                    edit_flag = false;
+                    Tip("自提点添加成功");
+                }else if(type=="edit"){
+                    Tip("自提点编辑成功");
+                }else{
+                    Tip("自提点删除成功");
+                }
+            }
+            else return Tip(res.error_text);
+        },
+        function(){return Tip('网络错误')}
+    )
+}
 //初始化百度地图
-var markers = [];
 function initBmap(){
     var map = new BMap.Map("bmap",{enableMapClick:false});          // 创建地图实例
     var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)});  // 创建比例尺
     map.addControl(scaleControl);  // 显示比例尺
-    var lat = parseFloat($("#lat").val());
-    var lon = parseFloat($("#lon").val());
+    //var lat = parseFloat($("#lat").val());
+    //var lon = parseFloat($("#lon").val());
+    var lat = 116.3345;
+    var lon = 39.3455;
     var marker = null;
     map.enableScrollWheelZoom();
     var myGeo = new BMap.Geocoder();
@@ -854,9 +921,7 @@ function initBmap(){
         }
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
         getPointByName(map, myGeo, address,true);
-        cur_address.find(".self-addr").html(text);
-        $("#addressDetail").attr("disabled","true");
-        edit_flag = false;
+        operateSelf("add",cur_address);
     });
     $(document).on("click",".cur_loc",function(){
         var $item = $(this).closest("li");
