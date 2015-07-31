@@ -2538,10 +2538,10 @@ class Goods(AdminBaseHandler):
 				return self.send_fail('请填写相应分组信息')
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
-			self.session.commit()
+			self.session.flush()
 
 			new_group_id = _group.id
-			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count-1))
+			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count+2))
 			self.session.add(group_priority)
 			self.session.commit()
 			return self.send_success(id=new_group_id)
