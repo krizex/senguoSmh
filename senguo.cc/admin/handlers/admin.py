@@ -1348,7 +1348,7 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 	@tornado.web.authenticated
 	#@get_unblock
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?int")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		self.if_current_shops()
@@ -1402,7 +1402,8 @@ class Order(AdminBaseHandler):
 				pay_type = int(self.args["pay_type"])
 				if pay_type != 9:#not all
 					order_list = order_list.filter(models.Order.pay_type==pay_type)
-
+			print(self.args)
+			print(self.args["self_id"])
 			if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
 				order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
 
@@ -1430,7 +1431,6 @@ class Order(AdminBaseHandler):
 					orders = [x for x in order_list if x.type == order_type]
 			else:
 				return self.send.send_error(404)
-			print(orders)
 			if self.args["filter"] !=[]:
 				filter_status = self.args["filter"]
 				if filter_status  == "send_positive":
@@ -1446,7 +1446,6 @@ class Order(AdminBaseHandler):
 				elif filter_status  == "price_desc":
 					orders.sort(key = lambda order:order.totalPrice,reverse = True)
 
-			print(orders)
 			count = len(orders)
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			session = self.session
@@ -1623,6 +1622,8 @@ class Order(AdminBaseHandler):
 				.filter(models.SelfAddress.active!=0).count()
 			except:
 				self_address_count = 0
+			if self.current_shop.shop_auth == 0 and self_address_count >= 1:
+				return self.send_fail("未认证店铺只能添加一个自提点")
 			if self_address_count >= 10:
 				return self.send_fail("至多只能添加10个自提点")
 			if "self_address" not in data:
@@ -1655,7 +1656,7 @@ class Order(AdminBaseHandler):
 				self_address.active = 0
 				self_address.if_default = 0
 			elif action == "set_self_address":
-				self_address.active = 0 if self_address.active == 1 else 1
+				self_address.active = 2 if self_address.active == 1 else 1
 			elif action == "set_self_default":
 				self_address.if_default = 1
 				try:
@@ -1664,7 +1665,6 @@ class Order(AdminBaseHandler):
 					 address_lsit = None
 				if address_lsit:
 					for address in address_lsit:
-						print(address.id)
 						if address.id != address_id:
 							address.if_default = 0
 			self.session.commit()

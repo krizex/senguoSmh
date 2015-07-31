@@ -401,16 +401,18 @@ class CreateShop(AdminBaseHandler):
 		period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
 		period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
 		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
+		period4 = models.Period(name="白天", start_time="09:00", end_time="21:00",config_type=1) #自提时间默认时间段
 
 		config = models.Config()
-		config.periods.extend([period1, period2, period3])
+		config.periods.extend([period1, period2, period3,period4])
 		marketing = models.Marketing()
 		shop.config = config
 		shop.marketing = marketing
 		shop.shop_start_timestamp = time.time()
-
 		self.session.add(shop)
 		self.session.commit()  # 要commit一次才有shop.id
+		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+		self.session.commit()
 
 	def create_staff(self,shop):
 		temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
@@ -426,3 +428,5 @@ class CreateShop(AdminBaseHandler):
 		if customer_first is None:
 			self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
 			self.session.commit()
+
+

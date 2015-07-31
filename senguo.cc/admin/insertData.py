@@ -42,18 +42,25 @@ session = models.DBSession()
 # 			i = i+1
 # 			print(i)
 
-def spiderShops():
-	shops = session.query(models.Spider_Shop).all()
+# def spiderShops():
+# 	shops = session.query(models.Spider_Shop).all()
+# 	for shop in shops:
+# 		address = shop.shop_address
+# 		if address.startswith("武汉市"):
+# 			shop.shop_address="湖北省"+address
+# 		elif address.startswith("湖北省武汉市"):
+# 			shop.shop_address=address
+# 		else:
+# 			shop.shop_address="湖北省武汉市"+address
+# 		session.commit()
+
+def addSome():
+	shops = session.query(models.Shop).all()
 	for shop in shops:
-		address = shop.shop_address
-		if address.startswith("武汉市"):
-			shop.shop_address="湖北省"+address
-		elif address.startswith("湖北省武汉市"):
-			shop.shop_address=address
-		else:
-			shop.shop_address="湖北省武汉市"+address
+		session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+		session.add(models.Period(config_id=shop.config.id, name="白天", start_time="09:00", end_time="21:00",config_type=1))
 		session.commit()
 
-g = multiprocessing.Process(name='spiderShops',target=spiderShops)
+g = multiprocessing.Process(name='addSome',target=addSome)
 g.start()
 g.join()
