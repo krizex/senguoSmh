@@ -13,6 +13,7 @@ $(document).ready(function(){
     else if(status == 2){
         $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
+    initBmap();
 }).on('click','.print-order',function(){
     orderPrint($(this),'print'); //有线打印
 
@@ -149,8 +150,44 @@ $(document).ready(function(){
 }).on('click','.condition-list li',function(){
     $(this).closest("ul").prev("button").children("em").html($(this).text()).attr("data-id",$(this).find('a').attr("data-id"));
     orderItem(_page);
+}).on("click","#add_self",function(){//添加自提点
+    var index = $(".self-address-list").children("li").size();
+    var $item = $('<li class="group"><div class="wrap-operate pull-right">'+
+        '<a href="javascript:;" class="pull-right set-default">设为默认</a>'+
+        '<a href="javascript:;" class="delete pull-right set-inl-blo"></a>'+
+        '<a href="javascript:;" class="edit pull-right set-inl-blo to-edit"></a></div>'+
+        '<a href="javascript:;" class="switch-abtn switch-abtn-active">'+
+        '<span class="a_on">已</span><span class="a_off">未</span>启用</a> <a href="javascript:;" class="cur_loc"></a> <span class="text-grey3  address-text">'+
+        '<span>自提点<span class="self-index">'+num_arr[index]+'</span> : <span class="self-addr">点击右方修改设置</span></span>' +
+        '<span class="default-address dgreen hidden">（默认自提点）</span></span></li>');
+    $(".self-address-list").append($item);
+}).on("click",".wrap-operate .edit",function(){
+    if(edit_flag==true) return Tip("请先保存正在编辑的自提点");
+    edit_flag = true;
+    var $item = $(this).closest("li");
+    cur_address = $item;
+    $("#addressDetail").removeAttr("disabled");
+    var text = $item.find(".self-addr").html();
+    if(text=="点击右方修改设置"){
+        $("#addressDetail").val("").focus();
+    }else{
+        $("#addressDetail").val(text).focus();
+    }
+}).on("click",".switch-abtn",function(){
+    if($(this).hasClass("switch-abtn-active")){
+        $(this).removeClass("switch-abtn-active");
+        $(this).closest("li").attr("data-start","off");
+    }else{
+        $(this).addClass("switch-abtn-active");
+        $(this).closest("li").attr("data-start","on");
+    }
+}).on("click",".wrap-operate .set-default",function(){
+    $(".self-address-list").find(".default-address").addClass("hidden");
+    $(this).closest("li").find(".default-address").removeClass("hidden");
 });
 
+var cur_address = null,edit_flag=false;
+var num_arr = ["一","二","三","四","五","六","七","八","九","十"];
 var orders=window.dataObj.order;
 var $list_item;
 var $goods_item;
@@ -158,7 +195,6 @@ var $staff_item;
 var order_link='/admin/order';
 var _page=0;
 var _page_total;
-
 function getOrder(url){
     $.getItem('/static/items/admin/order-item.html?v=20150613',function(data){
             $list_item=data;
@@ -169,7 +205,6 @@ function getOrder(url){
         }
     );
 }
-
 var getGoodsItem=function(url){
     $.ajaxSetup({'async':false});
     $.getItem(url,function(data){
@@ -177,7 +212,6 @@ var getGoodsItem=function(url){
         }
     );
 }
-
 var getStaffItem=function(url){
     $.ajaxSetup({'async':false});
     $.getItem(url,function(data){
@@ -185,8 +219,11 @@ var getStaffItem=function(url){
         }
     );
 }
-
 function orderItem(page){
+    var order_type = parseInt($.getUrlParam('order_type'));
+    if(order_type==3){
+        return false;
+    }
     $(".wrap-loading-box").removeClass("hidden");
     var action=$.getUrlParam('action');
     var url;
@@ -514,13 +551,6 @@ function orderPrint(target,action){
         });
         data.order_list_id=list;
     }
-
-        //var OpenWindow = window.open("","","width=500,height=600");
-        //OpenWindow.document.body.style.margin = "0";
-        //OpenWindow.document.body.style.marginTop = "15px";
-        //var box = OpenWindow.document.createElement('div');
-        //OpenWindow.document.body.appendChild(box);
-        //OpenWindow.document.close();
         var args={
             action:action,
             data:data
@@ -769,4 +799,184 @@ function orderEdit(target,action,content){
         },
         function(){return Tip('网络错误')}
     )
+}
+//初始化百度地图
+var markers = [];
+function initBmap(){
+    var map = new BMap.Map("bmap",{enableMapClick:false});          // 创建地图实例
+    var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)});  // 创建比例尺
+    map.addControl(scaleControl);  // 显示比例尺
+    var lat = parseFloat($("#lat").val());
+    var lon = parseFloat($("#lon").val());
+    var marker = null;
+    map.enableScrollWheelZoom();
+    var myGeo = new BMap.Geocoder();
+    var point = new BMap.Point(lat, lon);  // 创建点坐标
+    map.centerAndZoom(point, 15);
+    var marker1 = new BMap.Marker(point);
+    var slabel = new BMap.Label("店铺位置",{offset:new BMap.Size(-20,-20)});
+    slabel.setStyle({
+        border:"none",
+        fontWeight:"bold",
+        color:"red"
+    });
+    marker1.setLabel(slabel);
+    map.addOverlay(marker1);
+    initMarker();//初始化自提点
+    $("#addressDetail").on("keydown",function(ev){
+        if(ev.keyCode==13){
+            if(edit_flag == false) return false;
+            var text = $.trim($("#addressDetail").val());
+            if(text=="" || text.length>30){
+                Tip("详细地址不能为空且不能超过30个字符");
+                return false;
+            }
+            var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+            getPointByName(map, myGeo, address,false);
+        }
+    });
+    $("#search-lbs").on("click",function(){
+        if(edit_flag == false) return Tip("请先点击编辑按钮");
+        var text = $.trim($("#addressDetail").val());
+        if(text=="" || text.length>30){
+            Tip("详细地址不能为空且不能超过30个字符");
+            return false;
+        }
+        var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+        getPointByName(map, myGeo, address,false);
+    });
+    $("#save-lbs").on("click",function(){//保存自提点
+        if(edit_flag == false) return Tip("请先点击编辑按钮");
+        var text = $.trim($("#addressDetail").val());
+        if(text=="" || text.length>30){
+            Tip("详细地址不能为空且不能超过30个字符");
+            return false;
+        }
+        var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+        getPointByName(map, myGeo, address,true);
+        cur_address.find(".self-addr").html(text);
+        $("#addressDetail").attr("disabled","true");
+        edit_flag = false;
+    });
+    $(document).on("click",".cur_loc",function(){
+        var $item = $(this).closest("li");
+        var lng = parseFloat($item.attr("data-lng"));
+        var lat = parseFloat($item.attr("data-lat"));
+        var key = "自提点"+$item.find(".self-index").html();
+        map.centerAndZoom(new BMap.Point(lng, lat), 15);
+        var mark = getMarker(key);
+        if(mark){
+            mark.setAnimation(BMAP_ANIMATION_BOUNCE);
+            setTimeout(function(){
+                mark.setAnimation();
+            },3000);
+        }else{
+            return Tip("该自提点未找到");
+        }
+    });
+    $(document).on("click",".wrap-operate .delete",function(){
+        if(confirm("确认删除该自提点吗？")){
+            var key = "自提点"+cur_address.find(".self-index").html();
+            deleteMarker(key);
+            $(this).closest("li").remove();
+        }
+    });
+    function getPointByName(map, myGeo, address,flag){
+        myGeo.getPoint(address, function(point){
+            if (point) {
+                cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
+                map.centerAndZoom(point, 15);
+                initPoint(map,point,myGeo,flag);
+            }else{
+                Tip("根据您填写的地址未能找到正确位置，请重新填写哦！");
+            }
+        });
+    }
+    function getMarker(key){
+        var allOverlay = map.getOverlays();
+        for (var i = 0; i < allOverlay.length; i++){
+            if(allOverlay[i].getLabel().content == key){
+                return allOverlay[i];
+            }
+        }
+        return null;
+    }
+    function deleteMarker(key){
+        var allOverlay = map.getOverlays();
+        for (var i = 0; i < allOverlay.length; i++){
+            if(allOverlay[i].getLabel().content == key){
+                map.removeOverlay(allOverlay[i]);
+                return true;
+            }
+        }
+        return false;
+    }
+    function initPoint(map,point,myGeo,flag){
+        var index = cur_address.index();
+        var key = "自提点"+cur_address.find(".self-index").html();
+        if(!flag){
+            deleteMarker(key);
+            marker = new BMap.Marker(point);
+            marker.enableDragging();
+            map.addOverlay(marker);
+        }else{
+            marker.disableDragging();
+        }
+        marker.addEventListener("dragend",attribute);
+        var label = new BMap.Label("自提点"+cur_address.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
+        label.setStyle({
+            border:"none",
+            fontWeight:"bold"
+        });
+        marker.setLabel(label);
+        function attribute(){
+            var p = marker.getPosition();  //获取marker的位置
+            myGeo.getLocation(p, function(rs){
+                var addComp = rs.addressComponents;
+                $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+            });
+        }
+    }
+    function initMarker(){
+        var $list = $(".self-address-list").children("li");
+        if($list.size()==0) return false;
+        for(var i=0; i<$list.size(); i++){
+            var $item = $list.eq(i);
+            var lng = parseFloat($item.attr("data-lng"));
+            var lat = parseFloat($item.attr("data-lat"));
+            var mar = new BMap.Marker(point);
+            map.addOverlay(mar);
+            mar.addEventListener("dragend",attribute);
+            var label = new BMap.Label("自提点"+$item.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
+            label.setStyle({
+                border:"none",
+                fontWeight:"bold"
+            });
+            mar.setLabel(label);
+            function attribute(){
+                var p = marker.getPosition();  //获取marker的位置
+                myGeo.getLocation(p, function(rs){
+                    var addComp = rs.addressComponents;
+                    $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                });
+            }
+        }
+    }
+}
+//根据省市名称获取code
+function initProviceAndCityCode(p, c){
+    $.each(window.dataObj.area,function(name,value){
+        if(value.name==p){
+            $("#provinceAddress").attr("data-code",name);
+            if(value['city']){
+                $.each(value.city,function(i,n){
+                    if(n.name==c){
+                        $("#provinceAddress").attr("data-code",i);
+                        return false;
+                    }
+                })
+            }
+            return false;
+        }
+    })
 }
