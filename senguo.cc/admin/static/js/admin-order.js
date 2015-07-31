@@ -166,6 +166,18 @@ $(document).ready(function(){
         orderTypeActive($this,'edit_ontime_on');
 
     });
+    //自提模式开启/关闭
+    $(document).on('click','#stopSelf',function(){
+        var $this=$(this);
+        if(confirm('自提模式被关闭后用户下单时将不可选择该模式，确认要关闭自提模式吗？'))
+        {
+            orderTypeActive($this,'edit_self_on');
+        }
+    });
+    $(document).on('click','#startSelf',function(){
+        var $this=$(this);
+        orderTypeActive($this,'edit_self_on');
+    });
     //立即送设置
     $(document).on('click','#sendNowConfig',function(){SendNowConfig()});
     //商品列表下标

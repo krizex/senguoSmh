@@ -85,7 +85,7 @@
             <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-green" id="startOnTime">启用</a>
             {% end %}
         {% elif order_type ==3 %}
-            {% if current_shop.config.ontime_on==True %}
+            {% if current_shop.config.self_on==True %}
             <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopSelf">停用</a>
             {% else %}
             <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-green" id="startSelf">启用</a>

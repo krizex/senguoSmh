@@ -184,6 +184,9 @@ $(document).ready(function(){
     operateSelf("set",$(this).closest("li"));
 }).on("click",".wrap-operate .set-default",function(){
     operateSelf("default",$(this).closest("li"));
+}).on("click",".condition-list a",function(){
+    orderItem(0);
+    $("#self_point").html($(this).html()).attr("data-id",$(this).attr("data-id"));
 });
 
 var cur_address = null,edit_flag=false;
