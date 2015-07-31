@@ -205,11 +205,12 @@ $(document).ready(function(){
         if(_total_price<_mincharge_now){
             $('.mincharge_now').removeClass("hidden");
         }
+        $(".send-intime").addClass("active").next(".item_period").show().siblings(".item_period").hide();
     }else{
         if(intime_on!=undefined){
             $('#freight_money').text(_freigh_ontime);
             $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
-            $(".mincharge-send").text(_mincharge_ontime);
+            $(".mincharge-send").text(_mincharge_intime);
             $(".freigh_time").text(_freigh_ontime);
             $(".send-intime").addClass("active").next(".item_period").show().siblings(".item_period").hide();
             $(".mincharge-box").addClass("hidden");
@@ -231,10 +232,23 @@ $(document).ready(function(){
     $(".mincharge-send").text(_mincharge_now);
     $(".freigh_time").text(_freigh_now);
     $(".send-now").addClass("active");
-}).on("click",".ontime-period-choose .item",function(){
-    $(".mincharge-send").text(_mincharge_ontime);
+    $(".ontime-period-choose .available").removeClass("active");
+    $('#freight_money').text(_freigh_now);
+    $('.final_price').text(mathFloat(_total_price+_freigh_now));
+    $(".mincharge-box").addClass("hidden");
+    if(_total_price<_mincharge_now){
+        $('.mincharge_now').removeClass("hidden");
+    }
+}).on("click",".ontime-period-choose .available",function(){
+    $(".mincharge-send").text(_mincharge_intime);
     $(".freigh_time").text(_freigh_ontime);
     $(".send-now").removeClass("active");
+    $('#freight_money').text(_freigh_ontime);
+    $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
+    $(".mincharge-box").addClass("hidden");
+    if(_total_price<_mincharge_intime){
+        $('.mincharge_intime').removeClass("hidden");
+     }
 }).on('click','.type-choose .item',function(){
     var $this=$(this);
     pulse($this);
@@ -246,43 +260,39 @@ $(document).ready(function(){
     $this.siblings(".item_period").hide();
     $this.siblings(".send_type_item").removeClass("active");
     $this.addClass("active").next(".item_period").show();
-    if(_type=="ontime" || _type == "self"){
-        if(_type=="ontime"){
-             $('#freight_money').text(_freigh_ontime);
-             $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
-             $(".mincharge-box").addClass("hidden");
-             if(_total_price<_mincharge_intime){
-                $('.mincharge_intime').removeClass("hidden");
-             }
-             $(".self-address").addClass("hidden");
-        }else{
-            $('#freight_money').text(0);
-            $('.final_price').text(mathFloat(_total_price));
-            $(".mincharge-box").addClass("hidden");
-            $(".self-address").removeClass("hidden");
-        }
-    }else if(_type="now"){
-        $('#freight_money').text(_freigh_now);
-        $('.final_price').text(mathFloat(_total_price+_freigh_now));
+    console.log(_type);
+    if(_type == "self"){
+        $('#freight_money').text(0);
+        $('.final_price').text(mathFloat(_total_price));
         $(".mincharge-box").addClass("hidden");
-        $(".mincharge-send").text();
-        if(_total_price<_mincharge_now){
-            $('.mincharge_now').removeClass("hidden");
+        todayChoose();
+    }else{
+        if($(".send-now").hasClass("active")){
+            $('#freight_money').text(_freigh_now);
+            $('.final_price').text(mathFloat(_total_price+_freigh_now));
+        }else{
+            $('#freight_money').text(_freigh_ontime);
+            $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
         }
-        $(".self-address").addClass("hidden");
     }
 }).on("click",".ontime_send_day .type-today",function(){
     $(".send-now").show();
+    if($(".send-now").hasClass("available")){
+        $('#freight_money').text(_freigh_now);
+        $('.final_price').text(mathFloat(_total_price+_freigh_now));
+    }
 }).on("click",".ontime_send_day .type-tomorrow",function(){
     $(".send-now").hide();
+    $('#freight_money').text(_freigh_ontime);
+    $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
 }).on('click',".period-choose .item",function(){
     var $this=$(this);
-    if($this.hasClass('available')) {
+    if($this.hasClass('available')){
         pulse($this);
         $this.addClass('active').siblings().removeClass('active');
     }
 }).on('click',".type-today",function(){
-    var _item=$(this).parents(".type-choose").next(".period-choose").find(".item");
+    var _item=$(this).parents(".type-choose").siblings(".period-choose").find(".item");
     var time=new Date();
     var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
     var stop_range=Int($(this).parents(".type-choose").siblings('.stop-range').val().trim());
@@ -300,15 +310,26 @@ $(document).ready(function(){
         }
         if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
     });
-    var available=$(this).parents(".type-choose").next(".period-choose").find(".available").first();
-    available.addClass('active').siblings().removeClass('active');
+    if($(".send-intime").hasClass("active")){
+        if($(".send-now").hasClass("available")){
+        $(".send-now").addClass("active")
+        }else{
+            var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
+            available.addClass('active').siblings().removeClass('active');  
+        }
+    }else if($(".send-self").hasClass("active")){
+        var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
+        available.addClass('active').siblings().removeClass('active');
+    }
+    
+    
 }).on('click',".type-tomorrow",function(){
-    var _item=$(this).parents(".type-choose").next(".period-choose").find(".item");
+    var _item=$(this).parents(".item_period").find(".period-choose .item");
     _item.each(function(){
         var $this=$(this);
         $this.addClass('available').removeClass('not_available');
     });
-    _item.first().addClass('active').siblings().removeClass('active');
+    _item.first().addClass('active').siblings().removeClass('active'); 
 }).on("click",".pay_type .item",function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
@@ -376,16 +397,21 @@ $(document).ready(function(){
 
 _price_list=[];
 _total_price=0;
-_freigh_ontime=Int($('.freigh_time').attr("data-ontime"));
-_freigh_now=Int($('.freigh_time').attr("data-now"));
-_mincharge_ontime=Int($('.mincharge-send').attr("data-ontime"));
-_mincharge_now=Int($('.mincharge-send').attr("data-now"));
+_freigh_ontime=parseInt($('.freigh_time').attr("data-ontime"));
+_freigh_now=parseInt($('.freigh_time').attr("data-now"));
+_mincharge_intime=parseInt($('.mincharge-send').attr("data-ontime"));
+_mincharge_now=parseInt($('.mincharge-send').attr("data-now"));
 
 function todayChoose(){
     $(".send_day ").each(function(){
         var send_item=$(this);
         var stop_range=Int(send_item.siblings('.stop-range').val().trim());
         var now_on=$('.send-now').attr('data-config');
+        if(send_item.parents(".item_period").prev(".send_type_item").hasClass("active")){
+            var _type=send_item.parents(".item_period").prev(".send_type_item").attr("data-type");  
+        }else{
+            _type = ""
+        }
         var today=send_item.find('.active').data('id');
         var time=new Date();
         var time_now=checkTime(time.getHours())+':'+checkTime(time.getMinutes())+':'+checkTime(time.getSeconds());
@@ -416,15 +442,20 @@ function todayChoose(){
                });
             });
             if(now_on!=undefined){
-                var stop_now_time=$(".now_startMin").val();
-                console.log(stop_now_time);
-                console.log(time_now);
-                if(stop_now_time>time_now){
-                    $(".send-now").addClass("active");
-                }else{
+                if(_type=="self"){
+                    $(".send-now").addClass("not_available");
                     var available=send_item.siblings(".period-choose").find(".available").first();
                     available.addClass('active').siblings().removeClass('active');
+                }else{
+                    var stop_now_time=$(".now_startMin").val();
+                    if(stop_now_time>time_now){
+                        $(".send-now").addClass("active");
+                    }else{
+                        var available=send_item.siblings(".period-choose").find(".available").first();
+                        available.addClass('active').siblings().removeClass('active');
+                    }  
                 }
+               
             }else{
                 $(".send-now").addClass("not_available");
                 var available=send_item.siblings(".period-choose").find(".available").first();
@@ -660,15 +691,21 @@ function orderSubmit(target){
     var online_type = "";
     var period_id = "";
     var self_address_id = "";
-    var type=parseInt($('.send_type_item.active').attr('data-id'));
-    if(type==2){
-       var today=$('.ontime_send_day').find('.active').attr('data-id');
-       period_id=$('.ontime-period-choose').find('.active').attr('data-id'); 
-    }else if(type==3){
+    var type;
+    if($(".send-now").hasClass("active")){
+        type=1;
+    }else if($(".ontime-period-choose.available.active")){
+        type=2;
+        var today=$('.ontime_send_day').find('.active').attr('data-id');
+        period_id=$('.ontime-period-choose').find('.active').attr('data-id');
+    }
+    if($(".send-self").hasClass("active")){
+        type=3;
         var today=$('.self_send_day').find('.active').data('id');
         period_id=$('.self-period-choose').find('.active').attr('data-id');
-        self_address_id=$('.self-address').find('.active').attr('data-id');
+        self_address_id=$('.self-address-list').find('.active').attr('data-id');
     }
+    console.log(type);
     var address_id=$('#addressType').find('.active').attr('data-id');
     var pay_type=$('#payType').find('.active').attr('data-id');
     var message=$('#messageCon').val();

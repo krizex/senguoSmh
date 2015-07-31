@@ -1415,7 +1415,6 @@ class Cart(CustomerBaseHandler):
 			self_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=1 ).all()
 		except:
 			self_periods= []
-		print(self_periods)
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
 		coupon_number=0
@@ -1450,11 +1449,16 @@ class Cart(CustomerBaseHandler):
 				data.append(x_coupon)
 		self_address_list=[]
 		try:
-			self_address=self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,active=1).all()
+			self_address=self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,active=1)\
+			.order_by(models.SelfAddress.if_default).all()
 		except:
 			self_address=None
 		if self_address:
-			self_address_list=[x for x in self_address]
+			try:
+				self_address_list=[x for x in self_address]
+			except:
+				self_address_list=None
+		print(self_address_list)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
@@ -2179,10 +2183,11 @@ class Order(CustomerBaseHandler):
 			if order.shop.admin.has_mp:
 				self.order_cancel_msg(self.session,order,cancel_time)
 			else:
-				self.order_cancel_msg(order,cancel_time,None)
+				self.order_cancel_msg(self.session,order,cancel_time,None)
 			#使用优惠券
 			coupon_key=order.coupon_key
-			if coupon_key!='None':
+			print(coupon_key)
+			if coupon_key and coupon_key !='None':
 				q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
 				q.update(session=self.session,use_date=None,order_id=None,coupon_status=1)
 				qq=self.session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
