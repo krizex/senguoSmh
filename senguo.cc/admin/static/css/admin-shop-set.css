@@ -131,6 +131,7 @@
 .shop_status-list li{width:88px;height:30px;line-height:30px;}
 .shop_status-list li:hover{color:#fff;background-color:#6ba4ef;}
 
+#dropdownMenu1{width:61px;}
 .offline_entity-list{width:61px;top:28px;left:0;cursor:pointer;}
 .offline_entity-list li{width:59px;height:30px;line-height:30px;}
 .offline_entity-list li:hover{color:#fff;background-color:#6ba4ef;}
