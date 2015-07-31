@@ -1402,8 +1402,6 @@ class Order(AdminBaseHandler):
 				pay_type = int(self.args["pay_type"])
 				if pay_type != 9:#not all
 					order_list = order_list.filter(models.Order.pay_type==pay_type)
-			print(self.args)
-			print(self.args["self_id"])
 			if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
 				order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
 
