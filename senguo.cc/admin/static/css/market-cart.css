@@ -141,3 +141,4 @@
 .text-greyc{color:#ccc !important;}
 
 .send-now.active span{color:#33CC66 !important;}
+.self-address-list .active:hover{color:#33CC66;}

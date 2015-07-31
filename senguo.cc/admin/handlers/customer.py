@@ -1450,7 +1450,7 @@ class Cart(CustomerBaseHandler):
 		self_address_list=[]
 		try:
 			self_address=self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,active=1)\
-			.order_by(models.SelfAddress.if_default).all()
+			.order_by(models.SelfAddress.if_default.desc()).all()
 		except:
 			self_address=None
 		if self_address:
@@ -1458,7 +1458,6 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
-		print(self_address_list)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\

@@ -1353,10 +1353,7 @@ class Order(AdminBaseHandler):
 	def get(self):
 		self.if_current_shops()
 		order_type = self.args["order_type"]
-		if "self_id" in self.args:
-			self_address_id = int(self.args["self_address_id"])
-		else:
-			self_address_id = 0
+		
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
 			atonce,ontime,new_order_sum = 0,0,0
 			count = self._count()
@@ -1406,6 +1403,9 @@ class Order(AdminBaseHandler):
 				if pay_type != 9:#not all
 					order_list = order_list.filter(models.Order.pay_type==pay_type)
 
+			if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
+				order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
+
 			if order_status == 1:#filter order_status
 				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 					not_(models.Order.status.in_([-1,0]))).count()
@@ -1413,24 +1413,24 @@ class Order(AdminBaseHandler):
 				self.current_shop.new_order_sum = order_sum
 				self.session.commit()
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status == 1 and x.self_address_id == self_address_id]
+					orders = [x for x in order_list if x.type == order_type and x.status == 1]
 
 			elif order_status == 2:#unfinish
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4] and x.self_address_id == self_address_id]
+					orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
 
 			elif order_status == 3:
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7) and x.self_address_id == self_address_id]
+					orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
 
 			elif order_status == 4:
 				pass
 			elif order_status == 5:#all
 				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.self_address_id == self_address_id]
+					orders = [x for x in order_list if x.type == order_type]
 			else:
 				return self.send.send_error(404)
-
+			print(orders)
 			if self.args["filter"] !=[]:
 				filter_status = self.args["filter"]
 				if filter_status  == "send_positive":
@@ -1446,7 +1446,7 @@ class Order(AdminBaseHandler):
 				elif filter_status  == "price_desc":
 					orders.sort(key = lambda order:order.totalPrice,reverse = True)
 
-
+			print(orders)
 			count = len(orders)
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			session = self.session
@@ -1472,8 +1472,20 @@ class Order(AdminBaseHandler):
 		except:
 			shop_city,shop_province,shop_lat,shop_lon="","",0,0
 
+		self_address_list=[]
+		try:
+			self_address=self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id).\
+			filter(models.SelfAddress.active!=0).order_by(models.SelfAddress.if_default.desc()).all()
+		except:
+			self_address=None
+		if self_address:
+			try:
+				self_address_list=[x for x in self_address]
+			except:
+				self_address_list=None
+
 		return self.render("admin/orders.html",order_type=order_type,shop_city=shop_city,shop_province=shop_province,\
-			shop_lat=shop_lat,shop_lon=shop_lon,context=dict(subpage='order'))
+			shop_lat=shop_lat,shop_lon=shop_lon,self_address_list=self_address_list,context=dict(subpage='order'))
 
 
 	def edit_status(self,order,order_status,send_message=True):
@@ -1652,8 +1664,9 @@ class Order(AdminBaseHandler):
 					 address_lsit = None
 				if address_lsit:
 					for address in address_lsit:
+						print(address.id)
 						if address.id != address_id:
-							self_address.if_default = 0
+							address.if_default = 0
 			self.session.commit()
 
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):

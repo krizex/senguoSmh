@@ -99,12 +99,12 @@
     <div class="cate-title dgreen">选择自提点 : </div>
     <div class="dropdown slide-down-select pull-left w130 self-slide">
         <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu6" data-toggle="dropdown">
-            <em class="pull-left filter" data-id="0" id="self_point">所有自提点</em>
+            <em class="pull-left" data-id="-1" id="self_point">所有自提点</em>
             <span class="caret pull-right no-margin-left rotate0"></span>
         </button>
         <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu6" id="currentShopChange6">
             <li role="presentation">
-                <a class="item" href="javascript:;" data-id="0">所有自提点</a>
+                <a class="item" href="javascript:;" data-id="-1">所有自提点</a>
             </li>
             {% set self_addresses = [ x for x in handler.current_shop.config.self_addresses if x.active != 0]%}
             {% for index,self_address in enumerate(self_addresses) %}
@@ -355,7 +355,8 @@
                     <p class="tit clearfix">配送时间：</p>
                     <div class="send-time w450 center-block">
                         <ul class="time-list">
-                            {% for period in current_shop.config.periods%}
+                            {% set ontime_periods = [x for x in current_shop.config.periods if x.config_type == 0]%}
+                            {% for period in ontime_periods %}
                             <li class="time-list-item set-width-float time-period to-edit-item edit_item_box omg_item" data-id="{{period.id}}">
                                 <div class="staff-work-mode action-mode pull-left period-action" data-id="{{period.active}}">
                                     <a class="work-mode" href="javascript:;" style="display:none">已启用</a>
@@ -523,8 +524,7 @@
                     </p>
                     <ul class="self-address-list">
                     {% set arrNum = ['一','二','三','四','五','六','七','八','九','十'] %}
-                    {% set self_addresses = [ x for x in handler.current_shop.config.self_addresses if x.active != 0]%}
-                    {% for index,self_address in enumerate(self_addresses) %}
+                    {% for index,self_address in enumerate(self_address_list) %}
                         <li class="group" data-id="{{self_address.id}}" data-lat="{{self_address.lat}}" data-lng="{{self_address.lon}}">
                             <div class="wrap-operate pull-right">
                                 <a href="javascript:;" class="pull-right set-default">设为默认</a>
@@ -534,7 +534,7 @@
                             <a href="javascript:;" class="switch-abtn {% if self_address.active == 1 %}switch-abtn-active{% end %}"><span class="a_on">已</span><span class="a_off">未</span>启用</a>
                             <a href="javascript:;" class="cur_loc"></a>
                             <span class="text-grey3  address-text"><span>自提点<span class="self-index">{{arrNum[index]}}</span> : <span class="self-addr">{{self_address.address}}</span></span>
-                            <span class="default-address dgreen {% if self_address.if_default == 0 %}hidden{% end %}">（默认自提点）</span></span>
+                            <span class="default-address dgreen {% if self_address.if_default != 1 %}hidden{% end %}">（默认自提点）</span></span>
                         </li>
                        {% end %}
                     </ul>

@@ -184,9 +184,6 @@ $(document).ready(function(){
     operateSelf("set",$(this).closest("li"));
 }).on("click",".wrap-operate .set-default",function(){
     operateSelf("default",$(this).closest("li"));
-}).on("click",".condition-list a",function(){
-    orderItem(0);
-    $("#self_point").html($(this).html()).attr("data-id",$(this).attr("data-id"));
 });
 
 var cur_address = null,edit_flag=false;
@@ -199,7 +196,7 @@ var order_link='/admin/order';
 var _page=0;
 var _page_total;
 function getOrder(){
-    $.getItem('/static/items/admin/order-item.html?v=20150613',function(data){
+    $.getItem('/static/items/admin/order-item.html?v=20150713',function(data){
             $list_item=data;
             //商品列表item
     	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150613');
@@ -323,7 +320,10 @@ function orderItem(page){
                     var del_reason=data[i]['del_reason'];
                     var nickname=data[i]['nickname'];
                     var customer_id=data[i]['customer_id'];
-                          
+                    var _type=data[i]['type'];
+                    if(_type==3){
+                        $item.find(".if_self").text("自提");
+                    }
                     if(!message) {
                         $item.find('.order-message').hide();
                     }
