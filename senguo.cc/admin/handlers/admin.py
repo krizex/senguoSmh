@@ -1277,7 +1277,7 @@ class Comment(AdminBaseHandler):
 		pages=0
 		# print("[AdminComment]current_shop:",self.current_shop)
 		if action == "all":
-			comments = self.get_comments(self.current_shop.id, page, page_size)
+			comments = self.get_comments(self.current_shop.id, page, page_size, False)
 			# print("[AdminComment]comments:",comments,len(comments))
 			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
 				models.Order.status == 6).count()

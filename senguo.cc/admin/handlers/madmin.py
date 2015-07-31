@@ -310,7 +310,7 @@ class Comment(AdminBaseHandler):
 		except:
 			page = 0
 		page_size = 20
-		comments = self.get_comments(shop_id, page, page_size)
+		comments = self.get_comments(shop_id, page, page_size, False)
 		date_list = []
 		nomore = False
 		for comment in comments:

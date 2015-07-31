@@ -774,7 +774,7 @@ class ShopProfile(CustomerBaseHandler):
 			self.session.commit()
 		return self.send_success(notice='签到成功，积分+1')
 
-# 店剖 - 店铺成员
+# 店铺 - 店铺成员
 class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
