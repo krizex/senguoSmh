@@ -1799,8 +1799,7 @@ class CheckCash(SuperBaseHandler):
 
 		# *遍历shop_id_list1每一个shop的id
 		# if 1 == 2:
-		for shop_id in [4]:
-		# for shop_id in shop_id_list1:
+		for shop_id in [1080]:
 			# *查询店铺号在balancehistory中对应的shop_totalprice最新记录		                        	
 			shop_totalprice_history = {}
 			query_list = self.session.query(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d %H:%i:%S"),models.BalanceHistory.shop_totalPrice).\
@@ -1889,7 +1888,8 @@ class CheckCash(SuperBaseHandler):
 						self.session.commit()
 						change_shop_id.append(shop_id)
 				elif len(pay_type_2)< len(balance_type_1):
-					print("@@@@@@@@1",len(pay_type_2),len(balance_type_1))
+					# print("@@@@@@@@1",len(pay_type_2),len(balance_type_1))
+					pass
 				else:
 					pass
 
@@ -1910,9 +1910,6 @@ class CheckCash(SuperBaseHandler):
 
 				# *判断pay_type_3的长度是否大于balance_type_3，若大于，则说明order表中肯定有在线支付的订单记录没有插入到balancehistory表中，这时就要把相关记录插入到balancehistory表中
 				if len(pay_type_3) > len(balance_type_3):
-					# print("!!@@@11111111111111",shop_id)
-					# print("@@@@",len(pay_type_3))
-					# print(len(balance_type_3))
 					insert_order_num = [i for i in pay_type_3 if i not in balance_type_3]
 					insert_list = self.session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.online_type).\
 						       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
@@ -1935,7 +1932,8 @@ class CheckCash(SuperBaseHandler):
 						self.session.commit()
 						change_shop_id.append(shop_id)
 				elif len(pay_type_3) < len(balance_type_3):
-					print("@@@@@@@@2",len(pay_type_3),len(balance_type_3))
+					# print("@@@@@@@@2",len(pay_type_3),len(balance_type_3))
+					pass
 				else:
 					pass
 
@@ -1984,7 +1982,8 @@ class CheckCash(SuperBaseHandler):
 						self.session.commit()
 						change_shop_id.append(shop_id)
 				elif len(pay_type_2_delete)< len(balance_type_4_5):
-					print("@@@@@@@@3",len(pay_type_2_delete),len(balance_type_4_5))
+					# print("@@@@@@@@3",len(pay_type_2_delete),len(balance_type_4_5))
+					pass
 				else:
 					pass
 
@@ -2107,12 +2106,102 @@ class CheckCash(SuperBaseHandler):
 							self.session.commit()
 							change_shop_id.append(shop_id)
 				elif len(pay_type_2_3_done)< len(balance_type_6_7):
-					print("@@@@@@@@4",len(pay_type_2_3_done),len(balance_type_6_7))
+					# print("@@@@@@@@4",len(pay_type_2_3_done),len(balance_type_6_7))
 					pass
 				else:
 					pass
+
+			balance_list = self.session.query(models.BalanceHistory.id,func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d %H:%i:%S"),models.BalanceHistory.shop_id,models.BalanceHistory.balance_type,\
+				       models.BalanceHistory.balance_record,models.BalanceHistory.balance_value,models.BalanceHistory.customer_id,models.BalanceHistory.customer_totalPrice,\
+				       models.BalanceHistory.shop_totalPrice,models.BalanceHistory.available_balance,models.BalanceHistory.is_cancel).filter_by(shop_id = shop_id).order_by(models.BalanceHistory.create_time).all()
 			
-		# print(change_shop_id)
+			cancel_list = []
+			query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([4,5])).all()
+			for item in query_list:
+				for i in range(len(item[0])):
+					if item[0][i].isdigit():
+						break
+				cancel_list.append(item[0][i : len(item[0])-2])
+
+			shop_follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop_id,models.CustomerShopFollow.shop_balance != 0).with_lockmode("update").all()
+			if len(shop_follow) != 0:
+				for item in shop_follow:
+					item.shop_balance = 0
+			self.session.commit()
+
+			cur_shop = self.session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
+			cur_shop.shop_balance = 0
+			cur_shop.available_balance = 0
+			self.session.commit()
+
+			for i in range(0,len(balance_list)):
+				item = balance_list[i]
+
+				id = item[0]
+				create_time = item[1]
+				shop_id = item[2]
+				balance_type = item[3]
+				balance_record =  item[4]
+				balance_value =  item[5]
+				customer_id =  item[6]
+				customer_totalPrice =  item[7]
+				shop_totalPrice =  item[8]
+				available_balance =  item[9]
+				is_cancel =  item[10]
+
+				history_record = self.session.query(models.BalanceHistory).filter_by(id = id).with_lockmode("update").first()
+				if history_record.is_cancel != 1:
+					history_record.is_cancel = 0
+				if balance_type == 1:
+					for n in range(len(balance_record)):
+						if balance_record[n].isdigit():
+							break
+					order_num = balance_record[n : len(balance_record)]
+					if order_num in cancel_list:
+						history_record.is_cancel = 1
+
+				shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,shop_id = shop_id).with_lockmode("update").first()
+				if not shop_follow:
+					return self.send_fail('shop_follow not found')
+				cur_shop = self.session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
+
+				if balance_type == 0:
+					shop_follow.shop_balance += balance_value
+					cur_shop.shop_balance += balance_value
+					history_record.customer_totalPrice = shop_follow.shop_balance
+					history_record.shop_totalPrice = cur_shop.shop_balance
+					history_record.available_balance = cur_shop.available_balance
+				elif balance_type == 1:
+					shop_follow.shop_balance -= balance_value
+					history_record.customer_totalPrice = shop_follow.shop_balance
+					history_record.shop_totalPrice = cur_shop.shop_balance
+					history_record.available_balance = cur_shop.available_balance
+				elif balance_type == 2:
+					cur_shop.shop_balance -= balance_value
+					cur_shop.available_balance -= balance_value
+					history_record.customer_totalPrice = shop_follow.shop_balance
+					history_record.shop_totalPrice = cur_shop.shop_balance
+					history_record.available_balance = cur_shop.available_balance
+				elif balance_type == 3:
+					cur_shop.shop_balance += balance_value
+					history_record.customer_totalPrice = shop_follow.shop_balance
+					history_record.shop_totalPrice = cur_shop.shop_balance
+					history_record.available_balance = cur_shop.available_balance
+				elif balance_type in [4,5]:
+					shop_follow.shop_balance += balance_value
+					history_record.customer_totalPrice = shop_follow.shop_balance
+					history_record.shop_totalPrice = cur_shop.shop_balance
+					history_record.available_balance = cur_shop.available_balance
+				elif balance_type in [6,7]:
+					cur_shop.available_balance += balance_value
+					history_record.customer_totalPrice = shop_follow.shop_balance
+					history_record.shop_totalPrice = cur_shop.shop_balance
+					history_record.available_balance = cur_shop.available_balance
+				else:
+					return self.send_error(404)
+
+				self.session.commit()
+
 		####################
 		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
 
