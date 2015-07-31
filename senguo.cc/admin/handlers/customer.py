@@ -487,7 +487,9 @@ class CustomerProfile(CustomerBaseHandler):
 		action = self.args["action"]
 		data = self.args["data"]
 
-		if action == "edit_realname":
+		if action == "edit_nickname":
+			self.current_user.accountinfo.update(session=self.session, nickname=data)
+		elif action == "edit_realname":
 			self.current_user.accountinfo.update(session=self.session, realname=data)
 		elif action == "edit_email":
 			self.current_user.accountinfo.update(session=self.session, email=data)

@@ -350,10 +350,14 @@ class _AccountApi(_CommonApi):
 		u = cls()
 		u.accountinfo = account_info
 		session.add(u)
+		
+		# 2015.7.31 by Sky
+		# 将手机注册用户的昵称默认置为“用户XXXXX”
 		session.flush()
 		id = u.id
 		u = session.query(Accountinfo).filter_by(id = id).one()
 		u.nickname = "用户"+str(id)
+
 		session.commit()
 		return u
 
