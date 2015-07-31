@@ -236,14 +236,19 @@ function orderItem(page){
     }else{
         var link=window.location.href;
         var status=$('.order-status').find('.active').first().attr('data-id');
-        url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page; 
-    } 
-    $('.order-list-content').empty();
+        if(parseInt($.getUrlParam("order_type"))==3){
+            var self_id = $("#self_point").attr("data-id");
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page+'&self_id='+self_id;
+        }else{
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        }
+    }
     $.ajax({
         url:url,
         type:"get",
         success:function(res){
             if(res.success){
+                $('.order-list-content').empty();
                 var data=res.data;
                 $('.page-total').text(parseInt(res.page_sum));
                 _page_total=parseInt(res.page_sum);

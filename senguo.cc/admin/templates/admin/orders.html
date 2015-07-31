@@ -99,22 +99,19 @@
     <div class="cate-title dgreen">选择自提点 : </div>
     <div class="dropdown slide-down-select pull-left w130 self-slide">
         <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu6" data-toggle="dropdown">
-            <em class="pull-left filter" data-id="send_positive">所有自提点</em>
+            <em class="pull-left filter" data-id="0" id="self_point">所有自提点</em>
             <span class="caret pull-right no-margin-left rotate0"></span>
         </button>
         <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu6" id="currentShopChange6">
             <li role="presentation">
-                <a class="item" href="javascript:;" data-id="send_positive">所有自提点</a>
+                <a class="item" href="javascript:;" data-id="0">所有自提点</a>
             </li>
+            {% set self_addresses = [ x for x in handler.current_shop.config.self_addresses if x.active != 0]%}
+            {% for index,self_address in enumerate(self_addresses) %}
             <li role="presentation">
-                <a class="item" href="javascript:;" data-id="send_positive">华科南三门</a>
+                <a class="item" href="javascript:;" data-id="{{self_address.id}}">{{self_address.address}}</a>
             </li>
-            <li role="presentation">
-                <a class="item" href="javascript:;" data-id="send_desc">华科南二门</a>
-            </li>
-            <li role="presentation">
-                <a class="item" href="javascript:;" data-id="send_desc">华科正大门</a>
-            </li>
+            {% end %}
         </ul>
     </div>
 </div>

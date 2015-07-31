@@ -193,11 +193,7 @@ $(document).ready(function(){
                     var index = $(".order-type").children(".active").index();
                     $("#atonce").text(res.atonce);
                     $("#ontime").text(res.ontime);
-                    /*if(res.new_order_sum>0){
-                        $("#new-order-box").removeClass("hidden");
-                    }else{
-                        $("#new-order-box").addClass("hidden");
-                    }*/
+                    $("#selfPoint").text(res.selfPoint);
                 }
             }
         })
