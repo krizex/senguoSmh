@@ -7,7 +7,6 @@
 .bottom-line{background:url('../svg/cart-paper-border@2x.png') repeat-x;height:8px;background-size:8px;}
 
 .list-group .active{border-color:#f0f4f0;border-left:2px solid #33CC66;color:#33CC66;}
-.list-group .active span{color:#33CC66;}
 .list-group-item:first-child{border-radius:0;}
 .list-group-item:last-child{border-radius:0;}
 .list-group-item{border-left:2px solid #f0f4f0;overflow:hidden;position: relative;}
@@ -140,3 +139,5 @@
 .item-tit{padding:10px;color:#333;}
 .item-tit2{padding:5px 10px;}
 .text-greyc{color:#ccc !important;}
+
+.send-now.active span{color:#33CC66 !important;}

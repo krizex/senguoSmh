@@ -59,7 +59,7 @@
             <div class="send-time-choose clearfix center-block bg-white box-style">
                 <p class="text-left text-grey9 font14 m-b5 pl10">收货时间</p>
                 <div id="sendType" class="send_type list-group">
-                    {% if config.ontime_on == True%}
+                    {% if config.ontime_on==True or  config.now_on==True %}
                     <a data-id="2" class="send-intime list-group-item  seth-50 send_type_item text-grey" data-config="{{config.ontime_on}}" data-type="ontime">
                         <span class="pull-left title set-inl-blo font14">送货上门</span>
                         <p class="text-grey9 title-right">
@@ -67,15 +67,16 @@
                            <!--<span class="mt3">根据选择的时间段送达</span> -->
                         </p>
                     </a>
-                    {% if ontime_periods %}
                     <div id="sendPeriod" class="send_period list-group font14 item_period" style="display:none;">
                         <div class="arrow-top left70"></div>
                         <input type="hidden" class="stop-range" value="{{config.stop_range}}"/>
+                        {% if config.ontime_on == True%}
                         <ul class="send_day nav-pills clearfix text-center type-choose font14 mt10 ontime_send_day">
                             {% set day=config.day_on_time %}
                             <li data-id="1" class="{% if day == 0 or day==1 %}active{% end %} {% if day==2 %}hidden{% end %} pull-left item type-today"><a href="javascript:;" class="text-green">今天</a></li>
                             <li data-id="2" class="{% if day==2 %}active{% end %} {% if day==1 %}hidden{% end %} pull-left item type-tomorrow"><a href="javascript:;" class="text-green">明天</a></li>
                         </ul>
+                        {% end %}
                         <ul class="now-period-choose">
                             {% if config.now_on == True%}<!--立即送-->
                              <li  class="list-group-item available seth-30 item send-now text-grey" data-config="{{config.now_on}}">
@@ -86,6 +87,8 @@
                             </li>
                             {% end %}
                         </ul>
+                        {% if config.ontime_on == True%}
+                        {% if ontime_periods %}
                         <ul class="period-choose ontime-period-choose">
                             {% for period in ontime_periods %}<!--按时达-->
                             <li data-id="{{period.id}}" class="list-group-item available seth-30 item text-grey">
@@ -99,10 +102,11 @@
                             </li>
                             {% end %}
                         </ul>
+                        {% end %}
+                        {% end %}
                     </div>
                     {% end %}
-                    {% end %}
-                     {% if config.self_on == True%}
+                    {% if config.self_on == True%}
                     <a data-id="3" class="send-self  list-group-item item seth-50 send_type_item text-grey" data-config="{{config.self_on}}"  data-type="self">
                         <span class="pull-left title set-inl-blo font14 line50">上门自提</span>
                         <p class="text-grey9 title-right line50">

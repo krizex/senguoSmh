@@ -816,6 +816,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
+		print(order)
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
