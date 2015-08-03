@@ -1547,7 +1547,7 @@ class Balance(SuperBaseHandler):
 		print(super_admin)
 		level = super_admin.level
 		shop_province = super_admin.province
-		print(level,province)
+		print(level,shop_province)
 		if level == 0:
 			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
 			shop_list = self.session.query(models.Shop).all()
@@ -1657,6 +1657,7 @@ class Balance(SuperBaseHandler):
 					shop_province=shop_province).all()
 			else:
 				return self.send_fail('level error')
+
 			count =q[0][1]
 			if q[0][0]:
 				total=q[0][0]
@@ -1665,8 +1666,15 @@ class Balance(SuperBaseHandler):
 
 		# add by jyj 2015-7-4:
 		elif action == 'balance_list':
-			balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
-					filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+			if level == 0:
+				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
+						filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+			elif level == 1:
+				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
+					models.BalanceHistory.shop_totalPrice >=0,models.BalanceHistory.shop_totalPrice != None,shop_province=shop_province).order_by(
+					desc(models.BalanceHistory.create_time))
+			else:
+				return self.send_fail('level error')
 			history_list = balance_list.all()
 
 			exist_id_list = []
