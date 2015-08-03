@@ -170,11 +170,19 @@ $(document).ready(function () {
    window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
 }).on('click','.ok-coupon',function(){
     var type=$('.current-type').attr("data-id");
+    if ($(this).attr("data-flag")=="off"){
+        return;
+    }
+    $(this).attr("data-flag","off");
     addCoupon(type);
 }).on('click','.ok-editcoupon',function(){
     var coupon_id=$(this).attr("data-id");
     var type=$(this).attr("data-type");
     var edit_status=$(this).attr("data-flag");
+    if ($(this).attr("data-config")=="off"){
+        return;
+    }
+    $(this).attr("data-config","off");
     editCoupon(type,coupon_id,edit_status);
 }).on("click",".radio-list .radio",function(){
     if($(this).hasClass("forbidden-btn")){
@@ -558,12 +566,14 @@ function addCoupon(type){
     var action="newcoupon";
     var args={action:action,data:data};
     var url='';
+
     $.postJson(url,args,
         function(res){
             if(res.success){
                 Tip('新建优惠券成功!');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
+                    $(".ok-coupon").attr("data-flag","on");
                 },1500);
             }else{
                 Tip(res.error_text);
@@ -833,6 +843,7 @@ function editCoupon(type,coupon_id,edit_status){
                 Tip('编辑优惠券成功!');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+res.coupon_type;
+                    $(".ok-editcoupon").attr("data-config","on");
                 },1500);
             }else{
                 Tip(res.error_text);

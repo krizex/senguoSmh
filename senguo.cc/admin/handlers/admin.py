@@ -1277,7 +1277,7 @@ class Comment(AdminBaseHandler):
 		pages=0
 		# print("[AdminComment]current_shop:",self.current_shop)
 		if action == "all":
-			comments = self.get_comments(self.current_shop.id, page, page_size)
+			comments = self.get_comments(self.current_shop.id, page, page_size, False)
 			# print("[AdminComment]comments:",comments,len(comments))
 			all_comments = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
 				models.Order.status == 6).count()
@@ -1496,7 +1496,6 @@ class Order(AdminBaseHandler):
 		if order_status == 4:
 			# print('[AdminOrder]edit_status: login in order_status 4')
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
-
 			# 发送订单模版消息给送货员
 			if send_message:
 				self.send_staff_message(self.session,order)
@@ -2631,16 +2630,16 @@ class Goods(AdminBaseHandler):
 				groups = None
 			if groups:
 				group_count = groups.count()
-			if group_count == 5:
+			if group_count >= 5:
 				return self.send_fail('最多只能添加五种自定义分组')
 			if not args["name"] or not args["intro"]:
 				return self.send_fail('请填写相应分组信息')
 			_group = models.GoodsGroup(**args)
 			self.session.add(_group)
-			self.session.commit()
+			self.session.flush()
 
 			new_group_id = _group.id
-			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count-1))
+			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count+2))
 			self.session.add(group_priority)
 			self.session.commit()
 			return self.send_success(id=new_group_id)
@@ -3908,7 +3907,7 @@ class Marketing(AdminBaseHandler):
 				last_day=x.last_day
 			from_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_get_date))
 			to_get_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_get_date))
-			x_coupon={"last_day":last_day,"valid_way":x.valid_way,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
+			x_coupon={"shop_id":current_shop_id,"last_day":last_day,"valid_way":x.valid_way,"coupon_id":x.coupon_id,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"use_rule":x.use_rule,"use_goods_group":use_goods_group,"use_number":x.use_number,"edit_status":edit_status,\
 			"get_number":x.get_number,"total_number":x.total_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"from_get_date":from_get_date,"to_get_date":to_get_date,"get_rule":x.get_rule,"closed":x.closed}
 			data.append(x_coupon)
 	@tornado.web.authenticated

@@ -81,7 +81,7 @@
                             {% if config.now_on == True%}<!--立即送-->
                              <li  class="list-group-item available seth-30 item send-now text-grey" data-config="{{config.now_on}}">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
-                                <span class="pull-left set-inl-blo">下单{{config.intime_period or 0}}分钟内送达<span class="font12 text-greyc ml10">( {{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}} )</span></span>
+                                <span class="pull-left set-inl-blo">{{config.intime_period or 0}}分钟内送达<span class="font12 text-greyc ml10">( {{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}} )</span></span>
                                 <input type="hidden" class="now_startHour" value="{{config.start_time_now}}"/>
                                 <input type="hidden" class="now_startMin" value="{{config.end_time_now}}"/>
                                 <input type="hidden" class="now_stop" value="{{config.intime_period}}"/>
@@ -146,6 +146,7 @@
                             {% for address in self_address_list%}
                             <li data-id="{{address.id}}" class="list-group-item clearfix item seth-30">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
+                                <a class="area-icon set-inl-blo pull-left" href="{{reverse_url('shoparea',handler.shop_code)}}?action=self&id={{address.id}}"></a>
                                 {{address.address}}
                             </li>
                             {% end %}
@@ -174,27 +175,27 @@
                     </li>
                     {% end %}
                 </ul>
-                    <div class="address-box hidden set-w100-fle font12 p">
-                        <div class="bg-grey2 p_10">
-                            <p>
-                                <span class="tit set-inl-blo pull-left">姓名：</span>
-                                <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
-                            </p>
-                            <p>
-                                <span class="tit set-inl-blo pull-left">地址：</span>
-                                <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
-                            </p>
-                            <p>
-                                <span class="tit set-inl-blo pull-left">电话：</span>
-                                <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
-                            </p>
-                            <div class="w118 center-block clearfix mt10">
-                                <button class="btn text-white pull-right bg-green sure_btn" id="receiveAdd">确定</button>
-                                <button class="btn text-white pull-right bg-green hidden sure_btn" id="receiveEdit">确定</button>
-                                <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
-                            </div>
+                <div class="address-box hidden set-w100-fle font12 p">
+                    <div class="bg-grey2 p_10">
+                        <p>
+                            <span class="tit set-inl-blo pull-left">姓名：</span>
+                            <input type="text" placeholder="输入收货人姓名" class="input-sty bg-white pull-left" id="receiveName"/>
+                        </p>
+                        <p>
+                            <span class="tit set-inl-blo pull-left">地址：</span>
+                            <input type="text" placeholder="输入收货人详细地址"  class="input-sty bg-white pull-left" id="receiveAddress"/>
+                        </p>
+                        <p>
+                            <span class="tit set-inl-blo pull-left">电话：</span>
+                            <input type="text" placeholder="输入收货人有效联系电话"  class="input-sty bg-white pull-left" id="receivePhone"/>
+                        </p>
+                        <div class="w118 center-block clearfix mt10">
+                            <button class="btn text-white pull-right bg-green sure_btn" id="receiveAdd">确定</button>
+                            <button class="btn text-white pull-right bg-green hidden sure_btn" id="receiveEdit">确定</button>
+                            <button class="btn text-white bg-greyc pull-right m-r10" id="receiveCancel">取消</button>
                         </div>
                     </div>
+                </div>
             </div>
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
@@ -244,7 +245,7 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="group">
                     <span class="pull-left text-grey9 font14 m-b5 pl10">我的优惠券</span>
-                    <span class="has-coupon pull-left">{{coupon_number}}张优惠券可使用</span>
+                    <span class="has-coupon pull-right">{{coupon_number}}张优惠券可使用</span>
                     <span class="pull-right mr10 coupon_cmoney hidden"><span id="coupon_cmoney">0</span>元</span>
                 </p>
                 <div class="wrap-coupontype">

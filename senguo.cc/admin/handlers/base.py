@@ -588,7 +588,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
 
 	# 获取评论
-	def get_comments(self, shop_id, page=0, page_size=5):
+	def get_comments(self, shop_id, page=0, page_size=5, anonymous=True):
 		comments_new = {}
 		comments_result = []
 		comments_array  = []
@@ -603,26 +603,32 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		comments_count = comments_list.count()-page*page_size
 		comments = comments_list.offset(page*page_size).limit(page_size).all()
 		for item in comments:
-			comments_new['comments']      = item[0]
-			comments_new['create_date']   = item[1]
-			comments_new['order_num']     = item[2]
-			comments_new['comment_reply'] = item[3]
-			comments_new['order_id']      = item[4]
-			comments_new['comment_has_done'] = item[5]
-			comments_new['headimgurl']    = item[6]
-			comments_new['nickname']      = item[7]
-			comments_new['delete_reason'] = item[8]
-			comments_new['decline_reason']= item[9]
+			# comments_new['comments']      = item[0]
+			# comments_new['create_date']   = item[1]
+			# comments_new['order_num']     = item[2]
+			# comments_new['comment_reply'] = item[3]
+			# comments_new['order_id']      = item[4]
+			# comments_new['comment_has_done'] = item[5]
+			# comments_new['headimgurl']    = item[6]
+			if anonymous:
+				if len(item[7]) == 0:
+					comments_new['nickname'] = '***'
+				else:
+					comments_new['nickname'] = item[7][0]+'***'+item[7][-1]
+			else:
+				comments_new['nickname']  = item[7]
+			# comments_new['delete_reason'] = item[8]
+			# comments_new['decline_reason']= item[9]
 			if item[10]:
 				comments_new['comment_imgUrl'] = item[10].split(',')
 			else:
 				comments_new['comment_imgUrl'] = None
-			comments_new['commodity_quality'] = item[11]
-			comments_new['send_speed']        = item[12]
-			comments_new['shop_service']      = item[13]
+			# comments_new['commodity_quality'] = item[11]
+			# comments_new['send_speed']        = item[12]
+			# comments_new['shop_service']      = item[13]
 			comments_new['index'] = comments_count
-			comments_result.append(comments_new)
-			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],\
+			# comments_result.append(comments_new)
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],comments_new['nickname'],item[8],item[9],\
 				comments_new['comment_imgUrl'],item[11],item[12],item[13],comments_new['index']])
 			comments_count = comments_count-1
 		# print("[_AccountBaseHandler]comments_result:",comments_result)
@@ -1083,7 +1089,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if shop_follow.shop_point == None:
 			shop_follow.shop_point = 0
 			shop_follow.shop_point += totalprice
-			session.commit()
+			session.flush()
 			try:
 				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
 			except:

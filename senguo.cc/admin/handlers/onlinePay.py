@@ -214,7 +214,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
-			self.session.commit()
+			self.session.flush()
 			# print("[WeixinPay]shop_balance:",shop.shop_balance)
 
 			# 支付成功后  生成一条余额支付记录
@@ -448,7 +448,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		if not shop:
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
-		self.session.commit()
+		self.session.flush()
 		# print("[AliPay]shop_balance:",shop.shop_balance)
 
 		# 支付成功后  生成一条余额支付记录
@@ -506,7 +506,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		if not shop:
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
-		self.session.commit()
+		self.session.flush()
 		# print("[AliPay]shop_balance:",shop.shop_balance)
 
 		# 支付成功后  生成一条余额支付记录

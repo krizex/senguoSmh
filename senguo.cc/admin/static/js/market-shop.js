@@ -27,9 +27,9 @@ $(document).ready(function(){
 }).on("click","#show-more",function(){
     window.location.href=$(this).find("a").attr("href");
 }).on("click","#go-shop-area",function(){
-    window.location.href="/shoparea/"+$("#shop_code").text();
+    window.location.href="/shoparea/"+$("#shop_code").text()+"?action=shop";
 }).on("click","#go-send-area",function(){
-    window.location.href="/shoparea/"+$("#shop_code").text();
+    window.location.href="/shoparea/"+$("#shop_code").text()+"?action=shop";
 });
 function focus(){
     var url='';
