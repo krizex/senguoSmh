@@ -496,6 +496,9 @@ function todayChoose(){
                     }
                     if(stop_now_time>_time_now){
                         $(".send-now").addClass("active");
+                        if(_total_price<_mincharge_now){
+                            $('.mincharge_now').removeClass("hidden");
+                        }
                     }else{
                         var available=send_item.siblings(".period-choose").find(".available").first();
                         available.addClass('active').siblings().removeClass('active');
