@@ -194,25 +194,17 @@ $(document).ready(function(){
     var now_on=$('.send-now').attr('data-config'); 
     var self_on=parseInt($('.send-self').attr('data-config')); 
     if(now_on!=undefined){
-        $('#freight_money').text(_freigh_now);
-        $('.final_price').text(mathFloat(_total_price+_freigh_now));
-        $(".mincharge-send").text(_mincharge_now);
-        $(".freigh_time").text(_freigh_now);
+        freightNow();
         $(".send-now").addClass("active");
         $(".send_period").show();
         $(".mincharge-box").addClass("hidden");
         $(".send-intime").addClass("active").next(".item_period").show().siblings(".item_period").hide();
     }else{
         if(intime_on!=undefined){
-            $('#freight_money').text(_freigh_ontime);
-            $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
-            $(".mincharge-send").text(_mincharge_intime);
-            $(".freigh_time").text(_freigh_ontime);
+            freightIntime();
             $(".send-intime").addClass("active").next(".item_period").show().siblings(".item_period").hide();
             $(".mincharge-box").addClass("hidden");
-            if(_total_price<_mincharge_intime){
-                $('.mincharge_intime').removeClass("hidden");
-            }
+            minIntime();
         }else if(self_on!=undefined){
             $('#freight_money').text(0);
             $('.final_price').text(mathFloat(_total_price));
@@ -223,37 +215,17 @@ $(document).ready(function(){
     }
     //根据当前时间选择时间段
     todayChoose();
-}).on("click",".send-intime",function(){
-    if($(".send-now").hasClass("active")){
-       if(_total_price<_mincharge_now){
-            $('.mincharge_now').removeClass("hidden");
-        } 
-    }else{
-        if(_total_price<_mincharge_intime){
-            $('.mincharge_intime').removeClass("hidden");
-        }
-    }
 }).on("click",".now-period-choose",function(){
-    $(".mincharge-send").text(_mincharge_now);
-    $(".freigh_time").text(_freigh_now);
     $(".send-now").addClass("active");
     $(".ontime-period-choose .available").removeClass("active");
-    $('#freight_money').text(_freigh_now);
-    $('.final_price').text(mathFloat(_total_price+_freigh_now));
     $(".mincharge-box").addClass("hidden");
-    if(_total_price<_mincharge_now){
-        $('.mincharge_now').removeClass("hidden");
-    }
+    minNow();
+    freightNow();
 }).on("click",".ontime-period-choose .available",function(){
-    $(".mincharge-send").text(_mincharge_intime);
-    $(".freigh_time").text(_freigh_ontime);
     $(".send-now").removeClass("active");
-    $('#freight_money').text(_freigh_ontime);
-    $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
     $(".mincharge-box").addClass("hidden");
-    if(_total_price<_mincharge_intime){
-        $('.mincharge_intime').removeClass("hidden");
-    }
+    minIntime();
+    freightIntime();
 }).on('click','.type-choose .item',function(){
     var $this=$(this);
     pulse($this);
@@ -266,17 +238,31 @@ $(document).ready(function(){
     $this.siblings(".send_type_item").removeClass("active");
     $this.addClass("active").next(".item_period").show();
     if(_type == "self"){
-        $('#freight_money').text(0);
-        $('.final_price').text(mathFloat(_total_price));
-        $(".mincharge-box").addClass("hidden");
-        todayChoose();
-    }else{
-        if($(".send-now").hasClass("active")){
-            $('#freight_money').text(_freigh_now);
-            $('.final_price').text(mathFloat(_total_price+_freigh_now));
+        if($(".send-now").hasClass("available")){
+           minNow();
         }else{
-            $('#freight_money').text(_freigh_ontime);
-            $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
+            $('#freight_money').text(0);
+            $('.final_price').text(mathFloat(_total_price));
+            $(".mincharge-send").text(_mincharge_intime);
+            $(".freigh_time").text(_freigh_ontime);
+        }
+        todayChoose();
+        $(".mincharge-box").addClass("hidden");     
+    }else{
+        if($(".ontime_send_day .type-tomorrow").hasClass("active")){
+            $(".ontime-period-choose .available").first().addClass("active");
+            minIntime();
+            freightIntime();
+        }else{
+             if($(".send-now").hasClass("available")){
+                $(".send-now").addClass("active");
+                minNow();
+                freightNow();
+                $(".ontime-period-choose .available").removeClass("active");
+            }else{
+               minIntime();
+               freightIntime();
+            }
         }
     }
 }).on('click',".period-choose .item",function(){
@@ -308,7 +294,7 @@ $(document).ready(function(){
         if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
     });
     if($(".send-intime").hasClass("active")){
-        if($(".send-now").hasClass("active")){
+        if($(".send-now").hasClass("available")){
             var stop_now_time=$(".now_startMin").val();
             var stop_now=parseInt($(".now_stop").val());
             var _time_now;
@@ -325,6 +311,10 @@ $(document).ready(function(){
                     $('.mincharge_now').removeClass("hidden");
                     $('.mincharge_intime').addClass("hidden");
                 }
+                $('#freight_money').text(_freigh_now);
+                $('.final_price').text(mathFloat(_total_price+_freigh_now));
+                $(".mincharge-send").text(_mincharge_now);
+                $(".freigh_time").text(_freigh_now);
             }else{
                 $(".send-now").removeClass("active").addClass("not_available").removeClass("available");
             }  
@@ -356,6 +346,10 @@ $(document).ready(function(){
                 $('.mincharge_intime').removeClass("hidden");
             }
             $('.mincharge_now').addClass("hidden");
+            $('#freight_money').text(_freigh_ontime);
+            $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
+            $(".mincharge-send").text(_mincharge_intime);
+            $(".freigh_time").text(_freigh_ontime);
         }
     }
     if($(this).parents(".send_period").length>0){
@@ -363,8 +357,6 @@ $(document).ready(function(){
         $('#freight_money').text(_freigh_ontime);
         $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
     }
-}).on("click",".send-self",function(){
-    $(".mincharge-box").addClass("hidden");
 }).on("click",".pay_type .item",function(){
     var index = $(this).index();
     var status = $(this).attr('data-status');
@@ -437,6 +429,32 @@ _freigh_now=parseInt($('.freigh_time').attr("data-now"));
 _mincharge_intime=parseInt($('.mincharge-send').attr("data-ontime"));
 _mincharge_now=parseInt($('.mincharge-send').attr("data-now"));
 
+function minNow(){
+    $('#freight_money').text(_freigh_now);
+    $('.final_price').text(mathFloat(_total_price+_freigh_now));
+    $(".mincharge-send").text(_mincharge_now);
+    $(".freigh_time").text(_freigh_now);
+}
+
+function freightNow(){
+    if(_total_price<_mincharge_now){
+        $('.mincharge_now').removeClass("hidden");
+    } 
+}
+
+function minIntime(){
+    $('#freight_money').text(_freigh_ontime);
+    $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
+    $(".mincharge-send").text(_mincharge_intime);
+    $(".freigh_time").text(_freigh_ontime);
+}
+
+function freightIntime(){
+     if(_total_price<_mincharge_intime){
+        $('.mincharge_intime').removeClass("hidden");
+    }
+}
+
 function todayChoose(){
     $(".send_day ").each(function(){
         var send_item=$(this);
@@ -481,10 +499,11 @@ function todayChoose(){
             });
             if(now_on!=undefined){
                 if(_type=="self"){
-                    $(".send-now").addClass("not_available").removeClass("available");
+                    $(".send-now").removeClass("active");
                     var available=send_item.siblings(".period-choose").find(".available").first();
                     available.addClass('active').siblings().removeClass('active');
                 }else{
+                    console.log(66666);
                     var stop_now_time=$(".now_startMin").val();
                     var stop_now=parseInt($(".now_stop").val());
                     var _time_now;
@@ -494,25 +513,21 @@ function todayChoose(){
                         _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
  
                     }
+                    console.log(stop_now_time);
+                    console.log(_time_now);
                     if(stop_now_time>_time_now){
-                        $(".send-now").addClass("active");
-                        if(_total_price<_mincharge_now){
-                            $('.mincharge_now').removeClass("hidden");
-                        }
+                        $(".send-now").addClass("active").addClass("available");
+                        minNow();
+                        freightNow();
                     }else{
                         var available=send_item.siblings(".period-choose").find(".available").first();
                         available.addClass('active').siblings().removeClass('active');
                         $(".send-now").removeClass("active").addClass("not_available").removeClass("available");
                         $('.mincharge_now').addClass("hidden");
                         $('.mincharge_intime').addClass("hidden");
-                        $('#freight_money').text(_freigh_ontime);
-                        $('.final_price').text(mathFloat(_total_price+_freigh_ontime));
-                        $(".mincharge-send").text(_mincharge_intime);
-                        $(".freigh_time").text(_freigh_ontime);
                         $(".mincharge-box").addClass("hidden");
-                        if(_total_price<_mincharge_intime){
-                            $('.mincharge_intime').removeClass("hidden");
-                        }
+                        minIntime();
+                        freightIntime();
                     }  
                 }
                
