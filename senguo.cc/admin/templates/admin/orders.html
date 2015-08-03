@@ -122,10 +122,10 @@
             <a href="javascript:;">未处理&nbsp;<span class="text-pink num" id="not-deal"></span></a>
         </li>
         <li data-id="2">
-            <a href="javascript:;">配送中&nbsp;<span class="text-pink num"></span></a>
+            <a href="javascript:;">{% if order_type == 3 %}等待自取{% else %}配送中{% end %}&nbsp;<span class="text-pink num"></span></a>
         </li>
         <li data-id="3">
-            <a href="javascript:;">已送达&nbsp;<span class="text-pink num"></span></a>
+            <a href="javascript:;">已完成&nbsp;<span class="text-pink num"></span></a>
         </li>
         <li data-id="4">
             <a href="javascript:;">售后/退款&nbsp;<span class="text-pink num"></span></a>
