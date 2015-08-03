@@ -5,7 +5,7 @@
 
 {% block count %}
 <div class="box admin-right pull-right mb30">
-    	<p class="tit fs16">商品销售额Top30 - 按商品类目排序</p>
+    	<p class="tit fs16">销售额Top30商品类目</p>
     	<div class="choose-change center-block fs16 txt-center">
 		<a href="javascript:;" class="pre-item1 text-grey2"> < </a>
 	             <span class="choose-time">
@@ -17,18 +17,18 @@
 	             <a href="javascript:;" class="next-item1 text-grey2"> > </a>
 	</div>
 	<div class="change-box mb55">　　
-		<ul id="sell_way_change" class="sell-change-list pull-left">
+		<ul id="sell_way_change" class="sell-change-list1 pull-left">
 		            <li><a href="javascript:;" class="sort-date1 text-grey3">按天排</a></li>
 		            <li><a href="javascript:;" class="sort-week1 text-grey3">按周排</a></li>
 		            <li><a href="javascript:;" class="sort-month1 text-grey3">按月排</a></li>
 		</ul>
-		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart1">查看大图</button>
+		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart">查看大图</button>
 	</div>
     	<div class="max-height-roll clearfix mlf20" style="height:400px"><div id="goods_type" class="clearfix"></div></div>
 
     	<div id="type_bigchart_bg" class="div-bigchart_bg invisiable"></div>
     	<div class="wrap-bigchart  max-height-roll2 invisiable"  id="type_bigchart">
-	             <p class="tit mt30 txt-center fs16">商品销售额Top30 - 按商品类目排序<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart_close" title="点击关闭大图">X</button></p>
+	             <p class="tit mt30 txt-center fs16">销售额Top30商品类目<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart_close" title="点击关闭大图">X</button></p>
 	             <p class="choose-time txt-center fs16">
 		              <span class="year-span1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="year1"></span>年</span>
 		              <span class="month-span1"><span class="month1"></span>月</span>
@@ -40,34 +40,34 @@
 
     	<hr class="clearfix"/>
 
-    	<p class="tit fs16">同类商品店铺销售额Top10 - 按店铺名排序</p>
+    	<p class="tit fs16">同类商品销售额Top10店铺</p>
     	<div class="choose-change center-block font18 txt-center">
 		<a href="javascript:;" class="pre-item2 text-grey2"> < </a>
 	             <span class="choose-time fs16">
 		             <span class="year-span2"><span class="year2"></span>年</span>
 		             <span class="month-span2"><span class="month2"></span>月</span>
-		             <span class="date-span2"><span class="date1"></span>日</span>
+		             <span class="date-span2"><span class="date2"></span>日</span>
 		             <span class="week-span2 hidden"><span class="week-month2"></span>月<span class="week-date2"></span>日~<span class="week-month2-2"></span>月<span class="week-date2-2"></span>日</span>
 	             </span>
 	             <a href="javascript:;" class="next-item2 text-grey2"> > </a>
 	</div>
 	<div class="change-box mb55">　　
-		<ul id="sell_way_change" class="sell-change-list pull-left">
+		<ul id="sell_way_change" class="sell-change-list2 pull-left">
 		            <li><a href="javascript:;" class="sort-date2 text-grey3">按天排</a></li>
 		            <li><a href="javascript:;" class="sort-week2 text-grey3">按周排</a></li>
 		            <li><a href="javascript:;" class="sort-month2 text-grey3">按月排</a></li>
 		</ul>
-		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart2">查看大图</button>
+		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_shop_bigchart">查看大图</button>
 	</div>
 
 	<li> 
 	              <div class="tit cate-title">选择商品类目：</div>
 	              <div class="dropdown slide-down-select pull-left w130">
-		                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+		                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
 			                    <em class="pull-left filter_status" id="first_type">AAAA</em>
 			                    <span class="caret pull-right no-margin-left rotate0"></span>
 		                </button>
-		                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentTypeName">
+		                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="currentTypeName">
 		                	      <li>AAAA</li>
 		                	      <li>ABABAB</li>
 		                	      <li>CCCCC</li>
@@ -90,7 +90,7 @@
 
     	<div id="type_bigchart_bg" class="div-bigchart_bg invisiable"></div>
     	<div class="wrap-bigchart  max-height-roll2 invisiable"  id="shop_bigchart">
-	             <p class="tit mt30 txt-center fs20">同类商品店铺销售额Top10 - 按店铺名排序<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart_close" title="点击关闭大图">X</button></p>
+	             <p class="tit mt30 txt-center fs20">同类商品销售额Top10店铺<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart_close" title="点击关闭大图">X</button></p>
 	             <p class="choose-time txt-center fs16">
 		              <span class="year-span2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="year2"></span>年</span>
 		              <span class="month-span2"><span class="month2"></span>月</span>
@@ -102,7 +102,7 @@
 
     	<hr class="clearfix"/>
 
-    	<p class="tit fs16">同组商品店铺销售额Top10 - 按店铺名排序</p>
+    	<p class="tit fs16">同组商品销售额Top10店铺</p>
     	<div class="choose-change center-block fs16 txt-center">
 		<a href="javascript:;" class="pre-item3 text-grey2"> < </a>
 	             <span class="choose-time">
@@ -111,16 +111,30 @@
 		             <span class="date-span3"><span class="date3"></span>日</span>
 		             <span class="week-span3 hidden"><span class="week-month3"></span>月<span class="week-date3"></span>日~<span class="week-month3-2"></span>月<span class="week-date3-2"></span>日</span>
 	             </span>
-	             <a href="javascript:;" class="next-item1 text-grey2"> > </a>
+	             <a href="javascript:;" class="next-item3 text-grey2"> > </a>
 	</div>
 	<div class="change-box mb55">　　
-		<ul id="sell_way_change" class="sell-change-list pull-left">
+		<ul id="sell_way_change" class="sell-change-list3 pull-left">
 		            <li><a href="javascript:;" class="sort-date3 text-grey3">按天排</a></li>
 		            <li><a href="javascript:;" class="sort-week3 text-grey3">按周排</a></li>
 		            <li><a href="javascript:;" class="sort-month3 text-grey3">按月排</a></li>
 		</ul>
-		<!-- <button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart1">查看大图</button> -->
+		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_group_bigchart">查看大图</button>
 	</div>
+	<li> 
+	              <div class="tit cate-title">选择商品分组：</div>
+	              <div class="dropdown slide-down-select pull-left w130">
+		                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu2" data-toggle="dropdown">
+			                    <em class="pull-left filter_status" id="first_group">水果</em>
+			                    <span class="caret pull-right no-margin-left rotate0"></span>
+		                </button>
+		                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="currentGroupName">
+		                	      <li><a class="item">水果</a></li>
+		                	      <li><a class="item">干果</a></li>
+		                	      <li><a class="item">其他商品</a></li>
+		                </ul>
+	            </div>
+    	</li>
     	<div class="max-height-roll clearfix mlf20" style="height:400px"><div id="goods_group" class="clearfix"></div></div>
 
 </div>

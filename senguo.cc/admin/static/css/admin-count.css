@@ -24,10 +24,20 @@
 /**/
 
 /*add by jyj 2015-7-14*/
+.sell-change-list1{margin-left:60px;margin-top: 10px;}
+.sell-change-list1 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.sell-change-list1 li.active{border-color:#44b549;}
+.sell-change-list1 li.active a{color:#44b549;}
+
 .sell-change-list2{margin-left:60px;margin-top: 10px;}
 .sell-change-list2 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
 .sell-change-list2 li.active{border-color:#44b549;}
 .sell-change-list2 li.active a{color:#44b549;}
+
+.sell-change-list3{margin-left:60px;margin-top: 10px;}
+.sell-change-list3 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.sell-change-list3 li.active{border-color:#44b549;}
+.sell-change-list3 li.active a{color:#44b549;}
 /**/
 
 /*add by jyj 2015-7-17*/

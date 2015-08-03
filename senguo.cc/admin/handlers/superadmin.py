@@ -951,8 +951,8 @@ class OrderStatic(SuperBaseHandler):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				if order[1].hour + (order[1].minute+order[3])//60 == 24:
-					data[0] += 1
+				if order[1].hour + (order[1].minute+order[3])//60 >= 24:
+					data[order[1].hour + (order[1].minute+order[3])//60 - 24] += 1
 				else:
 					data[order[1].hour + (order[1].minute+order[3])//60] += 1
 			else:  # 按时达收货时间估计
@@ -975,6 +975,8 @@ class SellStatic(SuperBaseHandler):
 			return self.type_count()
 		elif action == 'shop':
 			return self.shop_count()
+		elif action == 'group':
+			return self.group_count()
 
 	@SuperBaseHandler.check_arguments("start_date:str","end_date:str")
 	def type_count(self):
@@ -985,13 +987,23 @@ class SellStatic(SuperBaseHandler):
 
 		return self.send_success(output_data = output_data)
 
-	@SuperBaseHandler.check_arguments("start_date:str","end_date:str","type_id:str")
+	@SuperBaseHandler.check_arguments("start_date:str","end_date:str","id:int")
 	def shop_count(self):
 		start_date = self.args['start_date']
 		end_date = self.args['end_date']
-		type_id = int(self.args['type_id'])
+		type_id = self.args['id']
 
-		output_data = start_date + '~' + end_date + 'count by shop' + 'type : ' + str(type_id)
+		output_data = start_date + '~' + end_date + 'count by shop' + '  id : ' + str(type_id)
+
+		return self.send_success(output_data = output_data)
+
+	@SuperBaseHandler.check_arguments("start_date:str","end_date:str","id:int")
+	def group_count(self):
+		start_date = self.args['start_date']
+		end_date = self.args['end_date']
+		group_id = self.args['id']
+
+		output_data = start_date + '~' + end_date + 'count by group' + '  id : ' + str(group_id)
 
 		return self.send_success(output_data = output_data)
 ##
