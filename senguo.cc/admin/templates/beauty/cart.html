@@ -79,7 +79,7 @@
                         {% end %}
                         <ul class="now-period-choose">
                             {% if config.now_on == True%}<!--立即送-->
-                             <li  class="list-group-item available seth-30 item send-now text-grey" data-config="{{config.now_on}}">
+                             <li  class="list-group-item available seth-50 item send-now text-grey" data-config="{{config.now_on}}">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
                                 <span class="pull-left set-inl-blo">{{config.intime_period or 0}}分钟内送达<span class="font12 text-greyc ml10">( {{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}} )</span></span>
                                 <input type="hidden" class="now_startHour" value="{{config.start_time_now}}"/>
@@ -92,7 +92,7 @@
                         {% if ontime_periods %}
                         <ul class="period-choose ontime-period-choose">
                             {% for period in ontime_periods %}<!--按时达-->
-                            <li data-id="{{period.id}}" class="list-group-item available seth-30 item text-grey">
+                            <li data-id="{{period.id}}" class="list-group-item available seth-50 item text-grey">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
                                 <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
                                 <span class="pull-left ontime-txt">
@@ -111,7 +111,7 @@
                     <a data-id="3" class="send-self  list-group-item item seth-50 send_type_item text-grey" data-config="{{config.self_on}}"  data-type="self">
                         <span class="pull-left title set-inl-blo font14 line50">上门自提</span>
                         <p class="text-grey9 title-right line50">
-                            <span class="text-grey3">起送价：0元&nbsp;&nbsp;&nbsp;配送费：<span class="freigh_ontime">0</span>元</span>
+                            <span class="text-grey3">无配送费</span>
                            <!--  <span class="mt3">根据选择的自提点自行拿货</span> -->
                         </p>
                     </a>
@@ -129,7 +129,7 @@
                         </ul>
                         <ul class="period-choose self-period-choose">
                         {% for period in self_periods%}
-                            <li data-id="{{period.id}}" class="list-group-item clearfix available seth-30 item text-grey">
+                            <li data-id="{{period.id}}" class="list-group-item clearfix available seth-50 item text-grey">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
                                 <span class="text-grey3 pull-left set-inl-blo period_name text-left">{{period.name}}</span>
                                 <span class="pull-left ontime-txt">
@@ -144,7 +144,7 @@
                         <p class="item-tit">自提地址</p>
                         <ul class="self-address-list type-choose font12 m-b5 clearfix">
                             {% for address in self_address_list%}
-                            <li data-id="{{address.id}}" class="list-group-item clearfix item seth-30">
+                            <li data-id="{{address.id}}" class="list-group-item clearfix item seth-50">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
                                 <a class="area-icon set-inl-blo pull-left" href="{{reverse_url('shoparea',handler.shop_code)}}?action=self&id={{address.id}}"></a>
                                 {{address.address}}

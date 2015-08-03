@@ -167,26 +167,13 @@ $(document).ready(function(){
     $("#addressDetail").removeAttr("disabled").val("").focus();
     $("#save-lbs").attr("data-type","add");
     cur_address = $item;
-}).on("click",".wrap-operate .edit",function(){
-    if(edit_flag) return Tip("请先保存正在编辑的自提点");
-    edit_flag = true;
-    var $item = $(this).closest("li");
-    cur_address = $item;
-    $("#addressDetail").removeAttr("disabled");
-    var text = $item.find(".self-addr").html();
-    if(text=="点击右方修改设置"){
-        $("#addressDetail").val("").focus();
-    }else{
-        $("#addressDetail").val(text).focus();
-    }
-    $("#save-lbs").attr("data-type","edit");
 }).on("click",".switch-abtn",function(){
     operateSelf("set",$(this).closest("li"));
 }).on("click",".wrap-operate .set-default",function(){
     operateSelf("default",$(this).closest("li"));
 });
 
-var cur_address = null,edit_flag=false;
+var cur_address = null,edit_flag=false,is_drag = false;
 var num_arr = ["一","二","三","四","五","六","七","八","九","十"];
 var orders=window.dataObj.order;
 var $list_item;
@@ -950,8 +937,6 @@ function initBmap(){
         }
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
         getPointByName(map, myGeo, address,true);
-        $(this).addClass("forhidden");
-        operateSelf($(this).attr("data-type"),cur_address);
     });
     $(document).on("click",".cur_loc",function(){
         var $item = $(this).closest("li");
@@ -964,7 +949,47 @@ function initBmap(){
             mark.setAnimation(BMAP_ANIMATION_BOUNCE);
             setTimeout(function(){
                 mark.setAnimation();
+            },2000);
+        }else{
+            return Tip("该自提点未找到");
+        }
+    });
+    $(document).on("click",".wrap-operate .edit",function(){
+        if(edit_flag) return Tip("请先保存正在编辑的自提点");
+        edit_flag = true;
+        var $item = $(this).closest("li");
+        cur_address = $item;
+        $("#addressDetail").removeAttr("disabled");
+        var text = $item.find(".self-addr").html();
+        if(text=="点击右方修改设置"){
+            $("#addressDetail").val("").focus();
+        }else{
+            $("#addressDetail").val(text).focus();
+        }
+        $("#save-lbs").attr("data-type","edit");
+        $(".self-address-list").find(".address-text").removeClass("green-txt")
+        cur_address.find(".address-text").addClass("green-txt");
+        var lng = parseFloat($item.attr("data-lng"));
+        var lat = parseFloat($item.attr("data-lat"));
+        var key = "自提点"+$item.find(".self-index").html();
+        map.centerAndZoom(new BMap.Point(lng, lat), 15);
+        marker = getMarker(key);
+        if(marker){
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+            setTimeout(function(){
+                marker.setAnimation();
             },3000);
+            marker.enableDragging();
+            marker.addEventListener("dragend",attribute);
+            function attribute(){
+                is_drag = true;
+                var p = marker.getPosition();  //获取marker的位置
+                myGeo.getLocation(p, function(rs){
+                    var addComp = rs.addressComponents;
+                    $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                    cur_address.attr("data-lng",p.lng).attr("data-lat",p.lat);
+                });
+            }
         }else{
             return Tip("该自提点未找到");
         }
@@ -995,8 +1020,12 @@ function initBmap(){
     function getPointByName(map, myGeo, address,flag){
         myGeo.getPoint(address, function(point){
             if (point) {
-                cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
-                map.centerAndZoom(point, 15);
+                if(!is_drag){
+                    cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
+                }
+                if(!flag){
+                    map.centerAndZoom(point, 15);
+                }
                 initPoint(map,point,myGeo,flag);
             }else{
                 Tip("根据您填写的地址未能找到正确位置，请重新填写哦！");
@@ -1030,7 +1059,10 @@ function initBmap(){
             marker = new BMap.Marker(point);
             marker.enableDragging();
             map.addOverlay(marker);
+            map.centerAndZoom(point, 15);
         }else{
+            $("#save-lbs").addClass("forhidden");
+            operateSelf($("#save-lbs").attr("data-type"),cur_address);
             marker.disableDragging();
         }
         marker.addEventListener("dragend",attribute);
@@ -1042,10 +1074,12 @@ function initBmap(){
         });
         marker.setLabel(label);
         function attribute(){
+            is_drag = true;
             var p = marker.getPosition();  //获取marker的位置
             myGeo.getLocation(p, function(rs){
                 var addComp = rs.addressComponents;
                 $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
             });
         }
     }
@@ -1058,7 +1092,6 @@ function initBmap(){
             var lat = parseFloat($item.attr("data-lat"));
             var mar = new BMap.Marker(new BMap.Point(lng,lat));
             map.addOverlay(mar);
-            mar.addEventListener("dragend",attribute);
             var label = new BMap.Label("自提点"+$item.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
             label.setStyle({
                 border:"none",
@@ -1066,13 +1099,6 @@ function initBmap(){
                 fontWeight:"bold"
             });
             mar.setLabel(label);
-            function attribute(){
-                var p = marker.getPosition();  //获取marker的位置
-                myGeo.getLocation(p, function(rs){
-                    var addComp = rs.addressComponents;
-                    $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
-                });
-            }
         }
     }
 }
