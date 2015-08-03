@@ -215,12 +215,17 @@ $(document).ready(function(){
     }
     //根据当前时间选择时间段
     todayChoose();
-}).on("click",".now-period-choose",function(){
-    $(".send-now").addClass("active");
-    $(".ontime-period-choose .available").removeClass("active");
-    $(".mincharge-box").addClass("hidden");
-    minNow();
-    freightNow();
+}).on("click",".send-now",function(){
+    if($(".send-now").hasClass("available")){
+        $(".send-now").addClass("active");
+        $(".ontime-period-choose .available").removeClass("active");
+        $(".mincharge-box").addClass("hidden");
+        minNow();
+        freightNow();
+    }else{
+        return noticeBox("抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！");
+    }
+    
 }).on("click",".ontime-period-choose .available",function(){
     $(".send-now").removeClass("active");
     $(".mincharge-box").addClass("hidden");
@@ -503,7 +508,6 @@ function todayChoose(){
                     var available=send_item.siblings(".period-choose").find(".available").first();
                     available.addClass('active').siblings().removeClass('active');
                 }else{
-                    console.log(66666);
                     var stop_now_time=$(".now_startMin").val();
                     var stop_now=parseInt($(".now_stop").val());
                     var _time_now;
