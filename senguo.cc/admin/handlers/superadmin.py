@@ -2628,9 +2628,9 @@ class AdminManager(SuperBaseHandler):
 			return self.send_success()
 		elif action == 'all':
 			data = []
-			temp = {}
 			admin_list = self.session.query(models.SuperAdmin).filter_by(level=1).all()
 			for item in admin_list:
+				temp = {}
 				province = self.code_to_text("province",item.province) if  item.province else ""
 				temp['realname'] = item.accountinfo.realname
 				temp['id']       = item.id
@@ -2642,13 +2642,13 @@ class AdminManager(SuperBaseHandler):
 		elif action == 'filter':
 			province = self.args['province']
 			data = []
-			temp = {}
 			admin_list = self.session.query(models.SuperAdmin).filter_by(level=1,province=province).all()
 			for item in admin_list:
+				temp = {}
 				temp['realname'] = item.accountinfo.realname
 				temp['id']       = item.id
 				temp['phone']    = item.accountinfo.phone
-				temp['province'] = item.accountinfo.province
+				temp['province'] = item.province
 				temp['headimgurl_small'] = item.accountinfo.headimgurl_small
 				data.append(temp)
 			return self.send_success(data = data)

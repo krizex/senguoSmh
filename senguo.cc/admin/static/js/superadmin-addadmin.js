@@ -8,6 +8,10 @@ $(document).ready(function(){
         searchUser();
     });
 }).on("click","#add-sure",function(){
+	var $this=$(this);
+	if($this.attr("data-statu")=="1") {
+        return false;
+    }
 	var admin_id=$.trim($("#get-id").val());
 	var province=$("#provinceAddress").attr("data-code");
 	if(!admin_id){
@@ -22,10 +26,12 @@ $(document).ready(function(){
 		"admin_id":admin_id,
 		"province":province
 	};
+	$this.attr("data-statu","1");
 	$.postJson(url,args,function(res){
 		if(res.success){
 			window.location.href="/super/admin?action=check_admin"; 
         }else{
+        	$this.attr("data-statu","");
             alert(res.error_text);
         }
 	});
