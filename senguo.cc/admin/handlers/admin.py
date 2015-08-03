@@ -3428,7 +3428,7 @@ class ShopBalance(AdminBaseHandler):
 			shop_code = self.current_shop.shop_code
 			shop_auth = self.current_shop.shop_auth
 			shop_balance = self.current_shop.shop_balance
-			shop_province= self.current_shop.province
+			shop_province= self.current_shop.shop_province
 			applicant_name = self.current_user.accountinfo.nickname
 			phone = self.args['phone']
 			if not check_msg_token(phone,code):
