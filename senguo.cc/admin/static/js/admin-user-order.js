@@ -173,7 +173,7 @@ $(document).ready(function(){
     operateSelf("default",$(this).closest("li"));
 });
 
-var cur_address = null,edit_flag=false;
+var cur_address = null,edit_flag=false,is_drag = false;
 var num_arr = ["一","二","三","四","五","六","七","八","九","十"];
 var orders=window.dataObj.order;
 var $list_item;
@@ -937,8 +937,6 @@ function initBmap(){
         }
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
         getPointByName(map, myGeo, address,true);
-        $(this).addClass("forhidden");
-        operateSelf($(this).attr("data-type"),cur_address);
     });
     $(document).on("click",".cur_loc",function(){
         var $item = $(this).closest("li");
@@ -975,12 +973,23 @@ function initBmap(){
         var lat = parseFloat($item.attr("data-lat"));
         var key = "自提点"+$item.find(".self-index").html();
         map.centerAndZoom(new BMap.Point(lng, lat), 15);
-        var mark = getMarker(key);
-        if(mark){
-            mark.setAnimation(BMAP_ANIMATION_BOUNCE);
+        marker = getMarker(key);
+        if(marker){
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
             setTimeout(function(){
-                mark.setAnimation();
+                marker.setAnimation();
             },3000);
+            marker.enableDragging();
+            marker.addEventListener("dragend",attribute);
+            function attribute(){
+                is_drag = true;
+                var p = marker.getPosition();  //获取marker的位置
+                myGeo.getLocation(p, function(rs){
+                    var addComp = rs.addressComponents;
+                    $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                    cur_address.attr("data-lng",p.lng).attr("data-lat",p.lat);
+                });
+            }
         }else{
             return Tip("该自提点未找到");
         }
@@ -1011,8 +1020,12 @@ function initBmap(){
     function getPointByName(map, myGeo, address,flag){
         myGeo.getPoint(address, function(point){
             if (point) {
-                cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
-                map.centerAndZoom(point, 15);
+                if(!is_drag){
+                    cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
+                }
+                if(!flag){
+                    map.centerAndZoom(point, 15);
+                }
                 initPoint(map,point,myGeo,flag);
             }else{
                 Tip("根据您填写的地址未能找到正确位置，请重新填写哦！");
@@ -1046,7 +1059,10 @@ function initBmap(){
             marker = new BMap.Marker(point);
             marker.enableDragging();
             map.addOverlay(marker);
+            map.centerAndZoom(point, 15);
         }else{
+            $("#save-lbs").addClass("forhidden");
+            operateSelf($("#save-lbs").attr("data-type"),cur_address);
             marker.disableDragging();
         }
         marker.addEventListener("dragend",attribute);
@@ -1058,10 +1074,12 @@ function initBmap(){
         });
         marker.setLabel(label);
         function attribute(){
+            is_drag = true;
             var p = marker.getPosition();  //获取marker的位置
             myGeo.getLocation(p, function(rs){
                 var addComp = rs.addressComponents;
                 $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
             });
         }
     }
@@ -1074,7 +1092,6 @@ function initBmap(){
             var lat = parseFloat($item.attr("data-lat"));
             var mar = new BMap.Marker(new BMap.Point(lng,lat));
             map.addOverlay(mar);
-            mar.addEventListener("dragend",attribute);
             var label = new BMap.Label("自提点"+$item.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
             label.setStyle({
                 border:"none",
@@ -1082,13 +1099,6 @@ function initBmap(){
                 fontWeight:"bold"
             });
             mar.setLabel(label);
-            function attribute(){
-                var p = marker.getPosition();  //获取marker的位置
-                myGeo.getLocation(p, function(rs){
-                    var addComp = rs.addressComponents;
-                    $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
-                });
-            }
         }
     }
 }
