@@ -27,8 +27,8 @@ session = models.DBSession()
 # # 插入店铺经纬度
 # def getLat():
 #   shops = session.query(models.Shop).all()
+#   total = session.query(models.Shop).count()
 #   i = 0
-#   total = shops.count()
 #   for shop in shops:
 #       if shop.lat == None and shop.lon== None or shop.lat == 0 and shop.lon== 0:
 #           city = code_to_text("city",shop.shop_city)
@@ -59,8 +59,8 @@ session = models.DBSession()
 # 插入店铺自提时间段
 def addSome():
     shops = session.query(models.Shop).all()
+    total = session.query(models.Shop).count()
     i = 0
-    total = shops.count()
     for shop in shops:
         session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
         session.add(models.Period(config_id=shop.config.id, name="中午", start_time="12:00", end_time="13:00", config_type=1))
