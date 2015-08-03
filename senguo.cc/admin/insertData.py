@@ -24,9 +24,11 @@ session = models.DBSession()
 # 		text = dis_dict[int(code)]["name"]
 # 		return text
 
+# # 插入店铺经纬度
 # def getLat():
 # 	shops = session.query(models.Shop).all()
 # 	i = 0
+#   total = shops.count()
 # 	for shop in shops:
 # 		if shop.lat == None and shop.lon== None or shop.lat == 0 and shop.lon== 0:
 # 			city = code_to_text("city",shop.shop_city)
@@ -40,7 +42,7 @@ session = models.DBSession()
 # 				shop.lon = result["result"]["location"]["lng"]
 # 				session.commit()
 # 			i = i+1
-# 			print(i)
+# 			print("Inserting Shop Position:",i,"/",total)
 
 # def spiderShops():
 # 	shops = session.query(models.Spider_Shop).all()
@@ -54,14 +56,19 @@ session = models.DBSession()
 # 			shop.shop_address="湖北省武汉市"+address
 # 		session.commit()
 
+# 插入店铺自提时间段
 def addSome():
 	shops = session.query(models.Shop).all()
+    i = 0
+    total = shops.count()
 	for shop in shops:
 		session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
 		session.add(models.Period(config_id=shop.config.id, name="中午", start_time="12:00", end_time="13:00", config_type=1))
         session.add(models.Period(config_id=shop.config.id, name="下午", start_time="17:00", end_time="18:00", config_type=1))
         session.add(models.Period(config_id=shop.config.id, name="晚上", start_time="21:00", end_time="22:00", config_type=1))
 		session.commit()
+        i = i+1
+        print("Inserting Self Period:",i,"/",total)
 
 g = multiprocessing.Process(name='addSome',target=addSome)
 g.start()
