@@ -58,7 +58,9 @@ def addSome():
 	shops = session.query(models.Shop).all()
 	for shop in shops:
 		session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
-		session.add(models.Period(config_id=shop.config.id, name="白天", start_time="09:00", end_time="21:00",config_type=1))
+		session.add(models.Period(config_id=shop.config.id, name="中午", start_time="12:00", end_time="13:00", config_type=1))
+        session.add(models.Period(config_id=shop.config.id, name="下午", start_time="17:00", end_time="18:00", config_type=1))
+        session.add(models.Period(config_id=shop.config.id, name="晚上", start_time="21:00", end_time="22:00", config_type=1))
 		session.commit()
 
 g = multiprocessing.Process(name='addSome',target=addSome)
