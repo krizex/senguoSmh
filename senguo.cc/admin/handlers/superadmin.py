@@ -2569,7 +2569,7 @@ class AdminManager(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments('action')
 	def get(self):
 		if action == 'add_admin':
-			return self.render('superAdmin/add_admin.html')
+			return self.render('superAdmin/add-admin.html')
 
 
 	@tornado.web.authenticated
