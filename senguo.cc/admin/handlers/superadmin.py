@@ -961,6 +961,43 @@ class OrderStatic(SuperBaseHandler):
 		return self.send_success(data=data)
 ##
 
+# added by jyj 2015-8-3
+#统计－销售统计
+class SellStatic(SuperBaseHandler):
+	def get(self):
+		return self.render("superAdmin/count-sell.html",context=dict(subcount='sell'))
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action:str')
+	def post(self):
+		action = self.args['action']
+		if action == 'type':
+			return self.type_count()
+		elif action == 'shop':
+			return self.shop_count()
+
+	@SuperBaseHandler.check_arguments("start_date:str","end_date:str")
+	def type_count(self):
+		start_date = self.args['start_date']
+		end_date = self.args['end_date']
+
+		output_data = start_date + '~' + end_date + 'count by type' 
+
+		return self.send_success(output_data = output_data)
+
+	@SuperBaseHandler.check_arguments("start_date:str","end_date:str","type_id:str")
+	def shop_count(self):
+		start_date = self.args['start_date']
+		end_date = self.args['end_date']
+		type_id = int(self.args['type_id'])
+
+		output_data = start_date + '~' + end_date + 'count by shop' + 'type : ' + str(type_id)
+
+		return self.send_success(output_data = output_data)
+##
+
+
+
 class Official(SuperBaseHandler):
 	def get(self):
 		return self.render("m-official/home.html")
