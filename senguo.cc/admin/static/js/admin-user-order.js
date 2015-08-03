@@ -949,7 +949,7 @@ function initBmap(){
             mark.setAnimation(BMAP_ANIMATION_BOUNCE);
             setTimeout(function(){
                 mark.setAnimation();
-            },3000);
+            },2000);
         }else{
             return Tip("该自提点未找到");
         }
