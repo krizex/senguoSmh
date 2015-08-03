@@ -252,7 +252,7 @@ function orderItem(page){
                     $('#ontime').text(_count[21]);
                     $("#selfPoint").text(_count[31]);
                 }
-                 if(_page_total <=1){
+                if(_page_total <=1){
                     $('.list-pagination').hide();
                 }
                 else {
@@ -382,12 +382,22 @@ function orderItem(page){
                         $item.find('.address-adapt').hide();
                     }
                     else if(status==1) {
+                        if(_type==3){
+                            $item.find('.to-send').text('开始处理');
+                        }else{
+                            $item.find('.to-send').text('开始配送');
+                        }
                         $item.find('.status_order').removeClass('hidden');
                         $item.find('.able_edit_order').show();
                         $item.find('.able_edit_sender').show();
                         $item.find('.status-send').show();
                     }
                     else if(status==4) {
+                        if(_type==3){
+                            $item.find('.status_send').children('status').text('等待自取');
+                        }else{
+                            $item.find('.status_send').children('status').text('配送中');
+                        }
                         $item.find('.status_send').removeClass('hidden');
                         $item.find('.able_edit_order').show();
                         $item.find('.able_edit_sender').show();
