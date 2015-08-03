@@ -169,11 +169,13 @@ $(document).ready(function(){
     $('.info_sure').each(function(){
         var $this=$(this);
         $this.on('click',function(){
-            if($this.hasClass('code_sure')&&confirm('店铺号用于您的商城链接，设置后将不可更改，是否确定使用该店铺号？'))
-            {
+            if($this.hasClass('code_sure')&&confirm('店铺号用于您的商城链接，设置后将不可更改，是否确定使用该店铺号？')){
+                infoEdit($this);
+            }else if($(this).hasClass("address-sure")){
+                return false;
+            }else{
                 infoEdit($this);
             }
-            else infoEdit($this);
         });
     });
     //修改地理位置
@@ -276,12 +278,12 @@ function initBmap(){
     $(document).on("keydown",function(ev){
         if(ev.keyCode==13){
             var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
-            getPointByName(map, myGeo, address,true);
+            getPointByName(map, myGeo, address);
         }
     });
     $("#search-lbs").on("click",function(){
         var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
-        getPointByName(map, myGeo, address,true);
+        getPointByName(map, myGeo, address);
     });
     $("#hand-search").on("click",function(){
         marker.setAnimation(BMAP_ANIMATION_BOUNCE);
@@ -301,7 +303,12 @@ function initBmap(){
                 pPoint = point;
                 map.removeOverlay(marker);
                 map.centerAndZoom(point, 17);
-                initPoint(map,point,myGeo);
+                $("#info_address").attr("data-lng",point.lng).attr("data-lat", point.lat);
+                if(flag){
+                    initPoint(map,point,myGeo,flag);
+                }else{
+                    initPoint(map,point,myGeo);
+                }
             }else{
                 if(flag){
                     Tip("根据您填写的地址未能找到正确位置，请重新填写哦！");
@@ -309,10 +316,13 @@ function initBmap(){
             }
         });
     }
-    function initPoint(map,point,myGeo){
+    function initPoint(map,point,myGeo,flag){
         marker = new BMap.Marker(point);
         marker.addEventListener("dragend",attribute);
         map.addOverlay(marker);
+        if(flag){
+            infoEdit($("#save-lbs"));
+        }
         function attribute(){
             isHand = true;
             var p = marker.getPosition();  //获取marker的位置

@@ -167,19 +167,6 @@ $(document).ready(function(){
     $("#addressDetail").removeAttr("disabled").val("").focus();
     $("#save-lbs").attr("data-type","add");
     cur_address = $item;
-}).on("click",".wrap-operate .edit",function(){
-    if(edit_flag) return Tip("请先保存正在编辑的自提点");
-    edit_flag = true;
-    var $item = $(this).closest("li");
-    cur_address = $item;
-    $("#addressDetail").removeAttr("disabled");
-    var text = $item.find(".self-addr").html();
-    if(text=="点击右方修改设置"){
-        $("#addressDetail").val("").focus();
-    }else{
-        $("#addressDetail").val(text).focus();
-    }
-    $("#save-lbs").attr("data-type","edit");
 }).on("click",".switch-abtn",function(){
     operateSelf("set",$(this).closest("li"));
 }).on("click",".wrap-operate .set-default",function(){
@@ -955,6 +942,35 @@ function initBmap(){
     });
     $(document).on("click",".cur_loc",function(){
         var $item = $(this).closest("li");
+        var lng = parseFloat($item.attr("data-lng"));
+        var lat = parseFloat($item.attr("data-lat"));
+        var key = "自提点"+$item.find(".self-index").html();
+        map.centerAndZoom(new BMap.Point(lng, lat), 15);
+        var mark = getMarker(key);
+        if(mark){
+            mark.setAnimation(BMAP_ANIMATION_BOUNCE);
+            setTimeout(function(){
+                mark.setAnimation();
+            },3000);
+        }else{
+            return Tip("该自提点未找到");
+        }
+    });
+    $(document).on("click",".wrap-operate .edit",function(){
+        if(edit_flag) return Tip("请先保存正在编辑的自提点");
+        edit_flag = true;
+        var $item = $(this).closest("li");
+        cur_address = $item;
+        $("#addressDetail").removeAttr("disabled");
+        var text = $item.find(".self-addr").html();
+        if(text=="点击右方修改设置"){
+            $("#addressDetail").val("").focus();
+        }else{
+            $("#addressDetail").val(text).focus();
+        }
+        $("#save-lbs").attr("data-type","edit");
+        $(".self-address-list").find(".address-text").removeClass("green-txt")
+        cur_address.find(".address-text").addClass("green-txt");
         var lng = parseFloat($item.attr("data-lng"));
         var lat = parseFloat($item.attr("data-lat"));
         var key = "自提点"+$item.find(".self-index").html();
