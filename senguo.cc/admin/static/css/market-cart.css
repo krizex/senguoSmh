@@ -143,3 +143,5 @@
 .send-now.active span{color:#33CC66 !important;}
 .self-address-list .active:hover{color:#33CC66;}
 .area-icon{width:14px;height:22px;background:url('../svg/icon_list-2.png') 0 -48px;background-size:140px 180px;position: relative;top:8px;margin:6px 5px 0 0;}
+
+.send-self{margin-bottom:0px;}
