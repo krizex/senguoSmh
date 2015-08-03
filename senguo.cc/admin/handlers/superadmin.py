@@ -951,8 +951,8 @@ class OrderStatic(SuperBaseHandler):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				if order[1].hour + (order[1].minute+order[3])//60 == 24:
-					data[0] += 1
+				if order[1].hour + (order[1].minute+order[3])//60 >= 24:
+					data[order[1].hour + (order[1].minute+order[3])//60 - 24] += 1
 				else:
 					data[order[1].hour + (order[1].minute+order[3])//60] += 1
 			else:  # 按时达收货时间估计

@@ -431,7 +431,7 @@ class ShopArea(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?","id?")
 	def get(self,shop_code):
-		shop =  self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
+		shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 		if not shop:
 			return self.send_fail('shop not found')
 		shop_name = ""
@@ -791,7 +791,6 @@ class ShopProfile(CustomerBaseHandler):
 						shop_follow.shop_point += 1
 						# print("[CustomerShopProfile]signin success")
 						self.session.commit()
-
 
 				# if point:
 				#     point.signIn_count += 1
