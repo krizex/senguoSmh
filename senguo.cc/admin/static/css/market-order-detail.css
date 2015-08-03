@@ -48,4 +48,4 @@
 .wrap-qrcode{width:100%;padding:10px 0 15px; background:#fff;margin-top:10px;}
 .wrap-qrcode p{text-align:center;}
 .qrcode{margin: 0 auto;width:140px;height:140px;margin-top:10px;}
-.area-icon{width:14px;height:22px;background:url('../svg/icon_list-2.png') 0 -48px;background-size:140px 180px;position: relative;right: 3px;top:8px;margin-right:5px;}
+.area-icon{width:14px;height:22px;background:url('../svg/icon_list-2.png') 0 -48px;background-size:140px 180px;position: relative;right: 3px;top:3px;margin-right:5px;}
