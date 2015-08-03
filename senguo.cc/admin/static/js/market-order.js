@@ -247,7 +247,7 @@ var goodsList=function(page,action){
                     }
                     else if(order_status==5) {
                         if(type==3){
-                            $item.find('.word').text('完成自取');
+                            $item.find('.word').text('自取完成');
                         }else{
                             $item.find('.word').text('已送达');
                         }

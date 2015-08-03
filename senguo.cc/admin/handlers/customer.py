@@ -434,7 +434,7 @@ class ShopArea(CustomerBaseHandler):
 		shop =  self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 		if not shop:
 			return self.send_fail('shop not found')
-		shop_name = shop.shop_name
+		shop_name = ""
 		address = ""
 		lat = ""
 		lon = ""
@@ -443,6 +443,7 @@ class ShopArea(CustomerBaseHandler):
 		area_radius = ""
 		area_list = ""
 		if self.args["action"] == "shop":
+			shop_name = shop.shop_name
 			lat = shop.lat
 			lon = shop.lon
 			address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
@@ -459,6 +460,7 @@ class ShopArea(CustomerBaseHandler):
 			except:
 				self_address = None
 			if self_address:
+				shop_name = shop.shop_name+" (自提点)"
 				address = self_address.address
 				lat = self_address.lat
 				lon = self_address.lon
@@ -501,7 +503,6 @@ class CustomerProfile(CustomerBaseHandler):
 		if accountinfo.wx_unionid:
 			third.append({'weixin':True})
 		self.render("customer/profile.html", context=dict(birthday=birthday,third=third,shop_info=shop_info,wxnotice=wxnotice))
-
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data","old_password?:str")
