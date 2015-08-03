@@ -230,7 +230,8 @@ class SwitchShop(AdminBaseHandler):
 				shop.total_money = format(total_money,'.2f')
 			else:
 				shop.total_money=0
-			shop.address = self.code_to_text("shop_city",shop.shop_city) +" " + shop.shop_address_detail
+			shop_city = self.code_to_text("shop_city",shop.shop_city)
+			shop.address = shop_city +" " + shop.shop_address_detail  if shop_city  else shop.shop_address_detail
 			shop_list.append(shop.safe_props())
 		return shop_list
 
@@ -1653,7 +1654,7 @@ class Order(AdminBaseHandler):
 					balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.totalPrice,balance_record = '余额退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
-						shop_follow.shop_balance)
+						shop_follow.shop_balance,shop_province = self.current_shop.shop_province)
 					self.session.add(balance_history)
 				self.session.commit()
 
@@ -3428,6 +3429,7 @@ class ShopBalance(AdminBaseHandler):
 			shop_code = self.current_shop.shop_code
 			shop_auth = self.current_shop.shop_auth
 			shop_balance = self.current_shop.shop_balance
+			shop_province= self.current_shop.province
 			applicant_name = self.current_user.accountinfo.nickname
 			phone = self.args['phone']
 			if not check_msg_token(phone,code):
@@ -3436,7 +3438,7 @@ class ShopBalance(AdminBaseHandler):
 				return self.send_fail('您的店铺没有这么多余额')
 			applyCash_history = models.ApplyCashHistory(shop_id = shop_id , value = apply_value ,has_done =0,\
 				shop_code = shop_code,shop_auth = shop_auth , shop_balance = shop_balance,alipay_account = \
-				alipay_account,applicant_name = applicant_name,account_name = account_name)
+				alipay_account,applicant_name = applicant_name,account_name = account_name,shop_province=shop_province)
 			self.session.add(applyCash_history)
 			self.current_shop.update(self.session,alipay_account=alipay_account,alipay_account_name=account_name)
 			self.session.commit()

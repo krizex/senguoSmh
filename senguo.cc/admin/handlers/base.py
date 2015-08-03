@@ -165,10 +165,13 @@ class GlobalBaseHandler(BaseHandler):
 
 		# 将城市编码转换为文字显示（可以由城市编码算出城市所在省份的编码）
 		elif column_name == "shop_city":
-			text += dis_dict[int(code/10000)*10000]["name"]
-			if "city" in dis_dict[int(code/10000)*10000].keys():
-				text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
-			return text
+			if code:
+				text += dis_dict[int(code/10000)*10000]["name"]
+				if "city" in dis_dict[int(code/10000)*10000].keys():
+					text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
+				return text
+			else:
+				return None
 
 		elif column_name == "city":
 			if "city" in dis_dict[int(code/10000)*10000].keys():
@@ -1074,14 +1077,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 6)
+				available_balance=order.shop.available_balance,balance_type = 6,shop_province=shop.shop_province)
 			session.add(balance_history)
 
 		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 7)
+				available_balance=order.shop.available_balance,balance_type = 7,shop_province=shop.shop_province)
 			session.add(balance_history)
 
 		#增 与订单总额相等的积分

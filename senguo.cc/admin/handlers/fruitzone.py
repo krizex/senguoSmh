@@ -1139,7 +1139,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province)
 		self.session.add(balance_history)
 		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()

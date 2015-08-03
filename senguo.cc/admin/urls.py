@@ -169,6 +169,9 @@ handlers = [
 	(r"/super/comment_info",handlers.superadmin.CommentInfo,{},"supercommentInfo"),
 	##
 
+	# added by woody 8.3
+	(r"/super/admin/",handlers.superadmin.AdminManager,{},"superareaadmin"),
+
 	## 店铺申请接入管理
 	# 所有店铺
 	(r"/super/shopManage", handlers.superadmin.ShopManage, {}, "superShopManage"),
