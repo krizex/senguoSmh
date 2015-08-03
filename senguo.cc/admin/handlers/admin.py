@@ -4591,12 +4591,13 @@ class WirelessPrint(AdminBaseHandler):
 				timenow=str(int(time.time())) #当前时间戳
 				machine_code=self.current_shop.config.wireless_print_num #打印机终端号 520
 				mkey=self.current_shop.config.wireless_print_key#打印机密钥 110110
-				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
-				# print("sign str    :",sign)
-				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
-				# print("sign str md5:",sign)
+				if machine_code and mkey:
+					sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
+					sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+				else:
+					print('[autoPrint]sign error')
+					sign = None
 				data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
-				# print("post        :",data)
 				r=requests.post("http://open.10ss.net:8888",data=data)
 
 				# print("======WirelessPrint======")
