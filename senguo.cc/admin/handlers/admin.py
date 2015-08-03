@@ -1484,7 +1484,9 @@ class Order(AdminBaseHandler):
 
 	def _count(self):
 		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
-				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0}
+				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0,
+				 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0
+				 }
 		try:
 			orders = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).all()
 		except:
@@ -3428,7 +3430,7 @@ class ShopBalance(AdminBaseHandler):
 			shop_code = self.current_shop.shop_code
 			shop_auth = self.current_shop.shop_auth
 			shop_balance = self.current_shop.shop_balance
-			shop_province= self.current_shop.province
+			shop_province= self.current_shop.shop_province
 			applicant_name = self.current_user.accountinfo.nickname
 			phone = self.args['phone']
 			if not check_msg_token(phone,code):

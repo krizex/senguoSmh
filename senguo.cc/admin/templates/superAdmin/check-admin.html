@@ -5,44 +5,34 @@
 {% block content %}
 <div class="admin-left text-right pull-left">
     <ul class="nav nav-stacked shop-manage-nav" role="tablist">
-        <li class=""><a href="{{reverse_url('superareaadmin')}}?action=check_admin">查看</a></li>
+        <li class="active"><a href="{{reverse_url('superareaadmin')}}?action=check_admin">查看</a></li>
         {% if if_super%}
-        <li class="active"><a href="{{reverse_url('superareaadmin')}}?action=add_admin">添加</a></li>
+        <li class=""><a href="{{reverse_url('superareaadmin')}}?action=add_admin">添加</a></li>
         {% end %}
     </ul>
 </div>
 <div class="admin-right pull-right">
-    <ul class="user-list clearfix">
-        
-    </ul>
-    <div class="admin-add-box pull-left">
-        <div class="mb10">
-            <span class="pull-left">输入用户的ID：</span>
-            <input type="text" id="inputinfo" placeholder="输入用户ID进行搜索"/>
-            <button  id="search" class="btn sure-btn"/>搜索</button>
-        </div>
-        <div class="mt10">
-            <span class="pull-left">输入用户的ID：</span>
-            <input class="pull-left" type="text" id="get-id"/>
-            <div class="dropdown select-provience pull-left ml10 province_select" data-toggle="modal" data-target="#provinceList">
-                <button class="btn btn-default dropdown-toggle" type="button">
-                    <span  id="provinceAddress" class="reProvince">选择省份</span>
-                    <span class="caret"></span>
-                </button>
-            </div>
-            <button class="btn sure-btn pull-right" id="add-sure">确定</button>
-        </div>
+	 <div class="dropdown select-provience pull-left mb10 province_select" data-toggle="modal" data-target="#provinceList">
+	 	<span>分管区域：</span>
+        <button class="btn btn-default dropdown-toggle ml10" type="button">
+            <span  id="provinceAddress" class="reProvince">所有</span>
+            <span class="caret"></span>
+        </button>
     </div>
+	<ul class="admin-list">
+		
+	</ul>
 </div>
 <div class="modal fade select-popbox" id="provinceList" tabindex="-1" role="dialog" aria-labelledby="provinceAddress" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">省份选择</h4>
+                <h4 class="modal-title">区域选择</h4>
             </div>
             <div class="modal-body">
                 <div class="address-list province-list select-list">
+                	<span id="check-all">所有</span>
                     <ul class="provinceList font14">
                     </ul>
                 </div>
@@ -57,5 +47,5 @@
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/area.js')}}"></script>
-<script src="{{static_url('js/superadmin-addadmin.js')}}"></script>
+<script src="{{static_url('js/superadmin-checkadmin.js')}}"></script>
 {% end %}
