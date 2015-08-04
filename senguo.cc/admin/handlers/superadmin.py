@@ -1042,7 +1042,7 @@ class ShopStatic(SuperBaseHandler):
 
 			# 总订单数
 			total = self.session.query(func.sum(models.Order.totalPrice), func.count()).join(models.Shop,models.Order.shop_id == models.Shop.id).\
-				filter(models.Order.create_date <=end_date,models.Order.status != 0).distinct(models.Order.id).all()
+				filter(models.Order.create_date <=end_date,models.Order.status != 0,models.Shop.shop_province==shop_province).distinct(models.Order.id).all()
 		else:
 			return self.send_fail('level error')
 
