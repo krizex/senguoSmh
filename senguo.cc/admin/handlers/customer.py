@@ -1928,6 +1928,17 @@ class Cart(CustomerBaseHandler):
 					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 					s[0].current_saled -= num
 			session.commit()
+
+			# 订单删除，恢复优惠券
+			coupon_key=order.coupon_key
+			if coupon_key and coupon_key !='None':
+				q=session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
+				q.update(session=session,use_date=None,order_id=None,coupon_status=1)
+				qq=session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
+				use_number=qq.use_number-1
+				qq.update(session,use_number=use_number)
+			session.commit()
+			
 			print("[CustomerCart]Order auto cancel: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
@@ -2213,9 +2224,9 @@ class Order(CustomerBaseHandler):
 				self.order_cancel_msg(self.session,order,cancel_time)
 			else:
 				self.order_cancel_msg(self.session,order,cancel_time,None)
-			#使用优惠券
+
+			# 订单删除，恢复优惠券
 			coupon_key=order.coupon_key
-			print(coupon_key)
 			if coupon_key and coupon_key !='None':
 				q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).with_lockmode("update").first()
 				q.update(session=self.session,use_date=None,order_id=None,coupon_status=1)
@@ -2224,7 +2235,7 @@ class Order(CustomerBaseHandler):
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
 
-				self.order_cancel_msg(self.session,order,cancel_time,None)
+			self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			return self.send_success()
 		elif action == "comment_point":
@@ -2755,7 +2766,7 @@ class payTest(CustomerBaseHandler):
 			if not shop:
 				return self.send_fail('[WxCharge]shop not found')
 			shop.shop_balance += totalPrice
-			self.session.c()
+			self.session.flush()
 			# print("[WxCharge]shop_balance after charge:",shop.shop_balance)
 
 			# 支付成功后  生成一条余额支付记录
