@@ -543,8 +543,6 @@ class SellStatic(AdminBaseHandler):
 					mgoods_list.append(item[0])
 			order_goods_list = fruit_list + mgoods_list
 
-
-
 			total_price_list = []
 			name_list = []
 
@@ -656,8 +654,6 @@ class SellStatic(AdminBaseHandler):
 				if item[0] != '{}' and item[0] != None:
 					mgoods_list.append(item[0])
 			order_goods_list = fruit_list + mgoods_list
-
-
 
 			total_price_list = []
 			name_list = []
@@ -793,8 +789,6 @@ class SellStatic(AdminBaseHandler):
 					if item[0] != '{}' and item[0] != None:
 						mgoods_list.append(item[0])
 				order_goods_list = fruit_list + mgoods_list
-
-
 
 				total_price_list = []
 				name_list = []
@@ -1048,7 +1042,7 @@ class OrderStatic(AdminBaseHandler):
 			start_date = datetime.datetime(now.year, now.month, now.day, 0)
 			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
 			q = q.filter(models.Order.create_date >= start_date,
-					   models.Order.create_date <= end_date)
+						 models.Order.create_date <= end_date)
 		else:
 			return self.send_error(404)
 		ss = q.group_by(func.hour(models.Order.create_date)).all()
@@ -1296,8 +1290,8 @@ class Comment(AdminBaseHandler):
 					   models.Order.customer_id == models.Accountinfo.id).\
 				order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
 			all_comments = self.session.query(models.Accountinfo.headimgurl, models.Accountinfo.nickname,
-										  models.Order.comment, models.Order.comment_create_date, models.Order.num,
-										  models.Order.comment_reply).\
+											  models.Order.comment, models.Order.comment_create_date, models.Order.num,
+											  models.Order.comment_reply).\
 				filter(models.Order.id.in_(order_ids), models.Order.status == 6,models.Order.customer_id == models.Accountinfo.id).count()
 			pages = all_comments/10
 			# print("[AdminComment]comments:",comments)
@@ -1484,7 +1478,7 @@ class Order(AdminBaseHandler):
 		return self.render("admin/orders.html",order_type=order_type,shop_city=shop_city,shop_province=shop_province,\
 			shop_lat=shop_lat,shop_lon=shop_lon,self_address_list=self_address_list,context=dict(subpage='order'))
 
-
+	# 编辑订单状态（order_status == 4:订单配送, order_status == 5:订单送达）
 	def edit_status(self,order,order_status,send_message=True):
 		# if order_status == 4:
 		# when the order complete
@@ -1506,6 +1500,7 @@ class Order(AdminBaseHandler):
 			# 更新fruit 的 current_saled
 			self.order_done(self.session,order)
 
+	# 订单计数
 	def _count(self):
 		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
 				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0,
@@ -1537,6 +1532,8 @@ class Order(AdminBaseHandler):
 		action = self.args["action"]
 		data = self.args["data"]
 		# print("[AdminOrder]current_shop:",self.current_shop)
+		
+		# 添加按时达时间段 / 添加自提时间段
 		if action in ("add_period","add_self_period"):
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
 			end_time = datetime.time(data["end_hour"],data["end_minute"])
@@ -1554,6 +1551,7 @@ class Order(AdminBaseHandler):
 			self.session.commit()
 			return self.send_success(period_id=period.id)
 
+		# 编辑按时达时间段 / 编辑自提时间段
 		elif action in ("edit_period", "edit_period_active"):
 			period = next((x for x in self.current_shop.config.periods if x.id == data["period_id"]), None)
 			if not period:
@@ -1571,21 +1569,25 @@ class Order(AdminBaseHandler):
 				period.active = 1 if period.active == 2 else 2
 				# print("[AdminOrder]On/Off period time, Shop ID:",period.config_id,", On/Off:",period.active)
 			self.session.commit()
+		# 删除按时达/自提时间段
 		elif action == "del_period":
 			try: q = self.session.query(models.Period).filter_by(id=int(data["period_id"]))
 			except:return self.send_error(404)
 			q.delete()
 			self.session.commit()
+		# 编辑按时达时间（全部/今天/明天）
 		elif action == "edit_send_day":
 			self.current_shop.config.day_on_time = int(data["day"])
 			self.session.commit()
 		elif action == "edit_ontime_on":
 			self.current_shop.config.ontime_on = not self.current_shop.config.ontime_on
 			self.session.commit()
-		elif action == "edit_min_charge_on_time":  # 按时达起送金额
+		# 编辑按时达起送金额
+		elif action == "edit_min_charge_on_time":
 			self.current_shop.config.min_charge_on_time = data["min_charge_on_time"]
 			self.session.commit()
-		elif action == "edit_stop_range":  # 下单截止时间（分钟）
+		# 编辑下单截止时间（分钟）
+		elif action == "edit_stop_range":
 			self.current_shop.config.stop_range = data["stop_range"] or 0
 			self.session.commit()
 		elif action == "edit_freight_on_time":
@@ -1600,19 +1602,23 @@ class Order(AdminBaseHandler):
 			self.current_shop.config.update(session=self.session,min_charge_now=data["min_charge_now"],
 											start_time_now=start_time, end_time_now=end_time,
 											freight_now=data["freight_now"] or 0,intime_period=data["intime_period"] or 30)
+		# 开启/关闭自提
 		elif action == "edit_self_on":
 			self.current_shop.config.self_on = not self.current_shop.config.self_on
 			self.session.commit()
+		# 编辑自提时间（全部/今天/明天）
 		elif action == "edit_day_self": #7.30
 			if "day" not in data:
 				return self.send_error(403)
 			self.current_shop.config.day_self = int(data["day"])
 			self.session.commit()
+		# 编辑自提截止时间（分钟）
 		elif action == "edit_end_self": #7.30
 			if "end_self" not in data:
 				return self.send_error(403)
 			self.current_shop.config.self_end_time = int(data["end_self"])
 			self.session.commit()
+		# 添加自提点地址
 		elif action == "add_self_address": #7.30
 			try:
 				self_address_count = self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id)\
@@ -1637,6 +1643,7 @@ class Order(AdminBaseHandler):
 			self.session.add(self_address)
 			self.session.commit()
 			return self.send_success(address_id=self_address.id)
+		# 编辑自提点地址 / 删除自提点 / 设置默认自提点
 		elif action in ("edit_self_address","del_self_address","set_self_address","set_self_default"):
 			if "address_id" not in data:
 				return self.send_fail(403)
@@ -1666,6 +1673,7 @@ class Order(AdminBaseHandler):
 							address.if_default = 0
 			self.session.commit()
 
+		# 编辑订单备注 / 编辑（修改）配送员 / 编辑订单状态（开始配送/完成订单） / 编辑订单总价 / 删除订单 / 打印订单
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
 			try:
 				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).first()
@@ -1732,16 +1740,16 @@ class Order(AdminBaseHandler):
 				customer_id = order.customer_id
 				shop_id = order.shop_id
 				if order.pay_type == 2:
-				#该订单之前 对应的记录作废
+					#该订单之前 对应的记录作废
 					balance_record = ("%{0}%").format(order.num)
 					old_balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_record.like(balance_record)).first()
 					if old_balance_history is None:
 						print('[AdminOrder]Delete order: old history not found')
 					else:
 						old_balance_history.is_cancel = 1
-						self.session.commit()
+						self.session.flush()
 
-				#恢复用户账户余额，同时产生一条记录
+					#恢复用户账户余额，同时产生一条记录
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = order.customer_id,\
 						shop_id = order.shop_id).first()
 					if not shop_follow:
@@ -1758,6 +1766,7 @@ class Order(AdminBaseHandler):
 			elif action == "print":
 				order.update(session=self.session, isprint=1)
 
+		# 批量编辑订单状态（批量配送/批量完成）
 		elif action == "batch_edit_status":
 			order_list_id = data["order_list_id"]
 			notice = ''
@@ -1791,7 +1800,7 @@ class Order(AdminBaseHandler):
 					staff_name = self.current_shop.admin.accountinfo.nickname
 				shop_name = self.current_shop.shop_name
 				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count)
-
+		# 批量打印订单
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
 			for key in order_list_id:
@@ -2077,6 +2086,7 @@ class Goods(AdminBaseHandler):
 						data = []
 					return self.send_success(data=data,count=count)
 
+			# 商品筛选与排序
 			elif self.args["filter_status"] !=[]:
 				data = []
 				if "page" in self.args:
@@ -2112,12 +2122,10 @@ class Goods(AdminBaseHandler):
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 
-
 				if order_status1 =="group":
 					case_one = 'models.Fruit.group_id'
 				elif order_status1 =="classify":
 					case_one = 'models.Fruit.fruit_type_id'
-
 
 				if order_status2 == "add_time":
 					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
@@ -2156,6 +2164,7 @@ class Goods(AdminBaseHandler):
 
 			return self.render("admin/goods-all.html",context=dict(subpage="goods"),token=qiniuToken,group_list=group_list,c_list=c_list,shop_code=shop_code)
 
+		# 商品类目
 		elif action == "classify":
 			if self.args["type"] != [] :
 				_type = self.args["type"]
@@ -2265,6 +2274,7 @@ class Goods(AdminBaseHandler):
 				return self.send_success(data=datalist)
 			else:
 				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
+		# 商品分组
 		elif action == "group":
 			data = []
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
@@ -2290,7 +2300,7 @@ class Goods(AdminBaseHandler):
 			else:
 				data.append({'id':0,'name':'','intro':'','num':default_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
-
+		# 商品删除
 		elif action == "delete":
 			if "page" in self.args:
 				data = []
@@ -2328,6 +2338,7 @@ class Goods(AdminBaseHandler):
 		data = self.args["data"]
 		current_shop = self.current_shop
 		shop_id = current_shop.id
+		# 添加商品
 		if action == "add_goods":
 			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
 				return self.send_fail("请至少添加一种计价方式")
@@ -2407,12 +2418,12 @@ class Goods(AdminBaseHandler):
 					num = 0
 				relate = select_num/unit_num
 				goods.charge_types.append(models.ChargeType(price=price,
-										unit=int(charge_type["unit"]),
-										num=num,
-										unit_num=unit_num,
-										market_price=market_price,
-										select_num=select_num,
-										relate=relate))
+										  unit=int(charge_type["unit"]),
+										  num=num,
+										  unit_num=unit_num,
+										  market_price=market_price,
+										  select_num=select_num,
+										  relate=relate))
 
 			self.session.add(goods)
 			self.session.commit()
@@ -2429,7 +2440,7 @@ class Goods(AdminBaseHandler):
 			except:return self.send_error(404)
 			if goods.shop != self.current_shop:
 				return self.send_error(403)
-
+			# 添加商品计价方式
 			if action == "add_charge_type":
 				# print('[AdminGoods]Add charge type, num:',data["num"],data["unit"],data["price"])
 				charge_type = models.ChargeType(fruit_id=goods.id,
@@ -2441,12 +2452,13 @@ class Goods(AdminBaseHandler):
 				self.session.add(charge_type)
 				self.session.commit()
 				return self.send_success()
+			# 编辑商品上/下架
 			elif action == "edit_active":
 				if goods.active == 1:
 					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
 					goods.update(session=self.session, active = 1)
-
+			# 编辑商品分组
 			elif action =="change_group":
 				group_id = int(data["group_id"])
 				if group_id == -1:
@@ -2461,7 +2473,7 @@ class Goods(AdminBaseHandler):
 						else:
 							return self.send_fail('该商品分组不存在或已被删除')
 				goods.update(session=self.session, group_id = int(data["group_id"]))
-
+			# 编辑商品
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
 					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
@@ -2522,13 +2534,13 @@ class Goods(AdminBaseHandler):
 							q_charge = None
 						if q_charge:
 							q_charge.one().update(session=self.session,price=price,
-									 unit=charge_type["unit"],
-									 num=num,
-									 unit_num=unit_num,
-									 market_price=market_price,
-									 select_num=select_num,
-									 relate=relate
-									 )
+												  unit=charge_type["unit"],
+												  num=num,
+												  unit_num=unit_num,
+												  market_price=market_price,
+												  select_num=select_num,
+												  relate=relate
+												 )
 						else:
 							charge_types = models.ChargeType(
 											fruit_id=int(data["goods_id"]),
@@ -2598,6 +2610,7 @@ class Goods(AdminBaseHandler):
 		elif action == "add_img":
 			return self.send_qiniu_token("add", 0)
 
+		# 批量上/下架 / 批量分组
 		elif action in ["batch_on",'batch_off',"batch_group"]:
 			for _id in data["goods_id"]:
 				try:
@@ -2615,8 +2628,9 @@ class Goods(AdminBaseHandler):
 						if re_count >= 6:
 							return self.send_fail("推荐分组最多只能添加六个商品")
 					goods.group_id= group_id
-				self.session.commit()
+			self.session.commit()
 
+		# 添加商品分组
 		elif action =="add_group":
 			args={}
 			args["shop_id"] = shop_id
@@ -2644,6 +2658,7 @@ class Goods(AdminBaseHandler):
 			self.session.commit()
 			return self.send_success(id=new_group_id)
 
+		# 删除商品分组 / 编辑商品分组
 		elif action in["delete_group","edit_group"]:
 			_id = data["id"]
 			_group = self.session.query(models.GoodsGroup).filter_by(id=_id,shop_id=shop_id,status=1).first()
@@ -2660,6 +2675,7 @@ class Goods(AdminBaseHandler):
 			else:
 				return self.send_fail('该商品分组不存在或已被删除')
 
+		# 编辑商品分组优先级
 		elif action == "group_priority":
 			groups = self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,status=1)
 			id_list = data["id"]
@@ -2677,6 +2693,7 @@ class Goods(AdminBaseHandler):
 					self.session.add(group_priority)
 			self.session.commit()
 
+		# 商品批量恢复删除
 		elif action == "batch_reset_delete":
 			for _id in data["goods_id"]:
 				try:
@@ -2687,6 +2704,7 @@ class Goods(AdminBaseHandler):
 					goods.active = 1
 				self.session.commit()
 
+		# 商品恢复删除
 		elif action == "reset_delete":
 			try:
 				goods = self.session.query(models.Fruit).filter_by( id = data["id"] ).first()
@@ -2696,14 +2714,15 @@ class Goods(AdminBaseHandler):
 				goods.active = 1
 			self.session.commit()
 
+		# 商品类目搜索
 		elif action =="classify_search":
 			classify = data["classify"]
 			try:
 				fruit_types = self.session.query(models.FruitType).filter(models.FruitType.name.like("%%%s%%" % classify)).all()
 			except:
-				return self.send_fail('没有该商品分类')
+				return self.send_fail('没有该商品类目')
 			if fruit_types == []:
-				return self.send_fail('没有该商品分类')
+				return self.send_fail('没有该商品类目')
 			types = self.getClass(fruit_types)
 			return self.send_success(data=types)
 
@@ -2712,7 +2731,7 @@ class Goods(AdminBaseHandler):
 
 		return self.send_success()
 
-#商品导入
+# 商品导入
 class GoodsImport(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str")
@@ -2892,7 +2911,6 @@ class Follower(AdminBaseHandler):
 					customer_list.append(customer)
 			customers = customer_list
 
-
 		elif action =="filter":
 			wd = self.args["wd"]
 			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
@@ -2920,6 +2938,7 @@ class Follower(AdminBaseHandler):
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
+		# 用户备注
 		if action == 'remark':
 			try:
 				customer = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id,customer_id=int(data["id"])).first()
@@ -3248,6 +3267,7 @@ class Config(AdminBaseHandler):
 			else:
 				active = 1
 			self.current_shop.config.update(session=self.session,text_message_active=active)
+		# 用户搜索
 		elif action =="search_user":
 			_id = int(self.args["data"]["id"])
 			data = []
@@ -3263,6 +3283,7 @@ class Config(AdminBaseHandler):
 			# if info and customer and customer_shop_follow:
 			data.append({'imgurl':info.headimgurl_small,'nickname':info.nickname,'id':info.id})
 			return self.send_success(data=data)
+		# 添加店铺管理员
 		elif action =="add_admin":
 			if self.current_shop.shop_auth ==0:
 				return self.send_fail('您的店铺还未认证，不能使用该功能')
@@ -3303,6 +3324,7 @@ class Config(AdminBaseHandler):
 					self.session.add(admin_temp)
 				self.session.commit()
 			return self.send_success()
+		# 删除店铺管理员
 		elif action =="delete_admin":
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有删除管理员的权限')
@@ -3314,6 +3336,7 @@ class Config(AdminBaseHandler):
 			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).delete()
 			self.session.commit()
 			return self.send_success()
+		# 店铺超级管理员订单模版消息提醒设置
 		elif action =="super_temp_active":
 			super_temp_active = self.current_shop.super_temp_active
 			if self.current_shop.admin.id !=self.current_user.id:
@@ -3321,6 +3344,7 @@ class Config(AdminBaseHandler):
 			self.current_shop.super_temp_active = 0 if super_temp_active == 1 else 1
 			self.session.commit()
 			return self.send_success()
+		# 店铺管理员订单模版消息提醒设置
 		elif action =="admin_temp_active":
 			_super = self.current_shop.admin
 			if _super.id !=self.current_user.id:
@@ -3339,28 +3363,33 @@ class Config(AdminBaseHandler):
 				admin.temp_active  = 0
 			self.session.commit()
 			return self.send_success()
+		# 商城模版设置
 		elif action=="tpl_choose":
 			tpl_id=int(self.args["data"]["tpl_id"])
 			self.current_shop.shop_tpl=tpl_id
 			self.session.commit()
 			return self.send_success()
+		# 打印类型设置（有线/无线）
 		elif action=="receipt_type_set":
 			self.current_shop.config.receipt_type = 0 if self.current_shop.config.receipt_type == 1 else 1
 			self.session.commit()
+		# 订单自动打印设置
 		elif action=="auto_print_set":
 			self.current_shop.config.auto_print = 0 if self.current_shop.config.auto_print == 1 else 1
 			self.session.commit()
+		# 自动打印订单取消信息设置
 		elif action=="concel_auto_print":
 			self.current_shop.config.concel_auto_print = 0 if self.current_shop.config.concel_auto_print == 1 else 1
 			self.session.commit()
+		# 无线打印机设置
 		elif action=="console_set":
 			_type = int(self.args["data"]["type"])
 			num = self.args["data"]["num"]
 			key = self.args["data"]["key"]
 			if len(num) > 20:
-				return self.send_fail("console num is too long")
+				return self.send_fail("您输入的打印机终端号过长")
 			if len(key) > 20:
-				return self.send_fail("console key is too long")
+				return self.send_fail("您输入的打印机密钥过长")
 			self.current_shop.config.wireless_print_num = num
 			self.current_shop.config.wireless_print_key = key
 			self.current_shop.config.wireless_type = _type
@@ -3397,7 +3426,7 @@ class AdminAuth(AdminBaseHandler):
 		wx_userinfo = self.get_wx_userinfo(code, mode)
 		if self.current_shop.admin.accountinfo.wx_unionid == wx_userinfo["unionid"]:
 			temp = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id,work=9).order_by(models.HireForm.create_time.desc()).first()
-			#超级管理员授权成功,将临时管理员表信息放入关系表中
+			#超级管理员授权成功，将临时管理员表信息放入关系表中
 			try:
 				staff_already = self.session.query(models.HireLink).filter_by(staff_id=temp.staff_id,shop_id=temp.shop_id).first()
 			except:
@@ -3412,17 +3441,17 @@ class AdminAuth(AdminBaseHandler):
 						work = 9
 					)
 				self.session.add(admin)
-			self.session.commit()
-			url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
+			self.session.flush()
 			account_info = self.session.query(models.Accountinfo).filter_by(id=temp.staff.accountinfo.id).first()
-			message_name = account_info.nickname
-			mobile = account_info.phone
-			message_shop_name = self.current_shop.shop_name
 			normal_admin = self.session.query(models.ShopAdmin).filter_by(id = account_info.id).first()
 			if not normal_admin:
 				normal_admin = models.ShopAdmin(id = account_info.id,role=3,privileges = 2)
 				self.session.add(normal_admin)
-				self.session.commit()
+			self.session.commit()
+			url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
+			message_name = account_info.nickname
+			mobile = account_info.phone
+			message_shop_name = self.current_shop.shop_name
 			message_content ='尊敬的{0}，您好，被{1}添加为管理员！'.format(message_name,message_shop_name)
 			postdata = dict(account='cf_senguocc',
 				password='sg201404',
@@ -3515,6 +3544,8 @@ class ShopBalance(AdminBaseHandler):
 				return self.send_success()
 			else:
 				return self.send_fail(resault)
+
+		# 申请提现
 		elif action == 'cash':
 			apply_value = self.args['apply_value']
 			if apply_value > self.current_shop.available_balance:
@@ -3540,6 +3571,7 @@ class ShopBalance(AdminBaseHandler):
 			self.session.commit()
 			return self.send_success()
 
+		# 提现记录
 		elif action == 'cash_history':
 			history = []
 			page=int(self.args['page'])-1
@@ -3565,6 +3597,7 @@ class ShopBalance(AdminBaseHandler):
 
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times)
 
+		# 所有账单
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
@@ -3587,6 +3620,7 @@ class ShopBalance(AdminBaseHandler):
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum)
 
+		# 用户充值账单
 		elif action == 'recharge':
 			history = []
 			page=int(self.args['page'])-1
@@ -3618,6 +3652,7 @@ class ShopBalance(AdminBaseHandler):
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,pay=pay,left=left)
 
+		# 在线支付账单
 		elif action == 'online':
 			history = []
 			page=int(self.args['page'])-1
@@ -3643,6 +3678,7 @@ class ShopBalance(AdminBaseHandler):
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
 
+		# 余额消费记录
 		elif action =='spend':
 			history = []
 			page=int(self.args['page'])-1
@@ -3669,6 +3705,7 @@ class ShopBalance(AdminBaseHandler):
 					'type':temp.balance_type,'total':shop_totalBalance})
 			return self.send_success(history = history,page_sum=page_sum,total=total,times=times,persons=persons)
 
+		# 可提现额度记录
 		elif action == 'available':
 			history = []
 			page = int(self.args['page']-1)
@@ -4358,7 +4395,7 @@ class Marketing(AdminBaseHandler):
 					pass
 				else:
 					x.closed=1
-			self.session.commit()
+			self.session.flush()
 			q=self.session.query(models.Marketing).filter_by(id=current_shop_id).first()
 			if q.coupon_active==0:
 				q.coupon_active=1
@@ -4371,6 +4408,7 @@ class Marketing(AdminBaseHandler):
 			return self.send_fail('something must wrong')
 		self.session.commit()
 		return self.send_success()
+
 # 营销和玩法 - 告白墙管理
 class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -4474,7 +4512,7 @@ class WirelessPrint(AdminBaseHandler):
 				partner='1693' #用户ID
 				apikey='664466347d04d1089a3d373ac3b6d985af65d78e' #API密钥
 				username='senguo' #用户名
-				mobilephone='123456' #打印机内的手机号
+				mobilephone='13800138000' #打印机内的手机号
 				timenow=str(int(time.time())) #当前时间戳
 				printname='senguo'+timenow #打印机名称
 				if action == "ylyprint" :
@@ -4484,10 +4522,10 @@ class WirelessPrint(AdminBaseHandler):
 						return self.send_fail("请设置为易联云无线打印")
 				elif action == "ylyadd":
 					machine_code = _data["num"] #打印机终端号
-					msign = _data["key"]#打印机密钥
-					sign=apikey+'partner'+partner+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+msign #生成的签名加密
+					msign = _data["key"] #打印机密钥
+					sign=apikey+'partner'+partner+'machine_code'+machine_code+'username'+username+'printname+'+printname+'mobilephone'+mobilephone+'msign'+msign+msign #生成的签名加密
 					sign=hashlib.md5(sign.encode('utf-8')).hexdigest().upper()
-					data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone}
+					data={"partner":partner,"machine_code":machine_code,"username":username,"printname":printname,"mobilephone":mobilephone,"msign":msign,"sign":sign}
 					r=requests.post("http://open.10ss.net:8888/addprint.php",data=data)
 
 					# print("======WirelessPrint Back======")
@@ -4496,11 +4534,10 @@ class WirelessPrint(AdminBaseHandler):
 					# print("res text       :",r.text)
 					# print("==============================")
 					text = int(r.text)
-					if text ==1:
+					if text == 1:
 						return self.send_success()
-					elif text ==2:
+					elif text == 2:
 						return self.send_success()
-						print("打印机重复，请确保此打印机没有添加到其他账号")
 					elif text == 3:
 						return self.send_fail("打印机添加失败")
 					elif text == 4:
