@@ -2632,7 +2632,7 @@ class QrWxpay(CustomerBaseHandler):
 	def get(self):
 		import pyqrcode
 
-# 余额充值
+# 余额充值（微信）
 class payTest(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')

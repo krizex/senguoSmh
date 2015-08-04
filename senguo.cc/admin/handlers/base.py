@@ -1133,13 +1133,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 	# 关闭店铺
 	def shop_close(self):
-		# print("[SuperBaseHandler]Shop close")
+		print("[Timer]Shop Close")
 		session = models.DBSession()
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
 			shops = None
-			# print("[SuperBaseHandler]Shop close error")
+			print("[Timer]Shop Close Error")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -1147,18 +1147,16 @@ class SuperBaseHandler(_AccountBaseHandler):
 				fruits = shop.fruits
 				menus = shop.menus
 				fans_count = shop.fans_count
-				# print("[SuperBaseHandler]shop_close: menus:",menus)
 				create_date = shop.create_date_timestamp
 				x = datetime.datetime.fromtimestamp(create_date)
-				# print("[SuperBaseHandler]shop_close: x:",x)
 				now = datetime.datetime.now()
 				days = (now - x).days
 				if days > 14:
 					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						# print("[SuperBaseHandler]Shop closed, Shop ID:",shop_id)
+						print("[Timer]Shop Close Success, shop_id:",shop_id)
 			session.commit()
-			# print("[SuperBaseHandler]Shop close done")
+			print("[Timer]Shop Close Done")
 			# return self.send_success(close_shop_list = close_shop_list)
 
 	def get_login_url(self):
