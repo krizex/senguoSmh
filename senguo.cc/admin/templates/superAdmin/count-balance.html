@@ -27,13 +27,18 @@
             <li class="all nav_item {{detail_active}}">
                 <a href="{{reverse_url('superBalance')}}">余额详情</a>
             </li>
+            {% if level == 0 %}
             <li class="admin nav_item {{cash_active}}">
                 <a href="{{reverse_url('superApplyCash')}}">提现申请</a>
             </li>
+            {% end %}
             <!-- add by jyj 2015-6-17 -->
+            {% if level == 0 %}
+            {{level}}
             <li class="admin nav_item {{check_active}}">
                 <a href="{{reverse_url('superCheckCash')}}">每日对账</a>
             </li>
+            {% end %}
             <!-- - -->
         </ul>
     </div>

@@ -1990,6 +1990,9 @@ class ApplyCash(SuperBaseHandler):
 		person_num = 0
 		company_num = 0
 		cash_history = []
+		level = self.current_user.level
+		if level == 1:
+			return self.send_error(404)
 		try:
 			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
 		except:
@@ -2081,6 +2084,9 @@ class ApplyCash(SuperBaseHandler):
 class CheckCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		level = self.current_user.level
+		if level == 1:
+			return self.send_error(404)
 		####################
 		#借用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
 
