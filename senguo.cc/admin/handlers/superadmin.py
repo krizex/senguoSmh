@@ -446,11 +446,11 @@ class ShopManage(SuperBaseHandler):
 			if flag==1:
 
 				# print("@@@@@@@@@")
-				return self.render("superAdmin/shop-manage.html", output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
+				return self.render("superAdmin/shop-manage.html",level=level,output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
 			else :
 				# print("###########")
 
-				return self.send_success(output_data=output_data,output_data_count=output_data_count)
+				return self.send_success(output_data=output_data,level=level,output_data_count=output_data_count)
 
 		else:
 			return self.send_error(404)
@@ -461,7 +461,7 @@ class ShopManage(SuperBaseHandler):
 		shops = q.all()
 		# shops 是models.Shop实例的列表
 
-		return self.render("superAdmin/apply-manage.html", context=dict(
+		return self.render("superAdmin/apply-manage.html",level=level,context=dict(
 				shops = shops,subpage='apply', action=action,
 				count=count))
 	@tornado.web.authenticated
@@ -747,7 +747,7 @@ class User(SuperBaseHandler):
 		sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
 		sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
 		sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
-		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))
+		return self.render("superAdmin/user.html", sum=sum,level=level, context=dict(subpage='user'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str","inputinfo?:str","page:int")
@@ -816,7 +816,9 @@ class User(SuperBaseHandler):
 class IncStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/count-user.html",context=dict(subpage='count',subcount='user'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-user.html",level = level, context=dict(subpage='count',subcount='user'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
@@ -908,7 +910,9 @@ class IncStatic(SuperBaseHandler):
 class DistributStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/count-attribute.html",context=dict(subpage='count',subcount='attribute'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-attribute.html",level=level, context=dict(subpage='count',subcount='attribute'))
 
 	@tornado.web.authenticated
 	def post(self):
@@ -943,7 +947,9 @@ class DistributStatic(SuperBaseHandler):
 class ShopStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/count-shop.html",context=dict(subpage='count',subcount='shop'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-shop.html",level=level,context=dict(subpage='count',subcount='shop'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
@@ -1075,7 +1081,9 @@ class ShopStatic(SuperBaseHandler):
 # add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
 	def get(self):
-		return self.render("superAdmin/count-order.html",context=dict(subcount='orderstatic'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-order.html",level=level,context=dict(subcount='orderstatic'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
@@ -1220,6 +1228,7 @@ class Comment(SuperBaseHandler):
 	def get(self):
 		data = []
 		order_info = {}
+		level = self.current_user.level
 		#apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
 		apply_list = self.session.query(models.CommentApply).order_by(desc(models.CommentApply.create_date)).all()
 		apply_count = self.session.query(models.CommentApply).filter(models.CommentApply.has_done==0).count()
@@ -1259,7 +1268,7 @@ class Comment(SuperBaseHandler):
 			"auth_apply":auth_apply
 			}
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = count,subpage="comment",subpage2="",data=data))
+		self.render('superAdmin/shop-comment-apply.html',level=level,context=dict(count = count,subpage="comment",subpage2="",data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -1415,7 +1424,7 @@ class CommentInfo(SuperBaseHandler):
 			}
 
 		if ajaxFlag != '1':
-			self.render('superAdmin/shop-comment-info.html',output_data = output_data,page_sum = page_sum,context=dict(count = count,subpage="comment",subpage2="info"))
+			self.render('superAdmin/shop-comment-info.html',output_data = output_data,level=level,page_sum = page_sum,context=dict(count = count,subpage="comment",subpage2="info"))
 		else:
 			return self.send_success(page_sum = page_sum)
 	@tornado.web.authenticated
@@ -1713,7 +1722,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			"auth_apply":auth_apply
 			}
 
-		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,subpage="auth",auth_apply_list=apply_list))
+		self.render('superAdmin/shop-cert-apply.html',level=level,context=dict(count = count,subpage="auth",auth_apply_list=apply_list))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id','decline_reason?:str','apply_type:int')
@@ -1917,7 +1926,7 @@ class Balance(SuperBaseHandler):
 						filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
 			elif level == 1:
 				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
-					models.BalanceHistory.shop_totalPrice >=0,models.BalanceHistory.shop_totalPrice != None,shop_province=shop_province).order_by(
+					models.BalanceHistory.shop_totalPrice >=0,models.BalanceHistory.shop_totalPrice != None,models.Shop.shop_province==shop_province).order_by(
 					desc(models.BalanceHistory.create_time))
 			else:
 				return self.send_fail('level error')
@@ -1978,6 +1987,9 @@ class ApplyCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action:?str','page?:int')
 	def get(self):
+		level = self.current_user.level
+		if level == 1:
+			return self.send_error(404)
 		page_size =10
 		page_sum =0
 		count = 0
@@ -1993,9 +2005,6 @@ class ApplyCash(SuperBaseHandler):
 		person_num = 0
 		company_num = 0
 		cash_history = []
-		level = self.current_user.level
-		if level == 1:
-			return self.send_error(404)
 		try:
 			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
 		except:
@@ -2841,6 +2850,7 @@ class AdminManager(SuperBaseHandler):
 	def get(self):
 		action   = self.args.get('action',None)
 		if_super = None
+		level = self.current_user.level
 		try:
 			if_super = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id,level=0).first()
 		except:
@@ -2848,9 +2858,9 @@ class AdminManager(SuperBaseHandler):
 		if action == 'add_admin':
 			if not if_super:
 				return self.send_fail(403)
-			return self.render('superAdmin/add-admin.html',if_super=if_super)
+			return self.render('superAdmin/add-admin.html',level=level, if_super=if_super)
 		elif action == "check_admin":
-			return self.render('superAdmin/check-admin.html',if_super=if_super)
+			return self.render('superAdmin/check-admin.html',level=level,if_super=if_super)
 		else:
 			return self.send_error(404)
 
