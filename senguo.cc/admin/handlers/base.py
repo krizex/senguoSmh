@@ -1368,6 +1368,30 @@ class AdminBaseHandler(_AccountBaseHandler):
 			d["SH2s"] = SH2s
 			data.append(d)
 		return data
+		
+	def getYouzan(self,action,appid,appsecret):
+		if action == "goods":
+			method = "kdt.items.get"
+		elif action == "shop":
+			method = "kdt.shop.basic.get"
+		AppID = appid
+		AppSecert = appsecret
+		app_id = AppID
+		_format = "json"
+		method  = method
+		sign_method = "md5"
+		timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+		v = "1.0"
+		method = method
+		sign = AppSecert+"app_id"+app_id+"format"+_format+"method"+method+"sign_method"+sign_method+"timestamp"+timestamp+"v"+v+AppSecert
+		sign = hashlib.md5(sign.encode('utf-8')).hexdigest()
+		link_param = "&timestamp="+timestamp+"&v="+v+"&app_id="+app_id+"&method="+method+"&sign_method"+sign_method+"&format"+_format
+		link = "https://open.koudaitong.com/api/entry?sign="+sign+link_param
+		r = requests.get(link)
+		result = r.json()
+		if "response" not in result:
+			return None
+		return result["response"]
 
 # 配送员端基类方法
 class StaffBaseHandler(_AccountBaseHandler):

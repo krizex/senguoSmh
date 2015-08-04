@@ -29,11 +29,23 @@
             </div>
         </div>
         <div class="tab-item tab2 hidden">
-            <p class="mt20 c666">可以将淘点点、有赞、饿了么等其他平台的数据导入进来</p>
+            <p class="mt20 c666">可以将淘点点、有赞、饿了么等其他平台的数据导入进来,选择平台导入</p>
+            <ul class="plant-list group mt10">
+                <li class="active" data-id="1">淘点点</li>
+                <li data-id="2">饿了么</li>
+                <li data-id="3">美团外卖</li>
+                <li data-id="4">有赞（口袋通）</li>
+                <li data-id="5">乐外卖</li>
+            </ul>
             <div class="wrap-url mt20">
                 <span class="c333">输入URL : </span>
                 <input type="text" class="create-ipt" id="shop_url" placeholder="请输入其他平台店铺地址"/>
                 <input type="button" class="get-code" value="开始导入"/>
+            </div>
+            <div class="input-box youzan-box hidden">
+                <input type="text" class="create-ipt mt10" placeholder="有赞AppID" id="youzan-appid"/><br>
+                <input type="text" class="create-ipt mt10" placeholder="有赞AppSecert" id="youzan-appsecret"/><br>
+                 <p class="mt10 f12"><input type="button" class="get-code" value="开始导入" id="check-youzan"/><a href="http://koudaitong.com/v2/apps/open/setting" target="_blank" class="ml10">(点击获取有赞AppID及AppSecert)</a></p>
             </div>
         </div>
         <div class="">

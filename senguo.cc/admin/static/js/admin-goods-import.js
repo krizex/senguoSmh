@@ -8,12 +8,17 @@ $(document).ready(function(){
     getGoods(parseInt($(".shop_name").attr("data-id")));
 }).on("click",".import-type li",function(){
     var index = $(this).index();
-    if(index==1){
-        return Tip("该功能还在开发中");
-    }
+    // if(index==1){
+    //     return Tip("该功能还在开发中");
+    // }
     type = index;
     $(".import-type li").removeClass("active").eq(index).addClass("active");
     $(".wrap-tabcont .tab-item").addClass("hidden").eq(index).removeClass("hidden");
+    if(index==0){
+        getGoods(parseInt($(".shop_name").attr("data-id")));
+    }else{
+        $(".shop-list").empty();
+    }
 }).on("click","#commit",function(){
     if(parseInt($("#choose_txt").html())==0){
         Tip("您还未选中任何商品");
@@ -22,7 +27,11 @@ $(document).ready(function(){
     if(type==0){
         importGoods($(this));
     }else{
-
+        var type=parseInt($(".plant-list .active").attr("data-id"));
+        if(type==4){
+           checkyouzan($(this)); 
+        }
+        
     }
 }).on("click",".shop-list li",function(){
     $(this).toggleClass("active");
@@ -48,6 +57,16 @@ $(document).ready(function(){
     var id=parseInt($this.attr("data-id"));
     $(".shop_name").attr("data-id",id).text($this.text());
     getGoods(id);
+}).on("click",".plant-list li",function(){
+    var index = $(this).index();
+    $(".plant-list li").removeClass("active").eq(index).addClass("active");
+    var type=parseInt($(this).attr("data-id"));
+    if(type==4){
+        $(".wrap-url").addClass("hidden");
+        $(".youzan-box").removeClass("hidden");
+    }
+}).on("click","#check-youzan",function(){
+    checkyouzan($(this));
 });
 var goods_item='<li data-id={{id}}>'+
                     '<i class="checkbox-btn"></i>'+
@@ -112,6 +131,50 @@ function importGoods($btn){
              },1500);
          }else{
             $btn.attr("data-flag","on");
+            return Tip(res.error_text);
+         }
+    });
+}
+
+function checkyouzan($btn){
+    if($btn.attr("data-flag")=="off"){
+        return Tip("请勿重复提交");
+    }
+    var appid=$("#youzan-appid").val().trim();
+    var appsecret=$("#youzan-appsecret").val().trim();
+    if(!appid){
+        return Tip("请输入appid");
+    }
+    if(!appsecret){
+        return Tip("请输入appsecret");
+    }
+    var args = {
+        action:"checkyouzan",
+        data:{
+            appid:appid,
+            appsecret:appsecret
+        }
+    };
+    var url = "";
+    $(".shop-list").empty();
+    $btn.attr("data-flag","off");
+    $.postJson(url,args,function(res){
+         if(res.success){
+             var goods_list=res.goods_list;
+             for(var key in goods_list){
+                var good=goods_list[key];
+                var render=template.compile(goods_item);
+                var html=render({
+                    logo:good["imgurl"],
+                    id:good["id"],
+                    name:good["name"],
+                    charge_types:good["charge_types"][0]
+                });
+                $(".shop-list").append(html);
+             }
+            $btn.attr("data-flag","on");
+         }else{
+             $btn.attr("data-flag","on");
             return Tip(res.error_text);
          }
     });
