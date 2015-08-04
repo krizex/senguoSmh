@@ -121,6 +121,7 @@ class GlobalBaseHandler(BaseHandler):
 		s*= 1000
 		return s;
 
+	# 更新店铺、用户的优惠券
 	def updatecouponbase(self,shop_id,customer_id):
 		current_customer_id=customer_id
 		now_date=int(time.time())
@@ -133,7 +134,7 @@ class GlobalBaseHandler(BaseHandler):
 				if x.coupon_status>0:
 					if now_date>x.uneffective_time:
 						x.update(self.session,coupon_status=3)
-				self.session.commit()
+				self.session.flush()
 		self.session.commit()
 		return None
 
@@ -562,7 +563,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	def send_qiniu_token(self, action, id):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
-
 
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 
@@ -1105,14 +1105,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	@classmethod
 	def get_ticket_url(self):
 		access_token = WxOauth2.get_client_access_token()
-		print("[_AccountBaseHandler]get_ticket_url: access_token:",access_token)
+		# print("[_AccountBaseHandler]get_ticket_url: access_token:",access_token)
 		scene_id = self.make_scene_id()
-		print("[_AccountBaseHandler]get_ticket_url: scene_id:",scene_id)
+		# print("[_AccountBaseHandler]get_ticket_url: scene_id:",scene_id)
 		url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={0}'.format(access_token)
 		data = {"action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": scene_id}}}
 		r = requests.post(url,data = json.dumps(data))
 		result = json.loads(r.text)
-		print("[_AccountBaseHandler]get_ticket_url: result:",result)
+		# print("[_AccountBaseHandler]get_ticket_url: result:",result)
 		ticket_url = result.get('url',None)
 		return ticket_url,scene_id
 
@@ -1738,7 +1738,7 @@ class WxOauth2:
 		# 	access_token["create_timestamp"] = datetime.datetime.now().timestamp()
 		# 	return data["access_token"]
 		# else:
-		# 	#print("获取微信接口调用的access_token出错：", data)
+		# 	#print("[WxOauth2]get_client_access_token: get access_token error:", data)
 		# 	return None
 		try:
 			access_token = session.query(models.AccessToken).first()

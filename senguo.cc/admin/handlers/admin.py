@@ -2118,7 +2118,7 @@ class Goods(AdminBaseHandler):
 					# print("[AdminGoods]filter_status2:",filter_status2)
 					if filter_status2 == -2:
 						goods = goods
-						print("[AdminGoods]Goods count:",goods.count())
+						# print("[AdminGoods]Goods count:",goods.count())
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 
@@ -4632,7 +4632,7 @@ class WirelessPrint(AdminBaseHandler):
 					sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
 					sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
 				else:
-					print('[autoPrint]sign error')
+					print('[WirelessPrint]sign error')
 					sign = None
 				data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
 				r=requests.post("http://open.10ss.net:8888",data=data)
