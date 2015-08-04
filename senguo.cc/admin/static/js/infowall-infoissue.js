@@ -76,7 +76,7 @@ $(document).ready(function(){
                 var number=$('#imgPreview').find('img').length;
                 console.log(number);
                 if(number<5) {
-                    var img = $('<img data-key=' + key + '>').attr({'src': 'http://infoimg.qiniudn.com/' + key});
+                    var img = $('<img data-key=' + key + '>').attr({'src': 'http://7rfai7.com2.z0.glb.qiniucdn.com/' + key});
                     $('#imgPreview').append(img);
                 }
                 else{alert('最多可上传5张图片！')}

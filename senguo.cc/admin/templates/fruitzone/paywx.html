@@ -86,8 +86,8 @@
         <p>下单时间：<span>{{order.create_date}}</span></p>
         <p>收货人：<span>{{order.receiver}}</span></p>
         <p>联系电话：<span>{{order.phone}}</span></p>
-        <p>收货地址：<span>{{order.address_text}}</span></p>
-        <p>配送时间：<span class="send_date m-r10">今天</span><span>{{order.send_time}}</span></p>
+        <p>{% if order.type==3 %}自取{% else %}收货{% end %}地址：<span>{{order.address_text}}</span>{% if order.type==3 %}<a class="area-icon set-inl-blo pull-right" href="{{reverse_url('shoparea',handler.shop_code)}}?action=self&id={{order.self_address_id}}"></a>{% end %}</p>
+        <p>{% if order.type==3 %}自取{% else %}配送{% end %}时间：<span class="send_date m-r10">今天</span><span>{{order.send_time}}</span></p>
         <p>订单备注：<span>{{order.message or '无'}}</span></p>
         <p class="text-black">支付方式：<span class="">{% if order.pay_type==1 %}货到付款{% elif order.pay_type==2 %}余额支付{% elif order.pay_type==3 %}在线支付{% if online_type=='wx'%}-微信支付{% elif online_type=='alipay'%}-支付宝支付{% end %}{% end %}</span></p>
     </div>
@@ -108,6 +108,7 @@
 <input type="hidden" value="{{order.create_date.day}}" class="create_day"/>
 <input type="hidden" value="{{order.today}}" class="send_day"/>
 <input type="hidden" value="{{order.id}}" id="order-id"/>
+<input type="hidden" value="{{order.type}}" class="order_type"/>
 {% end %}
 {% block bottom %}
 <script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 

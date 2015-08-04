@@ -66,6 +66,7 @@ function removeDom(){
     $('.send_day').remove();
 }
 function statusText(n){
+    var _type=parseInt($(".order_type").val());
     switch (n){
         case -1:
             $("#status-txt").text('未支付');
@@ -82,7 +83,11 @@ function statusText(n){
             $(".tel-btn").show();
             break;
         case 1:
-            $("#status-txt").text('已下单');
+            if(_type==3){
+                $("#status-txt").text('准备中');
+            }else{
+                $("#status-txt").text('已下单');
+            }
             $(".order-wawa").css("left","0");
             $(".order-line-grade").css("width","0");
             $(".order-status-txt").css("left","0");
@@ -91,14 +96,22 @@ function statusText(n){
         case 2:
         case 3:
         case 4:
-            $("#status-txt").text('配送中');
+            if(_type==3){
+                $("#status-txt").text('等待自取');
+            }else{
+                $("#status-txt").text('配送中');
+            }
             $(".order-wawa").css("left","50%");
             $(".order-line-grade").css("width","50%");
             $(".order-status-txt").css("left","50%");
             $(".tel-btn").show();
             break;
         case 5:
-            $("#status-txt").text('已送达');
+            if(_type==3){
+                $("#status-txt").text('自取完成');
+            }else{
+                $("#status-txt").text('已送达');
+            }
             $(".order-wawa").css("left","100%");
             $(".order-line-grade").css("width","100%");
             $(".order-status-txt").css("left","100%");

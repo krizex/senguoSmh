@@ -121,6 +121,7 @@ class GlobalBaseHandler(BaseHandler):
 		s*= 1000
 		return s;
 
+	# 更新店铺、用户的优惠券
 	def updatecouponbase(self,shop_id,customer_id):
 		current_customer_id=customer_id
 		now_date=int(time.time())
@@ -133,7 +134,7 @@ class GlobalBaseHandler(BaseHandler):
 				if x.coupon_status>0:
 					if now_date>x.uneffective_time:
 						x.update(self.session,coupon_status=3)
-				self.session.commit()
+				self.session.flush()
 		self.session.commit()
 		return None
 
@@ -566,7 +567,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def send_qiniu_token(self, action, id):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
-
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
@@ -825,6 +825,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
+		print(order)
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
@@ -1107,14 +1108,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	@classmethod
 	def get_ticket_url(self):
 		access_token = WxOauth2.get_client_access_token()
-		print("[_AccountBaseHandler]get_ticket_url: access_token:",access_token)
+		# print("[_AccountBaseHandler]get_ticket_url: access_token:",access_token)
 		scene_id = self.make_scene_id()
-		print("[_AccountBaseHandler]get_ticket_url: scene_id:",scene_id)
+		# print("[_AccountBaseHandler]get_ticket_url: scene_id:",scene_id)
 		url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={0}'.format(access_token)
 		data = {"action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": scene_id}}}
 		r = requests.post(url,data = json.dumps(data))
 		result = json.loads(r.text)
-		print("[_AccountBaseHandler]get_ticket_url: result:",result)
+		# print("[_AccountBaseHandler]get_ticket_url: result:",result)
 		ticket_url = result.get('url',None)
 		return ticket_url,scene_id
 
@@ -1135,13 +1136,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 	# 关闭店铺
 	def shop_close(self):
-		# print("[SuperBaseHandler]Shop close")
+		print("[Timer]Shop Close")
 		session = models.DBSession()
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
 			shops = None
-			# print("[SuperBaseHandler]Shop close error")
+			print("[Timer]Shop Close Error")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -1149,18 +1150,16 @@ class SuperBaseHandler(_AccountBaseHandler):
 				fruits = shop.fruits
 				menus = shop.menus
 				fans_count = shop.fans_count
-				# print("[SuperBaseHandler]shop_close: menus:",menus)
 				create_date = shop.create_date_timestamp
 				x = datetime.datetime.fromtimestamp(create_date)
-				# print("[SuperBaseHandler]shop_close: x:",x)
 				now = datetime.datetime.now()
 				days = (now - x).days
 				if days > 14:
 					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						# print("[SuperBaseHandler]Shop closed, Shop ID:",shop_id)
+						print("[Timer]Shop Close Success, shop_id:",shop_id)
 			session.commit()
-			# print("[SuperBaseHandler]Shop close done")
+			print("[Timer]Shop Close Done")
 			# return self.send_success(close_shop_list = close_shop_list)
 
 	def get_login_url(self):
@@ -1337,8 +1336,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		data = []
 		for order in orders:
 			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
-										 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today','active','arrival_day','arrival_time','finish_admin_id','intime_period',
 										 'send_admin_id','send_speed','shop_service']
 			d = order.safe_props(False)
 			if d['fruits']:
@@ -1743,7 +1741,7 @@ class WxOauth2:
 		# 	access_token["create_timestamp"] = datetime.datetime.now().timestamp()
 		# 	return data["access_token"]
 		# else:
-		# 	#print("获取微信接口调用的access_token出错：", data)
+		# 	#print("[WxOauth2]get_client_access_token: get access_token error:", data)
 		# 	return None
 		try:
 			access_token = session.query(models.AccessToken).first()

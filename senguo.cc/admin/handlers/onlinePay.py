@@ -102,7 +102,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
-			print("[WeixinPay]totalPrice:",totalPrice)
+			# print("[WeixinPay]totalPrice:",totalPrice)
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
@@ -142,7 +142,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
-		print("[WeixinQrPay]totalPrice:",totalPrice)
+		# print("[WeixinQrPay]totalPrice:",totalPrice)
 		wxPrice =int(totalPrice * 100)
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
