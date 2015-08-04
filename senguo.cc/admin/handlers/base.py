@@ -822,6 +822,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
+		print(order)
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
@@ -1334,8 +1335,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		data = []
 		for order in orders:
 			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
-										 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today','active','arrival_day','arrival_time','finish_admin_id','intime_period',
 										 'send_admin_id','send_speed','shop_service']
 			d = order.safe_props(False)
 			if d['fruits']:

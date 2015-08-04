@@ -210,7 +210,6 @@ class WxMessage(CustomerBaseHandler):
 			data[child.tag] = child.text
 		return data	
 
-
 # 店铺申请 - 首页 成为卖家
 class Home(CustomerBaseHandler):
 	# @tornado.web.authenticated
@@ -398,25 +397,29 @@ class CreateShop(AdminBaseHandler):
 
 	def create_shop(self,shop):
 		# 添加系统默认的时间段
-		period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
-		period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
-		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
+		period1 = models.Period(name="中午", start_time="12:00", end_time="13:00") #按时达默认时间段
+		period2 = models.Period(name="下午", start_time="17:00", end_time="18:00") #按时达默认时间段
+		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00") #按时达默认时间段
+		period4 = models.Period(name="中午", start_time="12:00", end_time="13:00", config_type=1) #自提时间默认时间段
+		period5 = models.Period(name="下午", start_time="17:00", end_time="18:00", config_type=1) #自提时间默认时间段
+		period6 = models.Period(name="晚上", start_time="21:00", end_time="22:00", config_type=1) #自提时间默认时间段
 
 		config = models.Config()
-		config.periods.extend([period1, period2, period3])
+		config.periods.extend([period1, period2, period3, period4, period5, period6])
 		marketing = models.Marketing()
 		shop.config = config
 		shop.marketing = marketing
 		shop.shop_start_timestamp = time.time()
-
 		self.session.add(shop)
-		self.session.commit()  # 要commit一次才有shop.id
+		self.session.flush()  # 要commit一次才有shop.id
+		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+		self.session.commit()
 
 	def create_staff(self,shop):
 		temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
 		if temp_staff is None:
 			self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
-			self.session.commit()
+			self.session.flush()
 
 		self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
 		self.session.commit()
