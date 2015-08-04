@@ -200,9 +200,9 @@ class ShopManage(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		##
-		#print("[SuperShopManage]shops count:",len(shops))
+		# print("[SuperShopManage]shops count:",len(shops))
 
-		#add6.5pm shop_status:
+		# add6.5pm shop_status:
 		if shop_status == 5:
 			pass
 		elif shop_status == 4:
@@ -218,7 +218,7 @@ class ShopManage(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		##
-		#print("[SuperShopManage]shops count:",len(shops))
+		# print("[SuperShopManage]shops count:",len(shops))
 
 		#add 6.4pm sort:
 		if shop_sort_key == 0:
@@ -501,7 +501,7 @@ class ShopManage(SuperBaseHandler):
 			shop.shop_start_timestamp = time.time()
 			self.session.add(shop)
 			shop_temp.shop_status = 2
-			self.session.commit()  # 要commit一次才有shop.id
+			self.session.flush()  # 要flush一次才有shop.id
 
 			######################################################################################
 			# inspect whether staff exited
@@ -511,7 +511,7 @@ class ShopManage(SuperBaseHandler):
 			# print('[SuperShopManage]admin_id:',shop.admin_id)
 			if temp_staff is None:
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
-				self.session.commit()
+				self.session.flush()
 
 			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
 			self.session.commit()
@@ -729,12 +729,12 @@ class IncStatic(SuperBaseHandler):
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
 			end_date =datetime.datetime(now.year,now.month,now.day,23,59,59)
-			print("[SuperIncStatic]end_date:",end_date)
+			# print("[SuperIncStatic]end_date:",end_date)
 		else:
 			date = self.monthdelta(datetime.datetime.now(), page)
 			start_date = datetime.datetime(date.year, date.month, 1)
 			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
-			print("[SuperIncStatic]end_date:",end_date)
+			# print("[SuperIncStatic]end_date:",end_date)
 
 		q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
 			filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
