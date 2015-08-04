@@ -16,15 +16,20 @@
 {% block setcontent %}
 <div class="container">
 <div class="order-list-box">
-    <ul class="search-lst" id="goods-lists">
+    <ul class="search-lst hide" id="goods-lists">
         <li>
             <a href="javascript:;">
+                <span class="c666 fr"><span class="dgreen">5</span>个</span>
                 <span class="c666">商品名称：</span>
                 <span class="dgreen">大苹果</span>
             </a>
         </li>
     </ul>
-    <p class="no-result mt30 hide">没有搜索到任何商品！</p>
+    <div class="no-goods-box">
+        <img src="/static/m-admin/img/no_search.png" alt="无结果"/>
+        <p class="c666 txt-center mt15">没有查询到与<span id="search_name" class="dgreen">“大苹果”</span>相关的任何商品</p>
+        <a href="/madmin/addGoods" class="add-btn add-new-goods">+添加新商品</a>
+    </div>
 </div>
 </div>
 {% end %}

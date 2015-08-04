@@ -97,9 +97,9 @@ $(document).ready(function(){
     var group_name = $("#group-name").val();
     var group_info = $("#group-info").val();
     var _action =$this.attr('data-action');
-    if($('.gropu-list li').length==7){
+    if($('.group-list li').length==7){
         $this.attr("data-flag", "on");
-        Tip("至多可添加五中自定义分组！");
+        Tip("至多可添加五个自定义分组！");
         return false;
     }
     if($.trim(group_name)==""){

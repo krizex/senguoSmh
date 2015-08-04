@@ -325,7 +325,28 @@ class Comment(AdminBaseHandler):
 class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/goods.html")
+		shop_id     = self.get_secure_cookie("shop_id")
+		data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						data.append({'id':0,'name':'','intro':'','num':default_count})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							first_text = _group.name[0:1]
+							data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count,"first_text":first_text})
+		else:
+			data.append({'id':0,'name':'','intro':'','num':default_count})
+		return self.render("m-admin/goods.html",data=data,record_count=record_count)
 #商品搜索
 class GoodsSearch(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -341,7 +362,11 @@ class GoodsEdit(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/goods-edit.html")
-
+#批量管理
+class GoodsBatch(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("m-admin/goods-batch.html")
 
 
 
