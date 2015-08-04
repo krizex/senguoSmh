@@ -964,48 +964,223 @@ class OrderStatic(SuperBaseHandler):
 # added by jyj 2015-8-3
 #统计－销售统计
 class SellStatic(SuperBaseHandler):
+	# fruit_list_query = []
+	# mgoods_list_query = []
 	def get(self):
 		return self.render("superAdmin/count-sell.html",context=dict(subcount='sell'))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action:str')
+	@SuperBaseHandler.check_arguments('action:str',"start_date:str","end_date:str")
 	def post(self):
 		action = self.args['action']
+		start_date = self.args['start_date']
+		end_date = self.args['end_date']
 		if action == 'type':
-			return self.type_count()
+			return self.type_count(start_date,end_date)
 		elif action == 'shop':
-			return self.shop_count()
+			return self.shop_count(start_date,end_date)
 		elif action == 'group':
-			return self.group_count()
+			return self.group_count(start_date,end_date)
 
-	@SuperBaseHandler.check_arguments("start_date:str","end_date:str")
-	def type_count(self):
-		start_date = self.args['start_date']
-		end_date = self.args['end_date']
+	def get_order(self,start_date,end_date):
+		# start_date_str = start_date
+		# end_date_str = end_date
+		start_date_str = '2015-06-01'
+		end_date_str = '2015-06-30'
 
-		output_data = start_date + '~' + end_date + 'count by type' 
+		start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+		start_date_pre = start_date + datetime.timedelta(days = -1)
+		start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+		start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+		end_date = datetime.datetime.strptime(end_date_str,'%Y-%m-%d')
+		end_date_next = end_date + datetime.timedelta(days = 1)
+		end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+		end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+		fruit_list_query = self.session.query(models.Order.fruits).filter(models.Order.status >= 5,\
+					        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+					        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+		mgoods_list_query = self.session.query(models.Order.mgoods).filter(models.Order.status >= 5,\
+					        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+					        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+
+		return [fruit_list_query,mgoods_list_query]
+
+	def type_count(self,start_date,end_date):
+		# 从fruit_type表中查出所有商品类目的id和名称，存到一个字典fruit_type_price_dict中
+		# 键为id，值为名称和销售额组成的列表，且销售额都初始化为0．
+		# fruit_type_price_dict = {}
+		# query_list = self.session.query(models.FruitType.id,models.FruitType.name).all()
+		# for item in query_list:
+		# 	fruit_type_price_dict[str(item[0])] = [item[1],0]
+		
+		# # 获取指定时间段内的所有订单的fruits字段和mgoods字段并分别存到两个列表中：fruit_list,mgoods_list
+		# order_list = self.get_order(start_date,end_date)
+
+		# fruit_list = []
+		# mgoods_list = []
+
+		# for item in order_list[0]:
+		# 	if item[0] != '{}' and item[0] != None:
+		# 		fruit_list.append(item[0])
+
+		# for item in order_list[1]:
+		# 	if item[0] != '{}' and item[0] != None:
+		# 		mgoods_list.append(item[0])	
+
+		# # 从fruit_list列表的每一项中分离出charge_type_id和对应的金额，
+		# # 然后从charge_type_id反查到fruit_type_id,最后将fruit_type_price_dict中与此id相同的项的金额自加这个金额．
+		# # 计价方式-商品类目id对照表:
+		# charge_type_fruit_type_id = {}
+		# query_list = self.session.query(models.ChargeType.id,models.Fruit.fruit_type_id).filter(models.ChargeType.fruit_id == models.Fruit.id).all()
+		# for item in query_list:
+		# 	charge_type_fruit_type_id[str(item[0])] = item[1]
+
+		# for goods_item in fruit_list:
+		# 	goods_item = eval(goods_item)
+		# 	for key in goods_item:
+		# 		fl_value = goods_item[key]
+		# 		num = float(fl_value["num"])
+		# 		single_price = float(fl_value["charge"].split('元')[0])
+		# 		total_price = single_price * num
+
+		# 		# 如果计价方式被删掉了,金额就统一归为'其他水果'的类目中
+		# 		if str(key) not  in list(charge_type_fruit_type_id.keys()):
+		# 			fruit_type_price_dict['999'][1] += total_price
+		# 			fruit_type_price_dict['999'][1] = round(fruit_type_price_dict['999'][1],2)
+		# 			continue
+
+		# 		fruit_type_id = charge_type_fruit_type_id[str(key)]
+		# 		fruit_type_price_dict[str(fruit_type_id)][1] += total_price
+		# 		fruit_type_price_dict[str(fruit_type_id)][1] = round(fruit_type_price_dict[str(fruit_type_id)][1],2)
+
+		# # 从mgoods_list列表的每一项中分离出对应的金额，直接将fruit_type_price_dict中id=2000项(其他商品)的金额自加这个金额．
+		# for goods_item in mgoods_list:
+		# 	goods_item = eval(goods_item)
+		# 	for key in goods_item:
+		# 		fl_value = goods_item[key]
+		# 		num = float(fl_value["num"])
+		# 		single_price = float(fl_value["charge"].split('元')[0])
+		# 		total_price = single_price * num
+
+		# 		fruit_type_price_dict['2000'][1] += total_price
+		# 		fruit_type_price_dict['2000'][1] = round(fruit_type_price_dict['2000'][1],2)
+
+		# fruit_type_price_dict['999'][0] = '其他水果'
+		# fruit_type_price_dict['1999'][0] = '其他干果'
+		# fruit_type_price_dict['2000'][0] = '其他商品'
+
+		# output_data = []
+		# type_select_list = []
+		# for key in fruit_type_price_dict:
+		# 	output_data.append(fruit_type_price_dict[key])
+		# 	type_select_list.append([key,fruit_type_price_dict[key][0],fruit_type_price_dict[key][1]])
+		# output_data.sort(key = lambda item : item[1],reverse = True)
+		# output_data = output_data[0 : 30]
+
+		# type_select_list.sort(key = lambda item : item[2],reverse = True)
+		# type_select_list = type_select_list[0 : 30]
+
+		# return self.send_success(output_data = output_data,type_select_list = type_select_list)
+		return self.send_success(output_data = "")
+
+	@SuperBaseHandler.check_arguments("id:int")
+	def shop_count(self,start_date,end_date):
+		goods_type_id = self.args['id']
+
+		# tmp = self.session.query(models.MChargeType.id,models.MChargeType.mgoods.menu.shop_id).all()
+		# print("@@@@@",tmp)
+
+		# 从fruit_type表中查出所有商品类目的id和名称，存到一个字典fruit_type_price_dict中
+		# 键为id，值为名称和销售额组成的列表，且销售额都初始化为0．
+		# fruit_type_price_dict = {}
+		# query_list = self.session.query(models.FruitType.id,models.FruitType.name).all()
+		# for item in query_list:
+		# 	fruit_type_price_dict[str(item[0])] = [item[1],0]
+		# shop_price_dict = {}
+		
+		# # 获取指定时间段内的所有订单的fruits字段和mgoods字段并分别存到两个列表中：fruit_list,mgoods_list
+		# order_list = self.get_order(start_date,end_date)
+
+		# fruit_list = []
+		# mgoods_list = []
+
+		# for item in order_list[0]:
+		# 	if item[0] != '{}' and item[0] != None:
+		# 		fruit_list.append(item[0])
+
+		# if goods_type_id == 2000:
+		# 	for item in order_list[1]:
+		# 		if item[0] != '{}' and item[0] != None:
+		# 			mgoods_list.append(item[0])	
+
+		# # 从fruit_list列表的每一项中分离出charge_type_id和对应的金额，
+		# # 然后从charge_type_id反查到shop_id,最后将fruit_type_price_dict中与此id相同的项的金额自加这个金额．
+		# # 计价方式-商品类目id-店铺id对照表:
+		# charge_type_fruit_type_shop_id = {}
+		# query_list = self.session.query(models.ChargeType.id,models.Fruit.fruit_type_id,models.Fruit.shop_id).filter(models.ChargeType.fruit_id == models.Fruit.id,models.Fruit.fruit_type_id == goods_type_id).all()
+		# for item in query_list:
+		# 	charge_type_fruit_type_shop_id[str(item[0])] = [item[1],item[2]]
+
+		# for goods_item in fruit_list:
+		# 	goods_item = eval(goods_item)
+		# 	for key in goods_item:
+		# 		fl_value = goods_item[key]
+		# 		num = float(fl_value["num"])
+		# 		single_price = float(fl_value["charge"].split('元')[0])
+		# 		total_price = single_price * num
+
+		# 		# 如果计价方式被删掉了,金额就统一归为'其他水果'的类目中
+		# 		if str(key) not  in list(charge_type_fruit_type_shop_id.keys()):
+		# 			fruit_type_price_dict['999'][1] += total_price
+		# 			fruit_type_price_dict['999'][1] = round(fruit_type_price_dict['999'][1],2)
+		# 			continue
+
+		# 		fruit_type_id = charge_type_fruit_type_shop_id[str(key)]
+		# 		fruit_type_price_dict[str(fruit_type_id)][1] += total_price
+		# 		fruit_type_price_dict[str(fruit_type_id)][1] = round(fruit_type_price_dict[str(fruit_type_id)][1],2)
+
+		# if goods_type_id == 2000:
+		# 	# 从mgoods_list列表的每一项中分离出对应的金额，直接将fruit_type_price_dict中id=2000项(其他商品)的金额自加这个金额．
+		# 	for goods_item in mgoods_list:
+		# 		goods_item = eval(goods_item)
+		# 		for key in goods_item:
+		# 			fl_value = goods_item[key]
+		# 			num = float(fl_value["num"])
+		# 			single_price = float(fl_value["charge"].split('元')[0])
+		# 			total_price = single_price * num
+
+		# 			fruit_type_price_dict['2000'][1] += total_price
+		# 			fruit_type_price_dict['2000'][1] = round(fruit_type_price_dict['2000'][1],2)
+
+		# fruit_type_price_dict['999'][0] = '其他水果'
+		# fruit_type_price_dict['1999'][0] = '其他干果'
+		# fruit_type_price_dict['2000'][0] = '其他商品'
+
+		# output_data = []
+		# for key in fruit_type_price_dict:
+		# 	output_data.append(fruit_type_price_dict[key])
+		# output_data.sort(key = lambda item : item[1],reverse = True)
+		# output_data = output_data[0 : 30]
+		# print(output_data)
+		# print(len(output_data))
+
+		output_data = ''
 
 		return self.send_success(output_data = output_data)
 
-	@SuperBaseHandler.check_arguments("start_date:str","end_date:str","id:int")
-	def shop_count(self):
-		start_date = self.args['start_date']
-		end_date = self.args['end_date']
-		type_id = self.args['id']
-
-		output_data = start_date + '~' + end_date + 'count by shop' + '  id : ' + str(type_id)
-
-		return self.send_success(output_data = output_data)
-
-	@SuperBaseHandler.check_arguments("start_date:str","end_date:str","id:int")
-	def group_count(self):
-		start_date = self.args['start_date']
-		end_date = self.args['end_date']
+	@SuperBaseHandler.check_arguments("id:int")
+	def group_count(self,start_date,end_date):
 		group_id = self.args['id']
+
+
 
 		output_data = start_date + '~' + end_date + 'count by group' + '  id : ' + str(group_id)
 
 		return self.send_success(output_data = output_data)
+
+	
+
 ##
 
 

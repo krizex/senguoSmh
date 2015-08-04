@@ -62,30 +62,44 @@
 
 	<li> 
 	              <div class="tit cate-title">选择商品类目：</div>
-	              <div class="dropdown slide-down-select pull-left w130">
+	              <div class="dropdown slide-down-select pull-left w130 wrap-fruit-type">
 		                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
 			                    <em class="pull-left filter_status" id="first_type">AAAA</em>
 			                    <span class="caret pull-right no-margin-left rotate0"></span>
 		                </button>
-		                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="currentTypeName">
-		                	      <li>AAAA</li>
-		                	      <li>ABABAB</li>
-		                	      <li>CCCCC</li>
-		                	      <li>DDD</li>
-		                	      <li>EEEEE</li>
-		                	       <li>AAAA</li>
-		                	      <li>ABABAB</li>
-		                	      <li>CCCCC</li>
-		                	      <li>DDD</li>
-		                	      <li>EEEEE</li>
-		                	       <li>AAAA</li>
-		                	      <li>ABABAB</li>
-		                	      <li>CCCCC</li>
-		                	      <li>DDD</li>
-		                	      <li>EEEEE</li>
+		                
+		                <ul class="dropdown-menu dropdown-menu-right w130 fruit-list" role="menu" aria-labelledby="dropdownMenu1" id="currentTypeName">
+		                	      <li>
+		                	      	<a class="item" href="javascript:;" id="type-select-fruit">水果</a>
+		                	      </li>
+		                	      <li>
+		                	      	<a class="item" href="javascript:;" id="type-select-dried">干果</a>
+		                	      </li>
+		                	      <li>
+		                	      	<a class="item" href="javascript:;" id="type-select-other">其他商品</a>
+		                	      </li>
 		                </ul>
+		                <ul class="fruit-type-list hidden" id="fruit-type">
+                	      		<li>aaaaa1</li>
+                	      		<li>aaaaa2</li>
+                	      		<li>aaaaa3</li>
+                	      		<li>aaaaa4</li>
+                	      		<li>aaaaa5</li>
+                	      		<li>aaaaa6</li>
+                	      		<li>aaaaa7</li>
+                	      		<li>aaaaa8</li>
+                	      		<li>aaaaa9</li>
+                	      		<li>aaaaa10</li>
+                	      	</ul>
+		                <ul class="fruit-type-list hidden" id="dried-type">
+                	      		<li>dddd1</li>
+                	      		<li>dddd2</li>
+                	      		<li>dddd3</li>
+
+                	      	</ul>
 	            </div>
     	</li>
+
     	<div class="max-height-roll clearfix mlf20" style="height:400px"><div id="goods_shop" class="clearfix"></div></div>
 
     	<div id="type_bigchart_bg" class="div-bigchart_bg invisiable"></div>
@@ -121,6 +135,7 @@
 		</ul>
 		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_group_bigchart">查看大图</button>
 	</div>
+
 	<li> 
 	              <div class="tit cate-title">选择商品分组：</div>
 	              <div class="dropdown slide-down-select pull-left w130">
@@ -128,10 +143,10 @@
 			                    <em class="pull-left filter_status" id="first_group">水果</em>
 			                    <span class="caret pull-right no-margin-left rotate0"></span>
 		                </button>
-		                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="currentGroupName">
-		                	      <li><a class="item">水果</a></li>
-		                	      <li><a class="item">干果</a></li>
-		                	      <li><a class="item">其他商品</a></li>
+		                <ul class="dropdown-menu dropdown-menu-right w130 fruit-list" role="menu" aria-labelledby="dropdownMenu1" id="currentGroupName">
+		                	      <li><a class="item" href="javascript:;" id="type-select-fruit2">水果</a></li>
+		                	      <li><a class="item" href="javascript:;" id="type-select-dried2">干果</a></li>
+		                	      <li><a class="item" href="javascript:;" id="type-select-other2">其他商品</a></li>
 		                </ul>
 	            </div>
     	</li>

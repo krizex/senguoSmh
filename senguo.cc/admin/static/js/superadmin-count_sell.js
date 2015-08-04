@@ -24,8 +24,19 @@ var choose_month3 = current_month;
 var choose_date3 = current_date;
 var current_sort_way3 = 1;  
 
+var type_select_second_menu_display = 1;
+
 $(document).ready(function(){
-	initCharts();
+	    initCharts();
+	    $("#fruit-type").hover(
+	    	function(){
+	    		$(this).fadeIn(400);
+	    	},
+	    	function(){
+	    		$(this).fadeOut(400);
+	    	}
+	    );
+
 }).on('click','.sell-change-list1 li',function(){
 	liveInit();
 	$(".year1").text(current_year);
@@ -108,13 +119,10 @@ $(document).ready(function(){
 			show_chart('type',week_first_date,week_last_date);
 			break;
 		case 3:
-			if(choose_month1 == 1){
-				choose_month1 = 12;
-				choose_year1 = choose_year1-1;
-			}
-			else{
-				choose_month1=choose_month1-1;
-			}
+			ChooseDate1 = new Date(ChooseDate1.getFullYear(),ChooseDate1.getMonth()-1,ChooseDate1.getDate());
+			choose_year1=ChooseDate1.getFullYear();
+			choose_month1=ChooseDate1.getMonth()+1;
+			choose_date1 = ChooseDate1.getDate();
 
 			$(".year1").text(choose_year1);
 			$(".month1").text(choose_month1);
@@ -126,6 +134,9 @@ $(document).ready(function(){
 			break;
 	}
 }).on("click",".next-item1",function(){
+	choose_year1=ChooseDate1.getFullYear();
+	choose_month1=ChooseDate1.getMonth()+1;
+	choose_date1 = ChooseDate1.getDate();
 	switch(current_sort_way1){
 		case 1:
 			ChooseDate1 = GetDateN(ChooseDate1,1);
@@ -153,13 +164,10 @@ $(document).ready(function(){
 			show_chart('type',week_first_date,week_last_date);
 			break;
 		case 3:
-			if(choose_month1 == 12){
-				choose_month1 = 1;
-				choose_year1 = choose_year1+1;
-			}
-			else{
-				choose_month1=choose_month1+1;
-			}
+			ChooseDate1 = new Date(ChooseDate1.getFullYear(),ChooseDate1.getMonth()+1,ChooseDate1.getDate());
+			choose_year1=ChooseDate1.getFullYear();
+			choose_month1=ChooseDate1.getMonth()+1;
+			choose_date1 = ChooseDate1.getDate();
 
 			$(".year1").text(choose_year1);
 			$(".month1").text(choose_month1);
@@ -251,13 +259,10 @@ $(document).ready(function(){
 			show_chart('shop',week_first_date,week_last_date,1);
 			break;
 		case 3:
-			if(choose_month2 == 1){
-				choose_month2 = 12;
-				choose_year2 = choose_year2-1;
-			}
-			else{
-				choose_month2=choose_month2-1;
-			}
+			ChooseDate2 = new Date(ChooseDate2.getFullYear(),ChooseDate2.getMonth()-1,ChooseDate2.getDate());
+			choose_year2=ChooseDate2.getFullYear();
+			choose_month2=ChooseDate2.getMonth()+1;
+			choose_date2 = ChooseDate2.getDate();
 
 			$(".year2").text(choose_year2);
 			$(".month2").text(choose_month2);
@@ -296,13 +301,10 @@ $(document).ready(function(){
 			show_chart('shop',week_first_date,week_last_date,1);
 			break;
 		case 3:
-			if(choose_month2 == 12){
-				choose_month2 = 1;
-				choose_year2 = choose_year2+1;
-			}
-			else{
-				choose_month2=choose_month2+1;
-			}
+			ChooseDate2 = new Date(ChooseDate2.getFullYear(),ChooseDate2.getMonth()+1,ChooseDate2.getDate());
+			choose_year2=ChooseDate2.getFullYear();
+			choose_month2=ChooseDate2.getMonth()+1;
+			choose_date2 = ChooseDate2.getDate();
 
 			$(".year2").text(choose_year2);
 			$(".month2").text(choose_month2);
@@ -394,13 +396,10 @@ $(document).ready(function(){
 			show_chart('group',week_first_date,week_last_date,1);
 			break;
 		case 3:
-			if(choose_month3 == 1){
-				choose_month3 = 12;
-				choose_year3 = choose_year3-1;
-			}
-			else{
-				choose_month3=choose_month3-1;
-			}
+			ChooseDate3 = new Date(ChooseDate3.getFullYear(),ChooseDate3.getMonth()-1,ChooseDate3.getDate());
+			choose_year3=ChooseDate3.getFullYear();
+			choose_month3=ChooseDate3.getMonth()+1;
+			choose_date3 = ChooseDate3.getDate();
 
 			$(".year3").text(choose_year3);
 			$(".month3").text(choose_month3);
@@ -439,13 +438,10 @@ $(document).ready(function(){
 			show_chart('group',week_first_date,week_last_date,1);
 			break;
 		case 3:
-			if(choose_month3 == 12){
-				choose_month3 = 1;
-				choose_year3 = choose_year3+1;
-			}
-			else{
-				choose_month3=choose_month3+1;
-			}
+			ChooseDate3 = new Date(ChooseDate3.getFullYear(),ChooseDate3.getMonth()+1,ChooseDate3.getDate());
+			choose_year3=ChooseDate3.getFullYear();
+			choose_month3=ChooseDate3.getMonth()+1;
+			choose_date3 = ChooseDate3.getDate();
 
 			$(".year3").text(choose_year3);
 			$(".month3").text(choose_month3);
@@ -455,7 +451,61 @@ $(document).ready(function(){
 			show_chart('group',start_date,end_date,1);
 			break;
 	}
+}).on('mouseover','#type-select-fruit',function(){
+	setTimeout(function(){
+		$("#fruit-type").removeClass("hidden").show();
+	}, 100);	
+}).on('mouseleave','#type-select-fruit',function(){
+	setTimeout(function(){
+		$("#fruit-type").addClass("hidden");
+	}, 100);
+}).on('mouseover','#fruit-type',function(){
+	setTimeout(function(){
+		$("#fruit-type").removeClass("hidden").show();
+	}, 100);
+}).on('mouseleave','#fruit-type',function(){
+	setTimeout(function(){
+		$("#fruit-type").addClass("hidden");
+	}, 100);
+}).on('mouseover','#type-select-dried',function(){
+	setTimeout(function(){
+		$("#dried-type").removeClass("hidden").show();
+	}, 100);	
+}).on('mouseleave','#type-select-dried',function(){
+	setTimeout(function(){
+		$("#dried-type").addClass("hidden");
+	}, 100);
+}).on('mouseover','#dried-type',function(){
+	setTimeout(function(){
+		$("#dried-type").removeClass("hidden").show();
+	}, 100);
+	
+}).on('mouseleave','#dried-type',function(){
+	setTimeout(function(){
+		$("#dried-type").addClass("hidden");
+	}, 100);
+}).on('click','#fruit-type li',function(){
+	var text  = $(this).text();
+	$("#first_type").text(text);
+	$("#fruit-type").addClass("hidden");
+}).on('click','#dried-type li',function(){
+	var text  = $(this).text();
+	$("#first_type").text(text);
+	$("#dried-type").addClass("hidden");
+}).on('click','#type-select-other',function(){
+	var text  = $(this).text();
+	$("#first_type").text(text);
+}).on('click','#type-select-fruit2',function(){
+	var text = $(this).text();
+	$('#first_group').text(text);
+}).on('click','#type-select-dried2',function(){
+	var text = $(this).text();
+	$('#first_group').text(text);
+}).on('click','#type-select-other2',function(){
+	var text = $(this).text();
+	$('#first_group').text(text);
 });
+
 
 // 实时更新函数
 function liveInit(){
@@ -692,7 +742,7 @@ function show_chart(action,start_date,end_date,id){
 		function(res){
 			if(res.success){
 				var output_data = res.output_data;
-				console.log(output_data);
+				// console.log(output_data);
 			}
 			else{
 				return Tip(res.error_text);

@@ -543,8 +543,6 @@ class SellStatic(AdminBaseHandler):
 					mgoods_list.append(item[0])
 			order_goods_list = fruit_list + mgoods_list
 
-
-
 			total_price_list = []
 			name_list = []
 
