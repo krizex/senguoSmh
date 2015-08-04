@@ -405,6 +405,9 @@ class ShopManage(SuperBaseHandler):
 				satisfy = 0.0
 				shop_id = shop.id
 				orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+				commodity_quality = 0
+				send_speed = 0
+				shop_service = 0
 				if orders:
 					q = self.session.query(func.avg(models.Order.commodity_quality),\
 						func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
@@ -2452,9 +2455,10 @@ class CheckCash(SuperBaseHandler):
 			self.session.commit()
 
 			cur_shop = self.session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
-			cur_shop.shop_balance = 0
-			cur_shop.available_balance = 0
-			self.session.commit()
+			if cur_shop:
+				cur_shop.shop_balance = 0
+				cur_shop.available_balance = 0
+				self.session.commit()
 
 			for i in range(0,len(balance_list)):
 				item = balance_list[i]
@@ -2835,20 +2839,33 @@ class AdminManager(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action')
 	def get(self):
+		action   = self.args.get('action',None)
+		if_super = None
+		try:
+			if_super = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id,level=0).first()
+		except:
+			if_super = None
 		if action == 'add_admin':
-			return self.render('superAdmin/add_admin.html')
+			if not if_super:
+				return self.send_fail(403)
+			return self.render('superAdmin/add-admin.html',if_super=if_super)
+		elif action == "check_admin":
+			return self.render('superAdmin/check-admin.html',if_super=if_super)
+		else:
+			return self.send_error(404)
 
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action','admin_id?','province?:str')
+	@SuperBaseHandler.check_arguments('action','admin_id?:int','province?:str')
 	def post(self):
-		admin_id = int(self.args['admin_id'])
+		if "admin_id" in self.args:
+			admin_id = int(self.args['admin_id'])
 		action   = self.args.get('action',None)
 		if action == 'search_user':
 			info = self.session.query(models.Accountinfo).filter_by(id=admin_id).first()
 			if not info:
 				return self.send_fail('该用户还不是森果的用户，无法添加其为超级管理员')
-			data = dict(imgurl=info.headimgurl_small,nickname=info.nickname,realname=info.realname,id=info.id)
+			data = dict(imgurl=info.headimgurl_small,nickname=info.nickname,realname=info.realname,id=info.id,phone=info.phone)
 			return self.send_success(data = data)
 		elif action == 'add_admin':
 			province = self.args.get('province',None)
@@ -2860,7 +2877,8 @@ class AdminManager(SuperBaseHandler):
 			info = self.session.query(models.Accountinfo).filter_by(id=admin_id).first()
 			if not info:
 				return self.send_fail('该用户还不是森果的用户，无法添加其为超级管理员')
-			super_admin = models.superAdmin()
+			super_admin = models.SuperAdmin()
+			super_admin.id = info.id
 			super_admin.account_info = info
 			super_admin.level = 1
 			super_admin.province = province
@@ -2869,31 +2887,32 @@ class AdminManager(SuperBaseHandler):
 			return self.send_success()
 		elif action == 'all':
 			data = []
-			temp = {}
-			admin_list = self.session.query(models.superAdmin).filter_by(level=1).all()
+			admin_list = self.session.query(models.SuperAdmin).filter_by(level=1).all()
 			for item in admin_list:
+				temp = {}
+				province = self.code_to_text("province",item.province) if  item.province else ""
 				temp['realname'] = item.accountinfo.realname
 				temp['id']       = item.id
 				temp['phone']    = item.accountinfo.phone
-				temp['province'] = item.accountinfo.province
+				temp['province'] = province
 				temp['headimgurl_small'] = item.accountinfo.headimgurl_small
 				data.append(temp)
 			return self.send_success(data = data)
 		elif action == 'filter':
 			province = self.args['province']
 			data = []
-			temp = {}
-			admin_list = self.session.query(models.superAdmin).filter_by(level=1,province=province).all()
+			admin_list = self.session.query(models.SuperAdmin).filter_by(level=1,province=province).all()
 			for item in admin_list:
+				temp = {}
 				temp['realname'] = item.accountinfo.realname
 				temp['id']       = item.id
 				temp['phone']    = item.accountinfo.phone
-				temp['province'] = item.accountinfo.province
+				temp['province'] = item.province
 				temp['headimgurl_small'] = item.accountinfo.headimgurl_small
 				data.append(temp)
 			return self.send_success(data = data)
 		elif action == 'cancel':
-			super_admin = self.session.query(models.superAdmin).filter_by(id=admin_id).first()
+			super_admin = self.session.query(models.SuperAdmin).filter_by(id=admin_id).first()
 			if not super_admin:
 				return self.send_fail('该管理员并不存在')
 			super_admin.level = -1
