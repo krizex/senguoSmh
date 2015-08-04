@@ -2621,6 +2621,7 @@ class QrWxpay(CustomerBaseHandler):
 	def get(self):
 		import pyqrcode
 
+# 余额充值
 class payTest(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
@@ -2748,13 +2749,13 @@ class payTest(CustomerBaseHandler):
 			if not shop_follow:
 				return self.send_fail('[WxCharge]shop_follow not found')
 			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-			self.session.commit()
+			self.session.flush()
 
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				return self.send_fail('[WxCharge]shop not found')
 			shop.shop_balance += totalPrice
-			self.session.commit()
+			self.session.c()
 			# print("[WxCharge]shop_balance after charge:",shop.shop_balance)
 
 			# 支付成功后  生成一条余额支付记录
@@ -2845,6 +2846,7 @@ class wxChargeCallBack(CustomerBaseHandler):
 			qr_url = ""
 		return self.send_success(qr_url=qr_url)
 
+# 插入爬取店铺数据（访问路由：/customer/test）
 class InsertData(CustomerBaseHandler):
 	# @tornado.web.authenticated
 	# @CustomerBaseHandler.check_arguments("code?:str")
@@ -2867,7 +2869,7 @@ class InsertData(CustomerBaseHandler):
 					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
 					lon = shop['lon'],shop_province = 420000,shop_city = 420100)
 				self.session.add(temp_shop)
-		self.session.commit()
+		self.session.flush()
 
 		for good in good_list:
 			temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],

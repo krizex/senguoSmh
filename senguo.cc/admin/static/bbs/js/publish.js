@@ -62,5 +62,5 @@ function publishAtical(target){
 function initEditor(){
     ueditor = UM.getEditor('ueditor');
     QINIU_TOKEN=$("#token").val();
-    QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/"
+    QINIU_BUCKET_DOMAIN="7rf3aw.com2.z0.glb.qiniucdn.com/"
 }

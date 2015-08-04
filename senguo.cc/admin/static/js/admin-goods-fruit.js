@@ -236,7 +236,7 @@ $(document).ready(function(){
                             };
                         },
                         'onUploadComplete':function(){
-                            $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
+                            $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
                         }
 
                     });
@@ -398,7 +398,7 @@ $(document).ready(function(){
                     Tip('The file ' + file.name + ' could not be uploaded: ' + data);
                 },
                 'onUploadComplete':function(){
-                    $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
+                    $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
                 }
 
             });
