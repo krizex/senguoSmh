@@ -63,7 +63,7 @@
 </div>
 <div class="boxs wrap-goods-group mt10 hide">
     <ul class="group-list" data-code="{{handler.current_shop.shop_code}}">
-        <li data-url="/madmin/goods?gid=-1">
+        <li data-url="/madmin/goodsBatch?gid=-1">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">
@@ -82,7 +82,7 @@
             </a>
         </li>
         {% for d in data %}
-        <li data-url="/madmin/goods?gid={{d['id']}}">
+        <li data-url="/madmin/goodsBatch?gid={{d['id']}}">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">

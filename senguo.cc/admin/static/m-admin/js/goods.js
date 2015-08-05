@@ -1,9 +1,12 @@
-var curGoods = null,width = 0,page=0,finished=false,nomore=false,cur_group=null,link="/admin/goods/all",_type = 0;
+var curGoods = null,width = 0,page=0,finished=false,nomore=false,cur_group=null,link="/admin/goods/all",_type = 1;
 $(document).ready(function(){
     var minheight = $(window).height()-80;
     $(".order-lists").css({minHeight:minheight+"px"});
     getGoodsItem("all",0);
     getData('fruit','color');
+    if($.getUrlParam("type")){
+        _type = parseInt($.getUrlParam("type"));
+    }
     $(window).scroll(function(){
         if(_type!=1) return false;
         var totalheight = $(window).height() + $(window).scrollTop() +150;
@@ -218,7 +221,7 @@ function operateGroup(action,id){
                     $(".pop-name").addClass("hide");
                 }else if(action=="add"){
                     var code = $(".group-list").attr("data-code");
-                    var li = '<li><a href="javascript:;"><div class="goods-row"><dl class="godl"><dt><div class="wrap-gi"><span class="group-text">'+group_name[0]+'</span></div></dt>'+
+                    var li = '<li data-url="/madmin/goodsBatch?gid='+res.id+'"><a href="javascript:;"><div class="goods-row"><dl class="godl"><dt><div class="wrap-gi"><span class="group-text">'+group_name[0]+'</span></div></dt>'+
                              '<dd><i class="more"></i><div class="c333"><div class="wrap-operates fr hide"><span class="del-group" data-id="'+res.id+'">删除</span>'+
                              '<span class="share-group" data-url="http://senguo.cc/'+code+'?group='+res.id+'">分享</span>' +
                             '<span class="edit-group" data-id="'+res.id+'">编辑</span></div><span><span class="go-name">'+group_name+'</span>(0)</span>'+
@@ -287,9 +290,6 @@ function getGoodsItem(action,type_id,value){
     }else if(action=="goods_search"){
         url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
     }else{
-        if($.getUrlParam("gid")){
-            filter_status2 = $.getUrlParam("gid");
-        }
         url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
     }
     $.ajax({
