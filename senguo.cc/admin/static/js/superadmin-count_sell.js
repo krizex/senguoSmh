@@ -830,6 +830,7 @@ function show_chart(action,start_date,end_date,id){
 		              //按商品类目排序
 	        		function (ec) {
 	            		            myChart1 = ec.init(document.getElementById('goods_type'));
+	            		       
 	            		            myChart1.showLoading({
 	                	            		text: '数据加载中...',
 	                	            		y:200,
@@ -940,6 +941,7 @@ function show_chart(action,start_date,end_date,id){
 		              //按商品类目排序
 	        		function (ec) {
 	            		            myChart2 = ec.init(document.getElementById('goods_shop'));
+	
 	            		            myChart2.showLoading({
 	                	            		text: '数据加载中...',
 	                	            		y:220,
@@ -1040,6 +1042,7 @@ function show_chart(action,start_date,end_date,id){
 		              //按商品类目排序
 	        		function (ec) {
 	            		            myChart3 = ec.init(document.getElementById('goods_group'));
+
 	            		            myChart3.showLoading({
 	                	            		text: '数据加载中...',
 	                	            		y:220,
@@ -1125,8 +1128,12 @@ function show_chart(action,start_date,end_date,id){
 				var output_data = res.output_data;
 				if(action == 'type'){
 					// 显示第一个图表
-					myChart1.hideLoading();
-					myChart_1_big.hideLoading();
+					     setTimeout(function(){
+					     	myChart1.hideLoading();
+					     	myChart_1_big.hideLoading();
+	            		            		  }, 2000);
+					
+					
 					var type_select_list = res.type_select_list;
 					cur_selected_type_id = type_select_list[0][0].toString();
 					cur_selected_type_name = type_select_list[0][1];
@@ -1182,9 +1189,11 @@ function show_chart(action,start_date,end_date,id){
 								first_words = '本月';
 								break;
 						}
+
 						var info = '<p class="info-wrap">'+ first_words + '所有商品总销售额为0~</p>';
 						$("#goods_type").empty().append(info);
 						$("#goods_type_big").empty().append(info);
+						console.log('@@@@');
 						return ;
 					}
 
@@ -1198,7 +1207,10 @@ function show_chart(action,start_date,end_date,id){
 
 				}
 				else if (action == 'shop'){
-					myChart2.hideLoading();
+					setTimeout(function(){
+						myChart2.hideLoading();
+	            		           		 }, 2000);
+					// myChart2.hideLoading();
 					if(output_data.length == 0){
 						var goods_type = $("#first_type").text();
 						var first_words = ''
@@ -1221,7 +1233,10 @@ function show_chart(action,start_date,end_date,id){
 					getCount("shop",ChartOptions2,myChart2,output_data);
 				}
 				else if (action == 'group'){
-					myChart3.hideLoading();
+					// myChart3.hideLoading();
+					setTimeout(function(){
+						myChart3.hideLoading();
+	            		            		}, 2000);
 					if(output_data.length == 0){
 						var goods_group = $("#first_group").text();
 						var first_words = ''
