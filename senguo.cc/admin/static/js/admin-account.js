@@ -244,7 +244,7 @@ function cash(){
     }
      if(!regFloat.test(apply_value)){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');
-    	return Tip('请填写数字，至多为小数点后两位');
+    	return Tip('请填写数字，最多为小数点后两位');
     }
     if(!code){
     	$('#cash-apply').removeClass('bg-grey').removeAttr('disabled');

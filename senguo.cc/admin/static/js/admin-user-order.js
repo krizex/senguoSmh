@@ -13,6 +13,7 @@ $(document).ready(function(){
     else if(status == 2){
         $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
+    initBmap();
 }).on('click','.print-order',function(){
     orderPrint($(this),'print'); //有线打印
 
@@ -149,8 +150,39 @@ $(document).ready(function(){
 }).on('click','.condition-list li',function(){
     $(this).closest("ul").prev("button").children("em").html($(this).text()).attr("data-id",$(this).find('a').attr("data-id"));
     orderItem(_page);
+}).on("click","#add_self",function(){//添加自提点
+    if(edit_flag) return Tip("请先保存正在编辑的自提点");
+    var index = $(".self-address-list").children("li").size();
+    if(index==10) return Tip("最多只能新建10个自提点");
+    edit_flag = true;
+    var $item = $('<li class="group"><div class="wrap-operate pull-right hide">'+
+        '<a href="javascript:;" class="delete pull-right set-inl-blo"></a>'+
+        '<a href="javascript:;" class="edit pull-right set-inl-blo to-edit"></a></div>'+
+        '<a href="javascript:;" class="switch-abtn switch-abtn-active">'+
+        '<span class="a_on">已</span><span class="a_off">未</span>启用</a> <a href="javascript:;" class="cur_loc"></a> <span class="text-grey3  address-text">'+
+        '<span>自提点<span class="self-index">'+num_arr[index]+'</span> : <span class="self-addr">点击右方修改设置</span></span>' +
+        '</span></li>');
+    $(".self-address-list").append($item);
+    $("#addressDetail").removeAttr("disabled").val("").focus();
+    $("#save-lbs").attr("data-type","add");
+    cur_address = $item;
+}).on("click",".switch-abtn",function(){
+    operateSelf("set",$(this).closest("li"));
+}).on("click",".wrap-operate .set-default",function(){
+    operateSelf("default",$(this).closest("li"));
+}).on("click",".reProvince",function(){
+    return Tip("自提点只能在店铺所在的省");
+}).on("click",".reCity",function(){
+    return Tip("自提点只能在店铺所在的城市");
+}).on("mouseover",".self-address-list li",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
+    $(this).find(".wrap-operate").removeClass("hide");
+}).on("mouseout",".self-address-list",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
 });
 
+var cur_address = null,edit_flag=false,is_drag = false;
+var num_arr = ["一","二","三","四","五","六","七","八","九","十"];
 var orders=window.dataObj.order;
 var $list_item;
 var $goods_item;
@@ -158,9 +190,8 @@ var $staff_item;
 var order_link='/admin/order';
 var _page=0;
 var _page_total;
-
-function getOrder(url){
-    $.getItem('/static/items/admin/order-item.html?v=20150613',function(data){
+function getOrder(){
+    $.getItem('/static/items/admin/order-item.html?v=20150713',function(data){
             $list_item=data;
             //商品列表item
     	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150613');
@@ -169,7 +200,6 @@ function getOrder(url){
         }
     );
 }
-
 var getGoodsItem=function(url){
     $.ajaxSetup({'async':false});
     $.getItem(url,function(data){
@@ -177,7 +207,6 @@ var getGoodsItem=function(url){
         }
     );
 }
-
 var getStaffItem=function(url){
     $.ajaxSetup({'async':false});
     $.getItem(url,function(data){
@@ -185,8 +214,8 @@ var getStaffItem=function(url){
         }
     );
 }
-
 function orderItem(page){
+    var order_type = parseInt($.getUrlParam('order_type'));
     $(".wrap-loading-box").removeClass("hidden");
     var action=$.getUrlParam('action');
     var url;
@@ -202,19 +231,24 @@ function orderItem(page){
     }else{
         var link=window.location.href;
         var status=$('.order-status').find('.active').first().attr('data-id');
-        url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page; 
-    } 
-    $('.order-list-content').empty();
+        if(parseInt($.getUrlParam("order_type"))==3){
+            var self_id = $("#self_point").attr("data-id");
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page+'&self_id='+self_id;
+        }else{
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        }
+    }
     $.ajax({
         url:url,
         type:"get",
         success:function(res){
             if(res.success){
+                $('.order-list-content').empty();
                 var data=res.data;
                 $('.page-total').text(parseInt(res.page_sum));
                 _page_total=parseInt(res.page_sum);
                 if(res.count){
-                     _count=res.count;
+                    var _count=res.count;
                     var type=parseInt($.getUrlParam("order_type"));
                     $('.order-status li').each(function(){
                         var $this=$(this);
@@ -224,8 +258,9 @@ function orderItem(page){
                     });
                     $('#atonce').text(_count[11]);
                     $('#ontime').text(_count[21]);
+                    $("#selfPoint").text(_count[31]);
                 }
-                 if(_page_total <=1){
+                if(_page_total <=1){
                     $('.list-pagination').hide();
                 }
                 else {
@@ -280,7 +315,10 @@ function orderItem(page){
                     var del_reason=data[i]['del_reason'];
                     var nickname=data[i]['nickname'];
                     var customer_id=data[i]['customer_id'];
-                          
+                    var _type=data[i]['type'];
+                    if(_type==3){
+                        $item.find(".if_self").text("自提");
+                    }
                     if(!message) {
                         $item.find('.order-message').hide();
                     }
@@ -352,18 +390,33 @@ function orderItem(page){
                         $item.find('.address-adapt').hide();
                     }
                     else if(status==1) {
+                        if(_type==3){
+                            $item.find('.to-send').text('开始处理');
+                        }else{
+                            $item.find('.to-send').text('开始配送');
+                        }
                         $item.find('.status_order').removeClass('hidden');
                         $item.find('.able_edit_order').show();
                         $item.find('.able_edit_sender').show();
                         $item.find('.status-send').show();
                     }
                     else if(status==4) {
+                        if(_type==3){
+                            $item.find('.status_send').children('.status').text('等待自取');
+                        }else{
+                            $item.find('.status_send').children('.status').text('配送中');
+                        }
                         $item.find('.status_send').removeClass('hidden');
                         $item.find('.able_edit_order').show();
                         $item.find('.able_edit_sender').show();
                         $item.find('.status-finish').show();
                     }
                     else if(status==5) {
+                        if(_type==3){
+                            $item.find('.status_finish').children('.status').text('自取完成');
+                        }else{
+                            $item.find('.status_finish').children('.status').text('已送达');
+                        }
                         $item.find('.status_finish').removeClass('hidden');
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
@@ -457,7 +510,7 @@ function orderPrint(target,action){
     var html=document.createElement("div"); 
     var type=parseInt($("#receipt-type").val());
     var console_type=parseInt($("#console-type").val());
-    console.log(console_type);
+    //console.log(console_type);
     if(action =='print'){
         var parent=target.parents('.order-list-item');
         var order_id=parent.attr('data-id');
@@ -514,13 +567,6 @@ function orderPrint(target,action){
         });
         data.order_list_id=list;
     }
-
-        //var OpenWindow = window.open("","","width=500,height=600");
-        //OpenWindow.document.body.style.margin = "0";
-        //OpenWindow.document.body.style.marginTop = "15px";
-        //var box = OpenWindow.document.createElement('div');
-        //OpenWindow.document.body.appendChild(box);
-        //OpenWindow.document.close();
         var args={
             action:action,
             data:data
@@ -693,80 +739,422 @@ function orderEdit(target,action,content){
     };
     $.postJson(url,args,function(res){
             if(res.success){
+                var _type = target.parents('.order-list-item').attr('data-type');
                 if(action=='edit_remark'){
                     parent.modal('hide');
                     var $remark_box=$('.order-list-item').eq(index).find('.saler-remark');
              	    $remark_box.show().find('.order_remark').text(content);
                     $('.order-list-item').eq(index).find('.saler-remark').val(content);
                 }else if(action=='edit_SH2'){
-                   var code=target.find('.sender-code').text();
-	               var name=target.find('.sender-name').text();
-	               var phone=target.find('.sender-phone').text();
-                   var $sender=parent.find('.order-sender');
-                   var order_status=Int($('.order-status').find('.active').first().attr('data-id'));
-                   if(order_status==1){
-                        parent.find('.to-send').attr({'disabled':true}).text('配送中');
-                   }
-                   $sender.find('.sender-code').text(code);
-	               $sender.find('.sender-name').text(name);
-                   $sender.find('.sender-phone').text(phone);
-                   parent.find('.status_send').removeClass('hidden');
-  	               parent.find('.status_order').addClass('hidden');
-                   parent.find('.status_finish').addClass('hidden');
-                   parent.find('.status_word').text('配送中');
-                   parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');
+                    var code=target.find('.sender-code').text();
+                    var name=target.find('.sender-name').text();
+                    var phone=target.find('.sender-phone').text();
+                    var $sender=parent.find('.order-sender');
+                    var order_status=Int($('.order-status').find('.active').first().attr('data-id'));
+                    if(order_status==1){
+                        if(_type==3){
+                            parent.find('.to-send').attr({'disabled':true}).text('等待自取');
+                        }else{
+                            parent.find('.to-send').attr({'disabled':true}).text('配送中');
+                        }
+                    }
+                    $sender.find('.sender-code').text(code);
+                    $sender.find('.sender-name').text(name);
+                    $sender.find('.sender-phone').text(phone);
+                    parent.find('.status_send').removeClass('hidden');
+                    parent.find('.status_order').addClass('hidden');
+                    parent.find('.status_finish').addClass('hidden');
+                    if(_type==3){
+                        parent.find('.status_word').text('等待自取');
+                    }else{
+                        parent.find('.status_word').text('配送中');
+                    }
+                    parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');
                 }else if(action=='edit_status'){
-		          target.addClass('bg-blue').siblings().removeClass('bg-blue');
-		          var status=target.text();
-		          parent.find('.status_word').text(status);
-                  if(content==1) {
+                    target.addClass('bg-blue').siblings().removeClass('bg-blue');
+                    var status=target.text();
+                    parent.find('.status_word').text(status);
+                    if(content==1) {
             		    parent.find('.status_order').removeClass('hidden');
               	        parent.find('.status_send').addClass('hidden');
             			parent.find('.status_finish').addClass('hidden');
-            	}
-		else if(content==4) {
-			parent.find('.status_send').removeClass('hidden');
-  	                           parent.find('.status_order').addClass('hidden');
-			parent.find('.status_finish').addClass('hidden');
-                                        target.attr({'disabled':true}).text('配送中');
-                                        parent.find('.check').removeClass('order-check');
-		}
-            	               else if(content==5) {
+                    }
+                    else if(content==4) {
+                        if(_type==3){
+                            parent.find('.status_send').children('.status').text('等待自取');
+                        }else{
+                            parent.find('.status_send').children('.status').text('配送中');
+                        }
+                        parent.find('.status_send').removeClass('hidden');
+                        parent.find('.status_order').addClass('hidden');
+                        parent.find('.status_finish').addClass('hidden');
+                        if(_type==3){
+                            target.attr({'disabled':true}).text('等待自取');
+                        }else{
+                            target.attr({'disabled':true}).text('配送中');
+                        }
+                        parent.find('.check').removeClass('order-check');
+                    }
+                    else if(content==5) {
+                        if(_type==3){
+                            parent.find('.status_finish').children('.status').text('自取完成');
+                        }else{
+                            parent.find('.status_finish').children('.status').text('已送达');
+                        }
             			parent.find('.status_finish').removeClass('hidden');
-              	             parent.find('.status_order').addClass('hidden');
-            			parent.find('.status_send').addClass('hidden');
-                                        target.attr({'disabled':true}).text('已完成');
-                                        parent.find('.check').removeClass('order-check');
-            		  }
+                        parent.find('.status_order').addClass('hidden');
+                        parent.find('.status_send').addClass('hidden');
+                        target.attr({'disabled':true}).text('已完成');
+                        parent.find('.check').removeClass('order-check');
+                    }
                 }else if(action=='batch_edit_status'){
-                        if(content==4) {
-                            $('.order-checked').each(function(){
-                                var $this=$(this);
-                                var $item =$this.parents('.order-list-item');
-                                $item.find('.status_send').removeClass('hidden');
-                                $item.find('.status_order').addClass('hidden');
-                                $item.find('.status_finish').addClass('hidden');
+                    if(content==4) {
+                        $('.order-checked').each(function(){
+                            var $this=$(this);
+                            var $item =$this.parents('.order-list-item');
+                            if(_type==3){
+                                $item.find('.status_send').children('.status').text('等待自取');
+                            }else{
+                                $item.find('.status_send').children('.status').text('配送中');
+                            }
+                            $item.find('.status_send').removeClass('hidden');
+                            $item.find('.status_order').addClass('hidden');
+                            $item.find('.status_finish').addClass('hidden');
+                            if(_type==3){
+                                $item.find('.to-send').attr({'disabled':true}).text('等待自取');
+                            }else{
                                 $item.find('.to-send').attr({'disabled':true}).text('配送中');
-                            });
-                        }
-                        else if(content==5) {
-                             $('.order-checked').each(function(){
-                                var $this=$(this);
-                                var $item =$this.parents('.order-list-item');
-                                $item.find('.status_finish').removeClass('hidden');
-                                $item.find('.status_order').addClass('hidden');
-                                $item.find('.status_send').addClass('hidden');
-                                $item.find('.to-finish').attr({'disabled':true}).text('已完成');
-                             });
-                        }
+                            }
+                        });
+                    }
+                    else if(content==5) {
+                        $('.order-checked').each(function(){
+                            var $this=$(this);
+                            var $item =$this.parents('.order-list-item');
+                            $item.find('.status_finish').removeClass('hidden');
+                            $item.find('.status_order').addClass('hidden');
+                            $item.find('.status_send').addClass('hidden');
+                            $item.find('.to-finish').attr({'disabled':true}).text('已完成');
+                        });
+                    }
                 }else if(action=='edit_totalPrice'){
-	      parent.modal('hide');
-                   $('.order-list-item').eq(index).find('.order-price').text(content);
+                    parent.modal('hide');
+                    $('.order-list-item').eq(index).find('.order-price').text(content);
                 }
             }
             else {
-                return Tip(res.error_text);}
+                return Tip(res.error_text);
+            }
         },
         function(){return Tip('网络错误')}
     )
+}
+
+function operateSelf(type,$obj){
+    var lat = $obj.attr("data-lat");
+    var lon = $obj.attr("data-lng");
+    var address = $.trim($("#addressDetail").val());
+    var action = "",url=order_link;
+    var args={};
+    if(type=="add"){
+        action="add_self_address";
+        args = {
+            action:action,
+            data:{
+                lat:lat,
+                lon:lon,
+                self_address:address
+            }
+        };
+    }else if(type=="edit"){
+        var id = $obj.attr("data-id");
+        action="edit_self_address";
+        args = {
+            action:action,
+            data:{
+                address_id:id,
+                lat:lat,
+                lon:lon,
+                address:address
+            }
+        };
+    }else if(type=="set"){
+        var id = $obj.attr("data-id");
+        if(id || id=="0"){
+            action="set_self_address";
+            args = {
+                action:action,
+                data:{
+                    address_id:id
+                }
+            };
+        }
+    }else if(type=="default"){
+        var id = $obj.attr("data-id");
+        if(id || id=="0"){
+            action="set_self_default";
+            args = {
+                action:action,
+                data:{
+                    address_id:id
+                }
+            };
+        }
+    }else{
+        $("#save-lbs").removeClass("forhidden");
+        return false;
+    }
+    $.postJson(url,args,function(res){
+            $("#save-lbs").removeClass("forhidden");
+            if(res.success){
+                if(type=="add"){
+                    var id = res.address_id;
+                    $obj.attr("data-id",id);
+                    $obj.find(".self-addr").html(address);
+                    $("#addressDetail").attr("disabled","true");
+                    edit_flag = false;
+                    Tip("自提点添加成功");
+                }else if(type=="edit"){
+                    $obj.find(".self-addr").html(address);
+                    $("#addressDetail").attr("disabled","true");
+                    edit_flag = false;
+                    Tip("自提点编辑成功");
+                }else if(type=="set"){
+                    var $this = $obj.find(".switch-abtn");
+                    if($this.hasClass("switch-abtn-active")){
+                        $this.removeClass("switch-abtn-active");
+                    }else{
+                        $this.addClass("switch-abtn-active");
+                    }
+                }else if(type=="default"){
+                    $(".self-address-list").find(".default-address").addClass("hidden");
+                    $obj.find(".default-address").removeClass("hidden");
+                }
+            }
+            else return Tip(res.error_text);
+        },
+        function(){return Tip('网络错误')}
+    );
+}
+//初始化百度地图
+function initBmap(){
+    var map = new BMap.Map("bmap",{enableMapClick:false});          // 创建地图实例
+    var scaleControl = new BMap.ScaleControl({anchor: BMAP_ANCHOR_BOTTOM_RIGHT,offset: new BMap.Size(15, 10)});  // 创建比例尺
+    map.addControl(scaleControl);  // 显示比例尺
+    var lat = parseFloat($("#lat").val());
+    var lon = parseFloat($("#lon").val());
+    var marker = null;
+    map.enableScrollWheelZoom();
+    var myGeo = new BMap.Geocoder();
+    var spoint = new BMap.Point(lat, lon);  // 创建点坐标
+    map.centerAndZoom(spoint, 15);
+    var marker1 = new BMap.Marker(spoint);
+    var slabel = new BMap.Label("店铺位置",{offset:new BMap.Size(-20,-20)});
+    slabel.setStyle({
+        border:"none",
+        color:"#ff6666",
+        fontWeight:"bold"
+    });
+    marker1.setLabel(slabel);
+    map.addOverlay(marker1);
+    initMarker();//初始化自提点
+    map.centerAndZoom(new BMap.Point(lat-0.016,lon+0.01), 15);
+    $("#addressDetail").on("keydown",function(ev){
+        if(ev.keyCode==13){
+            if(edit_flag == false) return false;
+            var text = $.trim($("#addressDetail").val());
+            if(text=="" || text.length>30){
+                Tip("详细地址不能为空且不能超过30个字符");
+                return false;
+            }
+            var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+            getPointByName(map, myGeo, address,false);
+        }
+    });
+    $("#search-lbs").on("click",function(){
+        if(edit_flag == false) return Tip("请先点击编辑按钮");
+        var text = $.trim($("#addressDetail").val());
+        if(text=="" || text.length>30){
+            Tip("详细地址不能为空且不能超过30个字符");
+            return false;
+        }
+        var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+        getPointByName(map, myGeo, address,false);
+    });
+    $("#save-lbs").on("click",function(){//保存自提点
+        if(edit_flag == false) return Tip("请先点击编辑或添加按钮");
+        if($(this).hasClass("forhidden")){
+            return false;
+        }
+        var text = $.trim($("#addressDetail").val());
+        if(text=="" || text.length>30){
+            Tip("详细地址不能为空且不能超过30个字符");
+            return false;
+        }
+        var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
+        getPointByName(map, myGeo, address,true);
+    });
+    $(document).on("click",".cur_loc",function(){
+        var $item = $(this).closest("li");
+        var lng = parseFloat($item.attr("data-lng"));
+        var lat = parseFloat($item.attr("data-lat"));
+        var key = "自提点"+$item.find(".self-index").html();
+        map.centerAndZoom(new BMap.Point(lng, lat), 15);
+        var mark = getMarker(key);
+        if(mark){
+            mark.setAnimation(BMAP_ANIMATION_BOUNCE);
+            setTimeout(function(){
+                mark.setAnimation();
+            },2000);
+        }else{
+            return Tip("该自提点未找到");
+        }
+    });
+    $(document).on("click",".wrap-operate .edit",function(){
+        if(edit_flag) return Tip("请先保存正在编辑的自提点");
+        edit_flag = true;
+        var $item = $(this).closest("li");
+        cur_address = $item;
+        $("#addressDetail").removeAttr("disabled");
+        var text = $item.find(".self-addr").html();
+        if(text=="点击右方修改设置"){
+            $("#addressDetail").val("").focus();
+        }else{
+            $("#addressDetail").val(text).focus();
+        }
+        $("#save-lbs").attr("data-type","edit");
+        $(".self-address-list").find(".address-text").removeClass("green-txt")
+        cur_address.find(".address-text").addClass("green-txt");
+        var lng = parseFloat($item.attr("data-lng"));
+        var lat = parseFloat($item.attr("data-lat"));
+        var key = "自提点"+$item.find(".self-index").html();
+        map.centerAndZoom(new BMap.Point(lng, lat), 15);
+        marker = getMarker(key);
+        if(marker){
+            marker.setAnimation(BMAP_ANIMATION_BOUNCE);
+            setTimeout(function(){
+                marker.setAnimation();
+            },3000);
+            marker.enableDragging();
+            marker.addEventListener("dragend",attribute);
+            function attribute(){
+                is_drag = true;
+                var p = marker.getPosition();  //获取marker的位置
+                myGeo.getLocation(p, function(rs){
+                    var addComp = rs.addressComponents;
+                    $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                    cur_address.attr("data-lng",p.lng).attr("data-lat",p.lat);
+                });
+            }
+        }else{
+            return Tip("该自提点未找到");
+        }
+    });
+    $(document).on("click",".wrap-operate .delete",function(){
+        var $this = $(this);
+        if(confirm("确认删除该自提点吗？")){
+            var id = $this.closest("li").attr("data-id");
+            var args = {
+                action:"set_self_address",
+                data:{
+                    address_id:id
+                }
+            };
+            $.postJson(order_link,args,function(res){
+                    if(res.success){
+                        var key = "自提点"+$this.closest("li").find(".self-index").html();
+                        deleteMarker(key);
+                        $this.closest("li").remove();
+                        Tip("自提点删除成功");
+                    }
+                    else return Tip(res.error_text);
+                },
+                function(){return Tip('网络错误')}
+            );
+        }
+    });
+    function getPointByName(map, myGeo, address,flag){
+        myGeo.getPoint(address, function(point){
+            if (point) {
+                if(!is_drag){
+                    cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
+                }
+                if(!flag){
+                    map.centerAndZoom(point, 15);
+                }
+                initPoint(map,point,myGeo,flag);
+            }else{
+                Tip("根据您填写的地址未能找到正确位置，请重新填写哦！");
+            }
+        });
+    }
+    function getMarker(key){
+        var allOverlay = map.getOverlays();
+        for (var i = 0; i < allOverlay.length; i++){
+            if(allOverlay[i].getLabel().content == key){
+                return allOverlay[i];
+            }
+        }
+        return null;
+    }
+    function deleteMarker(key){
+        var allOverlay = map.getOverlays();
+        for (var i = 0; i < allOverlay.length; i++){
+            if(allOverlay[i].getLabel().content == key){
+                map.removeOverlay(allOverlay[i]);
+                return true;
+            }
+        }
+        return false;
+    }
+    function initPoint(map,point,myGeo,flag){
+        var index = cur_address.index();
+        var key = "自提点"+cur_address.find(".self-index").html();
+        if(!flag){
+            deleteMarker(key);
+            marker = new BMap.Marker(point);
+            marker.enableDragging();
+            map.addOverlay(marker);
+            map.centerAndZoom(point, 15);
+        }else{
+            $("#save-lbs").addClass("forhidden");
+            operateSelf($("#save-lbs").attr("data-type"),cur_address);
+            marker.disableDragging();
+        }
+        marker.addEventListener("dragend",attribute);
+        var label = new BMap.Label("自提点"+cur_address.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
+        label.setStyle({
+            border:"none",
+            color:"#333333",
+            fontWeight:"bold"
+        });
+        marker.setLabel(label);
+        function attribute(){
+            is_drag = true;
+            var p = marker.getPosition();  //获取marker的位置
+            myGeo.getLocation(p, function(rs){
+                var addComp = rs.addressComponents;
+                $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                cur_address.attr("data-lng",point.lng).attr("data-lat",point.lat);
+            });
+        }
+    }
+    function initMarker(){
+        var $list = $(".self-address-list").children("li");
+        if($list.size()==0) return false;
+        for(var i=0; i<$list.size(); i++){
+            var $item = $list.eq(i);
+            var lng = parseFloat($item.attr("data-lng"));
+            var lat = parseFloat($item.attr("data-lat"));
+            var mar = new BMap.Marker(new BMap.Point(lng,lat));
+            map.addOverlay(mar);
+            var label = new BMap.Label("自提点"+$item.find(".self-index").html(),{offset:new BMap.Size(-20,-20)});
+            label.setStyle({
+                border:"none",
+                color:"#333333",
+                fontWeight:"bold"
+            });
+            mar.setLabel(label);
+        }
+    }
 }

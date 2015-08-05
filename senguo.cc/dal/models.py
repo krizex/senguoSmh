@@ -90,6 +90,7 @@ class ORDER_TYPE:
 	"""订单类型"""
 	NOW = 1
 	ON_TIME = 2
+	SELF = 3
 
 class TAG:
 	"""商品标签"""
@@ -434,6 +435,11 @@ class SuperAdmin(MapBase, _AccountApi):
 
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
+
+	# added by woody
+	level   = Column(Integer,default=0)  #0代表森果内部员工，1代表省级代理
+	province  = Column(Integer)          #如果是省级代理，则该字段表示该省的code
+	purview  = Column(Integer,default=0) #用户能否查看自己所在地区不属于自己推广的店铺数据，1:可以，0:不可以
 
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
@@ -922,6 +928,9 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	shop_id = Column(Integer , ForeignKey(Shop.id) ,nullable= False)
 	shop_code = Column(String(64))
 	shop_auth  = Column(Integer)
+	# woody
+	shop_province = Column(Integer)
+	
 	applicant_name  = Column(String(32))
 	shop_balance = Column(Float,default = 0)
 	alipay_account = Column(String(64))
@@ -936,7 +945,7 @@ class ApplyCashHistory(MapBase,_CommonApi):
 ################################################################################
 # 余额记录 只会在 三处地方产生:
 # 用户充值 ，店铺管理员提现 和 接下来要做的在线支付
-# 即只有真正实现 支付的地方才用到。而用户 余额消费 只是数值上的变动
+# 用户 余额消费 只是数值上的变动
 # 用户余额消费也会产生记录，只显示给用户自己看
 ################################################################################
 # 余额、在线支付历史
@@ -947,6 +956,10 @@ class BalanceHistory(MapBase,_CommonApi):
 	name = Column(String(32)) #当 balance_type = 0,3 ，时，表示 充值用户的名称 ，
 								#当 balance_type为2 的时候，表示申请提现店铺管理员名称
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
+
+	# 地址 added by woody
+	shop_province = Column(Integer)
+
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
 	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
 												# 6:余额消费完成 ，可提现额度变化 7:在线支付订单完成，可提现额度变化
@@ -1260,11 +1273,11 @@ class Order(MapBase, _CommonApi):
 	num = Column(String(15), nullable=False)  # 订单编号
 	phone = Column(String(30), nullable=False)
 	receiver = Column(String(64), nullable=False)
-	address_text = Column(String(1024), nullable=False)
+	address_text = Column(String(1024), nullable=False) #if type is 3,this column is self_address
 	message = Column(String(100)) #用户留言
 	status = Column(TINYINT, default=ORDER_STATUS.ORDERED)  # 订单状态: 未付款 = -1, 已删除 = 0, 未处理 = 1, JH = 2, SH1 = 3
 														    # SH2 = 4, 已收货 = 5, 用户评价 = 6, 自动评价 = 7, AFTER_SALE = 10
-	type = Column(TINYINT) #订单类型 1:立即送 2：按时达
+	type = Column(TINYINT) #订单类型 1:立即送 2：按时达 3:自提
 	intime_period = Column(Integer,default = 30) #when type is 1,it's usefull
 	freight = Column(SMALLINT, default=0)  # 订单运费
 	tip = Column(SMALLINT, default=0)  # 小费（暂时只有立即送可提供运费）
@@ -1306,6 +1319,8 @@ class Order(MapBase, _CommonApi):
 	coupon_key=Column(String(128))    #优惠券码
 	coupon_money=Column(Float,default=0)  #优惠金额
 	new_totalprice=Column(Float)
+
+	self_address_id = Column(Integer,default=0) #自提点id 7.30
 
 
 	def get_num(self,session,order_id):
@@ -1548,6 +1563,24 @@ class Config(MapBase, _CommonApi):
 	wireless_print_num = Column(String(20)) #无线打印机终端号 7.13
 	wireless_print_key = Column(String(20)) #无线打印机密钥 7.13
 
+	self_on = Column(Integer,default = 1) #0:自提停用 1:自提启用 7.30
+	day_self = Column(Integer,default = 0) #自提 0:all 1:今天 2:明天 7.30
+	self_end_time = Column(Integer,default = 0) #自提下单截止时间 7.30
+	self_addresses = relationship("SelfAddress")
+
+
+#自提地址 7.30 max10
+class SelfAddress(MapBase,_CommonApi):
+	 __tablename__ = "self_address"
+	 id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	 config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
+	 address = Column(String(1024), nullable=False)
+	 active = Column(Integer,default = 1) #0:delete 1:on 2:off
+	 if_default = Column(Integer,default = 0) #0:not default 1:default 2:shop_address
+	 lat    = Column(MyReal,default = 0)  #纬度
+	 lon    = Column(MyReal,default = 0)  #经度
+
+
 # 店铺营销功能状态
 class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
@@ -1579,6 +1612,7 @@ class Period(MapBase):
 	name = Column(String(20))
 	start_time = Column(Time)
 	end_time = Column(Time)
+	config_type = Column(Integer,default = 0) #0:按时达 1:自提 #7.30
 
 # 一级地址
 class Address1(MapBase, _CommonApi):

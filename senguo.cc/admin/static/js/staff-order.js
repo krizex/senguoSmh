@@ -57,7 +57,7 @@ $(document).ready(function(){
         var $this=$(this);
         order_id=$this.data('id');
         var index=$this.parents('.order-list-item').index();
-        console.log(index);
+        //console.log(index);
         $('.remark-input').empty();
         var remark_box=new Modal('remark_box');
         remark_box.modal('show');

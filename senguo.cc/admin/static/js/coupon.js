@@ -18,9 +18,7 @@ $(document).ready(function(){
             var coupon_id = $(this).attr("data-id");
             $(this).attr("data-flag","off");
             getCoupon(coupon_id,$(this));
-        }else{
-            return Tip("服务器正在处理请求，不要重复点击！");
-        }  
+        }
     });
 });
 //领取优惠券

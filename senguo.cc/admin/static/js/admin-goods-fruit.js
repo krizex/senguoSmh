@@ -236,7 +236,7 @@ $(document).ready(function(){
                             };
                         },
                         'onUploadComplete':function(){
-                            $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
+                            $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
                         }
 
                     });
@@ -398,7 +398,7 @@ $(document).ready(function(){
                     Tip('The file ' + file.name + ' could not be uploaded: ' + data);
                 },
                 'onUploadComplete':function(){
-                    $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
+                    $(this).parents('.upload-img').find('.imgPreview').attr({'src':'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
                 }
 
             });
@@ -638,8 +638,8 @@ function addEditFruit(target,action){
     if(!priority){priority=5}
     if(!intro){intro='';}
     if(!name){return Tip('请输入商品名称！');}
-    if(saled!=0&&!regFloat.test(saled)){return Tip('销量只能为数字，至多为小数点后两位！');}
-    if(storage!=0&&!regFloat.test(storage)){return Tip('库存只能为数字，至多为小数点后两位！');}
+    if(saled!=0&&!regFloat.test(saled)){return Tip('销量只能为数字，最多为小数点后两位！');}
+    if(storage!=0&&!regFloat.test(storage)){return Tip('库存只能为数字，最多为小数点后两位！');}
     if(!regNumber.test(priority)){return Tip('优先级只能为整数！');}
     if(priority<1||priority>10){return Tip('优先级只能为1-10！');}
     if(intro.length>100) {return Tip('商品简介请不要超过100个字！');}
@@ -664,10 +664,10 @@ function addEditFruit(target,action){
     var args;
     if(action=='add_fruit'||action=='add_mgoods'){
         if(!price||!num){return Tip('请至少完整填写一种计价方式！');}
-        if(!regFloat.test(price)){return Tip('价格只能为数字，至多为小数点后两位！');}
-        if(!regFloat.test(num)){return Tip('数量只能为数字，至多为小数点后两位！');}
+        if(!regFloat.test(price)){return Tip('价格只能为数字，最多为小数点后两位！');}
+        if(!regFloat.test(num)){return Tip('数量只能为数字，最多为小数点后两位！');}
         if(!unit_num) unit_num=1;
-        if(!regFloat.test(unit_num)){return Tip('计价方式换算单位只能为数字，至多为小数点后两位！');}
+        if(!regFloat.test(unit_num)){return Tip('计价方式换算单位只能为数字，最多为小数点后两位！');}
         if(!img_url){data.img_url=''}
         data.charge_types=charge_types;
         args={
@@ -730,10 +730,10 @@ function addEditCharge(target,id,action,item){
     var units=Int(charge_item.find('.charge-unit').attr('data-id'));
     var unit_num=parseFloat(charge_item.find('.charge-unit-num').val());
     if(!price||!num) {return Tip('请输入计价方式！')}
-    if(!regFloat.test(price)){return Tip('价格只能为数字，至多为小数点后两位！');}
+    if(!regFloat.test(price)){return Tip('价格只能为数字，最多为小数点后两位！');}
     if(!unit_num){unit_num=1}
-    if(!regFloat.test(num)){return Tip('数量只能为数字，至多为小数点后两位！');}
-    if(!regFloat.test(unit_num)){return Tip('单位换算数量只能为数字，至多为小数点后两位！');}
+    if(!regFloat.test(num)){return Tip('数量只能为数字，最多为小数点后两位！');}
+    if(!regFloat.test(unit_num)){return Tip('单位换算数量只能为数字，最多为小数点后两位！');}
     var data={
             price:price,
             unit:units,

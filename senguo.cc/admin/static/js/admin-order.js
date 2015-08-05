@@ -61,10 +61,8 @@ $(document).ready(function(){
                 }
                 $('.add-period').empty().append($item).show();
             });
-
-
         }
-        else return Tip('至多能添加20个时段！');
+        else return Tip('最多能添加20个时段！');
     });
     $(document).on('click','.add-time-period',function(){//添加确认
         var $this=$(this);
@@ -117,7 +115,12 @@ $(document).ready(function(){
     });
     //按时达下单截止时间
     $(document).on('click','.stopRange',function(){
-        var range=$('#stopRange').val().trim();
+        var range = "";
+        if(self_type==3){
+            range=$('#endSelf').val().trim();
+        }else{
+            range=$('#stopRange').val().trim();
+        }
         var regNumber=/^([1-9]\d*|[0]{1,1})$/;
         if(!regNumber.test(range)){
             return Tip('截止时间只能输入整数');
@@ -126,7 +129,11 @@ $(document).ready(function(){
         if(range<0||range>360){
              return Tip('截止时间范围为0~360分钟');
         }
-        stopRange($('#stopRange'),range);
+        if(self_type==3){
+            stopRange($('#endSelf'),range);
+        }else{
+            stopRange($('#stopRange'),range);
+        }
     });
     //按时达配送费
     $(document).on('click','.sendfreight',function(){
@@ -159,6 +166,18 @@ $(document).ready(function(){
         orderTypeActive($this,'edit_ontime_on');
 
     });
+    //自提模式开启/关闭
+    $(document).on('click','#stopSelf',function(){
+        var $this=$(this);
+        if(confirm('自提模式被关闭后用户下单时将不可选择该模式，确认要关闭自提模式吗？'))
+        {
+            orderTypeActive($this,'edit_self_on');
+        }
+    });
+    $(document).on('click','#startSelf',function(){
+        var $this=$(this);
+        orderTypeActive($this,'edit_self_on');
+    });
     //立即送设置
     $(document).on('click','#sendNowConfig',function(){SendNowConfig()});
     //商品列表下标
@@ -186,11 +205,7 @@ $(document).ready(function(){
                     var index = $(".order-type").children(".active").index();
                     $("#atonce").text(res.atonce);
                     $("#ontime").text(res.ontime);
-                    /*if(res.new_order_sum>0){
-                        $("#new-order-box").removeClass("hidden");
-                    }else{
-                        $("#new-order-box").addClass("hidden");
-                    }*/
+                    $("#selfPoint").text(res.selfPoint);
                 }
             }
         })
@@ -203,7 +218,12 @@ $(document).ready(function(){
     $this.addClass("active").siblings(".btn").removeClass("active");
     var day=parseInt($this.attr("data-id"));
     var url="";
-    var action="edit_send_day";
+    var action="";
+    if(self_type==3){
+        action="edit_day_self";
+    }else{
+        action="edit_send_day";
+    }
     var data={day:day};
     var args={
         action:action,
@@ -218,8 +238,7 @@ $(document).ready(function(){
 });
 
 var link='/admin/order';
-
-
+var self_type = parseInt($.getUrlParam("order_type"));//自提判断
 function addActive(target,id){
     for(var i=0;i<target.length;i++)
     {
@@ -227,7 +246,6 @@ function addActive(target,id){
             target.eq(i).addClass('active');
     }
 }
-
 function orderSearch(){
     var order_num=Int($('.search-con').val());
     var url='/admin/searchorder?action=order&&id='+order_num;
@@ -236,7 +254,7 @@ function orderSearch(){
 
 function addEditPeriod(target,action){
     var url=link;
-    var action=action;
+    var action = action;
     var parent;
     var period_id;
     var startTime;
@@ -244,6 +262,9 @@ function addEditPeriod(target,action){
     var periodName;
     if(action=='add_period'){
         parent=target.parents('.add-period')
+        if(self_type==3){
+            action="add_self_period";
+        }
     }
     else if(action=='edit_period'){
         parent=target.parents('.time-list-item');
@@ -277,7 +298,7 @@ function addEditPeriod(target,action){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                if(action=='add_period'){
+                if(action=='add_period' || action=='add_self_period'){
                     parent.empty().hide();
                     var item_url='/static/items/admin/send-period-item.html?v=20150613';
                     $.getItem(item_url,function(data){
@@ -310,7 +331,6 @@ function addEditPeriod(target,action){
                     parent.find('.show_item').show();
                     parent.find('.edit_item').addClass('hidden');
                     parent.addClass('edit_item_box');
-
                 }
             }
             else return Tip(res.error_text);
@@ -411,11 +431,19 @@ function sendMoney(target,money){
 
 function stopRange(target,range){
     var url='';
-    var action='edit_stop_range';
+    var action="";
+    if(self_type==3){
+        action="edit_end_self";
+    }else{
+        action="edit_stop_range";
+    }
     if(!range){range=0;}
     var args={
         action:action,
-        data:{stop_range:range}
+        data:{
+            stop_range:range,
+            end_self:range
+        }
     };
     $.postJson(url,args,function(res){
             if(res.success){

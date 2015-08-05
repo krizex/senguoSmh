@@ -286,7 +286,7 @@ $(function() {
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $('#data').val(),
         unique_names: false,
         save_key: false,
@@ -305,7 +305,7 @@ $(function() {
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#person-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#person-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
                 $("#person-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
@@ -342,7 +342,7 @@ $(function() {
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $('#data').val(),
         unique_names: false,
         save_key: false,
@@ -361,7 +361,7 @@ $(function() {
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#license-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#license-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
                 $("#license-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
@@ -398,7 +398,7 @@ $(function() {
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $('#data').val(),
         unique_names: false,
         save_key: false,
@@ -417,7 +417,7 @@ $(function() {
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#font-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#font-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
                 $("#font-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
@@ -454,7 +454,7 @@ $(function() {
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $('#data').val(),
         unique_names: false,
         save_key: false,
@@ -473,7 +473,7 @@ $(function() {
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#rever-img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#rever-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
                 $("#rever-img").next(".img-cover").addClass("hidden");
             },
             'Error': function (up, err, errTip) {
