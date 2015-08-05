@@ -21,9 +21,6 @@ codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else Non
 import tornado.websocket
 from dal.db_configs import DBSession
 
-import codecs 
-codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None)
-
 # 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -1637,7 +1634,7 @@ class Order(AdminBaseHandler):
 			if self.current_shop.shop_auth == 0 and self_address_count >= 1:
 				return self.send_fail("未认证店铺只能添加一个自提点")
 			if self_address_count >= 10:
-				return self.send_fail("至多只能添加10个自提点")
+				return self.send_fail("最多只能添加10个自提点")
 			if "self_address" not in data:
 				return self.send_error(403)
 			address = data["self_address"]
@@ -1661,6 +1658,8 @@ class Order(AdminBaseHandler):
 				self_address = self.session.query(models.SelfAddress).filter_by(id=address_id,config_id=self.current_shop.config.id).first()
 			except:
 				return self.send_fail(404)
+			if self_address.if_default == 2:
+				return self.send_fail(403)
 			if action == "edit_self_address":
 				self_address.address = data["address"] or ''
 				self_address.lat = data["lat"] or ''
@@ -2375,7 +2374,7 @@ class Goods(AdminBaseHandler):
 				if group_id == -1:
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
 					if re_count >= 6:
-						return self.send_fail("推荐分组至多只能添加六个商品")
+						return self.send_fail("推荐分组最多只能添加六个商品")
 				if group_id !=0 and group_id !=-1:
 					_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
 					if _group:
@@ -2479,7 +2478,7 @@ class Goods(AdminBaseHandler):
 				if group_id == -1:
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
 					if re_count >= 6:
-						return self.send_fail("推荐分组至多只能添加六个商品")
+						return self.send_fail("推荐分组最多只能添加六个商品")
 
 				if group_id !=0 and group_id !=-1:
 						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
@@ -2757,8 +2756,8 @@ class GoodsImport(AdminBaseHandler):
 		except:
 			shops = None
 		try:
-			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
-		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+			other_shops = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id).\
+						  filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
 		except:
 			other_shops = None
 
@@ -2802,7 +2801,7 @@ class GoodsImport(AdminBaseHandler):
 		elif action == "import_goods":
 			fruit_list  = data["fruit_list"]
 			if len(self.current_shop.fruits) + len(fruit_list) >200:
-				return self.send_fail("一家店铺至多可添加200种商品")
+				return self.send_fail("一家店铺最多可添加200种商品")
 			fruits = self.session.query(models.Fruit).filter(models.Fruit.id.in_(fruit_list)).all()
 			for fruit in fruits:
 				_fruit = models.Fruit(
@@ -2818,7 +2817,7 @@ class GoodsImport(AdminBaseHandler):
 					detail_describe=fruit.detail_describe,
 				)
 				self.session.add(_fruit)
-				self.session.commit()
+				self.session.flush()
 				if not fruit.charge_types:
 					continue
 				for charge in fruit.charge_types:
@@ -2834,7 +2833,59 @@ class GoodsImport(AdminBaseHandler):
 						relate = charge.relate
 					)
 					self.session.add(_charge)
-					self.session.commit()
+				self.session.commit()
+			return self.send_success()
+
+		elif  action == "checkyouzan":
+			if "appid" in data and "appsecret" in data:
+				appid = data["appid"]
+				appsecret = data["appsecret"]
+			else:
+				return self.send_error(403)
+			goods_info = self.getYouzan("goods",appid,appsecret)
+			goods_list = []
+			if goods_info and "total_results" in goods_info:
+				goods_total_results=int(goods_info["total_results"])
+				if goods_total_results>0:
+					for good in goods_info["items"]:
+						title = good.get("title","")
+						intro = good.get("desc","")
+						imgs = good.get("item_imgs","")
+						price = good.get("price",0)
+						good_img_url = []
+						charge_types = []
+						if price == "":
+							price = 0
+						for img in imgs:
+							good_img_url.append(img["url"])
+						if good_img_url !=[]:
+							img_url = good_img_url[0]
+						good_img_url=(";").join(good_img_url)
+						if len(title)>20:
+							title=title[0:20]
+						if len(intro)>8000:
+							intro=intro[0:8000]
+						if len(good_img_url)>500:
+							good_img_url=good_img_url[0:500]
+						charge_types.append({"price":price,"unit":self.getUnit(3)})
+						goods_list.append({"id":"","name":title,"charge_types":charge_types,"imgurl":img_url,"imgs":good_img_url,"intro":str(intro)})
+			return self.send_success(goods_list=goods_list)
+
+		elif action == "import_youzan":
+			if "datalist" in data:
+				datalist = data["datalist"]
+			else:
+				return self.send_error(403)
+			if len(self.current_shop.fruits) + len(datalist) >200:
+				return self.send_fail("一家店铺最多可添加200种商品")
+			for data in datalist:
+				print(data["imgs"])
+				print(data.get("imgs",""))
+				new_good = models.Fruit(shop_id = self.current_shop.id , fruit_type_id = 999,name = data.get("name",""),
+				storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
+				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 3,num = 1,market_price = None))
+				self.session.add(new_good)
+			self.session.commit()
 			return self.send_success()
 
 class editorTest(AdminBaseHandler):
@@ -3808,6 +3859,15 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_province = shop_city//10000*10000
 			shop.shop_city = shop_city
 			shop.shop_address_detail = shop_address_detail
+			try:
+				self_shop_address = self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,if_default=2).first()
+			except:
+				self_shop_address = None
+			print(shop_address_detail)
+			if self_shop_address:
+				self_shop_address.address = shop_address_detail
+				self_shop_address.lat = lat
+				self_shop_address.lon = lon
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
 			if "area_type" in data and data["area_type"] !="":

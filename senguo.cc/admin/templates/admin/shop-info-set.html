@@ -89,7 +89,7 @@
         <span class="w1 pull-left set-inl-blo">配送区域</span>
         <div class="w2 pull-left">
             <p class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</p>
-            <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,至多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
+            <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,最多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
         </div>
         <div class="pull-right">
             <a class="" id="edit-area" href="javascript:;">修改</a>
@@ -150,7 +150,7 @@
                             <span class="caret"></span>
                         </button>
                     </div>
-                    <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址，至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
+                    <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址，最多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
                     <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索"/>
                 </div>
             </div>

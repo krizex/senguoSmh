@@ -175,6 +175,11 @@ $(document).ready(function(){
     return Tip("自提点只能在店铺所在的省");
 }).on("click",".reCity",function(){
     return Tip("自提点只能在店铺所在的城市");
+}).on("mouseover",".self-address-list li",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
+    $(this).find(".wrap-operate").removeClass("hide");
+}).on("mouseout",".self-address-list",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
 });
 
 var cur_address = null,edit_flag=false,is_drag = false;
@@ -506,7 +511,7 @@ function orderPrint(target,action){
     var html=document.createElement("div"); 
     var type=parseInt($("#receipt-type").val());
     var console_type=parseInt($("#console-type").val());
-    console.log(console_type);
+    //console.log(console_type);
     if(action =='print'){
         var parent=target.parents('.order-list-item');
         var order_id=parent.attr('data-id');
