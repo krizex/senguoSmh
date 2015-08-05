@@ -25,7 +25,7 @@ function searchOrder(con){
     };
     $.postJson(url,args,function(res){
             if(res.success){
-                $("#goods_name").html(res.name);
+                $("#goods_name").html(con);
                 $("#goods_num").html(res.num);
                 if(res.num>0){
                     $("#search_link").attr("href","/madmin/goods?search="+con);

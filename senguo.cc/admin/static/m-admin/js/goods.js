@@ -36,6 +36,7 @@ $(document).ready(function(){
     var id = $(this).attr("data-id");
     $(".wrap_goods_menu").toggleClass("hide");
     $("#filter_status").attr("data-id",id).html($(this).html());
+    page=0;
     getGoodsItem("all",0);
 }).on("click",".goods-all-list li",function(){//大类切换
     var index = parseInt($(this).index());

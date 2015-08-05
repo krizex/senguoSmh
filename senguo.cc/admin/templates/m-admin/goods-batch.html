@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="javascript:;" class="back goback">返回</a>
+    <a href="/madmin/goods?type=2" class="back">返回</a>
     <span>批量管理</span>
     <a href="javascript:;" class="head-right select-all" data-status="0">全选</a>
 </div>
@@ -15,18 +15,18 @@
     <ul class="batch-lst mt10">
         {% for good in group_goods %}
         {% if good[2] %}
-        {% set img_url = good[2].split(";")[0]  %}
+        {% set img_url = good[2].split(";")[0] %}
         {% else %}
         {% set img_url =""  %}
         {% end %}
         <li data-id="{{good[0]}}">
             <dl class="batch-dl">
                 <dt>
-                    <img src="{{img_url or '/static/images/TDSG.png' }}" alt="商品图片"/>
+                    <img src="{{img_url or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="商品图片"/>
                 </dt>
                 <dd>
                     <p class="c333 clip">{{good[1]}}</p>
-                    <span class="checkbox checked-box"></span>
+                    <span class="checkbox"></span>
                 </dd>
             </dl>
         </li>
@@ -46,16 +46,16 @@
 <div class="wrap-bm-btns hide" id="choose_group">
     <p class="c666 txt-center"><span>分类至</span><span class="f12">(分组信息将展示在店铺中，便于用户购买商品)</span></p>
     <ul class="batch-group-list mt10">
-        <li class="active" data-id="-1">
+<!--        <li class="active" data-id="-1">
             <span class="c666 fr">共{{record_count}}件商品</span>
             <span class="checkbox checked-box"></span>
             <span class="gname clip">店铺推荐</span>
-        </li>
-        {% for d in data %}
+        </li>-->
+        {% for d in group_data %}
         <li class="" data-id="d['id']">
             <span class="c666 fr">共{{d['num']}}件商品</span>
             <span class="checkbox"></span>
-            <span class="gname clip">{% if d['id']==1 %}默认分组{% else %}{{d['name']}}{% end %}</span>
+            <span class="gname clip">{% if d['id']==1 %}默认分组{% elif d['id']==-1 %}店铺推荐{% else %}{{d['name']}}{% end %}</span>
         </li>
         {% end %}
     </ul>
