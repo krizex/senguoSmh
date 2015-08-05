@@ -570,7 +570,7 @@ class CouponList(CustomerBaseHandler):
 		self.updatecoupon(current_customer_id)
 		if action=="get_all":
 			data=[]
-			for x in range(1,3):
+			for x in range(1,4):
 				self.getcoupon(x,data)
 			return self.render("coupon/coupon-list.html",output_data=data)
 		elif action=="get_one":

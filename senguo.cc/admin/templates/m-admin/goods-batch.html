@@ -13,28 +13,24 @@
 <div class="container">
 <div class="order-list-box">
     <ul class="batch-lst mt10">
-        <li>
+        {% for good in group_goods %}
+        {% if good[2] %}
+        {% set img_url = good[2].split(";")[0]  %}
+        {% else %}
+        {% set img_url =""  %}
+        {% end %}
+        <li data-id="{{good[0]}}">
             <dl class="batch-dl">
                 <dt>
-                    <img src="/static/images/TDSG.png" alt="商品图片"/>
+                    <img src="{{img_url or '/static/images/TDSG.png' }}" alt="商品图片"/>
                 </dt>
                 <dd>
-                    <p class="c333 clip">特价山竹，好吃，非常好吃，来</p>
+                    <p class="c333 clip">{{good[1]}}</p>
                     <span class="checkbox checked-box"></span>
                 </dd>
             </dl>
         </li>
-        <li>
-            <dl class="batch-dl">
-                <dt>
-                    <img src="/static/images/TDSG.png" alt="商品图片"/>
-                </dt>
-                <dd>
-                    <p class="c333 clip">特价山竹，好吃，非常好吃，来</p>
-                    <span class="checkbox"></span>
-                </dd>
-            </dl>
-        </li>
+        {% end %}
     </ul>
 </div>
 </div>

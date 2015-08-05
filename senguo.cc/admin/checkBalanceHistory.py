@@ -13,6 +13,7 @@ session = models.DBSession()
 #用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
 
 def Check():
+	print("Start Checking Balance History...")
 	# *将balancehistory表中的所有店铺id查出来存放在列表shop_list_query1中
 	# *将系统中的所有status > -1的订单的数量不为0店铺的id查询出来存在一个列表shop_list_query2中
 	# *然后从列表shop_list_query2中除去shop_list_query1中的id 
@@ -21,6 +22,7 @@ def Check():
 	shop_id_list1 = []
 	for item in shop_list_query1:
 		shop_id_list1.append(item[0])
+	total = len(shop_id_list1)
 
 	# *设定一个change_shop_id列表,把balancehistory表中修改过的店铺的id都存进去.
 	change_shop_id = []
@@ -34,8 +36,10 @@ def Check():
 
 	# *遍历shop_id_list1每一个shop的id
 	# if 1 == 2:
+	c = 0
 	for shop_id in shop_id_list1:
-		print("@@",shop_id)
+		c = c+1
+		print("Processing [",c,"/",total,"] => Step 1: shop_id",shop_id,"Start")
 		if shop_id <= 0:
 			continue
 		# *筛选出shop_id错误的记录并修正.
@@ -345,7 +349,7 @@ def Check():
 			else:
 				pass
 
-		print("##",shop_id,"---","1")
+		print("Processing [",c,"/",total,"] => Step 2: shop_id",shop_id,"Checking")
 
 		balance_list = session.query(models.BalanceHistory.id,func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d %H:%i:%S"),models.BalanceHistory.shop_id,models.BalanceHistory.balance_type,\
 			       models.BalanceHistory.balance_record,models.BalanceHistory.balance_value,models.BalanceHistory.customer_id,models.BalanceHistory.customer_totalPrice,\
@@ -445,7 +449,7 @@ def Check():
 				return self.send_error(404)
 
 			session.commit()
-		print("##",shop_id,"---","2")
+		print("Processing [",c,"/",total,"] => Step 3: shop_id",shop_id,"Done")
 
 if __name__ == "__main__":
 	Check()

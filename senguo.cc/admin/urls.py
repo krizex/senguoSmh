@@ -169,6 +169,9 @@ handlers = [
 	(r"/super/comment_info",handlers.superadmin.CommentInfo,{},"supercommentInfo"),
 	##
 
+	# added by woody 8.3
+	(r"/super/admin",handlers.superadmin.AdminManager,{},"superareaadmin"),
+
 	## 店铺申请接入管理
 	# 所有店铺
 	(r"/super/shopManage", handlers.superadmin.ShopManage, {}, "superShopManage"),
@@ -273,7 +276,7 @@ handlers = [
 	(r"/madmin/gsearch", handlers.madmin.GoodsSearch, {}, "MadminGoodsSearch"),
 	(r"/madmin/goodsAdd", handlers.madmin.GoodsAdd, {}, "MadminGoodsAdd"),
 	(r"/madmin/goodsEdit/(\w+)", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
-	(r"/madmin/goodsBatch", handlers.madmin.GoodsBatch, {}, "MadminGoodsBatch"),
+	(r"/madmin/goodsBatch/(\w+)", handlers.madmin.GoodsBatch, {}, "MadminGoodsBatch"),
 
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次

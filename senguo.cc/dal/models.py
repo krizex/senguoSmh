@@ -436,6 +436,11 @@ class SuperAdmin(MapBase, _AccountApi):
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
 
+	# added by woody
+	level   = Column(Integer,default=0)  #0代表森果内部员工，1代表省级代理
+	province  = Column(Integer)          #如果是省级代理，则该字段表示该省的code
+	purview  = Column(Integer,default=0) #用户能否查看自己所在地区不属于自己推广的店铺数据，1:可以，0:不可以
+
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
 
@@ -923,6 +928,9 @@ class ApplyCashHistory(MapBase,_CommonApi):
 	shop_id = Column(Integer , ForeignKey(Shop.id) ,nullable= False)
 	shop_code = Column(String(64))
 	shop_auth  = Column(Integer)
+	# woody
+	shop_province = Column(Integer)
+	
 	applicant_name  = Column(String(32))
 	shop_balance = Column(Float,default = 0)
 	alipay_account = Column(String(64))
@@ -937,7 +945,7 @@ class ApplyCashHistory(MapBase,_CommonApi):
 ################################################################################
 # 余额记录 只会在 三处地方产生:
 # 用户充值 ，店铺管理员提现 和 接下来要做的在线支付
-# 即只有真正实现 支付的地方才用到。而用户 余额消费 只是数值上的变动
+# 用户 余额消费 只是数值上的变动
 # 用户余额消费也会产生记录，只显示给用户自己看
 ################################################################################
 # 余额、在线支付历史
@@ -948,6 +956,10 @@ class BalanceHistory(MapBase,_CommonApi):
 	name = Column(String(32)) #当 balance_type = 0,3 ，时，表示 充值用户的名称 ，
 								#当 balance_type为2 的时候，表示申请提现店铺管理员名称
 	shop_id  = Column(Integer,ForeignKey(CustomerShopFollow.shop_id),nullable = False)
+
+	# 地址 added by woody
+	shop_province = Column(Integer)
+
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
 	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
 												# 6:余额消费完成 ，可提现额度变化 7:在线支付订单完成，可提现额度变化

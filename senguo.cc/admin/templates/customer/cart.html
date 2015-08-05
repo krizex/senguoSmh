@@ -21,7 +21,7 @@
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
                             <span class="name pull-left color">{{cart_f[key]['charge_type'].fruit.name}}</span>
-                            <span class="price pull-left">￥<span class="item_total_price"></span>元</span>
+                            <span class="price pull-left">￥<span class="item_total_price"></span></span>
                         </div>
                     <span class="p0 charge-type pull-left color" data-id="{{cart_f[key]['charge_type'].id}}">
                         <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>元/{{cart_f[key]['charge_type'].num}}<span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
@@ -274,8 +274,8 @@
         <div class="bottom-line"></div>
     </div>
     <div class="pay-bill">
-        <span class="pull-left coupon-text hidden">已优惠 ￥<span id="coupon-money"></span></span>
-        <span class="yellow-text">总计：<span class="yellow-text">￥<span class="final_price yellow-text" id="total_price"></span></span> 元</span>
+        <span class="pull-left coupon-text hidden">已优惠 <span id="coupon-money"></span>元</span>
+        <span class="yellow-text">总计：<span class="yellow-text"><span class="final_price yellow-text" id="total_price"></span></span> 元</span>
         <a id="submitOrder" class="sub-btn sure_btn order-submit" href="javascript:;">提交订单</a>
     </div>
 {% end %}

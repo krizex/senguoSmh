@@ -23,7 +23,7 @@ ul{padding-left:0;}
 .header-nav{height:60px;line-height:60px;}
 .header-nav .nav{}
 .header-nav a{font-weight:bold;color:#333;}
-.header-nav li{\width:25%;text-align:center;float:left;}
+.header-nav li{width:20%;text-align:center;float:left;}
 .header-nav li.active a{background:#ddd;}
 
 .btn-style{display:inline-block;width:80px;height:30px;text-align:center;color:#fff;border:1px solid #e7e7eb;}
@@ -114,3 +114,14 @@ a:focus{text-decoration:none;}
 .top-margin2{margin-top:10px;}
 .balance-red{color:#FF3300;}
 /**/
+
+/*admin*/
+.admin-add-box{width:700px;margin:0 auto;height:35px;line-height:35px;margin-left:20px;}
+.admin-add-box input{border:1px solid #ddd;width:300px;padding:0 5px;}
+.admin-add-box .sure-btn{color:#fff;background-color: #009933; width:150px;}
+
+.clearfix{clear:both;}
+#check-all{border-bottom:1px solid #ddd;padding:5px;display:inline-block;width:100%;}
+#check-all:hover{background:#eee;cursor:pointer;}
+.province-list li{border-bottom:1px solid #ddd;padding:5px;}
+.province-list li:hover{background:#eee;cursor:pointer;}
