@@ -52,18 +52,20 @@ $(document).ready(function(){
         $("#qa").addClass("hide");
         $(".btns-list").addClass("hide");
         $("#add_goods").removeClass("hide");
+        $(".wrap-bm-btns").removeClass("hide");
     }else if(index==1){
         $(".container").removeClass("pt70");
         $(".second-tab").addClass("hide");
         $("#qa").removeClass("hide");
         $(".btns-list").addClass("hide");
         $("#group_manage").removeClass("hide");
+        $(".wrap-bm-btns").removeClass("hide");
     }else{
         $(".container").addClass("pt70");
         $(".second-tab").addClass("hide");
         $(".class_tab").removeClass("hide");
         $("#qa").addClass("hide");
-        $(".btns-list").addClass("hide");
+        $(".wrap-bm-btns").addClass("hide");
     }
     $(".boxs").addClass("hide").eq(index).removeClass("hide");
     $(".order-type-list .item").removeClass("active").eq(index).addClass("active");

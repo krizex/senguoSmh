@@ -341,8 +341,8 @@
 .goods-menu-list>li{text-align: left;padding-left: 12px;height: 22px;line-height: 22px;}
 .second-tab-list .l25{left: 25%;}
 .wrap-bm-btns{width: 100%;position: fixed;z-index:999;bottom:0;left:0;background-color: #fff;border-top:1px solid #ccc;padding: 12px 0;}
-.btns-list{display: flex;}
-.btns-list>li{border-right:1px solid #e7e7e7;flex: 1;-webkit-box-sizing: border-box;text-align: center;}
+.btns-list{display: table;table-layout: fixed;width: 100%;}
+.btns-list>li{border-right:1px solid #e7e7e7;display:table-cell;-webkit-box-sizing: border-box;text-align: center;}
 .btns-list>li>a{display: inline-block;height: 18px;color: #48b6a4;padding-left: 22px;background-size: 18px;background-repeat: no-repeat;background-position: left center;}
 .btns-list>li:last-child{border-right:none;}
 .add-goods,.add-group{background-image: url('/static/m-admin/img/17.png');}

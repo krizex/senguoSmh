@@ -28,10 +28,12 @@
     <div class="no-goods-box">
         <img src="/static/m-admin/img/no_search.png" alt="无结果"/>
         <p class="c666 txt-center mt15">没有查询到与<span id="search_name" class="dgreen">“大苹果”</span>相关的任何商品</p>
-        <a href="/madmin/addGoods" class="add-btn add-new-goods">+添加新商品</a>
+        <a href="/madmin/goodsAdd" class="add-btn add-new-goods">+添加新商品</a>
     </div>
 </div>
 </div>
+{% end %}
+{% block fix %}
 {% end %}
 {% block bottom %}
 <script src="{{static_url('m-admin/js/goods-search.js')}}"></script>
