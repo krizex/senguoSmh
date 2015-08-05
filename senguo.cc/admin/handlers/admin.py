@@ -1658,6 +1658,8 @@ class Order(AdminBaseHandler):
 				self_address = self.session.query(models.SelfAddress).filter_by(id=address_id,config_id=self.current_shop.config.id).first()
 			except:
 				return self.send_fail(404)
+			if self_address.if_default == 2:
+				return self.send_fail(403)
 			if action == "edit_self_address":
 				self_address.address = data["address"] or ''
 				self_address.lat = data["lat"] or ''
@@ -3851,6 +3853,15 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_province = shop_city//10000*10000
 			shop.shop_city = shop_city
 			shop.shop_address_detail = shop_address_detail
+			try:
+				self_shop_address = self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,if_default=2).first()
+			except:
+				self_shop_address = None
+			print(shop_address_detail)
+			if self_shop_address:
+				self_shop_address.address = shop_address_detail
+				self_shop_address.lat = lat
+				self_shop_address.lon = lon
 		elif action == "edit_deliver_area":
 			shop.deliver_area = data["deliver_area"]
 			if "area_type" in data and data["area_type"] !="":

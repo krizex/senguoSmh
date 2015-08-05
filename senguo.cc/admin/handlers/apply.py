@@ -412,7 +412,7 @@ class CreateShop(AdminBaseHandler):
 		shop.shop_start_timestamp = time.time()
 		self.session.add(shop)
 		self.session.flush()  # 要flush一次才有shop.id
-		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=2,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
 		self.session.commit()
 
 	def create_staff(self,shop):
