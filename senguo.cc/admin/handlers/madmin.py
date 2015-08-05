@@ -429,7 +429,6 @@ class GoodsBatch(AdminBaseHandler):
 	def get(self):
 		if "gid" in self.args:
 			_id = int(self.args["gid"])
-		print(_id)
 		shop_id     = self.get_secure_cookie("shop_id")
 		if not shop_id :
 			return self.send_error(404)
@@ -459,7 +458,7 @@ class GoodsBatch(AdminBaseHandler):
 			else:
 				imgurl = ""
 			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
-		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data)
+		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data,record_count=record_count)
 
 
 
