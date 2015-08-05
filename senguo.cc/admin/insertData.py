@@ -57,7 +57,7 @@ session = models.DBSession()
 #           shop.shop_address="湖北省武汉市"+address
 #       session.commit()
 
-# # 插入店铺自提时间段
+# # 插入店铺自提时间段和地址
 # def addSome():
 #     print("Start Inserting Self Period to Database...")
 #     shops = session.query(models.Shop).all()
@@ -102,8 +102,9 @@ session = models.DBSession()
 # 		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
 # 	session.commit()
 
-
+# 添加店铺默认自提地址
 def setShopSelfAddress():
+	print("Start Inserting Self Address to Database...")
 	shops = session.query(models.Shop).all()
 	total = len(shops)
 	i = 0
@@ -118,9 +119,9 @@ def setShopSelfAddress():
 			self_shop_address.if_default=2
 		else:
 			session.add(models.SelfAddress(config_id=shop.config.id, if_default=2,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
-		i=i+1
-		print(i)
 		session.commit()
+		i = i+1
+		print("Processing [",i,"/",total,"] => Insert Self Address Success, shop_id:",shop.id)
 
 g = multiprocessing.Process(name='setShopSelfAddress',target=setShopSelfAddress)
 g.start()
