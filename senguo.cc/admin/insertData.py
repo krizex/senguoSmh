@@ -57,21 +57,51 @@ session = models.DBSession()
 #           shop.shop_address="湖北省武汉市"+address
 #       session.commit()
 
-# 插入店铺自提时间段
-def addSome():
-    print("Start Inserting Self Period to Database...")
-    shops = session.query(models.Shop).all()
-    total = len(shops)
-    i = 0
-    for shop in shops:
-        session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
-        session.add(models.Period(config_id=shop.config.id, name="中午", start_time="12:00", end_time="13:00", config_type=1))
-        session.add(models.Period(config_id=shop.config.id, name="下午", start_time="17:00", end_time="18:00", config_type=1))
-        session.add(models.Period(config_id=shop.config.id, name="晚上", start_time="21:00", end_time="22:00", config_type=1))
-        session.commit()
-        i = i+1
-        print("Processing [",i,"/",total,"] => Insert Self Period Success, shop_id:",shop.id)
+# # 插入店铺自提时间段
+# def addSome():
+#     print("Start Inserting Self Period to Database...")
+#     shops = session.query(models.Shop).all()
+#     total = len(shops)
+#     i = 0
+#     for shop in shops:
+#         session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+#         session.add(models.Period(config_id=shop.config.id, name="中午", start_time="12:00", end_time="13:00", config_type=1))
+#         session.add(models.Period(config_id=shop.config.id, name="下午", start_time="17:00", end_time="18:00", config_type=1))
+#         session.add(models.Period(config_id=shop.config.id, name="晚上", start_time="21:00", end_time="22:00", config_type=1))
+#         session.commit()
+#         i = i+1
+#         print("Processing [",i,"/",total,"] => Insert Self Period Success, shop_id:",shop.id)
 
-g = multiprocessing.Process(name='addSome',target=addSome)
+# 插入余额记录店铺省份
+def balancehistory_province():
+	print("Start Inserting Province into Database balancehistory...")
+	balance_history = session.query(models.BalanceHistory).all()
+	total = len(balance_history)
+	i = 0
+	for item in balance_history:
+		shop_id = item.shop_id
+		shop = session.query(models.Shop).filter_by(id=shop_id).first()
+		if shop:
+			item.shop_province = shop.shop_province
+		i = i+1
+		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
+	session.commit()
+
+# 插入提现申请店铺省份
+def applycash_province():
+	print("Start Inserting Province into Database applycash...")
+	apply_history = session.query(models.ApplyCashHistory).all()
+	total = len(apply_history)
+	i = 0
+	for item in apply_history:
+		shop_id = item.shop_id
+		shop = session.query(models.Shop).filter_by(id=shop_id).first()
+		if shop:
+			item.shop_province = shop.shop_province
+		i = i+1
+		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
+	session.commit()
+
+g = multiprocessing.Process(name='applycash_province',target=applycash_province)
 g.start()
 g.join()
