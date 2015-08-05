@@ -74,7 +74,7 @@ $(document).ready(function(){
             },
             'onUploadComplete':function(){
                 var number=$('#imgPreview').find('img').length;
-                console.log(number);
+                //console.log(number);
                 if(number<5) {
                     var img = $('<img data-key=' + key + '>').attr({'src': 'http://7rfai7.com2.z0.glb.qiniucdn.com/' + key});
                     $('#imgPreview').append(img);

@@ -180,7 +180,7 @@ function checkyouzan($btn){
                 var charge_types=good["charge_types"][0];
                 var intro=good["intro"];
                 var imgs=good["imgs"];
-                console.log(name);
+                //console.log(name);
                 $item.attr({"data-id":key,"data-imgs":imgs,"data-intro":intro,"data-name":name,"data-price":charge_types["price"]});
                 $item.find(".shop-img").attr("src",logo);
                 $item.find(".name").text(name);
@@ -210,7 +210,7 @@ function importYouzan($btn){
         var price=$this.attr("data-price");
         datalist.push({"intro":intro,"name":name,"price":price,"imgs":imgs});
     });
-    console.log(datalist);
+    //console.log(datalist);
     var url = "";
     var args = {
         action:"import_youzan",

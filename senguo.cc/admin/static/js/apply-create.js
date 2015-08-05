@@ -76,7 +76,7 @@ $(document).ready(function(){
     $(".plant-list li").removeClass("active").eq(index).addClass("active");
 }).on("click",".shop-list li",function(){
     var num=parseInt($(".shop-number").text());
-    console.log($(this).hasClass("active"));
+    //console.log($(this).hasClass("active"));
     if($(this).not(".active")){
         $(".shop-number").text(num+1);
     }
