@@ -333,7 +333,7 @@ class Goods(AdminBaseHandler):
 	def get(self):
 		shop_id     = self.get_secure_cookie("shop_id")
 		data = []
-		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
 		default_count = goods.filter_by(group_id=0).count()
 		record_count = goods.filter_by(group_id=-1).count()
 		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
@@ -377,7 +377,7 @@ class GoodsAdd(AdminBaseHandler):
 		if not shop_id :
 			return self.send_error(404)
 		data = []
-		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
 		default_count = goods.filter_by(group_id=0).count()
 		record_count = goods.filter_by(group_id=-1).count()
 		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
@@ -406,7 +406,7 @@ class GoodsEdit(AdminBaseHandler):
 			return self.send_error(404)
 		data = []
 		group_data = []
-		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,id=id).all()
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,id=id).filter(models.Fruit.active!=0).all()
 		if not goods:
 			return self.send_error(404)
 		data = self.getGoodsData(goods,"one")
@@ -433,7 +433,7 @@ class GoodsBatch(AdminBaseHandler):
 		if not shop_id :
 			return self.send_error(404)
 		group_data = []
-		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
 		default_count = goods.filter_by(group_id=0).count()
 		record_count = goods.filter_by(group_id=-1).count()
 		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
