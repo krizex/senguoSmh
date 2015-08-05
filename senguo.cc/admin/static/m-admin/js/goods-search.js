@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $(".container").height($(window).height()-40);
     $("#search-goods").on("click",function(){  //订单搜索
         var id = $("#search-ipt").val();
         if($.trim(id)==""){
@@ -7,27 +8,25 @@ $(document).ready(function(){
             searchOrder(id);
         }
     });
-    $("#search-ipt").on("keydown",function(){  //订单搜索
+    $("#search-ipt").on("keydown keyup",function(){  //订单搜索
         var id = $("#search-ipt").val();
         if($.trim(id)==""){
-            return Tip("请输入商品名称");
+
         }else{
             searchOrder(id);
         }
     });
 });
 function searchOrder(con){
-    var url="/admin/goods/all";
-    var data={'classify':con};
+    var url="";
     var args={
-        action:'goods_search',
-        data:data
+        name:con
     };
     $.postJson(url,args,function(res){
             if(res.success){
                 $("#goods_name").html(con);
-                $("#goods_num").html(res.num);
-                if(res.num>0){
+                $("#goods_num").html(res.count);
+                if(res.count>0){
                     $("#search_link").attr("href","/madmin/goods?search="+con);
                     $(".no-goods-box").addClass("hide");
                     $(".search-lst").removeClass("hide");

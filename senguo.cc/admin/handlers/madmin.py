@@ -120,7 +120,7 @@ class Shop(AdminBaseHandler):
 		self_count = order_list.filter_by(type=3,status=1).count()
 		comment_count = order_list.filter_by(status = 6).count()
 		staff_count = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1).count()
-		goods_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		goods_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).count()
 
 		return self.render("m-admin/shop-profile.html", new_order_sum=new_order_sum, order_sum=order_sum,
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,show_balance = show_balance,\
@@ -358,8 +358,21 @@ class GoodsSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/goods-search.html")
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("name:str")
+	def post(self):
+		if "name" not in self.args:
+			return self.send_error(403)
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		name = self.args["name"]
+		goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
+		count = goods.count()
+		return self.send_success(count=count)
 #商品新建
-class GoodsAdd(AdminBaseHandler):	
+class GoodsAdd(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		token = self.get_qiniu_token("shopAuth_cookie","goodsadd")
@@ -423,7 +436,7 @@ class GoodsBatch(AdminBaseHandler):
 		if not shop_id :
 			return self.send_error(404)
 		group_data = []
-		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
 		default_count = goods.filter_by(group_id=0).count()
 		record_count = goods.filter_by(group_id=-1).count()
 		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
@@ -440,7 +453,7 @@ class GoodsBatch(AdminBaseHandler):
 							group_data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
 		else:
 			group_data.append({'id':0,'name':'','intro':'','num':default_count})
-		group_goods = self.session.query(models.Fruit.id,models.Fruit.name,models.Fruit.img_url).filter_by(shop_id=shop_id,group_id=_id).all()
+		group_goods = self.session.query(models.Fruit.id,models.Fruit.name,models.Fruit.img_url).filter(models.Fruit.active!=0).filter_by(shop_id=shop_id,group_id=_id).all()
 		goods_data = []
 		for good in group_goods:
 			if good[2]:
@@ -449,6 +462,8 @@ class GoodsBatch(AdminBaseHandler):
 				imgurl = ""
 			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
 		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data,record_count=record_count)
+
+
 
 
 

@@ -35,7 +35,11 @@ $(document).ready(function(){
     addGroup();
 }).on("click","#switch_group",function(){//切换商品分组
     var group_id = $(".batch-group-list").children(".active").attr("data-id");
-    batchGroup(group_id);
+    if(group_id){
+        batchGroup(group_id);
+    }else{
+        Tip("您还没有选择商品分组");
+    }
 /*    $("#choose_group").addClass("hide");
     $("#batch_group").removeClass("hide");*/
 }).on("click","#cancel_group",function(){
@@ -44,7 +48,7 @@ $(document).ready(function(){
 });
 //转移商品分组
 function batchGroup(group_id){
-    if($(".checked-box").size()==0){
+    if($(".batch-lst").find(".checked-box").size()==0){
         return Tip("您没有选中任何商品");
     }
     var aIds = [];

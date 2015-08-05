@@ -27,7 +27,11 @@ $(document).ready(function(){
             $(".no-result").html("数据加载中...");
             finished=false;
             page++;
-            pageGoods("all",0);
+            if($.getUrlParam("search")){
+                pageGoods("goods_search",0,$.getUrlParam("search"));
+            }else{
+                pageGoods("all",0);
+            }
         }
     });
 }).on("click",".goods_status",function(){
