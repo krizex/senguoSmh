@@ -1,0 +1,55 @@
+{% extends 'detail-base.html' %}
+{% block title %}订单评价{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/mobile-main.css')}}"/>
+{% end %}
+{% block top %}订单评价{% end %}
+{% block content %}
+<div class="header">订单评价</div>
+<div class="contain">
+    <input type="hidden" id="token" value="{{token}}"/>
+    <div class="contain-box">
+        <div class="wrap-user-txt">
+            <textarea id="user-txt" placeholder="长度在5-100字之间，您的评价对其他用户也有很大帮助"></textarea>
+        </div>
+        <p class="pra-title">添加晒单图片(添加图片，积分奖励+2)</p>
+    </div>
+    <ul class="img-lst group" id="img-lst">
+        <!--
+        <li>
+            <div class="wrap-img">
+                <img src="/static/images/anoa-7-md.gif" alt="晒单图片" class="image" url="/static/images/anoa-7-md.gif"/>
+                <a href="javascript:;" class="icon-del"></a>
+            </div>
+        </li>-->
+        {% if imgurls %}
+            {% for img in imgurls %}
+            <li>
+                <div class="wrap-img">
+                    <a href="{{img}}" title=""><img src="{{img}}?imageView2/1/w/200/h/200" alt="晒单图片" url="{{img}}"/></a>
+                    <a href="javascript:;" class="icon-del"></a>
+                </div>
+            </li>
+            {% end %}
+        {% end %}
+        {% if length<4 %}
+        <li>
+            <div class="wrap-add-img" id="add-img">
+                <img src="/static/images/comment_addimg.png" alt="添加图片"/>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+    <div class="wrap-btn-commit mt40">
+        <a href="javascript:;" class="btn-commit" id="commit-order-point" data-id="{{order_id}}">完成评价</a>
+    </div>
+</div>
+
+{% end %}
+{% block bottom %}
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/exif.min.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script src="{{static_url('js/market-comment-order.js')}}"></script>
+{% end %}

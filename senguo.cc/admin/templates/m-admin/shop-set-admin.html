@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% block title %}管理员设置{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="{{reverse_url('MadminSet')}}" class="back">返回</a>
+    <span>管理员设置</span>
+</div>
+{% end %}
+{% block content %}
+<input type="hidden" id="notice" value="{{notice}}"/>
+<div class="wrap-shop-set">
+    <ul class="data-list mt15">
+        <li class="admin-item">
+            <a href="javascript:;">
+                <span class="fr mt18"><span class="switch-btn {% if current_shop.super_temp_active == 1%}switch-abtn{% end %}" data-id="{{current_shop.admin_id}}" data-action="super"><i></i><span>订单提醒{% if current_shop.super_temp_active == 1%}开启{% else %}关闭{% end %}</span></span></span>
+                <span class="text-left">
+                    <span class="img-border fl"><img src="{{current_shop.admin.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" alt="管理员头像"/></span>
+                    <span class="fl ml10 mt6">
+                        <p class="c333">{{current_shop.admin.accountinfo.nickname}}</p>
+                        <p class="dgreen mt4">超级管理员</p>
+                    </span>
+                </span>
+            </a>
+        </li>
+    </ul>
+    {% for data in datalist %}
+    <ul class="data-list mt10">
+        <li class="admin-item">
+            <a href="javascript:;">
+                <span class="fr mt10">
+                    <span class="switch-btn {% if data['temp_active'] == 1%}switch-abtn{% end %}" data-id="{{data['id']}}" data-action="admin"><i></i><span>订单提醒{% if data['temp_active'] == 1%}开启{% else %}关闭{% end %}</span></span>
+                    <p class="del-admin" data-id="{{data['id']}}">删除</p>
+                </span>
+                <span class="text-left">
+                    <span class="img-border fl"><img src="{{data['imgurl'] or '/static/images/TDSG.png'}}" alt="管理员头像"/></span>
+                    <span class="fl ml10">
+                        <p class="c333">{{data['nickname']}}</p>
+                        <p class="c666 mt4 f12">管理员</p>
+                        <p class="c666 f12 mt4">{{data['id']}}</p>
+                    </span>
+                </span>
+            </a>
+        </li>
+    </ul>
+    {% end %}
+    <a href="{{reverse_url('MadminSetAttr')}}?action=addAdmin" class="create-btn add-admin">+添加管理员</a>
+</div>
+{% end %}
+{% block fix %}
+<div class="qa-btn" id="qa">?</div>
+<div class="pop-bwin pop-qa hide">
+    <ul class="shop-qalist">
+        <li class="title">说明</li>
+        <li>
+            <span class="roll-left"></span>店铺管理员拥有：店铺登录、店铺订单提醒等权限（管理员必须关注森果微信服务号sen-guo）
+        </li>
+        <li>
+            <span class="roll-left"></span>超级管理员可以添加多个管理员来同时管理店铺，最多只能添加三个管理员。
+        </li>
+        <li>
+            <span class="roll-left"></span>除超级管理员外只能设置一个管理员同时接收订单消息，超级管理员可以关闭自己的订单提醒。
+        </li>
+    </ul>
+    <a href="javascript:;" class="close-pop" id="close-pop"></a>
+</div>
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 id="b_title" class="txt-center">是否确认删除该管理员？</h3>
+        <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="del_admin">确认</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set-admin.js')}}"></script>
+{% end %}

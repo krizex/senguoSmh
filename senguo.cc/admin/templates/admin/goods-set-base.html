@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% block title %}森果后台-商品管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-goods.css')}}"/>{% block css %}{% end %}{% end %}
+{% block content %}
+<span class="right-title c222">商品管理
+    <a href="javascript:;" class="add-goods add-btn" id="add-goods">+添加新商品</a>
+    <a href="/admin/import" class="import-btn pull-right">一键导入商品数据</a>
+</span>
+<div class="subnav-box clearfix">
+    <ul class="subnav pull-left order-type">
+         <li class="text-center aall"><a href="{{reverse_url('adminGoods')}}">所有商品</a></li>
+         <li class="text-center agroup"><a href="{{reverse_url('adminGoodsGroup')}}">商品分组</a></li>
+         <li class="text-center adelete"><a href="{{reverse_url('adminGoodsDelete')}}">已删除商品</a></li>
+         <li class="text-center ml40 aclassify"><a href="{{reverse_url('adminGoodsClassify')}}">商品类目</a></li>
+    </ul>
+    <div class="search-input input-group pull-right">
+         <input type="text" value="" placeholder="输入商品名称进行搜索" class="search-con form-control" id="goods-all-ipt"/>
+         <input type="submit" value="搜索" class="search-btn form-control order-search" id="goods-all-search"/>
+    </div>
+</div>
+{% block setcontent %}{% end %}
+{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/admin-goods.js')}}"></script>
+{% block js %}
+{% end %}
+{% end %}

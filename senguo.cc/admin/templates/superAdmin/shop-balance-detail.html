@@ -1,0 +1,42 @@
+<!--create by jyj 2015-6-16-->
+{% extends 'count-balance.html' %}
+{% block title%}店铺余额详情{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/superadmin-main.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-main.css')}}"/>
+{% end %}
+
+{% block count %}
+<div class="admin-right pull-right">
+    <div class="div-fl align-center">
+        <a href="{{reverse_url('superBalance')}}" title="点击返回"><img src="/static/images/go-back1.png"></a>
+    </div>
+    <div class="div-fl align-center">
+        <span><p class="text-gray div-fl">余额详情</p>&nbsp;/&nbsp;{{history[0]["shop_name"]}}</span>
+    </div>
+
+    <div class="col-lg-12 col-md-12 boder-rd">
+        <div class="div-fl align-center">
+            <span class="admin-right">账户余额<span class="text-green">{{history[0]["balance"]}}</span>元&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+        <div class="div-fl align-center">
+            <span class="admin-right">提现中<span class="orange-txt">{{history[0]["cash_applying"]}}</span>元&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+        </div>
+    </div>
+    <div class="pull-left">
+            <table class="tb-account">
+            </table>
+    </div>
+</div>
+<nav>
+    <ul class="pager mlf300">
+        <li><a href="javascript:;" id="PrePage">&larr; 上一页</a></li>
+        <li class="PageNow green-txt"></li>
+        <li><a href="javascript:;" id="NextPage">下一页&rarr;</a></li>
+    </ul>
+</nav>
+{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/super-shop-balance.js')}}"></script>
+{% end %}

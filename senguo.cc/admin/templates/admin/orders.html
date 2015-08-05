@@ -1,0 +1,605 @@
+{% extends 'base.html' %}
+{% block title %}订单管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-order.css')}}"/>{% end %}
+{% block content %}
+{% set current_shop = handler.current_shop%}
+{% set lock_mode='' %}
+{% set notice=''%}
+{% set notic2e=''%}
+{% set now_active=''%}
+{% set in_active=''%}
+{% set self_active=''%}
+{% if order_type ==1 %}
+    {% set lock_mode = current_shop.config.now_on %}
+    {% set type_num =1 %}
+    {% set now_active='active'%}
+{% elif order_type ==2 %}
+    {% set lock_mode = current_shop.config.ontime_on %}
+    {% set type_num =2 %}
+    {% set in_active='active'%}
+{% elif order_type ==3 %}
+    {% set lock_mode = current_shop.config.self_on %}
+    {% set type_num =3 %}
+    {% set self_active='active'%}
+{% end %}
+{% if lock_mode == True %}
+    {% set lock_mode = 'unlock-mode'%}
+    {% set notice='开启'%}
+    {% set notice2='停用'%}
+{% else %}
+    {% set lock_mode = 'lock-mode'%}
+    {% set notice='停用'%}
+    {% set notice2='启用'%}
+{% end %}
+<input type="hidden" id="receipt-type" value="{{current_shop.config.receipt_type}}" />
+<input type="hidden" id="console-type" value="{{current_shop.config.wireless_type}}" />
+<span class="right-title" id="order-title-manage">订单管理</span>
+<div class="subnav-box clearfix">
+    <ul class="subnav pull-left order-type">
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{now_active}}">
+            <a href="{{reverse_url('adminOrder')}}?order_type=1" class="text-grey3">立即送</a>
+            <span class="number" id="atonce"></span>
+        </li>
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{in_active}}">
+            <a href="{{reverse_url('adminOrder')}}?order_type=2" class="text-grey3">按时达</a>
+            <span class="number" id="ontime"></span>
+        </li>
+        <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{self_active}}">
+            <a href="{{reverse_url('adminOrder')}}?order_type=3" class="text-grey3">自提</a>
+            <span class="number" id="selfPoint"></span>
+        </li>
+    </ul>
+    <div class="search-input input-group pull-right">
+         <input type="text" value="" placeholder="输入订单编号进行搜索" class="search-con form-control"/>
+         <input type="submit" value="订单搜索" class="search-btn form-control order-search"/>
+    </div>
+</div>
+<div class="mode-lock clearfix">
+    <div class="mode-content {{lock_mode}} pull-left">
+        {% if order_type ==1 %}
+        <p class="lock-unlock">已{{notice}}立即送模式 (点击右方{{notice2}}按钮可{{notice2}}立即送订单模式)。</p>
+        <p class="mode-introduce">用户下单完成，商家即要对订单打包并进行配送。满足用户对于商品的及时送达需求。</p>
+        <p class="set-introduce">点击右方设置，可以设置立即送的送达时间范围和起送金额。</p>
+        {% elif order_type ==2 %}
+        <p class="lock-unlock">已{{notice}}按时达模式 (点击右方{{notice2}}按钮可{{notice2}}按时达订单模式)。</p>
+        <p class="mode-introduce">根据商家设置的送货时间段进行配送。订单集中处理，节省配送成本。</p>
+        <p class="set-introduce">点击右方设置，可以设置按时达的送达时间范围和起送金额。</p>
+        {% elif order_type ==3 %}
+        <p class="lock-unlock">已{{notice}}自提模式 (点击右方{{notice2}}按钮可{{notice2}}自提订单模式)。</p>
+        <p class="mode-introduce">用户在自提点自提的订单。</p>
+        <p class="set-introduce">自提点默认为您的店铺地址，认证过的店铺可以设置多个自提点。</p>
+        {% end %}
+    </div>
+    <div class="mode-set pull-right">
+        <a href="javascript:;" class="set-btn btn-style unlock-mode bg-green"  data-toggle="modal" data-target="#SetBox">设置</a>
+        {% if order_type ==1 %}
+            {% if current_shop.config.now_on==True %}
+             <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopNowOn">停用</a>
+            {% else %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-green" id="startNowOn">启用</a>
+            {% end %}
+        {% elif order_type ==2 %}
+            {% if current_shop.config.ontime_on==True %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopOnTime">停用</a>
+            {% else %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-green" id="startOnTime">启用</a>
+            {% end %}
+        {% elif order_type ==3 %}
+            {% if current_shop.config.self_on==True %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType" id="stopSelf">停用</a>
+            {% else %}
+            <a href="javascript:;" class="stop-btn btn-style lock-mode sendNowType bg-green" id="startSelf">启用</a>
+            {% end %}
+        {% end %}
+    </div>
+</div>
+<div class="group"></div>
+{% if order_type ==3 %}
+<div class="wrap-selfslide group">
+    <div class="cate-title dgreen">选择自提点 : </div>
+    <div class="dropdown slide-down-select pull-left w130 self-slide">
+        <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu6" data-toggle="dropdown">
+            <em class="pull-left" data-id="-1" id="self_point">所有自提点</em>
+            <span class="caret pull-right no-margin-left rotate0"></span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu6" id="currentShopChange6">
+            <li role="presentation">
+                <a class="item" href="javascript:;" data-id="-1">所有自提点</a>
+            </li>
+            {% set self_addresses = [ x for x in handler.current_shop.config.self_addresses if x.active != 0]%}
+            {% for index,self_address in enumerate(self_addresses) %}
+            <li role="presentation">
+                <a class="item" href="javascript:;" data-id="{{self_address.id}}">{{self_address.address}}</a>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+</div>
+{% end %}
+<div class="subnav-box group">
+    <ul class="subnav pull-left order-status">
+        <li class="active" data-id="1">
+            <a href="javascript:;">未处理&nbsp;<span class="text-pink num" id="not-deal"></span></a>
+        </li>
+        <li data-id="2">
+            <a href="javascript:;">{% if order_type == 3 %}等待自取{% else %}配送中{% end %}&nbsp;<span class="text-pink num"></span></a>
+        </li>
+        <li data-id="3">
+            <a href="javascript:;">已完成&nbsp;<span class="text-pink num"></span></a>
+        </li>
+        <li data-id="4">
+            <a href="javascript:;">售后/退款&nbsp;<span class="text-pink num"></span></a>
+        </li>
+        <li data-id="5">
+            <a href="javascript:;">所有订单&nbsp;<span class="text-pink num"></span></a>
+        </li>
+    </ul>
+</div>
+<ul class="category-list group">
+    <li>
+        <div class="cate-title">排序规则 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu3" data-toggle="dropdown">
+                <em class="pull-left filter" data-id="send_positive">配送时间正序</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu3" id="currentShopChange3">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="send_positive">配送时间正序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="send_desc">配送时间倒序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="order_positive">下单时间正序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="order_desc">下单时间倒序</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="price_desc">金额从多到少</a>
+                </li>
+                 <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="price_positive">金额从少到多</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li>
+        <div class="cate-title">支付方式 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
+                <em class="pull-left pay_type" data-id="9">所有</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                </li>
+                <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="3">在线支付</a>
+                </li>
+                 <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="2">余额支付</a>
+                </li>
+                 <li  role="presentation">
+                    <a class="item" href="javascript:;" data-id="1">货到付款</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+    <li>
+        <div class="cate-title">用户类型 : </div>
+        <div class="dropdown slide-down-select pull-left w130">
+            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu5" data-toggle="dropdown">
+                <em class="pull-left user_type" data-id="9">所有</em>
+                <span class="caret pull-right no-margin-left rotate0"></span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu5" id="currentShopChange5">
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                </li>
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="0">新用户</a>
+                </li>
+                <li role="presentation">
+                    <a class="item" href="javascript:;" data-id="1">老用户</a>
+                </li>
+            </ul>
+        </div>
+    </li>
+</ul>
+<!--orders-mode-lock-end-->
+<div class="order-list set-width-float">
+    <div class="func-box set-width-float mt10">
+        <a href="javascript:;" class="check pull-left ml10" id="all-check"></a>
+        <span class="select-all pull-left ml5">全选</span>
+        <a href="javascript:;" class="func-btn blak-set-btn pull-left ml20" style="display:none">批量开始配送</a>
+        <a href="javascript:;" class="print-btn blak-set-btn pull-left ml20" id="batch-print">批量打印</a>
+        <!-- <a href="javascript:;" class="blak-set-btn">批量删除</a> -->
+    </div>
+    <div class="new-order-box hidden" id="new-order-box">您还有新订单未处理，快来戳我，戳我！！</div>
+    <ul class="order-list-content set-width-float mt10">
+
+    </ul>
+     <div class="users-pagination list-pagination">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+            <li>
+                <span class="page-now"></span>/<span class="page-total"></span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+            <li><a href="javascript:;" class="jump-to">跳转</a></li>
+        </ul>
+    </div>
+    <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-info" data-img="{{current_shop.config.receipt_img}}"  data-active="{{current_shop.config.receipt_img_active}}"/>
+</div>
+<div class="order_set_box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header set-width-float">
+                <span class="title pull-left">
+
+                </span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body set-width-float">
+        	   <input type="text" id="order_ser_val"/>
+            </div>
+             <div class="modal-footer">
+                <div class="btn-box">
+                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;">确认</button>
+                </div>
+            </div>
+       </div>
+    </div>
+</div>
+<div class="{% if order_type ==1 %}sendNowBox{% else %}sendIntimeBox{% end %} modal fade" id="SetBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog {% if order_type ==3 %}w700{% end %}">
+        <div class="modal-content">
+            <div class="modal-header set-width-float">
+                <span class="title pull-left">
+                    {% if order_type ==1 %}
+                    立即送设置
+                    {% elif order_type ==2 %}
+                    按时达设置
+                    {% elif order_type ==3 %}
+                    自提设置
+                    {% end %}
+                </span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body set-width-float">
+                {% if order_type ==1 %}
+                <ul>
+                    <li class="set-width-float set-bottom10">
+                        <span class="pull-left tit t1">起送金额：</span>
+                        <input class="pull-left money" type="number" value="{{current_shop.config.min_charge_now or 0}}" id="sendNowMoney"/>
+                    </li>
+                    <li class="send-time set-width-float set-bottom10">
+                        <span class="pull-left tit t1">配送费：</span>
+                        <input class="pull-left freight" type="number" value="{{current_shop.config.freight_now or 0}}" id="freight_now"/>
+                    </li>
+                    <li class="send-time set-width-float set-bottom10">
+                        <span class="pull-left tit t1">送达时间：</span>
+                        <input class="pull-left" type="number" value="{{current_shop.config.intime_period}}"  id="sendNowPeriod"/>
+                        <span class="pull-left">（在下单后N分钟送达，如未进行设置，默认为30分钟）</span>
+                    </li>
+                    <li class="send-time set-width-float set-bottom10">
+                        <span class="pull-left tit t1">配送时间：</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span class="time timer" id="NowStartHour">{{current_shop.config.start_time_now.hour or 00}}</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu hour-list choose-list" role="menu">
+
+                            </ul>
+                        </div>
+                        <span class="pull-left tit">：</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span class="time timer" id="NowStartMinute">{{current_shop.config.start_time_now.minute or 00}}</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu  minute-list choose-list" role="menu">
+                            </ul>
+                        </div>
+                        <span class="pull-left tit">&nbsp;至&nbsp;</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span class="time timer" id="NowEndHour">{{current_shop.config.end_time_now.hour or 00}}</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu hour-list choose-list" role="menu">
+                            </ul>
+                        </div>
+                        <span class="pull-left tit">：</span>
+                        <div class="input-group-btn">
+                            <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                <span class="time timer" id="NowEndMinute">{{current_shop.config.end_time_now.minute or 00}}</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu minute-list choose-list" role="menu">
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+                {% elif order_type ==2 %}
+                <div class="w450 center-block">
+                    <span class="tit pull-left t1">起送金额：</span>
+                    <div class="send-money clearfix to-edit-item edit_item_box omg_item">
+                        <span class="show_value show_item pull-left tit">{{current_shop.config.min_charge_on_time or 0}}</span>
+                        <input class="pull-left money edit_item hidden" type="number" value="{{current_shop.config.min_charge_on_time or 0}}" id="sendMoney"/>
+                        <span class="tit pull-left set-left10">元</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendMoney pl text-center text-white">确定</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
+                    </div>
+                    <span class="tit pull-left t1">配送费：</span>
+                    <div class="send-freight clearfix to-edit-item edit_item_box omg_item">
+                        <span class="show_value show_item pull-left tit">{{current_shop.config.freight_on_time or 0}}</span>
+                        <input class="pull-left freight edit_item hidden" type="number" value="{{current_shop.config.freight_on_time or 0}}" id="freight_intime"/>
+                        <span class="tit pull-left set-left10">元</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden sendfreight text-center text-white">确定</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
+                    </div>
+                    <span class="tit pull-left t1"> 今天明天：</span>
+                    <div class="send-day clearfix to-edit-item edit_item_box omg_item">
+                        {% set day=current_shop.config.day_on_time %}
+                        <button class="btn btn-default {% if day ==0 %}active{% end %}" data-id="0">全部</button>
+                        <button class="btn btn-default {% if day ==1 %}active{% end %}" data-id="1">今天</button>
+                        <button class="btn btn-default {% if day ==2 %}active{% end %}" data-id="2">明天</button>  
+                    </div>
+                    <p class="tit clearfix">配送时间：</p>
+                    <div class="send-time w450 center-block">
+                        <ul class="time-list">
+                            {% set ontime_periods = [x for x in current_shop.config.periods if x.config_type == 0]%}
+                            {% for period in ontime_periods %}
+                            <li class="time-list-item set-width-float time-period to-edit-item edit_item_box omg_item" data-id="{{period.id}}">
+                                <div class="staff-work-mode action-mode pull-left period-action" data-id="{{period.active}}">
+                                    <a class="work-mode" href="javascript:;" style="display:none">已启用</a>
+                                    <a class="stop-mode" href="javascript:;" style="display:none">未启用</a>
+                                </div>
+                                <span class="time1 text-black show_item pull-left startTime">{{period.start_time}}</span>
+                                <div class="edit_item hidden">
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time start-hour timer">{{period.start_time.hour}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list hour-list" role="menu">
+                                        </ul>
+                                    </div>
+                                    <span class="pull-left tit">：</span>
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time start-minute timer">{{period.start_time.minute}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list minute-list" role="menu">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <span class="pull-left to">至</span>
+                                <span class="time2 text-black show_item pull-left EndTime">{{period.end_time}}</span>
+                                <div class="edit_item hidden">
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time end-hour timer">{{period.end_time.hour}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list hour-list" role="menu">
+                                        </ul>
+                                    </div>
+                                    <span class="pull-left tit">：</span>
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time end-minute timer">{{period.end_time.minute}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list minute-list" role="menu">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <span class="time show_item periodName">{{period.name}}</span>
+                                <input type="text" class="period-name  pull-left text-center edit_item hidden" value="{{period.name}}"/>
+                                <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period" style="display:none"></a>
+                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit" style="display:none"></a>
+                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period text-center text-white">确定</a>
+                            </li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+                <p class="w450 center-block"><a href="javascript:;" class="add-new-time text-green font14">+ 添加新时段</a></p>
+                <div class="add-period  bg-grey5 set-width-float" style="display:none"></div>
+                <div class="w450 center-block clearfix">
+                    <div class="end-time clearfix to-edit-item edit_item_box omg_item">
+                        <span class="pull-left tit">下单截止时间：</span>
+                        <span class="show_item pull-left show_value tit">{{current_shop.config.stop_range or 0}}</span>
+                        <div class="input-group-btn pull-left edit_item hidden">
+                                <input type="text" id="stopRange" placeholder="请输入整数"/>
+                        </div>
+                        <span class="pull-left tit set-left10">分钟</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
+                    </div>
+                    <p class="notice text-grey9">截止时间是指在某送货时间段前N分钟用户将不能选择该时段配送</p>
+                </div>
+                {% elif order_type == 3%}
+                <div class="w550 center-block">
+                    <p class="text-grey3 f14">自提时间设置<span class="text-grey9">（添加、编辑、启用、停用自提时间）</span></p>
+                    <div class="self-day mt20 group">
+                        <span class="tit pull-left t1"> 今天明天：</span>
+                        <div class="send-day clearfix to-edit-item edit_item_box omg_item">
+                            {% set day=current_shop.config.day_self %}
+                            <button class="btn btn-default {% if day ==0 %}active{% end %}" data-id="0">全部</button>
+                            <button class="btn btn-default {% if day ==1 %}active{% end %}" data-id="1">今天</button>
+                            <button class="btn btn-default {% if day ==2 %}active{% end %}" data-id="2">明天</button>
+                        </div>
+                    </div>
+                    <p class="tit clearfix">自提时间：</p>
+                    <div class="send-time w550 center-block">
+                        <ul class="time-list">
+                            {% set self_periods = [x for x in current_shop.config.periods if x.config_type == 1]%}
+                            {% for period in self_periods %}
+                            <li class="time-list-item set-width-float time-period to-edit-item edit_item_box omg_item" data-id="{{period.id}}">
+                                <div class="staff-work-mode action-mode pull-left period-action" data-id="{{period.active}}">
+                                    <a class="work-mode" href="javascript:;" style="display:none">已启用</a>
+                                    <a class="stop-mode" href="javascript:;" style="display:none">未启用</a>
+                                </div>
+                                <span class="time1 text-black show_item pull-left startTime">{{period.start_time}}</span>
+                                <div class="edit_item hidden">
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time start-hour timer">{{period.start_time.hour}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list hour-list" role="menu">
+                                        </ul>
+                                    </div>
+                                    <span class="pull-left tit">：</span>
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time start-minute timer">{{period.start_time.minute}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list minute-list" role="menu">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <span class="pull-left to">至</span>
+                                <span class="time2 text-black show_item pull-left EndTime">{{period.end_time}}</span>
+                                <div class="edit_item hidden">
+                                    <div class="input-group-btn pull-left">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time end-hour timer">{{period.end_time.hour}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list hour-list" role="menu">
+                                        </ul>
+                                    </div>
+                                    <span class="pull-left tit">：</span>
+                                    <div class="input-group-btn">
+                                        <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                                            <span class="time end-minute timer">{{period.end_time.minute}}</span>
+                                            <span class="caret"></span>
+                                        </button>
+                                        <ul class="dropdown-menu choose-list minute-list" role="menu">
+                                        </ul>
+                                    </div>
+                                </div>
+                                <span class="time show_item periodName">{{period.name}}</span>
+                                <input type="text" class="period-name  pull-left text-center edit_item hidden" value="{{period.name}}"/>
+                                <a href="javascript:;" class="delete pull-right set-inl-blo delete-time-period" style="display:none"></a>
+                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit" style="display:none"></a>
+                                <a href="javascript:;" class="sure-btn pull-right edit_item hidden edit-time-period text-center text-white">确定</a>
+                            </li>
+                            {% end %}
+                        </ul>
+                    </div>
+                </div>
+                <p class="w550 center-block"><a href="javascript:;" class="add-new-time text-green font14">+ 添加新时段</a></p>
+                <div class="add-period  bg-grey5 set-width-float" style="display:none"></div>
+                <div class="w550 center-block clearfix">
+                    <div class="end-time clearfix to-edit-item edit_item_box omg_item">
+                        <span class="pull-left tit">下单截止时间：</span>
+                        <span class="show_item pull-left show_value tit">{{current_shop.config.self_end_time or 0}}</span>
+                        <div class="input-group-btn pull-left edit_item hidden">
+                            <input type="text" id="endSelf" placeholder="请输入整数"/>
+                        </div>
+                        <span class="pull-left tit set-left10">分钟</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
+                    </div>
+                    <p class="notice text-grey9">截止时间是指在下单后N分钟内用户不能选择该时段自提</p>
+                </div>
+                <div class="w550 center-block clearfix mt20">
+                    <p class="group set-self">
+                        <a href="javascript:;" class="add-self-address pull-right" id="add_self">+添加自提点</a>
+                        <span class="text-grey3 f14">自提点设置</span>
+                        <span class="text-grey9 f14">（添加、编辑、启用、停用自提点，设置自提点位置）</span>
+                    </p>
+                    <ul class="self-address-list">
+                    {% set arrNum = ['一','二','三','四','五','六','七','八','九','十'] %}
+                    {% for index,self_address in enumerate(self_address_list) %}
+                        <li class="group" data-id="{{self_address.id}}" data-lat="{{self_address.lat}}" data-lng="{{self_address.lon}}">
+                            <div class="wrap-operate pull-right">
+                                <a href="javascript:;" class="pull-right set-default">设为默认</a>
+                                <a href="javascript:;" class="delete pull-right set-inl-blo"></a>
+                                <a href="javascript:;" class="edit pull-right set-inl-blo to-edit"></a>
+                            </div>
+                            <a href="javascript:;" class="switch-abtn {% if self_address.active == 1 %}switch-abtn-active{% end %}"><span class="a_on">已</span><span class="a_off">未</span>启用</a>
+                            <a href="javascript:;" class="cur_loc"></a>
+                            <span class="text-grey3  address-text"><span>自提点<span class="self-index">{{arrNum[index]}}</span> : <span class="self-addr">{{self_address.address}}</span></span>
+                            <span class="default-address dgreen {% if self_address.if_default != 1 %}hidden{% end %}">（默认自提点）</span></span>
+                        </li>
+                       {% end %}
+                    </ul>
+                    <div class="wrap-shop-address mt10 group">
+                        <div class="pull-right">
+                            <input type="hidden" value="{{shop_lat}}" id="lat">
+                            <input type="hidden" value="{{shop_lon}}" id="lon">
+                            <a class="info_sure address-sure" href="javascript:;" data-id="address" id="save-lbs">保存</a>
+                        </div>
+                        <div class="w2 pull-left">
+                            <div class="info_hide group">
+                                <div class="dropdown select-provience pull-left set-right10 province_select" data-toggle="modal" data-target="#provinceList">
+                                    <button class="btn btn-default dropdown-toggle self-dropdown" type="button">
+                                        <span id="provinceAddress" class="reProvince">{{shop_province}}</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                </div>
+                                <div class="dropdown pull-left select-city set-right10 city_select" data-toggle="modal" data-target="#cityList">
+                                    <button class="btn btn-default dropdown-toggle self-dropdown" type="button">
+                                        <span id="cityAddress" class="reCity">{{shop_city}}</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                </div>
+                                <input type="text" class="input-box input1 pull-left" disabled="true" placeholder="请填写详细地址，最多30个字符" id="addressDetail" value="">
+                                <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="wrap-map mt10">
+                        <div class="wrap-bmap" id="bmap">
+
+                        </div>
+                    </div>
+                </div>
+                {% end %}
+            </div>
+            <div class="modal-footer">
+                <div class="btn-box {% if order_type ==3 %}pt20{% end %}">
+                    {% if order_type ==1 %}
+                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn" href="javascript:;" id="sendNowConfig">确认</button>
+                    {% elif order_type ==2 %}
+                    <button type="button" class="center-block modal-concel-btn clearfix" style="display:block;margin-left:100px" href="javascript:;" data-dismiss="modal">关闭</button>
+                    {% elif order_type ==3 %}
+                    <button type="button" class="modal-concel-btn" href="javascript:;" data-dismiss="modal">关闭</button>
+                    {% end %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=2595684c343d6499bf469da8a9c18231"></script>
+<script src="{{static_url('js/area.js')}}"></script>
+<script src="{{static_url('js/admin-order.js')}}"></script>
+<script src="{{static_url('js/admin-user-order.js')}}"></script>
+{% end %}

@@ -1,0 +1,87 @@
+.box{border:1px solid #eee;padding:10px 0;}
+.box .tit{text-indent:30px;line-height:30px;}
+.month-change{width:180px;margin-top:10px;margin-bottom:10px;}
+.table-count{width:100%;}
+.table-count td{height:30px;line-height:30px;border-bottom:1px solid #eee;}
+
+.change-list{margin-left:60px;}
+.change-list li{border-left:2px solid #fff;padding-left:14px;}
+.change-list li.active{border-color:#44b549;}
+.change-list li.active a{color:#44b549;}
+
+/*add by jyj 2015-6-23*/
+.mlf15{margin-left: 40px;}
+/**/
+
+/*add by jyj 2015-7-8*/
+.sell-change-list{margin-left:60px;margin-top: 10px;}
+.sell-change-list li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.sell-change-list li.active{border-color:#44b549;}
+.sell-change-list li.active a{color:#44b549;}
+.choose-change{width:400px;margin-top:10px;margin-bottom:10px;}
+.center-block{display:block !important;margin:0 auto;}
+.txt-center{text-align:center;}
+/**/
+
+/*add by jyj 2015-7-14*/
+.sell-change-list2{margin-left:60px;margin-top: 10px;}
+.sell-change-list2 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.sell-change-list2 li.active{border-color:#44b549;}
+.sell-change-list2 li.active a{color:#44b549;}
+/**/
+
+/*add by jyj 2015-7-17*/
+.mlf20{margin-left: 20px;}
+.dropdown-menu{overflow: hidden;max-height: 210px;overflow-y: auto;}
+.category-list>li{float: left;width: 25%;}
+.cate-title{font-size: 14px;color: #999;height: 28px;line-height: 28px;float: left;margin-right: 5px;}
+.slide-down-select{display:inline-block;width:100%;background:#fff;color:#000;border:1px solid #ddd;margin-left:0;}
+.slide-down-select .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;width: 100%;}
+.slide-down-select em{font-style:normal;display:inline-block;width:110px;font-size:14px;overflow:hidden;padding-left: 10px;text-align: left;}
+.dropdown-toggle{padding:0 4px;}
+.dropdown-menu li{width:100%;padding:0;}
+.dropdown-menu .item{padding-left:14px;}
+.dropdown-menu li a:hover{color:#fff;background-color: #6ba4ef;}
+.caret{margin-top:10px;color: #c6c6c6;}
+.borderc{border: 1px solid #e7e7eb;}
+.pointer{cursor: pointer;}
+.min80{min-width: 80px;}
+.mt2{margin-top: 2px;}
+.txt-center{text-align: center !important;}
+.txt-left{text-align: left !important;}
+.hig{border: 1px dashed #ff6666 !important;}
+.no-title{font-size: 20px;text-align: center;margin-top: 40px;color: #333;}
+
+.pull-left{float:left !important;}
+.w130{width:130px !important;}
+/**/
+
+/*add by jyj 2015-7-18*/
+.max-height-roll{overflow: hidden;max-height: 400px;overflow-y: auto;width:98%;}
+.max-height-roll2{overflow: hidden;max-height: 900px;overflow-y: auto;}
+.width100{width: auto;margin-right:0px;}
+.mt50{margin-top: 50px;}
+.mb50{margin-bottom: 50px;}
+/**/
+
+/*add by jyj 2015-7-21*/
+.mb55{margin-bottom: 55px;}
+
+/*add by jyj 2015-7-21*/
+.div-bigchart_bg{position: fixed;  top: 0%;  left: 0%;  width: 100%;  height: 100%; background-color: #000;  z-index:9998;-moz-opacity:0.7;-khtml-opacity: 0.7;opacity:.70;  filter: alpha(opacity=70);}
+.wrap-bigchart{position: fixed;left: 50%; top:50%; width:35%;  -webkit-transform:translate(-50%,-50%);height: 95%;  border: 1px solid #E8E9F7;  background-color: #FFF; overflow: auto; z-index:9999;}
+.invisiable{visibility: hidden;}
+.pull-right{float:right; }
+.mr15{margin-right: 15px !important;}
+
+.wrap-pos{margin:0 auto;width: 90%;}
+.invisiable{visibility: hidden;}
+/**/
+
+/*add by jyj 2015-7-23*/
+.mt30{margin-top: 30px;}
+.mb30{margin-bottom: 30px;}
+.has_no_goods{text-align:center;font-size: 16px;}
+.fs16{font-size: 16px;}
+.fs20{font-size: 20px;}
+/**/

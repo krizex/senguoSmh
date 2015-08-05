@@ -1,0 +1,74 @@
+.wrap-content{width: 1000px;margin: 0 auto;}
+.f16{font-size: 16px !important;}
+.wrap-slide{padding: 60px 0 10px 100px;position: relative;}
+.slide-box{width: 575px;height: 375px;overflow: hidden;}
+.slide-text{position: absolute;top: 150px;right: 80px;width: 240px;font-size: 14px;color: #999;line-height: 18px;}
+.slide-list{font-size: 0;width: 1152px;}
+.anima{-webkit-transition:all .3s ease-in-out;transition:all .3s ease-in-out;-ms-transition:all .3s ease-in-out;}
+.slide-list>li{padding-right: 40px;float: left;width: 192px;position: relative;left: 0;}
+.phonebg{position: absolute;z-index:1;background: url("/static/official_img/phone.png") no-repeat;width: 180px;height: 374px;top: 4px;left: 279px;}
+.wrap-computer{background-color: #666;height: 410px;position: relative;}
+.wrap-cimg{position: absolute;top: 15px;right: 50px;}
+.wrap-data-text{position: absolute;left: 100px;top: 150px;width: 250px;}
+.wrap-data-text>p{color: #fff;font-size: 14px;line-height: 18px;}
+.wrap-paytype{position: relative;padding: 60px 0 40px 0;}
+.phone-bg{position: relative;z-index:10;background: url("/static/official_img/phone.png") no-repeat;width: 180px;height: 374px;}
+.wrap-paytype .phone-bg{margin-left: 360px;}
+.phone-bg img{position: absolute;top: 56px;left: 16px;}
+.roll-box{position: absolute;z-index:5;top: 100px;left: 180px;width: 300px;height: 300px;}
+.roll-box>i{display: block;width: 80px;height: 80px;position: absolute;background-size: contain;}
+.roll-box .ali{background-image: url('/static/images/alipay_l.png');top: -70px;left: 76px;}
+.roll-box .wx{background-image: url('/static/images/wx_l.png');top: -20px;left: -20px;}
+.roll-box .weibo{background-image: url('/static/images/wb_l.png');top: 68px;left: -72px;}
+.roll-box .qq{background-image: url('/static/images/qq_l.png');top: 168px;left: -76px;}
+.big-roll{border-radius: 50%;width: 300px;height: 300px;position: absolute;top: 18px;left: 15px;}
+.s-roll{position: absolute;border-radius: 50%;-webkit-box-sizing:content-box;box-sizing:content-box;-ms-box-sizing:content-box;width: 240px;height: 240px;background-color: #d4d8d8;top: 50%;left: 50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);border: 30px solid #e9ebe7;}
+.login-text{color: #999;position: absolute;right: 130px;top: 200px;}
+.login-text>p{font-size: 14px;width: 250px;line-height: 18px;}
+.wrap-play{background-color: #888c8c;padding: 30px 0;position: relative;}
+.wrap-play .phone-bg{margin-left: 490px;background-image: url('/static/official_img/phone_white.png');}
+.wrap-play>i{display: block;width: 70px;height: 70px;position: absolute;background-size: contain;}
+.wrap-play .r1{background-image: url('/static/official_img/icon1.png');top: 65px;right: 150px;}
+.wrap-play .r2{background-image: url('/static/official_img/icon2.png');top: 148px;right: 102px;}
+.wrap-play .r3{background-image: url('/static/official_img/icon3.png');top: 244px;right: 102px;}
+.wrap-play .r4{background-image: url('/static/official_img/icon4.png');top: 324px;right: 150px;}
+.wrap-feature{padding: 50px 100px 0 100px;}
+.feature-list>li{width: 50%;float: left;}
+.feature-item{padding-left: 130px;padding-top:32px;margin-bottom: 40px;height: 134px;background-repeat: no-repeat;background-position: left top;}
+.feature-item>p{color: #999;font-size: 14px;width: 240px;}
+.feature-list .mul-shop{background-image: url('/static/official_img/icon5.png');}
+.feature-list .lbs{background-image: url('/static/official_img/icon6.png');}
+.feature-list .staff{background-image: url('/static/official_img/icon7.png');}
+.feature-list .stype{background-image: url('/static/official_img/icon8.png');}
+@-webkit-keyframes border{
+    0%{border-width: 0px;}
+    100%{border-width: 30px;}
+}
+@keyframes border{
+    0%{border-width: 0px;}
+    100%{border-width: 30px;}
+}
+@-ms-keyframes border{
+    0%{border-width: 0px;}
+    100%{border-width: 30px;}
+}
+.ani-border{
+    -webkit-animation:border 2s ease-in-out infinite;
+    animation:border 2s ease-in-out infinite;
+    -ms-animation:border 2s ease-in-out infinite;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

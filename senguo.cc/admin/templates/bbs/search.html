@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block title %}文章搜索{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <div class="wrap-order-tab">
+        <ul class="group order-type-list">
+            <div class="wrap-ipt"><input type="text" class="search-ipt" placeholder="请输入文章标题关键字" id="search-ipt"/></div>
+        </ul>
+    </div>
+    <a href="javascript:;" class="head-right search" id="search-article"><em></em></a>
+</div>
+{% end %}
+{% block content %}
+<div class="order-list-box">
+    <ul class="atical-list">
+
+    </ul>
+    <p class="loading mt30 c999 txt-center" style="display:none;">没有搜索到任何数据！</p>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('bbs/js/artical-search.js')}}"></script>
+{% end %}

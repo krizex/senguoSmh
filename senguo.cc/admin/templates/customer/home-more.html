@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% block title %}【{{context['shop_name']}}】一家不错的O2O店铺，快来关注吧~{% end %}
+{% block head %}
+<link rel="stylesheet" href="/static/css/idangerous.swiper.css"/>
+<link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/beauty/home.css')}}"/>
+{% end %}
+{% block content %}
+{% set notices=context['notices']%}
+{% import json%}
+<script>
+    window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
+    window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+</script>
+<input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
+<input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
+<input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
+<input type="hidden" id="shop_code" value="{{context['shop_code']}}"/>
+<span id="shop_imgurl" data-img="{{context['shop_logo']}}"></span>
+<div class="wrap-notice-box">
+    <div class="notice-list">
+        <div class="swiper-container" id="swiper-container">
+            <div class="swiper-wrapper">
+                {% if notices %}
+                    {% for notice in notices%}
+                    <div class="swiper-slide item">
+                        <img src="/static/images/furit.jpg" alt="推荐商品图片"/>
+                        <p class="notice-title">最新圣女果来袭，赶快抢购吧！</p>
+                    </div>
+                    {% end %}
+                {% else %}
+                <div class="swiper-slide item">
+                    <img src="/static/images/furit.jpg" alt="推荐商品图片"/>
+                    <p class="notice-title">推荐商品，快来购买！</p>
+                </div>
+                {% end %}
+            </div>
+        </div>
+        <div class="pagination"></div>
+    </div>
+    <div class="notice-top">
+        <p>店铺推荐</p>
+    </div>
+    <ul class="recommend-list">
+        <li class="red">
+            <img src="/static/images/furit.jpg" alt=""/>
+            <div class="item-info bg">
+                <div class="skew item-info-name mt20">
+                    又甜又大的樱桃
+                </div>
+                <div class="skew item-info-price mt10">
+                    ￥ <span class="font16">16</span>元/1份
+                </div>
+                <a href="javascrpt:;" class="skew now-buy">立即购买</a>
+            </div>
+        </li>
+        <li class="yellow">
+            <img src="/static/images/furit.jpg" alt=""/>
+            <div class="item-info bg">
+                <div class="skew item-info-name mt20">
+                    又甜又大的樱桃
+                </div>
+                <div class="skew item-info-price mt10">
+                    ￥ <span class="font16">16</span>元/1份
+                </div>
+                <a href="javascrpt:;" class="skew now-buy">立即购买</a>
+            </div>
+        </li>
+        <a href="javascript:;" class="more-goods">点击查看全部商品</a>
+    </ul>   
+</div>
+
+{% end %}
+{% block other %}
+
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/idangerous.swiper.min.js"></script>
+<script src="{{static_url('js/beauty/home.js')}}"></script>
+{% end %}
+

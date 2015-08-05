@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block title %}商城模版{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>商城模版</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-set">
+    <ul class="tpl-list">
+        <li class="{% if shop_tpl ==0 %}active{% end %}" data-id="0">
+            <div class="wrap-tpl-img">
+                <img src="/static/images/tpl-0.png" alt="商城模版一"/>
+                <div class="tpl-img-info">
+                    <p class="">森果商城模板一</p>
+                    <p class="mt4 f12">简约，直观，操作简单，适合高校经营。</p>
+                </div>
+            </div>
+            <div class="wrap-tpl-btns">
+                <span class="preview-btn">预览</span>
+                <span class="use-btn"><span class="used">已</span>启用</span>
+            </div>
+        </li>
+        <li class="{% if shop_tpl==1 %}active{% end %}" data-id="1">
+            <div class="wrap-tpl-img">
+                <img src="/static/images/tpl-1.png" alt="商城模版一"/>
+                <div class="tpl-img-info">
+                    <p class="">森果商城模板二</p>
+                    <p class="mt4 f12">大图，美观，对上传的图片要求比较高。<br><span class="dgreen">(建议上传的商品图片宽高比例为5:3，若图片宽度为800像素，则高度应为480像素)</span></p>
+                </div>
+            </div>
+            <div class="wrap-tpl-btns">
+                <span class="preview-btn">预览</span>
+                <span class="use-btn"><span class="used">已</span>启用</span>
+            </div>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-tpl hide">
+    <img class="tpl-big-img" src="/static/images/tpl-0.png" alt="森果模版"/>
+    <a href="javascript:;" class="close-pop close-tpl" id="close-pop"></a>
+</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set.js')}}"></script>
+{% end %}

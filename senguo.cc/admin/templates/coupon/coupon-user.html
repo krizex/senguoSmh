@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back"></a>
+    <span>店铺优惠券</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-user-coupon">
+    <div class="coupon-bg-box">
+        <div class="wrap-coupon-ubg">
+            <div class="coupon-ubg">
+                <div class="logo-box">
+                    <div class="wrap-shoplogo">
+                        <img src="{{output_data['shop_logo'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{output_data['shop_name']}}"/>
+                    </div>
+                </div>
+                <p class="c333 txt-center mt6">{{output_data['shop_name']}}</p>
+                <div class="price-box use-no">
+                    <p class="txt-center"><span class="f22">￥</span><span class="f42">{{output_data['coupon_money']}}</span></p>
+                    <div class="use-rule">
+                        <p class="rule-line"></p>
+                        <p class="rule-text">订单满{{output_data['use_rule']}}（含运费）即可使用</p>
+                    </div>
+                </div>
+                <p class="coupon-date f12">有效日期 : {{output_data['effective_time']}}-{{output_data['uneffective_time']}}</p>
+                <div class="go-link" data-url="/{{output_data['shop_code']}}">
+                    <i class="gap gap-top"></i>
+                    <span>立即使用</span>
+                </div>
+            </div>
+            <div class="coupon-im">
+                <p class="f14">使用说明 : </p>
+                <p class="point-left">此券限时限量领取，仅发行100张</p>
+                <p class="point-left">仅限在店铺名称内使用</p>
+                <p class="point-left">每笔订单仅限使用一张优惠券，不可找零</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/coupon-user.js')}}"></script>
+{% end %}
