@@ -534,7 +534,7 @@
                             {% end %}
                             <a href="javascript:;" class="switch-abtn {% if self_address.active == 1 %}switch-abtn-active{% end %}"><span class="a_on">已</span><span class="a_off">未</span>启用</a>
                             <a href="javascript:;" class="cur_loc"></a>
-                            <span class="text-grey3  address-text"><span>自提点<span class="self-index">{{arrNum[index]}}</span> : <span class="self-addr">{{self_address.address}}{% if self_address.if_default==2 %}<span class="dgreen">（店铺地址）</span>{% end %}</span></span></span>
+                            <span class="text-grey3 address-text"><span>自提点<span class="self-index">{{arrNum[index]}}</span> : <span class="self-addr">{{self_address.address}}{% if self_address.if_default==2 %}<span class="dgreen">（店铺地址）</span>{% end %}</span></span></span>
                         </li>
                         {% end %}
                     </ul>
