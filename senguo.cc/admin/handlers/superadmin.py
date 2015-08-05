@@ -94,13 +94,8 @@ class ShopAdminManage(SuperBaseHandler):
 			return self.send_error(404)
 		# 排序规则id, offset 和 limit
 		q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
-		#print("[超级管理员]",q,'*******************************')
 
 		admins = q.all()
-		#print(q.count())
-		#print(admins)
-		#for admin in admins:
-		#    print(admin)
 		# admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
 		return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
 	@tornado.web.authenticated
@@ -169,8 +164,9 @@ class ShopManage(SuperBaseHandler):
 			output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
 			output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
 
-			print(output_data_count)
+			# print("[SuperShopManage]output_data_count:",output_data_count)
 			##
+
 		elif level == 1:
 			output_data_count = {}
 			output_data_count["status_5_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
@@ -237,8 +233,6 @@ class ShopManage(SuperBaseHandler):
 		##
 
 		offset = (self.args.get("page", 1) - 1) * self._page_count
-		#print("**************offset = %d"%(offset))
-
 
 		#add6.5pm shop_auth:
 		if shop_auth == 4:
@@ -254,7 +248,7 @@ class ShopManage(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		##
-
+		# print("[SuperShopManage]shops count:",len(shops))
 
 		# add6.5pm shop_status:
 		if shop_status == 5:
@@ -272,7 +266,7 @@ class ShopManage(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		##
-
+		# print("[SuperShopManage]shops count:",len(shops))
 
 		#add 6.4pm sort:
 		if shop_sort_key == 0:
@@ -362,7 +356,7 @@ class ShopManage(SuperBaseHandler):
 				####################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 				wx_openid = account_info.wx_openid
-				#subscribe = user_subscribe(wx_openid)
+				# subscribe = user_subscribe(wx_openid)
 				data["subscribe"] = account_info.subscribe
 
 				data["shop_trademark_url"] = shop.shop_trademark_url
@@ -427,8 +421,7 @@ class ShopManage(SuperBaseHandler):
 
 				#chang by jyj 2015-6-16
 				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
-				##        </li>
-
+				##
 
 				data["shop_property"] = shop.shop_property
 
@@ -444,12 +437,8 @@ class ShopManage(SuperBaseHandler):
 				output_data.append(data)
 
 			if flag==1:
-
-				# print("@@@@@@@@@")
 				return self.render("superAdmin/shop-manage.html",level=level,output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
 			else :
-				# print("###########")
-
 				return self.send_success(output_data=output_data,level=level,output_data_count=output_data_count)
 
 		else:
@@ -464,6 +453,7 @@ class ShopManage(SuperBaseHandler):
 		return self.render("superAdmin/apply-manage.html",level=level,context=dict(
 				shops = shops,subpage='apply', action=action,
 				count=count))
+
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action")
 	def post(self):
@@ -494,7 +484,7 @@ class ShopManage(SuperBaseHandler):
 		if not self.args["new_status"] in models.SHOP_STATUS.DATA_LIST:
 			return self.send_error(400)
 
-		#首个店铺未进行店铺认证不允许再申请店铺
+		# 首个店铺未进行店铺认证不允许再申请店铺
 		try:
 			shops = self.session.query(models.Shop).filter_by(admin_id=shop_temp.admin_id)
 		except:
@@ -532,40 +522,42 @@ class ShopManage(SuperBaseHandler):
 				content = message_fail_content)
 			headers = dict(Host = '106.ihuyi.cn',connection = "close")
 			r = requests.post(url,data = postdata , headers = headers)
-			# print("[超级管理员]审核通知短信平台返回信息：",r.text)
 
 			reason = "原因：" + message_reason
 
-			# weixin message
+			# 发送店铺申请失败微信模板消息通知用户
 			WxOauth2.fail_template_msg(account_info.wx_openid, shop_temp.shop_name,
-									   account_info.realname, account_info.phone,reason)  # 发送微信模板消息通知用户
+									   account_info.realname, account_info.phone,reason)
 
 		else:
 			if shop_temp.shop_status == 2:
 				return self.send_fail("店铺已经申请成功")
 
 			# 添加系统默认的时间段
-			period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
-			period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
-			period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
+			period1 = models.Period(name="中午", start_time="12:00", end_time="13:00") #按时达默认时间段
+			period2 = models.Period(name="下午", start_time="17:00", end_time="18:00") #按时达默认时间段
+			period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00") #按时达默认时间段
+			period4 = models.Period(name="中午", start_time="12:00", end_time="13:00", config_type=1) #自提时间默认时间段
+			period5 = models.Period(name="下午", start_time="17:00", end_time="18:00", config_type=1) #自提时间默认时间段
+			period6 = models.Period(name="晚上", start_time="21:00", end_time="22:00", config_type=1) #自提时间默认时间段
 
 			config = models.Config()
-			config.periods.extend([period1, period2, period3])
+			config.periods.extend([period1, period2, period3, period4, period5, period6])
 			marketing = models.Marketing()
 
 			# 把临时表的内容复制到shop表
 			shop = models.Shop(admin_id=shop_temp.admin_id,
-										 shop_name=shop_temp.shop_name,
-										 create_date_timestamp=shop_temp.create_date_timestamp,
-										 shop_trademark_url=shop_temp.shop_trademark_url,
-										 shop_service_area=shop_temp.shop_service_area,
-										 shop_province=shop_temp.shop_province,
-										 shop_city=shop_temp.shop_city,
-										 shop_address_detail=shop_temp.shop_address_detail,
-										 have_offline_entity=shop_temp.have_offline_entity,
-										 shop_intro=shop_temp.shop_intro,
-										 lat=shop_temp.lat,
-										 lon=shop_temp.lon)
+							   shop_name=shop_temp.shop_name,
+							   create_date_timestamp=shop_temp.create_date_timestamp,
+							   shop_trademark_url=shop_temp.shop_trademark_url,
+							   shop_service_area=shop_temp.shop_service_area,
+							   shop_province=shop_temp.shop_province,
+							   shop_city=shop_temp.shop_city,
+							   shop_address_detail=shop_temp.shop_address_detail,
+							   have_offline_entity=shop_temp.have_offline_entity,
+							   shop_intro=shop_temp.shop_intro,
+							   lat=shop_temp.lat,
+							   lon=shop_temp.lon)
 			shop.config = config
 			shop.marketing = marketing
 			# shop.create_date_timestamp = time.time()
@@ -579,11 +571,9 @@ class ShopManage(SuperBaseHandler):
 			# inspect whether staff exited
 			######################################################################################
 			temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
-			# print('temp_staff')
-			# print(shop.admin_id)
-			# print(temp_staff)
+			# print('[SuperShopManage]temp_staff:',temp_staff)
+			# print('[SuperShopManage]admin_id:',shop.admin_id)
 			if temp_staff is None:
-				# print('passssssssssssssssssssssssssssssssssssssssss')
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
 				self.session.flush()
 
@@ -606,7 +596,6 @@ class ShopManage(SuperBaseHandler):
 			message_name = account_info.realname
 			message_shop_name = shop_temp.shop_name
 			# mobile = account_info.phone
-			# print(mobile)
 
 			message_content ='尊敬的{0}，您好，您在森果平台申请的店铺{1}已经通过审核，点击链接查看使用教程 http://dwz.cn/CSY6L'.format(message_name,message_shop_name)
 
@@ -616,7 +605,6 @@ class ShopManage(SuperBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',connection="close")
 			r = requests.post(url,data = postdata , headers = headers)
-			# print(r.text)
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
 
 			WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
@@ -731,9 +719,7 @@ class User(SuperBaseHandler):
 	def get(self):
 		level = self.current_user.level
 		shop_province = self.current_user.province
-		print(shop_province)
-		# shop_province = 420000
-		print(shop_province)
+		# print("[SuperUser]shop_province:",shop_province)
 		if level == 0:
 			q = self.session.query(models.Accountinfo)
 		elif level == 1:
@@ -798,9 +784,8 @@ class User(SuperBaseHandler):
 				filter(models.CustomerShopFollow.customer_id == users[i][0]).all()
 			h_names = self.session.query(models.Shop.id,models.Shop.shop_code,models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
 
-			#add by jyj 2015-6-22
-			#将生日的时间戳转换为日期类型：
-			# print(users[i][7])
+			# add by jyj 2015-6-22
+			# 将生日的时间戳转换为日期类型：
 			if users[i][7] == None:
 				birthday = 0
 			else:
@@ -837,12 +822,12 @@ class IncStatic(SuperBaseHandler):
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
 			end_date =datetime.datetime(now.year,now.month,now.day,23,59,59)
+			# print("[SuperIncStatic]end_date:",end_date)
 		else:
 			date = self.monthdelta(datetime.datetime.now(), page)
 			start_date = datetime.datetime(date.year, date.month, 1)
 			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
-
-			
+			# print("[SuperIncStatic]end_date:",end_date)
 
 		# woody 8.4
 		level = self.current_user.level
@@ -863,8 +848,6 @@ class IncStatic(SuperBaseHandler):
 		else:
 			return self.send_fail('level error')
 			
-
-			# print("[SuperIncStatic]end_date:",end_date)
 		all_infos = q.all()
 		admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
 		customer_infos = q.filter(exists().where(models.Accountinfo.id == models.Customer.id)).all()
@@ -968,10 +951,13 @@ class ShopStatic(SuperBaseHandler):
 		elif action == "province":
 			if level == 0:
 				provinces = self.session.query(models.Shop.shop_province, func.count()).\
-					group_by(models.Shop.shop_province).all()
+							group_by(models.Shop.shop_province).\
+							order_by(func.count().desc()).all()
 			elif level == 1:
 				provinces = self.session.query(models.Shop.shop_province, func.count()).\
-				filter(models.Shop.shop_province==shop_province).group_by(models.Shop.shop_province).all()
+							filter(models.Shop.shop_province==shop_province).\
+							group_by(models.Shop.shop_province).\
+							order_by(func.count().desc()).all()
 			else:
 				return self.send_fail('level error')
 			data = []
@@ -984,10 +970,13 @@ class ShopStatic(SuperBaseHandler):
 		elif action == "city":
 			if level == 0:
 				cities = self.session.query(models.Shop.shop_city, func.count()).\
-					group_by(models.Shop.shop_city).all()
+						 group_by(models.Shop.shop_city).\
+						 order_by(func.count().desc()).all()
 			elif level == 1:
-				cities = self.session.query(models.Shop.shop_city, func.count()).filter(models.Shop.shop_province==shop_province).\
-					group_by(models.Shop.shop_city).all()
+				cities = self.session.query(models.Shop.shop_city, func.count()).\
+						 filter(models.Shop.shop_province==shop_province).\
+						 group_by(models.Shop.shop_city).\
+						 order_by(func.count().desc()).all()
 			else:
 				return self.send_fail('level error')
 			data = []
@@ -1064,13 +1053,25 @@ class ShopStatic(SuperBaseHandler):
 		date = end_date
 		# data的封装格式为：[日期，日，日订单数，累计订单数，日订单总金额，累计订单总金额]
 		while 1:
+			try:
+				_date = date.strftime('%Y-%m-%d')
+			except:
+				_date = ""
+			try:
+				data6 = format(total[0],'.2f')
+			except:
+				data6 = format(0,'.2f')
 			if i < len(s) and s[i][0].date() == date.date():
-				data.append((date.strftime('%Y-%m-%d'), date.day, s[i][1], total[1], format(s[i][2],'.2f'), format(total[0],'.2f')))
+				try:
+					data5 = format(s[i][2],'.2f')
+				except:
+					data5 = format(0,'.2f')
+				data.append((_date, date.day, s[i][1], total[1], data5,data6))
 				total[1] -= s[i][1]
 				total[0] -= s[i][2]
 				i += 1
 			else:
-				data.append((date.strftime('%Y-%m-%d'), date.day, 0, total[1], format(0,'.2f'), format(total[0],'.2f')))
+				data.append((_date, date.day, 0, total[1], format(0,'.2f'),data6))
 			date -= datetime.timedelta(1)
 			if date <= start_date:
 				break
@@ -1185,44 +1186,6 @@ class OrderStatic(SuperBaseHandler):
 class Official(SuperBaseHandler):
 	def get(self):
 		return self.render("m-official/home.html")
-
-# class ShopClose(SuperBaseHandler):
-# 	@tornado.web.authenticated
-# 	def get(self):
-# 		try:
-# 			shops = self.session.query(models.Shop).filter_by(status =1).all()
-# 		except:
-# 			return self.send_fail('shopclose error')
-# 		if shops:
-# 			for shop in shops:
-# 				shop_code = shop.shop_code
-# 				shop_id = shop.id
-# 				fruits = shop.fruits
-# 				menus = shop.menus
-# 				# print(menus)
-# 				create_date = shop.create_date_timestamp
-# 				x = datetime.datetime.fromtimestamp(create_date)
-# 				# print(x)
-# 				now = datetime.datetime.now()
-# 				days = (now -x).days
-# 				if days >14:
-# 					if shop_code =='not set':
-# 						shop.status = 0
-# 					if len(fruits) == 0 and len(menus) == 0:
-# 						shop.status = 0
-# 					try:
-# 						follower_count = self.session.query(models.CustomerShopFollow).filter_by(shop_id = shop_id).count()
-# 					except:
-# 						return self.send_fail('follower_count error')
-# 					if follower_count <2:
-# 						shop.status =0
-# 				self.session.commit()
-# 			return self.send_success()
-
-# class Comment(SuperBaseHandler):
-# 	@tornado.web.authenticated
-# 	def get(self):
-# 	    self.render('superAdmin/shop-comment-apply.html',context=dict(count = {'all':10,'all_temp':10}))
 
 # 店铺 - 删除评论申请
 class Comment(SuperBaseHandler):
@@ -1735,12 +1698,12 @@ class ShopAuthenticate(SuperBaseHandler):
 		try:
 			shop_auth_apply = self.session.query(models.ShopAuthenticate).filter_by(id = apply_id).first()
 		except:
-			print('ShopAuthenticate: shop_auth_apply not found')
+			print('[ShopAuthenticate]shop_auth_apply not found')
 
 		try:
 			shop = self.session.query(models.Shop).filter_by(id = shop_auth_apply.shop_id).first()
 		except:
-			print('ShopAuthenticate: shop not found')
+			print('[ShopAuthenticate]shop not found')
 
 		if not shop_auth_apply:
 			return self.error(404)
@@ -1761,13 +1724,12 @@ class ShopAuthenticate(SuperBaseHandler):
 					shop.shop_auth = 3
 					shop.auth_change = 2
 			self.session.commit()
-			#发送短消息提醒
+			# 发送短消息提醒
 			if shop.shop_phone:
 				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
-				# print("店铺没有预留电话！")
-				print("no phone")
-			#发送模板消息
+				print("[ShopAuthenticate]no phone")
+			# 发送模板消息
 			self.shop_auth_msg(shop,True)
 		elif action == 'decline':
 			decline_reason = self.args['decline_reason']
@@ -1776,13 +1738,12 @@ class ShopAuthenticate(SuperBaseHandler):
 			if shop.auth_change == 0:
 				shop.shop_auth = 0
 			self.session.commit()
-			#发送短消息提醒
+			# 发送短消息提醒
 			if shop.shop_phone:
 				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
-				# print("店铺没有预留电话！")
-				print("no phone")
-			#发送模板消息
+				print("[ShopAuthenticate]no phone")
+			# 发送模板消息
 			self.shop_auth_msg(shop,False)
 		else:
 			return self.send_error(404)
@@ -1798,7 +1759,7 @@ class Balance(SuperBaseHandler):
 		cash_success = 0
 		cash_times = 0
 		cash_persons = 0
-		#当level=1时，表示区域管理员，只显示该区域的数据，
+		# 当level=1时，表示区域管理员，只显示该区域的数据
 		# woody 8.3
 		super_admin = self.current_user
 		print(super_admin)
@@ -1811,7 +1772,6 @@ class Balance(SuperBaseHandler):
 
 			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
 			person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
-			# print(person_num,'haaha')
 		elif level == 1:
 			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0,shop_province=shop_province).all()
 			shop_list = self.session.query(models.Shop).filter_by(shop_province=shop_province).all()
@@ -1830,7 +1790,7 @@ class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','page:int')
 	def post(self):
-		#当level=1时，表示区域管理员，只显示该区域的数据，
+		# 当level=1时，表示区域管理员，只显示该区域的数据
 		# woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
@@ -1963,7 +1923,7 @@ class Balance(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		if not history_list:
-			print('Balance: history_list error')
+			print('[SuperBalance]history_list error')
 		for temp in history_list:
 				shop = self.session.query(models.Shop).filter_by(id=temp.shop_id).first()
 				shop_name = shop.shop_name
@@ -2010,7 +1970,7 @@ class ApplyCash(SuperBaseHandler):
 		try:
 			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
 		except:
-			print('ApplyCash: no cash_history')
+			print('[SuperApplyCash]no cash_history')
 		if cash_history!=[]:
 			alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).all()
 			persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
@@ -2067,7 +2027,7 @@ class ApplyCash(SuperBaseHandler):
 			apply_id = self.args['apply_id']
 			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
 			if apply_cash == '':
-				return self.send_fail('apply_cash not found')
+				return self.send_fail('[SuperApplyCash]apply_cash not found')
 			apply_cash.has_done = 2
 			apply_cash.decline_reason = self.args['decline_reason']
 			self.session.commit()
@@ -2076,11 +2036,11 @@ class ApplyCash(SuperBaseHandler):
 			apply_id = self.args['apply_id']
 			apply_cash = self.session.query(models.ApplyCashHistory).filter_by(id = apply_id).first()
 			if apply_cash == '':
-				return self.send_fail('apply_cash not found')
+				return self.send_fail('[SuperApplyCash]apply_cash not found')
 			apply_cash.has_done = 1
 			shop = self.session.query(models.Shop).filter_by(id = apply_cash.shop_id).first()
 			if not shop:
-				return self.send_fail('shop not found')
+				return self.send_fail('[SuperApplyCash]shop not found')
 			shop.is_balance = 1
 			shop.shop_balance = shop.shop_balance-apply_cash.value
 			shop.available_balance = shop.available_balance - apply_cash.value
@@ -2405,8 +2365,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 		return self.send_success(page_sum=page_sum,history = history)
 ##
 
-
-
+# 分省代理管理员
 class AdminManager(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action')
@@ -2427,7 +2386,6 @@ class AdminManager(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 
-
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','admin_id?:int','province?:str')
 	def post(self):
@@ -2446,7 +2404,7 @@ class AdminManager(SuperBaseHandler):
 				self.send_fail('请输入该用户所管辖的省份')
 			super_admin = self.session.query(models.SuperAdmin).filter_by(id = admin_id).first()
 			if super_admin:
-				return self.send_fail('该用户已经是超级管理员,请勿重复添加')
+				return self.send_fail('该用户已经是超级管理员，请勿重复添加')
 			info = self.session.query(models.Accountinfo).filter_by(id=admin_id).first()
 			if not info:
 				return self.send_fail('该用户还不是森果的用户，无法添加其为超级管理员')
@@ -2487,21 +2445,9 @@ class AdminManager(SuperBaseHandler):
 		elif action == 'cancel':
 			super_admin = self.session.query(models.SuperAdmin).filter_by(id=admin_id).first()
 			if not super_admin:
-				return self.send_fail('该管理员并不存在')
+				return self.send_fail('该管理员不存在')
 			super_admin.level = -1
 			self.session.commit()
 			return self.send_success()
 		else:
 			return self.send_error(404)
-
-
-
-
-
-
-
-
-
-
-
-
