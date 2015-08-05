@@ -21,9 +21,6 @@ codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else Non
 import tornado.websocket
 from dal.db_configs import DBSession
 
-import codecs 
-codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None)
-
 # 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -2744,8 +2741,8 @@ class GoodsImport(AdminBaseHandler):
 		except:
 			shops = None
 		try:
-			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
-		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+			other_shops = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id).\
+						  filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
 		except:
 			other_shops = None
 
@@ -2789,7 +2786,7 @@ class GoodsImport(AdminBaseHandler):
 		elif action == "import_goods":
 			fruit_list  = data["fruit_list"]
 			if len(self.current_shop.fruits) + len(fruit_list) >200:
-				return self.send_fail("一家店铺至多可添加200种商品")
+				return self.send_fail("一家店铺最多可添加200种商品")
 			fruits = self.session.query(models.Fruit).filter(models.Fruit.id.in_(fruit_list)).all()
 			for fruit in fruits:
 				_fruit = models.Fruit(
@@ -2805,7 +2802,7 @@ class GoodsImport(AdminBaseHandler):
 					detail_describe=fruit.detail_describe,
 				)
 				self.session.add(_fruit)
-				self.session.commit()
+				self.session.flush()
 				if not fruit.charge_types:
 					continue
 				for charge in fruit.charge_types:
@@ -2821,7 +2818,7 @@ class GoodsImport(AdminBaseHandler):
 						relate = charge.relate
 					)
 					self.session.add(_charge)
-					self.session.commit()
+				self.session.commit()
 			return self.send_success()
 
 		elif  action == "checkyouzan":
@@ -2850,12 +2847,12 @@ class GoodsImport(AdminBaseHandler):
 							img_url = good_img_url[0]
 						good_img_url=(";").join(good_img_url)
 						if len(title)>20:
-							title=title[1:21]
+							title=title[0:20]
 						if len(intro)>8000:
-							intro=intro[1:8000]
+							intro=intro[0:8000]
 						if len(good_img_url)>500:
-							good_img_url=good_img_url[1:501]
-						charge_types.append({"price":price,"unit":self.getUnit(2)})
+							good_img_url=good_img_url[0:500]
+						charge_types.append({"price":price,"unit":self.getUnit(3)})
 						goods_list.append({"id":"","name":title,"charge_types":charge_types,"imgurl":img_url,"imgs":good_img_url,"intro":str(intro)})
 			return self.send_success(goods_list=goods_list)
 
@@ -2870,10 +2867,10 @@ class GoodsImport(AdminBaseHandler):
 				print(data["imgs"])
 				print(data.get("imgs",""))
 				new_good = models.Fruit(shop_id = self.current_shop.id , fruit_type_id = 999,name = data.get("name",""),
-				storage = 100,unit = 2,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
-				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 2,num =1,market_price = 0))
+				storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
+				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 3,num = 1,market_price = None))
 				self.session.add(new_good)
-				self.session.commit()
+			self.session.commit()
 			return self.send_success()
 
 class editorTest(AdminBaseHandler):

@@ -4,7 +4,8 @@
 var type = 0,page=0;
 $(document).ready(function(){
     $(".wrap-goods-groups").prev(".subnav-box").hide();
-    $(".right-title").hide();
+    $(".add-btn").hide();
+    $(".import-btn").hide();
     getGoods(parseInt($(".shop_name").attr("data-id")));
 }).on("click",".import-type li",function(){
     var index = $(this).index();
