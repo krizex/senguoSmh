@@ -34,8 +34,10 @@ $(document).ready(function(){
 }).on("click","#add_group",function(){
     addGroup();
 }).on("click","#switch_group",function(){//切换商品分组
-    $("#choose_group").addClass("hide");
-    $("#batch_group").removeClass("hide");
+    var group_id = $(".batch-group-list").children(".active").attr("data-id");
+    batchGroup(group_id);
+/*    $("#choose_group").addClass("hide");
+    $("#batch_group").removeClass("hide");*/
 }).on("click","#cancel_group",function(){
     $("#choose_group").addClass("hide");
     $("#batch_group").removeClass("hide");
@@ -75,21 +77,19 @@ function addGroup(){
     if($("#add_group").attr("data-flag")=="off"){
         return false;
     }
-    if(action!="del"){
-        var group_name = $.trim($("#group_name").val());
-        var group_info = $.trim($("#group_info").val());
-        if($('.batch-group-list li').size()==7){
-            Tip("最多只能添加五个自定义分组！");
-            return false;
-        }
-        if(group_name=="" || group_name.length>10){
-            Tip("分组名字不能为空且不能超过10个字");
-            return false;
-        }
-        if(group_info=="" || group_info.length>50){
-            Tip("分组介绍不能为空且不能超过50个字");
-            return false;
-        }
+    var group_name = $.trim($("#group_name").val());
+    var group_info = $.trim($("#group_info").val());
+    if($('.batch-group-list li').size()==7){
+        Tip("最多只能添加五个自定义分组！");
+        return false;
+    }
+    if(group_name=="" || group_name.length>10){
+        Tip("分组名字不能为空且不能超过10个字");
+        return false;
+    }
+    if(group_info=="" || group_info.length>50){
+        Tip("分组介绍不能为空且不能超过50个字");
+        return false;
     }
     $("#add_group").attr("data-flag", "off");
     var url = '/admin/goods/group';

@@ -2,10 +2,23 @@ var curGoods = null,width = 0,page=0,finished=false,nomore=false,cur_group=null,
 $(document).ready(function(){
     var minheight = $(window).height()-80;
     $(".order-lists").css({minHeight:minheight+"px"});
-    getGoodsItem("all",0);
+    if($.getUrlParam("search")){
+        getGoodsItem("goods_search",0,$.getUrlParam("search"));
+    }else{
+        getGoodsItem("all",0);
+    }
     getData('fruit','color');
     if($.getUrlParam("type")){
         _type = parseInt($.getUrlParam("type"));
+        $(".container").removeClass("pt70");
+        $(".second-tab").addClass("hide");
+        $("#qa").removeClass("hide");
+        $(".btns-list").addClass("hide");
+        $("#group_manage").removeClass("hide");
+        $(".boxs").addClass("hide").eq(1).removeClass("hide");
+        $(".order-type-list .item").removeClass("active").eq(1).addClass("active");
+        page=0;
+        $(".order-type-list .tab-bg").css("left","33.3%");
     }
     $(window).scroll(function(){
         if(_type!=1) return false;
