@@ -18,7 +18,7 @@
     {% set type_num =2 %}
     {% set in_active='active'%}
 {% elif order_type ==3 %}
-    {% set lock_mode = current_shop.config.ontime_on %}
+    {% set lock_mode = current_shop.config.self_on %}
     {% set type_num =3 %}
     {% set self_active='active'%}
 {% end %}
@@ -122,10 +122,10 @@
             <a href="javascript:;">未处理&nbsp;<span class="text-pink num" id="not-deal"></span></a>
         </li>
         <li data-id="2">
-            <a href="javascript:;">配送中&nbsp;<span class="text-pink num"></span></a>
+            <a href="javascript:;">{% if order_type == 3 %}等待自取{% else %}配送中{% end %}&nbsp;<span class="text-pink num"></span></a>
         </li>
         <li data-id="3">
-            <a href="javascript:;">已送达&nbsp;<span class="text-pink num"></span></a>
+            <a href="javascript:;">已完成&nbsp;<span class="text-pink num"></span></a>
         </li>
         <li data-id="4">
             <a href="javascript:;">售后/退款&nbsp;<span class="text-pink num"></span></a>
@@ -520,7 +520,7 @@
                     <p class="group set-self">
                         <a href="javascript:;" class="add-self-address pull-right" id="add_self">+添加自提点</a>
                         <span class="text-grey3 f14">自提点设置</span>
-                        <span class="text-grey9">（添加、编辑、启用、停用自提点，设置自提点位置）</span>
+                        <span class="text-grey9 f14">（添加、编辑、启用、停用自提点，设置自提点位置）</span>
                     </p>
                     <ul class="self-address-list">
                         {% set arrNum = ['一','二','三','四','五','六','七','八','九','十'] %}
@@ -558,7 +558,7 @@
                                         <span class="caret"></span>
                                     </button>
                                 </div>
-                                <input type="text" class="input-box input1 pull-left" disabled="true" placeholder="请填写详细地址，至多30个字符" id="addressDetail" value="">
+                                <input type="text" class="input-box input1 pull-left" disabled="true" placeholder="请填写详细地址，最多30个字符" id="addressDetail" value="">
                                 <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索">
                             </div>
                         </div>

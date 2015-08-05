@@ -45,8 +45,8 @@ $(document).ready(function () {
                 };
             },
             'onUploadComplete': function () {
-                $('#logoImg').show().attr({'src': 'http://shopimg.qiniudn.com/' + key + '?imageView2/1/w/100/h/100'});
-                $('.receipt-img img').attr({'src': 'http://shopimg.qiniudn.com/' + key + '?imageView2/1/w/100/h/100'});
+                $('#logoImg').show().attr({'src': 'http://7rf3aw.com2.z0.glb.qiniucdn.com/' + key + '?imageView2/1/w/100/h/100'});
+                $('.receipt-img img').attr({'src': 'http://7rf3aw.com2.z0.glb.qiniucdn.com/' + key + '?imageView2/1/w/100/h/100'});
                 $('.logo-box').find('.filename').hide();
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();
@@ -269,7 +269,7 @@ function receiptEdit(target) {
         receipt_msg = ''
     }
     if (receipt_msg.length > 20) {
-        return Tip('小票附加消息请不要超过20个字！');
+        return Tip('小票附加消息请不要超过20个字');
     }
     var data = {
         receipt_msg: receipt_msg

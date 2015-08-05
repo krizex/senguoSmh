@@ -102,7 +102,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			unifiedOrder =   UnifiedOrder_pub()
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
-			print("[WeixinPay]totalPrice:",totalPrice)
+			# print("[WeixinPay]totalPrice:",totalPrice)
 			unifiedOrder.setParameter("body",'charge')
 			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
@@ -142,7 +142,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
-		print("[WeixinQrPay]totalPrice:",totalPrice)
+		# print("[WeixinQrPay]totalPrice:",totalPrice)
 		wxPrice =int(totalPrice * 100)
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'QrWxpay')
@@ -214,7 +214,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			if not shop:
 				return self.send_fail('shop not found')
 			shop.shop_balance += totalPrice
-			self.session.commit()
+			self.session.flush()
 			# print("[WeixinPay]shop_balance:",shop.shop_balance)
 
 			# 支付成功后  生成一条余额支付记录
@@ -225,7 +225,8 @@ class OnlineWxPay(CustomerBaseHandler):
 				return self.send_fail('customer not found')
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
+				shop_province=shop.shop_province)
 			self.session.add(balance_history)
 			# print("[WeixinPay]balance_history:",balance_history)
 			self.session.commit()
@@ -448,7 +449,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		if not shop:
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
-		self.session.commit()
+		self.session.flush()
 		# print("[AliPay]shop_balance:",shop.shop_balance)
 
 		# 支付成功后  生成一条余额支付记录
@@ -459,7 +460,8 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('customer not found')
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no,
+			shop_province = shop.shop_province)
 		self.session.add(balance_history)
 		# print("[AliPay]balance_history:",balance_history)
 		self.session.commit()
@@ -506,7 +508,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		if not shop:
 			return self.send_fail('shop not found')
 		shop.shop_balance += totalPrice
-		self.session.commit()
+		self.session.flush()
 		# print("[AliPay]shop_balance:",shop.shop_balance)
 
 		# 支付成功后  生成一条余额支付记录
@@ -517,7 +519,8 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_fail('customer not found')
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no,
+			shop_province = shop.shop_province)
 		self.session.add(balance_history)
 		# print("[AliPay]balance_history:",balance_history)
 		self.session.commit()

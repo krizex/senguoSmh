@@ -104,7 +104,7 @@ $(document).ready(function(){
                 };
             },
             'onUploadComplete':function(){
-                $('#logoImg').show().attr({'src':'http://shopimg.qiniudn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
+                $('#logoImg').show().attr({'src':'http://7rf3aw.com2.z0.glb.qiniucdn.com/'+key+'?imageView2/1/w/100/h/100','data-key':key});
                 $('.logo-box').find('.filename').hide();
                 $('.logo-box').find('.fileinfo').hide();
                 $('.logo-box').find('.close').hide();

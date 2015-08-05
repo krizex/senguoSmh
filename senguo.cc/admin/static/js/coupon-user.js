@@ -3,7 +3,7 @@
  */
 $(document).ready(function(){
     var height = $(window).height();
-    $(".wrap-user-coupon").css("minHeight",height-40);
+    $(".wrap-user-coupon").css("minHeight",height+"px");
 }).on("click",".go-link",function(){
     var url = $(this).attr("data-url");
     window.location.href=url;

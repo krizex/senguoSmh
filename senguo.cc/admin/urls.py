@@ -66,6 +66,7 @@ handlers = [
 	(r"/customer/qqoauth",handlers.customer.Access,{"action":"qqoauth"},"customerQOauth"),
 	(r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
+	(r"/customer/weixinphone", handlers.customer.Third, {"action":"weixinphone"}, "customerWeixinphone"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
 	(r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
 
@@ -167,6 +168,9 @@ handlers = [
 	(r"/super/comment_apply",handlers.superadmin.Comment,{},"supercommentApply"),
 	(r"/super/comment_info",handlers.superadmin.CommentInfo,{},"supercommentInfo"),
 	##
+
+	# added by woody 8.3
+	(r"/super/admin",handlers.superadmin.AdminManager,{},"superareaadmin"),
 
 	## 店铺申请接入管理
 	# 所有店铺

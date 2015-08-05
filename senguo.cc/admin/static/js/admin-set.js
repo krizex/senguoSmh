@@ -1,6 +1,6 @@
 $(document).ready(function(){
     $('.info-edit').on('click',function(){
-        console.log(2333);
+        //console.log(2333);
         var $this=$(this);
         $this.parents('.set-list-item').find('.address-show').hide();
         $this.parents('.set-list-item').find('.address-edit').show();

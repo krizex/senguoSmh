@@ -35,22 +35,22 @@ class Login(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('scene_id')
 	def post(self):
 		scene_id = int(self.args['scene_id'])
-		print("[ApplyLogin]scene_id:",scene_id)
+		# print("[ApplyLogin]scene_id:",scene_id)
 		scene_openid = self.session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
 		if scene_openid:
 			openid = scene_openid.openid
-			print("[ApplyLogin]openid:",openid)
+			# print("[ApplyLogin]openid:",openid)
 			accountinfo = self.session.query(models.Accountinfo).filter_by(wx_openid = openid).first()
 			if accountinfo:
-				print("[ApplyLogin]accountinfo:",accountinfo)
+				# print("[ApplyLogin]accountinfo:",accountinfo)
 				customer = self.session.query(models.ShopAdmin).filter_by(id = accountinfo.id).first()
 				if customer:
-					print("[ApplyLogin]customer:",customer)
+					# print("[ApplyLogin]customer:",customer)
 					self.set_current_user(customer,domain=ROOT_HOST_NAME)
-			print("[ApplyLogin]True")
+			# print("[ApplyLogin]True")
 			return self.send_success(login=True)
 		else:
-			print("[ApplyLogin]False")
+			# print("[ApplyLogin]False")
 			return self.send_success(login=False)
 
 # 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
@@ -64,7 +64,7 @@ class WxMessage(CustomerBaseHandler):
 		if self.check_signature(signature,timestamp,nonce):
 			return self.write(echostr)
 		else:
-			print('[ApplyWxMessage]the message is not from weixin')
+			# print('[ApplyWxMessage]the message is not from weixin')
 			return self.write(echostr)
 
 	@CustomerBaseHandler.check_arguments('ToUserName?:str','FromUserName?:str','CreateTime?','MsgType?','Event?','EventKey?','Ticket?')
@@ -75,11 +75,11 @@ class WxMessage(CustomerBaseHandler):
 			import xml.etree.ElementTree as ET
 		raw_data = self.request.body
 		data = self.xmlToDic(raw_data) 
-		print('[ApplyWxMessage]raw_data:',raw_data)
+		# print('[ApplyWxMessage]raw_data:',raw_data)
 		openid = data.get('FromUserName',None)
 		event  = data.get('Event',None)
 		eventkey = data.get('EventKey',None)
-		print('[ApplyWxMessage]openid:',openid,', event:',event,', eventkey:',eventkey)
+		# print('[ApplyWxMessage]openid:',openid,', event:',event,', eventkey:',eventkey)
 
 		openid = data.get('FromUserName',None)
 		event  = data.get('Event',None)
@@ -115,7 +115,7 @@ class WxMessage(CustomerBaseHandler):
 				reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
 			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 			reply = ET.tostring(reply,encoding='utf8',method='xml')
-			print("[ApplyWxMessage]reply:",reply)
+			# print("[ApplyWxMessage]reply:",reply)
 			self.write(reply)
 
 		if event == 'subscribe' or 'scan' or 'SCAN':
@@ -130,18 +130,18 @@ class WxMessage(CustomerBaseHandler):
 				scene_openid = models.Scene_Openid(scene_id=scene_id,openid=openid)
 				self.session.add(scene_openid)
 				self.session.commit()
-				print("[ApplyWxMessage]scene_openid.id:",scene_openid.id,", scene_openid.scene_id:",scene_openid.scene_id,", scene_openid.openid:",scene_openid.openid)
+				# print("[ApplyWxMessage]scene_openid.id:",scene_openid.id,", scene_openid.scene_id:",scene_openid.scene_id,", scene_openid.openid:",scene_openid.openid)
 
 				customer = self.session.query(models.Accountinfo).filter_by(wx_openid=openid).first()
 				if customer:
 					print('[ApplyWxMessage]customer exists')
 				else:
-					print('[ApplyWxMessage]add new customer')
+					# print('[ApplyWxMessage]add new customer')
 					access_token = WxOauth2.get_client_access_token()
 					url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
 					r = requests.get(url)
 					wx_userinfo = json.loads(r.text)
-					print("[ApplyWxMessage]wx_userinfo:",wx_userinfo)
+					# print("[ApplyWxMessage]wx_userinfo:",wx_userinfo)
 					if wx_userinfo["headimgurl"] not in [None,'']:
 						headimgurl = wx_userinfo.get("headimgurl",None)
 						headimgurl_small = wx_userinfo.get("headimgurl",None)[0:-1] + "132"
@@ -210,7 +210,6 @@ class WxMessage(CustomerBaseHandler):
 			data[child.tag] = child.text
 		return data	
 
-
 # 店铺申请 - 首页 成为卖家
 class Home(CustomerBaseHandler):
 	# @tornado.web.authenticated
@@ -266,7 +265,6 @@ class CreateShop(AdminBaseHandler):
 		data = self.args["data"]
 		if not action or not data:
 			return self.send_error(403)
-
 		try:
 			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
 		except:
@@ -317,7 +315,7 @@ class CreateShop(AdminBaseHandler):
 				shops = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.shop_name.like("%%%s%%" %shop_name)).all()
 			except:
 				shops = None
-				print("[AdminCreateShop]Shop search error")
+				# print("[AdminCreateShop]Shop search error")
 
 			data=[]
 			if shops:
@@ -340,12 +338,12 @@ class CreateShop(AdminBaseHandler):
 			shop_list = data["shop_list"]
 			if self.current_shop:
 				shop_number = len(self.current_shop.admin.shops)
-				if len(shop_list) + shop_number >30:
-					notice="您已创建"+str(shop_number)+"家店铺 ，至多还可创建"+str(30-shop_number)+"家店铺"
+				if len(shop_list) + shop_number > 30:
+					notice="您已创建"+str(shop_number)+"家店铺，最多还可创建"+str(30-shop_number)+"家店铺"
 					return self.send_fail(notice)
 			else:
 				if len(shop_list)>=30:
-					return self.send_fail("至多还可创建30家店铺")
+					return self.send_fail("最多可创建30家店铺")
 
 			spider_shops  = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.id.in_(shop_list)).all()
 
@@ -373,14 +371,15 @@ class CreateShop(AdminBaseHandler):
 					if len(name)>20:
 						name=name[1:21]
 					new_good = models.Fruit(shop_id = shop.id , fruit_type_id = 999,name = name,
-						storage = 100,unit = 2,img_url = temp_good.good_img_url ,)
-					new_good.charge_types.append(models.ChargeType(price = temp_good.goods_price,unit = 2,num =1,market_price = temp_good.goods_price))
+						storage = 100,unit = 3,img_url = temp_good.good_img_url ,)
+					new_good.charge_types.append(models.ChargeType(price = temp_good.goods_price,unit = 3,num = 1,market_price = None))
 					self.session.add(new_good)
-					self.session.commit()
+				self.session.commit()
 				self.create_staff(shop)
 
 			return self.send_success()
 
+	# 生成店铺号（2位随机字母+6位随机数字）
 	def make_shop_code(self):
 		chars = 'abcdefghijklmnopqrstuvwxyz'
 		nums = '0123456789'
@@ -398,19 +397,21 @@ class CreateShop(AdminBaseHandler):
 
 	def create_shop(self,shop):
 		# 添加系统默认的时间段
-		period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
-		period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
-		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
-		period4 = models.Period(name="白天", start_time="09:00", end_time="21:00",config_type=1) #自提时间默认时间段
+		period1 = models.Period(name="中午", start_time="12:00", end_time="13:00") #按时达默认时间段
+		period2 = models.Period(name="下午", start_time="17:00", end_time="18:00") #按时达默认时间段
+		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00") #按时达默认时间段
+		period4 = models.Period(name="中午", start_time="12:00", end_time="13:00", config_type=1) #自提时间默认时间段
+		period5 = models.Period(name="下午", start_time="17:00", end_time="18:00", config_type=1) #自提时间默认时间段
+		period6 = models.Period(name="晚上", start_time="21:00", end_time="22:00", config_type=1) #自提时间默认时间段
 
 		config = models.Config()
-		config.periods.extend([period1, period2, period3,period4])
+		config.periods.extend([period1, period2, period3, period4, period5, period6])
 		marketing = models.Marketing()
 		shop.config = config
 		shop.marketing = marketing
 		shop.shop_start_timestamp = time.time()
 		self.session.add(shop)
-		self.session.commit()  # 要commit一次才有shop.id
+		self.session.flush()  # 要flush一次才有shop.id
 		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
 		self.session.commit()
 
@@ -418,15 +419,13 @@ class CreateShop(AdminBaseHandler):
 		temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
 		if temp_staff is None:
 			self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
-			self.session.commit()
+		self.session.flush()
 
 		self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
-		self.session.commit()
+		self.session.flush()
 
 		# 把管理员同时设为顾客的身份
 		customer_first = self.session.query(models.Customer).get(shop.admin_id)
 		if customer_first is None:
 			self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
-			self.session.commit()
-
-
+		self.session.commit()

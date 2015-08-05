@@ -13,13 +13,12 @@ $(document).ready(function(){
     });
     //领取优惠券
     $(document).on("click",".get-coupon",function(){
+        if($(this).hasClass("coupon-used")) return Tip("该优惠券还没有到领取时间");
         if($(this).attr("data-flag")=="on"){
             var coupon_id = $(this).attr("data-id");
             $(this).attr("data-flag","off");
             getCoupon(coupon_id,$(this));
-        }else{
-            return Tip("服务器正在处理请求，不要重复点击！");
-        }  
+        }
     });
 });
 //领取优惠券

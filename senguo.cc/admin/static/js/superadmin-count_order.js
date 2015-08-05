@@ -198,7 +198,7 @@ function getCount(action,page,type,options,myChart){
     options.series[0].data=[];
     myChart.clear();
     count(action,page,type);
-    console.log(data)
+    //console.log(data);
     for(var data_e in data){
         var clock=data_e;
         var num=data[data_e];

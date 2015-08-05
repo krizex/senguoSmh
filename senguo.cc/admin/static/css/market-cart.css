@@ -132,13 +132,16 @@
 .mr8{margin-right: 8px;}
 .mr10{margin-right: 10px;}
 .cart-titles{background-color: #fff;padding-top: 10px;}
-.has-coupon {line-height: 18px;}
+.has-coupon {line-height: 18px;margin: 0 10px;}
 
 .seth-50{height:50px;line-height:50px;}
 .seth-40{height:40px;line-height:40px;}
-.item-tit{padding:10px;color:#333;}
+.item-tit{padding:15px;color:#333;}
 .item-tit2{padding:5px 10px;}
 .text-greyc{color:#ccc !important;}
 
 .send-now.active span{color:#33CC66 !important;}
 .self-address-list .active:hover{color:#33CC66;}
+.area-icon{width:14px;height:22px;background:url('../svg/icon_list-2.png') 0 -48px;background-size:140px 180px;position: relative;top:8px;margin:6px 5px 0 0;}
+
+.send-self{margin-bottom:0px;}

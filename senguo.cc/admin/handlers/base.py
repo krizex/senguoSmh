@@ -121,6 +121,7 @@ class GlobalBaseHandler(BaseHandler):
 		s*= 1000
 		return s;
 
+	# 更新店铺、用户的优惠券
 	def updatecouponbase(self,shop_id,customer_id):
 		current_customer_id=customer_id
 		now_date=int(time.time())
@@ -133,7 +134,7 @@ class GlobalBaseHandler(BaseHandler):
 				if x.coupon_status>0:
 					if now_date>x.uneffective_time:
 						x.update(self.session,coupon_status=3)
-				self.session.commit()
+				self.session.flush()
 		self.session.commit()
 		return None
 
@@ -165,17 +166,27 @@ class GlobalBaseHandler(BaseHandler):
 
 		# 将城市编码转换为文字显示（可以由城市编码算出城市所在省份的编码）
 		elif column_name == "shop_city":
-			text += dis_dict[int(code/10000)*10000]["name"]
-			if "city" in dis_dict[int(code/10000)*10000].keys():
-				text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			if code:
+				text += dis_dict[int(code/10000)*10000]["name"]
+				if "city" in dis_dict[int(code/10000)*10000].keys():
+					text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			else:
+				text = ""
 			return text
 
 		elif column_name == "city":
-			if "city" in dis_dict[int(code/10000)*10000].keys():
-				text = dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			if code:
+				if "city" in dis_dict[int(code/10000)*10000].keys():
+					text = dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			else:
+				text = ""
 			return text
+
 		elif column_name == "province":
-			text = dis_dict[int(code)]["name"]
+			if code:
+				text = dis_dict[int(code)]["name"]
+			else:
+				text = ""
 			return text
 
 		# 将订单状态编码转换为文字显示
@@ -563,7 +574,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def send_qiniu_token(self, action, id):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 
-
 		token = q.upload_token(BUCKET_SHOP_IMG, expires = 60*30*100,
 
 							  policy={"callbackUrl": "http://i.senguo.cc/fruitzone/imgcallback",
@@ -588,7 +598,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
 
 	# 获取评论
-	def get_comments(self, shop_id, page=0, page_size=5):
+	def get_comments(self, shop_id, page=0, page_size=5, anonymous=True):
 		comments_new = {}
 		comments_result = []
 		comments_array  = []
@@ -603,26 +613,32 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		comments_count = comments_list.count()-page*page_size
 		comments = comments_list.offset(page*page_size).limit(page_size).all()
 		for item in comments:
-			comments_new['comments']      = item[0]
-			comments_new['create_date']   = item[1]
-			comments_new['order_num']     = item[2]
-			comments_new['comment_reply'] = item[3]
-			comments_new['order_id']      = item[4]
-			comments_new['comment_has_done'] = item[5]
-			comments_new['headimgurl']    = item[6]
-			comments_new['nickname']      = item[7]
-			comments_new['delete_reason'] = item[8]
-			comments_new['decline_reason']= item[9]
+			# comments_new['comments']      = item[0]
+			# comments_new['create_date']   = item[1]
+			# comments_new['order_num']     = item[2]
+			# comments_new['comment_reply'] = item[3]
+			# comments_new['order_id']      = item[4]
+			# comments_new['comment_has_done'] = item[5]
+			# comments_new['headimgurl']    = item[6]
+			if anonymous:
+				if len(item[7]) == 0:
+					comments_new['nickname'] = '***'
+				else:
+					comments_new['nickname'] = item[7][0]+'***'+item[7][-1]
+			else:
+				comments_new['nickname']  = item[7]
+			# comments_new['delete_reason'] = item[8]
+			# comments_new['decline_reason']= item[9]
 			if item[10]:
 				comments_new['comment_imgUrl'] = item[10].split(',')
 			else:
 				comments_new['comment_imgUrl'] = None
-			comments_new['commodity_quality'] = item[11]
-			comments_new['send_speed']        = item[12]
-			comments_new['shop_service']      = item[13]
+			# comments_new['commodity_quality'] = item[11]
+			# comments_new['send_speed']        = item[12]
+			# comments_new['shop_service']      = item[13]
 			comments_new['index'] = comments_count
-			comments_result.append(comments_new)
-			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],\
+			# comments_result.append(comments_new)
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],comments_new['nickname'],item[8],item[9],\
 				comments_new['comment_imgUrl'],item[11],item[12],item[13],comments_new['index']])
 			comments_count = comments_count-1
 		# print("[_AccountBaseHandler]comments_result:",comments_result)
@@ -1069,21 +1085,21 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 6)
+				available_balance=order.shop.available_balance,balance_type = 6,shop_province=shop.shop_province)
 			session.add(balance_history)
 
 		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 7)
+				available_balance=order.shop.available_balance,balance_type = 7,shop_province=shop.shop_province)
 			session.add(balance_history)
 
 		#增 与订单总额相等的积分
 		if shop_follow.shop_point == None:
 			shop_follow.shop_point = 0
 			shop_follow.shop_point += totalprice
-			session.commit()
+			session.flush()
 			try:
 				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
 			except:
@@ -1099,14 +1115,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	@classmethod
 	def get_ticket_url(self):
 		access_token = WxOauth2.get_client_access_token()
-		print("[_AccountBaseHandler]get_ticket_url: access_token:",access_token)
+		# print("[_AccountBaseHandler]get_ticket_url: access_token:",access_token)
 		scene_id = self.make_scene_id()
-		print("[_AccountBaseHandler]get_ticket_url: scene_id:",scene_id)
+		# print("[_AccountBaseHandler]get_ticket_url: scene_id:",scene_id)
 		url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={0}'.format(access_token)
 		data = {"action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": scene_id}}}
 		r = requests.post(url,data = json.dumps(data))
 		result = json.loads(r.text)
-		print("[_AccountBaseHandler]get_ticket_url: result:",result)
+		# print("[_AccountBaseHandler]get_ticket_url: result:",result)
 		ticket_url = result.get('url',None)
 		return ticket_url,scene_id
 
@@ -1127,13 +1143,13 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 	# 关闭店铺
 	def shop_close(self):
-		# print("[SuperBaseHandler]Shop close")
+		print("[Timer]Shop Close")
 		session = models.DBSession()
 		try:
 			shops = session.query(models.Shop).filter_by(status = 1).all()
 		except:
 			shops = None
-			# print("[SuperBaseHandler]Shop close error")
+			print("[Timer]Shop Close Error")
 		if shops:
 			for shop in shops:
 				shop_code = shop.shop_code
@@ -1141,18 +1157,16 @@ class SuperBaseHandler(_AccountBaseHandler):
 				fruits = shop.fruits
 				menus = shop.menus
 				fans_count = shop.fans_count
-				# print("[SuperBaseHandler]shop_close: menus:",menus)
 				create_date = shop.create_date_timestamp
 				x = datetime.datetime.fromtimestamp(create_date)
-				# print("[SuperBaseHandler]shop_close: x:",x)
 				now = datetime.datetime.now()
 				days = (now - x).days
 				if days > 14:
 					if (shop_code == 'not set') or (fans_count < 2) or (len(fruits)+len(menus) == 0):
 						shop.status = 0
-						# print("[SuperBaseHandler]Shop closed, Shop ID:",shop_id)
+						print("[Timer]Shop Close Success, shop_id:",shop_id)
 			session.commit()
-			# print("[SuperBaseHandler]Shop close done")
+			print("[Timer]Shop Close Done")
 			# return self.send_success(close_shop_list = close_shop_list)
 
 	def get_login_url(self):
@@ -1364,6 +1378,30 @@ class AdminBaseHandler(_AccountBaseHandler):
 			d["SH2s"] = SH2s
 			data.append(d)
 		return data
+		
+	def getYouzan(self,action,appid,appsecret):
+		if action == "goods":
+			method = "kdt.items.get"
+		elif action == "shop":
+			method = "kdt.shop.basic.get"
+		AppID = appid
+		AppSecert = appsecret
+		app_id = AppID
+		_format = "json"
+		method  = method
+		sign_method = "md5"
+		timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
+		v = "1.0"
+		method = method
+		sign = AppSecert+"app_id"+app_id+"format"+_format+"method"+method+"sign_method"+sign_method+"timestamp"+timestamp+"v"+v+AppSecert
+		sign = hashlib.md5(sign.encode('utf-8')).hexdigest()
+		link_param = "&timestamp="+timestamp+"&v="+v+"&app_id="+app_id+"&method="+method+"&sign_method"+sign_method+"&format"+_format
+		link = "https://open.koudaitong.com/api/entry?sign="+sign+link_param
+		r = requests.get(link)
+		result = r.json()
+		if "response" not in result:
+			return None
+		return result["response"]
 
 # 配送员端基类方法
 class StaffBaseHandler(_AccountBaseHandler):
@@ -1734,7 +1772,7 @@ class WxOauth2:
 		# 	access_token["create_timestamp"] = datetime.datetime.now().timestamp()
 		# 	return data["access_token"]
 		# else:
-		# 	#print("获取微信接口调用的access_token出错：", data)
+		# 	#print("[WxOauth2]get_client_access_token: get access_token error:", data)
 		# 	return None
 		try:
 			access_token = session.query(models.AccessToken).first()

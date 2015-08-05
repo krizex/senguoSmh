@@ -140,42 +140,90 @@ class ShopManage(SuperBaseHandler):
 		action = self.args["action"]
 		flag=self.args["flag"]
 
+		# woody 8.3
+		level = self.current_user.level
+		shop_province = self.current_user.province
 
-		#add by jyj 2015-6-16
-		output_data_count = {}
-		output_data_count["status_5_count"] = self.session.query(models.Shop).count()
-		output_data_count["status_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_code == 'not set').count()
-		output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2).count()
-		output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1).count()
-		output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3).count()
-		output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count()
+		# level = 1
+		# shop_province = 420000
 
-		output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
-		output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
+		if level == 0:
+			#add by jyj 2015-6-16
+			output_data_count = {}
+			output_data_count["status_5_count"] = self.session.query(models.Shop).count()
+			output_data_count["status_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_code == 'not set').count()
+			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2).count()
+			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1).count()
+			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count()
 
-		output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4])).count()
-		output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
-		output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
-		##
+			output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
+			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
+
+			output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4])).count()
+			output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
+			output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
+
+			# print("[SuperShopManage]output_data_count:",output_data_count)
+			##
+
+		elif level == 1:
+			output_data_count = {}
+			output_data_count["status_5_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
+			output_data_count["status_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_code == 'not set',models.Shop.shop_province==shop_province).count()
+			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0,models.Shop.shop_province==shop_province).count()
+
+			output_data_count["auth_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
+			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4]),models.Shop.shop_province==shop_province).count()
+
+			output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4]),models.Shop.shop_province==shop_province).count()
+			output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3]),models.Shop.shop_province==shop_province).count()
+			output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0,models.Shop.shop_province==shop_province).count()
+		else:
+			return self.send_fail('level error')
 
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
 		if 'search' in self.args:
 			from sqlalchemy.sql import or_
 			search = self.args["search"]
 			if search == '':
-				q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
-				shops = q.order_by(models.Shop.id).all()
+				if level == 0:
+					q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
+					shops = q.order_by(models.Shop.id).all()
+				elif level == 1:
+					q = self.session.query(models.Shop).filter_by(shop_province=shop_province)
+					shops = q.order_by(models.Shop.id).all()
+				else:
+					return self.send_fail('level error')
 			else:
-				q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
-				  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
-				  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				   	models.Shop.shop_code !='not set',models.Shop.status !=0 ).all()
-				shops = q
+				if level == 0:
+					q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
+					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
+					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					shops = q
+				elif level == 1:
+					q = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province,or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
+					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
+					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					shops = q
+				else:
+					return self.send_fail('level error')
+
 		else:
 		#add6.4pm
-			q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
-			shops = q.order_by(models.Shop.id).all()
-
+			if level == 0:
+				q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
+				shops = q.order_by(models.Shop.id).all()
+			elif level == 1:
+				q = self.session.query(models.Shop).filter_by(shop_province=shop_province)
+				shops = q.order_by(models.Shop.id).all()
+			else:
+				return self.send_fail('level error')
 		shop_auth = self.args["shop_auth"]
 		shop_status = self.args["shop_status"]
 		shop_sort_key = self.args["shop_sort_key"]
@@ -200,9 +248,9 @@ class ShopManage(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		##
-		#print("[SuperShopManage]shops count:",len(shops))
+		# print("[SuperShopManage]shops count:",len(shops))
 
-		#add6.5pm shop_status:
+		# add6.5pm shop_status:
 		if shop_status == 5:
 			pass
 		elif shop_status == 4:
@@ -218,7 +266,7 @@ class ShopManage(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		##
-		#print("[SuperShopManage]shops count:",len(shops))
+		# print("[SuperShopManage]shops count:",len(shops))
 
 		#add 6.4pm sort:
 		if shop_sort_key == 0:
@@ -253,13 +301,24 @@ class ShopManage(SuperBaseHandler):
 		#add 6.6pm by jyj,search_count:
 		search_count = len(shops)
 		##
-
 		q_temp = self.session.query(models.ShopTemp)
 		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
 		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
 		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
-		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
-		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+
+		if level == 0:
+			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
+			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+			shop_count = self.session.query(models.Shop).count()
+		elif level == 1:
+			comment = self.session.query(models.Order).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(
+				models.Shop.shop_province==shop_province,models.Order.status==6).count()
+
+			auth_apply=self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
+				).filter(models.Shop.shop_province==shop_province,models.ShopAuthenticate.has_done==0).distinct(models.ShopAuthenticate.id).count()
+			shop_count = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
+		else:
+			return self.send_fail('level error')
 
 		count = {
 			"all_temp": q_temp.count(),
@@ -269,7 +328,7 @@ class ShopManage(SuperBaseHandler):
 
 			#change 6.6pm by jyj
 			#old:"all" : q.count(),
-			"all": self.session.query(models.Shop).count(),
+			"all":shop_count,
 			##
 
 			"comment":comment,
@@ -292,12 +351,12 @@ class ShopManage(SuperBaseHandler):
 			output_data = []
 			for shop in shops:
 				data = {}
-				##############################################################################
+				####################
 				# user's subscribe
-				##############################################################################
+				####################
 				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
 				wx_openid = account_info.wx_openid
-				#subscribe = user_subscribe(wx_openid)
+				# subscribe = user_subscribe(wx_openid)
 				data["subscribe"] = account_info.subscribe
 
 				data["shop_trademark_url"] = shop.shop_trademark_url
@@ -340,6 +399,9 @@ class ShopManage(SuperBaseHandler):
 				satisfy = 0.0
 				shop_id = shop.id
 				orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+				commodity_quality = 0
+				send_speed = 0
+				shop_service = 0
 				if orders:
 					q = self.session.query(func.avg(models.Order.commodity_quality),\
 						func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
@@ -375,9 +437,9 @@ class ShopManage(SuperBaseHandler):
 				output_data.append(data)
 
 			if flag==1:
-				return self.render("superAdmin/shop-manage.html",output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
-			else:
-				return self.send_success(output_data=output_data,output_data_count=output_data_count)
+				return self.render("superAdmin/shop-manage.html",level=level,output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
+			else :
+				return self.send_success(output_data=output_data,level=level,output_data_count=output_data_count)
 
 		else:
 			return self.send_error(404)
@@ -388,9 +450,10 @@ class ShopManage(SuperBaseHandler):
 		shops = q.all()
 		# shops 是models.Shop实例的列表
 
-		return self.render("superAdmin/apply-manage.html", context=dict(
+		return self.render("superAdmin/apply-manage.html",level=level,context=dict(
 				shops = shops,subpage='apply', action=action,
 				count=count))
+
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action")
 	def post(self):
@@ -421,7 +484,7 @@ class ShopManage(SuperBaseHandler):
 		if not self.args["new_status"] in models.SHOP_STATUS.DATA_LIST:
 			return self.send_error(400)
 
-		#首个店铺未进行店铺认证不允许再申请店铺
+		# 首个店铺未进行店铺认证不允许再申请店铺
 		try:
 			shops = self.session.query(models.Shop).filter_by(admin_id=shop_temp.admin_id)
 		except:
@@ -462,36 +525,39 @@ class ShopManage(SuperBaseHandler):
 
 			reason = "原因：" + message_reason
 
-			# weixin message
+			# 发送店铺申请失败微信模板消息通知用户
 			WxOauth2.fail_template_msg(account_info.wx_openid, shop_temp.shop_name,
-									   account_info.realname, account_info.phone,reason)  # 发送微信模板消息通知用户
+									   account_info.realname, account_info.phone,reason)
 
 		else:
 			if shop_temp.shop_status == 2:
 				return self.send_fail("店铺已经申请成功")
 
 			# 添加系统默认的时间段
-			period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
-			period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
-			period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
+			period1 = models.Period(name="中午", start_time="12:00", end_time="13:00") #按时达默认时间段
+			period2 = models.Period(name="下午", start_time="17:00", end_time="18:00") #按时达默认时间段
+			period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00") #按时达默认时间段
+			period4 = models.Period(name="中午", start_time="12:00", end_time="13:00", config_type=1) #自提时间默认时间段
+			period5 = models.Period(name="下午", start_time="17:00", end_time="18:00", config_type=1) #自提时间默认时间段
+			period6 = models.Period(name="晚上", start_time="21:00", end_time="22:00", config_type=1) #自提时间默认时间段
 
 			config = models.Config()
-			config.periods.extend([period1, period2, period3])
+			config.periods.extend([period1, period2, period3, period4, period5, period6])
 			marketing = models.Marketing()
 
 			# 把临时表的内容复制到shop表
 			shop = models.Shop(admin_id=shop_temp.admin_id,
-										 shop_name=shop_temp.shop_name,
-										 create_date_timestamp=shop_temp.create_date_timestamp,
-										 shop_trademark_url=shop_temp.shop_trademark_url,
-										 shop_service_area=shop_temp.shop_service_area,
-										 shop_province=shop_temp.shop_province,
-										 shop_city=shop_temp.shop_city,
-										 shop_address_detail=shop_temp.shop_address_detail,
-										 have_offline_entity=shop_temp.have_offline_entity,
-										 shop_intro=shop_temp.shop_intro,
-										 lat=shop_temp.lat,
-										 lon=shop_temp.lon)
+							   shop_name=shop_temp.shop_name,
+							   create_date_timestamp=shop_temp.create_date_timestamp,
+							   shop_trademark_url=shop_temp.shop_trademark_url,
+							   shop_service_area=shop_temp.shop_service_area,
+							   shop_province=shop_temp.shop_province,
+							   shop_city=shop_temp.shop_city,
+							   shop_address_detail=shop_temp.shop_address_detail,
+							   have_offline_entity=shop_temp.have_offline_entity,
+							   shop_intro=shop_temp.shop_intro,
+							   lat=shop_temp.lat,
+							   lon=shop_temp.lon)
 			shop.config = config
 			shop.marketing = marketing
 			# shop.create_date_timestamp = time.time()
@@ -499,7 +565,7 @@ class ShopManage(SuperBaseHandler):
 			shop.shop_start_timestamp = time.time()
 			self.session.add(shop)
 			shop_temp.shop_status = 2
-			self.session.commit()  # 要commit一次才有shop.id
+			self.session.flush()  # 要flush一次才有shop.id
 
 			######################################################################################
 			# inspect whether staff exited
@@ -509,16 +575,16 @@ class ShopManage(SuperBaseHandler):
 			# print('[SuperShopManage]admin_id:',shop.admin_id)
 			if temp_staff is None:
 				self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
-				self.session.commit()
+			self.session.flush()
 
 			self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
-			self.session.commit()
+			self.session.flush()
 
 			#把管理员同时设为顾客的身份
 			customer_first = self.session.query(models.Customer).get(shop.admin_id)
 			if customer_first is None:
 				self.session.add(models.Customer(id = shop.admin_id,balance = 0,credits = 0,shop_new = 0))
-				self.session.commit()
+			self.session.commit()
 
 			account_info = self.session.query(models.Accountinfo).get(shop_temp.admin_id)
 
@@ -651,13 +717,23 @@ class OrderManage(SuperBaseHandler):
 class User(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		q = self.session.query(models.Accountinfo)
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# print("[SuperUser]shop_province:",shop_province)
+		if level == 0:
+			q = self.session.query(models.Accountinfo)
+		elif level == 1:
+			shop_province = self.code_to_text('province',shop_province)
+			shop_province = shop_province[0:len(shop_province)-1]
+			q = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+		else:
+			return self.send_fail('level error')
 		sum = {}
 		sum["all"] = q.count()
 		sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
 		sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
 		sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
-		return self.render("superAdmin/user.html", sum=sum, context=dict(subpage='user'))
+		return self.render("superAdmin/user.html", sum=sum,level=level, context=dict(subpage='user'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str","inputinfo?:str","page:int")
@@ -665,19 +741,36 @@ class User(SuperBaseHandler):
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 20
-
-		#change by jyj 2015-6-22
-		q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex, \
-					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
+		#woody 8.3
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# print("[SuperUser]shop_province:",shop_province)
+		if level == 0:
+			#change by jyj 2015-6-22
+			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
+					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
+					models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
+		elif level == 1:
+			# shop_province = 420000
+			shop_province = self.code_to_text('province',shop_province)  #将省由code转换为汉字
+			shop_province = shop_province[0:len(shop_province)-1]        #去掉‘省’字
+			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
+					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
+					models.Accountinfo.birthday,"%Y-%m-%d")).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(desc(models.Accountinfo.id))
+		else:
+			return self.send_fail('level error')
 		##
 		if action == "all":
 			pass
 		elif action == "admin":
 			q = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id))
+			# print("[SuperUser]q.count():",q.count())
 		elif action == "customer":
 			q = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id))
+			# print("[SuperUser]q.count():",q.count())
 		elif action == "phone":
 			q = q.filter(models.Accountinfo.phone != '')
+			# print("[SuperUser]q.count():",q.count())
 		# add by jyj 2015-6-23:
 		elif action == "search":
 			inputinfo = self.args["inputinfo"]
@@ -691,8 +784,8 @@ class User(SuperBaseHandler):
 				filter(models.CustomerShopFollow.customer_id == users[i][0]).all()
 			h_names = self.session.query(models.Shop.id,models.Shop.shop_code,models.Shop.shop_name).filter_by(admin_id=users[i][0]).all()
 
-			#add by jyj 2015-6-22
-			#将生日的时间戳转换为日期类型：
+			# add by jyj 2015-6-22
+			# 将生日的时间戳转换为日期类型：
 			if users[i][7] == None:
 				birthday = 0
 			else:
@@ -708,7 +801,9 @@ class User(SuperBaseHandler):
 class IncStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/count-user.html",context=dict(subpage='count',subcount='user'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-user.html",level = level, context=dict(subpage='count',subcount='user'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
@@ -727,17 +822,32 @@ class IncStatic(SuperBaseHandler):
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
 			end_date =datetime.datetime(now.year,now.month,now.day,23,59,59)
-			print("[SuperIncStatic]end_date:",end_date)
+			# print("[SuperIncStatic]end_date:",end_date)
 		else:
 			date = self.monthdelta(datetime.datetime.now(), page)
 			start_date = datetime.datetime(date.year, date.month, 1)
 			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
-			print("[SuperIncStatic]end_date:",end_date)
+			# print("[SuperIncStatic]end_date:",end_date)
 
-		q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
-			filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
-				   models.Accountinfo.create_date_timestamp < end_date.timestamp())
-
+		# woody 8.4
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 1
+		# shop_province = 420000
+		if shop_province:
+			shop_province = self.code_to_text('province',shop_province)
+			shop_province = shop_province[0:len(shop_province)-1]
+		if level == 0:
+			q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
+				filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
+					   models.Accountinfo.create_date_timestamp < end_date.timestamp())
+		elif level == 1:
+			q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
+				filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)),models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
+					   models.Accountinfo.create_date_timestamp < end_date.timestamp())
+		else:
+			return self.send_fail('level error')
+			
 		all_infos = q.all()
 		admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
 		customer_infos = q.filter(exists().where(models.Accountinfo.id == models.Customer.id)).all()
@@ -756,8 +866,12 @@ class IncStatic(SuperBaseHandler):
 		count(admin_infos, 2)
 		count(customer_infos, 3)
 		count(phone_infos, 4)
-
-		total = self.session.query(models.Accountinfo).count()
+		if level == 0:
+			total = self.session.query(models.Accountinfo).count()
+		elif level == 1:
+			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).count()
+		else:
+			return self.send_fail('level error')
 
 		for x in range(1, end_date.day+1)[::-1]:
 			data[x][5] = total
@@ -766,7 +880,13 @@ class IncStatic(SuperBaseHandler):
 		for key in data:
 			l.append((end_date.strftime('%Y-%m-') + str(key), key, data[key][1],
 					  data[key][2], data[key][3], data[key][4], data[key][5]))
-		first_info = self.session.query(models.Accountinfo).first()
+		if level == 0:
+			first_info = self.session.query(models.Accountinfo).first()
+		elif level == 1:
+			first_info = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).first()
+		else:
+			return self.send_fail('level error')
+
 		page_sum = (datetime.datetime.now() - datetime.datetime.
 					fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
 		return self.send_success(data=l[::-1], page_sum=page_sum)
@@ -775,53 +895,109 @@ class IncStatic(SuperBaseHandler):
 class DistributStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/count-attribute.html",context=dict(subpage='count',subcount='attribute'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-attribute.html",level=level, context=dict(subpage='count',subcount='attribute'))
 
 	@tornado.web.authenticated
 	def post(self):
-		total = self.session.query(models.Accountinfo).count()
-		sex = self.session.query(models.Accountinfo.sex, func.count()).order_by(func.count().desc()).group_by(models.Accountinfo.sex).all()
-		province = self.session.query(models.Accountinfo.wx_province, func.count()).order_by(func.count().desc()).\
-			group_by(models.Accountinfo.wx_province).all()
-		city = self.session.query(models.Accountinfo.wx_city, func.count()).order_by(func.count().desc()).\
-			group_by(models.Accountinfo.wx_city).all()
+		# woody 8.4
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 1
+		# shop_province = 420000
+		if level == 0:
+			total = self.session.query(models.Accountinfo).count()
+			sex = self.session.query(models.Accountinfo.sex, func.count()).order_by(func.count().desc()).group_by(models.Accountinfo.sex).all()
+			province = self.session.query(models.Accountinfo.wx_province, func.count()).order_by(func.count().desc()).\
+				group_by(models.Accountinfo.wx_province).all()
+			city = self.session.query(models.Accountinfo.wx_city, func.count()).order_by(func.count().desc()).\
+				group_by(models.Accountinfo.wx_city).all()
+		elif level == 1:
+			shop_province = self.code_to_text('province',shop_province)
+			shop_province = shop_province[0:len(shop_province)-1]
+			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).count()
+			sex = self.session.query(models.Accountinfo.sex, func.count()).order_by(func.count().desc()).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).group_by(models.Accountinfo.sex).all()
+			province = self.session.query(models.Accountinfo.wx_province, func.count()).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(func.count().desc()).\
+				group_by(models.Accountinfo.wx_province).all()
+			city = self.session.query(models.Accountinfo.wx_city, func.count()).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(func.count().desc()).\
+				group_by(models.Accountinfo.wx_city).all()
+		else:
+			return self.send_fail('level error')
+
 		return self.send_success(total=total, sex=sex, province=province, city=city)
 
 # 统计 - 店铺数据
 class ShopStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("superAdmin/count-shop.html",context=dict(subpage='count',subcount='shop'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-shop.html",level=level,context=dict(subpage='count',subcount='shop'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
 	def post(self):
 		action = self.args["action"]
-
+		# woody 8.4 
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 0
+		# shop_province = 420000
 		if action == "num":
 			return self.num()
 
 		elif action == "province":
-			provinces = self.session.query(models.Shop.shop_province, func.count()).\
-				group_by(models.Shop.shop_province).order_by(func.count().desc()).all()
+			if level == 0:
+				provinces = self.session.query(models.Shop.shop_province, func.count()).\
+							group_by(models.Shop.shop_province).\
+							order_by(func.count().desc()).all()
+			elif level == 1:
+				provinces = self.session.query(models.Shop.shop_province, func.count()).\
+							filter(models.Shop.shop_province==shop_province).\
+							group_by(models.Shop.shop_province).\
+							order_by(func.count().desc()).all()
+			else:
+				return self.send_fail('level error')
 			data = []
 			for province in provinces:
-				data.append((dis_dict[province[0]]["name"], province[1]))
+				if dis_dict.get(province[0],None):
+					data.append((dis_dict[province[0]]["name"], province[1]))
+				else:
+					data.append((None,province[1]))
 
 		elif action == "city":
-			cities = self.session.query(models.Shop.shop_city, func.count()).\
-				group_by(models.Shop.shop_city).order_by(func.count().desc()).all()
+			if level == 0:
+				cities = self.session.query(models.Shop.shop_city, func.count()).\
+						 group_by(models.Shop.shop_city).\
+						 order_by(func.count().desc()).all()
+			elif level == 1:
+				cities = self.session.query(models.Shop.shop_city, func.count()).\
+						 filter(models.Shop.shop_province==shop_province).\
+						 group_by(models.Shop.shop_city).\
+						 order_by(func.count().desc()).all()
+			else:
+				return self.send_fail('level error')
 			data = []
 			for city in cities:
 				code = city[0]
-				if "city" in dis_dict[city[0]//10000*10000]:
-					name = dis_dict[city[0]//10000*10000]["city"][code]["name"]
+				if code:
+					if "city" in dis_dict[city[0]//10000*10000]:
+						name = dis_dict[city[0]//10000*10000]["city"][code]["name"]
+					else:
+						name = dis_dict[city[0]]["name"]
+					data.append((name, city[1]))
 				else:
-					name = dis_dict[city[0]]["name"]
-				data.append((name, city[1]))
+					data.append((None,None))
 		else:
 			return self.send_fail()
-		total = self.session.query(models.Shop).count()
+		if level == 0:
+			total = self.session.query(models.Shop).count()
+		elif level == 1:
+			total = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
+		else:
+			return self.send_fail('level error')
 		return self.send_success(data=data, total=total)
 
 	@SuperBaseHandler.check_arguments("page:int")
@@ -838,17 +1014,38 @@ class ShopStatic(SuperBaseHandler):
 			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
 
 		# 日订单数，日总订单金额
-		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
-			filter(models.Order.create_date >= start_date,
-				   models.Order.create_date <= end_date,models.Order.status !=0).\
-			group_by(func.year(models.Order.create_date),
-					 func.month(models.Order.create_date),
-					 func.day(models.Order.create_date)).\
-			order_by(models.Order.create_date.desc()).all()
+		# woody 8.4
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 1
+		# shop_province = 420000
+		if level ==0:
+			s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
+				filter(models.Order.create_date >= start_date,
+					   models.Order.create_date <= end_date,models.Order.status !=0).\
+				group_by(func.year(models.Order.create_date),
+						 func.month(models.Order.create_date),
+						 func.day(models.Order.create_date)).\
+				order_by(models.Order.create_date.desc()).all()
 
-		# 总订单数
-		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
-			filter(models.Order.create_date <=end_date,models.Order.status != 0).all()
+			# 总订单数
+			total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
+				filter(models.Order.create_date <=end_date,models.Order.status != 0).all()
+		elif level == 1:
+			s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).join(models.Shop,models.Order.shop_id == models.Shop.id).\
+				filter(models.Order.create_date >= start_date,
+					   models.Order.create_date <= end_date,models.Order.status !=0,models.Shop.shop_province ==shop_province).distinct(models.Order.id).\
+				group_by(func.year(models.Order.create_date),
+						 func.month(models.Order.create_date),
+						 func.day(models.Order.create_date)).\
+				order_by(models.Order.create_date.desc()).all()
+
+			# 总订单数
+			total = self.session.query(func.sum(models.Order.totalPrice), func.count()).join(models.Shop,models.Order.shop_id == models.Shop.id).\
+				filter(models.Order.create_date <=end_date,models.Order.status != 0,models.Shop.shop_province==shop_province).distinct(models.Order.id).all()
+		else:
+			return self.send_fail('level error')
+
 		total = list(total[0])
 
 		data = []
@@ -887,7 +1084,9 @@ class ShopStatic(SuperBaseHandler):
 # add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
 	def get(self):
-		return self.render("superAdmin/count-order.html",context=dict(subcount='orderstatic'))
+		# woody
+		level = self.current_user.level
+		return self.render("superAdmin/count-order.html",level=level,context=dict(subcount='orderstatic'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action:str")
@@ -902,8 +1101,20 @@ class OrderStatic(SuperBaseHandler):
 	def order_time(self):
 
 		type = self.args["type"]
-		q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
-				filter(not_(models.Order.status.in_([-1,0])))
+		# woody 8.4
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 1
+		# shop_province = 420000
+		if level == 0:
+			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
+					filter(not_(models.Order.status.in_([-1,0])))
+		elif level==1:
+			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).join(
+				models.Shop,models.Order.shop_id==models.Shop.id).filter(not_(models.Order.status.in_([-1,0])),models.Shop.shop_province==shop_province)
+		else:
+			return self.send_fail('level error')
+
 		if type == 1:  # 累计数据
 			pass
 		elif type == 2:  # 昨天数据
@@ -930,8 +1141,21 @@ class OrderStatic(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("type:int")
 	def receive_time(self):
 		type = self.args["type"]
-		q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
-			filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,models.Shop.id == models.Config.id)
+		# woody 8.4
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 1
+		# shop_province = 420000
+		if level == 0:
+			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
+				filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,models.Shop.id == models.Config.id)
+		elif level == 1:
+			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).join(models.Shop,
+				models.Order.shop_id==models.Shop.id).filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,
+				models.Shop.id == models.Config.id,models.Shop.shop_province==shop_province)
+		else:
+			return self.send_fail('level error')
+
 		if type == 1:
 			orders = q.all()
 		elif type == 2:
@@ -949,8 +1173,8 @@ class OrderStatic(SuperBaseHandler):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				if order[1].hour + (order[1].minute+order[3])//60 == 24:
-					data[0] += 1
+				if order[1].hour + (order[1].minute+order[3])//60 >= 24:
+					data[order[1].hour + (order[1].minute+order[3])//60 - 24] += 1
 				else:
 					data[order[1].hour + (order[1].minute+order[3])//60] += 1
 			else:  # 按时达收货时间估计
@@ -969,6 +1193,7 @@ class Comment(SuperBaseHandler):
 	def get(self):
 		data = []
 		order_info = {}
+		level = self.current_user.level
 		#apply_list = self.session.query(models.CommentApply).filter_by(has_done = 0).all()
 		apply_list = self.session.query(models.CommentApply).order_by(desc(models.CommentApply.create_date)).all()
 		apply_count = self.session.query(models.CommentApply).filter(models.CommentApply.has_done==0).count()
@@ -1008,7 +1233,7 @@ class Comment(SuperBaseHandler):
 			"auth_apply":auth_apply
 			}
 		# return self.send_success(data = data)
-		self.render('superAdmin/shop-comment-apply.html',context=dict(count = count,subpage="comment",subpage2="",data=data))
+		self.render('superAdmin/shop-comment-apply.html',level=level,context=dict(count = count,subpage="comment",subpage2="",data=data))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id:int','decline_reason?:str')
@@ -1045,21 +1270,35 @@ class CommentInfo(SuperBaseHandler):
 		page = 0
 		ajaxFlag = self.args["ajaxFlag"]
 
-		order_list =  self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+		# woody 8.3
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 1
+		# shop_province = 420000
 
-		all_comment_order = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
-		all_count = all_comment_order.count()
-		full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
-		img_count = all_comment_order.filter(models.Order.comment_imgUrl.like('http:%')).count()
+		if level == 0:
+			order_list =  self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+			all_comment_order = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
+			all_count = all_comment_order.count()
+			full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
+			img_count = all_comment_order.filter(models.Order.comment_imgUrl.like('http:%')).count()
+		elif level == 1:
+			order_list = self.session.query(models.Order).join(models.Shop,models.Order.shop_id==models.Shop.id).filter(models.Order.status==6,models.Shop.shop_province==shop_province
+				).distinct(models.Order.id).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
+			all_comment_order = self.session.query(models.Order).join(models.Shop,models.Order.shop_id==models.Shop.id).filter(models.Order.status==6,models.Shop.shop_province==shop_province
+				).distinct(models.Order.id).order_by(desc(models.Order.comment_create_date))
+			all_count = all_comment_order.count()
+			full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
+			img_count = all_comment_order.filter(models.Order.comment_imgUrl.like('http:%')).count()
+		else:
+			return self.send_fail('level error')
 
 		for order in order_list:
 			data = {}
 			comment_image_list = []
-
 			data["all_count"] = all_count
 			data["full_count"] = full_count
 			data["img_count"] = img_count
-
 			data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 						filter(models.Accountinfo.id == order.customer_id).first()[0]
 			data["nickname"] = self.session.query(models.Accountinfo.nickname).\
@@ -1130,10 +1369,18 @@ class CommentInfo(SuperBaseHandler):
 
 
 		q_temp = self.session.query(models.ShopTemp).count()
-		all_shop = self.session.query(models.Shop).count()
-		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
-		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
-
+		if level == 0:
+			all_shop = self.session.query(models.Shop).count()
+			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
+			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+		elif level == 1:
+			all_shop = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
+			comment = self.session.query(models.Order).join(models.Shop,models.Order.shop_id==models.Shop.id).filter(models.Order.status==6,
+				models.Shop.shop_province==shop_province).distinct(models.Order.id).count()
+			auth_apply = self.session.query(models.ShopAuthenticate,models.ShopAuthenticate.shop_id==models.Shop.id).filter(models.ShopAuthenticate.has_done==0,
+				models.Shop.shop_province == shop_province).distinct(models.ShopAuthenticate.id).count()
+		else:
+			return self.send_fail('level error')
 		count = {
 			"all_temp": q_temp,
 			"all": all_shop,
@@ -1142,7 +1389,7 @@ class CommentInfo(SuperBaseHandler):
 			}
 
 		if ajaxFlag != '1':
-			self.render('superAdmin/shop-comment-info.html',output_data = output_data,page_sum = page_sum,context=dict(count = count,subpage="comment",subpage2="info"))
+			self.render('superAdmin/shop-comment-info.html',output_data = output_data,level=level,page_sum = page_sum,context=dict(count = count,subpage="comment",subpage2="info"))
 		else:
 			return self.send_success(page_sum = page_sum)
 	@tornado.web.authenticated
@@ -1155,8 +1402,14 @@ class CommentInfo(SuperBaseHandler):
 		output_data_tmp = []
 		output_data = []
 
-		order_list_data = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
-
+		# woody 8.3
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		if level == 0:
+			order_list_data = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
+		elif level == 1:
+			order_list_data = self.session.query(models.Order).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Order.status==6,
+				models.Shop.shop_province==shop_province).distinct(models.Order.id).order_by(desc(models.Order.comment_create_date))
 		if action == 'all':
 			order_list = order_list_data.offset(page*page_size).limit(page_size).all()
 			for order in order_list:
@@ -1403,14 +1656,29 @@ class ShopAuthenticate(SuperBaseHandler):
 		page=int(self.args["page"])
 		page_size = 10
 		page_area = page*page_size
+		# woody 8.3
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		# level = 1
+		# shop_province = 420000
+		if  level == 0:
+			apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 
-		apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			q_temp = self.session.query(models.ShopTemp).count()
+			all_shop = self.session.query(models.Shop).count()
+			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 
-		q_temp = self.session.query(models.ShopTemp).count()
-		all_shop = self.session.query(models.Shop).count()
-		comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
-
-		auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+		elif level == 1:
+			apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
+				).filter(models.Shop.shop_province==shop_province).distinct(models.ShopAuthenticate.id
+				).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			q_temp = self.session.query(models.ShopTemp).count()
+			all_shop = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
+			comment = self.session.query(models.Order).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Order.status==6,
+				models.Shop.shop_province==shop_province).distinct(models.Order.id).count()
+			auth_apply = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id).filter(
+				models.ShopAuthenticate.has_done==0,models.Shop.shop_province==shop_province).distinct(models.ShopAuthenticate.id).count()
 
 		count = {
 			"all_temp": q_temp,
@@ -1419,7 +1687,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			"auth_apply":auth_apply
 			}
 
-		self.render('superAdmin/shop-cert-apply.html',context=dict(count = count,subpage="auth",auth_apply_list=apply_list))
+		self.render('superAdmin/shop-cert-apply.html',level=level,context=dict(count = count,subpage="auth",auth_apply_list=apply_list))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id','decline_reason?:str','apply_type:int')
@@ -1456,12 +1724,12 @@ class ShopAuthenticate(SuperBaseHandler):
 					shop.shop_auth = 3
 					shop.auth_change = 2
 			self.session.commit()
-			#发送短消息提醒
+			# 发送短消息提醒
 			if shop.shop_phone:
 				shop_auth_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				print("[ShopAuthenticate]no phone")
-			#发送模板消息
+			# 发送模板消息
 			self.shop_auth_msg(shop,True)
 		elif action == 'decline':
 			decline_reason = self.args['decline_reason']
@@ -1470,12 +1738,12 @@ class ShopAuthenticate(SuperBaseHandler):
 			if shop.auth_change == 0:
 				shop.shop_auth = 0
 			self.session.commit()
-			#发送短消息提醒
+			# 发送短消息提醒
 			if shop.shop_phone:
 				shop_auth_fail_msg(shop.shop_phone,shop.admin.accountinfo.nickname,shop.shop_name)
 			else:
 				print("[ShopAuthenticate]no phone")
-			#发送模板消息
+			# 发送模板消息
 			self.shop_auth_msg(shop,False)
 		else:
 			return self.send_error(404)
@@ -1485,20 +1753,29 @@ class ShopAuthenticate(SuperBaseHandler):
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-
 		cash_list = []
 		cash_on = 0
 		total_balance = 0
 		cash_success = 0
 		cash_times = 0
 		cash_persons = 0
-		cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
-		shop_list = self.session.query(models.Shop).all()
-
-		cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
-		person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
-		# print("[SuperBalance]person_num",person_num)
-
+		# 当level=1时，表示区域管理员，只显示该区域的数据
+		# woody 8.3
+		super_admin = self.current_user
+		# print("[SuperBalance]Current super_admin:",super_admin)
+		level = super_admin.level
+		shop_province = super_admin.province
+		# print("[SuperBalance]Current super_admin level:",level,", shop_province:",shop_province)
+		if level == 0:
+			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
+			shop_list = self.session.query(models.Shop).all()
+			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
+			person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
+		elif level == 1:
+			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0,shop_province=shop_province).all()
+			shop_list = self.session.query(models.Shop).filter_by(shop_province=shop_province).all()
+			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1,shop_province=shop_province).all()
+			person_num = self.session.query(models.ApplyCashHistory).filter_by(shop_province=shop_province).distinct(models.ApplyCashHistory.shop_id).count()
 		for item in cash_list:
 			cash_on += item.value
 		for item in shop_list:
@@ -1507,11 +1784,16 @@ class Balance(SuperBaseHandler):
 		cash_on = format(cash_on,'.2f')
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
-			total_balance=total_balance,cash_on=cash_on,context=dict(page="detail"))
+			total_balance=total_balance,cash_on=cash_on,level=level,context=dict(page="detail"))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','page:int')
 	def post(self):
+		# 当level=1时，表示区域管理员，只显示该区域的数据
+		# woody 8.3
+		level = self.current_user.level
+		shop_province = self.current_user.province
+
 		history = []
 		page =0
 		page_size=15
@@ -1525,15 +1807,31 @@ class Balance(SuperBaseHandler):
 		persons = 0
 		pay = 0
 		left = 0
-		balance_history = self.session.query(models.BalanceHistory).order_by(desc(models.BalanceHistory.create_time))
+		if level == 0:
+			balance_history = self.session.query(models.BalanceHistory).order_by(desc(models.BalanceHistory.create_time))
+		elif level == 1:
+			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_province=shop_province).order_by(desc(models.BalanceHistory.create_time))
+		else:
+			return self.send_fail('level error')
 		if action == 'all_history':
 			history_list =balance_history .offset(page*page_size).limit(page_size).all()
 			count = balance_history.count()
 		elif action == 'recharge':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).\
-			order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 0).all()
-			q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1,is_cancel = 0).all()
+			if level == 0:
+				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).\
+				order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 0).all()
+				q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1,is_cancel = 0).all()
+			elif level == 1:
+				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=0,shop_province=shop_province).order_by(
+					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=0,
+					shop_province=shop_province).all()
+				q1= self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type=1,is_cancel=0,
+					shop_province=shop_province).all()
+			else:
+				return self.send_fail('level error')
+
 			if q[0][0]:
 				total =q[0][0]
 			count = q[0][1]
@@ -1544,19 +1842,38 @@ class Balance(SuperBaseHandler):
 			left = float(total)-float(pay)
 			left = format(left,'.2f')
 		elif action == 'online':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3)\
-			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
-			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
+			if level == 0:
+				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3)\
+				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
+				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
+			elif level == 1:
+				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=3,shop_province=shop_province).order_by(
+					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
+					shop_province=shop_province).all()
+				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
+					shop_province=shop_province).count()
+			else:
+				return self.send_fail('level error')
 			if q[0][0]:
 				total = q[0][0]
 			total = format(total,'.2f')
 			count = q[0][1]
 			times = count
 		elif action == 'cash_history':
-			history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 2)\
-			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 2).all()
+			if level == 0:
+				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 2)\
+				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 2).all()
+			elif level == 1:
+				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=2,shop_province=shop_province).order_by(
+					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=2,
+					shop_province=shop_province).all()
+			else:
+				return self.send_fail('level error')
+
 			count =q[0][1]
 			if q[0][0]:
 				total=q[0][0]
@@ -1565,8 +1882,15 @@ class Balance(SuperBaseHandler):
 
 		# add by jyj 2015-7-4:
 		elif action == 'balance_list':
-			balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
-					filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+			if level == 0:
+				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
+						filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+			elif level == 1:
+				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
+					models.BalanceHistory.shop_totalPrice >=0,models.BalanceHistory.shop_totalPrice != None,models.Shop.shop_province==shop_province).order_by(
+					desc(models.BalanceHistory.create_time))
+			else:
+				return self.send_fail('level error')
 			history_list = balance_list.all()
 
 			exist_id_list = []
@@ -1582,7 +1906,6 @@ class Balance(SuperBaseHandler):
 						item["latest_time"] = tmp[1].strftime("%Y-%m-%d %H:%M:%S")
 						item["total_price"] =  tmp[2]
 						item["shop_code"] = shop_code[0][0]
-
 						history.append(item)
 				else:
 					pass
@@ -1624,6 +1947,9 @@ class ApplyCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action:?str','page?:int')
 	def get(self):
+		level = self.current_user.level
+		if level == 1:
+			return self.send_error(404)
 		page_size =10
 		page_sum =0
 		count = 0
@@ -1686,7 +2012,7 @@ class ApplyCash(SuperBaseHandler):
 			return self.send_success(history=history,page_sum=page_sum)
 		else:
 			return self.render('superAdmin/balance-apply.html',history=history,page_sum=page_sum,all_cash=all_cash,person_cash=person_cash,\
-				company_cash=company_cash,all_num=all_num,person_num=person_num,company_num=company_num,context=dict(page='cash'))
+				company_cash=company_cash,all_num=all_num,person_num=person_num,level=level,company_num=company_num,context=dict(page='cash'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
@@ -1721,7 +2047,7 @@ class ApplyCash(SuperBaseHandler):
 			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
 				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = \
-				self.current_user.id,available_balance = shop.available_balance)
+				self.current_user.id,available_balance = shop.available_balance,shop_province=shop.shop_province)
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success(history = history)
@@ -1730,54 +2056,10 @@ class ApplyCash(SuperBaseHandler):
 class CheckCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-
-		####################
-		#借用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
-		# shop_list_query = self.session.query(models.Shop.id,models.Shop.shop_name).filter(models.Shop.shop_status == 2).all()
-		
-		# shop_id_list = []
-		# shop_id_name_dict = {}
-		
-		# for item in shop_list_query:
-		# 	shop_id_list.append(item[0])
-		# 	shop_id_name_dict[str(item[0])] = item[1]
-
-		# for id_item in shop_id_name_dict:
-		# 	shop_id = int(id_item)
-		# 	shop_balance_history_query = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_id == shop_id).all()
-
-
-		# str0 = "可提现额度入账：订单1234002379121完成"
-		# i = -1
-		# while i < len(str0):
-		# 	i += 1
-		# 	if  str0[i].isdigit():
-		# 		break
-		# print(str0[-(len(str0) - i) : -2])
-
-		# balance_type_1_3 = []
-		# balance_type_6_7 = []
-		# query_list = self.session.query(models.BalanceHistory.create_time,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([1,3])).all()
-		# for item in query_list:
-		# 	for i in range(1,7):
-
-		# 	for i in range(len(item[1])):
-		# 		# print("@@@@",i,item[1])
-		# 		if item[1][i].isdigit():
-		# 			break
-
-		# 	balance_type_1_3.append(item[1][i : len(item[1])])
-
-
-		# query_list = self.session.query(models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([6,7])).all()
-		# for item in query_list:
-		# 	balance_type_6_7.append(item[0])
-
-		# print("@@@@@",balance_type_1_3)
-		# print("@@@@@",len(balance_type_1_3))
-
-		####################
-		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
+		level = self.current_user.level
+		if level == 1:
+			return self.send_error(404)
+		return self.render("superAdmin/balance-check.html",level=level,context=dict(page='check'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','data','page?:int')
@@ -1980,6 +2262,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 		history_list = []
 		history = []
 
+		level = self.current_user.level
 		shop_id = self.session.query(models.Shop.id).filter(models.Shop.shop_code == shop_code).first()
 		shop_id = shop_id[0]
 
@@ -2007,8 +2290,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 
 			history.append({'shop_name':shop_name,'balance':shop_totalBalance,'cash_applying':cash_applying})
 
-
-		return self.render("superAdmin/shop-balance-detail.html",history = history,context=dict())
+		return self.render("superAdmin/shop-balance-detail.html",level=level,history = history,context=dict())
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('page:int')
@@ -2080,3 +2362,90 @@ class ShopBalanceDetail(SuperBaseHandler):
 					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying})
 		return self.send_success(page_sum=page_sum,history = history)
 ##
+
+# 分省代理管理员
+class AdminManager(SuperBaseHandler):
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action')
+	def get(self):
+		action   = self.args.get('action',None)
+		if_super = None
+		level = self.current_user.level
+		try:
+			if_super = self.session.query(models.SuperAdmin).filter_by(id=self.current_user.id,level=0).first()
+		except:
+			if_super = None
+		if action == 'add_admin':
+			if not if_super:
+				return self.send_fail(403)
+			return self.render('superAdmin/add-admin.html',level=level, if_super=if_super)
+		elif action == "check_admin":
+			return self.render('superAdmin/check-admin.html',level=level,if_super=if_super)
+		else:
+			return self.send_error(404)
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action','admin_id?:int','province?:str')
+	def post(self):
+		if "admin_id" in self.args:
+			admin_id = int(self.args['admin_id'])
+		action   = self.args.get('action',None)
+		if action == 'search_user':
+			info = self.session.query(models.Accountinfo).filter_by(id=admin_id).first()
+			if not info:
+				return self.send_fail('该用户还不是森果的用户，无法添加其为超级管理员')
+			data = dict(imgurl=info.headimgurl_small,nickname=info.nickname,realname=info.realname,id=info.id,phone=info.phone)
+			return self.send_success(data = data)
+		elif action == 'add_admin':
+			province = self.args.get('province',None)
+			if not province:
+				self.send_fail('请输入该用户所管辖的省份')
+			super_admin = self.session.query(models.SuperAdmin).filter_by(id = admin_id).first()
+			if super_admin:
+				return self.send_fail('该用户已经是超级管理员，请勿重复添加')
+			info = self.session.query(models.Accountinfo).filter_by(id=admin_id).first()
+			if not info:
+				return self.send_fail('该用户还不是森果的用户，无法添加其为超级管理员')
+			super_admin = models.SuperAdmin()
+			super_admin.id = info.id
+			super_admin.account_info = info
+			super_admin.level = 1
+			super_admin.province = province
+			self.session.add(super_admin)
+			self.session.commit()
+			return self.send_success()
+		elif action == 'all':
+			data = []
+			admin_list = self.session.query(models.SuperAdmin).filter_by(level=1).all()
+			for item in admin_list:
+				temp = {}
+				province = self.code_to_text("province",item.province) if  item.province else ""
+				temp['realname'] = item.accountinfo.realname
+				temp['id']       = item.id
+				temp['phone']    = item.accountinfo.phone
+				temp['province'] = province
+				temp['headimgurl_small'] = item.accountinfo.headimgurl_small
+				data.append(temp)
+			return self.send_success(data = data)
+		elif action == 'filter':
+			province = self.args['province']
+			data = []
+			admin_list = self.session.query(models.SuperAdmin).filter_by(level=1,province=province).all()
+			for item in admin_list:
+				temp = {}
+				temp['realname'] = item.accountinfo.realname
+				temp['id']       = item.id
+				temp['phone']    = item.accountinfo.phone
+				temp['province'] = item.province
+				temp['headimgurl_small'] = item.accountinfo.headimgurl_small
+				data.append(temp)
+			return self.send_success(data = data)
+		elif action == 'cancel':
+			super_admin = self.session.query(models.SuperAdmin).filter_by(id=admin_id).first()
+			if not super_admin:
+				return self.send_fail('该管理员不存在')
+			super_admin.level = -1
+			self.session.commit()
+			return self.send_success()
+		else:
+			return self.send_error(404)

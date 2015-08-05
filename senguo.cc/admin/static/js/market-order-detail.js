@@ -108,7 +108,7 @@ function statusText(n){
             break;
         case 5:
             if(_type==3){
-                $("#status-txt").text('完成自取');
+                $("#status-txt").text('自取完成');
             }else{
                 $("#status-txt").text('已送达');
             }
