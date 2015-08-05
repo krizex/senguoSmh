@@ -62,7 +62,7 @@ $(document).ready(function(){
                 $('.add-period').empty().append($item).show();
             });
         }
-        else return Tip('至多能添加20个时段！');
+        else return Tip('最多能添加20个时段！');
     });
     $(document).on('click','.add-time-period',function(){//添加确认
         var $this=$(this);

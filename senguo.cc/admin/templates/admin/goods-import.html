@@ -1,7 +1,7 @@
 {% extends 'goods-set-base.html' %}
 {% block setcontent %}
 <div class="wrap-goods-groups">
-    <p class="c333 mt10 choose-text"><a href="{{reverse_url('adminGoods')}}" class="c999 cancel-add-goods">商品管理</a><span class="c333"> / 添加新商品</span></p>
+    <p class="c333 mt10 choose-text"><a href="{{reverse_url('adminGoods')}}" class="c999 cancel-add-goods">商品管理</a><span class="c333"> / 导入商品</span></p>
     <div class="subnav-box clearfix mt20">
         <ul class="subnav pull-left import-type">
             <li class="text-center active"><a href="javascript:;">从其他店铺导入</a></li>
@@ -10,9 +10,9 @@
     </div>
     <div class="wrap-tabcont">
         <div class="tab-item tab1">
-            <p class="c666 mt20">可以将同一卖家帐号下多店铺管理中心里其他店铺的商品数据导入进来，省去新建商品的麻烦</p>
+            <p class="c666 mt20">可以将同一卖家帐号下多店铺管理中心里其他店铺的商品数据导入到当前店铺，省去新建商品的麻烦</p>
             <div class="mt20 group">
-                <div class="cate-title mt2 c333">选择店铺 : </div>
+                <div class="cate-title mt2 c333">选择店铺：</div>
                 <div class="dropdown slide-down-select pull-left mt2 import-drop-down">
                     <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
                         <em title="" class="pull-left shop_name" data-id="{{shop_list[0]['id']}}">{{shop_list[0]['name']}}</em>
@@ -29,15 +29,30 @@
             </div>
         </div>
         <div class="tab-item tab2 hidden">
-            <p class="mt20 c666">可以将淘点点、有赞、饿了么等其他平台的数据导入进来</p>
-            <div class="wrap-url mt20">
-                <span class="c333">输入URL : </span>
+            <p class="mt20 c666">可以将淘点点、有赞、饿了么等其他平台的商品数据导入到当前店铺。请选择平台导入：</p>
+            <ul class="plant-list group mt10">
+                <!-- <li class="active" data-id="1">淘点点</li>
+                <li data-id="2">饿了么</li>
+                <li data-id="3">美团外卖</li> -->
+                <li class="active" data-id="4">有赞（口袋通）</li>
+                <!-- <li data-id="5">乐外卖</li> -->
+            </ul>
+            <div class="wrap-url mt20 hidden">
+                <span class="c333">输入URL：</span>
                 <input type="text" class="create-ipt" id="shop_url" placeholder="请输入其他平台店铺地址"/>
                 <input type="button" class="get-code" value="开始导入"/>
             </div>
+            <div class="input-box youzan-box">
+                <span class="create-text c333">有赞AppID：</span>
+                <input type="text" class="create-ipt mt10" placeholder="请填写有赞AppID" id="youzan-appid"/><br>
+                <span class="create-text c333">有赞AppSecert：</span>
+                <input type="text" class="create-ipt mt10" placeholder="请填写有赞AppSecert" id="youzan-appsecret"/><br>
+                <p class="mt10"><a href="http://koudaitong.com/v2/apps/open/setting" target="_blank">*点击此处</a>查看您的有赞AppID及AppSecert。请注意开启“有赞开放API”，每一个有赞店铺对应唯一的AppID及AppSecret</p>
+                <p class="mt10"><input type="button" class="get-code" value="开始导入" id="check-youzan"/></p>
+            </div>
         </div>
         <div class="">
-            <p class="c333 mt20">选择商品 : </p>
+            <p class="c333 mt20">选择商品：</p>
             <div class="wrap-shop-goods mt10">
                 <ul class="shop-list group">
                     <li>
@@ -54,7 +69,7 @@
                         <i class="checkbox-btn fl"></i>
                         <span class="f12 fl ml10">全选</span>
                     </span>
-                   <!--  <div class="page-switch">
+                    <!-- <div class="page-switch">
                         <a href="javascript:;" class="prev-page">上一页</a>
                         <span class="page-num"><span id="cur_page">1</span>/<span id="total_page">3</span></span>
                         <a href="javascript:;" class="next-page">下一页</a>

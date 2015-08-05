@@ -134,7 +134,7 @@ function bind_wx(){
     $.postJson(url,args,
         function (res) {
             if (res.success) {
-                console.log(typeof(res.wx_bind));
+                //console.log(typeof(res.wx_bind));
                 if(res.wx_bind == true){
                     confirmBox('您已绑定微信账号，是否确认更换当前绑定微信账号？//(ㄒoㄒ)//');
                 }

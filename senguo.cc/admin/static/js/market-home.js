@@ -607,7 +607,7 @@ function goodsNum(target,action){
     var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
     var change_num=relate*unit_num*1;
     var limit_num=parseInt(parent.attr('data-limit'));
-    console.log(storage);
+    //console.log(storage);
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {

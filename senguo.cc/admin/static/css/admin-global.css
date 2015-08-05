@@ -197,7 +197,8 @@ img{border:none;}
 .text-orange2{color:#ec6b10}
 .text-black{color:#222;}
 .text-center{text-align:center;}
-.text-link{color: #6ba4ef!important;}
+.text-link{color:#6ba4ef!important;}
+.name-link{color:#6ba4ef!important;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
 
 .bg-green{background:#44b549 !important;;}
 .bg-pink{background:#ff6563 !important;}
