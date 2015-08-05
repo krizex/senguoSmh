@@ -76,8 +76,14 @@ $(document).ready(function(){
     page=0;
     if($(this).hasClass("active")){//切换排序方式
         $(this).children(".turn").toggleClass("rotate-img2");
+        if($(this).children(".turn").hasClass("rotate-img2")){
+            $(this).attr("data-id",$(this).attr("data-id")+"_desc");
+        }else{
+            $(this).attr("data-id",$(this).attr("data-sid"));
+        }
+        getGoodsItem("all",0);
     }else{
-        $(".goods_list").find(".turn").removeClass("rotate-img2");
+        //$(".goods_list").find(".turn").removeClass("rotate-img2");
         $(".goods_list li").removeClass("active").eq(index).addClass("active");
         $(".goods_list .tab-line").css("left",25*index+"%");
         getGoodsItem("all",0);
