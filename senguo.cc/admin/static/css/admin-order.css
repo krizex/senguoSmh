@@ -217,10 +217,11 @@
 .self-dropdown .caret{margin-top: 0!important;}
 .self-address{width: 444px !important;}
 .set-default{height: 28px;line-height: 28px;font-size: 14px;margin-left: 15px;}
-.address-text{display: inline-block;vertical-align: middle;max-width: 320px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+.address-text{display: inline-block;vertical-align: middle;position:relative;top:-4px;max-width: 320px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
 .pt20{padding-top: 20px !important;}
 .w700{width: 700px !important;}
 .self-address-list>li{height: 25px;overflow: hidden;}
+.self-address-list>li:hover{background-color: #eee;} 
 
 
 
