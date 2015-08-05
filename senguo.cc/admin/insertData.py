@@ -57,6 +57,29 @@ session = models.DBSession()
 #           shop.shop_address="湖北省武汉市"+address
 #       session.commit()
 
+def balancehistory_province():
+	balance_history = session.query(models.BalanceHistory).all()
+	for item in balance_history:
+		shop_id = item.shop_id
+		shop = session.query(models.Shop).filter_by(id=shop_id).first()
+		if shop:
+			item.shop_province = shop.shop_province
+		print(item.shop_province)
+	session.commit()
+
+def applycash_province():
+	apply_history = session.query(models.ApplyCashHistory).all()
+	for item in apply_history:
+		shop_id = item.shop_id
+		shop = session.query(models.Shop).filter_by(id=shop_id).first()
+		if shop:
+			item.shop_province = shop.shop_province
+		print(item.shop_province)
+	session.commit()
+
+
+g = multiprocessing.Process(name='applycash_province',target=applycash_province)
+
 # 插入店铺自提时间段
 def addSome():
     print("Start Inserting Self Period to Database...")

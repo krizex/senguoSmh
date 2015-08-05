@@ -35,22 +35,22 @@ class Login(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('scene_id')
 	def post(self):
 		scene_id = int(self.args['scene_id'])
-		print("[ApplyLogin]scene_id:",scene_id)
+		# print("[ApplyLogin]scene_id:",scene_id)
 		scene_openid = self.session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
 		if scene_openid:
 			openid = scene_openid.openid
-			print("[ApplyLogin]openid:",openid)
+			# print("[ApplyLogin]openid:",openid)
 			accountinfo = self.session.query(models.Accountinfo).filter_by(wx_openid = openid).first()
 			if accountinfo:
-				print("[ApplyLogin]accountinfo:",accountinfo)
+				# print("[ApplyLogin]accountinfo:",accountinfo)
 				customer = self.session.query(models.ShopAdmin).filter_by(id = accountinfo.id).first()
 				if customer:
-					print("[ApplyLogin]customer:",customer)
+					# print("[ApplyLogin]customer:",customer)
 					self.set_current_user(customer,domain=ROOT_HOST_NAME)
-			print("[ApplyLogin]True")
+			# print("[ApplyLogin]True")
 			return self.send_success(login=True)
 		else:
-			print("[ApplyLogin]False")
+			# print("[ApplyLogin]False")
 			return self.send_success(login=False)
 
 # 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
@@ -64,7 +64,7 @@ class WxMessage(CustomerBaseHandler):
 		if self.check_signature(signature,timestamp,nonce):
 			return self.write(echostr)
 		else:
-			print('[ApplyWxMessage]the message is not from weixin')
+			# print('[ApplyWxMessage]the message is not from weixin')
 			return self.write(echostr)
 
 	@CustomerBaseHandler.check_arguments('ToUserName?:str','FromUserName?:str','CreateTime?','MsgType?','Event?','EventKey?','Ticket?')
@@ -75,11 +75,11 @@ class WxMessage(CustomerBaseHandler):
 			import xml.etree.ElementTree as ET
 		raw_data = self.request.body
 		data = self.xmlToDic(raw_data) 
-		print('[ApplyWxMessage]raw_data:',raw_data)
+		# print('[ApplyWxMessage]raw_data:',raw_data)
 		openid = data.get('FromUserName',None)
 		event  = data.get('Event',None)
 		eventkey = data.get('EventKey',None)
-		print('[ApplyWxMessage]openid:',openid,', event:',event,', eventkey:',eventkey)
+		# print('[ApplyWxMessage]openid:',openid,', event:',event,', eventkey:',eventkey)
 
 		openid = data.get('FromUserName',None)
 		event  = data.get('Event',None)
@@ -115,7 +115,7 @@ class WxMessage(CustomerBaseHandler):
 				reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
 			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 			reply = ET.tostring(reply,encoding='utf8',method='xml')
-			print("[ApplyWxMessage]reply:",reply)
+			# print("[ApplyWxMessage]reply:",reply)
 			self.write(reply)
 
 		if event == 'subscribe' or 'scan' or 'SCAN':
@@ -130,18 +130,18 @@ class WxMessage(CustomerBaseHandler):
 				scene_openid = models.Scene_Openid(scene_id=scene_id,openid=openid)
 				self.session.add(scene_openid)
 				self.session.commit()
-				print("[ApplyWxMessage]scene_openid.id:",scene_openid.id,", scene_openid.scene_id:",scene_openid.scene_id,", scene_openid.openid:",scene_openid.openid)
+				# print("[ApplyWxMessage]scene_openid.id:",scene_openid.id,", scene_openid.scene_id:",scene_openid.scene_id,", scene_openid.openid:",scene_openid.openid)
 
 				customer = self.session.query(models.Accountinfo).filter_by(wx_openid=openid).first()
 				if customer:
 					print('[ApplyWxMessage]customer exists')
 				else:
-					print('[ApplyWxMessage]add new customer')
+					# print('[ApplyWxMessage]add new customer')
 					access_token = WxOauth2.get_client_access_token()
 					url = 'https://api.weixin.qq.com/cgi-bin/user/info?access_token={0}&openid={1}'.format(access_token,openid)
 					r = requests.get(url)
 					wx_userinfo = json.loads(r.text)
-					print("[ApplyWxMessage]wx_userinfo:",wx_userinfo)
+					# print("[ApplyWxMessage]wx_userinfo:",wx_userinfo)
 					if wx_userinfo["headimgurl"] not in [None,'']:
 						headimgurl = wx_userinfo.get("headimgurl",None)
 						headimgurl_small = wx_userinfo.get("headimgurl",None)[0:-1] + "132"
@@ -265,7 +265,6 @@ class CreateShop(AdminBaseHandler):
 		data = self.args["data"]
 		if not action or not data:
 			return self.send_error(403)
-
 		try:
 			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
 		except:
@@ -316,7 +315,7 @@ class CreateShop(AdminBaseHandler):
 				shops = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.shop_name.like("%%%s%%" %shop_name)).all()
 			except:
 				shops = None
-				print("[AdminCreateShop]Shop search error")
+				# print("[AdminCreateShop]Shop search error")
 
 			data=[]
 			if shops:
@@ -380,6 +379,7 @@ class CreateShop(AdminBaseHandler):
 
 			return self.send_success()
 
+	# 生成店铺号（2位随机字母+6位随机数字）
 	def make_shop_code(self):
 		chars = 'abcdefghijklmnopqrstuvwxyz'
 		nums = '0123456789'
@@ -411,7 +411,7 @@ class CreateShop(AdminBaseHandler):
 		shop.marketing = marketing
 		shop.shop_start_timestamp = time.time()
 		self.session.add(shop)
-		self.session.flush()  # 要commit一次才有shop.id
+		self.session.flush()  # 要flush一次才有shop.id
 		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
 		self.session.commit()
 

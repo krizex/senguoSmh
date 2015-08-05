@@ -936,34 +936,35 @@ class Market(CustomerBaseHandler):
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
-		print('[CustomerMarket]shop.admin.id:',shop.admin.id)
+		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 
 		if shop.admin.has_mp:
-			print('[CustomerMarket]login shop.admin.has_mp')
+			# print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
 			admin_id    = shop.admin.id
 			wx_openid   = self.session.query(models.Mp_customer_link).first()
 			if wx_openid:
-				print('[CustomerMarket]whatttttttttttttttt')
+				# print('[CustomerMarket]whatttttttttttttttt')
+				pass
 			else:
 				#生成wx_openid
 				if self.is_wexin_browser():
-					print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+					# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 					wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
-					print(wx_openid,appid,appsecret)
+					# print(wx_openid,appid,appsecret)
 					if wx_openid:
 						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
 						self.session.add(admin_customer_openid)
 						self.session.commit()
-					else:
-						print('[CustomerMarket]get openid failed')
-				else:
-					print('[CustomerMarket]haahahahah')
+					# else:
+					#	print('[CustomerMarket]get openid failed')
+				# else:
+				#	print('[CustomerMarket]haahahahah')
 		else:
 			pass
-		print('[CustomerMarket]success??????????????????????????????????')
+		# print('[CustomerMarket]success??????????????????????????????????')
 
 		# self.current_shop = shop
 		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
@@ -1003,7 +1004,7 @@ class Market(CustomerBaseHandler):
 					# print("[CustomerMarket]add phone point:",now,shop_follow.shop_point,'phone')
 
 			self.session.add(shop_follow)
-			self.session.commit()
+			self.session.flush()
 
 			point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop.id)
 			if point_history:
@@ -1087,20 +1088,20 @@ class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
 	def get_customer_openid(self,appid,appsecret,shop_code):
-		print('[CustomerMarket]login in get_customer_openid')
+		# print('[CustomerMarket]login in get_customer_openid')
 		code = self.args.get('code',None)
-		print('[CustomerMarket]code:',code)
+		# print('[CustomerMarket]code:',code)
 		if len(code) == 0:
-			print('[CustomerMarket]get code')
+			# print('[CustomerMarket]get code')
 			appid = 'wx0ed17cdc9020a96e'
 			redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
 			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
-			print("[CustomerMarket]url:",url)
+			# print("[CustomerMarket]url:",url)
 			return self.redirect(url)
 		else:
-			print('[CustomerMarket]has code')
+			# print('[CustomerMarket]has code')
 			wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
-			print("[CustomerMarket]wx_openid:",wx_openid)
+			# print("[CustomerMarket]wx_openid:",wx_openid)
 			return wx_openid
 
 	@tornado.web.authenticated
@@ -1315,8 +1316,8 @@ class Market(CustomerBaseHandler):
 				print("[CustomerMarket]favour: point_history None")
 
 			if shop_follow:
-					shop_follow.shop_point += 1
-					now = datetime.datetime.now()
+				shop_follow.shop_point += 1
+				now = datetime.datetime.now()
 			else:
 				print('[CustomerMarket]favour: customer_shop_follow not found')
 		# 商品赞+1
@@ -1388,7 +1389,7 @@ class Cart(CustomerBaseHandler):
 
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
-
+		self.updatecoupon(customer_id)
 		show_balance = False
 		balance_value = 0
 		storages = {}
@@ -1453,7 +1454,7 @@ class Cart(CustomerBaseHandler):
 		coupon_number=0
 		for x in q:
 			now_date=int(time.time())
-			if now_date<x.effective_time:
+			if now_date<x.effective_time or now_date>x.uneffective_time:
 				pass
 			else:
 				coupon_number+=1
@@ -1823,10 +1824,10 @@ class Cart(CustomerBaseHandler):
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-		print('[CustomerCart]Order commit success, order ID:',order.id)
-		#如果提交订单是在线支付 ，则 将订单号存入 cookie
+		# print('[CustomerCart]Order commit success, order ID:',order.id)
+		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
+			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
@@ -1835,23 +1836,23 @@ class Cart(CustomerBaseHandler):
 			self.session.commit()
 			time.sleep(0.5)
 			if online_type == 'wx':
-				print("[CustomerCart]online_type:",online_type)
+				# print("[CustomerCart]online_type:",online_type)
 				success_url = self.reverse_url('onlineWxPay')
 			elif online_type == 'alipay':
-				print("[CustomerCart]online_type:",online_type)
+				# print("[CustomerCart]online_type:",online_type)
 				success_url = self.reverse_url('onlineAliPay')
 			else:
 				print("[CustomerCart]online_type error")
-			print("[CustomerCart]online_type:",online_type,', success_url:',success_url)
+			# print("[CustomerCart]online_type:",online_type,', success_url:',success_url)
 			return self.send_success(success_url=success_url,order_id = order.id)
 
 		# 执行后续的记录修改
-		print('[CustomerCart]before callback')
+		# print('[CustomerCart]before callback')
 		self.cart_callback(order.id)
 		return self.send_success(order_id = order.id)
 
 	def cart_callback(self,order_id):
-		print("[CustomerCart]cart_callback: order_id:",order_id)
+		# print("[CustomerCart]cart_callback: order_id:",order_id)
 		# try:
 		# 	order_id = int(self.args['order_id'])
 		# except:
@@ -1859,7 +1860,7 @@ class Cart(CustomerBaseHandler):
 		# 	return self.send_fail("CartCallback: get order_id error")
 		order = self.session.query(models.Order).filter_by(id = int(order_id)).first()
 		if not order:
-			print("[CustomerCart]cart_callback: order not found")
+			# print("[CustomerCart]cart_callback: order not found")
 			return self.send_fail("[CustomerCart]cart_callback: order not found")
 		totalPrice = order.new_totalprice
 		shop_id = order.shop_id
@@ -1867,21 +1868,21 @@ class Cart(CustomerBaseHandler):
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 		shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
-			print("[CustomerCart]cart_callback: shop/customer not found")
+			# print("[CustomerCart]cart_callback: shop/customer not found")
 			return self.send_fail('[CustomerCart]cart_callback: shop/customer not found')
 		# 送货地址处理
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
 		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
-			print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
 		else:
 			access_token = None
 
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
-			print("[CustomerCart]cart_callback: access_token:",access_token)
+			# print("[CustomerCart]cart_callback: access_token:",access_token)
 			self.send_admin_message(self.session,order,access_token)
 
 		####################################################
@@ -1902,7 +1903,7 @@ class Cart(CustomerBaseHandler):
 			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
-				balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
+				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.flush()
@@ -2215,8 +2216,7 @@ class Order(CustomerBaseHandler):
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.new_totalprice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
-						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = \
-						shop_follow.shop_balance)
+						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province)
 				self.session.add(balance_history)
 			self.session.commit()
 			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -2284,8 +2284,8 @@ class Order(CustomerBaseHandler):
 			# shop_follow.send_speed        = send_speed
 			# shop_follow.shop_service      = shop_service
 
-			self.session.commit()
-			return self.send_success()
+			# self.session.commit()
+			# return self.send_success()
 
 		elif action == "comment":
 			data = self.args["data"]
@@ -2327,18 +2327,18 @@ class Order(CustomerBaseHandler):
 						point_history.each_point = 2
 						notice = '评论成功，积分+2'
 						self.session.add(point_history)
-						self.session.commit()
+						self.session.flush()
 						if imgUrl:
 							point_history.point_type = models.POINT_TYPE.COMMENTIMG
 							point_history.each_point = 2
 							notice = '评论成功，积分+2,评论晒图，积分+2'
 							self.session.add(point_history)
-							self.session.commit()
+							self.session.flush()
 
 			self.session.commit()
 			return self.send_success(notice=notice)
 
-			#need to rocord this poist history?
+			#need to rocord this point history?
 		else:
 			return self.send_error(404)
 
@@ -2390,9 +2390,9 @@ class OrderDetail(CustomerBaseHandler):
 			order.comment_reply = None
 			if apply_list:
 				apply_list.has_done=1
-			self.session.commit()
+			self.session.flush()
 
-			# recover point
+			# 删除评论，减掉用户相应积分
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 				order.customer_id , shop_id = order.shop_id).first()
 			if not shop_follow:
@@ -2645,7 +2645,7 @@ class payTest(CustomerBaseHandler):
 			qr_url=self._qr_pay()
 			# url = pyqrcode.create(res_dict['code_url'])
 			# url.png('really.png',scale = 8)
-			print("[WxQrCharge]qr_url:",qr_url)
+			# print("[WxQrCharge]qr_url:",qr_url)
 			return self.render("customer/qrwxpay.html" , qr_url =qr_url ,totalPrice=totalPrice)
 		else:
 			path_url = self.request.full_url()
@@ -2776,7 +2776,8 @@ class payTest(CustomerBaseHandler):
 			#name = self.current_user.accountinfo.nickname
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id)
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
+				shop_province=shop.shop_province)
 			self.session.add(balance_history)
 			# print("[WxCharge]balance_history:",balance_history)
 			self.session.commit()
