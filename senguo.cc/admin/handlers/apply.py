@@ -265,7 +265,6 @@ class CreateShop(AdminBaseHandler):
 		data = self.args["data"]
 		if not action or not data:
 			return self.send_error(403)
-
 		try:
 			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
 		except:
