@@ -1,5 +1,5 @@
 $(document).ready(function(){
-    $(".container").height($(window).height()-40);
+    $(".container").css("minHeight",$(window).height()-40);
     $("#search-goods").on("click",function(){  //订单搜索
         var id = $("#search-ipt").val();
         if($.trim(id)==""){
@@ -26,6 +26,7 @@ function searchOrder(con){
             if(res.success){
                 $("#goods_name").html(con);
                 $("#goods_num").html(res.count);
+                $("#search_name").html(con);
                 if(res.count>0){
                     $("#search_link").attr("href","/madmin/goods?search="+con);
                     $(".no-goods-box").addClass("hide");

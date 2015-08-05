@@ -2,6 +2,7 @@ var curGoods = null,width = 0,page=0,finished=false,nomore=false,cur_group=null,
 $(document).ready(function(){
     var minheight = $(window).height()-80;
     $(".order-lists").css({minHeight:minheight+"px"});
+    $(".wrap-goods-group").css({minHeight:(minheight+30)+"px"});
     if($.getUrlParam("search")){
         getGoodsItem("goods_search",0,$.getUrlParam("search"));
     }else{

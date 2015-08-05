@@ -1,5 +1,5 @@
 $(document).ready(function(){
-
+    $(".container").css("minHeight",$(window).height()-40);
 }).on("click","#batch_group",function(){
     $("#batch_group").addClass("hide");
     $("#choose_group").removeClass("hide");
