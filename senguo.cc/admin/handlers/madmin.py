@@ -358,6 +358,16 @@ class GoodsSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/goods-search.html")
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("name:str")
+	def post(self):
+		if "name" not in self.args:
+			return self.send_error(403)
+		name = self.args["name"]
+		goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
+		count = goods.count()
+		return self.send_success(count=count)
 #商品新建
 class GoodsAdd(AdminBaseHandler):
 	@tornado.web.authenticated
@@ -415,7 +425,11 @@ class GoodsEdit(AdminBaseHandler):
 #批量管理
 class GoodsBatch(AdminBaseHandler):
 	@tornado.web.authenticated
-	def get(self,_id):
+	@AdminBaseHandler.check_arguments("gid")
+	def get(self):
+		if "gid" in self.args:
+			_id = int(self.args["gid"])
+		print(_id)
 		shop_id     = self.get_secure_cookie("shop_id")
 		if not shop_id :
 			return self.send_error(404)
@@ -438,7 +452,14 @@ class GoodsBatch(AdminBaseHandler):
 		else:
 			group_data.append({'id':0,'name':'','intro':'','num':default_count})
 		group_goods = self.session.query(models.Fruit.id,models.Fruit.name,models.Fruit.img_url).filter_by(shop_id=shop_id,group_id=_id).all()
-		return self.render("m-admin/goods-batch.html",group_data=group_data,group_goods=group_goods)
+		goods_data = []
+		for good in group_goods:
+			if good[2]:
+				imgurl = good[2].split(";")[0]
+			else:
+				imgurl = ""
+			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
+		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data)
 
 
 
