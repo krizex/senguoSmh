@@ -359,7 +359,7 @@ class GoodsSearch(AdminBaseHandler):
 	def get(self):
 		return self.render("m-admin/goods-search.html")
 #商品新建
-class GoodsAdd(AdminBaseHandler):
+class GoodsAdd(AdminBaseHandler):	
 	@tornado.web.authenticated
 	def get(self):
 		token = self.get_qiniu_token("shopAuth_cookie","goodsadd")
