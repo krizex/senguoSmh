@@ -1186,10 +1186,10 @@ class OrderStatic(SuperBaseHandler):
 # added by jyj 2015-8-3
 #统计－销售统计
 class SellStatic(SuperBaseHandler):
-	# fruit_list_query = []
-	# mgoods_list_query = []
 	def get(self):
-		return self.render("superAdmin/count-sell.html",context=dict(subcount='sell'))
+		# 管理员的level(总超级管理员:0,省级代理管理员:1,已删除:-1)
+		level = self.current_user.level
+		return self.render("superAdmin/count-sell.html",level = level,context=dict(subcount='sell'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action:str',"start_date:str","end_date:str")
