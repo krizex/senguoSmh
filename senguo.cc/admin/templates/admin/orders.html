@@ -523,20 +523,20 @@
                         <span class="text-grey9 f14">（添加、编辑、启用、停用自提点，设置自提点位置）</span>
                     </p>
                     <ul class="self-address-list">
-                    {% set arrNum = ['一','二','三','四','五','六','七','八','九','十'] %}
-                    {% for index,self_address in enumerate(self_address_list) %}
+                        {% set arrNum = ['一','二','三','四','五','六','七','八','九','十'] %}
+                        {% for index,self_address in enumerate(self_address_list) %}
                         <li class="group" data-id="{{self_address.id}}" data-lat="{{self_address.lat}}" data-lng="{{self_address.lon}}">
-                            <div class="wrap-operate pull-right">
-                                <a href="javascript:;" class="pull-right set-default">设为默认</a>
+                            {% if self_address.if_default!=2 %}
+                            <div class="wrap-operate pull-right hide">
                                 <a href="javascript:;" class="delete pull-right set-inl-blo"></a>
                                 <a href="javascript:;" class="edit pull-right set-inl-blo to-edit"></a>
                             </div>
+                            {% end %}
                             <a href="javascript:;" class="switch-abtn {% if self_address.active == 1 %}switch-abtn-active{% end %}"><span class="a_on">已</span><span class="a_off">未</span>启用</a>
                             <a href="javascript:;" class="cur_loc"></a>
-                            <span class="text-grey3  address-text"><span>自提点<span class="self-index">{{arrNum[index]}}</span> : <span class="self-addr">{{self_address.address}}</span></span>
-                            <span class="default-address dgreen {% if self_address.if_default != 1 %}hidden{% end %}">（默认自提点）</span></span>
+                            <span class="text-grey3  address-text"><span>自提点<span class="self-index">{{arrNum[index]}}</span> : <span class="self-addr">{{self_address.address}}{% if self_address.if_default==2 %}<span class="dgreen">(店铺地址)</span>{% end %}</span></span></span>
                         </li>
-                       {% end %}
+                        {% end %}
                     </ul>
                     <div class="wrap-shop-address mt10 group">
                         <div class="pull-right">
