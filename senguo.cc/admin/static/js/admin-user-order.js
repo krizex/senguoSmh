@@ -171,6 +171,15 @@ $(document).ready(function(){
     operateSelf("set",$(this).closest("li"));
 }).on("click",".wrap-operate .set-default",function(){
     operateSelf("default",$(this).closest("li"));
+}).on("click",".reProvince",function(){
+    return Tip("自提点只能在店铺所在的省");
+}).on("click",".reCity",function(){
+    return Tip("自提点只能在店铺所在的城市");
+}).on("mouseover",".self-address-list li",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
+    $(this).find(".wrap-operate").removeClass("hide");
+}).on("mouseout",".self-address-list",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
 });
 
 var cur_address = null,edit_flag=false,is_drag = false;
