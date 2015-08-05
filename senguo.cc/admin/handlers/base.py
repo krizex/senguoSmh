@@ -170,16 +170,22 @@ class GlobalBaseHandler(BaseHandler):
 				text += dis_dict[int(code/10000)*10000]["name"]
 				if "city" in dis_dict[int(code/10000)*10000].keys():
 					text += " " + dis_dict[int(code/10000)*10000]["city"][code]["name"]
-				return text
 			else:
-				return None
+				text = ""
+			return text
 
 		elif column_name == "city":
-			if "city" in dis_dict[int(code/10000)*10000].keys():
-				text = dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			if code:
+				if "city" in dis_dict[int(code/10000)*10000].keys():
+					text = dis_dict[int(code/10000)*10000]["city"][code]["name"]
+			else:
+				text = ""
 			return text
 		elif column_name == "province":
-			text = dis_dict[int(code)]["name"]
+			if code:
+				text = dis_dict[int(code)]["name"]
+			else:
+				text = ""
 			return text
 
 		# 将订单状态编码转换为文字显示
