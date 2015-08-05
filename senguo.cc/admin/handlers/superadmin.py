@@ -2012,7 +2012,7 @@ class ApplyCash(SuperBaseHandler):
 			return self.send_success(history=history,page_sum=page_sum)
 		else:
 			return self.render('superAdmin/balance-apply.html',history=history,page_sum=page_sum,all_cash=all_cash,person_cash=person_cash,\
-				company_cash=company_cash,all_num=all_num,person_num=person_num,company_num=company_num,context=dict(page='cash'))
+				company_cash=company_cash,all_num=all_num,person_num=person_num,level=level,company_num=company_num,context=dict(page='cash'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','apply_id?:int','decline_reason?:str')
@@ -2059,7 +2059,7 @@ class CheckCash(SuperBaseHandler):
 		level = self.current_user.level
 		if level == 1:
 			return self.send_error(404)
-		return self.render("superAdmin/balance-check.html",context=dict(page='check'))
+		return self.render("superAdmin/balance-check.html",level=level,context=dict(page='check'))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','data','page?:int')
@@ -2262,6 +2262,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 		history_list = []
 		history = []
 
+		level = self.current_user.level
 		shop_id = self.session.query(models.Shop.id).filter(models.Shop.shop_code == shop_code).first()
 		shop_id = shop_id[0]
 
@@ -2289,8 +2290,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 
 			history.append({'shop_name':shop_name,'balance':shop_totalBalance,'cash_applying':cash_applying})
 
-
-		return self.render("superAdmin/shop-balance-detail.html",history = history,context=dict())
+		return self.render("superAdmin/shop-balance-detail.html",level=level,history = history,context=dict())
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('page:int')
