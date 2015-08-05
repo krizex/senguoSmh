@@ -24,18 +24,18 @@
 		</ul>
 		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart">查看大图</button>
 	</div>
-    	<div class="max-height-roll clearfix mlf20" style="height:400px"><div id="goods_type" class="clearfix"></div></div>
+    	<div class="max-height-roll clearfix mlf20"><div id="goods_type" class="clearfix goods_type_height"></div></div>
 
     	<div id="type_bigchart_bg" class="div-bigchart_bg invisiable"></div>
     	<div class="wrap-bigchart  max-height-roll2 invisiable"  id="type_bigchart">
-	             <p class="tit mt30 txt-center fs16">销售额Top30商品类目<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart_close" title="点击关闭大图">X</button></p>
+	             <p class="tit mt30 txt-center fs16">&nbsp;&nbsp;&nbsp;销售额Top30商品类目<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart_close" title="点击关闭大图">X</button></p>
 	             <p class="choose-time txt-center fs16">
-		              <span class="year-span1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="year1"></span>年</span>
+		              <span class="year-span1"><span class="year1"></span>年</span>
 		              <span class="month-span1"><span class="month1"></span>月</span>
 		              <span class="date-span1"><span class="date1"></span>日</span>
 		              <span class="week-span1 hidden"><span class="week-month1"></span>月<span class="week-date1"></span>日~<span class="week-month1-2"></span>月<span class="week-date1-2"></span>日</span>
 	             </p>
-              	<div id="goods_type_big" class="wrap-pos mt30"></div>
+              		<div id="goods_type_big" class="wrap-pos mt30 goods_type_big_height"></div>
     	</div>
 
     	<hr class="clearfix"/>
@@ -57,14 +57,13 @@
 		            <li><a href="javascript:;" class="sort-week2 text-grey3">按周排</a></li>
 		            <li><a href="javascript:;" class="sort-month2 text-grey3">按月排</a></li>
 		</ul>
-		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_shop_bigchart">查看大图</button>
 	</div>
 
 	<li> 
 	              <div class="tit cate-title">选择商品类目：</div>
 	              <div class="dropdown slide-down-select pull-left w130 wrap-fruit-type">
 		                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
-			                    <em class="pull-left filter_status" id="first_type">AAAA</em>
+			                    <em class="pull-left filter_status" id="first_type"></em>
 			                    <span class="caret pull-right no-margin-left rotate0"></span>
 		                </button>
 		                
@@ -80,39 +79,15 @@
 		                	      </li>
 		                </ul>
 		                <ul class="fruit-type-list hidden" id="fruit-type">
-                	      		<li>aaaaa1</li>
-                	      		<li>aaaaa2</li>
-                	      		<li>aaaaa3</li>
-                	      		<li>aaaaa4</li>
-                	      		<li>aaaaa5</li>
-                	      		<li>aaaaa6</li>
-                	      		<li>aaaaa7</li>
-                	      		<li>aaaaa8</li>
-                	      		<li>aaaaa9</li>
-                	      		<li>aaaaa10</li>
+
                 	      	</ul>
 		                <ul class="fruit-type-list hidden" id="dried-type">
-                	      		<li>dddd1</li>
-                	      		<li>dddd2</li>
-                	      		<li>dddd3</li>
 
                 	      	</ul>
 	            </div>
     	</li>
 
-    	<div class="max-height-roll clearfix mlf20" style="height:400px"><div id="goods_shop" class="clearfix"></div></div>
-
-    	<div id="type_bigchart_bg" class="div-bigchart_bg invisiable"></div>
-    	<div class="wrap-bigchart  max-height-roll2 invisiable"  id="shop_bigchart">
-	             <p class="tit mt30 txt-center fs20">同类商品销售额Top10店铺<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_type_bigchart_close" title="点击关闭大图">X</button></p>
-	             <p class="choose-time txt-center fs16">
-		              <span class="year-span2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="year2"></span>年</span>
-		              <span class="month-span2"><span class="month2"></span>月</span>
-		              <span class="date-span2"><span class="date2"></span>日</span>
-		              <span class="week-span2 hidden"><span class="week-month2"></span>月<span class="week-date2"></span>日~<span class="week-month2-2"></span>月<span class="week-date2-2"></span>日</span>
-	             </p>
-                           <div id="goods_shop_big" class="wrap-pos mt30"></div>
-    	</div>
+    	<div class="max-height-roll3 clearfix mlf20"><div id="goods_shop" class="clearfix chart-height"></div></div>
 
     	<hr class="clearfix"/>
 
@@ -133,7 +108,6 @@
 		            <li><a href="javascript:;" class="sort-week3 text-grey3">按周排</a></li>
 		            <li><a href="javascript:;" class="sort-month3 text-grey3">按月排</a></li>
 		</ul>
-		<button class="btn btn-default area height25 mr15 pull-right" type="button" id="btn_group_bigchart">查看大图</button>
 	</div>
 
 	<li> 
@@ -150,7 +124,7 @@
 		                </ul>
 	            </div>
     	</li>
-    	<div class="max-height-roll clearfix mlf20" style="height:400px"><div id="goods_group" class="clearfix"></div></div>
+    	<div class="max-height-roll3 clearfix mlf20"><div id="goods_group" class="clearfix chart-height"></div></div>
 
 </div>
 {% end %}

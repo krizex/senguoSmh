@@ -24,18 +24,14 @@ var choose_month3 = current_month;
 var choose_date3 = current_date;
 var current_sort_way3 = 1;  
 
-var type_select_second_menu_display = 1;
+var cur_selected_type_id = 1;
+var cur_selected_type_name = ""
+
+var cur_selected_group_id = 1;
+var cur_selected_group_name = "水果";
 
 $(document).ready(function(){
 	    initCharts();
-	    $("#fruit-type").hover(
-	    	function(){
-	    		$(this).fadeIn(400);
-	    	},
-	    	function(){
-	    		$(this).fadeOut(400);
-	    	}
-	    );
 
 }).on('click','.sell-change-list1 li',function(){
 	liveInit();
@@ -455,32 +451,31 @@ $(document).ready(function(){
 	setTimeout(function(){
 		$("#fruit-type").removeClass("hidden").show();
 	}, 100);	
-}).on('mouseleave','#type-select-fruit',function(){
+}).on('mouseout','#type-select-fruit',function(){
 	setTimeout(function(){
 		$("#fruit-type").addClass("hidden");
 	}, 100);
 }).on('mouseover','#fruit-type',function(){
 	setTimeout(function(){
-		$("#fruit-type").removeClass("hidden").show();
+		$("#fruit-type").removeClass("hidden").show();;
 	}, 100);
-}).on('mouseleave','#fruit-type',function(){
+}).on('mouseout','#fruit-type',function(){
 	setTimeout(function(){
 		$("#fruit-type").addClass("hidden");
 	}, 100);
 }).on('mouseover','#type-select-dried',function(){
 	setTimeout(function(){
-		$("#dried-type").removeClass("hidden").show();
+		$("#dried-type").removeClass("hidden").show();;
 	}, 100);	
-}).on('mouseleave','#type-select-dried',function(){
+}).on('mouseout','#type-select-dried',function(){
 	setTimeout(function(){
 		$("#dried-type").addClass("hidden");
 	}, 100);
 }).on('mouseover','#dried-type',function(){
 	setTimeout(function(){
-		$("#dried-type").removeClass("hidden").show();
+		$("#dried-type").removeClass("hidden").show();;
 	}, 100);
-	
-}).on('mouseleave','#dried-type',function(){
+}).on('mouseout','#dried-type',function(){
 	setTimeout(function(){
 		$("#dried-type").addClass("hidden");
 	}, 100);
@@ -495,15 +490,93 @@ $(document).ready(function(){
 }).on('click','#type-select-other',function(){
 	var text  = $(this).text();
 	$("#first_type").text(text);
+	var start_date = new Date();
+	var end_date = new Date();
+	switch(current_sort_way2){
+		case 1:
+			vstart_date = ChooseDate2;
+			end_date = ChooseDate2;
+			break;
+		case 2:
+			start_date = getWeekFirstDate(ChooseDate2);
+			end_date = GetDateN(start_date,6);
+			break;
+		case 3:
+			start_date = new Date(choose_year2,choose_month2-1,1);
+			end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
+			break;
+	}
+	cur_selected_type_id = 2000;
+	show_chart('shop',start_date,end_date,cur_selected_type_id);
 }).on('click','#type-select-fruit2',function(){
 	var text = $(this).text();
 	$('#first_group').text(text);
+	var start_date = new Date();
+	var end_date = new Date();
+	switch(current_sort_way3){
+		case 1:
+			vstart_date = ChooseDate3;
+			end_date = ChooseDate3;
+			break;
+		case 2:
+			start_date = getWeekFirstDate(ChooseDate3);
+			end_date = GetDateN(start_date,6);
+			break;
+		case 3:
+			start_date = new Date(choose_year3,choose_month3-1,1);
+			end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
+			break;
+	}
+	cur_selected_group_id = 1;
+	show_chart('group',start_date,end_date,cur_selected_group_id);
 }).on('click','#type-select-dried2',function(){
 	var text = $(this).text();
 	$('#first_group').text(text);
+	var start_date = new Date();
+	var end_date = new Date();
+	switch(current_sort_way3){
+		case 1:
+			vstart_date = ChooseDate3;
+			end_date = ChooseDate3;
+			break;
+		case 2:
+			start_date = getWeekFirstDate(ChooseDate3);
+			end_date = GetDateN(start_date,6);
+			break;
+		case 3:
+			start_date = new Date(choose_year3,choose_month3-1,1);
+			end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
+			break;
+	}
+	cur_selected_group_id = 2;
+	show_chart('group',start_date,end_date,cur_selected_group_id);
 }).on('click','#type-select-other2',function(){
 	var text = $(this).text();
 	$('#first_group').text(text);
+	var start_date = new Date();
+	var end_date = new Date();
+	switch(current_sort_way3){
+		case 1:
+			vstart_date = ChooseDate3;
+			end_date = ChooseDate3;
+			break;
+		case 2:
+			start_date = getWeekFirstDate(ChooseDate3);
+			end_date = GetDateN(start_date,6);
+			break;
+		case 3:
+			start_date = new Date(choose_year3,choose_month3-1,1);
+			end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
+			break;
+	}
+	cur_selected_group_id = 0;
+	show_chart('group',start_date,end_date,cur_selected_group_id);
+}).on("click","#btn_type_bigchart",function(){
+	$("#type_bigchart_bg").removeClass("invisiable");
+	$("#type_bigchart").removeClass("invisiable");
+}).on("click","#btn_type_bigchart_close",function(){
+	$("#type_bigchart_bg").addClass("invisiable");
+	$("#type_bigchart").addClass("invisiable");
 });
 
 
@@ -713,36 +786,463 @@ function initCharts(){
 	});
 
 	show_chart('type',CurrentDate,CurrentDate);
-	show_chart('shop',CurrentDate,CurrentDate,1);
-	show_chart('group',CurrentDate,CurrentDate,1)
+	show_chart('shop',CurrentDate,CurrentDate,cur_selected_type_id);
+	show_chart('group',CurrentDate,CurrentDate,cur_selected_group_id);
+	
 }
 
 function show_chart(action,start_date,end_date,id){
 	if (id == undefined){
-		id = ''
+		id = '';
 	}
+	var args = {};
+
+	var myChart1 = null;
+	var myChart_1_big = null;
+	var ChartOptions1 = null;
+
+	var myChart2 = null;
+	var ChartOptions2 = null;
+
+	var myChart3 = null;
+	var ChartOptions3 = null;
+
 	var url = '';
 	if(action == 'type'){
-		var args = {
+		args = {
 			action : action,
 			start_date : getDateStr(start_date),
 			end_date : getDateStr(end_date)
 		};
+
+		require.config({
+		       	paths: {
+		            		echarts:'/static/js'
+		        	}
+		});
+		require(
+		             [
+			            'echarts',
+			            'echarts/chart/bar',
+			            'echarts/chart/line',
+			            'echarts/chart/pie'
+		             ],
+		              //按商品类目排序
+	        		function (ec) {
+	            		            myChart1 = ec.init(document.getElementById('goods_type'));
+	            		            myChart1.showLoading({
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
+	            			});
+
+	            		            myChart_1_big = ec.init(document.getElementById('goods_type_big'));
+	            		            myChart_1_big.showLoading({
+	                	            		text: '数据加载中...',
+	                	            		y:200,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
+	            			});
+	            			ChartOptions1 = {
+	            				    title : {
+					        	        subtext: '数值单位：元',
+					        	        x:'center',
+					        	        subtextStyle: {
+						            		color: '#000'          // 副标题文字颜色
+						        }
+					    },
+					    tooltip : {
+						        trigger: 'axis',
+						        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+						            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						        }
+						        
+					    },
+
+					    toolbox: {
+						        show : true,
+						        feature : {
+						            mark : {show: true},
+						            magicType : {show: true, type: []},
+						            restore : {show: true},
+						            saveAsImage : {show: true}
+						        }
+					    },
+					    calculable : true,
+					    xAxis : [
+						        {
+						            show : false,	
+						            type : 'value'
+						        }
+					    ],
+					    yAxis : [
+						        {
+						            type : 'category'
+						        }
+					    ],
+					    series : [
+						        {
+						            name:'销售额',
+						            type:'bar',
+						            stack: '总量',
+						            itemStyle : { 
+						            		normal: {
+						            			label : 
+						            			{
+						            				show: true, 
+						            				position: 'right',
+						            				textStyle : {
+									                            fontWeight : 'bold'
+									             }
+						            			}
+						            		}
+						            	}
+						        }
+						       
+					    	],
+					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+				                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+				                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+				                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				};
+				
+			}	
+
+		);
 	}
-	else if(action == 'shop' || action == 'group'){
-		var args = {
+	else if(action == 'shop'){
+		args = {
 			action : action,
 			start_date : getDateStr(start_date),
 			end_date : getDateStr(end_date),
 			id : id
 		};
+
+		require.config({
+		       	paths: {
+		            		echarts:'/static/js'
+		        	}
+		});
+		require(
+		             [
+			            'echarts',
+			            'echarts/chart/bar',
+			            'echarts/chart/line',
+			            'echarts/chart/pie'
+		             ],
+		              //按商品类目排序
+	        		function (ec) {
+	            		            myChart2 = ec.init(document.getElementById('goods_shop'));
+	            		            myChart2.showLoading({
+	                	            		text: '数据加载中...',
+	                	            		y:220,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
+	            			});
+
+	            			ChartOptions2 = {
+	            				    title : {
+					        	        subtext: '数值单位：元',
+					        	        x:'center',
+					        	        subtextStyle: {
+						            		color: '#000'          // 副标题文字颜色
+						        }
+					    },
+					    tooltip : {
+						        trigger: 'axis',
+						        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+						            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						        }
+						        
+					    },
+
+					    toolbox: {
+						        show : true,
+						        feature : {
+						            mark : {show: true},
+						            magicType : {show: true, type: []},
+						            restore : {show: true},
+						            saveAsImage : {show: true}
+						        }
+					    },
+					    calculable : true,
+					    xAxis : [
+						        {
+						            show : false,	
+						            type : 'value'
+						        }
+					    ],
+					    yAxis : [
+						        {
+						            type : 'category'
+						        }
+					    ],
+					    series : [
+						        {
+						            name:'销售额',
+						            type:'bar',
+						            stack: '总量',
+						            itemStyle : { 
+						            		normal: {
+						            			label : 
+						            			{
+						            				show: true, 
+						            				position: 'right',
+						            				textStyle : {
+									                            fontWeight : 'bold'
+									             }
+						            			}
+						            		}
+						            	}
+						        }
+						       
+					    	],
+					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+				                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+				                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+				                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				};
+				
+			}	
+
+		);
+	}
+	else if (action == 'group'){
+		args = {
+			action : action,
+			start_date : getDateStr(start_date),
+			end_date : getDateStr(end_date),
+			id : id
+		};
+
+		require.config({
+		       	paths: {
+		            		echarts:'/static/js'
+		        	}
+		});
+		require(
+		             [
+			            'echarts',
+			            'echarts/chart/bar',
+			            'echarts/chart/line',
+			            'echarts/chart/pie'
+		             ],
+		              //按商品类目排序
+	        		function (ec) {
+	            		            myChart3 = ec.init(document.getElementById('goods_group'));
+	            		            myChart3.showLoading({
+	                	            		text: '数据加载中...',
+	                	            		y:220,
+    					effect : "ring",
+    					textStyle:{
+    						baseline:'middle',
+    						fontSize:16
+    					}
+	            			});
+
+	            			ChartOptions3 = {
+	            				    title : {
+					        	        subtext: '数值单位：元',
+					        	        x:'center',
+					        	        subtextStyle: {
+						            		color: '#000'          // 副标题文字颜色
+						        }
+					    },
+					    tooltip : {
+						        trigger: 'axis',
+						        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+						            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+						        }
+						        
+					    },
+
+					    toolbox: {
+						        show : true,
+						        feature : {
+						            mark : {show: true},
+						            magicType : {show: true, type: []},
+						            restore : {show: true},
+						            saveAsImage : {show: true}
+						        }
+					    },
+					    calculable : true,
+					    xAxis : [
+						        {
+						            show : false,	
+						            type : 'value'
+						        }
+					    ],
+					    yAxis : [
+						        {
+						            type : 'category'
+						        }
+					    ],
+					    series : [
+						        {
+						            name:'销售额',
+						            type:'bar',
+						            stack: '总量',
+						            itemStyle : { 
+						            		normal: {
+						            			label : 
+						            			{
+						            				show: true, 
+						            				position: 'right',
+						            				textStyle : {
+									                            fontWeight : 'bold'
+									             }
+						            			}
+						            		}
+						            	}
+						        }
+						       
+					    	],
+					    color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
+				                    '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
+				                    '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
+				                    '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
+				};
+				
+			}	
+
+		);
 	}
 	
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
+
 				var output_data = res.output_data;
-				// console.log(output_data);
+				if(action == 'type'){
+					// 显示第一个图表
+					myChart1.hideLoading();
+					myChart_1_big.hideLoading();
+					var type_select_list = res.type_select_list;
+					cur_selected_type_id = type_select_list[0][0].toString();
+					cur_selected_type_name = type_select_list[0][1];
+					$("#first_type").attr("data-id","cur_selected_type_id");
+					$("#first_type").text(cur_selected_type_name);
+
+					// 为第二个图表的下拉按钮添加内容和点击事件
+					$("#fruit-type").empty();
+					$("#dried-type").empty();
+					for (var i = 0;i < type_select_list.length;i++){
+						var item = type_select_list[i];
+
+						if(item[0] < 1000){
+							var li_item = '<li id={{type_id}} data-id={{data_id}} onclick="onTypeItemClick({{type_id}})">{{type_name}}</li>';
+							var render = template.compile(li_item);
+
+							var type_id = 'type' + item[0];
+							var data_id = item[0].toString();
+							var type_name = item[1];
+							var list_item = render({
+								type_id:type_id,
+								data_id:data_id,
+								type_name:type_name
+							});
+							$("#fruit-type").append(list_item);
+						}
+						else if (item[0] > 1000 && item[0] < 2000){
+							var li_item = '<li id={{type_id}} data-id={{data_id}}>{{type_name}}</li>';
+							var render = template.compile(li_item);
+
+							var type_id = 'type' + item[0];
+							var data_id = item[0].toString();
+							var type_name = item[1];
+							var list_item = render({
+								type_id:type_id,
+								data_id:data_id,
+								type_name:type_name
+							});
+							$("#dried-type").append(list_item);
+						}
+					}
+
+					if(output_data.length == 0){
+						var first_words = ''
+						switch(current_sort_way1){
+							case 1:
+								first_words = '今天';
+								break;
+							case 2:
+								first_words = '本周';
+								break;
+							case 3:
+								first_words = '本月';
+								break;
+						}
+						var info = '<p class="info-wrap">'+ first_words + '所有商品总销售额为0~</p>';
+						$("#goods_type").empty().append(info);
+						$("#goods_type_big").empty().append(info);
+						return ;
+					}
+
+					$("#goods_type").css("height",output_data.length*40+105 + "px");
+					$("#goods_type_big").css("height",output_data.length*35+105 + "px");
+					getCount("type",ChartOptions1,myChart1,output_data);
+
+					myChart_1_big.refresh();
+					myChart_1_big.setOption(ChartOptions1);
+					
+
+				}
+				else if (action == 'shop'){
+					myChart2.hideLoading();
+					if(output_data.length == 0){
+						var goods_type = $("#first_type").text();
+						var first_words = ''
+						switch(current_sort_way2){
+							case 1:
+								first_words = '今天';
+								break;
+							case 2:
+								first_words = '本周';
+								break;
+							case 3:
+								first_words = '本月';
+								break;
+						}
+						var info = '<p class="info-wrap">'+ first_words + goods_type + '的总销售额为0~</p>';
+						$("#goods_shop").empty().append(info);
+						return ;
+					}
+					
+					getCount("shop",ChartOptions2,myChart2,output_data);
+				}
+				else if (action == 'group'){
+					myChart3.hideLoading();
+					if(output_data.length == 0){
+						var goods_group = $("#first_group").text();
+						var first_words = ''
+						switch(current_sort_way3){
+							case 1:
+								first_words = '今天';
+								break;
+							case 2:
+								first_words = '本周';
+								break;
+							case 3:
+								first_words = '本月';
+								break;
+						}
+						var info = '<p class="info-wrap">'+ first_words + goods_group + '的总销售额为0~</p>';
+						$("#goods_group").empty().append(info);
+						return ;
+					}
+
+					getCount("group",ChartOptions3,myChart3,output_data);
+				}
 			}
 			else{
 				return Tip(res.error_text);
@@ -752,4 +1252,78 @@ function show_chart(action,start_date,end_date,id){
 	            		return Tip('网络好像不给力呢~ ( >O< ) ~！');
 	            	}
 	);
+}
+
+function  onTypeItemClick(type_id){
+	var first_type = $("#"+type_id.id).text();
+	$("#first_type").text(first_type);
+	var start_date = new Date();
+	var end_date = new Date();
+	switch(current_sort_way2){
+		case 1:
+			vstart_date = ChooseDate2;
+			end_date = ChooseDate2;
+			break;
+		case 2:
+			start_date = getWeekFirstDate(ChooseDate2);
+			end_date = GetDateN(start_date,6);
+			break;
+		case 3:
+			start_date = new Date(choose_year2,choose_month2-1,1);
+			end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
+			break;
+	}
+	cur_selected_type_id = parseInt($("#"+type_id.id).attr("data-id"));
+	show_chart('shop',start_date,end_date,cur_selected_type_id);
+}
+
+function getCount(action,options,myChart,output_data){
+
+	options.xAxis[0].data = []
+	options.yAxis[0].data = [];
+	myChart.clear();
+	if(action == "type"){
+		options.series[0].data = [];
+		for(var i = 0;i < output_data.length;i++){
+			var data = output_data[i];
+			var price = parseFloat(data[1]).toFixed(2);
+			options.yAxis[0].data.push(data[0]);
+			options.series[0].data.push(price);
+		}
+	}
+	else if(action == "shop"){
+		options.series[0].data = [];
+		for(var i = 0;i < output_data.length;i++){
+			var data = output_data[i];
+			var price = parseFloat(data[2]).toFixed(2);
+			// if(data[1].length > 5){
+			// 	options.yAxis[0].data.push(data[1].substr(0,5) + '...');
+			// }
+			// else{
+			options.yAxis[0].data.push(data[1]);
+			// }
+			options.series[0].data.push(price);
+		}
+	}
+	else if(action == "group"){
+		options.series[0].data = [];
+		for(var i = 0;i < output_data.length;i++){
+			var data = output_data[i];
+			var price = parseFloat(data[2]).toFixed(2);
+			// if(data[1].length > 5){
+			// 	options.yAxis[0].data.push(data[1].substr(0,5) + '...');
+			// }
+			// else{
+			options.yAxis[0].data.push(data[1]);
+			// }
+			options.series[0].data.push(price);
+		}
+	}
+	else{
+		return Tip('网络好像不给力呢~ ( >O< ) ~！');
+	}
+
+	myChart.refresh();
+	myChart.setOption(options);
+
 }
