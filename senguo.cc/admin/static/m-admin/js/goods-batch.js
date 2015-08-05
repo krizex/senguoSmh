@@ -53,7 +53,7 @@ function batchGroup(group_id){
         var id = $(this).attr("data-id");
         aIds.push(id);
     });
-    var url="";
+    var url="/admin/goods/all";
     var args={
         action:"batch_group",
         data:{
