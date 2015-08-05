@@ -1085,20 +1085,23 @@ class OrderStatic(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 15
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
-		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size-1)
-		# print("[AdminOrderStatic]start_date:",start_date,", end_date:",end_date)
+		start_date = datetime.datetime(start_date.year,start_date.month,start_date.day,23,59,59)
+		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+		print("[AdminOrderStatic]start_date:",start_date,", end_date:",end_date,end_date-start_date)
 
-		# 日订单数，日总订单金额
+		# 以15天为一次查询，查询:日期，日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
 			filter_by(shop_id=self.current_shop.id).\
-			filter(models.Order.create_date >= start_date,
+			filter(models.Order.create_date > start_date,
 				   models.Order.create_date < end_date,not_(models.Order.status.in_([-1,0]))).\
 			group_by(func.year(models.Order.create_date),
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
+		print(s)
 
 		# 总订单数
+		# 截止到end_date的:总订单总价,总订单数
 		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
 			filter(models.Order.create_date <= end_date).all()
@@ -1128,7 +1131,10 @@ class OrderStatic(AdminBaseHandler):
 		for x in range(0, 15):
 			date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
 			# print("[AdminOrderStatic]date:",date.strftime('%Y-%m-%d'))
+			# print(s[0])
 			# if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
+			if i < len(s):
+				print('haha',s[i][0].strftime('%Y-%m-%d'),date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d')==date.strftime('%Y-%m-%d'))
 			if i < len(s) and (s[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 				if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(float(s[i][2]),'.2f'), format(float(total[0]),'.2f'), s_old[j][1], old_total))
@@ -1227,6 +1233,7 @@ class FollowerStatic(AdminBaseHandler):
 			i = 0
 			for x in range(0, 15):
 				date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
+				print(date)
 				if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total))
 					total -= s[i][1]
