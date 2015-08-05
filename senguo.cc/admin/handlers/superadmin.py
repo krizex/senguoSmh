@@ -744,7 +744,7 @@ class User(SuperBaseHandler):
 		#woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
-		print(shop_province)
+		# print("[SuperUser]shop_province:",shop_province)
 		if level == 0:
 			#change by jyj 2015-6-22
 			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
@@ -764,13 +764,13 @@ class User(SuperBaseHandler):
 			pass
 		elif action == "admin":
 			q = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id))
-			print(q.count())
+			# print("[SuperUser]q.count():",q.count())
 		elif action == "customer":
 			q = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id))
-			print(q.count())
+			# print("[SuperUser]q.count():",q.count())
 		elif action == "phone":
 			q = q.filter(models.Accountinfo.phone != '')
-			print(q.count())
+			# print("[SuperUser]q.count():",q.count())
 		# add by jyj 2015-6-23:
 		elif action == "search":
 			inputinfo = self.args["inputinfo"]
@@ -1762,14 +1762,13 @@ class Balance(SuperBaseHandler):
 		# 当level=1时，表示区域管理员，只显示该区域的数据
 		# woody 8.3
 		super_admin = self.current_user
-		print(super_admin)
+		# print("[SuperBalance]Current super_admin:",super_admin)
 		level = super_admin.level
 		shop_province = super_admin.province
-		print(level,shop_province)
+		# print("[SuperBalance]Current super_admin level:",level,", shop_province:",shop_province)
 		if level == 0:
 			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
 			shop_list = self.session.query(models.Shop).all()
-
 			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
 			person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
 		elif level == 1:
@@ -1907,7 +1906,6 @@ class Balance(SuperBaseHandler):
 						item["latest_time"] = tmp[1].strftime("%Y-%m-%d %H:%M:%S")
 						item["total_price"] =  tmp[2]
 						item["shop_code"] = shop_code[0][0]
-
 						history.append(item)
 				else:
 					pass
