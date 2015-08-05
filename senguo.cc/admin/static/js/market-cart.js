@@ -243,15 +243,11 @@ $(document).ready(function(){
     $this.siblings(".send_type_item").removeClass("active");
     $this.addClass("active").next(".item_period").show();
     if(_type == "self"){
-        if($(".send-now").hasClass("available")){
-           minNow();
-        }else{
-            $('#freight_money').text(0);
-            $('.final_price').text(mathFloat(_total_price));
-            $(".mincharge-send").text(_mincharge_intime);
-            $(".freigh_time").text(_freigh_ontime);
-        }
         todayChoose();
+        $('#freight_money').text(0);
+        $('.final_price').text(mathFloat(_total_price));
+        $(".mincharge-send").text(_mincharge_intime);
+        $(".freigh_time").text(_freigh_ontime);
         $(".mincharge-box").addClass("hidden");     
     }else{
         if($(".ontime_send_day .type-tomorrow").hasClass("active")){
