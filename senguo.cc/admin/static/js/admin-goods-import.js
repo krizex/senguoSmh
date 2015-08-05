@@ -29,7 +29,7 @@ $(document).ready(function(){
     }else{
         var type=parseInt($(".plant-list .active").attr("data-id"));
         if(type==4){
-           checkyouzan($(this)); 
+           importYouzan($(this)); 
         }
         
     }
@@ -76,6 +76,14 @@ var goods_item='<li data-id={{id}}>'+
                         '{{ if charge_types }}<p class="c666">价格{{charge_types["price"]}}元/{{charge_types["unit"]}}</p>{{/if}}'+
                     '</div>'+
                 '</li>';
+var goods_item2='<li>'+
+                    '<i class="checkbox-btn"></i>'+
+                    '<img class="shop-img" src="" alt="店铺logo"/>'+
+                    '<div class="shop-item">'+
+                        '<p class="c333 name" title=""></p>'+
+                        '<p class="c666">价格<span class="price"></span>元/<span class="unit"></span></p>'+
+                    '</div>'+
+                '</li>';
 function getGoods(shop_id){
     var args = {
         action:"get_goods",
@@ -95,7 +103,8 @@ function getGoods(shop_id){
                     logo:good["imgurl"],
                     id:good["id"],
                     name:good["name"],
-                    charge_types:good["charge_types"][0]
+                    charge_types:good["charge_types"][0],
+                    intro:good["intro"]
                 });
                 $(".shop-list").append(html);
              }
@@ -163,18 +172,60 @@ function checkyouzan($btn){
              var goods_list=res.goods_list;
              for(var key in goods_list){
                 var good=goods_list[key];
-                var render=template.compile(goods_item);
-                var html=render({
-                    logo:good["imgurl"],
-                    id:good["id"],
-                    name:good["name"],
-                    charge_types:good["charge_types"][0]
-                });
-                $(".shop-list").append(html);
+                var $item=$(goods_item2);
+                var logo=good["imgurl"];
+                var id=key;
+                var name=good["name"];
+                var charge_types=good["charge_types"][0];
+                var intro=good["intro"];
+                var imgs=good["imgs"];
+                console.log(name);
+                $item.attr({"data-id":key,"data-imgs":imgs,"data-intro":intro,"data-name":name,"data-price":charge_types["price"]});
+                $item.find(".shop-img").attr("src",logo);
+                $item.find(".name").text(name);
+                $item.find(".price").text(charge_types["price"]);
+                $item.find(".unit").text(charge_types["unit"]);
+                $(".shop-list").append($item);
              }
             $btn.attr("data-flag","on");
          }else{
              $btn.attr("data-flag","on");
+            return Tip(res.error_text);
+         }
+    });
+}
+
+function importYouzan($btn){
+    if($btn.attr("data-flag")=="off"){
+        return Tip("请勿重复提交");
+    }
+    var datalist=[];
+    $(".shop-list .active").each(function(){
+        var $this=$(this);
+        var id=$this.attr("data-id");
+        var imgs=$this.attr("data-imgs");
+        var intro=$this.attr("data-intro");
+        var name=$this.attr("data-name");
+        var price=$this.attr("data-price");
+        datalist.push({"intro":intro,"name":name,"price":price,"imgs":imgs});
+    });
+    console.log(datalist);
+    var url = "";
+    var args = {
+        action:"import_youzan",
+        data:{
+            datalist:datalist,
+        }
+    };
+    $btn.attr("data-flag","off");
+    $.postJson(url,args,function(res){
+         if(res.success){
+            Tip("导入成功");
+             setTimeout(function(){
+                 window.location.href='/admin/goods/all';
+             },1500);
+         }else{
+            $btn.attr("data-flag","on");
             return Tip(res.error_text);
          }
     });

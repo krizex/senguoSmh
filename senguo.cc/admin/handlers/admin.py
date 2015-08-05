@@ -2803,39 +2803,57 @@ class GoodsImport(AdminBaseHandler):
 					self.session.commit()
 			return self.send_success()
 
-		elif action in ["checkyouzan","youzan"]:
-			if action == "checkyouzan":
-				if "appid" in data and "appsecret" in data:
-					appid = data["appid"]
-					appsecret = data["appsecret"]
-				else:
-					return self.send_error(403)
-				goods_info = self.getYouzan("goods",appid,appsecret)
-				goods_list = []
-				if goods_info and "total_results" in goods_info:
-					goods_total_results=int(goods_info["total_results"])
-					if goods_total_results>0:
-						for good in goods_info["items"]:
-							title = good.get("title",None)
-							intro = good.get("desc",None)
-							imgs = good.get("item_imgs",None)
-							price = good.get("price",0)
-							good_img_url = []
-							charge_types = []
-							if price == "":
-								price = 0
-							for img in imgs:
-								good_img_url.append(img["url"])
-							if good_img_url !=[]:
-								img_url = good_img_url[0]
-							if len(title)>20:
-								title=title[1:21]
-							charge_types.append({"price":price,"unit":self.getUnit(2)})
-							goods_list.append({"id":"","name":title,"charge_types":charge_types,"imgurl":img_url})
-				return self.send_success(goods_list=goods_list)
+		elif  action == "checkyouzan":
+			if "appid" in data and "appsecret" in data:
+				appid = data["appid"]
+				appsecret = data["appsecret"]
+			else:
+				return self.send_error(403)
+			goods_info = self.getYouzan("goods",appid,appsecret)
+			goods_list = []
+			if goods_info and "total_results" in goods_info:
+				goods_total_results=int(goods_info["total_results"])
+				if goods_total_results>0:
+					for good in goods_info["items"]:
+						title = good.get("title","")
+						intro = good.get("desc","")
+						imgs = good.get("item_imgs","")
+						price = good.get("price",0)
+						good_img_url = []
+						charge_types = []
+						if price == "":
+							price = 0
+						for img in imgs:
+							good_img_url.append(img["url"])
+						if good_img_url !=[]:
+							img_url = good_img_url[0]
+						good_img_url=(";").join(good_img_url)
+						if len(title)>20:
+							title=title[1:21]
+						if len(intro)>8000:
+							intro=intro[1:8000]
+						if len(good_img_url)>500:
+							good_img_url=good_img_url[1:501]
+						charge_types.append({"price":price,"unit":self.getUnit(2)})
+						goods_list.append({"id":"","name":title,"charge_types":charge_types,"imgurl":img_url,"imgs":good_img_url,"intro":str(intro)})
+			return self.send_success(goods_list=goods_list)
 
-			elif action == "youzan":
-				pass
+		elif action == "import_youzan":
+			if "datalist" in data:
+				datalist = data["datalist"]
+			else:
+				return self.send_error(403)
+			if len(self.current_shop.fruits) + len(datalist) >200:
+				return self.send_fail("一家店铺至多可添加200种商品")
+			for data in datalist:
+				print(data["imgs"])
+				print(data.get("imgs",""))
+				new_good = models.Fruit(shop_id = self.current_shop.id , fruit_type_id = 999,name = data.get("name",""),
+				storage = 100,unit = 2,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
+				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 2,num =1,market_price = 0))
+				self.session.add(new_good)
+				self.session.commit()
+			return self.send_success()
 
 class editorTest(AdminBaseHandler):
 	@tornado.web.authenticated
