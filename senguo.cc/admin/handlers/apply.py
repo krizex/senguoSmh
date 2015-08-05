@@ -338,12 +338,12 @@ class CreateShop(AdminBaseHandler):
 			shop_list = data["shop_list"]
 			if self.current_shop:
 				shop_number = len(self.current_shop.admin.shops)
-				if len(shop_list) + shop_number >30:
-					notice="您已创建"+str(shop_number)+"家店铺 ，至多还可创建"+str(30-shop_number)+"家店铺"
+				if len(shop_list) + shop_number > 30:
+					notice="您已创建"+str(shop_number)+"家店铺，最多还可创建"+str(30-shop_number)+"家店铺"
 					return self.send_fail(notice)
 			else:
 				if len(shop_list)>=30:
-					return self.send_fail("至多还可创建30家店铺")
+					return self.send_fail("最多可创建30家店铺")
 
 			spider_shops  = self.session.query(models.Spider_Shop).filter(models.Spider_Shop.id.in_(shop_list)).all()
 

@@ -1627,7 +1627,7 @@ class Order(AdminBaseHandler):
 			if self.current_shop.shop_auth == 0 and self_address_count >= 1:
 				return self.send_fail("未认证店铺只能添加一个自提点")
 			if self_address_count >= 10:
-				return self.send_fail("至多只能添加10个自提点")
+				return self.send_fail("最多只能添加10个自提点")
 			if "self_address" not in data:
 				return self.send_error(403)
 			address = data["self_address"]
@@ -2359,7 +2359,7 @@ class Goods(AdminBaseHandler):
 				if group_id == -1:
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
 					if re_count >= 6:
-						return self.send_fail("推荐分组至多只能添加六个商品")
+						return self.send_fail("推荐分组最多只能添加六个商品")
 				if group_id !=0 and group_id !=-1:
 					_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
 					if _group:
@@ -2463,7 +2463,7 @@ class Goods(AdminBaseHandler):
 				if group_id == -1:
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
 					if re_count >= 6:
-						return self.send_fail("推荐分组至多只能添加六个商品")
+						return self.send_fail("推荐分组最多只能添加六个商品")
 
 				if group_id !=0 and group_id !=-1:
 						_group = self.session.query(models.GoodsGroup).filter_by(id = group_id,shop_id = shop_id,status = 1).first()
@@ -2862,7 +2862,7 @@ class GoodsImport(AdminBaseHandler):
 			else:
 				return self.send_error(403)
 			if len(self.current_shop.fruits) + len(datalist) >200:
-				return self.send_fail("一家店铺至多可添加200种商品")
+				return self.send_fail("一家店铺最多可添加200种商品")
 			for data in datalist:
 				print(data["imgs"])
 				print(data.get("imgs",""))

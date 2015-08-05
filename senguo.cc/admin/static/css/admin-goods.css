@@ -181,7 +181,7 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .go-btn{display:block;background-color: #41b546;color: #fff;font-size: 14px;text-align: center;height: 30px;line-height: 30px;border-radius: 14px;width: 100px;margin: 30px auto 0 auto;}
 .import-type{padding-left: 22px !important;}
 .import-type li{width: 150px;}
-.create-ipt{width: 240px;border: 1px solid #ddd;height: 26px;background-color: #fff;color: #333;font-size: 14px;padding: 0 6px;text-align: left;}
+.create-ipt{width: 260px;border: 1px solid #ddd;height: 26px;background-color: #fff;color: #333;font-size: 14px;padding: 0 6px;text-align: left;}
 .create-text{width: 110px;display: inline-block;}
 .get-code{width: 100px;background-color: #41b546;text-align: center;height: 28px;color: #fff;font-size: 14px;border-radius: 2px;}
 /*分类*/
