@@ -2138,12 +2138,18 @@ class Goods(AdminBaseHandler):
 
 				if order_status2 == "add_time":
 					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
+				elif order_status2 == "add_time_desc":
+					goods = goods.order_by(models.Fruit.add_time,eval(case_one))
 				elif order_status2 == "name":
 					goods = goods.order_by(models.Fruit.name.desc(),eval(case_one))
 				elif order_status2 == "saled":
 					goods = goods.order_by(models.Fruit.saled.desc(),eval(case_one))
+				elif order_status2 == "saled_desc":
+					goods = goods.order_by(models.Fruit.saled,eval(case_one))
 				elif order_status2 == "storage":
 					goods = goods.order_by(models.Fruit.storage.desc(),eval(case_one))
+				elif order_status2 == "storage_desc":
+					goods = goods.order_by(models.Fruit.storage,eval(case_one))
 				elif order_status2 == "current_saled":
 					goods = goods.order_by(models.Fruit.current_saled.desc(),eval(case_one))
 
