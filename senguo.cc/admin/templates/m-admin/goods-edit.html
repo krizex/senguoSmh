@@ -1,0 +1,306 @@
+{% extends 'base.html' %}
+{% block title %}编辑商品{% end %}
+{% block head %}
+<link href="/static/js/ueditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
+{% end %}
+{% block header %}
+<input type="hidden" id="token" value="{{token}}"/>
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>编辑商品</span>
+    <a href="javascript:;" class="head-right finish-btn" id="finish_btn" data-id="{{data['id']}}">完成</a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container pm80">
+    <div class="wrap-add-class">
+        <p class="c666 add-title mt6">基本信息</p>
+        <ul class="add-list">
+            <li>
+                <div class="add-row">
+                    <span class="add-left">商品类目</span>
+                    <span class="add-right borderm choose_classify" data-id="{{data['fruit_type_id']}}">{{data['fruit_type_name']}}</span>
+                </div>
+            </li>
+            <li>
+                <div class="add-row">
+                    <span class="add-left">商品名称</span>
+                    <span class="add-right borderm nodownm">
+                        <input type="text" class="add-ipt goods-goods-name" placeholder="输入商品名称，12字以内" value="{{data['name']}}"/>
+                    </span>
+                </div>
+            </li>
+            <li>
+                <div class="add-row">
+                    <span class="add-left">商品分组</span>
+                    <span class="add-right borderm choose-group" data-id="{{data['group_id']}}">
+                        {{data['group_name']}}
+                    </span>
+                </div>
+            </li>
+            <li class="group">
+                <div class="w50 add-row fl">
+                    <span class="add-left">库存</span>
+                    <span class="add-right nodownm">
+                        <input type="tel" class="add-ipt stock-num" placeholder="请输入库存" value="{{data['storage']}}"/>
+                    </span>
+                </div>
+                <div class="w50 add-row fl borderl">
+                    <span class="add-left pl10">库存单位</span>
+                    <span class="add-right pl10 current-unit" data-id="{{data['unit']}}">{{data['unit_name']}}</span>
+                </div>
+            </li>
+        </ul>
+        <p class="c666 add-title mt6">商品图片 : <span class="f12">第一张图片会默认为封面</span></p>
+        <ul class="img-list group" id="img_list">
+            {% for img in data['imgurl']%}
+            <li>
+                <img src="{{img or '/static/images/TDSG.png'}}?imageView2/1/w/120/h/120" url="{{img or '/static/images/TDSG.png'}}" alt="商品图片" class="image"/>
+                <a href="javascript:;" class="icon-del"></a>
+            </li>
+            {% end %}
+            <li id="img-lst" class="{% if len(data['imgurl'])==5 %}hide{% end %}">
+                <img src="/static/m-admin/img/add_img.png" alt="添加商品图片" id="add-img"/>
+            </li>
+        </ul>
+        <div class="price-list">
+            {% for index,charge in enumerate(data['charge_types'])%}
+            <div class="price-item" data-id="{{charge['id']}}">
+                <div class="c666 add-title mt6">
+                    <a href="javascript:;" class="del-price fr dgreen mr10" data-id="{{charge['id']}}">删除</a>
+                    <span>售价<span class="price-index">{{index+1}}</span> : <span class="first-num">{{int(charge['unit_num'])}}</span><span class="now-unit">{{charge['unit_name']}}</span>=<span class="second-num">{{int(charge['select_num'])}}</span><span class="stock-unit">{{data['unit_name']}}</span></span>
+                </div>
+                <ul class="add-list">
+                    <li>
+                        <div class="add-row">
+                            <span class="add-left">售出单位</span>
+                            <span class="add-right borderm price-unit" data-id="{{charge['unit']}}">{{charge['unit_name']}}</span>
+                        </div>
+                    </li>
+                    <li class="group">
+                        <div class="w50 add-row fl">
+                            <span class="add-left">售价</span>
+                        <span class="add-right nodownm borderm">
+                            <span class="textr mr10">元</span>
+                            <input type="text" class="add-ipt current-price" placeholder="请输入售价" value="{{charge['price']}}"/>
+                        </span>
+                        </div>
+                        <div class="w50 add-row fl borderl borderm">
+                            <span class="add-left pl10">数量</span>
+                            <span class="add-right pl10 nodownm">
+                                <span class="textr"></span>
+                                <input type="tel" class="add-ipt price-num" placeholder="请输入数量" value="{{charge['num']}}"/>
+                            </span>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="add-row">
+                            <span class="add-left">市场价</span>
+                            <span class="add-right nodownm">
+                                <span class="textr">元</span>
+                                <input type="text" class="add-ipt market-price" placeholder="请输入市场价" value="{{charge['market_price']}}"/>
+                            </span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            {% end %}
+        </div>
+        <p class="dgreen add-title" id="add_price">+新建售价方式</p>
+        <p class="c666 add-title mt10">商品简介(可选)</p>
+        <div class="wrap-info-ipt">
+            <textarea class="mtextarea goods-info" placeholder="请输入商品简介，100字以内">{{data['intro']}}</textarea>
+        </div>
+        <p class="dgreen add-title mt10" id="add_detail" data-flag="true" data-text="{{data['detail_describe']}}">+商品图文详情<span class="f12 c666">（买家会在商品的详情页里看到）</span></p>
+        <div class="slide-more mt10 slide_more">
+            <span class="c666 add-right">展开高级设置</span>
+        </div>
+        <ul class="add-list hide" id="goods_set">
+            <li>
+                <div class="add-row">
+                    <span class="add-left">商品限购</span>
+                    <span class="add-right nodownm pt4">
+                        <div class="wrap-more-set">
+                            <input type="tel" class="num-ipt limit_num" value="{{data['limit_num']}}"/>
+                            <p class="num-info">输入商品限购数量，0为默认<br>不限购</p>
+                        </div>
+                    </span>
+                </div>
+            </li>
+            <li>
+                <div class="add-row">
+                    <span class="add-left">优先级</span>
+                <span class="add-right nodownm pt4">
+                    <div class="wrap-more-set">
+                        <input type="tel" class="num-ipt goods-priority" value="{{data['priority']}}"/>
+                        <p class="num-info">输入0-9的数字，数字越大，商品排序越靠前</p>
+                    </div>
+                </span>
+                </div>
+            </li>
+            <li>
+                <div class="add-row">
+                    <span class="add-left">商品标签</span>
+                    <span class="add-right nodownm pt0">
+                        <div class="wrap-mark-set" data-id="{{data['tag']}}">
+                            <span class="mark-choose w24" data-id="1">无</span>
+                            <span class="mark-choose" data-id="2">限时折扣</span>
+                            <span class="mark-choose" data-id="3">热卖中</span>
+                            <span class="mark-choose" data-id="4">今日特价</span>
+                            <span class="mark-choose" data-id="5">新品</span>
+                        </div>
+                    </span>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="boxs wrap-classify pt30 hide">
+        <div class="second-tab class_tab">
+            <ul class="second-tab-list class_list group pt0">
+                <li class="goods-status class_status dgreen clip" data-id="1"><span id="class_type" data-id="color">颜色</span><i class="imenu"></i></li>
+                <li class="gitem active" data-id="fruit">水果</li>
+                <li class="gitem" data-id="ganguo">干果</li>
+                <li class="gitem" data-id="other">其它</li>
+                <li class="tab-line l25"></li>
+            </ul>
+            <div class="wrap-menu-list wrap-goods-menu wrap_class_menu hide">
+                <ul class="menu-list goods-menu-list class_menu_list">
+                    <li class="f12" data-id="color">颜色</li>
+                    <li class="f12"  data-id="nature">味性</li>
+                    <li class="f12"  data-id="length">名称字数</li>
+                    <li class="f12"  data-id="garden">生物学分类</li>
+                </ul>
+            </div>
+        </div>
+        <div class="wrap-coupon-ipt">
+            <input type="text" class="coupon-ipt" placeholder="搜索商品类目">
+            <a href="javascrpipt:;" class="convert-btn" id="convert-btn">搜索</a>
+        </div>
+        <ul class="classify-list mt10">
+
+        </ul>
+    </div>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-conver hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center">单位换算</h3>
+        <div class="wp-ipt mt10">
+            <p class="c999 f12">需要经过换算，让单位统一，保证库存与销量的统计保持一致</p>
+            <div class="mt10 txt-center">
+                <input type="tel" class="f12 unit-ipt" id="first_num" placeholder="填整数"/><span class="c333" id="now-unit">kg</span>&nbsp;&nbsp;=&nbsp;&nbsp;
+                <input type="tel" class="f12 unit-ipt" id="second_num" placeholder="填整数"/><span class="c333" id="stock-unit">kg</span>
+            </div>
+            <p class="c666 f12 mt10">换算案例：库存单位为kg，售出单位为份时</p>
+            <p class="c666 text-dent f12">5kg苹果有3份，则填写<span class="dgreen">5kg=3份</span></p>
+        </div>
+        <div class="wrap-bbtns txt-center">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_conver">确定</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-del hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center">是否确认删除该商品？</h3>
+        <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="del_sure">确认</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-code2 hide">
+    <div class="pop-bcontent f12">
+        <div class="b-close"></div>
+        <img class="code2-logo code2group" src="/static/images/admin_logo1.png" alt="森果logo"/>
+        <p class="c666 mt10">商品链接(长按链接复制到剪切板)</p>
+        <p class="dgreen mt6 shop_url" id="shop_url">http://senguo.cc/{{handler.current_shop.shop_code}}/goods/{{data['id']}}</p>
+        <p class="c666 mt10">链接二维码(长按二维码保存本地或识别)</p>
+        <div class="big-code2 mt10" id="big-code2">
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-editor hide">
+    <div class="wrap-kindeditor">
+        <script type="text/plain" id="ueditor" style="width:100%;height:300px;max-height:300px;"></script>
+        <div class="wrap-bbtns txt-center wrap-bbtns-editor">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="ok-editor">确定</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="wrap-bm-btns">
+    <ul class="btns-list group">
+        <li>
+            <a href="javascript:;" class="bm-btn share-goods" id="share_goods">分享</a>
+        </li>
+        <li>
+            <a href="javascript:;" class="bm-btn down-goods" id="down_goods">下架</a>
+        </li>
+        <li>
+            <a href="javascript:;" class="bm-btn del-goods" id="del_goods">删除</a>
+        </li>
+    </ul>
+</div>
+<div class="pop-bwin pop-unit hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center unit-title">库存单位</h3>
+        <ul class="status-list unit_list">
+            <li data-id="1" class="">个</li>
+            <li data-id="2" class="">斤</li>
+            <li data-id="3" class="">份</li>
+            <li data-id="4" class="">kg</li>
+            <li data-id="5" class="">克</li>
+            <li data-id="6" class="">升</li>
+            <li data-id="7" class="">箱</li>
+            <li data-id="8" class="">盒</li>
+            <li data-id="9" class="">件</li>
+            <li data-id="10" class="">框</li>
+            <li data-id="11" class="">包</li>
+        </ul>
+        <div class="wrap-bbtns txt-center">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_unit">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-group hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center unit-title">选择分组</h3>
+        <ul class="status-list group_list">
+            <li data-id="-1" class="active">店铺推荐</li>
+            {% for d in group_data %}
+            <li data-id="{{d['id']}}" class="">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</li>
+            {% end %}
+        </ul>
+        <div class="wrap-bbtns txt-center">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_group">确定</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="wrap-loading-box hide">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/template.js"></script>
+<script src="/static/js/exif.min.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/ueditor/umeditor.min.js"></script>
+<script src="/static/js/ueditor/umeditor.config.js"></script>
+<script src="/static/js/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script src="/static/js/third/qrcode.min.js"></script>
+<script src="{{static_url('m-admin/js/goods-add.js')}}"></script>
+{% end %}

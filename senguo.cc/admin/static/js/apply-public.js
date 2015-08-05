@@ -2,11 +2,10 @@ $(document).ready(function(){
     //fastclick initialise
     FastClick.attach(document.body);
     //商品单位转换
-    var height = $(window).height()-70;
-    $(".container").css("minHeight",height-60+"px");
-    $(".wrap-create").css("minHeight",height-60+"px");
+    var height = $(window).height();
+    $(".container").css("minHeight",height-245+"px");
     if($(".home-top").size()>0){
-        $("#title").html("店铺申请");
+        $("#title").html("卖家入驻申请");
         $("#beta").hide();
         if($("#tel").val()!=""){
             $("#tel").attr("disabled","disabled").addClass("bgd");

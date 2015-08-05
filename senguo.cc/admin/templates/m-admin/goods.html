@@ -5,7 +5,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="{{reverse_url('MadminShop')}}" class="back">返回</a>
+    <a href="javascript:;" class="back goback">返回</a>
     <div class="wrap-order-tab">
         <ul class="group order-type-list goods-all-list">
             <li class="active item" data-id="1">所有商品</li>
@@ -39,10 +39,10 @@
 </div>
 <div class="second-tab class_tab hide">
     <ul class="second-tab-list class_list group pt0">
-        <li class="goods-status class_status dgreen clip" data-id="1">颜色<i class="imenu"></i></li>
-        <li class="gitem active" data-id="2">水果</li>
-        <li class="gitem" data-id="3">干果</li>
-        <li class="gitem" data-id="5">其它</li>
+        <li class="goods-status class_status dgreen clip" data-id="1"><span id="class_type" data-id="color">颜色</span><i class="imenu"></i></li>
+        <li class="gitem active" data-id="fruit">水果</li>
+        <li class="gitem" data-id="ganguo">干果</li>
+        <li class="gitem" data-id="other">其它</li>
         <li class="tab-line l25"></li>
     </ul>
     <div class="wrap-menu-list wrap-goods-menu wrap_class_menu hide">
@@ -63,7 +63,7 @@
 </div>
 <div class="boxs wrap-goods-group mt10 hide">
     <ul class="group-list" data-code="{{handler.current_shop.shop_code}}">
-        <li>
+        <li data-url="/madmin/goods?gid=-1">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">
@@ -82,7 +82,7 @@
             </a>
         </li>
         {% for d in data %}
-        <li>
+        <li data-url="/madmin/goods?gid={{d['id']}}">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">
@@ -118,55 +118,10 @@
 </div>
 <div class="boxs wrap-classify hide">
     <div class="wrap-coupon-ipt">
-        <input type="text" class="coupon-ipt" placeholder="搜索商品类目">
+        <input type="text" class="coupon-ipt" placeholder="搜索商品类目" id="class_con">
         <a href="javascrpipt:;" class="convert-btn" id="convert-btn">搜索</a>
     </div>
     <ul class="classify-list mt10">
-        <li>
-            <div class="class-row">
-                <span class="class-left red-bg">红色</span>
-                <span class="class-right slide-class arrow-up">已添加4种</span>
-            </div>
-            <ul class="class-lst group red">
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-            </ul>
-        </li>
-        <li>
-            <div class="class-row">
-                <span class="class-left yellow-bg">黄色</span>
-                <span class="class-right slide-class">已添加4种</span>
-            </div>
-            <ul class="class-lst group yellow hide">
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-            </ul>
-        </li>
-        <li>
-            <div class="class-row">
-                <span class="class-left green-bg">黄色</span>
-                <span class="class-right slide-class">已添加4种</span>
-            </div>
-            <ul class="class-lst group green hide">
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-            </ul>
-        </li>
     </ul>
 </div>
 </div>

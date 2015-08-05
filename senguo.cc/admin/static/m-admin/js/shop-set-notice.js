@@ -21,8 +21,8 @@ var link = "/admin/config";
 function noticeAdd(){
     var url=link;
     var action="add_notice";
-    var summary=$('.new-notice-title').val();
-    var detail=$('.new-notice-detail').val();
+    var summary= $.trim($('.new-notice-title').val());
+    var detail=$.trim($('.new-notice-detail').val());
     var img_url=$("#notice_img").attr("url");
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
@@ -96,7 +96,7 @@ $(document).ready(function(){
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $("#token").val(),
         unique_names: false,
         save_key: false,
@@ -127,7 +127,7 @@ $(document).ready(function(){
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#notice_img").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#notice_img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
                 $(".img-cover").addClass("hide");
                 $(".del-img").removeClass("hide");
                 $(".moxie-shim").addClass("hide");

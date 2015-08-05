@@ -88,6 +88,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .mt2{margin-top: 2px;}
 .mt4{margin-top: 4px;}
 .mt6{margin-top: 6px;}
+.mt8{margin-top: 8px;}
 .mt15{margin-top: 15px;}
 .mt16{margin-top: 16px;}
 .mt44{margin-top: 44px;}
@@ -106,7 +107,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 /*高度*/
 .h0{height: 0 !important;overflow: hidden;}
 /*提示框*/
-.zb-tip{width: 70%;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
+.zb-tip{width: 70%;max-width:700px;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
 /*页面头部*/
 .header{position: fixed;top: 0;left: 0;z-index:999;width: 100%;background-color: #48b6a4;height: 40px;line-height:40px;color: #fff;text-align: center;}
 .back{display: inline-block;height: 40px;min-width:40px;line-height:2.9em;padding-left: 12px;background-image: url('/static/svg/back-white@2x.png');background-size: 10px 16px;color: #fff;position: absolute;left: 12px;top: 0;background-position: left center;}
@@ -117,7 +118,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .head-right.search>em{display: block;background-image: url('/static/bbs/img/bbs_top.png');background-repeat: no-repeat;background-size: 20px 40px;background-position: 0 -20px;width: 20px;height: 20px;margin: 10px 28px;}
 .head-right.profile-center>em{display: block;background-image: url('/static/m-admin/img/top_center.png');background-repeat: no-repeat;background-size: 20px;width: 20px;height: 20px;margin: 10px 28px;}
 /*页面容器*/
-.container{position: relative;z-index: 1;padding-top: 40px;min-height: 400px;}
+.container{position: relative;z-index: 1;padding-top: 40px;}
 /*弹出框底层*/
 .pop-win{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}
 .pop-bwin{width: 100%;height: 100%;position: fixed;background-color: rgba(0,0,0,.4);top: 0;left: 0;z-index:9999;}

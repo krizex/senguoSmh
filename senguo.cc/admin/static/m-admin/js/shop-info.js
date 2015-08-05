@@ -120,7 +120,7 @@ $(document).ready(function(){
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $("#token").val(),
         unique_names: false,
         save_key: false,
@@ -147,7 +147,7 @@ $(document).ready(function(){
             'UploadProgress': function (up, file) {
             },
             'FileUploaded': function (up, file, info) {
-                $("#shop_logo").attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#shop_logo").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
                 infoEdit("edit_shop_logo");
             },
             'Error': function (up, err, errTip) {

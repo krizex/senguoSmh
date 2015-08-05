@@ -331,10 +331,12 @@ $(document).ready(function(){
     $item.find(".price-unit").html(current_unit).attr("data-id",current_unit_id);
     $(this).closest("p").before($item);
 }).on("click",".del-price-type",function(){//删除售价方式
-    var id=$(this).parents('.wrap-add-price').attr('data-id');
-    $(this).closest(".wrap-add-price").remove();
-    if(id){
-        del_list.push(parseInt(id));
+    if(confirm("确认删除该售价方式？")){
+        var id=$(this).parents('.wrap-add-price').attr('data-id');
+        if(id){
+            del_list.push(parseInt(id));
+        }
+        $(this).closest(".wrap-add-price").remove();
     }
 }).on('click','.furit-type li',function(){/*水果分类*/
     var $this=$(this);
@@ -904,7 +906,7 @@ function initEditor($obj,type){
         ['simpleupload', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc']
     ]});
     QINIU_TOKEN=$("#token").val();
-    QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/";
+    QINIU_BUCKET_DOMAIN="7rf3aw.com2.z0.glb.qiniucdn.com/";
     if($obj.attr("data-text")){
         editor.body.innerHTML=$obj.attr("data-text");
     }
@@ -1030,7 +1032,7 @@ $(document).ready(function(){
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $("#token").val(),
         unique_names: false,
         save_key: false,
@@ -1057,7 +1059,7 @@ $(document).ready(function(){
             'FileUploaded': function (up, file, info) {
                 $("#" + file.id).prev(".img-cover").remove();
                 $("#" + file.id).next("a").removeClass("hidden");
-                $("#"+file.id).attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {

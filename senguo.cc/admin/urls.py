@@ -22,7 +22,6 @@ from dal import models
 # ]
 
 handlers = [
-
 	#告白墙
 	(r"/lovewall/public/(\w+)", handlers.activity.ConfessionPublic, {}, "ConfessionPublic"),
 	(r"/lovewall/center/(\w+)", handlers.activity.ConfessionCenter, {}, "ConfessionCenter"),
@@ -46,9 +45,13 @@ handlers = [
 	#(r'/market/staffinsert',handlers.market.StaffInsert,{},"staffinsert"),
 
 	#优惠券
-	(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
+	#(r"/coupon", handlers.activity.Coupon, {}, "Coupon"),
 	(r"/coupon/detail", handlers.activity.CouponDetail, {}, "CouponDetail"),
-
+	(r"/coupon/grub", handlers.activity.CouponCustomer, {}, "CouponGrub"),
+	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
+	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
+	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
+	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
 	(r"/staff/logout", handlers.staff.Access, {"action":"logout"}, "staffLogout"),
@@ -63,6 +66,7 @@ handlers = [
 	(r"/customer/qqoauth",handlers.customer.Access,{"action":"qqoauth"},"customerQOauth"),
 	(r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
+	(r"/customer/weixinphone", handlers.customer.Third, {"action":"weixinphone"}, "customerWeixinphone"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
 	(r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
 
@@ -268,7 +272,7 @@ handlers = [
 	(r"/madmin/goods", handlers.madmin.Goods, {}, "MadminGoods"),
 	(r"/madmin/gsearch", handlers.madmin.GoodsSearch, {}, "MadminGoodsSearch"),
 	(r"/madmin/goodsAdd", handlers.madmin.GoodsAdd, {}, "MadminGoodsAdd"),
-	(r"/madmin/goodsEdit", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
+	(r"/madmin/goodsEdit/(\w+)", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
 	(r"/madmin/goodsBatch", handlers.madmin.GoodsBatch, {}, "MadminGoodsBatch"),
 
 	# 主页
@@ -288,6 +292,8 @@ handlers = [
 	# (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),
 	# (r"/fruitzone/applySuccess", handlers.fruitzone.ApplySuccess, {}, "fruitzoneShopApplySuccess"),
 	(r"/apply", handlers.apply.Home, {}, "ApplyHome"),
+	(r"/apply/login", handlers.apply.Login, {}, "ApplyLogin"),
+	(r"/wxmessage",handlers.apply.WxMessage,{},'wxmessage'),
 	(r"/admin/create", handlers.apply.CreateShop, {}, "CreateShop"),
 	
 	(r"/fruitzone/shop/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传

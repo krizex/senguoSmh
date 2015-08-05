@@ -1,18 +1,21 @@
 body{background-color: #f5f5f5;}
-.f16{font-size: 16px;}
-.f12{font-size: 12px;}
-.f32{font-size: 32px;}
+.pm20{padding-bottom: 20px !important;}
+.f16{font-size: 16px !important;}
+.f12{font-size: 12px !important;}
+.f22{font-size: 22px !important;}
+.f42{font-size: 42px !important;}
+.f32{font-size: 32px !important;}
 .header{background-color: #33CC66;max-width: 800px;min-width: 320px;left: 50%;-webkit-transform:translate(-50%,0);}
-.container{background-color: #fff;margin: 0 auto;max-width: 800px;min-width: 320px;overflow-x: hidden;}
+.container{background-color: #fff;margin: 0 auto;max-width: 800px;min-width: 320px;-webkit-box-sizing: border-box;}
 .coupon-box{padding: 20px 10px;}
-.wrap-coupon-ipt{position: relative;padding-right: 60px;}
+.wrap-coupon-ipt{position: relative;padding-right: 70px;padding-left: 10px;padding-top: 10px;}
 .coupon-ipt{width: 100%;font-size: 14px;height: 30px;border: 1px solid #ccc;color: #999;border-radius: 2px;padding: 0 10px;-webkit-box-sizing: border-box;}
-.convert-btn{display: inline-block;position: absolute;top: 0;right: 0;width: 55px;height: 30px;line-height: 30px;text-align: center;color: #fff;background-color: #d3eacd;border-radius: 2px;}
+.convert-btn{display: inline-block;position: absolute;top: 10px;right: 10px;width: 55px;height: 30px;line-height: 30px;text-align: center;color: #fff;background-color: #33CC66;border-radius: 2px;}
 .coupon-list{margin-top:10px;}
 .coupon-list>li{margin-bottom: 8px;position: relative;}
-.gap{position: absolute;width: 5px;height: 100%;z-index:999;top: 0;background-size: contain;}
-.gap-right{right:-1px;background-image: url('/static/images/gap.png');}
-.gap-left{left:-1px;background-image: url('/static/images/gap.png');-webkit-transform:rotate(180deg);}
+.gap{position: absolute;z-index:99;top: 0;background-size: contain;background-image: url('/static/images/gap.png');}
+.gap-right{width: 5px;height: 100%;right:-1px;}
+.gap-left{width: 5px;height: 100%;left:-1px;-webkit-transform:rotate(180deg);}
 .coupon-item{background-color: #c9c7c0;position: relative;padding-right: 56px;color: #fff;position: relative;}
 .coupon-item>dl{padding: 30px 10px 0px 15px;}
 .coupon-item .shop-info{position: absolute;top:4px;left:10px;height: 20px;line-height: 20px;color: #fff;padding-left: 25px;background: url('/static/images/i_shop.png') no-repeat left center;background-size:22px;}
@@ -35,4 +38,59 @@ body{background-color: #f5f5f5;}
 .get-money{font-size: 34px;text-align: center;padding: 30px 0;}
 .coupon-info{border-top:1px dashed #fff;padding: 10px 0 16px 0;}
 .coupon-info>p{width: 240px;display: block;margin: 0 auto;}
+/*用户优惠券*/
+.wrap-user-coupon{background:-webkit-linear-gradient(#70DB94,#34CC67);background:linear-gradient(#70DB94,#34CC67);overflow-x: hidden;}
+.coupon-bg-box{width: 80.3%;margin: 0 auto;position: relative;padding-bottom: 60px;}
+.coupon-bg{width: 149.2%;z-index:1;}
+.wrap-coupon-ubg{position: absolute;width:100%;top: 25px;left:0;z-index:10;}
+.coupon-ubg{background-color: #fff;border-radius: 5px;padding-top: 20px;}
+/*.coupon-ubg:after{display: block;content:'';position: absolute;width: 154%;height: 52%;z-index:-1;left:-6%;top:35%;border-radius:10px;-webkit-transform:skew(40deg) rotate(-20deg);transform:skew(40deg) rotate(-20deg);background:linear-gradient(to bottom,rgba(88,165,110,0.6) 0%,rgba(88,165,110,0) 50%,rgba(88,165,110,0)) 100%;}*/
+.wrap-coupon-ubg:before{display: block;content:'';position: absolute;width: 100%;height: 100%;z-index:-1;border-radius:10px;-webkit-transform:skew(40deg);-webkit-transform-origin:left top;background:linear-gradient(to left,rgba(88,165,110,0.6) 0%,rgba(88,165,110,0) 50%,rgba(88,165,110,0)) 100%;}
+.coupon-ubg:after{display: block;content:'';position: absolute;width: 100%;height: 14%;margin-top:-4px;z-index:-1;border-radius:10px;-webkit-transform:skew(40deg);-webkit-transform-origin:left top;background:linear-gradient(to right,rgba(88,165,110,0.3) 0%,rgba(88,165,110,0) 30%,rgba(88,165,110,0)) 100%;}
+.logo-box{text-align: center;}
+.wrap-shoplogo{width: 80px;height: 80px;border-radius: 50%;border: 2px solid #35ca93;display: inline-block;}
+.wrap-shoplogo>img{width: 100%;height: 100%;border-radius: 50%;}
+.price-box{margin-top: 25px;}
+.cou-status{width: 64px;height: 64px;background-size: contain;position: absolute;top: 8px;left: 8px;}
+.cou-status-no{background-image: url('/static/images/use_no.png');}
+.cou-status-yes{background-image: url('/static/images/use_yes.png');}
+.cou-status-null{background-image: url('/static/images/use_null.png');}
+.use-no{color: #34cc67;}
+.use-yes{color: #9f9f9f;}
+.coupon-date{text-align: center;color: #666;margin-top: 12px;}
+.use-rule{position: relative;height: 18px;width: 92%;margin: 0 auto;}
+.use-rule .rule-line{width: 100%;height: 2px;position: absolute;top: 8px;background-color: #34cc67;}
+.use-rule .rule-text{position: absolute;padding:0 6px;height: 18px;line-height: 18px;font-size:12px;text-align: center;background-color: #fff;left: 50%;-webkit-transform:translate(-50%, 0);white-space: nowrap;max-width: 96%;overflow: hidden;}
+.point-left{padding-left: 14px;background: url('/static/images/w_point.png') left center no-repeat;}
+.go-link{height: 54px;line-height:60px;cursor:pointer;margin-top:42px;background-color: #ff9800;position: relative;width: 100%;text-align: center;color: #fff;font-size: 16px;border-bottom-left-radius: 5px;border-bottom-right-radius: 5px;}
+.gap-top{height: 6px;width: 100%;left: 0;background-image: url('/static/images/gap_top.png');background-repeat: repeat-x;}
+.coupon-im{margin-top: 25px;}
+.coupon-im>p{font-size: 12px;color: #fff;line-height: 20px;}
+/*我的优惠券*/
+.bold{font-weight:bold;}
+.wrap-mycoupon{background-color: #f5f5f5;}
+.my-coupon-list{padding: 15px 10px;}
+.f26{font-size: 26px;}
+.my-coupon-list>li{background-color: #fff;position: relative;height: 80px;margin-bottom: 10px;box-shadow: 0px 2px 2px #ccc;}
+.get-coupon{position: absolute;right: 0;top: 0;background-color: #34cc67;color: #fff;width:65px;height: 80px;text-align: center;cursor: pointer;z-index:888;}
+.get-coupon>span{font-size: 22px;margin-top: 18px;display: inline-block;line-height: 1;}
+.gap1-right{background-image: url('/static/images/gap1.png');width: 4px;height:100%;background-repeat: repeat-y;right:65px;}
+.coupon-lprice{padding: 10px 80px 0px 6px;position: relative;-webkit-box-sizing: border-box;height: 80px;}
+.price-txt{white-space: nowrap;overflow: hidden;color: #34cc67;width: 84px;position: absolute;left: 0;top: 24px;padding-left: 6px;-webkit-box-sizing:border-box;}
+.price-stxt{width: 100%;overflow: hidden;white-space: nowrap;color: #34cc67;}
+.price-info{padding-left: 85px;overflow: hidden;}
+.price-info>p{line-height: 20px;white-space: nowrap;}
+.green-txt{color: #34cc67;}
+.price-info .price-des{white-space: normal;line-height: 14px;max-height: 29px;overflow: hidden;}
+.coupon-used{background-color: #dbdbdb;color: #9f9f9f;}
+.c9f{color: #9f9f9f !important;}
+.gap2-right{background-image: url('/static/images/gap2.png');width: 4px;height:100%;background-repeat: repeat-y;right:65px;}
+/*状态*/
+.coupon-status{background-color: #fff;padding: 30px 0 40px 0;text-align: center;position: relative;}
+.status-txt{color: #666;line-height: 22px;text-align: center;}
+.gap-bm{background-image: url('/static/images/gap3.png');height: 6px;width:100%;background-repeat: repeat-x;top: auto;bottom: 0px;left: 0;}
+.chbox-img{width: 21%;}
+.no-img{width: 17.1%;}
+.go-next{display:inline-block;width: 120px;height: 26px;line-height: 26px;text-align: center;color: #fff;background-color: #34cc67;border-radius: 4px;}
+
 

@@ -1,9 +1,11 @@
-var curGoods = null,width = 0,page=0,finished=false,nomore=false,cur_group=null,link="/admin/goods/all";
+var curGoods = null,width = 0,page=0,finished=false,nomore=false,cur_group=null,link="/admin/goods/all",_type = 0;
 $(document).ready(function(){
     var minheight = $(window).height()-80;
     $(".order-lists").css({minHeight:minheight+"px"});
     getGoodsItem("all",0);
+    getData('fruit','color');
     $(window).scroll(function(){
+        if(_type!=1) return false;
         var totalheight = $(window).height() + $(window).scrollTop() +150;
         if(finished && $(".container").height() <= totalheight) {
             $(".no-result").html("数据加载中...");
@@ -21,6 +23,7 @@ $(document).ready(function(){
     getGoodsItem("all",0);
 }).on("click",".goods-all-list li",function(){//大类切换
     var index = parseInt($(this).index());
+    _type=parseInt($(this).attr('data-id'));
     if(index==0){//所有商品
         $(".container").addClass("pt70");
         $(".second-tab").addClass("hide");
@@ -42,35 +45,35 @@ $(document).ready(function(){
         $(".btns-list").addClass("hide");
     }
     $(".boxs").addClass("hide").eq(index).removeClass("hide");
-    var _type=parseInt($(this).attr('data-id'));
     $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
     page=0;
     $(".order-type-list .tab-bg").css("left",33.3*index+"%");
 }).on("click",".goods_list .gitem",function(){
     var index = $(this).index();
+    page=0;
     if($(this).hasClass("active")){//切换排序方式
         $(this).children(".turn").toggleClass("rotate-img2");
     }else{
-        $(".second-tab-list").find(".turn").removeClass("rotate-img2");
-        $(".second-tab-list li").removeClass("active").eq(index).addClass("active");
-        $(".second-tab-list .tab-line").css("left",25*index+"%");
+        $(".goods_list").find(".turn").removeClass("rotate-img2");
+        $(".goods_list li").removeClass("active").eq(index).addClass("active");
+        $(".goods_list .tab-line").css("left",25*index+"%");
         getGoodsItem("all",0);
     }
 }).on("click",".class_status",function(){
     $(".wrap_class_menu").toggleClass("hide");
 }).on("click",".class_menu_list li",function(){
-    var id = $(this).attr("data-id");
+    var sub_type = $(this).attr("data-id");
+    var type = $(".class_list").find(".active").attr("data-id");
+    $("#class_type").attr("data-id",sub_type).html($(this).html());
     $(".wrap_class_menu").toggleClass("hide");
+    getData(type,sub_type);
 }).on("click",".class_list .gitem",function(){
     var index = $(this).index();
-    page=0;
-    if($(this).hasClass("active")){//切换排序方式
-        $(this).children(".turn").toggleClass("rotate-img2");
-    }else{
-        $(".second-tab-list").find(".turn").removeClass("rotate-img2");
-        $(".second-tab-list li").removeClass("active").eq(index).addClass("active");
-        $(".second-tab-list .tab-line").css("left",25*index+"%");
-    }
+    var type = $(this).attr("data-id");
+    var sub_type = $("#class_type").attr("data-id");
+    $(".class_list li").removeClass("active").eq(index).addClass("active");
+    $(".class_list .tab-line").css("left",25*index+"%");
+    getData(type,sub_type);
 }).on("click","#qa",function(){
     $(this).addClass("hide");
     $(".pop-qa").removeClass("hide");
@@ -91,6 +94,7 @@ $(document).ready(function(){
 }).on("click",".add-group",function(){
     $("#group_name").val("");
     $("#group_info").val("");
+    $("#g_title").html("添加分组");
     $(".pop-name").removeClass("hide");
     $("#group_name").focus();
     $("#opreate_group").attr("data-action","add");
@@ -102,6 +106,7 @@ $(document).ready(function(){
     cur_group = $(this).closest("li");
     $("#group_name").val(cur_group.find(".go-name").html());
     $("#group_info").val(cur_group.find(".go-info").html());
+    $("#g_title").html("编辑分组");
     $(".pop-name").removeClass("hide");
     $("#group_name").focus();
     $("#opreate_group").attr("data-id",$(this).attr("data-id")).attr("data-action","edit");
@@ -111,14 +116,19 @@ $(document).ready(function(){
     cur_group = $(this).closest("li");
     $("#del_group").attr("data-id",$(this).attr("data-id"));
     $(".pop-del").removeClass("hide");
-}).on("click","#del-group",function(){
+}).on("click","#del_group",function(){
     var id = $(this).attr("data-id");
     operateGroup("del",id);
+}).on("click",".group-list li",function(e){
+    var url = $(this).attr("data-url");
+    if($(e.target).closest(".wrap-operates").size()==0){
+        window.location.href=url;
+    }
 }).on("click",".manage-group",function(){
     $(".wrap-operates").removeClass("hide");
     $(".wrap-bm-btns .btns-list").addClass("hide");
     $("#finish_group").removeClass("hide");
-}).on("click",".finish-group",function(){//完成
+}).on("click",".finish-group",function(){
     $(".wrap-operates").addClass("hide");
     $(".wrap-bm-btns .btns-list").addClass("hide");
     $("#group_manage").removeClass("hide");
@@ -132,8 +142,12 @@ $(document).ready(function(){
     if($(e.target).closest(".switch-btn").size>0){
         return false;
     }else{
-        //window.location.href="";//跳到编辑
+        var id = $(this).attr("data-id");
+        window.location.href="/madmin/goodsEdit/"+id;//跳到编辑
     }
+}).on("click","#convert-btn",function(){//分类搜索
+    var con = $.trim($("#class_con").val());
+    getData2(con);
 });
 //上下架商品
 function switchGoods(id,$obj){
@@ -199,8 +213,8 @@ function operateGroup(action,id){
             $("#opreate_group").attr("data-flag", "on");
             if (res.success) {
                 if(action=='edit'){
-                    cur_group.find('.group-name').text(group_name);
-                    cur_group.find('.group-intro').text(group_info);
+                    cur_group.find('.go-name').text(group_name);
+                    cur_group.find('.go-info').text(group_info);
                     $(".pop-name").addClass("hide");
                 }else if(action=="add"){
                     var code = $(".group-list").attr("data-code");
@@ -273,6 +287,9 @@ function getGoodsItem(action,type_id,value){
     }else if(action=="goods_search"){
         url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
     }else{
+        if($.getUrlParam("gid")){
+            filter_status2 = $.getUrlParam("gid");
+        }
         url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
     }
     $.ajax({
@@ -321,50 +338,72 @@ function insertGoods(data){
             }
         }
         $item.find(".goods-vol").html(goods.saled);
-        //$item.find(".goods-goods-edit").attr("href","/madmin/editGoods?id="+goods.id);
         $("#goods-all-list").append($item);
     }
-    /*$(".sw-link-copy").zclip({
-        path: "/static/js/third/ZeroClipboard.swf",
-        copy: function(){
-            return $(this).prev("input").val();
-        },
-        afterCopy:function(){*//* 复制成功后的操作 *//*
-            Tip("链接已经复制到剪切板");
+}
+/*水果分类*/
+function getData(type,sub_type){
+    $.ajax({
+        url:'/admin/goods/classify?type='+type+'&sub_type='+sub_type,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.data;
+                $('.classify-list').empty();
+                var item='<li><div class="class-row"><span class="class-left {{property}}">{{name}}</span><span class="class-right slide-class"></span></div>'+
+                '<ul class="class-lst group {{property}} hide">'+
+                '{{each types as type}}'+
+                    '<li data-id="{{type.id}}" data-code="{{code}}"><span class="{{if type.num>0}}selected{{/if}}"><span class="class_name">{{type.name}}</span>({{type.num}})</span></li>'+
+                '{{/each}}'+
+                '</ul></li>';
+                for(var d in data){
+                    if(data[d]['data'].length!=0){
+                        var render = template.compile(item);
+                        var html = render({
+                            property:data[d]['property'],
+                            name:data[d]['name'],
+                            types:data[d]['data']
+                        });
+                        $('.classify-list').append(html);
+                    }
+                }
+            }
         }
     });
-    $(".er-code-img").each(function(){
-        var _this = $(this);
-        $(this).empty();
-        new QRCode(this, {
-            width : 80,//设置宽高
-            height : 80
-        }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
-    });*/
 }
-function orderEdit(target,action,content){
-    var url='/admin/order';
-    var action=action;
-    var data;
-    var args;
-    var order_id=parseInt($('.pop-staff').attr('data-id'));
-    data={order_id:order_id};
-    if(action=='edit_SH2')
-    {
-        data.staff_id=parseInt(content);
+//搜索分类
+function getData2(con){
+    if(con==""){
+        return Tip('请输入分类名称');
     }
-    args={
-        action:action,
+    var url="/admin/goods/classify";
+    var data={'classify':con};
+    var args={
+        action:'classify_search',
         data:data
     };
     $.postJson(url,args,function(res){
-        if(res.success){
-            if(action=='edit_SH2'){
-
+            if(res.success){
+                var data = res.data;
+                $('.classify-list').empty();
+                var item='<ul class="class-lst group">'+
+                            '<li data-id="{{id}}" data-code="{{code}}"><span><span class="class_name">{{name}}</span>({{num}})</span></li>'+
+                        '</ul>';
+                for(var d in data){
+                    if(data[d].length!=0){
+                        var render = template.compile(item);
+                        var html = render({
+                            id:data[d]['id'],
+                            name:data[d]['name'],
+                            num:data[d]['num'],
+                            code:data[d]['code']
+                        });
+                        $('.classify-list').append(html);
+                    }
+                }
             }
-        }
-        else {
-            return Tip(res.error_text);
-        }
-    })
+            else return Tip(res.error_text);
+        },
+        function(){return Tip('网络错误');}
+    );
 }

@@ -113,7 +113,7 @@ var goodsList=function(page,action){
         if(res.success)
         {
             if(window.dataObj.list_item==undefined){
-                getItem('/static/items/customer/orderlist_item.html?v=20150613',function(data){
+                getItem('/static/items/customer/orderlist_item.html?v=20150713',function(data){
                     window.dataObj.list_item=data;
                     initData(res);
                 });    
@@ -138,7 +138,7 @@ var goodsList=function(page,action){
                     var order_status=orders[i]['order_status'];
                     var address_text=orders[i]['address_text'];
                     var send_time=orders[i]['send_time'];
-                    var totalPrice=orders[i]['order_totalPrice'];
+                    var totalPrice=orders[i]['new_totalprice'];
                     var sender_img=orders[i]['sender_img'];
                     var sender_phone=orders[i]['sender_phone'];
                     var comment=orders[i]['comment'];
@@ -162,6 +162,9 @@ var goodsList=function(page,action){
                         pay_txt = "余额支付";
                     }else{
                         pay_txt = "在线支付";
+                    }
+                    if(type==3){
+                        $item.find("._to_send").text("自提点");
                     }
                     $item.attr({'data-id':id,'data-status':order_status,'data-type':online_type});
                     /*$item.find('.detail-link').attr({'href':'/customer/orders/detail/'+id});*/
@@ -220,14 +223,22 @@ var goodsList=function(page,action){
                      }
                      else if(order_status==1) {
                         $item.find('.cancel').show();
-                        $item.find('.word').text('已下单');
+                        if(type==3){
+                            $item.find('.word').text('准备中');
+                        }else{
+                            $item.find('.word').text('已下单');
+                        }
                         $item.find('.status-box').addClass('left0');
                         $item.find('.circle-icon').addClass('left0');
                         $item.find('.inner').addClass('width0');
                     }
                      else if(order_status==4) {
                         $item.find('.order_dealing').show();
-                        $item.find('.word').text('配送中');
+                        if(type==3){
+                            $item.find('.word').text('等待自取');
+                        }else{
+                            $item.find('.word').text('配送中');
+                        }
                         $item.find('.status-box').addClass('left50');
                         $item.find('.circle-icon').addClass('left50');
                         $item.find('.inner').addClass('width50');
@@ -235,7 +246,11 @@ var goodsList=function(page,action){
                         $item.find('.sender_phone').attr({'href':'tel:'+sender_phone}).show();
                     }
                     else if(order_status==5) {
-                        $item.find('.word').text('已送达');
+                        if(type==3){
+                            $item.find('.word').text('自取完成');
+                        }else{
+                            $item.find('.word').text('已送达');
+                        }
                         $item.find('.status-box').addClass('left100');
                         $item.find('.circle-icon').addClass('left100');
                         $item.find('.inner').addClass('width100');

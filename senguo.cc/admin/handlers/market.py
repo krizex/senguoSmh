@@ -72,7 +72,6 @@ class Info(CustomerBaseHandler):
 
 	def get(self):
 		id = int(self.args['id'])
-		print(id)
 		try:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = id).one()
 		except:
@@ -108,11 +107,7 @@ class Info(CustomerBaseHandler):
 		elif action == 'name':
 			shop.shop_name = self.args['data'].get('shop_name',None)
 		elif action == 'phone':
-			print('login phone')
 			shop.shop_phone = self.args['data'].get('shop_phone',None)
-			print(self.args['data'].get('shop_phone',None))
-			print(shop.shop_phone)
-
 		elif action == 'deliver_area':
 			shop.delivery_area = self.args['data'].get('deliver_area',None)
 		elif action == 'shop_address':
@@ -126,7 +121,7 @@ class Info(CustomerBaseHandler):
 		elif action == 'shop_auth':
 			shop.shop_auth = self.args['data']['shop_auth']
 		else:
-			return self.send_fail('action error')
+			return self.send_fail('[MarketInfo]action error')
 
 		self.session.commit()
 		return self.send_success()
@@ -139,17 +134,17 @@ class Info(CustomerBaseHandler):
 class ShopAdminInfo(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('action?:str')
 	def get(self,id):
-		print(self.args)
+		print("[MarketShopAdminInfo]self.args:",self.args)
 		#shop_id = int(self.get_secure_cookie("spider_shop"))
 		#shop_id = int(self.args['id'])
 		shop_id = int(id)
 		action = self.args.get('action',None)
-		print(shop_id,'shopinsert hhhhhhhhhhhhh')
+		print("[MarketShopAdminInfo]shop_id:",shop_id)
 		if shop_id:
 			shop = self.session.query(models.Spider_Shop).filter_by(id = shop_id).first()
 			if not shop:
-				return self.send_fail('shop not found aaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
-			print(action,'action',self.args)
+				return self.send_fail('[MarketShopAdminInfo]shop not found')
+			print("[MarketShopAdminInfo]action:",action,", self.args:",self.args)
 			if action == 'bind':
 				#if not self.is_wexin_browser():
 				#	return self.send_fail("请在微信中执行此从操作!")
@@ -157,7 +152,7 @@ class ShopAdminInfo(CustomerBaseHandler):
 				if shop.has_done == 1:
 					return self.send_fail('该店铺已录入！')
 				admin_id  =  self.wx_bind(shop_id)
-				print(admin_id)
+				print("[MarketShopAdminInfo]admin_id:",admin_id)
 				shop.done_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
 				#shop.curator = self.current_user.accountinfo.nickname
 				self.session.commit()
@@ -173,13 +168,13 @@ class ShopAdminInfo(CustomerBaseHandler):
 		else:
 			return self.send_fail('id error')
 		url = "http://i.senguo.cc/market/shopinsert/%s?action=bind" % (str(shop_id))
-		print(url)
+		print("[MarketShopAdminInfo]url:",url)
 		return self.render("market/shop-manager.html",url=url,shop_id = shop_id)
 
 	@CustomerBaseHandler.check_arguments('admin_name?:str','admin_phone?:str','action')
 	def post(self,id):
 		action = self.args.get('action',None)
-		print(id)
+		print("[MarketShopAdminInfo]id:",id)
 		if action == 'save':
 			#id = self.args.get('id',None)
 			if id:
@@ -209,19 +204,19 @@ class ShopAdminInfo(CustomerBaseHandler):
 			#print(self.get_wexin_oauth_link2(next_url = next_url))
 			#return self.redirect(self.get_wexin_oauth_link2(next_url = next_url))
 			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect'.format(MP_APPID,'http://auth.senguo.cc/market/shopinsert/%d?action=bind') %(shop_id)
-			print(url)
+			print("[MarketShopAdminInfo]wx_bind: url:",url)
 			return self.redirect(url)
 		else:
 			code = self.args['code']
-			print(code)
+			print("[MarketShopAdminInfo]wx_bind: code:",code)
 			mode = 'mp'
 			wx_userinfo = self.get_wx_userinfo(code,mode)
 			user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_userinfo["unionid"]).first()
 			if user:
-				print('id exits , it is',user.id)
+				print("[MarketShopAdminInfo]wx_bind: user exists, ID:",user.id)
 				return user.id
 			else:
-				print("user not exit , make new wx_info")
+				print("[MarketShopAdminInfo]wx_bind: user not exists, regiest as new user")
 				if wx_userinfo["headimgurl"] not in [None,'']:
 					headimgurl = wx_userinfo["headimgurl"]
 					headimgurl_small = wx_userinfo["headimgurl"][0:-1] + "132"
@@ -244,33 +239,36 @@ class ShopAdminInfo(CustomerBaseHandler):
 					u.accountinfo = account_info
 					self.session.add(u)
 					self.session.commit()
-					print('get wx_userinfo success')
+					print('[MarketShopAdminInfo]wx_bind: get wx_userinfo success')
 				except:
 					return False
 				return u.id
 
 	# 生成店铺、添加商品
 	def add_shop(self,admin_id,shop_id):
-		print('login in add_shop')
+		print('[MarketShopAdminInfo]add_shop: login in add_shop')
 
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
 		if not shop_admin:
 
-			return self.send_fail('shop_admin not found')
+			return self.send_fail('[MarketShopAdminInfo]add_shop: shop_admin not found')
 		temp_shop = self.session.query(models.Spider_Shop).filter_by(id = int(shop_id)).first()
 		if not temp_shop:
-			return self.send_fail('temp_shop not found')
+			return self.send_fail('[MarketShopAdminInfo]add_shop: temp_shop not found')
 
 		# 添加系统默认的时间段
-		period1 = models.Period(name="中午", start_time="12:00", end_time="12:30")
-		period2 = models.Period(name="下午", start_time="17:30", end_time="18:00")
-		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00")
+		period1 = models.Period(name="中午", start_time="12:00", end_time="13:00") #按时达默认时间段
+		period2 = models.Period(name="下午", start_time="17:00", end_time="18:00") #按时达默认时间段
+		period3 = models.Period(name="晚上", start_time="21:00", end_time="22:00") #按时达默认时间段
+		period4 = models.Period(name="中午", start_time="12:00", end_time="13:00", config_type=1) #自提时间默认时间段
+		period5 = models.Period(name="下午", start_time="17:00", end_time="18:00", config_type=1) #自提时间默认时间段
+		period6 = models.Period(name="晚上", start_time="21:00", end_time="22:00", config_type=1) #自提时间默认时间段
 
 		config = models.Config()
-		config.periods.extend([period1, period2, period3])
+		config.periods.extend([period1, period2, period3, period4, period5, period6])
 		marketing = models.Marketing()
 		shop_code = self.make_shop_code()
-		print('make shop_code success')
+		print('[MarketShopAdminInfo]add_shop: make shop_code success')
 		temp_shop.shop_code = shop_code
 		shop = models.Shop(admin_id = admin_id,shop_name = temp_shop.shop_name,
 			create_date_timestamp = time.time(),shop_trademark_url = temp_shop.shop_logo,shop_province = 420000,shop_auth = 5,
@@ -281,13 +279,13 @@ class ShopAdminInfo(CustomerBaseHandler):
 		temp_shop.has_done = 1
 		self.session.add(shop)
 		self.session.commit()
-		print('shop add success')
+		print('[MarketShopAdminInfo]add_shop: shop add success')
 
 		# 添加商品
-		print('start add goods')
+		print('[MarketShopAdminInfo]add_shop: start add goods')
 		spider_goods = self.session.query(models.Spider_Good).filter_by(shop_id = temp_shop.shop_id).all()
 		for temp_good in spider_goods:
-			print(shop.id)
+			print("[MarketShopAdminInfo]add_shop: shop.id:",shop.id)
 			new_good = models.Fruit(shop_id = shop.id , fruit_type_id = 999,name = temp_good.goods_name,
 				storage = 100,unit = 2,img_url = temp_good.good_img_url ,)
 			new_good.charge_types.append(models.ChargeType(price = temp_good.goods_price,unit = 2,num =1,market_price = temp_good.goods_price))
@@ -297,13 +295,11 @@ class ShopAdminInfo(CustomerBaseHandler):
 		# inspect whether staff exited
 		######################################################################################
 		temp_staff = self.session.query(models.ShopStaff).get(shop.admin_id)
-		# print('temp_staff')
-		# print(shop.admin_id)
-		# print(temp_staff)
+		# print('[MarketShopAdminInfo]add_shop: temp_staff:',temp_staff)
+		# print('[MarketShopAdminInfo]add_shop: admin_id:',shop.admin_id)
 		if temp_staff is None:
-			# print('passssssssssssssssssssssssssssssssssssssssss')
 			self.session.add(models.ShopStaff(id=shop.admin_id, shop_id=shop.id))  # 添加默认员工时先添加一个员工，否则报错
-			self.session.commit()
+			self.session.flush()
 
 		self.session.add(models.HireLink(staff_id=shop.admin_id, shop_id=shop.id,default_staff=1))  # 把管理者默认为新店铺的二级配送员
 		self.session.commit()
@@ -348,6 +344,6 @@ class Success(CustomerBaseHandler):
 		curator = shop.curator
 		done_time = shop.done_time
 		shop_code = shop.shop_code
-		print(self.current_user.accountinfo.nickname)
-		print(shop_code,curator,shop_name)
+		print('[MarketSuccess]self.current_user.accountinfo.nickname:',self.current_user.accountinfo.nickname)
+		print('[MarketSuccess]shop_code:',shop_code,', curator:',curator,', shop_name:',shop_name)
 		return self.render("market/success.html",curator = curator , done_time = done_time , shop_code = shop_code, shop_name=shop_name)

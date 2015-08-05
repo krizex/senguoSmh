@@ -25,6 +25,7 @@ from concurrent.futures import ThreadPoolExecutor
 from functools import partial, wraps
 
 import chardet
+import random
 
 
 # 非阻塞
@@ -119,6 +120,22 @@ class GlobalBaseHandler(BaseHandler):
 		s = s * EARTH_RADIUS
 		s*= 1000
 		return s;
+
+	def updatecouponbase(self,shop_id,customer_id):
+		current_customer_id=customer_id
+		now_date=int(time.time())
+		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,customer_id=current_customer_id).with_lockmode('update').all()
+		for x in q:
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,closed=0).with_lockmode('update').first()
+			if  qq!=None:
+				if now_date>qq.to_get_date:
+					qq.closed=1
+				if x.coupon_status>0:
+					if now_date>x.uneffective_time:
+						x.update(self.session,coupon_status=3)
+				self.session.commit()
+		self.session.commit()
+		return None
 
 	# 数字代号转换为文字描述
 	def code_to_text(self, column_name, code):
@@ -395,7 +412,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			ua = self.request.headers["User-Agent"]
 		else:
 			ua = ""
-		return  "MicroMessenger" in ua
+		return "MicroMessenger" in ua
 	# 判断是否为PC浏览器
 	def is_pc_browser(self):
 		if "User-Agent" in self.request.headers:
@@ -524,7 +541,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			# print("[_AccountBaseHandler]get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
 			if not self._user:
-				print("[_AccountBaseHandler]get_current_user: self._user not found2333333")
+				print("[_AccountBaseHandler]get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -571,7 +588,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		return token
 
 	# 获取评论
-	def get_comments(self, shop_id, page=0, page_size=5):
+	def get_comments(self, shop_id, page=0, page_size=5, anonymous=True):
 		comments_new = {}
 		comments_result = []
 		comments_array  = []
@@ -586,26 +603,32 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		comments_count = comments_list.count()-page*page_size
 		comments = comments_list.offset(page*page_size).limit(page_size).all()
 		for item in comments:
-			comments_new['comments']      = item[0]
-			comments_new['create_date']   = item[1]
-			comments_new['order_num']     = item[2]
-			comments_new['comment_reply'] = item[3]
-			comments_new['order_id']      = item[4]
-			comments_new['comment_has_done'] = item[5]
-			comments_new['headimgurl']    = item[6]
-			comments_new['nickname']      = item[7]
-			comments_new['delete_reason'] = item[8]
-			comments_new['decline_reason']= item[9]
+			# comments_new['comments']      = item[0]
+			# comments_new['create_date']   = item[1]
+			# comments_new['order_num']     = item[2]
+			# comments_new['comment_reply'] = item[3]
+			# comments_new['order_id']      = item[4]
+			# comments_new['comment_has_done'] = item[5]
+			# comments_new['headimgurl']    = item[6]
+			if anonymous:
+				if len(item[7]) == 0:
+					comments_new['nickname'] = '***'
+				else:
+					comments_new['nickname'] = item[7][0]+'***'+item[7][-1]
+			else:
+				comments_new['nickname']  = item[7]
+			# comments_new['delete_reason'] = item[8]
+			# comments_new['decline_reason']= item[9]
 			if item[10]:
 				comments_new['comment_imgUrl'] = item[10].split(',')
 			else:
 				comments_new['comment_imgUrl'] = None
-			comments_new['commodity_quality'] = item[11]
-			comments_new['send_speed']        = item[12]
-			comments_new['shop_service']      = item[13]
+			# comments_new['commodity_quality'] = item[11]
+			# comments_new['send_speed']        = item[12]
+			# comments_new['shop_service']      = item[13]
 			comments_new['index'] = comments_count
-			comments_result.append(comments_new)
-			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],item[7],item[8],item[9],\
+			# comments_result.append(comments_new)
+			comments_array.append([item[0],item[1],item[2],item[3],item[4],item[5],item[6],comments_new['nickname'],item[8],item[9],\
 				comments_new['comment_imgUrl'],item[11],item[12],item[13],comments_new['index']])
 			comments_count = comments_count-1
 		# print("[_AccountBaseHandler]comments_result:",comments_result)
@@ -753,7 +776,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				if mp_customer:
 					other_touser = mp_customer.wx_openid
 				else:
-					# print("店铺管理员对应公众平台的用户id没有找到")
+					# print("[_AccountBaseHandle]send_admin_message: mp_customer not found")
 					other_touser = info.wx_openid
 			else:
 				other_touser = info.wx_openid
@@ -774,18 +797,18 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单完成模版消息给用户
 	@classmethod
 	def order_done_msg(self,session,order):
-		# print('login in order_done_msg')
+		# print('[TempMsg]login order_done_msg')
 		order_num = order.num
 		order_sendtime = order.arrival_day  + " " + order.arrival_time
 		shop_phone = order.shop.shop_phone
 		customer_id= order.customer_id
 		shop_name = order.shop.shop_name
 		order_id = order.id
-		# print(order_num , order_sendtime , shop_phone)
+		# print('[TempMsg]order_num:',order_num,', order_sendtime:',order_sendtime,', shop_phone:',shop_phone)
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
-			return self.send_fail('[_AccountBaseHandler]order_done_msg: customer not found')
+			return self.send_fail('[TempMsg]order_done_msg: customer not found')
 		touser = customer_info.wx_openid
 		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 
@@ -799,6 +822,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
+		print(order)
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
@@ -878,15 +902,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				content="------------------------------------------------\r\n"+\
 						"@@2 订单"+order_num+"已取消\r\n"+\
 						"------------------------------------------------\r\n"
-			# print(content)
 			machine_code=current_shop.config.wireless_print_num #打印机终端号 520
-			mkey=current_shop.config.wireless_print_key#打印机密钥 110110
-			sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
-			# print("sign str    :",sign)
-			sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
-			# print("sign str md5:",sign)
+			mkey=current_shop.config.wireless_print_key #打印机密钥 110110
+			if machine_code and mkey:
+				sign=apikey+'machine_code'+machine_code+'partner'+partner+'time'+timenow+mkey #生成的签名加密
+				sign=hashlib.md5(sign.encode("utf-8")).hexdigest().upper()
+			else:
+				print('[autoPrint]sign error')
+				sign = None
 			data={"partner":partner,"machine_code":machine_code,"content":content,"time":timenow,"sign":sign}
-			# print("post        :",data)
 			r=requests.post("http://open.10ss.net:8888",data=data)
 
 			# print("======WirelessPrint======")
@@ -926,7 +950,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				msgDetail = "-------------------------\n"+\
 							"<Font# Bold=1 Width=2 Height=2>订单"+order_num+"已取消</Font#>\n"+\
 							"-------------------------\n"
-			# print(msgDetail)
 			content = memberCode+msgDetail+deviceNo+str(reqTime)+API_KEY
 			securityCode = hashlib.md5(content.encode('utf-8')).hexdigest()
 			data={"reqTime":reqTime,"securityCode":securityCode,"memberCode":memberCode,"deviceNo":deviceNo,"mode":mode,"msgDetail":msgDetail}
@@ -945,7 +968,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return None
 		if admin_info.mp_name and admin_info.mp_appid and admin_info.mp_appsecret:
 			if admin_info.access_token and now - admin_info.token_creatime < 3600:
-				print(admin_info.access_token , admin_info.token_creatime , 'hahahahah')
+				print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token,", token_creatime:",admin_info.token_creatime)
 				return admin_info.access_token
 			else:
 				appid = admin_info.mp_appid
@@ -957,10 +980,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					admin_info.access_token = data['access_token']
 					admin_info.token_creatime = now
 					session.commit()
-					print(admin_info.access_token,'heheheheheh')
+					print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token)
 					return data['access_token']
 				else:
-					# print("[微信授权]Token错误")
+					# print("[WxAuth]Token error")
 					return None
 		else:
 			return None
@@ -973,7 +996,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	##############################################################################################
 	@classmethod
 	def order_done(self,session,order):
-		# print('login in order_done')
+		# print('[_AccountBaseHandler]login order_done')
 		now = datetime.datetime.now()
 		order.arrival_day = now.strftime("%Y-%m-%d")
 		order.arrival_time= now.strftime("%H:%M")
@@ -989,15 +1012,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		#add by jyj 2015-6-15
 		totalprice_inc = order.totalPrice
 		order.shop.shop_property += totalprice_inc
-		# print(order.shop.shop_property,'order.shop.shop_property')
+		# print("[_AccountBaseHandler]order_done: order.shop.shop_property:",order.shop.shop_property)
 
 		fruits = eval(order.fruits)
 		if fruits:
-			print(fruits.keys())
+			# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
 			ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType)\
 			.filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for s in ss:
-				print(s)
 				num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 				s[0].current_saled -= num
 
@@ -1014,7 +1036,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return self.send_fail('[_AccountBaseHandler]order_done: shop_follow error')
 		if shop_follow.shop_new == 0:
 			shop_follow.shop_new = 1
-			# print("[订单管理]用户",customer_id,"完成订单，新用户标识置为：",customer.shop_new)
 		try:
 			order_count = session.query(models.Order).filter_by(customer_id = customer_id,shop_id = shop_id).count()
 		except:
@@ -1068,7 +1089,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if shop_follow.shop_point == None:
 			shop_follow.shop_point = 0
 			shop_follow.shop_point += totalprice
-			session.commit()
+			session.flush()
 			try:
 				point_history = models.PointHistory(customer_id = customer_id,shop_id = shop_id)
 			except:
@@ -1079,6 +1100,31 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				session.add(point_history)
 		session.commit()
 
+	# woody 7.23
+	# 生成是否关注微信公众号的二维码
+	@classmethod
+	def get_ticket_url(self):
+		access_token = WxOauth2.get_client_access_token()
+		print("[_AccountBaseHandler]get_ticket_url: access_token:",access_token)
+		scene_id = self.make_scene_id()
+		print("[_AccountBaseHandler]get_ticket_url: scene_id:",scene_id)
+		url = 'https://api.weixin.qq.com/cgi-bin/qrcode/create?access_token={0}'.format(access_token)
+		data = {"action_name": "QR_SCENE", "action_info": {"scene": {"scene_id": scene_id}}}
+		r = requests.post(url,data = json.dumps(data))
+		result = json.loads(r.text)
+		print("[_AccountBaseHandler]get_ticket_url: result:",result)
+		ticket_url = result.get('url',None)
+		return ticket_url,scene_id
+
+	def make_scene_id():
+		session = models.DBSession()
+		while True:
+			scene_id = random.randint(1,2**20)
+			scene_openid = session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
+			if not scene_openid:
+				break
+		return scene_id
+
 # 超级管理员基类方法
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
@@ -1087,7 +1133,6 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 	# 关闭店铺
 	def shop_close(self):
-		# print(self)
 		# print("[SuperBaseHandler]Shop close")
 		session = models.DBSession()
 		try:
@@ -1264,7 +1309,6 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# 	else:
 		# 		self.current_shop = shop
 	def if_current_shops(self):
-		print("oh ~ no")
 		if not self.current_user.shops:
 			try:
 				shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
@@ -1280,14 +1324,18 @@ class AdminBaseHandler(_AccountBaseHandler):
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
+	
+	# 刷新数据库优惠券信息
+	def updatecoupon(self,customer_id):
+		current_shop_id=self.get_secure_cookie("shop_id") 
+		self.updatecouponbase(current_shop_id,customer_id)
 
 	# 获取订单
 	def getOrder(self,orders):
 		data = []
 		for order in orders:
 			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today',
-										 'type','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today','active','arrival_day','arrival_time','finish_admin_id','intime_period',
 										 'send_admin_id','send_speed','shop_service']
 			d = order.safe_props(False)
 			if d['fruits']:
@@ -1386,7 +1434,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
 	def _f(self, cart, menu, charge_type_id, inc):
 		d = eval(getattr(cart, menu))
-		# print(type(d[charge_type_id]))
+		# print("[CustomerBaseHandler]type(d[charge_type_id]):",type(d[charge_type_id]))
 		if d:
 			if inc == 2:#加1
 				if charge_type_id in d.keys(): d[charge_type_id] =   int(d[charge_type_id]) + 1
@@ -1517,6 +1565,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		else:
 			tpl_path = "customer"
 		return tpl_path
+	# 刷新数据库优惠券信息
+	def updatecoupon(self,customer_id):
+		current_shop_id= self.get_cookie("market_shop_id") 
+		self.updatecouponbase(current_shop_id,customer_id)
+
 
 
 import urllib.request

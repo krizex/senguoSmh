@@ -23,7 +23,7 @@ ul{padding-left:0;}
 .header-nav{height:60px;line-height:60px;}
 .header-nav .nav{}
 .header-nav a{font-weight:bold;color:#333;}
-.header-nav li{\width:20%;text-align:center;float:left;}
+.header-nav li{\width:25%;text-align:center;float:left;}
 .header-nav li.active a{background:#ddd;}
 
 .btn-style{display:inline-block;width:80px;height:30px;text-align:center;color:#fff;border:1px solid #e7e7eb;}
