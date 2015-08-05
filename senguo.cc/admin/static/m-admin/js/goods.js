@@ -110,7 +110,8 @@ $(document).ready(function(){
 }).on("click","#close-pop",function(){
     $("#qa").removeClass("hide");
     $(".pop-qa").addClass("hide");
-}).on("click",".share-group",function(){
+}).on("click",".share-group",function(e){
+    e.stopPropagation();
     var url = $(this).attr("data-url");
     $(".shop_url").html(url);
     $("#big-code2").empty();
@@ -132,7 +133,8 @@ $(document).ready(function(){
     var id = $(this).attr("data-id") || 0;
     var action = $(this).attr("data-action");
     operateGroup(action,id);
-}).on("click",".edit-group",function(){
+}).on("click",".edit-group",function(e){
+    e.stopPropagation();
     cur_group = $(this).closest("li");
     $("#group_name").val(cur_group.find(".go-name").html());
     $("#group_info").val(cur_group.find(".go-info").html());
@@ -142,7 +144,8 @@ $(document).ready(function(){
     $("#opreate_group").attr("data-id",$(this).attr("data-id")).attr("data-action","edit");
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
-}).on("click",".del-group",function(){
+}).on("click",".del-group",function(e){
+    e.stopPropagation();
     cur_group = $(this).closest("li");
     $("#del_group").attr("data-id",$(this).attr("data-id"));
     $(".pop-del").removeClass("hide");
@@ -255,6 +258,7 @@ function operateGroup(action,id){
                             '</div><p class="c666 mt6 clip go-info">'+group_info+'</p></dd></dl></div></a></li>';
                     $(".group-list").append(li);
                     $(".pop-name").addClass("hide");
+                    Tip("新分组添加成功");
                 }else if(action=="del"){
                     cur_group.remove();
                     $(".pop-del").addClass("hide");
