@@ -511,7 +511,7 @@ function orderPrint(target,action){
     var html=document.createElement("div"); 
     var type=parseInt($("#receipt-type").val());
     var console_type=parseInt($("#console-type").val());
-    console.log(console_type);
+    //console.log(console_type);
     if(action =='print'){
         var parent=target.parents('.order-list-item');
         var order_id=parent.attr('data-id');

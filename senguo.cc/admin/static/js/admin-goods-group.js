@@ -97,7 +97,7 @@ $(document).ready(function(){
     var group_info = $("#group-info").val();
     var _action =$this.attr('data-action');
     if($('.gropu-list li').length==7){
-        Tip("至多可添加五种自定义分组！");
+        Tip("最多可添加五中自定义分组！");
         return false;
     }
     if($.trim(group_name)==""){

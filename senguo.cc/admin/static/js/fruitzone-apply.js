@@ -234,9 +234,9 @@ function Apply(target){
         code:code,
         shop_phone:phone
     };
-    console.log(address);
+    //console.log(address);
     myGeo.getPoint(address, function (point) {
-        console.log(point);
+        //console.log(point);
         if (point) {
             shop_point = point;
             args.lat=shop_point.lat;

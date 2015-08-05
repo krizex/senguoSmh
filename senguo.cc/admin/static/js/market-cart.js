@@ -74,7 +74,7 @@ $(document).ready(function(){
             $receiveAddress.val('');
             $receivePhone.val('');
         }
-        else return noticeBox('至多能添加五个收获地址！',$this);
+        else return noticeBox('最多能添加五个收获地址！',$this);
     });
     $(document).on('click','#receiveAdd',function(){
         var $this=$(this);
@@ -82,7 +82,7 @@ $(document).ready(function(){
         var address=$receiveAddress.val();
         var phone=$receivePhone.val();
         if(max<5) addressAddEdit('add_address',name,address,phone,$this);
-        else return noticeBox('至多能添加五个收获地址！',$this);
+        else return noticeBox('最多能添加五个收获地址！',$this);
     });
 
     //收货地址编辑
@@ -517,8 +517,8 @@ function todayChoose(){
                         _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
  
                     }
-                    console.log(stop_now_time);
-                    console.log(_time_now);
+                    //console.log(stop_now_time);
+                    //console.log(_time_now);
                     if(stop_now_time>_time_now){
                         $(".send-now").addClass("active").addClass("available");
                         minNow();

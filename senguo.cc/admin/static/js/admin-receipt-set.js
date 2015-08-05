@@ -269,7 +269,7 @@ function receiptEdit(target) {
         receipt_msg = ''
     }
     if (receipt_msg.length > 20) {
-        return Tip('小票附加消息请不要超过20个字！');
+        return Tip('小票附加消息请不要超过20个字');
     }
     var data = {
         receipt_msg: receipt_msg
