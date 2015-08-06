@@ -388,7 +388,7 @@
 .slide-more{height: 38px;line-height: 38px;text-align: center;background-color: #fff;}
 .slide-more .add-right{display: inline-block;}
 .wrap-more-set{position: relative;}
-.num-ipt{border: 1px solid #48b6a4;height: 24px;width:44px;text-align: center;color: #333;border-radius: 4px;position: absolute;left: 0;top: 4px;-webkit-box-sizing: border-box;}
+.num-ipt{border: 1px solid #48b6a4;height: 24px;line-height: 24px;width:44px;text-align: center;color: #333;border-radius: 4px;position: absolute;left: 0;top: 3px;-webkit-box-sizing: border-box;}
 .num-info{color: #999;font-size: 12px;padding-left: 60px;line-height: 16px;}
 .wrap-mark-set>span{display: inline-block;padding:0 2px;font-size: 12px;color: #999;border-radius: 4px;border: 1px solid #999;-webkit-box-sizing: border-box;text-align: center;height:26px;line-height: 26px;}
 .wrap-mark-set .w24{width: 24px;}
