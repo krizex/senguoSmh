@@ -190,7 +190,7 @@ $(document).ready(function(){
 	$(".year-span2").show();
 	$(".month-span2").show();
 	$(".date-span2").show();
-	show_chart('shop',CurrentDate,CurrentDate,1);
+	show_chart('shop',CurrentDate,CurrentDate,cur_selected_type_id);
 
 }).on('click','.sort-week2',function(){
 	current_sort_way2 = 2;
@@ -209,7 +209,7 @@ $(document).ready(function(){
 	$(".year-span2").show();
 	$(".week-span2").removeClass("hidden").show();
 
-	show_chart('shop',week_first_date,week_last_date,1);
+	show_chart('shop',week_first_date,week_last_date,cur_selected_type_id);
 }).on('click','.sort-month2',function(){
 	current_sort_way2 = 3;
 	liveInit();
@@ -223,7 +223,7 @@ $(document).ready(function(){
 
 	var start_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),1);
 	var end_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),getLastDayOfMonth(CurrentDate.getMonth()+1,CurrentDate.getFullYear()))
-	show_chart('shop',start_date,end_date,1);
+	show_chart('shop',start_date,end_date,cur_selected_type_id);
 }).on("click",".pre-item2",function(){
 	switch(current_sort_way2){
 		case 1:
@@ -236,7 +236,7 @@ $(document).ready(function(){
 			$(".month2").text(choose_month2);
 			$(".date2").text(choose_date2);
 
-			show_chart('shop',ChooseDate2,ChooseDate2,1);
+			show_chart('shop',ChooseDate2,ChooseDate2,cur_selected_type_id);
 			break;
 		case 2:
 			ChooseDate2 = GetDateN(ChooseDate2,-7);
@@ -252,7 +252,7 @@ $(document).ready(function(){
 
 			$(".year2").text(choose_year2);
 
-			show_chart('shop',week_first_date,week_last_date,1);
+			show_chart('shop',week_first_date,week_last_date,cur_selected_type_id);
 			break;
 		case 3:
 			ChooseDate2 = new Date(ChooseDate2.getFullYear(),ChooseDate2.getMonth()-1,ChooseDate2.getDate());
@@ -265,7 +265,7 @@ $(document).ready(function(){
 
 			var start_date = new Date(choose_year2,choose_month2-1,1);
 			var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
-			show_chart('shop',start_date,end_date,1);
+			show_chart('shop',start_date,end_date,cur_selected_type_id);
 
 			break;
 	}
@@ -280,7 +280,7 @@ $(document).ready(function(){
 			$(".year2").text(choose_year2);
 			$(".month2").text(choose_month2);
 			$(".date2").text(choose_date2);
-			show_chart('shop',ChooseDate2,ChooseDate2,1);
+			show_chart('shop',ChooseDate2,ChooseDate2,cur_selected_type_id);
 			break;
 		case 2:
 			ChooseDate2 = GetDateN(ChooseDate2,7);
@@ -294,7 +294,7 @@ $(document).ready(function(){
 			$(".week-month2-2").text(week_last_date.getMonth()+1);
 			$(".week-date2-2").text(week_last_date.getDate());
 			$(".year2").text(choose_year2);
-			show_chart('shop',week_first_date,week_last_date,1);
+			show_chart('shop',week_first_date,week_last_date,cur_selected_type_id);
 			break;
 		case 3:
 			ChooseDate2 = new Date(ChooseDate2.getFullYear(),ChooseDate2.getMonth()+1,ChooseDate2.getDate());
@@ -307,7 +307,7 @@ $(document).ready(function(){
 
 			var start_date = new Date(choose_year2,choose_month2-1,1);
 			var end_date = new Date(choose_year2,choose_month2-1,getLastDayOfMonth(choose_month2,choose_year2))
-			show_chart('shop',start_date,end_date,1);
+			show_chart('shop',start_date,end_date,cur_selected_type_id);
 			break;
 	}
 }).on('click','.sell-change-list3 li',function(){
@@ -327,7 +327,7 @@ $(document).ready(function(){
 	$(".year-span3").show();
 	$(".month-span3").show();
 	$(".date-span3").show();
-	show_chart('group',CurrentDate,CurrentDate,1);
+	show_chart('group',CurrentDate,CurrentDate,cur_selected_group_id);
 
 }).on('click','.sort-week3',function(){
 	current_sort_way3 = 2;
@@ -346,7 +346,7 @@ $(document).ready(function(){
 	$(".year-span3").show();
 	$(".week-span3").removeClass("hidden").show();
 
-	show_chart('group',week_first_date,week_last_date,1);
+	show_chart('group',week_first_date,week_last_date,cur_selected_group_id);
 }).on('click','.sort-month3',function(){
 	current_sort_way3 = 3;
 	liveInit();
@@ -360,7 +360,7 @@ $(document).ready(function(){
 
 	var start_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),1);
 	var end_date = new Date(CurrentDate.getFullYear(),CurrentDate.getMonth(),getLastDayOfMonth(CurrentDate.getMonth()+1,CurrentDate.getFullYear()))
-	show_chart('group',start_date,end_date,1);
+	show_chart('group',start_date,end_date,cur_selected_group_id);
 }).on("click",".pre-item3",function(){
 	switch(current_sort_way3){
 		case 1:
@@ -373,7 +373,7 @@ $(document).ready(function(){
 			$(".month3").text(choose_month3);
 			$(".date3").text(choose_date3);
 
-			show_chart('group',ChooseDate3,ChooseDate3,1);
+			show_chart('group',ChooseDate3,ChooseDate3,cur_selected_group_id);
 			break;
 		case 2:
 			ChooseDate3 = GetDateN(ChooseDate3,-7);
@@ -389,7 +389,7 @@ $(document).ready(function(){
 
 			$(".year3").text(choose_year3);
 
-			show_chart('group',week_first_date,week_last_date,1);
+			show_chart('group',week_first_date,week_last_date,cur_selected_group_id);
 			break;
 		case 3:
 			ChooseDate3 = new Date(ChooseDate3.getFullYear(),ChooseDate3.getMonth()-1,ChooseDate3.getDate());
@@ -402,7 +402,7 @@ $(document).ready(function(){
 
 			var start_date = new Date(choose_year3,choose_month3-1,1);
 			var end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
-			show_chart('group',start_date,end_date,1);
+			show_chart('group',start_date,end_date,cur_selected_group_id);
 
 			break;
 	}
@@ -417,7 +417,7 @@ $(document).ready(function(){
 			$(".year3").text(choose_year3);
 			$(".month3").text(choose_month3);
 			$(".date3").text(choose_date3);
-			show_chart('group',ChooseDate3,ChooseDate3,1);
+			show_chart('group',ChooseDate3,ChooseDate3,cur_selected_group_id);
 			break;
 		case 2:
 			ChooseDate3 = GetDateN(ChooseDate3,7);
@@ -431,7 +431,7 @@ $(document).ready(function(){
 			$(".week-month3-2").text(week_last_date.getMonth()+1);
 			$(".week-date3-2").text(week_last_date.getDate());
 			$(".year3").text(choose_year3);
-			show_chart('group',week_first_date,week_last_date,1);
+			show_chart('group',week_first_date,week_last_date,cur_selected_group_id);
 			break;
 		case 3:
 			ChooseDate3 = new Date(ChooseDate3.getFullYear(),ChooseDate3.getMonth()+1,ChooseDate3.getDate());
@@ -444,7 +444,7 @@ $(document).ready(function(){
 
 			var start_date = new Date(choose_year3,choose_month3-1,1);
 			var end_date = new Date(choose_year3,choose_month3-1,getLastDayOfMonth(choose_month3,choose_year3))
-			show_chart('group',start_date,end_date,1);
+			show_chart('group',start_date,end_date,cur_selected_group_id);
 			break;
 	}
 }).on('mouseover','#type-select-fruit',function(){

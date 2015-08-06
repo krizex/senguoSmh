@@ -1205,6 +1205,11 @@ class SellStatic(SuperBaseHandler):
 			return self.group_count(start_date,end_date)
 
 	def get_order(self,start_date,end_date):
+		# added by jyj 2015-8-6 (add level and shop_province filter)
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		##
+
 		start_date_str = start_date
 		end_date_str = end_date
 
@@ -1217,12 +1222,21 @@ class SellStatic(SuperBaseHandler):
 		end_date_next = end_date + datetime.timedelta(days = 1)
 		end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
 		end_date_next_str = end_date_next.strftime('%Y-%m-%d')
-		fruit_list_query = self.session.query(models.Order.fruits).filter(models.Order.status >= 5,\
-					        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
-					        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
-		mgoods_list_query = self.session.query(models.Order.mgoods).filter(models.Order.status >= 5,\
-					        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
-					        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+
+		if level == 0:
+			fruit_list_query = self.session.query(models.Order.fruits).filter(models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+			mgoods_list_query = self.session.query(models.Order.mgoods).filter(models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+		elif level == 1:
+			fruit_list_query = self.session.query(models.Order.fruits).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Shop.shop_province == shop_province,models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+			mgoods_list_query = self.session.query(models.Order.mgoods).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Shop.shop_province == shop_province,models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
 
 		return [fruit_list_query,mgoods_list_query]
 
