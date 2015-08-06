@@ -1161,7 +1161,7 @@ function show_chart(action,start_date,end_date,id){
 							$("#fruit-type").append(list_item);
 						}
 						else if (item[0] > 1000 && item[0] < 2000){
-							var li_item = '<li id={{type_id}} data-id={{data_id}}>{{type_name}}</li>';
+							var li_item = '<li id={{type_id}} data-id={{data_id}} onclick="onTypeItemClick({{type_id}})">{{type_name}}</li>';
 							var render = template.compile(li_item);
 
 							var type_id = 'type' + item[0];
