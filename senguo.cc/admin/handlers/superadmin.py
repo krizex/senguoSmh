@@ -1947,9 +1947,9 @@ class ApplyCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action:?str','page?:int')
 	def get(self):
+		# woody
 		level = self.current_user.level
-		if level == 1:
-			return self.send_error(404)
+		shop_province = self.current_user.province
 		page_size =10
 		page_sum =0
 		count = 0
@@ -1966,15 +1966,29 @@ class ApplyCash(SuperBaseHandler):
 		company_num = 0
 		cash_history = []
 		try:
-			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
+			if level == 0 :
+				cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
+			elif level == 1:
+				cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0,shop_province=shop_province).all()
+			else:
+				return self.send_fail('level error')
 		except:
 			print('[SuperApplyCash]no cash_history')
 		if cash_history!=[]:
-			alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).all()
-			persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
-			.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).all()
-			companys = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
-			.filter(models.ApplyCashHistory.shop_auth.in_([2,3])).all()
+			if level == 0:
+				alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).all()
+				persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
+				.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).all()
+				companys = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
+				.filter(models.ApplyCashHistory.shop_auth.in_([2,3])).all()
+			elif level == 1:
+				alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done=0,shop_province=shop_province).all()
+				persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done=0,shop_province=shop_province
+					).filter(models.ApplyCashHistory.shop_auth.in_([1,4])).all()
+				companys = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0,shop_province=shop_province
+					).filter(models.ApplyCashHistory.shop_auth.in_([2,3])).all()
+			else:
+				return self.send_fail('level error')
 			if alls[0][0]:
 				all_num = alls[0][1]
 				all_cash = alls[0][0]
@@ -1988,8 +2002,10 @@ class ApplyCash(SuperBaseHandler):
 		all_cash=format(all_cash,'.2f')
 		person_cash=format(person_cash,'.2f')
 		company_cash=format(company_cash,'.2f')
-
-		cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0)
+		if level==0:
+			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0)
+		elif level == 1:
+			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done=0,shop_province=shop_province)
 		if 'page' in self.args:
 			page = int(self.args['page'])
 		if action == 'all_apply' or action == '[]':

@@ -112,7 +112,9 @@ class WxMessage(CustomerBaseHandler):
 			elif Content == '打印机':
 				reply_message = 'senguo.cc/bbs/detail/8'
 			else:
-				reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
+				MsgType = 'transfer_customer_service'
+				reply_message = None
+				# reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
 			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 			reply = ET.tostring(reply,encoding='utf8',method='xml')
 			# print("[ApplyWxMessage]reply:",reply)
@@ -167,7 +169,7 @@ class WxMessage(CustomerBaseHandler):
 					self.session.commit()
 
 	@classmethod
-	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content):
+	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content=None):
 		root = ET.Element('xml')
 		first = ET.Element('ToUserName')
 		first.text = ToUserName
@@ -175,13 +177,17 @@ class WxMessage(CustomerBaseHandler):
 		second.text = FromUserName
 		third = ET.Element('CreateTime')
 		third.text=CreateTime
-		forth = ET.Element('CreateTime')
-		forth.text = CreateTime
-		fifth = ET.Element('MsgType')
-		fifth.text = MsgType
-		sixth = ET.Element('Content')
-		sixth.text = Content
-		root.extend((first,second,third,forth,fifth,sixth))
+		# forth = ET.Element('CreateTime')
+		# forth.text = CreateTime
+		forth = ET.Element('MsgType')
+		forth.text = MsgType
+		data = [first,second,third,forth]
+		if Content:
+			fifth = ET.Element('Content')
+			fifth.text = Content
+			data.append(fifth)
+		data = tuple(data)
+		root.extend(data)
 		return root
 
 	@classmethod
