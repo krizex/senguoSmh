@@ -2662,6 +2662,13 @@ class Goods(AdminBaseHandler):
 			self.session.add(_group)
 			self.session.flush()
 
+			try:
+				old_group = self.session.query(models.GroupPriority).filter_by(shop_id=shop_id).first()
+			except:
+				old_group = None
+			if not old_group:
+				defautl_group = models.GroupPriority(shop_id=shop_id,group_id=0,priority=(group_count+1))
+				self.session.add(defautl_group)
 			new_group_id = _group.id
 			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count+2))
 			self.session.add(group_priority)
