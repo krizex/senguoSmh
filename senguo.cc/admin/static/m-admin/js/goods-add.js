@@ -1,6 +1,6 @@
 var width = 0,price_type = 0,cur_price=null,editor=null,goods_id=-1,del_list=[],type="add";
 $(document).ready(function(){
-    width = $("#img-lst").width();
+    width = $("#img_list").children("li").first().width();
     getData('fruit','color');
     if($("#finish_btn").attr("data-id")){//编辑
         $("#img_list").children("li").height(width);
@@ -13,22 +13,13 @@ $(document).ready(function(){
             height : 300
         }).makeCode( $("#shop_url").html());
     }
-    var zb_t;
-    window.onbeforeunload = function(){
-        if(goodsEdit==true){
-            setTimeout(function(){zb_t = setTimeout(onunloadcancel, 0)}, 0);
-            return "当前有商品正在编辑还未保存，确定离开此页？";
-        }
-    }
-    window.onunloadcancel = function(){
-        clearTimeout(zb_t);
-    }
 }).on("click",".goods_status",function(){
     $(".wrap-goods-menu").toggleClass("hide");
 }).on("click",".slide_more",function(){
     if($("#goods_set").hasClass("hide")){
         $(this).children("span").html("收起高级设置");
         $("#goods_set").removeClass("hide");
+        document.body.scrollTop=$(window).scrollTop()+100;
     }else{
         $(this).children("span").html("展开高级设置");
         $("#goods_set").addClass("hide");
@@ -38,10 +29,9 @@ $(document).ready(function(){
     $(".wrap-mark-set span").removeClass("active");
     $(this).addClass("active");
 }).on("click",".icon-del",function(){//删除商品图片
-    var $list = $(this).closest(".item-img-lst");
     $(this).closest("li").remove();
-    $(".moxie-shim").css({left:$("#add-img").closest("li").position().left,top:$("#add-img").closest("li").position().top});
     $("#img-lst").removeClass("hide");
+    $(".moxie-shim").css({width:width+"px",height:width+"px",top:"10px"});//调整按钮的位置
     $(".moxie-shim").removeClass("hide");
 }).on("click","#add_price",function(){//添加售价方式
     var $item = $(".price-list").children(".price-item").first().clone();
@@ -61,14 +51,14 @@ $(document).ready(function(){
     if(confirm("修改库存单位后现有的售价方式会被修改成库存单位，确认修改？")){
         price_type = 0;
         $(".unit-title").html("库存单位");
-        $(".unit_list li").removeClass("active");
+        $(".unit_list li").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
         $(".pop-unit").removeClass("hide");
     }
 }).on("click",".price-unit",function(){//售出单位
     price_type = 1;
     cur_price = $(this).closest(".price-item");
     $(".unit-title").html("售出单位");
-    $(".unit_list li").removeClass("active");
+    $(".unit_list li").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
     $(".pop-unit").removeClass("hide");
 }).on("click",".unit_list li",function(){
     var id = $(this).attr("data-id");
@@ -124,15 +114,33 @@ $(document).ready(function(){
         $(".pop-conver").addClass("hide");
     }
 }).on("click",".choose_classify",function(){
+    $("#finish_btn").addClass("hide");
     $(".wrap-add-class").addClass("hide");
     $(".wrap-classify").removeClass("hide");
 }).on("click",".class-lst li",function(){
     $(".choose_classify").html($(this).find(".class_name").html()).attr("data-id",$(this).attr("data-id"));
+    if($("#img_list").children("li").size()==6 && $("#img-lst").hasClass("hide")){
+    }else{
+        if($("#img_list").children("li").size()>4){
+            $("#img-lst").addClass("hide");
+        }
+        var code = $(this).attr("data-code");
+        var w = width+10;
+        var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img src="/static/design_img/'+code+'.png" url="/static/design_img/'+code+'.png" alt="商品图片" class="image"/><a href="javascript:;" class="icon-del"></a></li>');
+        if($("#img_list").children("li").size()>1){
+            $("#img_list").children("li").first().before($item);
+        }else{
+            $("#img-lst").before($item);
+        }
+    }
     $(".wrap-classify").addClass("hide");
+    $("#finish_btn").removeClass("hide");
     $(".wrap-add-class").removeClass("hide");
 }).on("click","#convert-btn",function(){//分类搜索
-    var con = $.trim($("#class_con").val());
+    var con = $.trim($(".coupon-ipt").val());
     getData2(con);
+}).on("click",".class_status",function(){
+    $(".wrap_class_menu").toggleClass("hide");
 }).on("click",".class_menu_list li",function(){
     var sub_type = $(this).attr("data-id");
     var type = $(".class_list").find(".active").attr("data-id");
@@ -165,7 +173,6 @@ $(document).ready(function(){
     $("#add_detail").attr("data-text",editor.body.innerHTML);
     $(".pop-editor").addClass("hide");
 }).on("click",".choose-group",function(){
-    $(".group_list li").removeClass("active");
     $(".pop-group").removeClass("hide");
 }).on("click",".group_list li",function(){
     $(".group_list li").removeClass("active");
@@ -339,7 +346,7 @@ function finishGoods(){
             detail_describe = editor.body.innerHTML;
         }
     }else{
-        detail_describe = $("#add_detail").attr("data-text");
+        detail_describe = $("#add_detail").attr("data-text") || "";
     }
     //商品限购、排序优先级
     var limit_num = $.trim($(".limit_num").val());
@@ -575,7 +582,7 @@ function getData(type,sub_type){
                 var item='<li><div class="class-row"><span class="class-left {{property}}">{{name}}</span><span class="class-right slide-class"></span></div>'+
                     '<ul class="class-lst group {{property}} hide">'+
                     '{{each types as type}}'+
-                    '<li data-id="{{type.id}}" data-code="{{code}}"><span class="{{if type.num>0}}selected{{/if}}"><span class="class_name">{{type.name}}</span>({{type.num}})</span></li>'+
+                    '<li data-id="{{type.id}}" data-code="{{type.code}}"><span class="{{if type.num>0}}selected{{/if}}"><span class="class_name">{{type.name}}</span>({{type.num}})</span></li>'+
                     '{{/each}}'+
                     '</ul></li>';
                 for(var d in data){
@@ -589,6 +596,9 @@ function getData(type,sub_type){
                         $('.classify-list').append(html);
                     }
                 }
+                var $first_li = $(".classify-list").children("li").first();
+                $first_li.children(".class-lst").removeClass("hide");
+                $first_li.find(".slide-class").addClass("arrow-up");
             }
         }
     });

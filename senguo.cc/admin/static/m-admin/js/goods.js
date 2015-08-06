@@ -5,6 +5,8 @@ $(document).ready(function(){
     $(".wrap-goods-group").css({minHeight:(minheight+30)+"px"});
     if($.getUrlParam("search")){
         getGoodsItem("goods_search",0,$.getUrlParam("search"));
+    }else if($.getUrlParam("classify")){
+        getGoodsItem("classify",$.getUrlParam("classify"));
     }else{
         getGoodsItem("all",0);
     }
@@ -30,6 +32,8 @@ $(document).ready(function(){
             page++;
             if($.getUrlParam("search")){
                 pageGoods("goods_search",0,$.getUrlParam("search"));
+            }else if($.getUrlParam("classify")) {
+                pageGoods("classify",$.getUrlParam("classify"));
             }else{
                 pageGoods("all",0);
             }
@@ -72,6 +76,7 @@ $(document).ready(function(){
     $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
     page=0;
     $(".order-type-list .tab-bg").css("left",33.3*index+"%");
+    document.body.scrollTop=0;
 }).on("click",".goods_list .gitem",function(){
     var index = $(this).index();
     page=0;
@@ -152,17 +157,22 @@ $(document).ready(function(){
 }).on("click","#del_group",function(){
     var id = $(this).attr("data-id");
     operateGroup("del",id);
-}).on("click",".group-list li",function(e){
-    var url = $(this).attr("data-url");
-    if($(e.target).closest(".wrap-operates").size()==0){
+}).on("click",".group-list li",function(){
+    if($(this).find(".more").hasClass("hide")){
+        return false;
+    }else{
+        var url = $(this).attr("data-url");
         window.location.href=url;
     }
 }).on("click",".manage-group",function(){
     $(".wrap-operates").removeClass("hide");
+    $(".group-list").find(".more").addClass("hide");
+    $(".default-more").removeClass("hide");
     $(".wrap-bm-btns .btns-list").addClass("hide");
     $("#finish_group").removeClass("hide");
 }).on("click",".finish-group",function(){
     $(".wrap-operates").addClass("hide");
+    $(".group-list").find(".more").removeClass("hide");
     $(".wrap-bm-btns .btns-list").addClass("hide");
     $("#group_manage").removeClass("hide");
 }).on("click",".slide-class",function(){
@@ -181,6 +191,9 @@ $(document).ready(function(){
 }).on("click","#convert-btn",function(){//分类搜索
     var con = $.trim($("#class_con").val());
     getData2(con);
+}).on("click",".class-lst li",function(){
+    var id = $(this).attr("data-id");
+    window.location.href="/madmin/goods?classify="+id;
 });
 //上下架商品
 function switchGoods(id,$obj){
@@ -400,6 +413,9 @@ function getData(type,sub_type){
                         $('.classify-list').append(html);
                     }
                 }
+                var $first_li = $(".classify-list").children("li").first();
+                $first_li.children(".class-lst").removeClass("hide");
+                $first_li.find(".slide-class").addClass("arrow-up");
             }
         }
     });

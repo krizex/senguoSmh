@@ -81,14 +81,13 @@
                         <div class="w50 add-row fl">
                             <span class="add-left">售价</span>
                         <span class="add-right nodownm borderm">
-                            <span class="textr mr10">元</span>
+                            <span class="textr mr5">元</span>
                             <input type="text" class="add-ipt current-price" placeholder="请输入售价" value="{{charge['price']}}"/>
                         </span>
                         </div>
                         <div class="w50 add-row fl borderl borderm">
                             <span class="add-left pl10">数量</span>
                             <span class="add-right pl10 nodownm">
-                                <span class="textr"></span>
                                 <input type="tel" class="add-ipt price-num" placeholder="请输入数量" value="{{charge['num']}}"/>
                             </span>
                         </div>
@@ -117,29 +116,29 @@
         </div>
         <ul class="add-list hide" id="goods_set">
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">商品限购</span>
                     <span class="add-right nodownm pt4">
                         <div class="wrap-more-set">
                             <input type="tel" class="num-ipt limit_num" value="{{data['limit_num']}}"/>
-                            <p class="num-info">输入商品限购数量，0为默认<br>不限购</p>
+                            <p class="num-info">输入商品限购数量，0为<br>默认不限购</p>
                         </div>
                     </span>
                 </div>
             </li>
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">优先级</span>
                 <span class="add-right nodownm pt4">
                     <div class="wrap-more-set">
                         <input type="tel" class="num-ipt goods-priority" value="{{data['priority']}}"/>
-                        <p class="num-info">输入0-9的数字，数字越大，商品<br>排序越靠前</p>
+                        <p class="num-info">输入0-9的数字，数字越大，<br>商品排序越靠前</p>
                     </div>
                 </span>
                 </div>
             </li>
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">商品标签</span>
                     <span class="add-right nodownm pt0">
                         <div class="wrap-mark-set" data-id="{{data['tag']}}">
@@ -269,13 +268,13 @@
     <div class="pop-bcontent">
         <h3 class="txt-center unit-title">选择分组</h3>
         <ul class="status-list group_list">
-            <li data-id="-1" class="active">店铺推荐</li>
+            <li data-id="-1">店铺推荐</li>
             {% for d in group_data %}
-            <li data-id="{{d['id']}}" class="">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</li>
+            <li data-id="{{d['id']}}" class="{% if d['id']==data['group_id'] %}active{% end %}">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</li>
             {% end %}
         </ul>
         <div class="wrap-bbtns txt-center">
-            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_group">确定</a>
+            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_group" data-id="{{data['group_id']}}" data-name="{{data['group_name']}}">确定</a>
             <a href="javascript:;" class="cancel-bbtn c666">取消</a>
         </div>
     </div>

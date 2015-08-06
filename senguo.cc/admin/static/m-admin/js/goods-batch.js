@@ -40,8 +40,6 @@ $(document).ready(function(){
     }else{
         Tip("您还没有选择商品分组");
     }
-/*    $("#choose_group").addClass("hide");
-    $("#batch_group").removeClass("hide");*/
 }).on("click","#cancel_group",function(){
     $("#choose_group").addClass("hide");
     $("#batch_group").removeClass("hide");
@@ -109,7 +107,7 @@ function addGroup(){
         function (res) {
             $("#add_group").attr("data-flag", "on");
             if (res.success) {
-                var li = '<li data-id="'+res.id+'"><span class="c666 fr">共0件商品</span><span class="checkbox vm"></span><span class="gname clip vm">'+group_name+'</span></li>';
+                var li = '<li data-id="'+res.id+'"><span class="c666 fr">共0件商品</span><span class="checkbox vm"></span> <span class="gname clip vm">'+group_name+'</span></li>';
                 $(".batch-group-list").append(li);
                 $(".pop-name").addClass("hide");
             }

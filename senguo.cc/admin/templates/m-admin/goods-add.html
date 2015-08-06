@@ -33,7 +33,7 @@
             <li>
                 <div class="add-row">
                     <span class="add-left">商品分组</span>
-                    <span class="add-right borderm choose-group">
+                    <span class="add-right borderm choose-group" data-id="0">
                         默认分组
                     </span>
                 </div>
@@ -74,14 +74,13 @@
                         <div class="w50 add-row fl">
                             <span class="add-left">售价</span>
                         <span class="add-right nodownm borderm">
-                            <span class="textr mr10">元</span>
+                            <span class="textr mr5">元</span>
                             <input type="text" class="add-ipt current-price" placeholder="请输入售价"/>
                         </span>
                         </div>
                         <div class="w50 add-row fl borderl borderm">
                             <span class="add-left pl10">数量</span>
                         <span class="add-right pl10 nodownm">
-                            <span class="textr"></span>
                             <input type="tel" class="add-ipt price-num" placeholder="请输入数量"/>
                         </span>
                         </div>
@@ -109,29 +108,29 @@
         </div>
         <ul class="add-list hide" id="goods_set">
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">商品限购</span>
                 <span class="add-right nodownm pt4">
                     <div class="wrap-more-set">
                         <input type="tel" class="num-ipt limit_num" value="0"/>
-                        <p class="num-info">输入商品限购数量，0为默认<br>不限购</p>
+                        <p class="num-info">输入商品限购数量，0为<br>默认不限购</p>
                     </div>
                 </span>
                 </div>
             </li>
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">优先级</span>
                 <span class="add-right nodownm pt4">
                     <div class="wrap-more-set">
                         <input type="tel" class="num-ipt goods-priority" value="5"/>
-                        <p class="num-info">输入0-9的数字，数字越大，商品<br>排序越靠前</p>
+                        <p class="num-info">输入0-9的数字，数字越大，<br>商品排序越靠前</p>
                     </div>
                 </span>
                 </div>
             </li>
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">商品标签</span>
                 <span class="add-right nodownm pt0">
                     <div class="wrap-mark-set">
@@ -228,13 +227,13 @@
     <div class="pop-bcontent">
         <h3 class="txt-center unit-title">选择分组</h3>
         <ul class="status-list group_list">
-            <li data-id="-1" class="active">店铺推荐</li>
+            <li data-id="-1" class="">店铺推荐</li>
             {% for d in data %}
-            <li data-id="{{d['id']}}" class="">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</li>
+            <li data-id="{{d['id']}}" class="{% if d['id']==0 %}active{% end %}">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</li>
             {% end %}
         </ul>
         <div class="wrap-bbtns txt-center">
-            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_group">确定</a>
+            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_group" data-id="0" data-name="默认分组">确定</a>
             <a href="javascript:;" class="cancel-bbtn c666">取消</a>
         </div>
     </div>
