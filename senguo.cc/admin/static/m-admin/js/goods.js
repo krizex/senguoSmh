@@ -172,7 +172,7 @@ $(document).ready(function(){
     e.stopPropagation();
     switchGoods($(this).attr("data-id"),$(this));
 }).on("click","#goods-all-list li",function(e){
-    if($(e.target).closest(".switch-btn").size>0){
+    if($(e.target).closest(".switch-btn").size()>0){
         return false;
     }else{
         var id = $(this).attr("data-id");
@@ -249,6 +249,7 @@ function operateGroup(action,id){
                     cur_group.find('.go-name').text(group_name);
                     cur_group.find('.go-info').text(group_info);
                     $(".pop-name").addClass("hide");
+                    Tip("分组编辑成功");
                 }else if(action=="add"){
                     var code = $(".group-list").attr("data-code");
                     var li = '<li data-url="/madmin/goodsBatch?gid='+res.id+'"><a href="javascript:;"><div class="goods-row"><dl class="godl"><dt><div class="wrap-gi"><span class="group-text">'+group_name[0]+'</span></div></dt>'+
@@ -262,6 +263,7 @@ function operateGroup(action,id){
                 }else if(action=="del"){
                     cur_group.remove();
                     $(".pop-del").addClass("hide");
+                    Tip("分组删除成功");
                 }
             }
             else {

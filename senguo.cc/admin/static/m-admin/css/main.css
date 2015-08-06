@@ -360,7 +360,7 @@
 .group-text{background-color: #b2dfdb;margin-top:6px;font-weight:bold;display:inline-block;width: 24px;height: 24px;text-align: center;line-height: 24px;color: #48b6a4;font-size: 14px;border-radius: 50%;}
 .group-list>li{margin-bottom: 10px;}
 .bm60{bottom:60px}
-.wrap-operates span{font-size: 14px;margin-right: 8px;color: #48B6A4;}
+.wrap-operates span{font-size: 14px;color: #48B6A4;width: 38px;height: 20px;display: inline-block;}
 .code2group{margin-top: 36px;}
 /*添加商品&编辑商品*/
 .w50{width: 50% !important;-webkit-box-sizing: border-box;}
