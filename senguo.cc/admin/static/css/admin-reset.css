@@ -48,7 +48,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pointer{cursor: pointer;}
 .white-box{background-color: #fff;padding: 0 10px;margin-bottom: 12px;}
 .iblock{display: inline-block;}
-.radio{display: inline-block;vertical-align:-5px;width: 16px;height: 15px;background: url('/static/images/radio.png') no-repeat left center;background-size: 16px;margin: 0 8px 0 0;}
+.radio{display: inline-block;vertical-align:-5px;width: 16px;height: 15px;background: url('/static/images/radio_uncheck.png') no-repeat left center;background-size: 16px;margin: 0 8px 0 0;}
 .radio-active{background-image: url('/static/images/radio_checked.png');}
 /*字体颜色*/
 .red-txt{color: #ff6666!important;}

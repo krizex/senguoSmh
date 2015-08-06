@@ -17,7 +17,7 @@
         <p>商家比较小气，还没有任何发放任何充值优惠券哦～</p>
         {%else%}
         {%for data in output_data%}
-        <p>{{i}}、充值{{data["get_rule"]}}元,即可获得价值{{data["coupon_money"]}}元的优惠券一张,{%if data["get_limit"]!=-1%}每个用户限领{{data["get_limit"]}}张</p>
+        <p class="recharge-roll"><i></i>在{{data["from_get_date"]}}-{{data["to_get_date"]}}期间充值{{data["get_rule"]}}元，即可获得价值{{data["coupon_money"]}}元的优惠券一张，{%if data["get_limit"]!=-1%}每个用户限领{{data["get_limit"]}}张</p>
         {%else%}
         <p> 多充多送</p>
         {%end%}
