@@ -491,7 +491,7 @@ class CouponProfile(CustomerBaseHandler):
 				current_shop_id=shop.id
 				self.set_cookie("market_shop_id",str(current_shop_id))
 			except:
-				return self.send_error(404)
+				return self.render("coupon/coupon-profile.html",output_data=[])
 			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]

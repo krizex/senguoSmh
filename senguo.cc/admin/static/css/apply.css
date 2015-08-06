@@ -62,7 +62,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .tab3{padding: 0 10px;}
 .choose-plant{position: relative;padding-left: 80px;}
 .choose-plant span{display: inline-block;position: absolute;top: 3px;left: 0;}
-.plant-list>li{float: left;white-space: nowrap;width: 80px;height: 20px;font-size:12px;margin-bottom: 6px;line-height: 20px;-webkit-box-sizing: border-box;padding-left: 15px;background-image: url('/static/images/radio.png');background-position: left center;background-size: 12px;background-repeat: no-repeat;}
+.plant-list>li{float: left;white-space: nowrap;width: 80px;height: 20px;font-size:12px;margin-bottom: 6px;line-height: 20px;-webkit-box-sizing: border-box;padding-left: 15px;background-image: url('/static/images/radio_uncheck.png');background-position: left center;background-size: 12px;background-repeat: no-repeat;}
 .plant-list .active{background-image: url('/static/images/radio_checked.png');}
 .sure-btn{width: 120px;}
 /*foot*/

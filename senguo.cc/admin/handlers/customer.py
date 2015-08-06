@@ -2512,10 +2512,13 @@ class Recharge(CustomerBaseHandler):
 		get_rule=0
 		coupon_money=0
 		data=[]
+		now_date=int(time.time())
 		for x in q:
 			qq=self.session.query(models.CouponsCustomer).filter_by(shop_id=current_shop_id,coupon_id=x.coupon_id,coupon_status=0).first()
-			if qq!=None:
-				data0={"get_rule":x.get_rule,"coupon_money":x.coupon_money,"get_limit":x.get_limit}
+			if qq!=None and x.from_get_date<now_date and x.to_get_date>now_date:
+				from_get_date=time.strftime('%Y-%m-%d',time.localtime(x.from_get_date))
+				to_get_date=time.strftime('%Y-%m-%d',time.localtime(x.to_get_date))
+				data0={"get_rule":x.get_rule,"coupon_money":x.coupon_money,"get_limit":x.get_limit,"from_get_date":from_get_date,"to_get_date":to_get_date}
 				data.append(data0)
 
 		# print("[WxCharge]next_url:",next_url)
