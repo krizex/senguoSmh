@@ -140,6 +140,7 @@ class customerGoods(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
 			return self.send_error(404)
+
 		if shop:
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self._shop_code = shop.shop_code
@@ -148,11 +149,17 @@ class customerGoods(CustomerBaseHandler):
 			shop_code = shop.shop_code
 		else:
 			shop_name =''
+			return self.send_error(404)
+			
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
 		try:
 			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
 		except:
 			favour = None
+		if favour is None:
+			good.favour_today = False
+		else:
+			good.favour_today = favour.create_date == datetime.date.today()
 
 		if good:
 			if good.img_url:
@@ -162,11 +169,6 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			good = []
 			img_url = ''
-
-		if favour is None:
-			good.favour_today = False
-		else:
-			good.favour_today = favour.create_date == datetime.date.today()
 
 		charge_types= []
 		for charge_type in good.charge_types:
