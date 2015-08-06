@@ -10,6 +10,9 @@
 <!--add by jyj 2015-6-15-->
 {% set order_active = ""%}
 <!---->
+<!-- added by jyj 2015-8-3 -->
+{% set sell_active = "" %}
+<!--  -->
 
 {% if subcount == "user"%}
     {% set user_active = "active"%}
@@ -21,6 +24,11 @@
 {% elif subcount == "apply"%}
     {% set apply_active = "active"%}
 <!---->
+
+<!-- added by jyj 2015-8-3 -->
+{% elif subcount == "sell" %}
+    {% set sell_active = "active" %}
+<!--  -->
 <!--add by jyj 2015-6-15-->
 {% else %}
     {% set order_active = "active"%}
@@ -46,6 +54,11 @@
                 <a href="{{reverse_url('superOrderStatic')}}">订单统计</a>
             </li>
             <!---->
+            <!-- added by jyj 2015-8-3 -->
+            <li class="sell nav_item {{sell_active}}">
+                <a href="{{reverse_url('superSellStatic')}}">销售统计</a>                
+            </li>
+            <!--  -->
         </ul>
     </div>
     {% block count %}
