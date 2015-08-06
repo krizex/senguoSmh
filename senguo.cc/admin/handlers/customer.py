@@ -153,10 +153,6 @@ class customerGoods(CustomerBaseHandler):
 			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
 		except:
 			favour = None
-		if favour is None:
-			good.favour_today = False
-		else:
-			good.favour_today = favour.create_date == datetime.date.today()
 
 		if good:
 			if good.img_url:
@@ -166,6 +162,11 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			good = []
 			img_url = ''
+
+		if favour is None:
+			good.favour_today = False
+		else:
+			good.favour_today = favour.create_date == datetime.date.today()
 
 		charge_types= []
 		for charge_type in good.charge_types:
