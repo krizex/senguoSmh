@@ -497,16 +497,14 @@ function todayChoose(){
                 var stop_now=parseInt($(".now_stop").val());
                 var _time_now;
                 var _time_now_real=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-                if(_time.getMinutes()+stop_now>=60){
-                    _time_now=checkTime(_time.getHours()+1)+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+                var time_n=parseInt(stop_now/60);
+                var lef_minute=stop_now%60;
+                if(_time.getMinutes()+lef_minute>=60){
+                     _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute-60)+':'+checkTime(_time.getSeconds());
                 }else{
-                    _time_now=_time_now_real;
+                    _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute)+':'+checkTime(_time.getSeconds());
 
                 }
-                console.log(stop_now_time);
-                console.log(start_now_time);
-                console.log(_time_now);
-                console.log(stop_now_time>_time_now);
                 if(stop_now_time>_time_now&&_time_now_real>start_now_time){
                     $(".send-now").show().addClass("active").addClass("available");
                     minNow();
