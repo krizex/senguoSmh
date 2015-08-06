@@ -893,6 +893,7 @@ function show_chart(action,start_date,end_date,id){
 						            name:'销售额',
 						            type:'bar',
 						            stack: '总量',
+						            barWidth:30,
 						            itemStyle : { 
 						            		normal: {
 						            			label : 
@@ -994,6 +995,7 @@ function show_chart(action,start_date,end_date,id){
 						            name:'销售额',
 						            type:'bar',
 						            stack: '总量',
+						            barWidth:30,
 						            itemStyle : { 
 						            		normal: {
 						            			label : 
@@ -1095,6 +1097,7 @@ function show_chart(action,start_date,end_date,id){
 						            name:'销售额',
 						            type:'bar',
 						            stack: '总量',
+						            barWidth:30,
 						            itemStyle : { 
 						            		normal: {
 						            			label : 
