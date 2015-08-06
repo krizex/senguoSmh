@@ -1128,10 +1128,10 @@ function show_chart(action,start_date,end_date,id){
 				var output_data = res.output_data;
 				if(action == 'type'){
 					// 显示第一个图表
-					     setTimeout(function(){
-					     	myChart1.hideLoading();
-					     	myChart_1_big.hideLoading();
-	            		            		  }, 2000);
+					     // setTimeout(function(){
+	         //    		            		  }, 2000);
+				     	myChart1.hideLoading();
+				     	myChart_1_big.hideLoading();
 					
 					
 					var type_select_list = res.type_select_list;
@@ -1193,7 +1193,6 @@ function show_chart(action,start_date,end_date,id){
 						var info = '<p class="info-wrap">'+ first_words + '所有商品总销售额为0~</p>';
 						$("#goods_type").empty().append(info);
 						$("#goods_type_big").empty().append(info);
-						console.log('@@@@');
 						return ;
 					}
 
@@ -1207,10 +1206,10 @@ function show_chart(action,start_date,end_date,id){
 
 				}
 				else if (action == 'shop'){
-					setTimeout(function(){
-						myChart2.hideLoading();
-	            		           		 }, 2000);
-					// myChart2.hideLoading();
+					// setTimeout(function(){
+					// 	myChart2.hideLoading();
+	    //         		           		 }, 2000);
+					myChart2.hideLoading();
 					if(output_data.length == 0){
 						var goods_type = $("#first_type").text();
 						var first_words = ''
@@ -1233,10 +1232,10 @@ function show_chart(action,start_date,end_date,id){
 					getCount("shop",ChartOptions2,myChart2,output_data);
 				}
 				else if (action == 'group'){
-					// myChart3.hideLoading();
-					setTimeout(function(){
-						myChart3.hideLoading();
-	            		            		}, 2000);
+					myChart3.hideLoading();
+					// setTimeout(function(){
+					// 	myChart3.hideLoading();
+	    //         		            		}, 2000);
 					if(output_data.length == 0){
 						var goods_group = $("#first_group").text();
 						var first_words = ''
