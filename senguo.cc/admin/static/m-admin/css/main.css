@@ -45,7 +45,7 @@
 .shop-set{background-image: url('/static/m-admin/img/top_set.png');background-size: 20px;}
 /*bbs首页*/
 .bbs-menu{background-image: url('/static/bbs/img/icon_menu.png');background-size: 20px;padding-left: 26px;}
-.wrap-menu-list{position: absolute;width: 112px;background-color: #48b6a4;top:100%;left: 0;height: 200px;z-index:99;}
+.wrap-menu-list{position: absolute;width: 112px;background-color: rgba(72,182,164,0.8);top:100%;left: 0;height: 200px;z-index:99;}
 .menu-list{padding: 5px 0;height: 200px;z-index:99;}
 .menu-list>li{cursor: pointer;height: 26px;line-height: 26px;text-align: center;color: #fff;margin: 5px 0;}
 .atical-list{background-color: #fff;}
@@ -338,7 +338,7 @@
 .second-tab-list .imenu{position: relative;left: 2px;width: 14px;height: 10px;background-image: url('/static/m-admin/img/menu.png');}
 .second-tab-list .active .turn{display: inline-block;}
 .wrap-goods-menu{width: 25%;height: 160px;}
-.goods-menu-list>li{text-align: left;padding-left: 12px;height: 22px;line-height: 22px;}
+.goods-menu-list>li{text-align: left;padding-left: 12px;height: 24px;line-height: 24px;}
 .second-tab-list .l25{left: 25%;}
 .wrap-bm-btns{width: 100%;position: fixed;z-index:999;bottom:0;left:0;background-color: #fff;border-top:1px solid #ccc;padding: 12px 0;}
 .btns-list{display: table;table-layout: fixed;width: 100%;}

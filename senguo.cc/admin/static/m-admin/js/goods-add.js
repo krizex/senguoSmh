@@ -491,7 +491,7 @@ $(document).ready(function(){
                     }
                 });
                 var w = width+10;
-                var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><div style="width:'+w+'px;height:'+w+'px;" class="img-cover2 hide wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="商品图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></li>');
+                var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><div style="width:'+width+'px;height:'+width+'px;" class="img-cover2 wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="商品图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></li>');
                 $("#add-img").closest("li").before($item);
                 if ($("#img_list").children("li").size() == 6) {
                     $("#img-lst").addClass("hide");
