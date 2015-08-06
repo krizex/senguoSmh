@@ -161,8 +161,14 @@ $(document).ready(function(){
     if($(this).find(".more").hasClass("hide")){
         return false;
     }else{
-        var url = $(this).attr("data-url");
-        window.location.href=url;
+        var num = parseInt($(this).attr("data-num"));
+        if(num==0){
+            Tip("当前分组没有商品哦！");
+            return false;
+        }else{
+            var url = $(this).attr("data-url");
+            window.location.href=url;
+        }
     }
 }).on("click",".manage-group",function(){
     $(".wrap-operates").removeClass("hide");
@@ -185,16 +191,51 @@ $(document).ready(function(){
     if($(e.target).closest(".switch-btn").size()>0){
         return false;
     }else{
-        var id = $(this).attr("data-id");
-        window.location.href="/madmin/goodsEdit/"+id;//跳到编辑
+        if($(this).attr("data-flag")=="delete"){
+            return false;
+        }else{
+            var id = $(this).attr("data-id");
+            window.location.href="/madmin/goodsEdit/"+id;//跳到编辑
+        }
     }
 }).on("click","#convert-btn",function(){//分类搜索
     var con = $.trim($("#class_con").val());
     getData2(con);
 }).on("click",".class-lst li",function(){
+    var num = parseInt($(this).attr("data-num"));
+    if(num==0){
+        Tip("当前类目没有商品哦！");
+        return false;
+    }else{
+        var id = $(this).attr("data-id");
+        window.location.href="/madmin/goods?classify="+id;
+    }
+}).on("click",".cancel-goods",function(){//撤销删除
+    var id = $(this).closest("li").attr("data-id");
+    $("#del_goods").attr("data-id",id);
+    curGoods = $(this).closest("li");
+    $(".pop-delg").removeClass("hide");
+}).on("click","#del_goods",function(){
     var id = $(this).attr("data-id");
-    window.location.href="/madmin/goods?classify="+id;
+    cancelDel(id);
 });
+//取消删除
+function cancelDel(id){
+    var url="/admin/goods/delete";
+    var args={
+        action:'reset_delete',
+        data:{
+            id:id
+        }
+    };
+    $.postJson(url,args,function(res) {
+        if (res.success) {
+            Tip("撤销删除成功");
+            curGoods.remove();
+            $(".pop-delg").addClass("hide");
+        }
+    });
+}
 //上下架商品
 function switchGoods(id,$obj){
     var url=link;
@@ -265,7 +306,7 @@ function operateGroup(action,id){
                     Tip("分组编辑成功");
                 }else if(action=="add"){
                     var code = $(".group-list").attr("data-code");
-                    var li = '<li data-url="/madmin/goodsBatch?gid='+res.id+'"><a href="javascript:;"><div class="goods-row"><dl class="godl"><dt><div class="wrap-gi"><span class="group-text">'+group_name[0]+'</span></div></dt>'+
+                    var li = '<li data-url="/madmin/goodsBatch?gid='+res.id+'" data-num="0"><a href="javascript:;"><div class="goods-row"><dl class="godl"><dt><div class="wrap-gi"><span class="group-text">'+group_name[0]+'</span></div></dt>'+
                              '<dd><i class="more"></i><div class="c333"><div class="wrap-operates fr hide"><span class="del-group" data-id="'+res.id+'">删除</span>'+
                              '<span class="share-group" data-url="http://senguo.cc/'+code+'?group='+res.id+'">分享</span>' +
                             '<span class="edit-group" data-id="'+res.id+'">编辑</span></div><span><span class="go-name">'+group_name+'</span>(0)</span>'+
@@ -297,12 +338,16 @@ function pageGoods(action,type_id,value){
     var order_status2 = $(".goods_list").find(".active").attr("data-id");
     var filter_status2 = -2;
     var pn = page;
-    if(action=="classify"){
-        url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
-    }else if(action=="goods_search"){
-        url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
+    if(filter_status=="delete"){
+        url="/admin/goods/delete?page="+pn;
     }else{
-        url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
+        if(action=="classify"){
+            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
+        }else if(action=="goods_search"){
+            url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
+        }else{
+            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
+        }
     }
     $.ajax({
         url:url,
@@ -331,12 +376,16 @@ function getGoodsItem(action,type_id,value){
     var order_status2 = $(".goods_list").find(".active").attr("data-id");
     var filter_status2 = -2;
     var pn = page;
-    if(action=="classify"){
-        url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
-    }else if(action=="goods_search"){
-        url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
+    if(filter_status=="delete"){
+        url="/admin/goods/delete?page="+pn;
     }else{
-        url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
+        if(action=="classify"){
+            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
+        }else if(action=="goods_search"){
+            url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
+        }else{
+            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
+        }
     }
     $.ajax({
         url:url,
@@ -384,6 +433,12 @@ function insertGoods(data){
             }
         }
         $item.find(".goods-vol").html(goods.saled);
+        if($("#filter_status").attr("data-id")=="delete"){
+            $item.attr("data-flag","delete");
+            $item.find(".switch-btn").addClass("hide");
+            $item.find(".cancel-goods").removeClass("hide");
+            $item.find(".more").hide();
+        }
         $("#goods-all-list").append($item);
     }
 }
@@ -399,7 +454,7 @@ function getData(type,sub_type){
                 var item='<li><div class="class-row"><span class="class-left {{property}}">{{name}}</span><span class="class-right slide-class"></span></div>'+
                 '<ul class="class-lst group {{property}} hide">'+
                 '{{each types as type}}'+
-                    '<li data-id="{{type.id}}" data-code="{{code}}"><span class="{{if type.num>0}}selected{{/if}}"><span class="class_name">{{type.name}}</span>({{type.num}})</span></li>'+
+                    '<li data-id="{{type.id}}" data-code="{{type.code}}" data-num="{{type.num}}"><span class="{{if type.num>0}}selected{{/if}}"><span class="class_name">{{type.name}}</span>({{type.num}})</span></li>'+
                 '{{/each}}'+
                 '</ul></li>';
                 for(var d in data){
@@ -436,7 +491,7 @@ function getData2(con){
                 var data = res.data;
                 $('.classify-list').empty();
                 var item='<ul class="class-lst group">'+
-                            '<li data-id="{{id}}" data-code="{{code}}"><span><span class="class_name">{{name}}</span>({{num}})</span></li>'+
+                            '<li data-id="{{id}}" data-code="{{code}}" data-num="{{num}}"><span><span class="class_name">{{name}}</span>({{num}})</span></li>'+
                         '</ul>';
                 for(var d in data){
                     if(data[d].length!=0){

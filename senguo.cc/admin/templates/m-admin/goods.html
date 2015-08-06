@@ -34,6 +34,7 @@
             <li data-id="off">已下架</li>
             <li data-id="sold_out">已售完</li>
             <li data-id="current_sell">待成交</li>
+            <li data-id="delete">已删除</li>
         </ul>
     </div>
 </div>
@@ -63,7 +64,7 @@
 </div>
 <div class="boxs wrap-goods-group mt10 hide">
     <ul class="group-list" data-code="{{handler.current_shop.shop_code}}">
-        <li data-url="/madmin/goodsBatch?gid=-1">
+        <li data-url="/madmin/goodsBatch?gid=-1" data-num="{{record_count}}">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">
@@ -82,7 +83,7 @@
             </a>
         </li>
         {% for d in data %}
-        <li data-url="/madmin/goodsBatch?gid={{d['id']}}">
+        <li data-url="/madmin/goodsBatch?gid={{d['id']}}" data-num="{{d['num']}}">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">
@@ -137,6 +138,7 @@
                     <dd>
                         <i class="more"></i>
                         <span class="switch-btn switch-goods"><i></i><span>已<span class="s_off">下</span><span class="s_on">上</span>架</span></span>
+                        <span class="cancel-goods hide">撤销删除</span>
                         <p class="dgreen clip goods-name">
                             <span class="goods-goods-name"></span>
                         </p>
@@ -203,6 +205,15 @@
         <h3 class="txt-center">是否确认删除该分组？</h3>
         <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
             <a href="javascript:;" class="ok-bbtn dgreen" id="del_group">确认</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-delg hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center">确认撤销删除该商品？</h3>
+        <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="del_goods">确认</a>
             <a href="javascript:;" class="cancel-bbtn c666">取消</a>
         </div>
     </div>
