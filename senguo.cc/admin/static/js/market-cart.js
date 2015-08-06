@@ -790,6 +790,9 @@ function addressAddEdit(action,name,address,phone,target){
 }
 //订单提交
 function orderSubmit(target){
+    if($('#submitOrder').attr("disabled")=="true"){
+        return false;
+    }
     var url='';
     var fruits={};
     var mgoods={};
@@ -894,14 +897,13 @@ function orderSubmit(target){
                     return noticeBox(res.error_text);
                  }
             });
-        }
-        else {
+        }else {
             noticeBox(res.error_text,target);
             $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled');  
         }
     },
     function(){noticeBox('网络好像不给力呢~ ( >O< ) ~')},
-    function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')});
+    function(){noticeBox('服务器貌似出错了~ ( >O< ) ~')});
 }
 //获取手机验证码倒计时
 var wait=60;
