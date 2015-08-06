@@ -2359,9 +2359,9 @@ class Goods(AdminBaseHandler):
 			args["name"] = data["name"]
 			args["storage"] = data["storage"]
 			args["unit"] = data["unit"]
-			if data["detail_describe"]:
+			if "detail_describe" in data and data["detail_describe"]:
 				args["detail_describe"] = data["detail_describe"].replace("script","'/script/'")
-			if data["tag"]:
+			if "tag" in data and  data["tag"]:
 				args["tag"] = data["tag"]
 			if "limit_num" in data:
 				args["limit_num"] = data["limit_num"]
