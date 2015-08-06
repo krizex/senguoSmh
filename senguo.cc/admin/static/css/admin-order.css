@@ -200,13 +200,13 @@
 .green-txt{color: #41b546 !important;}
 .wrap-selfslide{padding-left: 10px;margin-top: 10px;}
 .add-self-address{width: 116px;display:inline-block;margin-left:20px;font-size: 14px;color: #fff;text-align: center;height: 28px;line-height: 28px;background-color: #52b43f;border-radius: 2px;}
-.switch-abtn{background:#999;display:inline-block;padding:2px 4px;border-radius:1px;color:#fff;}
+.switch-abtn{background:#999;display:inline-block;padding:1px 3px;border-radius:1px;color:#fff;position: relative;bottom: 3px;height: 18px;}
 .switch-abtn .a_on{display: none;}
 .switch-abtn .a_off{display: inline;}
 .switch-abtn-active{background:#44b549;}
 .switch-abtn-active .a_on{display: inline;}
 .switch-abtn-active .a_off{display: none;}
-.cur_loc{height: 20px;width: 20px;background-image: url('/static/images/loc.png');background-size: 20px;display: inline-block;margin: 0 4px;position:relative;top:4px;background-repeat: no-repeat;}
+.cur_loc{height: 20px;width: 20px;background-image: url('/static/images/loc.png');background-size: 20px;display: inline-block;margin: 0 4px;position:relative;top:2px;background-repeat: no-repeat;}
 .wrap-map{position: relative;padding-bottom: 20px;}
 .wrap-bmap{width: 550px;height: 350px;border: 1px solid #e7e7eb;}
 .search-lbs{width: 80px;height: 30px;text-align: center;color: #666;margin-left: 10px;text-indent: 0;}
@@ -217,12 +217,13 @@
 .self-dropdown .caret{margin-top: 0!important;}
 .self-address{width: 444px !important;}
 .set-default{height: 28px;line-height: 28px;font-size: 14px;margin-left: 15px;}
-.address-text{display: inline-block;vertical-align: middle;max-width: 320px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
+.address-text{display: inline-block;vertical-align: middle;position:relative;top:-3px;max-width: 320px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
 .pt20{padding-top: 20px !important;}
 .w700{width: 700px !important;}
 .stop_bbtn{background-color: #e6e6e6;}
 
 .self-address-list>li{height: 25px;overflow: hidden;}
+.self-address-list>li:hover{background-color: #eee;} 
 
 
 

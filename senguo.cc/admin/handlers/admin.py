@@ -1658,13 +1658,15 @@ class Order(AdminBaseHandler):
 				self_address = self.session.query(models.SelfAddress).filter_by(id=address_id,config_id=self.current_shop.config.id).first()
 			except:
 				return self.send_fail(404)
-			if self_address.if_default == 2:
-				return self.send_fail(403)
 			if action == "edit_self_address":
+				if self_address.if_default == 2:
+					return self.send_fail(403)
 				self_address.address = data["address"] or ''
 				self_address.lat = data["lat"] or ''
 				self_address.lon = data["lon"] or ''
 			elif action == "del_self_address":
+				if self_address.if_default == 2:
+					return self.send_fail(403)
 				self_address.active = 0
 				self_address.if_default = 0
 			elif action == "set_self_address":
@@ -2666,6 +2668,13 @@ class Goods(AdminBaseHandler):
 			self.session.add(_group)
 			self.session.flush()
 
+			try:
+				old_group = self.session.query(models.GroupPriority).filter_by(shop_id=shop_id).first()
+			except:
+				old_group = None
+			if not old_group:
+				defautl_group = models.GroupPriority(shop_id=shop_id,group_id=0,priority=(group_count+1))
+				self.session.add(defautl_group)
 			new_group_id = _group.id
 			group_priority = models.GroupPriority(shop_id=shop_id,group_id=new_group_id,priority=(group_count+2))
 			self.session.add(group_priority)
