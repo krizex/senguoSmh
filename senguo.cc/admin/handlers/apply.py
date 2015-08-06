@@ -124,7 +124,7 @@ class WxMessage(CustomerBaseHandler):
 			if event == 'subscribe':
 				scene_id = int(eventkey.split('_')[1]) if eventkey and eventkey.find('qrscene') !=-1 else None
 			elif event == 'scan' or 'SCAN':
-				scene_id = int(eventkey)  if eventkey else None
+				scene_id = int(eventkey)  if eventkey and eventkey.isdigit() else None
 			else:
 				return self.send_success(error_text = 'error')
 			if openid and scene_id:
@@ -177,8 +177,6 @@ class WxMessage(CustomerBaseHandler):
 		second.text = FromUserName
 		third = ET.Element('CreateTime')
 		third.text=CreateTime
-		# forth = ET.Element('CreateTime')
-		# forth.text = CreateTime
 		forth = ET.Element('MsgType')
 		forth.text = MsgType
 		data = [first,second,third,forth]
