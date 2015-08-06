@@ -210,6 +210,10 @@ handlers = [
 	#add by jyj 2015-6-15
 	(r"/super/orderstatic", handlers.superadmin.OrderStatic, {}, "superOrderStatic"),
 	##
+	# added by jyj 2015-8-3
+	(r"/super/sellstatic",handlers.superadmin.SellStatic,{},"superSellStatic"),
+	# #
+
 	# (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
