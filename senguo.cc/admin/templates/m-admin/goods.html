@@ -72,7 +72,7 @@
                         </dt>
                         <dd>
                             <i class="more default-more"></i>
-                            <div class="c333">
+                            <div class="c333 f14">
                                 <span><span class="go-name">店铺推荐</span>({{record_count}})</span>
                             </div>
                             <p class="c666 mt6 clip go-info">该分组最多加入6个商品，分组排序优先级最高</p>
@@ -92,19 +92,19 @@
                         <dd>
                             {% if d['id']==0 %}
                             <i class="more default-more"></i>
-                            <div class="c333">
+                            <div class="c333 f14">
                                 <span><span class="go-name">默认分组</span>({{d['num']}})</span>
                             </div>
                             <p class="c666 mt6 clip go-info">若不设置分组，商品会默认进入该分组该分组该分组</p>
                             {% else %}
                             <i class="more"></i>
-                            <div class="c333">
+                            <div class="c333 f14">
                                 <div class="wrap-operates fr hide">
                                     <span class="del-group" data-id="{{d['id']}}">删除</span>
                                     <span class="share-group" data-url="http://senguo.cc/{{handler.current_shop.shop_code}}?group={{d['id']}}">分享</span>
                                     <span class="edit-group" data-id="{{d['id']}}">编辑</span>
                                 </div>
-                                <span><span class="go-name">{{d['name']}}</span>({{d['num']}})</span>
+                                <span><span class="go-name">{{d['name']}}</span> ({{d['num']}})</span>
                             </div>
                             <p class="c666 mt6 clip go-info">{{d['intro']}}</p>
                             {% end %}

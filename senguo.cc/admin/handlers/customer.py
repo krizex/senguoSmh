@@ -140,6 +140,7 @@ class customerGoods(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
 			return self.send_error(404)
+
 		if shop:
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self._shop_code = shop.shop_code
@@ -148,6 +149,8 @@ class customerGoods(CustomerBaseHandler):
 			shop_code = shop.shop_code
 		else:
 			shop_name =''
+			return self.send_error(404)
+			
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
 		try:
 			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
@@ -1950,65 +1953,6 @@ class CartCallback(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('order_id')
 	@tornado.web.authenticated
 	def post(self):
-		# print('[CartCallback]login callback')
-		# try:
-		# 	order_id = int(self.args['order_id'])
-		# 	# print("[CartCallback]order_id:",order_id)
-		# except:
-		# 	print("[CartCallback]get order_id error")
-		# 	return self.send_fail("[CartCallback]get order_id error")
-		# order = self.session.query(models.Order).filter_by(id = order_id).first()
-		# if not order:
-		# 	print("[CartCallback]order not found")
-		# 	return self.send_fail("[CartCallback]order not found")
-		# totalPrice = order.totalPrice
-		# shop_id = order.shop_id
-		# customer_id = order.customer_id
-		# customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-		# shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		# if not shop or not customer:
-		# 	print("[CartCallback]shop/customer not found")
-		# 	return self.send_fail('[CartCallback]shop/customer not found')
-		# # 送货地址处理
-		# # address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
-		# # if not address:
-		# # 	return self.send_fail("没找到地址", 404)
-		# if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
-		# 	print(shop.admin.mp_appsecret,shop.admin.mp_appid)
-		# 	access_token = self.get_other_accessToken(self.session,shop.admin.id)
-		# else:
-		# 	print(None)
-		# 	access_token = None
-		# print('lalalalalallalal')
-
-		# # 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
-		# if order.pay_type != 3:
-		# 	print(access_token,'access_token')
-		# 	self.send_admin_message(self.session,order)
-
-		# ####################################################
-		# # 订单提交成功后 ，用户余额减少，
-		# # 同时生成余额变动记录,
-		# # 订单完成后 店铺冻结资产相应转入 店铺可提现余额
-		# # woody 4.29
-		# ####################################################
-		# # print(self.args['pay_type'],'好难过')
-		# if order.pay_type == 2:
-		# 	shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = self.current_user.id,\
-		# 		shop_id = shop_id).first()
-		# 	if not shop_follow:
-		# 		return self.send_fail('shop_follow not found')
-		# 	shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-		# 	self.session.commit()
-		# 	#生成一条余额交易记录
-		# 	balance_record = '余额支付：订单' + order.num
-		# 	balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
-		# 		shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
-		# 		balance_record = balance_record,shop_totalPrice = shop.shop_balance,\
-		# 		customer_totalPrice = shop_follow.shop_balance)
-		# 	self.session.add(balance_history)
-		# 	self.session.commit()
-
 		return self.send_success()
 
 # 订单提交成功页面
@@ -2864,7 +2808,6 @@ class InsertData(CustomerBaseHandler):
 	# @CustomerBaseHandler.check_arguments("code?:str")
 	# @tornado.web.asynchronous
 	def get(self):
-		# import gevent
 		import requests
 		import json
 		shop_list , good_list = self.get_data()
@@ -2888,6 +2831,23 @@ class InsertData(CustomerBaseHandler):
 				sales = good['sales'],goods_name = good['goods_name'])
 			self.session.add(temp_good)
 		self.session.commit()
+		
+		# session = DBSession()
+
+		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+		# print(shop.shop_balance)
+		# shop.shop_balance += 100
+		# session.commit()
+
+		# session2 = DBSession()
+		# shop2 = session2.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+		# print(shop2.shop_balance)
+		# shop2.shop_balance += 100
+		# session2.commit()
+
+		# shop3 = self.session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+		# print(shop3.shop_balance)
+
 
 		return self.send_success()
 		# import multiprocessing
