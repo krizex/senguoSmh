@@ -1167,7 +1167,6 @@ class OrderStatic(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 
-
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
@@ -1184,7 +1183,7 @@ class OrderStatic(SuperBaseHandler):
 ##
 
 # added by jyj 2015-8-3
-#统计－销售统计
+# 统计 － 销售统计
 class SellStatic(SuperBaseHandler):
 	def get(self):
 		# 管理员的level(总超级管理员:0,省级代理管理员:1,已删除:-1)
