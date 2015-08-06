@@ -74,7 +74,7 @@ $(document).ready(function(){
             $receiveAddress.val('');
             $receivePhone.val('');
         }
-        else return noticeBox('至多能添加五个收获地址！',$this);
+        else return noticeBox('最多能添加五个收获地址！',$this);
     });
     $(document).on('click','#receiveAdd',function(){
         var $this=$(this);
@@ -82,7 +82,7 @@ $(document).ready(function(){
         var address=$receiveAddress.val();
         var phone=$receivePhone.val();
         if(max<5) addressAddEdit('add_address',name,address,phone,$this);
-        else return noticeBox('至多能添加五个收获地址！',$this);
+        else return noticeBox('最多能添加五个收获地址！',$this);
     });
 
     //收货地址编辑
@@ -243,24 +243,20 @@ $(document).ready(function(){
     $this.siblings(".send_type_item").removeClass("active");
     $this.addClass("active").next(".item_period").show();
     if(_type == "self"){
-        if($(".send-now").hasClass("available")){
-           minNow();
-        }else{
-            $('#freight_money').text(0);
-            $('.final_price').text(mathFloat(_total_price));
-            $(".mincharge-send").text(_mincharge_intime);
-            $(".freigh_time").text(_freigh_ontime);
-        }
         todayChoose();
+        $('#freight_money').text(0);
+        $('.final_price').text(mathFloat(_total_price));
+        $(".mincharge-send").text(_mincharge_intime);
+        $(".freigh_time").text(_freigh_ontime);
         $(".mincharge-box").addClass("hidden");     
     }else{
         if($(".ontime_send_day .type-tomorrow").hasClass("active")){
-            $(".ontime-period-choose .available").first().addClass("active");
+            $(".ontime-period-choose .available").first().addClass("active").siblings("li").removeClass("active");
             minIntime();
             freightIntime();
         }else{
              if($(".send-now").hasClass("available")){
-                $(".send-now").addClass("active");
+                $(".send-now").show().addClass("active");
                 minNow();
                 freightNow();
                 $(".ontime-period-choose .available").removeClass("active");
@@ -299,7 +295,7 @@ $(document).ready(function(){
         if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
     });
     if($(".send-intime").hasClass("active")){
-        if($(".send-now").hasClass("available")){
+        if($('.send-now').attr('data-config')!=undefined&&$(".send-now").hasClass("available")){
             var stop_now_time=$(".now_startMin").val();
             var stop_now=parseInt($(".now_stop").val());
             var _time_now;
@@ -307,19 +303,15 @@ $(document).ready(function(){
                 _time_now=checkTime(_time.getHours()+1)+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
             }else{
                 _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-
             }
             if(stop_now_time>_time_now){
-                $(".send-now").addClass("active");
+                $(".send-now").show().addClass("active");
                 $(this).parents(".type-choose").siblings(".period-choose").find(".available").removeClass("active");
                 if(_total_price<_mincharge_now){
                     $('.mincharge_now').removeClass("hidden");
                     $('.mincharge_intime').addClass("hidden");
                 }
-                $('#freight_money').text(_freigh_now);
-                $('.final_price').text(mathFloat(_total_price+_freigh_now));
-                $(".mincharge-send").text(_mincharge_now);
-                $(".freigh_time").text(_freigh_now);
+                minNow();
             }else{
                 $(".send-now").removeClass("active").addClass("not_available").removeClass("available");
             }  
@@ -331,13 +323,7 @@ $(document).ready(function(){
         var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
         available.addClass('active').siblings().removeClass('active');
     }
-    if($('.send-now').attr('data-config')!=undefined){
-        $(".send-now").show();
-        if($(".send-now").hasClass("available")){
-            $('#freight_money').text(_freigh_now);
-            $('.final_price').text(mathFloat(_total_price+_freigh_now));
-        }
-    }
+    
 }).on('click',".type-tomorrow",function(){
     var _item=$(this).parents(".item_period").find(".period-choose .item");
     _item.each(function(){
@@ -462,19 +448,16 @@ function freightIntime(){
 
 function todayChoose(){
     $(".send_day ").each(function(){
-        var send_item=$(this);
-        var stop_range=Int(send_item.siblings('.stop-range').val().trim());
+        var $send_item=$(this);
+        var stop_range=Int($send_item.siblings('.stop-range').val().trim());
         var now_on=$('.send-now').attr('data-config');
-        if(send_item.parents(".item_period").prev(".send_type_item").hasClass("active")){
-            var _type=send_item.parents(".item_period").prev(".send_type_item").attr("data-type");  
-        }else{
-            _type = "";
-        }
-        var today=send_item.find('.active').data('id');
+        var _type=$(".send_type_item.active").attr("data-type");  
+        var today=$send_item.find('.active').data('id');
         var _time=new Date();
         var time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+        console.log(today);
         if(today==1) {
-            send_item.siblings(".period-choose").find(".item").each(function(){
+            $send_item.siblings(".period-choose").find(".item").each(function(){
                 var $this=$(this);
                 var intime_startHour=Int($this.find('.time_startHour').val());
                 var intime_startMin=Int($this.find('.time_startMin').val());
@@ -498,16 +481,17 @@ function todayChoose(){
                         if (today_now == 1 && time >= time_now) {
                             $this.addClass('active');
                         }
+                    }else{
+                        noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this);
                     }
-                    else if(noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this)){}
                });
             });
-            if(now_on!=undefined){
-                if(_type=="self"){
-                    $(".send-now").removeClass("active");
-                    var available=send_item.siblings(".period-choose").find(".available").first();
-                    available.addClass('active').siblings().removeClass('active');
-                }else{
+            if(_type=="self"){
+                $(".send-now").removeClass("active");
+                var available=$send_item.siblings(".period-choose").find(".available").first();
+                available.addClass('active').siblings("li").removeClass('active');
+            }else if(_type=="ontime"){
+                if(now_on!=undefined){
                     var stop_now_time=$(".now_startMin").val();
                     var stop_now=parseInt($(".now_stop").val());
                     var _time_now;
@@ -517,14 +501,14 @@ function todayChoose(){
                         _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
  
                     }
-                    console.log(stop_now_time);
-                    console.log(_time_now);
+                    //console.log(stop_now_time);
+                    //console.log(_time_now);
                     if(stop_now_time>_time_now){
                         $(".send-now").addClass("active").addClass("available");
                         minNow();
                         freightNow();
                     }else{
-                        var available=send_item.siblings(".period-choose").find(".available").first();
+                        var available=$send_item.siblings(".period-choose").find(".available").first();
                         available.addClass('active').siblings().removeClass('active');
                         $(".send-now").removeClass("active").addClass("not_available").removeClass("available");
                         $('.mincharge_now').addClass("hidden");
@@ -532,18 +516,17 @@ function todayChoose(){
                         $(".mincharge-box").addClass("hidden");
                         minIntime();
                         freightIntime();
-                    }  
+                    } 
+                }else{
+                    $(".send-now").addClass("not_available").removeClass("available");
+                    var available=$send_item.siblings(".period-choose").find(".available").first();
+                    available.addClass('active').siblings("li").removeClass('active');
                 }
-               
-            }else{
-                $(".send-now").addClass("not_available").removeClass("available");
-                var available=send_item.siblings(".period-choose").find(".available").first();
-                available.addClass('active').siblings().removeClass('active');
-            }
-           
+            }  
         }else{
+            console.log(today);
             $('.send-now').hide();
-            send_item.siblings(".period-choose").find(".item").first().addClass("active");
+            $send_item.siblings(".period-choose").find(".item").first().addClass("active").siblings("li").removeClass("active");
         }
     });
     

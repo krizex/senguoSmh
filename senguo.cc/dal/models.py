@@ -1576,7 +1576,7 @@ class SelfAddress(MapBase,_CommonApi):
 	 config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
 	 address = Column(String(1024), nullable=False)
 	 active = Column(Integer,default = 1) #0:delete 1:on 2:off
-	 if_default = Column(Integer,default = 0) #0:not default 1:default
+	 if_default = Column(Integer,default = 0) #0:not default 1:default 2:shop_address
 	 lat    = Column(MyReal,default = 0)  #纬度
 	 lon    = Column(MyReal,default = 0)  #经度
 

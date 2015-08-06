@@ -25,7 +25,7 @@ $(document).ready(function(){
         $(".pop-reply").removeClass("hide");
     });
     $(document).on("click",".commit-reply",function(){
-        console.log(curItem);
+        //console.log(curItem);
         var text = $("#reply-text").val();
         var id = curItem.attr("data-id");
         commitReply(id,text);
