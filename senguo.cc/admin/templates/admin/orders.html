@@ -147,19 +147,19 @@
                 <li role="presentation">
                     <a class="item" href="javascript:;" data-id="send_positive">配送时间正序</a>
                 </li>
-                 <li role="presentation">
+                <li role="presentation">
                     <a class="item" href="javascript:;" data-id="send_desc">配送时间倒序</a>
                 </li>
-                 <li role="presentation">
+                <li role="presentation">
                     <a class="item" href="javascript:;" data-id="order_positive">下单时间正序</a>
                 </li>
-                 <li role="presentation">
+                <li role="presentation">
                     <a class="item" href="javascript:;" data-id="order_desc">下单时间倒序</a>
                 </li>
-                 <li role="presentation">
+                <li role="presentation">
                     <a class="item" href="javascript:;" data-id="price_desc">金额从多到少</a>
                 </li>
-                 <li role="presentation">
+                <li role="presentation">
                     <a class="item" href="javascript:;" data-id="price_positive">金额从少到多</a>
                 </li>
             </ul>
@@ -176,13 +176,13 @@
                 <li role="presentation">
                     <a class="item" href="javascript:;" data-id="9">所有</a>
                 </li>
-                <li  role="presentation">
+                <li role="presentation">
                     <a class="item" href="javascript:;" data-id="3">在线支付</a>
                 </li>
-                 <li  role="presentation">
+                 <li role="presentation">
                     <a class="item" href="javascript:;" data-id="2">余额支付</a>
                 </li>
-                 <li  role="presentation">
+                 <li role="presentation">
                     <a class="item" href="javascript:;" data-id="1">货到付款</a>
                 </li>
             </ul>
@@ -240,14 +240,13 @@
         <div class="modal-content">
             <div class="modal-header set-width-float">
                 <span class="title pull-left">
-
                 </span>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
             <div class="modal-body set-width-float">
-        	   <input type="text" id="order_ser_val"/>
+        	    <input type="text" id="order_ser_val"/>
             </div>
-             <div class="modal-footer">
+            <div class="modal-footer">
                 <div class="btn-box">
                     <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
                     <button type="button" class="pull-left modal-sure-btn" href="javascript:;">确认</button>
@@ -295,7 +294,6 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu hour-list choose-list" role="menu">
-
                             </ul>
                         </div>
                         <span class="pull-left tit">：</span>
@@ -420,13 +418,14 @@
                         <span class="pull-left tit">下单截止时间：</span>
                         <span class="show_item pull-left show_value tit">{{current_shop.config.stop_range or 0}}</span>
                         <div class="input-group-btn pull-left edit_item hidden">
-                                <input type="text" id="stopRange" placeholder="请输入整数"/>
+                            <input type="text" id="stopRange" placeholder="请输入整数"/>
                         </div>
                         <span class="pull-left tit set-left10">分钟</span>
                         <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
-                    <p class="notice text-grey9">截止时间是指在某送货时间段前N分钟用户将不能选择该时段配送</p>
+                    <p class="notice text-grey9">截止时间是指，在某送货时间段开始前N分钟用户将不能选择该时段下单</p>
+                    <p class="notice text-grey9">例如：若按时达时间段为11:00~17:00，下单截止时间为20分钟，则10:40起，用户<br>　　　便不能在该时间段内下单。</p>
                 </div>
                 {% elif order_type == 3%}
                 <div class="w550 center-block">
@@ -514,7 +513,8 @@
                         <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
-                    <p class="notice text-grey9">截止时间是指在下单后N分钟内用户不能选择该时段自提</p>
+                    <p class="notice text-grey9">截止时间是指，在某自提时间段截止前N分钟内用户将不能选择该时段下单，为商家提供准备包裹时间</p>
+                    <p class="notice text-grey9">例如：若自提时间段为11:00~17:00，下单截止时间为20分钟，则16:40起，用户便不能在该时间段内<br>　　　下单。</p>
                 </div>
                 <div class="w550 center-block clearfix mt20">
                     <p class="group set-self">

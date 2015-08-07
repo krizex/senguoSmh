@@ -124,7 +124,7 @@
 .order-submit{background-color: #ff9800;display: inline-block;width: 80px;height: 40px;line-height: 40px;color: #fff;text-align: center;margin-left: 10px;white-space: nowrap;}
 .coupon-text{color: #666;font-size: 12px;margin-left: 10px;}
 .wrap-coupontype{padding: 0 10px;}
-.coupon_type{border:1px solid #f0f4f0;border-left:none;max-height: 200px;overflow: auto;}
+.coupon_type{border:1px solid #f0f4f0;border-left:none;max-height: 200px;}
 .coupon_type>li{height: 50px;padding:0 6px;cursor: pointer;font-size: 12px;border-left:2px solid #f0f4f0;}
 .coupon_type .active{border-left-color:#33cc66;color: #33CC66;}
 .coupon-bg{display: inline-block;height: 30px;width: 57px;color: #fff;text-align: center;line-height: 30px;white-space: nowrap;background: url('/static/images/coupon_pay.png') no-repeat left center;background-size: contain;}
@@ -132,7 +132,7 @@
 .mr8{margin-right: 8px;}
 .mr10{margin-right: 10px;}
 .cart-titles{background-color: #fff;padding-top: 10px;}
-.has-coupon {line-height: 18px;margin: 0 10px;}
+.has-coupon{line-height: 18px;margin: 0 10px;}
 
 .seth-50{height:50px;line-height:50px;}
 .seth-40{height:40px;line-height:40px;}

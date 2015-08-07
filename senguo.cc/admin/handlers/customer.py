@@ -937,7 +937,6 @@ class Market(CustomerBaseHandler):
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
-
 		if shop.admin.has_mp:
 			# print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
@@ -974,8 +973,14 @@ class Market(CustomerBaseHandler):
 		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
+			coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
+			if coupon_have==0:
+				coupon_active=0
+			else :
+				coupon_active=shop.marketing.coupon_active
 		else:
 			shop_marketing = 0
+			coupon_active=1
 
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -983,7 +988,7 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
-
+		self.set_cookie("coupon_active", str(coupon_active))
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -1658,7 +1663,7 @@ class Cart(CustomerBaseHandler):
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=1).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:
-				if period.start_time.hour*60 + period.start_time.minute - \
+				if period.end_time.hour*60 + period.end_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
 					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择其他时间段")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
