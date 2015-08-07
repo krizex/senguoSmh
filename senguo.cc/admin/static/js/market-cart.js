@@ -416,7 +416,6 @@ function todayChoose(){
     var $send_item=$(".send_type_item.active").next(".item_period").find(".send_day");
     var today=$send_item.find('.active').data('id');
     var stop_range = 0;
-    console.log($send_item);
     if($send_item.length>0){
         stop_range=Int($send_item.siblings('.stop-range').val().trim());
     }
