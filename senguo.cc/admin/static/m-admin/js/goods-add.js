@@ -44,7 +44,7 @@ $(document).ready(function(){
     $item.find(".now-unit").html("kg");
     $item.find(".second-num").html("1");
     $item.find(".stock-unit").html("kg");
-    $item.find(".price-unit").html("kg");
+    $item.find(".price-unit").html("kg").attr("data-id","4");
     $item.find(".price-text").html("kg");
     $item.find(".current-price").val("");
     $item.find(".price-num").val("");
@@ -113,7 +113,7 @@ $(document).ready(function(){
         return false;
     }else{
         var unit = $(this).attr("data-unit");
-        var id = $(this).attr("data-unitid");
+        var id = $(this).attr("data-id");
         cur_price.find(".price-unit").html(unit).attr("data-id",id);
         $(".price-text").html(unit);
         cur_price.find(".now-unit").html(unit);
@@ -155,13 +155,17 @@ $(document).ready(function(){
     var type = $(".class_list").find(".active").attr("data-id");
     $("#class_type").attr("data-id",sub_type).html($(this).html());
     $(".wrap_class_menu").toggleClass("hide");
+    if($(".class_list").children(".active").size()==0){
+        $(".class_list").children(".gitem").eq(0).addClass("active");
+    }
+    $(".class_list").children(".tab-line").removeClass("hide");
     getData(type,sub_type);
 }).on("click",".class_list .gitem",function(){
     var index = $(this).index();
     var type = $(this).attr("data-id");
     var sub_type = $("#class_type").attr("data-id");
     $(".class_list li").removeClass("active").eq(index).addClass("active");
-    $(".class_list .tab-line").css("left",25*index+"%");
+    $(".class_list .tab-line").removeClass("hide").css("left",25*index+"%");
     getData(type,sub_type);
 }).on("click",".slide-class",function(){
     $(this).toggleClass("arrow-up");
@@ -647,6 +651,8 @@ function getData2(con){
                         $('.classify-list').append(html);
                     }
                 }
+                $(".class_list").children(".gitem").removeClass("active");
+                $(".class_list").children(".tab-line").addClass("hide");
             }
             else return Tip(res.error_text);
         },

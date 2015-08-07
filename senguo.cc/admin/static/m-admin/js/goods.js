@@ -95,7 +95,6 @@ $(document).ready(function(){
         }
         getGoodsItem("all",0);
     }else{
-        //$(".goods_list").find(".turn").removeClass("rotate-img2");
         $(".goods_list li").removeClass("active").eq(index).addClass("active");
         $(".goods_list .tab-line").css("left",25*index+"%");
         getGoodsItem("all",0);
@@ -107,13 +106,17 @@ $(document).ready(function(){
     var type = $(".class_list").find(".active").attr("data-id");
     $("#class_type").attr("data-id",sub_type).html($(this).html());
     $(".wrap_class_menu").toggleClass("hide");
+    if($(".class_list").children(".active").size()==0){
+        $(".class_list").children(".gitem").eq(0).addClass("active");
+    }
+    $(".class_list").children(".tab-line").removeClass("hide");
     getData(type,sub_type);
 }).on("click",".class_list .gitem",function(){
     var index = $(this).index();
     var type = $(this).attr("data-id");
     var sub_type = $("#class_type").attr("data-id");
     $(".class_list li").removeClass("active").eq(index).addClass("active");
-    $(".class_list .tab-line").css("left",25*index+"%");
+    $(".class_list .tab-line").removeClass("hide").css("left",25*index+"%");
     getData(type,sub_type);
 }).on("click","#qa",function(){
     $(this).addClass("hide");
@@ -440,7 +443,7 @@ function insertGoods(data){
             }
         }
         $item.find(".goods-vol").html(goods.saled);
-        if($("#filter_status").attr("data-id")=="delete"){
+        if($("#filter_status").attr("data-id")=="delete" || goods.active==0){
             $item.attr("data-flag","delete");
             $item.find(".switch-btn").addClass("hide");
             $item.find(".cancel-goods").removeClass("hide");
@@ -512,6 +515,8 @@ function getData2(con){
                         $('.classify-list').append(html);
                     }
                 }
+                $(".class_list").children(".gitem").removeClass("active");
+                $(".class_list").children(".tab-line").addClass("hide");
             }
             else return Tip(res.error_text);
         },

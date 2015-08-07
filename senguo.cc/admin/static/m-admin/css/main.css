@@ -466,7 +466,9 @@
 .btn-group .cancel-sbtn{color: #666;border: 1px solid #999;-webkit-box-sizing: border-box;}
 .btn-group .sure-sbtn{color: #fff;background-color: #48b6a4;}
 .vm{vertical-align: middle;}
-
+/*自提点*/
+.self-choose{padding-left: 75px;}
+.self-choose .add-left{height: 30px;line-height: 30px;}
 
 
 
