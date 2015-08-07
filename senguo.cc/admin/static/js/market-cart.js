@@ -448,7 +448,7 @@ function todayChoose(){
                 var time_n=parseInt(stop_now/60);
                 var lef_minute=stop_now%60;
                 if(_time.getMinutes()+lef_minute>=60){
-                     _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute-60)+':'+checkTime(_time.getSeconds());
+                     _time_now=checkTime(_time.getHours()+time_n+1)+':'+checkTime(_time.getMinutes()+lef_minute-60)+':'+checkTime(_time.getSeconds());
                 }else{
                     _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute)+':'+checkTime(_time.getSeconds());
 
