@@ -44,7 +44,16 @@ $(document).ready(function(){
             $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);
         }
     });
-    getOrder(0);
+    if($.getUrlParam("type")){
+        var index = parseInt($.getUrlParam("type"));
+        $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
+        $(".order-lists").eq($(".second-tab-list .active").index()).empty();
+        _page=0;
+        $(".order-type-list .tab-bg").css("left",33.3*index+"%");
+        getOrder(0);
+    }else{
+        getOrder(0);
+    }
     // swiper.swipeTo(0);
     if(nomore==false){
         scrollLoading();
