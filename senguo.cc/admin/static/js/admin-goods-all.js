@@ -23,12 +23,26 @@ $(document).ready(function(){
         localStorage.setItem("add",'0');
     }
     var sub_type=parseInt($.getUrlParam("type_id"));
+    console.log(link_type);
     if(link_type=="classify"){//分类跳转
         getGoodsItem(link_type,0,sub_type);
     }else if(link_type=="goodsearch"){//搜索跳转
         var value = decodeURIComponent($.getUrlParam("content"));
         isSearch = true;
         getGoodsItem("goods_search",0,"",value);
+    }else if(link_type=="group"){
+        var gid=parseInt($.getUrlParam("gid"));
+        $(".filter_status2").attr("data-id",gid);
+        console.log(gid);
+        $("#group-goods-lst li").each(function(){
+            var $this=$(this).find("a");
+            var id= parseInt($this.attr("data-id"));
+            console.log(id);
+            if(id==gid){
+                $(".filter_status2").text($this.text());
+            }
+        });
+        getGoodsItem("all",0);
     }else{
         getGoodsItem("all",0);
     }

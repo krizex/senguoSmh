@@ -186,7 +186,7 @@ $(document).ready(function(){
 //drag
 function drag(obj){
     obj.onmousedown=function(ev){
-        if($(ev.target).closest(".right-link").length>0){
+        if($(ev.target).closest(".forbid-click").length>0){
         }else{
             $(".sw-er-tip").addClass("invisible");
             var $this = $(obj);

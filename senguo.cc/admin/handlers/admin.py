@@ -1547,6 +1547,14 @@ class Order(AdminBaseHandler):
 				config_type = 0
 			elif action == "add_self_period":
 				config_type = 1
+			
+			periods = self.session.query(models.Period).filter_by(config_id=self.current_shop.id)
+			periods_count = 0
+			if periods.count()>0:
+					periods_count = periods.filter_by(config_type=config_type).count()
+			if periods_count>=10:
+				return self.send_fail("至多只能添加10个时间段")
+
 			period = models.Period(config_id=self.current_shop.id,
 								   name=data["name"],
 								   start_time=start_time,
@@ -2359,9 +2367,9 @@ class Goods(AdminBaseHandler):
 			args["name"] = data["name"]
 			args["storage"] = data["storage"]
 			args["unit"] = data["unit"]
-			if data["detail_describe"]:
+			if "detail_describe" in data and data["detail_describe"]:
 				args["detail_describe"] = data["detail_describe"].replace("script","'/script/'")
-			if data["tag"]:
+			if "tag" in data and  data["tag"]:
 				args["tag"] = data["tag"]
 			if "limit_num" in data:
 				args["limit_num"] = data["limit_num"]
