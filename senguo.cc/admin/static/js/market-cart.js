@@ -326,7 +326,7 @@ $(document).ready(function(){
     if(index != 0){
         $(".wrap-online-lst").addClass("hidden");
     }else{
-         $(".wrap-online-lst").toggleClass("hidden");
+        $(".wrap-online-lst").toggleClass("hidden");
     }
     pulse($(this));
     $(".pay_type li").removeClass("active");
@@ -404,7 +404,7 @@ function minIntime(){
 }
 
 function freightIntime(){
-     if(_total_price<_mincharge_intime){
+    if(_total_price<_mincharge_intime){
         $('.mincharge_intime').removeClass("hidden");
     }
 }
@@ -607,7 +607,7 @@ function goodsNum(target,action){
         charge_type_id:charge_type_id
     };
     if(action==2){
-         if(limit_num>0&&num==limit_num){
+        if(limit_num>0&&num==limit_num){
             return  noticeBox('商品限购数量'+limit_num);
         }
     }
@@ -622,7 +622,6 @@ function goodsNum(target,action){
                 }
                 if(action==2)
                 {
-                   
                     num++;
                     item.val(num);
                     total=mathFloat(num*price);
@@ -867,7 +866,7 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-           // window.location.href= '/notice/success'
+            // window.location.href= '/notice/success'
             var url='/customer/cartback';
             var args={order_id:res.order_id};
             $.postJson(url,args,function(data) {
@@ -878,11 +877,11 @@ function orderSubmit(target){
                     }else{
                         window.location.href=window.dataObj.success_href; 
                     }
-                 }
-                 else{
+                }
+                else{
                     $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled'); 
                     return noticeBox(res.error_text);
-                 }
+                }
             });
         }else {
             noticeBox(res.error_text,target);
@@ -925,7 +924,6 @@ function Vrify(phone){
                 time($('#getVrify'));
                 noticeBox('验证码已发送到您的手机，请注意查收！');
                 $('#getVrify').removeAttr('disabled');
-
             }
             else return noticeBox(res.error_text);
         },
