@@ -1870,3 +1870,11 @@ class CouponsCustomer(MapBase, _CommonApi):
 	uneffective_time=Column(Integer)
 	coupon_status=Column(Integer,default=0)
 	order_id=Column(Integer)
+
+# 极光推送消息
+class Jpushinfo(MapBase, _CommonApi):
+	__tablename__="jpush_info"
+	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
+	user_id=Column(Integer,nullable=False)
+	user_type=Column(Integer,nullable=False)  #0  admin 1 customer
+	jpush_id=Column(String(128),nullable=False)

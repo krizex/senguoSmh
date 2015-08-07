@@ -12,6 +12,9 @@ import requests
 import base64
 import decimal
 import json
+
+import urllib
+import hashlib
 # add by cm 2015.5.15
 import string
 import random
@@ -22,6 +25,7 @@ import tornado.websocket
 from dal.db_configs import DBSession
 
 import codecs 
+
 codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None)
 
 # 登录处理
@@ -31,6 +35,7 @@ class Access(AdminBaseHandler):
 	def prepare(self):
 		"""prepare会在get、post等函数运行前运行，如果不想父类的prepare函数起作用的话就把他覆盖掉"""
 		pass
+	@AdminBaseHandler.check_arguments("openid?","unionid?","country?","province?","city?","headimgurl?","nickname?","sex?")
 	def get(self):
 		next_url = self.get_argument('next', '')
 		if self._action == "login":
@@ -42,6 +47,23 @@ class Access(AdminBaseHandler):
 			return self.redirect(self.reverse_url("OfficialHome"))
 		elif self._action == "oauth":
 			self.handle_oauth()
+		elif self._action=="weixinphoneadmin":
+			openid=str(self.args["openid"])
+			unionid=str(self.args["unionid"])
+			country=str(self.args["country"])
+			province=str(self.args["province"])
+			city=str(self.args["city"])
+			headimgurl=str(self.args["headimgurl"])
+			nickname=str(self.args["nickname"])
+			sex=int(self.args["sex"])
+			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
+			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
+			if  q==None:
+				u = models.Customer.register_with_wx(self.session,userinfo)
+				self.set_current_user(u,domain = ROOT_HOST_NAME)
+			else:
+				self.set_current_user(q,domain = ROOT_HOST_NAME)
+			return self.redirect(self.reverse_url("customerProfile"))
 		else:
 			return self.send_error(404)
 
@@ -3937,6 +3959,7 @@ class Marketing(AdminBaseHandler):
 			data1={"a":q.total_number,"b":q.get_number,"c":q.use_number,"d":d,"total":total}
 			return self.render("admin/details.html",output_data=data,data1=data1,coupon_type=coupon_type,context=dict(subpage='marketing'))
 		elif action=="newcouponpage":
+			create_date=int(time.time())
 			coupon_type=int(self.args["coupon_type"])
 			data=[]
 			data0=[]

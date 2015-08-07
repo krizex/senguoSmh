@@ -73,11 +73,11 @@ class Access(CustomerBaseHandler):
 			return self.send_error(404)
 
 	#@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
+	@CustomerBaseHandler.check_arguments("phone", "password", "next?","jpush_id?")
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-
+		jpush_id=self,args["jpush_id"]
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print("[PhoneLogin]Customer ID:",u.id)
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
@@ -85,6 +85,17 @@ class Access(CustomerBaseHandler):
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
+		if jpush_id:
+			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id).all()
+			new_device=1
+			for x in qq:
+					if x.jpush_id==jpush_id:
+						new_device=0
+						break
+			if new_device==1:
+				new_jpushinfo=models.Jpushinfo(user_id=u.accountinfo.id,user_type=0,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
 		return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("code")
@@ -119,7 +130,7 @@ class Access(CustomerBaseHandler):
 class Third(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
-	@CustomerBaseHandler.check_arguments("openid?","unionid?","country?","province?","city?","headimgurl?","nickname?","sex?")
+	@CustomerBaseHandler.check_arguments("openid?","unionid?","country?","province?","city?","headimgurl?","nickname?","sex?","jpush_id?")
 	def get(self):
 		action =self._action
 		if self._action == "weixin":
@@ -142,6 +153,42 @@ class Third(CustomerBaseHandler):
 			else:
 				self.set_current_user(q,domain = ROOT_HOST_NAME)
 			return self.redirect(self.reverse_url("customerProfile"))
+		elif self._action=="weixinphoneadmin":
+			openid=str(self.args["openid"])
+			unionid=str(self.args["unionid"])
+			country=str(self.args["country"])
+			province=str(self.args["province"])
+			city=str(self.args["city"])
+			headimgurl=str(self.args["headimgurl"])
+			nickname=str(self.args["nickname"])
+			sex=int(self.args["sex"])
+			jpush_id=str(self.args["jpush_id"])
+			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
+			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
+			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id).all()
+			new_device=1
+			for x in qq:
+					if x.jpush_id==jpush_id:
+						new_device=0
+						break
+			if new_device==1 and q:
+				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=0,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
+			if  q==None:
+				u = models.Customer.register_with_wx(self.session,userinfo)
+				self.set_current_user(u,domain = ROOT_HOST_NAME)
+				new_jpushinfo=models.Jpushinfo(user_id=u.accountinfo.id,user_type=0,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
+				return self.redirect(self.reverse_url("ApplyHome"))
+			else:
+				self.set_current_user(q,domain = ROOT_HOST_NAME)
+				haveshop=self.session.query(models.ShopAdmin).filter_by(id=q.id).count()
+				if haveshop==0:
+					return self.redirect(self.reverse_url("ApplyHome"))	
+				else:
+					return self.redirect(self.reverse_url("MadminHome"))
 # 商品详情
 class customerGoods(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -1432,7 +1479,7 @@ class Cart(CustomerBaseHandler):
 		coupon_number=0
 		for x in q:
 			now_date=int(time.time())
-			if now_date<x.effective_time:
+			if now_date<x.effective_time or now_date>x.uneffective_time:
 				pass
 			else:
 				coupon_number+=1
@@ -1848,7 +1895,7 @@ class Cart(CustomerBaseHandler):
 				customer_totalPrice = shop_follow.shop_balance)
 			self.session.add(balance_history)
 			self.session.commit()
-
+			return self.send_success() 
 		return True
 
 	@classmethod
