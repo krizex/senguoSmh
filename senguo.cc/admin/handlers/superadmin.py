@@ -137,6 +137,7 @@ class ShopManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action","search","shop_auth:int","shop_status:int","shop_status:int","shop_sort_key:int","if_reverse:int","page?:int","flag:int")
 	def get(self):
+
 		action = self.args["action"]
 		flag=self.args["flag"]
 
@@ -186,6 +187,7 @@ class ShopManage(SuperBaseHandler):
 			return self.send_fail('level error')
 
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
+
 		if 'search' in self.args:
 			from sqlalchemy.sql import or_
 			search = self.args["search"]
@@ -203,13 +205,13 @@ class ShopManage(SuperBaseHandler):
 					q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
 					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
 					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					   	models.Shop.shop_code !='not set').all()
 					shops = q
 				elif level == 1:
 					q = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province,or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
 					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
 					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					   	models.Shop.shop_code !='not set').all()
 					shops = q
 				else:
 					return self.send_fail('level error')

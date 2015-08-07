@@ -2045,7 +2045,6 @@ class Goods(AdminBaseHandler):
 
 	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
 	def get(self):
-		print("@@@@","action=",self._action)
 		self.if_current_shops()
 		action = self._action
 		_id = str(time.time())
@@ -2138,16 +2137,18 @@ class Goods(AdminBaseHandler):
 				elif order_status1 =="classify":
 					case_one = 'models.Fruit.fruit_type_id'
 
+				# changed by jyj 2015-8-7
 				if order_status2 == "add_time":
-					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.add_time.desc())
 				elif order_status2 == "name":
-					goods = goods.order_by(models.Fruit.name.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.name.desc())
 				elif order_status2 == "saled":
-					goods = goods.order_by(models.Fruit.saled.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.saled.desc())
 				elif order_status2 == "storage":
-					goods = goods.order_by(models.Fruit.storage.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.storage.desc())
 				elif order_status2 == "current_saled":
-					goods = goods.order_by(models.Fruit.current_saled.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.current_saled.desc())
+				##
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -2286,35 +2287,6 @@ class Goods(AdminBaseHandler):
 			else:
 				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
 		# # 商品分组
-		# elif action == "group":
-		# 	data = []
-		# 	goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
-		# 	default_count = goods.filter_by(group_id=0).count()
-		# 	record_count = goods.filter_by(group_id=-1).count()
-		# 	group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
-		# 	goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
-		# 	# _group = self.session.query(models.GoodsGroup).filter_by(shop_id = self.current_shop.id,status = 1).all()
-		# 	# for g in _group:
-		# 	# 	goods_count = goods.filter_by( group_id = g.id ).count()
-		# 	# 	data.append({'id':g.id,'name':g.name,'intro':g.intro,'num':goods_count})
-		# 	if group_priority:
-		# 		for g in group_priority:
-		# 			group_id = g.group_id
-		# 			if group_id != -1:
-		# 				if group_id == 0:
-		# 					data.append({'id':0,'name':'','intro':'','num':default_count})
-		# 				else:
-		# 					_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
-		# 					if _group:
-		# 						goods_count = goods.filter_by( group_id = _group.id ).count()
-		# 						data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
-		# 	else:
-		# 		data.append({'id':0,'name':'','intro':'','num':default_count})
-		# 	return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
-
-
-		# 商品分组  
-		# modified by jyj 2015-8-6
 		elif action == "group":
 			data = []
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)

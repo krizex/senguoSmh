@@ -149,7 +149,11 @@ $(document).ready(function(){
         }
         isSearch = false;
         $(this).closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$(this).attr("data-id"));
-        getGoodsItem("all",pn,"");
+
+        // chaged by jyj 2015-8-7
+        getGoodsItem("all",0,"");
+        pn = 0;
+        // 
     }else if($(this).closest("ul").hasClass("batch-group-list")){//批量分组
         if(goodsEdit){
             return Tip("请先完成正在编辑的商品");
@@ -934,8 +938,6 @@ function getGoodsItem(action,page,type_id,value){
     var order_status1 = $(".order_status1").attr("data-id");
     var order_status2 = $(".order_status2").attr("data-id");
     var filter_status2 = $(".filter_status2").attr("data-id");
-    console.log('@@@',filter_status,order_status1,order_status2,filter_status2);
-    console.log('now , page=',page,'  action=',action,'  type_id = ',type_id,'  value = ',value);
     pn = page;
     if(action=="classify"){
         url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
