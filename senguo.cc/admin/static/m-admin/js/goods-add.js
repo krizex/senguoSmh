@@ -53,12 +53,14 @@ $(document).ready(function(){
     $(".price-list").append($item);
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
+    $("html,body").removeClass("flow-hidden");
 }).on("click",".current-unit",function(){//库存单位
     if(confirm("修改库存单位后现有的售价方式会被修改成库存单位，确认修改？")){
         price_type = 0;
         $(".unit-title").html("库存单位");
         $(".unit_list li").removeClass("active").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
         $(".pop-unit").removeClass("hide");
+        $("html,body").addClass("flow-hidden");
     }
 }).on("click",".price-unit",function(){//售出单位
     price_type = 1;
@@ -66,15 +68,13 @@ $(document).ready(function(){
     $(".unit-title").html("售出单位");
     $(".unit_list li").removeClass("active").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
     $(".pop-unit").removeClass("hide");
+    $("html,body").addClass("flow-hidden");
 }).on("click",".unit_list li",function(){
-    var id = $(this).attr("data-id");
-    var name = $(this).html();
     $(".unit_list li").removeClass("active");
     $(this).addClass("active");
-    $("#sure_unit").attr("data-id",id).attr("data-name",name);
 }).on("click","#sure_unit",function(){
-    var id = $(this).attr("data-id");
-    var name = $(this).attr("data-name");
+    var id = $(".unit_list").find(".active").attr("data-id");
+    var name = $(".unit_list").find(".active").html();
     if(price_type==0){
         var $list = $(".price-list").children(".price-item");
         switchUnit($list,id,name);
@@ -104,6 +104,7 @@ $(document).ready(function(){
             $(".pop-unit").addClass("hide");
         }
     }
+    $("html,body").removeClass("flow-hidden");
 }).on("click","#sure_conver",function(){//确认转换
     var firstNum = $("#first_num").val().trim();
     var secondNum = $("#second_num").val().trim();
@@ -182,14 +183,17 @@ $(document).ready(function(){
     $(".pop-editor").addClass("hide");
 }).on("click",".choose-group",function(){
     $(".pop-group").removeClass("hide");
+    $("html,body").removeClass("flow-hidden");
 }).on("click",".group_list li",function(){
     $(".group_list li").removeClass("active");
     $(this).addClass("active");
     $("#sure_group").attr("data-id",$(this).attr("data-id")).attr("data-name",$(this).html());
     $(".pop-group").removeClass("hide");
+    $("html,body").removeClass("flow-hidden");
 }).on("click","#sure_group",function(){
     $(".choose-group").html($(this).attr("data-name")).attr("data-id",$(this).attr("data-id"));
     $(".pop-group").addClass("hide");
+    $("html,body").addClass("flow-hidden");
 }).on("click","#finish_btn",function(){//添加商品
     finishGoods();
 }).on("click",".del-price",function(){

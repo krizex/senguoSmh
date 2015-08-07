@@ -1,9 +1,11 @@
 var curGoods = null,width = 0,page=0,finished=false,nomore=false,cur_group=null,link="/admin/goods/all",_type = 1;
 $(document).ready(function(){
     var minheight = $(window).height()-80;
-    $(".order-lists").css({minHeight:minheight+"px"});
+    $(".order-lists").css({minHeight:(minheight-80)+"px"});
     $(".wrap-goods-group").css({minHeight:(minheight+30)+"px"});
     if($.getUrlParam("search")){
+        $(".goods_list .gitem").removeClass("active");
+        $(".goods_list .tab-line").addClass("hide");
         getGoodsItem("goods_search",0,$.getUrlParam("search"));
     }else if($.getUrlParam("classify")){
         getGoodsItem("classify",$.getUrlParam("classify"));
@@ -44,6 +46,10 @@ $(document).ready(function(){
 }).on("click",".goods_menu_list li",function(){
     var id = $(this).attr("data-id");
     $(".wrap_goods_menu").toggleClass("hide");
+    if($(".goods_list").find(".active").size()==0){
+        $(".goods_list .gitem").eq(0).addClass("active");
+    }
+    $(".goods_list .tab-line").removeClass("hide");
     $("#filter_status").attr("data-id",id).html($(this).html());
     page=0;
     getGoodsItem("all",0);
@@ -395,11 +401,12 @@ function getGoodsItem(action,type_id,value){
                 var data = res.data;
                 $("#goods-all-list").empty();
                 if(data.length==0){
-                    $(".no-result").html("没有更多商品了");
+                    $(".no-result").html("没有搜索到商品~~");
                     finished = false;
                 }else{
                     insertGoods(data);
                     finished = true;
+                    $(".no-result").html("");
                 }
             }else{
                 Tip(res.error_text);

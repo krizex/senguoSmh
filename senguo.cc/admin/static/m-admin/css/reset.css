@@ -9,6 +9,7 @@ table, caption, tbody, tfoot, thead, tr, th, td {margin: 0; padding: 0; border: 
 html,body,textarea,input,select,button,h1,h2,h3,h4,h5,h6{line-height: 1.25;font-size:14px;font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica,"ff-tisa-web-pro-1","ff-tisa-web-pro-2","Lucida Grande","Hiragino Sans GB","Hiragino Sans GB W3";}
 html{overflow-x: hidden;-webkit-overflow-scrolling:touch;overflow-scrolling:touch;min-height: 100%;}
 body{background-color: #f0f4f0;overflow-x: hidden;}
+.flow-hidden{overflow: hidden !important;}
 .h100{height: 100%;overflow: hidden;}
 i{display: inline-block;background-size: contain;background-repeat: no-repeat;}
 ol, ul{list-style: none;padding:0;}
