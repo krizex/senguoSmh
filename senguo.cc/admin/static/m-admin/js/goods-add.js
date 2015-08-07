@@ -13,6 +13,11 @@ $(document).ready(function(){
             height : 300
         }).makeCode( $("#shop_url").html());
     }
+
+}).on("click",".gogoods",function(){
+    if(confirm("当前商品未完成，确定返回吗？")){
+        window.location.href="/madmin/goods";
+    }
 }).on("click",".goods_status",function(){
     $(".wrap-goods-menu").toggleClass("hide");
 }).on("click",".slide_more",function(){

@@ -372,10 +372,10 @@
 .add-list>li{color: #666;}
 .add-row{position: relative;height: 38px;padding-left: 60px;}
 .high-row{display: inline-block;width: 232px;left: 50%;-webkit-transform:translate(-50%,0);}
-.add-left{position: absolute;display: inline-block;width: 60px;height: 38px;line-height: 38px;color: #666;left:0;top: 0;}
-.add-right{-webkit-box-sizing: border-box;height: 38px;line-height:38px;display: block;padding-right: 16px;padding-left:4px;color: #999;background: url('/static/images/arrow-down.gif') no-repeat right center;background-size: 14px 8px;}
+.add-left{position: absolute;display: inline-block;width: 60px;height: 38px;line-height: 38px;color: #9f9f9f;left:0;top: 0;}
+.add-right{-webkit-box-sizing: border-box;height: 38px;line-height:38px;display: block;padding-right: 12px;padding-left:4px;color: #999;background: url('/static/images/arr-right.png') no-repeat right center;background-size: 8px 14px;}
 .add-ipt{width: 100%;-webkit-box-sizing: border-box;height: 34px;color: #333;border: none;background-color: #fff;padding-left: 0;margin-left: 0;}
-.choose_classify{background-image: url('/static/images/arr-right.png');background-size: 8px 14px;}
+/*.choose_classify{background-image: url('/static/images/arr-right.png');background-size: 8px 14px;}*/
 .add-row .add-right{color: #333;}
 .borderm{border-bottom: 1px solid #ebebeb;}
 .borderl{border-left: 1px solid #ebebeb;}
@@ -389,7 +389,7 @@
 .wrap-info-ipt{padding: 10px;background-color: #fff;}
 .mtextarea{width: 100%;line-height: 18px;font-size: 12px;color: #333;height: 56px;overflow: auto;border: none;}
 .slide-more{height: 38px;line-height: 38px;text-align: center;background-color: #fff;}
-.slide-more .add-right{display: inline-block;}
+.slide-more .add-right{display: inline-block;padding-right:16px;background: url('/static/images/arrow-down.gif') no-repeat right center;background-size: 14px 8px;}
 .wrap-more-set{position: relative;}
 .num-ipt{border: 1px solid #48b6a4;height: 24px;line-height: 24px;width:44px;text-align: center;color: #333;border-radius: 4px;position: absolute;left: 0;top: 3px;-webkit-box-sizing: border-box;}
 .num-info{color: #999;font-size: 12px;padding-left: 60px;line-height: 16px;}
