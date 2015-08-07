@@ -295,7 +295,6 @@
                                 <span class="caret"></span>
                             </button>
                             <ul class="dropdown-menu hour-list choose-list" role="menu">
-
                             </ul>
                         </div>
                         <span class="pull-left tit">：</span>
@@ -426,7 +425,8 @@
                         <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
-                    <p class="notice text-grey9">截止时间是指在某送货时间段前N分钟用户将不能选择该时段配送</p>
+                    <p class="notice text-grey9">截止时间是指，在某送货时间段开始前N分钟用户将不能选择该时段下单</p>
+                    <p class="notice text-grey9">例如：若按时达时间段为11:00~17:00，下单截止时间为20分钟，则10:40起，用户<br>　　　便不能在该时间段内下单。</p>
                 </div>
                 {% elif order_type == 3%}
                 <div class="w550 center-block">
@@ -514,7 +514,8 @@
                         <a href="javascript:;" class="sure-btn pull-right edit_item hidden stopRange text-center text-white">✓</a>
                         <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
                     </div>
-                    <p class="notice text-grey9">截止时间是指在下单后N分钟内用户不能选择该时段自提</p>
+                    <p class="notice text-grey9">截止时间是指，在某自提时间段截止前N分钟内用户将不能选择该时段下单，为商家提供准备包裹时间</p>
+                    <p class="notice text-grey9">例如：若自提时间段为11:00~17:00，下单截止时间为20分钟，则16:40起，用户便不能在该时间段内<br>　　　下单。</p>
                 </div>
                 <div class="w550 center-block clearfix mt20">
                     <p class="group set-self">
