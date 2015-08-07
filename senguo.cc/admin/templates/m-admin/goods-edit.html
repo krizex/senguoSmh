@@ -55,7 +55,7 @@
         <ul class="img-list group" id="img_list">
             {% for img in data['imgurl']%}
             <li>
-                <img src="{{img or '/static/images/TDSG.png'}}?imageView2/1/w/120/h/120" url="{{img or '/static/images/TDSG.png'}}" alt="商品图片" class="image"/>
+                <img src="{{img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" url="{{img or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="商品图片" class="image"/>
                 <a href="javascript:;" class="icon-del"></a>
             </li>
             {% end %}
@@ -176,7 +176,6 @@
             <a href="javascrpipt:;" class="convert-btn" id="convert-btn">搜索</a>
         </div>
         <ul class="classify-list mt10">
-
         </ul>
     </div>
 </div>
