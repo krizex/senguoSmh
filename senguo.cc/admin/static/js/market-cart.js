@@ -251,8 +251,10 @@ $(document).ready(function(){
             $(".mincharge-send").text(_mincharge_now);
             $(".freigh_time").text(_freigh_now);
         }else{
-            $(".mincharge-send").text(_mincharge_intime);
-            $(".freigh_time").text(_freigh_ontime);
+            if($(".ontime-period-choose").length>0){
+                $(".mincharge-send").text(_mincharge_intime);
+                $(".freigh_time").text(_freigh_ontime);
+            }
         }
     }else{
         if($(".ontime_send_day .type-tomorrow").hasClass("active")){
@@ -266,8 +268,11 @@ $(document).ready(function(){
                 freightNow();
                 $(".ontime-period-choose .available").removeClass("active");
             }else{
-               minIntime();
-               freightIntime();
+                 if($(".ontime-period-choose").length>0){
+                    minIntime();
+                    freightIntime();
+                 }
+               
             }
         }
     }
@@ -403,42 +408,50 @@ function freightIntime(){
 }
 
 function todayChoose(){
+    var ontime_on=$('.ontime-period-choose').attr('data-config');
     var now_on=$('.send-now').attr('data-config');
     var _type=$(".send_type_item.active").attr("data-type");  
     var _time=new Date();
     var time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
     var $send_item=$(".send_type_item.active").next(".item_period").find(".send_day");
     var today=$send_item.find('.active').data('id');
-    var stop_range=Int($send_item.siblings('.stop-range').val().trim());
+    var stop_range = 0;
+    console.log($send_item);
+    if($send_item.length>0){
+        stop_range=Int($send_item.siblings('.stop-range').val().trim());
+    }
+    
     if(_type=="ontime"){
         if(today==1){
-            $send_item.siblings(".period-choose").find(".item").each(function(){
-                var $this=$(this);
-                var intime_startHour=Int($this.find('.time_startHour').val());
-                var intime_startMin=Int($this.find('.time_startMin').val());
-                var time;
-                if(intime_startMin==0){
-                    intime_startHour=intime_startHour-1;
-                }
-                if(stop_range<=intime_startMin){
-                    time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-                }
-               else{
-                    n = parseInt(stop_range/60)
-                    time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
-                }
-                if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
-                $this.on('click',function(){
-                    if($this.hasClass('available')) {
-                        var today_now = $('#sendDay').find('.active').data('id');
-                        if (today_now == 1 && time >= time_now) {
-                            $this.addClass('active');
-                        }
-                    }else{
-                        noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this);
+            if(ontime_on!=undefined){
+                $send_item.siblings(".period-choose").find(".item").each(function(){
+                    var $this=$(this);
+                    var intime_startHour=Int($this.find('.time_startHour').val());
+                    var intime_startMin=Int($this.find('.time_startMin').val());
+                    var time;
+                    if(intime_startMin==0){
+                        intime_startHour=intime_startHour-1;
                     }
-               });
-            });
+                    if(stop_range<=intime_startMin){
+                        time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
+                    }
+                   else{
+                        n = parseInt(stop_range/60)
+                        time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
+                    }
+                    if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
+                    $this.on('click',function(){
+                        if($this.hasClass('available')) {
+                            var today_now = $('#sendDay').find('.active').data('id');
+                            if (today_now == 1 && time >= time_now) {
+                                $this.addClass('active');
+                            }
+                        }else{
+                            noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this);
+                        }
+                   });
+                });
+            }
             if(now_on!=undefined){
                 var start_now_time=$(".now_startHour").val();
                 var stop_now_time=$(".now_startMin").val();
@@ -455,6 +468,7 @@ function todayChoose(){
                 }
                 if(stop_now_time>_time_now&&_time_now_real>start_now_time){
                     $(".send-now").show().addClass("active").addClass("available");
+                    $send_item.siblings(".period-choose").find(".available").removeClass("active");
                     minNow();
                     freightNow();
                 }else{
@@ -473,10 +487,37 @@ function todayChoose(){
                 available.addClass('active').siblings("li").removeClass('active');
             }
         }else{
-            $(".send-now").hide();  
-            $send_item.siblings(".period-choose").find(".item").first().addClass("active").siblings("li").removeClass("active");
-            minIntime();
-            freightIntime();
+            if(today!=undefined){
+                $(".send-now").hide();
+                $send_item.siblings(".period-choose").find(".item").first().addClass("active").siblings("li").removeClass("active");
+                minIntime();
+                freightIntime();
+            }else{
+                if(now_on!=undefined){
+                    minNow();
+                    freightNow();
+                    var start_now_time=$(".now_startHour").val();
+                    var stop_now_time=$(".now_startMin").val();
+                    var stop_now=parseInt($(".now_stop").val());
+                    var _time_now;
+                    var _time_now_real=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+                    var time_n=parseInt(stop_now/60);
+                    var lef_minute=stop_now%60;
+                    if(_time.getMinutes()+lef_minute>=60){
+                         _time_now=checkTime(_time.getHours()+time_n+1)+':'+checkTime(_time.getMinutes()+lef_minute-60)+':'+checkTime(_time.getSeconds());
+                    }else{
+                        _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute)+':'+checkTime(_time.getSeconds());
+
+                    }
+                    if(stop_now_time>_time_now&&_time_now_real>start_now_time){
+                        $(".send-now").show().addClass("active").addClass("available");
+                    }else{
+                        $(".send-now").addClass("not_available").removeClass("available").removeClass("active");
+                    }
+                }else{
+                    $(".send-now").addClass("not_available").removeClass("available").removeClass("active");     
+                }
+            }
         } 
     }else if(_type=="self"){
         if(today==1){
