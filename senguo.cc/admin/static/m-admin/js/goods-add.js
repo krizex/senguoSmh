@@ -40,6 +40,7 @@ $(document).ready(function(){
     $item.find(".second-num").html("1");
     $item.find(".stock-unit").html("kg");
     $item.find(".price-unit").html("kg");
+    $item.find(".price-text").html("kg");
     $item.find(".current-price").val("");
     $item.find(".price-num").val("");
     $item.find(".market-price").val("");
@@ -51,14 +52,14 @@ $(document).ready(function(){
     if(confirm("修改库存单位后现有的售价方式会被修改成库存单位，确认修改？")){
         price_type = 0;
         $(".unit-title").html("库存单位");
-        $(".unit_list li").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
+        $(".unit_list li").removeClass("active").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
         $(".pop-unit").removeClass("hide");
     }
 }).on("click",".price-unit",function(){//售出单位
     price_type = 1;
     cur_price = $(this).closest(".price-item");
     $(".unit-title").html("售出单位");
-    $(".unit_list li").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
+    $(".unit_list li").removeClass("active").eq(parseInt($(this).attr("data-id"))-1).addClass("active");
     $(".pop-unit").removeClass("hide");
 }).on("click",".unit_list li",function(){
     var id = $(this).attr("data-id");
@@ -92,6 +93,7 @@ $(document).ready(function(){
             }
         }else{
             cur_price.find(".price-unit").html(name).attr("data-id",id);
+            $(".price-text").html(name);
             cur_price.find(".first-num").html("1");
             cur_price.find(".now-unit").html(name);
             $(".pop-unit").addClass("hide");
@@ -107,6 +109,7 @@ $(document).ready(function(){
         var unit = $(this).attr("data-unit");
         var id = $(this).attr("data-unitid");
         cur_price.find(".price-unit").html(unit).attr("data-id",id);
+        $(".price-text").html(unit);
         cur_price.find(".now-unit").html(unit);
         cur_price.attr("data-first",firstNum).attr("data-second",secondNum);
         cur_price.find(".first-num").html(firstNum);
@@ -423,6 +426,7 @@ function switchUnit($list,id,name){
         var $this = $list.eq(i);
         $this.attr("data-first","1").attr("data-second","1");
         $this.find(".price-unit").attr("data-id",id).html(name);
+        $(".price-text").html(name);
         $this.find(".first-num").html("1");
         $this.find(".second-num").html("1");
         $this.find(".now-unit").html(name);
@@ -433,6 +437,7 @@ function switchUnit($list,id,name){
 function simpleUnitSwitch(price_unit,cur_unit,id){
     var first = 1,second = 1;
     cur_price.find(".price-unit").html(price_unit).attr("data-id",id);
+    $(".price-text").html(price_unit);
     cur_price.find(".now-unit").html(price_unit);
     if(price_unit == "kg" && cur_unit == "克"){
         first = 1;
