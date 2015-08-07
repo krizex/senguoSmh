@@ -9,7 +9,7 @@
     <div class="wrap-group-list">
         <ul class="group-lst">
              <li data-index="0" data-rel="0" data-id="-1" class="bg-grey2 item">
-                <div class="right-link">
+                <div class="right-link forbid-click">
                     <a href="javascript:;" class="spread-group">推广分组</a>
                     <div class="sw-er-tip all-position invisible">
                         <div class="top-arr">
@@ -29,12 +29,12 @@
                         </div>
                     </div>
                 </div>
-                <p class="c333">店铺推荐（{{record_count}}）</p>
+                <p class="c333"><a href="{{reverse_url('adminGoods')}}?type=group&&gid=-1" class="left-link forbid-click">店铺推荐（{{record_count}}）</a></p>
                 <p>该分组最多加入6个商品，分组排序优先级最高</p>
             </li>
            {% for d in data %}
             <li data-index="" data-rel="" data-id="{{d['id']}}" class="self-group item">
-                <div class="right-link">
+                <div class="right-link forbid-click">
                     {% if d['id']==0 %}
                     <a href="javascript:;" class="spread-group">推广分组</a>
                     {% else %}
@@ -60,7 +60,7 @@
                         </div>
                     </div>
                 </div>
-                <p class="c333"><span class="group-name">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</span>（{{d['num']}}）</p>
+                <p class="c333"><a href="{{reverse_url('adminGoods')}}?type=group&&gid={{d['id']}}" class="left-link forbid-click"><span class="group-name">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</span>（{{d['num']}}）</a></p>
                 <p class="group-intro">{% if d['id']==0 %}若不设置分组，商品会默认进入该分组中{% else %}{{d['intro']}}{% end %}</p>
             </li>
             {% end %}
