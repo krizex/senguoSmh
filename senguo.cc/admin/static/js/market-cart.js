@@ -485,11 +485,12 @@ function todayChoose(){
                 var intime_endHour=Int($this.find('.time_endHour').val());
                 var intime_endMin=Int($this.find('.time_endMin').val());
                 var time;
-                if(stop_range<=intime_endMin){
-                    time=checkTime(intime_endHour)+':'+checkTime(intime_endMin-stop_range)+':00';
+                var n = parseInt(stop_range/60)
+                var lef_minute=stop_range%60;
+                if(intime_endMin>lef_minute){
+                    time=checkTime(intime_endHour-n)+':'+checkTime(intime_endMin-lef_minute)+':00';
                 }else{
-                    n = parseInt(stop_range/60)
-                    time=checkTime(intime_endHour-n)+':'+checkTime(60-(stop_range-60*n-intime_endMin))+':00';
+                    time=checkTime(intime_endHour-n-1)+':'+checkTime(60-lef_minute+intime_endMin)+':00';
                 }
                 if (time < time_now) {
                     $this.removeClass('available').addClass('not_available').removeClass('active');
