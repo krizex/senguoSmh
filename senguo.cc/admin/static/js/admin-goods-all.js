@@ -935,6 +935,7 @@ function getGoodsItem(action,page,type_id,value){
     var order_status2 = $(".order_status2").attr("data-id");
     var filter_status2 = $(".filter_status2").attr("data-id");
     console.log('@@@',filter_status,order_status1,order_status2,filter_status2);
+    console.log('now , page=',page,'  action=',action,'  type_id = ',type_id,'  value = ',value);
     pn = page;
     if(action=="classify"){
         url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
