@@ -278,61 +278,11 @@ $(document).ready(function(){
         $this.addClass('active').siblings().removeClass('active');
     }
 }).on('click',".type-today",function(){
-    var _item=$(this).parents(".type-choose").siblings(".period-choose").find(".item");
-    var _time=new Date();
-    var time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-    var stop_range=Int($(this).parents(".type-choose").siblings('.stop-range').val().trim());
-    _item.each(function(){
-        var $this=$(this);
-        var intime_startHour=Int($this.find('.time_startHour').val());
-        var intime_startMin=Int($this.find('.time_startMin').val());
-        var time;
-        if(intime_startMin==0){
-            intime_startHour=intime_startHour-1;
-        }
-        if(stop_range<=intime_startMin){
-            time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-        }
-       else{
-            n = parseInt(stop_range/60)
-            time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
-        }
-        if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
-    });
-    if($(".send-intime").hasClass("active")){
-        if($('.send-now').attr('data-config')!=undefined){
-            $(".send-now").show();
-            if($(".send-now").hasClass("available")){
-                var stop_now_time=$(".now_startMin").val();
-                var stop_now=parseInt($(".now_stop").val());
-                var _time_now;
-                if(_time.getMinutes()+stop_now>=60){
-                    _time_now=checkTime(_time.getHours()+1)+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-                }else{
-                    _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-                }
-                if(stop_now_time>_time_now){
-                    $(".send-now").show().addClass("active");
-                    $(this).parents(".type-choose").siblings(".period-choose").find(".available").removeClass("active");
-                    if(_total_price<_mincharge_now){
-                        $('.mincharge_now').removeClass("hidden");
-                        $('.mincharge_intime').addClass("hidden");
-                    }
-                    minNow();
-                }else{
-                    $(".send-now").removeClass("active").addClass("not_available").removeClass("available");
-                }   
-            }
-            
-        }else{
-            var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
-            available.addClass('active').siblings().removeClass('active');  
-        }
-    }else if($(".send-self").hasClass("active")){
-        var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
-        available.addClass('active').siblings().removeClass('active');
+    var _type=$(".send_type_item.active").attr("data-type"); 
+    todayChoose();
+    if(_type=="ontime"&&$(".send-now").attr("data-config")!=undefined){
+        $(".send-now").show();
     }
-    
 }).on('click',".type-tomorrow",function(){
     var _item=$(this).parents(".item_period").find(".period-choose .item");
     _item.each(function(){
@@ -464,18 +414,20 @@ function todayChoose(){
         if(today==1){
             $send_item.siblings(".period-choose").find(".item").each(function(){
                 var $this=$(this);
-                var intime_endHour=Int($this.find('.time_endHour').val());
-                var intime_endMin=Int($this.find('.time_endMin').val());
+                var intime_startHour=Int($this.find('.time_startHour').val());
+                var intime_startMin=Int($this.find('.time_startMin').val());
                 var time;
-                if(stop_range<=intime_endMin){
-                    time=checkTime(intime_endHour)+':'+checkTime(intime_endMin-stop_range)+':00';
-                }else{
+                if(intime_startMin==0){
+                    intime_startHour=intime_startHour-1;
+                }
+                if(stop_range<=intime_startMin){
+                    time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
+                }
+               else{
                     n = parseInt(stop_range/60)
-                    time=checkTime(intime_endHour-n)+':'+checkTime(60-(stop_range-60*n-intime_endMin))+':00';
+                    time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
                 }
-                if (time < time_now) {
-                    $this.removeClass('available').addClass('not_available').removeClass('active');
-                }
+                if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
                 $this.on('click',function(){
                     if($this.hasClass('available')) {
                         var today_now = $('#sendDay').find('.active').data('id');
