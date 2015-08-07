@@ -1658,7 +1658,7 @@ class Cart(CustomerBaseHandler):
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=1).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:
-				if period.start_time.hour*60 + period.start_time.minute - \
+				if period.end_time.hour*60 + period.end_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
 					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择其他时间段")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')

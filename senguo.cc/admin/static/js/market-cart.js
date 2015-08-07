@@ -284,18 +284,20 @@ $(document).ready(function(){
     var stop_range=Int($(this).parents(".type-choose").siblings('.stop-range').val().trim());
     _item.each(function(){
         var $this=$(this);
-        var intime_endHour=Int($this.find('.time_endHour').val());
-        var intime_endMin=Int($this.find('.time_endMin').val());
+        var intime_startHour=Int($this.find('.time_startHour').val());
+        var intime_startMin=Int($this.find('.time_startMin').val());
         var time;
-        if(stop_range<=intime_endMin){
-            time=checkTime(intime_endHour)+':'+checkTime(intime_endMin-stop_range)+':00';
-        }else{
+        if(intime_startMin==0){
+            intime_startHour=intime_startHour-1;
+        }
+        if(stop_range<=intime_startMin){
+            time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
+        }
+       else{
             n = parseInt(stop_range/60)
-            time=checkTime(intime_endHour-n)+':'+checkTime(60-(stop_range-60*n-intime_endMin))+':00';
+            time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
         }
-        if (time < time_now) {
-            $this.removeClass('available').addClass('not_available').removeClass('active');
-        }
+        if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
     });
     if($(".send-intime").hasClass("active")){
         if($('.send-now').attr('data-config')!=undefined){
