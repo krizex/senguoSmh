@@ -418,14 +418,14 @@
 .class-lst{padding: 10px 10px 0 10px;}
 .class-lst>li{padding: 0 4px 4px 0;float:left;width: 20%;-webkit-box-sizing: border-box;white-space: nowrap;}
 .class-lst>li>span{display: block;height: 30px;line-height: 30px;-webkit-box-sizing: border-box;background-color: #fff;border-radius: 2px;text-align: center;color: #666;font-size: 12px;}
-.class-lst .selected{border: 1px solid #ddd;color: #333;}
+.class-lst .selected{border: 1px solid #48b6a4;color: #48b6a4;}
 .red .selected{border: 1px solid #E27386;color: #E27386;}
 .yellow .selected{border: 1px solid #F8BF32;color: #F8BF32;}
 .green .selected{border: 1px solid #48B6A4;color: #48B6A4;}
 .purple .selected{border: 1px solid #D0A3F1;color: #D0A3F1;}
 .blue .selected{border: 1px solid #03A9F4;color: #03A9F4;}
 .white .selected{border: 1px solid #ddd;color: #ddd;}
-.unknow .selected{border: 1px solid #48b6a4;color: #48b6a4;}
+.unknow .selected{border: 1px solid #ddd;color: #ddd;}
 .class-left{background-color: #d7d7d7;color: #333 !important;}
 .class-row .red{background-color: #E27386;color: #fff;}
 .class-row .yellow{background-color: #F8BF32;color: #fff!important;}
