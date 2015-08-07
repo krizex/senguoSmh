@@ -331,7 +331,7 @@
 .goods-name{padding-right: 85px;}
 .gdl{position: relative;}
 .gdl>dt{position: absolute;width: 50px;height: 50px;left: 0;}
-.gdl>dt img{width: 50px;height: 50px;}
+.gdl>dt img{width: 50px;height: 50px;margin-top: 2px;}
 .gdl>dd{padding-left: 60px;min-height: 50px;}
 .switch-goods{position: absolute;right: 0;top: -6px;}
 .cancel-goods{position: absolute;right: 0;top: -6px;width: 80px;height: 24px;text-align:center;border-radius:4px;display: inline-block;line-height: 24px;font-size: 14px;color: #fff;background-color: #48b6a4;}
