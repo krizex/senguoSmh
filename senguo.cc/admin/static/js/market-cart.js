@@ -237,6 +237,7 @@ $(document).ready(function(){
     $this.addClass('active').siblings().removeClass('active');
 }).on("click",".send_type_item",function(){
     var $this=$(this);
+    pulse($this);
     var _type=$this.attr("data-type");
     var _status=$this.attr('data-config');
     $this.siblings(".item_period").hide();
@@ -348,6 +349,7 @@ $(document).ready(function(){
     $(this).children("a").addClass("checkboxed");
 }).on("click",".coupon_type li",function(){//优惠券
     var index = $(this).index();
+    pulse($(this));
     if($(this).hasClass("active")){
         $(this).removeClass("active");
         $(this).children("a").removeClass("checkboxed");
@@ -843,7 +845,7 @@ function orderSubmit(target){
         if(!period_id) return noticeBox('请选择自提时间段！',target);
         if(!self_address_id) return noticeBox('请选择自提地址！',target);
     }
-    if(!type){return noticeBox('请选择送货时段！',target)}
+    if(!type){return noticeBox('请选择送货时段！',target);}
     $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
