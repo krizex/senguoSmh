@@ -425,7 +425,7 @@
 .purple .selected{border: 1px solid #D0A3F1;color: #D0A3F1;}
 .blue .selected{border: 1px solid #03A9F4;color: #03A9F4;}
 .white .selected{border: 1px solid #ddd;color: #ddd;}
-.unknow .selected{border: 1px solid #ddd;color: #ddd;}
+.unknow .selected{border: 1px solid #48b6a4;color: #48b6a4;}
 .class-left{background-color: #d7d7d7;color: #333 !important;}
 .class-row .red{background-color: #E27386;color: #fff;}
 .class-row .yellow{background-color: #F8BF32;color: #fff!important;}
