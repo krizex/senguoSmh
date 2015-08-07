@@ -23,7 +23,6 @@ $(document).ready(function(){
         localStorage.setItem("add",'0');
     }
     var sub_type=parseInt($.getUrlParam("type_id"));
-    console.log(link_type);
     if(link_type=="classify"){//分类跳转
         getGoodsItem(link_type,0,sub_type);
     }else if(link_type=="goodsearch"){//搜索跳转
@@ -33,11 +32,9 @@ $(document).ready(function(){
     }else if(link_type=="group"){
         var gid=parseInt($.getUrlParam("gid"));
         $(".filter_status2").attr("data-id",gid);
-        console.log(gid);
         $("#group-goods-lst li").each(function(){
             var $this=$(this).find("a");
             var id= parseInt($this.attr("data-id"));
-            console.log(id);
             if(id==gid){
                 $(".filter_status2").text($this.text());
             }
@@ -933,12 +930,11 @@ function initEditor($obj,type){
 function getGoodsItem(action,page,type_id,value){
     $(".wrap-loading-box").removeClass("hidden");
     var url;
-    console.log('@@@');
     var filter_status = $(".filter_status").attr("data-id");
     var order_status1 = $(".order_status1").attr("data-id");
     var order_status2 = $(".order_status2").attr("data-id");
     var filter_status2 = $(".filter_status2").attr("data-id");
-    console.log(filter_status,order_status1,order_status2,filter_status2);
+    console.log('@@@',filter_status,order_status1,order_status2,filter_status2);
     pn = page;
     if(action=="classify"){
         url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;

@@ -384,6 +384,11 @@ class ShopManage(SuperBaseHandler):
 				data["auth_type"] = auth_type_array[shop.shop_auth]
 
 				data["admin_nickname"] = shop.admin.accountinfo.nickname
+
+				# added by jyj 2015-8-7
+				data["admin_id"] = shop.admin.accountinfo.id
+				# #
+
 				data["shop_address_detail"] = shop.shop_address_detail
 				data["shop_code"] = shop.shop_code
 				shop_status_array = ['关闭','营业中','筹备中','休息中']
@@ -775,6 +780,10 @@ class User(SuperBaseHandler):
 		elif action == "search":
 			inputinfo = self.args["inputinfo"]
 			q = q.filter(or_(models.Accountinfo.nickname.like("%{0}%".format(inputinfo)),(func.concat(models.Accountinfo.id,'')).like("%{0}%".format(inputinfo))))
+		# added by jyj 2015-8-7:
+		elif action == "out_link":
+			admin_id = int(self.args["inputinfo"])
+			q = q.filter(models.Accountinfo.id == admin_id)
 		else:
 			return self.send_error(404)
 		users = q.offset(page*page_size).limit(page_size).all()
