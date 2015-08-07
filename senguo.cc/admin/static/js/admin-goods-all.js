@@ -919,10 +919,12 @@ function initEditor($obj,type){
 function getGoodsItem(action,page,type_id,value){
     $(".wrap-loading-box").removeClass("hidden");
     var url;
+    console.log('@@@');
     var filter_status = $(".filter_status").attr("data-id");
     var order_status1 = $(".order_status1").attr("data-id");
     var order_status2 = $(".order_status2").attr("data-id");
     var filter_status2 = $(".filter_status2").attr("data-id");
+    console.log(filter_status,order_status1,order_status2,filter_status2);
     pn = page;
     if(action=="classify"){
         url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;

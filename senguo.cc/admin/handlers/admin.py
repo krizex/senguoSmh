@@ -2045,6 +2045,7 @@ class Goods(AdminBaseHandler):
 
 	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
 	def get(self):
+		print("@@@@","action=",self._action)
 		self.if_current_shops()
 		action = self._action
 		_id = str(time.time())
@@ -2374,6 +2375,7 @@ class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
 	def post(self):
+		print("###,here is post function")
 		action = self.args["action"]
 		data = self.args["data"]
 		current_shop = self.current_shop
