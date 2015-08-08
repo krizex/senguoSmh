@@ -1,4 +1,5 @@
 .img-border{display: inline-block;border: 2px solid #76ccc0;border-radius: 50%;line-height: 1;}
+.tel-block{display: block;margin-top: -4px;}
 /*店铺中心*/
 .profile-top{position: relative}
 .sw-tip{position: absolute;width: 0;height: 0;border:25px solid transparent;top:0;left:0;z-index:99;}
@@ -468,9 +469,10 @@
 .btn-group .sure-sbtn{color: #fff;background-color: #48b6a4;}
 .vm{vertical-align: middle;}
 /*自提点*/
-.wrap-self-choose{position: fixed;top: 40px;left: 0;width: 100%;z-index:999;-webkit-box-sizing: border-box;padding: 0 10px;background-color: #e7e7e7;}
+.wrap-self-choose{position: fixed;top: 40px;left: 0;width: 100%;z-index:999;-webkit-box-sizing: border-box;padding: 5px 0;background-color: #fff;}
+.self-choose-box{background-color: #eee;padding: 0 10px;}
 .self-choose{padding-left: 75px;height:30px;}
-.self-choose .add-left{height: 30px;line-height: 30px;}
+.self-choose .add-left{height: 30px;line-height: 30px;color: #9f9f9f;}
 .self-choose .add-right{height: 30px;line-height: 30px;}
 
 

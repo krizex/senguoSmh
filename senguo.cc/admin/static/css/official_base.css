@@ -205,20 +205,24 @@ a,input,button{ outline:none; }
 .more-list:hover{text-decoration: none;background-color: #fff;color: #333;}
 /*右下角*/
 .scrollUpf{position: fixed; z-index: 9999; display: block;width: 48px;bottom:90px;right: 50px;display: none;}
-.scrollUpf a{display: block;height: 48px;margin-bottom:6px;}
-.scrollUpf .r-wx{ width:48px; height:40px; margin:5px auto; position:relative;}
+.scrollUpf a{display: block;width:48px;height: 48px;margin:5px auto;position:relative;}
+.scrollUpf .r-wx{height: 40px;}
 .scrollUp {height: 48px;width: 48px;background: url('../official_img/top1.png') no-repeat left top;transition: top 0.9s ease 0s;}
 .scrollUp:hover {background: url('../official_img/top2.png') no-repeat left top;}
 .scrollUpf .iopa{ top:0;background:url('../official_img/code1.png') no-repeat left top; position:absolute; z-index:10; width:100%;height:100%; }
 .scrollUpf .iopa:hover{background-image:url('../official_img/code2.png');}
+.scrollUpf .iokf{ top:0;background:url('../official_img/kf1.png') no-repeat left top; position:absolute; z-index:10; width:100%;height:100%; }
+.scrollUpf .iokf:hover{background-image:url('../official_img/kf2.png');}
 .fi-wx-show{border:2px solid #33CC66; background:#fff; position:absolute;bottom: -14px;left: -220px;display: none;}
 .r-wx:hover .fi-wx-show{display: block;}
+.fi-kf-show{border:2px solid #33CC66; background:#fff; position:absolute;bottom: 0;left: -194px;padding: 6px;display: none;}
+.r-kf:hover .fi-kf-show{display: block;}
+.fi-kf-show p{font-size: 14px;line-height: 20px;color: #666;}
 .wx-show-txt{width:200px; height:200px; padding:20px; font-size:18px; line-height:33px;background:url("../official_img/server.jpg") no-repeat;background-size: 200px;}
 .wx-threeRs{width:0;height:0;right:-25px; bottom:20px;z-index:200;border-width:13px; border-style:solid; border-color:transparent transparent transparent #fff; display:block; position:absolute;}
 .wx-threeR{width: 0;height: 0;right: -31px;bottom: 17px;z-index:100;border-width: 16px;border-style: solid;border-color: transparent transparent transparent #33CC66;display: block;position: absolute;}
-.wx-threeBs{width:0;height:0;left:69px; bottom:-25px;z-index:200;border-width:13px; border-style:solid; border-color: #fff transparent transparent transparent; display:block; position:absolute;}
-.wx-threeB{width: 0;height: 0;left:66px;bottom:-31px;z-index:100;border-width: 16px;border-style: solid;border-color: #33CC66 transparent transparent transparent;display: block;position: absolute;}
-
+.fi-kf-show .wx-threeR{bottom:5px;}
+.fi-kf-show .wx-threeRs{bottom:8px;}
 
 
 

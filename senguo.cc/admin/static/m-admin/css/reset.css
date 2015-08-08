@@ -133,7 +133,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pop-content .title{font-size:16px;color:#666;text-align:left;}
 .pop-content .close-btn{position:absolute;right:10px;top:10px;font-size:16px;color:#48b6a4;font-weight:bold;}
 /*页面提示文字*/
-.no-result{font-size: 14px;text-align: center;color: #999;}
+.no-result{font-size: 14px;text-align: center;color: #999;width: 100%;}
 .order-list-box>p{position: absolute;top: 100px;min-width: 320px;}
 /*加载中动画*/
 .wrap-loading-box{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}

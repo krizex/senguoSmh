@@ -11,13 +11,13 @@ $(document).ready(function(){
         if(_type==3){
             $(".second-item").html("等待自取");
             $(".third-item").html("已完成");
-            $(".second-tab").addClass("mt30");
+            $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
         }else{
             $(".second-item").html("处理中");
             $(".third-item").html("已送达");
             $(".wrap-self-choose").addClass("hide");
-            $(".second-tab").removeClass("mt30");
+            $(".second-tab").removeClass("mt40");
         }
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
@@ -51,6 +51,12 @@ $(document).ready(function(){
         }
     });
     if($.getUrlParam("type")){
+        if(parseInt($.getUrlParam("type"))==2){
+            $(".second-item").html("等待自取");
+            $(".third-item").html("已完成");
+            $(".second-tab").addClass("mt40");
+            $(".wrap-self-choose").removeClass("hide");
+        }
         var index = parseInt($.getUrlParam("type"));
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
@@ -130,7 +136,7 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                                     '</a>'+
                                 '</div>'+
                                 '<div class="order-status-txt {{left}} forbid_click">'+
-                                    '<a class="task-staff {{color}}" href="javascript:;">{{sender_name}}</a><a class="{{tel_show}}" href="tel:{{staff_phone}}">拨号</a>'+
+                                    '<a class="task-staff {{color}}" href="javascript:;">{{sender_name}}</a><a class="tel-block {{tel_show}}" href="tel:{{staff_phone}}">拨号</a>'+
                                 '</div>'+
                             '</div>'+
                         '</div>'+
