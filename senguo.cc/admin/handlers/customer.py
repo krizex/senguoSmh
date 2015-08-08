@@ -2817,26 +2817,30 @@ class InsertData(CustomerBaseHandler):
 		import json
 		shop_list , good_list = self.get_data()
 		# print(shop_list)
-		for shop in shop_list:
-			try:
-				link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
-			except:
-				link_exist = None
-			if not link_exist:
-				temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
-					shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
-					delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
-					lon = shop['lon'],shop_province = 420000,shop_city = 420100)
-				self.session.add(temp_shop)
-		self.session.flush()
+		# for shop in shop_list:
+		# 	try:
+		# 		link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
+		# 	except:
+		# 		link_exist = None
+		# 	if not link_exist:
+		# 		temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
+		# 			shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
+		# 			delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
+		# 			delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
+		# 			lon = shop['lon'],shop_province = 420000,shop_city = 420100)
+		# 		self.session.add(temp_shop)
+		# self.session.flush()
 
-		for good in good_list:
-			temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
-				sales = good['sales'],goods_name = good['goods_name'])
-			self.session.add(temp_good)
-		self.session.commit()
-		
+		# for good in good_list:
+		# 	temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
+		# 		sales = good['sales'],goods_name = good['goods_name'])
+		# 	self.session.add(temp_good)
+		# self.session.commit()
+		shop = self.session.query(models.Shop).filter(models.Shop.shop_name.like('%%%s%%' % '')).count()
+		print(shop)
+		shop_all = self.session.query(models.Shop).count()
+		print(shop_all)
+
 		# session = DBSession()
 
 		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
@@ -2854,7 +2858,7 @@ class InsertData(CustomerBaseHandler):
 		# print(shop3.shop_balance)
 
 
-		return self.send_success()
+		return self.send_success(shop=shop,shop_all=shop_all)
 		# import multiprocessing
 		# from multiprocessing import Process
 		# import datetime

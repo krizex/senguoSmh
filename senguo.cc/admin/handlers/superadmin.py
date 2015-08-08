@@ -2190,12 +2190,14 @@ class Balance(SuperBaseHandler):
 			total_balance=total_balance,cash_on=cash_on,level=level,context=dict(page="detail"))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action','page:int')
+	@SuperBaseHandler.check_arguments('action','page:int','shop_name')
 	def post(self):
 		# 当level=1时，表示区域管理员，只显示该区域的数据
 		# woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
+
+		print(self.args)
 
 		history = []
 		page =0
@@ -2204,6 +2206,9 @@ class Balance(SuperBaseHandler):
 		count=0
 		action = self.args['action']
 		page = self.args['page']-1
+		shop_name = self.args.get('shop_name','')
+		# shop_name = ''
+		# print(shop_name,'shop_name')
 		history_list = []
 		total = 0
 		times = 0
@@ -2211,27 +2216,45 @@ class Balance(SuperBaseHandler):
 		pay = 0
 		left = 0
 		if level == 0:
-			balance_history = self.session.query(models.BalanceHistory).order_by(desc(models.BalanceHistory.create_time))
+			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+				).order_by(desc(models.BalanceHistory.create_time))
 		elif level == 1:
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_province=shop_province).order_by(desc(models.BalanceHistory.create_time))
+			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_province==shop_province,
+				models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).order_by(desc(models.BalanceHistory.create_time))
 		else:
 			return self.send_fail('level error')
 		if action == 'all_history':
-			history_list =balance_history .offset(page*page_size).limit(page_size).all()
+			history_list =balance_history.offset(page*page_size).limit(page_size).all()
 			count = balance_history.count()
 		elif action == 'recharge':
 			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).\
-				order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 0).all()
-				q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1,is_cancel = 0).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type == 0,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)
+					).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type == 0,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+				q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
+					models.BalanceHistory.balance_type == 1,
+					models.BalanceHistory.is_cancel == 0,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=0,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=0,
-					shop_province=shop_province).all()
-				q1= self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type=1,is_cancel=0,
-					shop_province=shop_province).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type==0,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type==0,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+				q1= self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
+					models.BalanceHistory.balance_type==1,
+					models.BalanceHistory.is_cancel==0,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			else:
 				return self.send_fail('level error')
 
@@ -2246,34 +2269,66 @@ class Balance(SuperBaseHandler):
 			left = format(left,'.2f')
 		elif action == 'online':
 			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3)\
-				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
-				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type == 3,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type ==3,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+
+				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter(
+					models.BalanceHistory.balance_type == 3,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).count()
 			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=3,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
-					shop_province=shop_province).all()
-				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
-					shop_province=shop_province).count()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type==3,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type==3,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).all()
+
+				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter(
+					models.BalanceHistory.balance_type==3,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).count()
 			else:
 				return self.send_fail('level error')
 			if q[0][0]:
 				total = q[0][0]
-			total = format(total,'.2f')
-			count = q[0][1]
+				total = format(total,'.2f')
+			else:
+				total = 0
+			count = q[0][1] if q[0][1] else 0
 			times = count
 		elif action == 'cash_history':
 			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 2)\
-				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 2).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type == 2,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type == 2,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=2,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=2,
-					shop_province=shop_province).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type==2,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type==2,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			else:
 				return self.send_fail('level error')
 
@@ -2286,12 +2341,18 @@ class Balance(SuperBaseHandler):
 		# add by jyj 2015-7-4:
 		elif action == 'balance_list':
 			if level == 0:
-				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
-						filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
+					models.BalanceHistory.shop_totalPrice >= 0,
+					models.BalanceHistory.shop_totalPrice != None,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time))
 			elif level == 1:
 				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
-					models.BalanceHistory.shop_totalPrice >=0,models.BalanceHistory.shop_totalPrice != None,models.Shop.shop_province==shop_province).order_by(
-					desc(models.BalanceHistory.create_time))
+					models.BalanceHistory.shop_totalPrice >=0,
+					models.BalanceHistory.shop_totalPrice != None,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time))
 			else:
 				return self.send_fail('level error')
 			history_list = balance_list.all()

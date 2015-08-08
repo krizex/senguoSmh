@@ -959,6 +959,7 @@ class BalanceHistory(MapBase,_CommonApi):
 
 	# 地址 added by woody
 	shop_province = Column(Integer)
+	shop_name     = Column(String(64))
 
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
 	balance_type = Column(Integer,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
