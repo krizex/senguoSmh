@@ -219,8 +219,8 @@ a,input,button{ outline:none; }
 .r-kf:hover .fi-kf-show{display: block;}
 .fi-kf-show p{font-size: 14px;line-height: 20px;color: #666;}
 .wx-show-txt{width:200px; height:200px; padding:20px; font-size:18px; line-height:33px;background:url("../official_img/server.jpg") no-repeat;background-size: 200px;}
-.wx-threeRs{width:0;height:0;right:-25px; bottom:20px;z-index:200;border-width:13px; border-style:solid; border-color:transparent transparent transparent #fff; display:block; position:absolute;}
-.wx-threeR{width: 0;height: 0;right: -31px;bottom: 17px;z-index:100;border-width: 16px;border-style: solid;border-color: transparent transparent transparent #33CC66;display: block;position: absolute;}
+.wx-threeRs{width:0;height:0;right:-26px; bottom:20px;z-index:200;border-width:13px; border-style:solid; border-color:transparent transparent transparent #fff; display:block; position:absolute;}
+.wx-threeR{width: 0;height: 0;right: -32px;bottom: 17px;z-index:100;border-width: 16px;border-style: solid;border-color: transparent transparent transparent #33CC66;display: block;position: absolute;}
 .fi-kf-show .wx-threeR{bottom:5px;}
 .fi-kf-show .wx-threeRs{bottom:8px;}
 
