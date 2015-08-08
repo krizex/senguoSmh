@@ -158,9 +158,9 @@ class ShopList(FruitzoneBaseHandler):
 		_page_count = 15
 		page = self.args["page"] - 1
 		# page = 1
-		print(self.args)
+		# print(self.args)
 		nomore = False
-		print(province)
+		# print(province)
 		if province:
 			q = self.session.query(models.Shop).filter_by(shop_province=province)
 		else:
@@ -168,17 +168,17 @@ class ShopList(FruitzoneBaseHandler):
 		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).filter(
 			models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,
 			models.Shop.shop_code !='not set',models.Shop.status !=0 )
-		print(q.count(),'店铺总数',page)
+		# print(q.count(),'店铺总数',page)
 		shops = []
 
 		if "service_area" in self.args:
-			print('service service_area')
+			# print('service service_area')
 			service_area = int(self.args['service_area'])
 			if service_area > 0:
 				q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 			# q = q.filter_by(shop_service_area = service_area)
 		if "city" in self.args:
-			print('city')
+			# print('city')
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
 			# print('shop_count',shop_count)
@@ -187,20 +187,19 @@ class ShopList(FruitzoneBaseHandler):
 			q = q.offset(page * _page_count).limit(_page_count).all()
 
 		elif "province" in self.args:
-			print('province')
 			# print('province')
-			print(q.count(),'before')
+			# print('province')
+			# print(q.count(),'before')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
-			print(shop_count,'after')
+			# print(shop_count,'after')
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 
-
 		shops = self.get_data(q)
-		print(len(shops),'shoplist len')
+		# print(len(shops),'shoplist len')
 
-		#当限制为具体某省店铺列表时，默认按距离排序
+		# 当限制为具体某省店铺列表时，默认按距离排序
 		lat1 = None
 		lon1 = None
 		if self.args["lat"] != '[]':
