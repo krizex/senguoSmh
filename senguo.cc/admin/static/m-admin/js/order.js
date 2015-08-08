@@ -2,16 +2,22 @@ var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
     $("html,body").addClass("h100");
     width = $(window).width();
-    $(".no-result").css("width",width);
     var minheight = $(window).height()-80;
-    //$(".swiper-wrapper").width(width*$(".swiper-slide").size());
     $(".order-lists").css({minHeight:minheight+"px"});
 
     $(".order-type-list .item").on("click",function(){
         var index = $(this).index();
         var _type=parseInt($(this).attr('data-id'));
         if(_type==3){
-            return Tip('该功能正在开发中，敬请期待');
+            $(".second-item").html("等待自取");
+            $(".third-item").html("已完成");
+            $(".second-tab").addClass("mt30");
+            $(".wrap-self-choose").removeClass("hide");
+        }else{
+            $(".second-item").html("处理中");
+            $(".third-item").html("已送达");
+            $(".wrap-self-choose").addClass("hide");
+            $(".second-tab").removeClass("mt30");
         }
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
@@ -51,10 +57,7 @@ $(document).ready(function(){
         _page=0;
         $(".order-type-list .tab-bg").css("left",33.3*index+"%");
         getOrder(0);
-    }else{
-        getOrder(0);
     }
-    // swiper.swipeTo(0);
     if(nomore==false){
         scrollLoading();
     }
@@ -79,6 +82,22 @@ $(document).ready(function(){
     var src = $(this).find("img").attr("src");
     $("#sure-staff").attr({"data-src":src,"data-tel":$(this).attr("data-tel")});
     $(".staff-list>li").removeClass("active").eq(index).addClass("active");
+}).on("click",".choose_self",function(){
+    var index = $(this).attr("data-index");
+    $(".self_list li").removeClass("active").eq(index).addClass("active");
+    $(".pop-self").removeClass("hide");
+}).on("click",".cancel-bbtn",function(){
+    $(this).closest(".pop-bwin").addClass("hide");
+}).on("click",".self_list li",function(){
+    var index = $(this).index();
+    $(".self_list li").removeClass("active").eq(index).addClass("active");
+}).on("click","#sure_self",function(){
+    var index = $(".self_list").children(".active").index();
+    var id = $(".self_list").children(".active").attr("data-id");
+    var name = $(".self_list").children(".active").html();
+    $(".choose_self").html(name).attr("data-id",id).attr("data-index",index);
+    getOrder(0,true);
+    $(".pop-self").addClass("hide");
 });
 
 var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="m-order-item" data-id="{{id}}">'+
@@ -146,7 +165,7 @@ function scrollLoading(){
     });
 }
 
-var getOrder=function(page){
+var getOrder=function(page,flag){
     $('.wrap-loading-box').removeClass('hide');
     if(!page){
         var page = 0;
@@ -156,6 +175,9 @@ var getOrder=function(page){
     var order_status=$('.second-tab-list .active').attr('data-id');
     var index=$('.second-tab-list .active').index();
     var url='/admin/order?order_type='+order_type+'&order_status='+order_status+'&page='+page;
+    if(order_type==3){
+        url = url+'&self_id='+$(".choose_self").attr("data-id");
+    }
     $.ajax({
         url:url,
         type:"get",
@@ -163,6 +185,9 @@ var getOrder=function(page){
             if(res.success){
                 var data=res.data;
                 nomore=res.nomore;
+                if(flag){
+                    $('.order-lists').eq(index).empty();
+                }
                 if(data.length==0){
                     $('.wrap-loading-box').addClass('hide');
                     $(".no-result").html("没有更多订单了");

@@ -56,6 +56,7 @@ $(document).ready(function(){
 }).on("click",".goods-all-list li",function(){//大类切换
     var index = parseInt($(this).index());
     _type=parseInt($(this).attr('data-id'));
+    $(".wrap-menu-list").addClass("hide");
     if(index==0){//所有商品
         $(".container").addClass("pt70");
         $(".second-tab").addClass("hide");
@@ -85,6 +86,7 @@ $(document).ready(function(){
     document.body.scrollTop=0;
 }).on("click",".goods_list .gitem",function(){
     var index = $(this).index();
+    $(".wrap-menu-list").addClass("hide");
     page=0;
     if($(this).hasClass("active")){//切换排序方式
         $(this).children(".turn").toggleClass("rotate-img2");
@@ -113,6 +115,7 @@ $(document).ready(function(){
     getData(type,sub_type);
 }).on("click",".class_list .gitem",function(){
     var index = $(this).index();
+    $(".wrap-menu-list").addClass("hide");
     var type = $(this).attr("data-id");
     var sub_type = $("#class_type").attr("data-id");
     $(".class_list li").removeClass("active").eq(index).addClass("active");

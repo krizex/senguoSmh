@@ -217,7 +217,18 @@ class Order(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		self.if_current_shops()
-		return self.render("m-admin/order.html")
+		self_address_list=[]
+		try:
+			self_address=self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id).\
+			filter(models.SelfAddress.active!=0).order_by(models.SelfAddress.if_default.desc()).all()
+		except:
+			self_address=None
+		if self_address:
+			try:
+				self_address_list=[x for x in self_address]
+			except:
+				self_address_list=None
+		return self.render("m-admin/order.html",self_address_list=self_address_list,)
 
 # 移动后台 - 订单详情
 class OrderDetail(AdminBaseHandler):

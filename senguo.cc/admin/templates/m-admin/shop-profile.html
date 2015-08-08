@@ -84,7 +84,7 @@
     </div>
     <div class="white-box">
         <p class="box-title">
-            <a href="{{reverse_url('MadminOrder')}}" class="more fr">更多</a>
+            <a href="{{reverse_url('MadminOrder')}}?type=0" class="more fr">更多</a>
             <span class="box-icon data-order">订单管理</span>
         </p>
         <ul class="group stat-order-list pm8">
@@ -100,7 +100,7 @@
                     <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
                 </li>
             </a>
-            <a href="{{reverse_url('MadminOrder')}}?type=0">
+            <a href="{{reverse_url('MadminOrder')}}?type=2">
                 <li>
                     <p class="name">自提</p>
                     <p class="num"><span class="tip-num">{{self_count}}</span></p>

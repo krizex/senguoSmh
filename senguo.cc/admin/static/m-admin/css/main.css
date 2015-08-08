@@ -132,6 +132,7 @@
 .order-content .order-grade{margin-top: -20px;}
 .swiper-wrapper,.swiper-slide{overflow: auto;}
 .order-lists>li{position: relative;z-index:100;}
+.order-lists>li:last-child{margin-bottom: 20px;}
 /*订单搜索*/
 .search-ipt{width: 100%;background-color: transparent;border: none;height: 28px;color:#fff;padding: 2px 10px;-webkit-box-sizing: border-box;font-size: 14px;}
 .wrap-ipt{line-height: 1;height: 28px;}
@@ -467,8 +468,9 @@
 .btn-group .sure-sbtn{color: #fff;background-color: #48b6a4;}
 .vm{vertical-align: middle;}
 /*自提点*/
-.self-choose{padding-left: 75px;}
+.wrap-self-choose{position: fixed;top: 40px;left: 0;width: 100%;z-index:999;-webkit-box-sizing: border-box;padding: 0 10px;background-color: #e7e7e7;}
+.self-choose{padding-left: 75px;height:30px;}
 .self-choose .add-left{height: 30px;line-height: 30px;}
-
+.self-choose .add-right{height: 30px;line-height: 30px;}
 
 
