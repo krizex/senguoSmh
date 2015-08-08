@@ -2145,16 +2145,18 @@ class Goods(AdminBaseHandler):
 				elif order_status1 =="classify":
 					case_one = 'models.Fruit.fruit_type_id'
 
+				# changed by jyj 2015-8-7
 				if order_status2 == "add_time":
-					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.add_time.desc())
 				elif order_status2 == "name":
-					goods = goods.order_by(models.Fruit.name.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.name.desc())
 				elif order_status2 == "saled":
-					goods = goods.order_by(models.Fruit.saled.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.saled.desc())
 				elif order_status2 == "storage":
-					goods = goods.order_by(models.Fruit.storage.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.storage.desc())
 				elif order_status2 == "current_saled":
-					goods = goods.order_by(models.Fruit.current_saled.desc(),eval(case_one))
+					goods = goods.order_by(eval(case_one),models.Fruit.current_saled.desc())
+				##
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -2292,7 +2294,7 @@ class Goods(AdminBaseHandler):
 				return self.send_success(data=datalist)
 			else:
 				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
-		# 商品分组
+		# # 商品分组
 		elif action == "group":
 			data = []
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
@@ -2318,6 +2320,7 @@ class Goods(AdminBaseHandler):
 			else:
 				data.append({'id':0,'name':'','intro':'','num':default_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
+			
 		# 商品删除
 		elif action == "delete":
 			if "page" in self.args:
@@ -2352,6 +2355,7 @@ class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
 	def post(self):
+		print("###,here is post function")
 		action = self.args["action"]
 		data = self.args["data"]
 		current_shop = self.current_shop

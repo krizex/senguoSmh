@@ -137,6 +137,7 @@ class ShopManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action","search","shop_auth:int","shop_status:int","shop_status:int","shop_sort_key:int","if_reverse:int","page?:int","flag:int")
 	def get(self):
+
 		action = self.args["action"]
 		flag=self.args["flag"]
 
@@ -186,6 +187,7 @@ class ShopManage(SuperBaseHandler):
 			return self.send_fail('level error')
 
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
+
 		if 'search' in self.args:
 			from sqlalchemy.sql import or_
 			search = self.args["search"]
@@ -203,13 +205,13 @@ class ShopManage(SuperBaseHandler):
 					q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
 					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
 					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					   	models.Shop.shop_code !='not set').all()
 					shops = q
 				elif level == 1:
 					q = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province,or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
 					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
 					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					   	models.Shop.shop_code !='not set').all()
 					shops = q
 				else:
 					return self.send_fail('level error')
@@ -384,6 +386,11 @@ class ShopManage(SuperBaseHandler):
 				data["auth_type"] = auth_type_array[shop.shop_auth]
 
 				data["admin_nickname"] = shop.admin.accountinfo.nickname
+
+				# added by jyj 2015-8-7
+				data["admin_id"] = shop.admin.accountinfo.id
+				# #
+
 				data["shop_address_detail"] = shop.shop_address_detail
 				data["shop_code"] = shop.shop_code
 				shop_status_array = ['关闭','营业中','筹备中','休息中']
@@ -775,6 +782,10 @@ class User(SuperBaseHandler):
 		elif action == "search":
 			inputinfo = self.args["inputinfo"]
 			q = q.filter(or_(models.Accountinfo.nickname.like("%{0}%".format(inputinfo)),(func.concat(models.Accountinfo.id,'')).like("%{0}%".format(inputinfo))))
+		# added by jyj 2015-8-7:
+		elif action == "out_link":
+			admin_id = int(self.args["inputinfo"])
+			q = q.filter(models.Accountinfo.id == admin_id)
 		else:
 			return self.send_error(404)
 		users = q.offset(page*page_size).limit(page_size).all()
