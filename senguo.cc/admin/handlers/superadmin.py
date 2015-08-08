@@ -1608,6 +1608,7 @@ class Comment(SuperBaseHandler):
 			shop_name = shop.shop_name
 			has_done = comment_apply.has_done
 			admin_name= shop.admin.accountinfo.nickname
+			admin_id = shop.admin.accountinfo.id
 			# order info
 			customer_id = order.customer_id
 			customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -1621,8 +1622,8 @@ class Comment(SuperBaseHandler):
 			create_date = comment_apply.create_date
 			order_info = dict(
 				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
-				comment = comment)
-			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
+				comment = comment,customer_id = customer_id)
+			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id,admin_id])
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
@@ -1705,6 +1706,8 @@ class CommentInfo(SuperBaseHandler):
 			data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 						filter(models.Accountinfo.id == order.customer_id).first()[0]
 			data["nickname"] = self.session.query(models.Accountinfo.nickname).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
+			data["user_id"] = self.session.query(models.Accountinfo.id).\
 						filter(models.Accountinfo.id == order.customer_id).first()[0]
 			if len(data["nickname"]) > 6:
 				data["nickname"] = data["nickname"][0:6] + '...'
@@ -1821,6 +1824,9 @@ class CommentInfo(SuperBaseHandler):
 
 				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
+
+				data["user_id"] = self.session.query(models.Accountinfo.id).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
 				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
@@ -1898,6 +1904,8 @@ class CommentInfo(SuperBaseHandler):
 
 				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				data["user_id"] = self.session.query(models.Accountinfo.id).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
 				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
@@ -1977,6 +1985,8 @@ class CommentInfo(SuperBaseHandler):
 
 				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				data["user_id"] = self.session.query(models.Accountinfo.id).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
 				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
@@ -2197,7 +2207,6 @@ class Balance(SuperBaseHandler):
 		level = self.current_user.level
 		shop_province = self.current_user.province
 
-		print(self.args)
 
 		history = []
 		page =0
@@ -2827,6 +2836,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 				else:
 					order_num = temp.balance_record[11:32]
 				name = temp.name[0:6]
+				user_id = temp.customer_id
 				order_num_txt = "-订单编号"
 			elif temp.balance_type == 2:
 				record = "提现:"
@@ -2834,12 +2844,13 @@ class ShopBalanceDetail(SuperBaseHandler):
 			elif temp.balance_type == 0:
 				record = "用户充值:"
 				name = temp.name
+				user_id = temp.customer_id
 
 			balance_value = format(temp.balance_value,'.2f')
 
 			history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
 					'balance_value':balance_value,'type':temp.balance_type,'record':record,'order_num':order_num,\
-					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying})
+					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying,'user_id':user_id})
 		return self.send_success(page_sum=page_sum,history = history)
 ##
 

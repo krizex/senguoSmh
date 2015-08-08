@@ -80,6 +80,7 @@ function getContent(action,page){
     $.postJson(url,args,
         function (res) {
            if(res.success){
+                $(".pager").show();
                $('.user-list').empty();
                 var users=res.data;
                 for(var i=0;i<users.length;i++){
@@ -170,6 +171,12 @@ function getSearchContent(action,inputinfo,page){
     $.postJson(url,args,
         function (res) {
            if(res.success){
+                if(action == "out_link"){
+                    $(".pager").hide();
+                }
+                else{
+                     $(".pager").show();
+                }
                $('.user-list').empty();
                 var users=res.data;
                 for(var i=0;i<users.length;i++){
