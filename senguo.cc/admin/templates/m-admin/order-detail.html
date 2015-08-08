@@ -40,8 +40,8 @@
         <p>下单时间：<span>{{order.create_date}}</span></p>
         <p>收货人：<span>{{order.receiver}}</span><span class="user-box">用户：<a href="javascript:;">{{order.customer_nickname}}</a></span></p>
         <p>联系电话：<span>{{order.phone}}</span><a class="ml10" href="tel:{{order.phone}}">拨号</a></p>
-        <p>{% if order.type==3%}自提点{% else %}收货地址{% end %}：<span>{{order.address_text}}</span></p>
-        <p>{% if order.type==3%}自提时间{% else %}配送时间{% end %}：<span class="send_date m-r10" style="display: none;">今天</span><span>{{order.send_time}}</span></p>
+        <p>{% if order.type==3%}自提{% else %}收货{% end %}地址：<span>{{order.address_text}}</span></p>
+        <p>{% if order.type==3%}自提{% else %}配送{% end %}时间：<span class="send_date m-r10" style="display: none;">今天</span><span>{{order.send_time}}</span></p>
         {% if order.message %}<p>订单备注：<span>{{order.message or '无'}}</span></p>{% end %}
         <p class="{% if order.remark == None%}hide{% end %} remark">商家备注：<span class="con">{{order.remark or '无'}}</span></p>
         <p class="text-black">支付方式：<span>{{order.pay_type_con}}</span></p>
