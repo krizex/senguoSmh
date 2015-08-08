@@ -1184,7 +1184,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 	def get_shop_count(self):
 		try:
 			shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set' ).count()
+				models.Shop.shop_code !='not set',models.Shop.status !=0).count()
 		except:
 			return self.send_fail("[FruitzoneBaseHandler]get_shop_count: shop count error")
 		return shop_count
@@ -1207,7 +1207,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		from sqlalchemy import func
 		try:
 			shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
-			filter(models.Shop.shop_code != 'not set').group_by(models.Shop.shop_province).all()
+			filter(models.Shop.shop_code != 'not set',models.Shop.status!=0).group_by(models.Shop.shop_province).all()
 		except:
 			return self.send_fail('[FruitzoneBaseHandler]get_shop_group: group error')
 		# print("[FruitzoneBaseHandler]get_shop_group: type(shop_count):",type(shop_count))
