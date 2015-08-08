@@ -213,7 +213,6 @@ class Order(StaffBaseHandler):
 				if order.pay_type == 1:  # 货到付款订单，员工需收款
 					self.hirelink.money += order.totalPrice
 
-
 			else:
 				return self.send.fail("你还没分配工作，请联系商家")
 			order.status = status

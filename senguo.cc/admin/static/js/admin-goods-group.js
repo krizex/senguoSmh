@@ -97,7 +97,7 @@ $(document).ready(function(){
     var group_info = $("#group-info").val();
     var _action =$this.attr('data-action');
     if($('.gropu-list li').length==7){
-        Tip("至多可添加五中自定义分组！");
+        Tip("最多可添加五中自定义分组！");
         return false;
     }
     if($.trim(group_name)==""){
@@ -186,7 +186,7 @@ $(document).ready(function(){
 //drag
 function drag(obj){
     obj.onmousedown=function(ev){
-        if($(ev.target).closest(".right-link").length>0){
+        if($(ev.target).closest(".forbid-click").length>0){
         }else{
             $(".sw-er-tip").addClass("invisible");
             var $this = $(obj);

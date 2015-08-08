@@ -103,11 +103,10 @@
                         <div class="coupon-row f12">
                             <a href="javascript:;" class="radio  {%if  pre_coupon["valid_way"]==0 %}radio-active {%end%} {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="0"></a>
                             <input type="text" class="  {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} Wdate from_valid_date" id="date3" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date4\')}'})" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%} {%if  pre_coupon["valid_way"]==0%}value="{{pre_coupon["from_valid_date"]}}" {%else%}value="" {%end%}>
-                             到 <input type="text" class="  {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} Wdate to_valid_date" id="date4" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date3\')}'})" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%} {%if  pre_coupon["valid_way"]==0%}value="{{pre_coupon["to_valid_date"]}}" {%else%} {%end%}>
+                            到 <input type="text" class="  {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} Wdate to_valid_date" id="date4" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date3\')}'})" {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%} {%if  pre_coupon["valid_way"]==0%}value="{{pre_coupon["to_valid_date"]}}" {%else%} {%end%}>
                         </div>
                         <div class="coupon-row f12 mt10">
-                            <a href="javascript:;" class="radio {%if  pre_coupon["valid_way"]==1 %}radio-active {%end%} {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="1"></a>
-                            领取即生效，有效期天数为 <input type="text" class="  {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} mr10 last_day" {%if  pre_coupon["valid_way"]==1%}value="{{pre_coupon["last_day"]}}" {%else%}value="" {%end%} {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}>天
+                            <a href="javascript:;" class="radio {%if  pre_coupon["valid_way"]==1 %}radio-active {%end%} {%if  pre_coupon["edit_status"]!=0 %}forbidden-btn{%end%}" data-id="1"></a>领取即生效，有效期天数为 <input type="text" class="  {%if  pre_coupon["edit_status"]!=0 %} disabled {%end%} mr10 last_day" {%if  pre_coupon["valid_way"]==1%}value="{{pre_coupon["last_day"]}}" {%else%}value="" {%end%} {%if  pre_coupon["edit_status"]!=0 %}disabled="disabled"{%end%}>天
                         </div>
                     </td>
                 </tr>

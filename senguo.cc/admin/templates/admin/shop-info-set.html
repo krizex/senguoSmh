@@ -89,7 +89,7 @@
         <span class="w1 pull-left set-inl-blo">配送区域</span>
         <div class="w2 pull-left">
             <p class="info_show deliver_area">{{current_shop.deliver_area or '未设置'}}</p>
-            <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,至多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
+            <input class="info_hide deliver-area" type="text" placeholder="请填写配送区域,最多50个字符" value="{{current_shop.deliver_area or ''}}" style="display:none"/>
         </div>
         <div class="pull-right">
             <a class="" id="edit-area" href="javascript:;">修改</a>
@@ -150,7 +150,7 @@
                             <span class="caret"></span>
                         </button>
                     </div>
-                    <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址，至多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
+                    <input type="text" class="input-box input1 pull-left" placeholder="请填写详细地址，最多50个字符" id="addressDetail" value="{{current_shop.shop_address_detail or ''}}"/>
                     <input type="button" class="pull-left search-lbs" id="search-lbs" value="地图搜索"/>
                 </div>
             </div>
@@ -171,14 +171,16 @@
 <div class="pop-bmap invisible" data-type="{{current_shop.area_type}}" data-roundness="{{current_shop.roundness}}" data-radius="{{current_shop.area_radius}}" data-arealist="{{current_shop.area_list}}">
     <div class="pop-content">
         <div class="title">店铺配送区域</div>
-        <div class="name"><span>文字描述:</span> <input class="shop-area-text" id="shop-area-text" type="text" placeholder="输入配送范围" value="{{current_shop.deliver_area or '未设置'}}"/></div>
-        <div class="name group"><span>区域显示形状: </span><ul class="map-sharp-list group"><li class="">圆形(易操作，推荐)</li><li>多边形（不易操作）</li></ul></div>
-        <div class="name group">地图区域显示:
-            <div class="wrap-map" id="maparea"></div>
+        <div class="pop-content-box">
+            <div class="name"><span>文字描述:</span> <input class="shop-area-text" id="shop-area-text" type="text" placeholder="输入配送范围" value="{{current_shop.deliver_area or '未设置'}}"/></div>
+            <div class="name group"><span>区域显示形状: </span><ul class="map-sharp-list group"><li class="">圆形(易操作，推荐)</li><li>多边形（不易操作）</li></ul></div>
+            <div class="name group">地图区域显示:
+                <div class="wrap-map" id="maparea"></div>
+            </div>
         </div>
         <div class="pop-btns">
             <a href="javascript:;" class="ok-btn" id="ok-area" data-id="area">确定</a>
-            <a href="javascritpt:;" class="cancel-btn">取消</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
         </div>
     </div>
 </div>

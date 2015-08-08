@@ -55,14 +55,14 @@
         <span class="w1 pull-left set-inl-blo">小票附加信息</span>
         <div class="w2 pull-left">
             <span class="address-show receipt-msg-con">{{receipt_msg or '无'}}</span>
-            <input class="address-edit receipt-msg"  type="text" value="{{receipt_msg or '无'}}" style="display:none"/>
+            <input class="address-edit receipt-msg" type="text" placeholder="小票附加信息将打印在小票最后，最多20个字" value="{{receipt_msg or ''}}" style="display:none"/>
         </div>
         <div class="pull-right">
             <a class="info-edit address-show" href="javascript:;">修改</a>
             <a class="info-sure address-edit edit-receipt-notice" href="javascript:;" data-id="name" style="display:none">确定</a>
         </div>
     </li>
-     <li class="item clearfix set-list-item">
+    <li class="item clearfix set-list-item">
         <div class="pull-right">
             <a class="info-edit address-show" href="javascript:;">修改</a>
             <a class="info-sure address-edit edit-console" href="javascript:;" data-id="name" style="display:none">确定</a>
@@ -80,16 +80,16 @@
             <div class="iti">
                 <span class="w1 pull-left set-inl-blo mr20">无线打印机终端号</span>
                 <div class="w2 pull-left">
-                    <span class="address-show console-num">{{current_shop.config.wireless_print_num or '请设置'}}</span>
-                    <input class="address-edit num-input"  type="text" value="{{current_shop.config.wireless_print_num or '请设置'}}" style="display:none"/>
+                    <span class="address-show console-num">{{current_shop.config.wireless_print_num or '未设置'}}</span>
+                    <input class="address-edit num-input" type="text" placeholder="请填写打印机终端号" value="{{current_shop.config.wireless_print_num or ''}}" style="display:none"/>
                 </div>
             </div>
             <br>
             <div class="iti-last secket-key">
                  <span class="w1 pull-left set-inl-blo mr20">无线打印机密钥</span>
                  <div class="w2 pull-left">
-                    <span class="address-show console-key">{{current_shop.config.wireless_print_key or '请设置'}}</span>
-                    <input class="address-edit key-input" type="text" value="{{current_shop.config.wireless_print_key or '请设置'}}" style="display:none"/>
+                    <span class="address-show console-key">{{current_shop.config.wireless_print_key or '未设置'}}</span>
+                    <input class="address-edit key-input" type="text" placeholder="请填写打印机密钥" value="{{current_shop.config.wireless_print_key or ''}}" style="display:none"/>
                 </div>
             </div>
        </div>

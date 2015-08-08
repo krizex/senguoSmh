@@ -173,7 +173,7 @@ function regist(target){
             {
                 $('#subRegist').addClass('bg-green').removeAttr('disabled');
                 var next = getCookie("next_url");
-                console.log(next);
+                //console.log(next);
                 if(next==''){
                     window.location.href='/list';
                 }else{
@@ -182,7 +182,7 @@ function regist(target){
             }
             else {
                 noticeBox(res.error_text);
-                 $('#subRegist').addClass('bg-green').removeAttr('disabled');
+                $('#subRegist').addClass('bg-green').removeAttr('disabled');
             }
         },
         function(){

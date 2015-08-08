@@ -36,19 +36,19 @@ def order_cancel():
     from threading import Timer
     from handlers import customer
     session = models.DBSession()
-    print("[Timer]Auto Cancel add timer")
+    print("[Timer]Auto Cancel Add Timer")
     try:
         orders = session.query(models.Order).filter_by(status=-1).all()
     except:
         orders = None
-        print("[Timer]Auto Cancel Error")
+        print("[Timer]Auto Cancel Add Timer Error")
     if orders:
         for order in orders:
             Timer(60*15,customer.Cart.order_cancel_auto,(session,order.id,)).start()
-            print("[Timer]Auto Cancel add timer Success, order_id:",order.id)
+            print("[Timer]Auto Cancel Add Timer Success, order_id:",order.id)
             time.sleep(0.5)
         session.commit()
-    print("[Timer]Auto Cancel add timer Done")
+    print("[Timer]Auto Cancel Add Timer Done")
 
 # Access Token 更新
 def delete(args):
@@ -57,17 +57,17 @@ def delete(args):
     print("[Timer]AccessToken Updated:",session.query(models.AccessToken).count())
     session.commit()
 
+# 时间计数
 global count
 count = 1
-
 def print_time(args):
     global count
-    print(count,'-',time.strftime('%H:%M'))
+    print(count,'-',time.strftime('%Y-%m-%d %H:%M'))
     count += 1
 
 def main():
 
-    # 在线支付订单自动取消任务开始
+    # 在线支付订单自动取消任务开始，每次启动时
     order_cancel()
 
     countTime = Pysettimer(print_time,(),60,True)

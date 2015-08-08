@@ -32,7 +32,7 @@
                 <li class="area-info brnone">
                     <img src="{{current_user.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" class="admin-img round height50 pull-left"/>
                     <div class="switch-info area pull-right switch-area">
-                        <div class="job text-left mt5"><a href="{{reverse_url('customerProfile')}}" class="text-link">{{current_user.accountinfo.nickname}}</a></div>
+                        <div class="job text-left mt5"><a href="{{reverse_url('customerProfile')}}" class="name-link">{{current_user.accountinfo.nickname}}</a></div>
                         <div class="switch-change-phone">
                             {% if current_user.accountinfo.phone %}
                             {{current_user.accountinfo.phone}}

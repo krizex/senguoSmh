@@ -23,12 +23,26 @@ $(document).ready(function(){
         localStorage.setItem("add",'0');
     }
     var sub_type=parseInt($.getUrlParam("type_id"));
+    console.log(link_type);
     if(link_type=="classify"){//分类跳转
         getGoodsItem(link_type,0,sub_type);
     }else if(link_type=="goodsearch"){//搜索跳转
         var value = decodeURIComponent($.getUrlParam("content"));
         isSearch = true;
         getGoodsItem("goods_search",0,"",value);
+    }else if(link_type=="group"){
+        var gid=parseInt($.getUrlParam("gid"));
+        $(".filter_status2").attr("data-id",gid);
+        console.log(gid);
+        $("#group-goods-lst li").each(function(){
+            var $this=$(this).find("a");
+            var id= parseInt($this.attr("data-id"));
+            console.log(id);
+            if(id==gid){
+                $(".filter_status2").text($this.text());
+            }
+        });
+        getGoodsItem("all",0);
     }else{
         getGoodsItem("all",0);
     }
@@ -534,7 +548,7 @@ function dealGoods($item,type){
         imgUrls.each(function(){
             var $this = $(this);
             arr1.push($this.closest("li").attr("data-index"));
-            console.log($this.attr("url"));
+            //console.log($this.attr("url"));
             arr2.push($this.attr("url"));
         });
         imgList.index = arr1;
@@ -904,7 +918,7 @@ function initEditor($obj,type){
         ['simpleupload', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc']
     ]});
     QINIU_TOKEN=$("#token").val();
-    QINIU_BUCKET_DOMAIN="shopimg.qiniudn.com/";
+    QINIU_BUCKET_DOMAIN="7rf3aw.com2.z0.glb.qiniucdn.com/";
     if($obj.attr("data-text")){
         editor.body.innerHTML=$obj.attr("data-text");
     }
@@ -1030,7 +1044,7 @@ $(document).ready(function(){
         flash_swf_url: 'static/js/plupload/Moxie.swf',
         dragdrop: false,
         chunk_size: '4mb',
-        domain: "http://shopimg.qiniudn.com/",
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
         uptoken: $("#token").val(),
         unique_names: false,
         save_key: false,
@@ -1057,7 +1071,7 @@ $(document).ready(function(){
             'FileUploaded': function (up, file, info) {
                 $("#" + file.id).prev(".img-cover").remove();
                 $("#" + file.id).next("a").removeClass("hidden");
-                $("#"+file.id).attr("url","http://shopimg.qiniudn.com/"+file.id);
+                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {

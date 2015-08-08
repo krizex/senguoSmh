@@ -1,6 +1,7 @@
 var ulat = 0,ulng =0,first=true;
 $(document).ready(function(){
     var link_action=$.getUrlParam('action');
+    var link_province=$.getUrlParam('province');
     if(link_action){
         if(link_action=='shop'){
             $(".filter_search").addClass("hidden");
@@ -8,6 +9,11 @@ $(document).ready(function(){
             var shops=$('.shoplist').attr('data-shop');
             var id=$.getUrlParam('id');
             return shopsList(0,id,'admin_shop');
+        }else if(link_action=="province"){
+            window.dataObj.type='province';
+            window.dataObj.action='filter';
+            filter(link_province,'province');
+            $(".whole_country").hide();
         }
     }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
@@ -51,6 +57,10 @@ $(document).ready(function(){
         }
         var p_num=$this.find('.num').text();
         if(!p_num) $this.find('.num').text(0);
+        if(link_action=="province"&&code!=link_province){
+
+            $this.hide();
+        }
     });
     //choose province
     $(document).on('click','.provincelist li',function(){
@@ -404,13 +414,16 @@ function filter(data){
    window.dataObj.action="filter";
    var action="filter";
    window.dataObj.page=1;
+   var link_action=$.getUrlParam('action');
+   var link_province=$.getUrlParam('province');
     var page = window.dataObj.page;
     var url="";
     var args={
         action:action,
         page:page,
         service_area:$("#school_name").attr("data-key"),
-        key_word:$("#comm_name").attr("data-key")
+        key_word:$("#comm_name").attr("data-key"),
+        province:link_province
     };
     if(ulat != 0){
         args.lat = ulat;
@@ -423,17 +436,23 @@ function filter(data){
         }
         else if(type=='province') {
             args.province=Int(data);
+            if(link_action=="province"){
+                args.province=Int(link_province);
+            }
             window.dataObj.type=='province';
         }
     }
     $.postJson(url,args,
         function(res){
             if(res.success)
-            {
-                if(first){
-                    setTimeout(function(){
-                        initLocation();
-                    },10);
+            {   
+                
+                if(link_action!="province"){
+                   if(first){
+                        setTimeout(function(){
+                            initLocation();
+                        },10);
+                    } 
                 }
                 $(".wrap-loading-box").addClass("hidden");
                 remove_bg();
