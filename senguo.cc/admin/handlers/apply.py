@@ -123,6 +123,7 @@ class WxMessage(CustomerBaseHandler):
 		if event == 'subscribe' or 'scan' or 'SCAN':
 			if event == 'subscribe':
 				scene_id = int(eventkey.split('_')[1]) if eventkey and eventkey.find('qrscene') !=-1 else None
+
 			elif event == 'scan' or 'SCAN':
 				scene_id = int(eventkey)  if eventkey and eventkey.isdigit() else None
 			else:
@@ -167,6 +168,18 @@ class WxMessage(CustomerBaseHandler):
 					admin.accountinfo = account_info
 					self.session.add(admin)
 					self.session.commit()
+			if event == 'subscribe':
+				ToUserName = data.get('ToUserName',None) #开发者微信号
+				FromUserName = data.get('FromUserName',None) # 发送方openid
+				CreateTime  = data.get('CreateTime',None) #接受消息时间
+				MsgType = 'text'
+				reply_message = '再小的水果店，也要有自己的O2O平台！\n互联网时代，水果零售一站式解决方案！\n---------\n赶紧点击http://senguo.cc/apply申请接入,拥有属于你的水果O2O店铺吧\n你也可以点击http://senguo.cc/list进入水果商城 开始选购水果'
+				reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
+				reply = ET.tostring(reply,encoding='utf8',method='xml')
+				# print("[ApplyWxMessage]reply:",reply)
+				self.write(reply)
+
+				
 
 	@classmethod
 	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content=None):
