@@ -756,14 +756,14 @@ class User(SuperBaseHandler):
 			#change by jyj 2015-6-22
 			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
 					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
-					models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
+					models.Accountinfo.birthday,"%Y-%m-%d"),models.Accountinfo.wx_username).order_by(desc(models.Accountinfo.id))
 		elif level == 1:
 			# shop_province = 420000
 			shop_province = self.code_to_text('province',shop_province)  #将省由code转换为汉字
 			shop_province = shop_province[0:len(shop_province)-1]        #去掉‘省’字
 			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
 					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
-					models.Accountinfo.birthday,"%Y-%m-%d")).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(desc(models.Accountinfo.id))
+					models.Accountinfo.birthday,"%Y-%m-%d"),models.Accountinfo.wx_username).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(desc(models.Accountinfo.id))
 		else:
 			return self.send_fail('level error')
 		##
