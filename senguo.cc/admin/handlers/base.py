@@ -127,7 +127,7 @@ class GlobalBaseHandler(BaseHandler):
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,customer_id=current_customer_id).with_lockmode('update').all()
 		for x in q:
-			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,closed=0).with_lockmode('update').first()
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id).with_lockmode('update').first()
 			if  qq!=None:
 				if now_date>qq.to_get_date:
 					qq.closed=1
