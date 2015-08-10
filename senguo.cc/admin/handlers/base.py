@@ -814,12 +814,9 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		_jpush = jpush.JPush(app_key, master_secret)
 		push = _jpush.create_push()
 		push = _jpush.create_push()
-		devices=self.session.query(models.Jpushinfo),filter_by(user_id=order.shop_id,user_type=0).all()
-		device=None
-		for x in devices:
-			device+=(x.jpush_id,)
-		push.audience = jpush.audience(jpush.registration_id(device))
-		push.message=jpush.message(msg_content=self.reverse_url("MadminOrder"))
+		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).all()
+		push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+		push.message=jpush.message(msg_content="http://test123.senguo.cc/madmin/order")
 		push.notification = jpush.notification(alert="您收到了一条新订单，点击查看详情")
 		push.platform = jpush.platform("android")
 		push.send()

@@ -44,7 +44,9 @@ function login(target){
 		if(res.success){
 
 			if(next==''||!next){
-				window.location.href='/list';
+				if(res.come_from==0) window.location.href='/madmin';
+				else if (res.come_from==1) window.location.href='/customer/profile';
+				else window.location.href='/list';
 			}
 			else{
 				window.location.href=next;

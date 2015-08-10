@@ -77,7 +77,8 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		jpush_id=self,args["jpush_id"]
+		jpush_id=self.args["jpush_id"]
+		user_type=int(self.args["user_type"])
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print("[PhoneLogin]Customer ID:",u.id)
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
@@ -86,17 +87,17 @@ class Access(CustomerBaseHandler):
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		if jpush_id:
-			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id).all()
+			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id,user_type=user_type).with_lockmode('update').first()
 			new_device=1
-			for x in qq:
-					if x.jpush_id==jpush_id:
-						new_device=0
-						break
+			if qq.jpush_id==jpush_id:
+				new_device=0			
 			if new_device==1:
-				new_jpushinfo=models.Jpushinfo(user_id=u.accountinfo.id,user_type=0,jpush_id=jpush_id)
-				self.session.add(new_jpushinfo)
+				self.session.update(user_id=u.accountinfo.id,user_type=user_type,jpush_id=jpush_id)
 				self.session.commit()
-		return self.send_success()
+			if user_type==0:
+				return self.send_success(come_from=0)
+			return self.redirect(come_from=1)
+		return self.send_success(come_from=3)
 
 	@CustomerBaseHandler.check_arguments("code")
 	def handle_qq_oauth(self,next_url):
@@ -172,6 +173,7 @@ class Third(CustomerBaseHandler):
 						new_device=0
 						break
 			if new_device==1 and q:
+				print(new_device,'new_device')
 				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=0,jpush_id=jpush_id)
 				self.session.add(new_jpushinfo)
 				self.session.commit()
