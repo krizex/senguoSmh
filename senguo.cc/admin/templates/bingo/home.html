@@ -27,7 +27,7 @@
                         <div class="swiper-wrapper">
                             {% for notice in notices%}
                             <div class="swiper-slide item notice-item">
-                                <img src="{{notice[2] or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/800/h/320" alt=""/>
+                                <img src="{{notice[2] or '/static/images/banner.png'}}?imageView2/1/w/800/h/320" alt=""/>
                                 <p class="notice-title">{{notice[0]}}</p>
                                 <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
                             </div>
@@ -37,7 +37,7 @@
                     <div class="pagination"></div>
                 </div>
                 {% else %}
-                <img src="/static/images/holder_fruit.jpg" class="default-img img"/>
+                <img src="/static/images/banner.png" class="default-img img"/>
                 {% end %}
             </div>
             {#<div class="no-mar-btom top-title">
@@ -51,14 +51,17 @@
         </div>#}
             <div class="wrap-tab-group">
                 <ul class="tab-group group">
-                    <li class="active" data-id="-1">店铺推荐</li>
-                    <li data-id="0">默认分组</li>
+                    <li>所有商品</li>
+                    <li data-id="{{context['group_list'][0]['id']}}">{{context['group_list'][0]['name'][0:5]}}</li>
                     <li class="more-group-btn">
+                        {% if len(context['group_list']) >1%}
                         <span class="i-cert"></span>
-                        <span id="cur_group">个人喜爱</span>
+                        {% end %}
+                        <span id="cur_group">所有商品</span>
                         <ul class="more-group hidden">
+                            <li>所有商品</li>
                             {% for group in context['group_list'] %}
-                            <li data-id="{{group['id']}}">{{group['name']}}</li>
+                            <li data-id="{{group['id']}}">{{group['name'][0:5]}}</li>
                             {% end %}
                         </ul>
                     </li>
@@ -74,10 +77,8 @@
             <div class="goods-box mt-20">
                 {% for group in context['group_list'] %}
                 {#<p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>#}
-                <!--<ul class="goods-list-{{group['id']}} fruit-list goods-list"  data-page="1">-->
+                <ul class="goods-list-{{group['id']}} fruit-list bingo-list"  data-page="1"></ul>
                 {% end %}
-                <ul class="bingo-list">
-                </ul>
             </div>
             <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
         </div>
@@ -112,7 +113,7 @@
                 </div>
                 <div class="wrap-src-price">
                     <p class="src-price"><span class="f12 rmb">￥</span><span class="src-price-num"></span></p>
-                    <p class="cur-price"><span class="f12 rmb">￥</span><span class="cur-price-num"></span></p>
+                    <p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num"></span></p>
                 </div>
                 <div class="wrap-bug-text hidden">
                     <span class="bug-num"><span class="f12">x</span><span class="buy-num">1</span></span>

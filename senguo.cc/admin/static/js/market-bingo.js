@@ -33,10 +33,19 @@ $(document).ready(function(){
         $('.wrap-goods-box').css('margin-top','40px');
         $('.classify-title').hide();
     }else{
-        if($('.classify-list li').length==0){
+        if($('.more-group li').length==0){
             $(".wrap-loading-box").addClass("hidden");
         }
-        goodsList(1,6,-1);
+        $('.more-group li').each(function(){
+            var $this=$(this);
+            var id = Number($this.attr('data-id'));
+            var _group_id = id;
+            if(_finished==true){
+                goodsList(1,6,_group_id); 
+                scrollLoading(_group_id);
+            }
+         });
+        $('.tab-group li').first().addClass("active");
     }
     var shop_logo=$('#shop_imgurl').attr('data-img');
     if(parseInt($("#shop_status").val())==3){
@@ -57,6 +66,8 @@ $(document).ready(function(){
             $(".more-group").addClass("hidden");
         }
     });
+}).on("click",".more-group-btn",function(){
+    $(".more-group").toggleClass("hidden");
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -125,8 +136,8 @@ $(document).ready(function(){
     var $this=$(this);
     $this.find('.icon').toggle();
     $('.goods-class-choose').toggle();
-}).on('click','.classify-list li',function(){
-    $('.classify-list').toggle();
+}).on('click','.more-group li',function(){
+    $('.more-group').toggle();
     var $this=$(this);
     var text=$this.text();
     $('#classify').text(text);
@@ -316,7 +327,7 @@ var goodsList=function(page,action,_group_id){
         var initData=function(data){
             var data=data;
             for(var key in data){
-                fruitItem($('.bingo-list'),data[key]);//fruits information
+                fruitItem($('.goods-list-'+_group_id),data[key]);//fruits information
             }
             var fruits=window.dataObj.fruits;
             var c_fs=[];
@@ -370,7 +381,10 @@ var fruitItem=function(box,fruits,type){
     }else{
         tag = "";
     }
-    $item.attr("data-id",id);
+    if(!intro){
+        intro=" ";
+    }
+    $item.attr("data-id",id).addClass(code);
     $item.find(".g-name").html(name);
     $item.find(".g-detail").html(intro);
     $item.find(".goods_img").attr("src",ori_img);
