@@ -2161,19 +2161,24 @@ class Goods(AdminBaseHandler):
 					# changed by jyj 2015-8-7
 					if order_status2 == "add_time":
 						goods = goods.order_by(eval(case_one),models.Fruit.add_time.desc())
+					elif order_status2 == "add_time_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.add_time)
 					elif order_status2 == "name":
 						goods = goods.order_by(eval(case_one),models.Fruit.name.desc())
 					elif order_status2 == "saled":
 						goods = goods.order_by(eval(case_one),models.Fruit.saled.desc())
+					elif order_status2 == "saled_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.saled)
 					elif order_status2 == "storage":
 						goods = goods.order_by(eval(case_one),models.Fruit.storage.desc())
+					elif order_status2 == "storage_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.storage)
 					elif order_status2 == "current_saled":
 						goods = goods.order_by(eval(case_one),models.Fruit.current_saled.desc())
 					##
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-
 
 				# added by jyj 2015-8-8 (for sorting by the data-item's name order by pinyin)
 				if order_status2 == "name":

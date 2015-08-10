@@ -357,8 +357,10 @@ class GlobalBaseHandler(BaseHandler):
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
+					unit_num = int(charge.unit_num) if charge.unit_num else 0
+					select_num = int(charge.select_num) if charge.select_num else 0
 					charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-						'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+						'num':charge.num,'unit_num':unit_num,'market_price':market_price,'select_num':select_num})
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
