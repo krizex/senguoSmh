@@ -1596,6 +1596,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		tpl_path = ""
 		if tpl_id == 1:
 			tpl_path = "beauty"
+		elif tpl_id == 2:
+			tpl_path = "bingo"
 		else:
 			tpl_path = "customer"
 		return tpl_path
