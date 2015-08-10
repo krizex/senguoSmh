@@ -40,7 +40,7 @@
             <img src="/static/images/banner.png" class="default-img img"/>
             {% end %}
         </div>
-        <div class="no-mar-btom top-title">
+        {#<div class="no-mar-btom top-title">
             <div class="inner text-white bg-green" id="fruitPosition">
                 <a href="{{reverse_url('customerGoodsSearch')}}" class="search-btn _add_cart" id="search-btn"><em></em></a>
                 <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
@@ -48,42 +48,36 @@
                 </a>
                 <a href="javascript:;" class="pull-left classify-icon text-white to-hide"> <span>分组</span><em class="set-inl-blo pull-right"></em></a>
             </div>
+        </div>#}
+        <div class="wrap-tab-group">
+            <ul class="tab-group group">
+                <li class="active" data-id="-1">店铺推荐</li>
+                <li data-id="0">默认分组</li>
+                <li class="more-group-btn">
+                    <span class="i-cert"></span>
+                    <span id="cur_group">个人喜爱</span>
+                    <ul class="more-group hidden">
+                        {% for group in context['group_list'] %}
+                        <li data-id="{{group['id']}}">{{group['name']}}</li>
+                        {% end %}
+                    </ul>
+                </li>
+            </ul>
         </div>
     </div>
-    <ul class="classify-list bg-green text-white anim-bounceDown to-hide" style="display:none;">
+    {#<ul class="classify-list bg-green text-white anim-bounceDown to-hide" style="display:none;">
         {% for group in context['group_list'] %}
         <li class="pull-left" data-id="{{group['id']}}">{{group['name']}}</li>
         {% end %}
-    </ul>
+    </ul>#}
     <div class="wrap-goods-box" id="wrap-goods-box">
-        <div class="goods-box">
+        <div class="goods-box mt-20">
              {% for group in context['group_list'] %}
-             <p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>
+             {#<p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>#}
             <!--<ul class="goods-list-{{group['id']}} fruit-list goods-list"  data-page="1">-->
-            <ul class="bingo-list">
-                <li>
-                    <div class="goods-img-box">
-                        <img src="/static/images/lizi.jpg" alt="水果图片"/>
-                    </div>
-                    <div class="goods-attr-box">
-                        <div class="attr-left">
-                            <p class="g-name clip">泰国进口金丝梨子，好吃</p>
-                            <p class="g-detail clip">个大肉厚 汁多甘甜 汁多甘甜</p>
-                        </div>
-                        <div class="attr-right">
-                            <span class="src-price">原价22</span>
-                            <div class="wrap-price">
-                                <span class="cur-price">￥20</span>
-                                <span class="price-right">
-                                    <span>(一份2斤)</span>
-                                    <span>20.00元/斤</span>
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-                </li>
-            </ul>
             {% end %}
+            <ul class="bingo-list">
+            </ul>
         </div>
         <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
     </div>
@@ -99,6 +93,35 @@
         <div class="load-txt">加载中...</div>
     </div>
 </div>
+<ul class="hidden" id="goods_item">
+    <li>
+        <div class="goods-img-box">
+            <img class="goods_img" src="" alt="水果图片"/>
+            <div class="status-tip"></div>
+        </div>
+        <div class="goods-attr-box">
+            <div class="attr-left">
+                <p class="g-name clip"></p>
+                <p class="g-detail clip"></p>
+            </div>
+            <div class="attr-right">
+                <div class="wrap-operate">
+                    <a href="javascript:;" class="roll-btn minus-gds hidden">-</a>
+                    <a href="javascript:;" class="roll-btn add-gds hidden">+</a>
+                    <a href="javascript:;" class="roll-btn buy-gds">买</a>
+                </div>
+                <div class="wrap-src-price">
+                    <p class="src-price"><span class="f12 rmb">￥</span><span class="src-price-num"></span></p>
+                    <p class="cur-price"><span class="f12 rmb">￥</span><span class="cur-price-num"></span></p>
+                </div>
+                <div class="wrap-bug-text hidden">
+                    <span class="bug-num"><span class="f12">x</span><span class="buy-num">1</span></span>
+                    <span class="price-all">小计 ￥<span class="price-all-num"></span>元</span>
+                </div>
+            </div>
+        </div>
+    </li>
+</ul>
 {% end %}
 {% block other %}
 <div class="modal fade large-img-box" id="large_imgbox">
@@ -153,6 +176,6 @@
 {% end %}
 {% block bottom %}
 <script src="/static/js/third/idangerous.swiper.min.js"></script>
-<script src="{{static_url('js/market-home.js')}}"></script>
+<script src="{{static_url('js/market-bingo.js')}}"></script>
 {% end %}
 
