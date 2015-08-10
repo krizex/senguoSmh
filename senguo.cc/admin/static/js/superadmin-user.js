@@ -1,18 +1,36 @@
 var page=0;
+var item;
+var action='all';
+var input = $("#inputinfo");
+var 
 $(document).ready(function(){
     $.ajaxSetup({'async':false});
     $.getItem(item_link+'/user-item.html?v=20150808',function(data){item=data;});
     getContent('all',0);
-    classify($('.all'),'all');
-    classify($('.admin'),'admin');
-    classify($('.customer'),'customer');
-    classify($('.phone'),'phone');
-    var pre=$('#PrePage');
-    var next=$('#NextPage');
+    // classify($('.all'),'all');
+    // classify($('.admin'),'admin');
+    // classify($('.customer'),'customer');
+    // classify($('.phone'),'phone');
+    // var pre=$('#PrePage');
+    // var next=$('#NextPage');
 
+    var action_text = $(".left-choose-list").find(".active").attr("data-id");
+    if (action_text == '1'){
+        action = 'all';
+    }
+    else if (action_text == '2'){
+        action = 'admin';
+    }
+    else if (action_text == '3'){
+        action = 'customer';
+    }
+    else if (action_text == '4'){
+        action = 'phone';
+    }
+    // console.log(action);
     // add by jyj 2015-6-23
     var search = $("#search");
-    var input = $("#inputinfo");
+    
     search.on('click',function(){
         page=0;
         getSearchContent('search',$("#inputinfo").val(),page);
@@ -40,37 +58,114 @@ $(document).ready(function(){
     // {
     //     next.addClass('hidden');
     // }
-    pre.on('click',function(){
-         if(inputinfo==""){
-           if(page>0){
-            page--;
-            getContent(action,page);
-           }
-           else  return Tip("当前已经是第一页");
+    // pre.on('click',function(){
+    //      if(inputinfo==""){
+    //        if(page>0){
+    //         page--;
+    //         // var action_text = $(".left-choose-list").find(".active").attr("data-id");
+    //         // if (action_text == '1'){
+    //         //     action = 'all';
+    //         // }
+    //         // else if (action_text == '2'){
+    //         //     action = 'admin';
+    //         // }
+    //         // else if (action_text == '3'){
+    //         //     action = 'customer';
+    //         // }
+    //         // else if (action_text == '4'){
+    //         //     action = 'phone';
+    //         // }
+    //         getContent(action,page);
+    //        }
+    //        else  return Tip("当前已经是第一页");
+    //     }
+    //     else{
+    //           if(page>0){
+    //         page--;
+    //         getSearchContent('search',$("#inputinfo").val(),page);
+    //        }
+    //        else  return Tip("当前已经是第一页");
+    //     }
+    // });
+    // next.on('click',function(){
+    //      // if(inputinfo==""){
+    //      //     page++;
+    //      //    //  var action_text = $(".left-choose-list").find(".active").attr("data-id");
+    //      //    // if (action_text == '1'){
+    //      //    //     action = 'all';
+    //      //    // }
+    //      //    // else if (action_text == '2'){
+    //      //    //     action = 'admin';
+    //      //    // }
+    //      //    // else if (action_text == '3'){
+    //      //    //     action = 'customer';
+    //      //    // }
+    //      //    // else if (action_text == '4'){
+    //      //    //     action = 'phone';
+    //      //    // }
+    //      //    console.log("#####################");
+    //      //    getContent(action,page);
+    //     }
+    //     else{
+    //         page++;
+    //         getSearchContent('search',$("#inputinfo").val(),page);
+    //     }
+    // });
+}).on('click','.nav_item',function(){
+        var $this=$(this);
+        var action_text = $this.attr("data-id");
+        if (action_text == '1'){
+                action = 'all';
+                $this.addClass('active').siblings('.nav_item').removeClass('active');
+                getContent(action,0);
+            }
+        else if (action_text == '2'){
+            action = 'admin';
+            $this.addClass('active').siblings('.nav_item').removeClass('active');
+            getContent(action,0);
         }
-        else{
-              if(page>0){
-            page--;
-            getSearchContent('search',$("#inputinfo").val(),page);
-           }
-           else  return Tip("当前已经是第一页");
+        else if (inputinfoaction_text == '3'){
+            action = 'customer';
+            $this.addClass('active').siblings('.nav_item').removeClass('active');
+            getContent(action,0);
         }
-    });
-    next.on('click',function(){
-         if(inputinfo==""){
+        else if (action_text == '4'){
+            action = 'phone';
+            $this.addClass('active').siblings('.nav_item').removeClass('active');
+            getContent(action,0);
+        }
+        console.log(action);
+}).on('click','#PrePage',function(){
+
+}).on('click','#NextPage',function(){
+    console.log(typeof input);
+    if(input==""){
              page++;
+            //  var action_text = $(".left-choose-list").find(".active").attr("data-id");
+            // if (action_text == '1'){
+            //     action = 'all';
+            // }
+            // else if (action_text == '2'){
+            //     action = 'admin';
+            // }
+            // else if (action_text == '3'){
+            //     action = 'customer';
+            // }
+            // else if (action_text == '4'){
+            //     action = 'phone';
+            // }
+            console.log("#####################");
             getContent(action,page);
-        }
-        else{
+    }
+    else{
             page++;
             getSearchContent('search',$("#inputinfo").val(),page);
         }
-    });
 });
-var item;
-var action='all';
+
 function classify(target,act){
     target.on('click',function(){getContent(act,0);action=act;page=0;});
+    console.log(action);
 }
 
 function getContent(action,page){

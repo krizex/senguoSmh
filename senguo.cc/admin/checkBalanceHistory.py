@@ -390,8 +390,8 @@ def Check():
 			is_cancel =  item[10]
 
 			# added by jyj 2015-8-10
-			shop_province = self.session.query(models.Shop.shop_province).filter_by(id = shop_id).all()[0][0]
-			shop_name = self.session.query(models.Shop.shop_name).filter_by(id = shop_id).all()[0][0]
+			shop_province = session.query(models.Shop.shop_province).filter_by(id = shop_id).all()[0][0]
+			shop_name = session.query(models.Shop.shop_name).filter_by(id = shop_id).all()[0][0]
 			##
 
 			history_record = session.query(models.BalanceHistory).filter_by(id = id).with_lockmode("update").first()
