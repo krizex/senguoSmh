@@ -75,17 +75,18 @@ session = models.DBSession()
 # 插入余额记录店铺省份
 def balancehistory_province():
 	print("Start Inserting Province into Database balancehistory...")
-	balance_history = session.query(models.BalanceHistory).all()
+	balance_history = session.query(models.BalanceHistory).filter(models.BalanceHistory != None).all()
 	total = len(balance_history)
 	i = 0
 	for item in balance_history:
-		shop_id = item.shop_id
-		shop = session.query(models.Shop).filter_by(id=shop_id).first()
-		if shop:
-			item.shop_province = shop.shop_province
-			item.shop_name     = shop.shop_name
-		i = i+1
-		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
+		if not item.shop_name:
+			shop_id = item.shop_id
+			shop = session.query(models.Shop).filter_by(id=shop_id).first()
+			if shop:
+#				item.shop_province = shop.shop_province
+				item.shop_name     = shop.shop_name
+			i = i+1
+			print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
 	session.commit()
 
 # 插入提现申请店铺省份
