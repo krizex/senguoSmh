@@ -18,8 +18,8 @@
         {% for  data in context['data']%}
             <li data-id="{{data[7]}}" class="item">
                 <ul class="com-attr group">
-                    <li>店铺：<a href="/{{data[0]}}">{{data[1]}}</a></li>
-                    <li>管理员：<a href="javascript:;">{{data[2]}}</a></li>
+                    <li>店铺：<a href="/{{data[0]}}"  target="_blank">{{data[1]}}</a></li>
+                    <li>管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data[8]}}" target="_blank" title="点击查看用户详细信息">{{data[2]}}</a></li>
                     <li>申请时间：<span>{{data[3]}}</span></li>
                 </ul>
                 <p class="del-com">删除理由：<span>{{data[4]}}</span></p>
@@ -27,7 +27,7 @@
                     <dd><img class="per-img" src="{{data[5]['headimgurl_small'] or '/static/images/test-img.jpg'}}" alt="头像"/></dd>
                     <dt>
                         <ul class="com-attr group">
-                            <li><a href="javascript:;">{{data[5]['name']}}</a></li>
+                            <li><a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data[5]['customer_id']}}" target="_blank" title="点击查看用户详细信息">{{data[5]['name']}}</a></li>
                             <li><span>{{data[5]['order_create_date']}}</span></li>
                             <li>订单编号：<a href="javascript:;">{{data[5]['num']}}</a></li>
                         </ul>

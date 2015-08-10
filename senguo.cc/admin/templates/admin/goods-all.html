@@ -37,10 +37,16 @@
             <div class="cate-title">排列方式 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left order_status1" data-id="group">按商品分组</em>
+                    <em title="{{current_shop.shop_name}}" class="pull-left order_status1" data-id="all">所有方式</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+
+                <!-- added by jyj 2015-8-8 -->
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="all">所有方式</a>
+                    </li>
+                    <!--  -->
                     <li role="presentation">
                         <a class="item" href="javascript:;" data-id="group">按商品分组</a>
                     </li>

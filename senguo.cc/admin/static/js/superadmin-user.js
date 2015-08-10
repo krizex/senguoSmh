@@ -80,6 +80,7 @@ function getContent(action,page){
     $.postJson(url,args,
         function (res) {
            if(res.success){
+                $(".pager").show();
                $('.user-list').empty();
                 var users=res.data;
                 for(var i=0;i<users.length;i++){
@@ -172,6 +173,12 @@ function getSearchContent(action,inputinfo,page){
     $.postJson(url,args,
         function (res) {
            if(res.success){
+                if(action == "out_link"){
+                    $(".pager").hide();
+                }
+                else{
+                     $(".pager").show();
+                }
                $('.user-list').empty();
                 var users=res.data;
                 for(var i=0;i<users.length;i++){
@@ -191,9 +198,14 @@ function getSearchContent(action,inputinfo,page){
                     var city=user[5];
 
                     var phone=user[6];
+                    var wx_username=user[8];
+                    if(!wx_username){
+                        wx_username = "未填写";
+                    }
+                    $item.find('.wx-username').text(wx_username);
 
                     //add by jyj 2015-6-22
-                    var birthday = user[8];
+                    var birthday = user[9];
                     if(birthday == 0){
                             birthday = "未填写";
                     }
@@ -202,7 +214,7 @@ function getSearchContent(action,inputinfo,page){
                     //
 
                     //change by jyj 2015-6-24
-                    var fshop=user[9];
+                    var fshop=user[10];
                     if(fshop.length != 0){
                         if(fshop[0][2].length != 0){
                             for(j= 0;j< fshop.length;j++){
@@ -220,7 +232,7 @@ function getSearchContent(action,inputinfo,page){
                     }
                     //
 
-                    var oshop=user[10];
+                    var oshop=user[11];
 
                     if(!phone) phone='未绑定';
                     $item.find('.img').attr({'src':img});

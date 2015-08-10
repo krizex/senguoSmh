@@ -61,7 +61,7 @@
                     <a href="{{reverse_url('superShopAuth')}}?page=0" target="_blank"> <span class="text-blue">认证信息</span></a>
                 </p>
                 <p>
-                    <span class="tit2">店铺管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data["admin_id"]}}" target="_blank" class="admin-link"><span class="text-blue admin_nickname">{{data["admin_nickname"]}}</span></a></span>
+                    <span class="tit2">店铺管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data["admin_id"]}}" target="_blank" class="admin-link"  title="点击查看用户详细信息"><span class="text-blue admin_nickname">{{data["admin_nickname"]}}</span></a></span>
                 </p>
                 <p>
                     <span  class="shop_address">店铺地址：{{data["shop_address_detail"]}}</span></span>

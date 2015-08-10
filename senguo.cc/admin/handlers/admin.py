@@ -2140,28 +2140,68 @@ class Goods(AdminBaseHandler):
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 
-				if order_status1 =="group":
-					case_one = 'models.Fruit.group_id'
-				elif order_status1 =="classify":
-					case_one = 'models.Fruit.fruit_type_id'
+				# add by jyj 2015-8-8
+				if order_status1 == "all":
+					if order_status2 == "add_time":
+						goods = goods.order_by(models.Fruit.add_time.desc())
+					elif order_status2 == "name":
+						goods = goods.order_by(models.Fruit.name.desc())
+					elif order_status2 == "saled":
+						goods = goods.order_by(models.Fruit.saled.desc())
+					elif order_status2 == "storage":
+						goods = goods.order_by(models.Fruit.storage.desc())
+					elif order_status2 == "current_saled":
+						goods = goods.order_by(models.Fruit.current_saled.desc())
+				else:
+					if order_status1 =="group":
+						case_one = 'models.Fruit.group_id'
+					elif order_status1 =="classify":
+						case_one = 'models.Fruit.fruit_type_id'
 
-				# changed by jyj 2015-8-7
-				if order_status2 == "add_time":
-					goods = goods.order_by(eval(case_one),models.Fruit.add_time.desc())
-				elif order_status2 == "name":
-					goods = goods.order_by(eval(case_one),models.Fruit.name.desc())
-				elif order_status2 == "saled":
-					goods = goods.order_by(eval(case_one),models.Fruit.saled.desc())
-				elif order_status2 == "storage":
-					goods = goods.order_by(eval(case_one),models.Fruit.storage.desc())
-				elif order_status2 == "current_saled":
-					goods = goods.order_by(eval(case_one),models.Fruit.current_saled.desc())
-				##
+					# changed by jyj 2015-8-7
+					if order_status2 == "add_time":
+						goods = goods.order_by(eval(case_one),models.Fruit.add_time.desc())
+					elif order_status2 == "name":
+						goods = goods.order_by(eval(case_one),models.Fruit.name.desc())
+					elif order_status2 == "saled":
+						goods = goods.order_by(eval(case_one),models.Fruit.saled.desc())
+					elif order_status2 == "storage":
+						goods = goods.order_by(eval(case_one),models.Fruit.storage.desc())
+					elif order_status2 == "current_saled":
+						goods = goods.order_by(eval(case_one),models.Fruit.current_saled.desc())
+					##
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-				datalist = goods.offset(offset).limit(page_size).all()
-				data = self.getGoodsData(datalist,"all")
+
+
+				# added by jyj 2015-8-8 (for sorting by the data-item's name order by pinyin)
+				if order_status2 == "name":
+					from operator import itemgetter
+					data_all_list = goods.all()
+					data_all_tmp = self.getGoodsData(data_all_list,"all")
+					data_all = []
+
+					for i in range(len(data_all_tmp)):
+						name_code = data_all_tmp[i]["name"].encode('gbk')
+						data_all_tmp[i]["name_gbk"] = name_code
+
+					if order_status1 =="group":
+						data_all_tmp.sort(key = itemgetter('group_id','name_gbk'),reverse = False)
+					elif order_status1 == "classify":
+						data_all_tmp.sort(key = itemgetter('fruit_type_id','name_gbk'),reverse = False)
+					elif order_status1 == "all":
+						data_all_tmp.sort(key = itemgetter('name_gbk'),reverse = False)
+
+					for i in range(len(data_all_tmp)):
+						data_all_tmp[i]["name_gbk"] = str(data_all_tmp[i]["name_gbk"])
+
+					data = data_all_tmp[offset : offset+page_size]
+				else:
+					datalist = goods.offset(offset).limit(page_size).all()
+					data = self.getGoodsData(datalist,"all")
+				##
+
 				return self.send_success(data=data,count=count)
 
 			group_list = []
