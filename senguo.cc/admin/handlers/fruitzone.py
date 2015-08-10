@@ -1014,7 +1014,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop.shop_name)
 		self.session.add(balance_history)
 		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()
@@ -1175,7 +1175,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province,shop_name=shop.shop_name)
 		self.session.add(balance_history)
 		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()

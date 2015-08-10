@@ -1909,7 +1909,7 @@ class Cart(CustomerBaseHandler):
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
-				customer_totalPrice = shop_follow.shop_balance)
+				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.flush()
 		self.session.commit()
@@ -2162,7 +2162,7 @@ class Order(CustomerBaseHandler):
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.new_totalprice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
-						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province)
+						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 				self.session.add(balance_history)
 			self.session.commit()
 			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -2726,7 +2726,7 @@ class payTest(CustomerBaseHandler):
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
-				shop_province=shop.shop_province)
+				shop_province=shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			# print("[WxCharge]balance_history:",balance_history)
 			self.session.commit()
