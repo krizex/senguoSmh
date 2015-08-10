@@ -656,7 +656,7 @@ function show_all_single_chart(start_date,end_date){
 	setTimeout(function(){
 
 	}, 250);
-	 $.ajaxSetup({async:false});
+	 // $.ajaxSetup({async:false});
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
@@ -760,7 +760,7 @@ function show_all_chart(start_date,end_date){
 	setTimeout(function(){
 
 	}, 250);
-	 $.ajaxSetup({async:false});
+	 // $.ajaxSetup({async:false});
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
@@ -1427,7 +1427,7 @@ function show_chart(action,start_date,end_date,name){
 	setTimeout(function(){
 
 	}, 250);
-	 $.ajaxSetup({async:false});
+	 // $.ajaxSetup({async:false});
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
