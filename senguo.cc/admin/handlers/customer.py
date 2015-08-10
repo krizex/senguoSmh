@@ -89,8 +89,9 @@ class Access(CustomerBaseHandler):
 		if jpush_id:
 			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id,user_type=user_type).with_lockmode('update').first()
 			new_device=1
-			if qq.jpush_id==jpush_id:
-				new_device=0			
+			if qq:
+				if qq.jpush_id==jpush_id:
+					new_device=0			
 			if new_device==1:
 				self.session.update(user_id=u.accountinfo.id,user_type=user_type,jpush_id=jpush_id)
 				self.session.commit()
@@ -148,6 +149,16 @@ class Third(CustomerBaseHandler):
 			sex=int(self.args["sex"])
 			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
 			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
+			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=1).first()
+			new_device=1
+			if qq:
+				if qq.jpush_id==jpush_id:
+					new_device=0
+			if new_device==1 and q:
+				print(new_device,'new_device')
+				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=1,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
 			if  q==None:
 				u = models.Customer.register_with_wx(self.session,userinfo)
 				self.set_current_user(u,domain = ROOT_HOST_NAME)
@@ -166,12 +177,11 @@ class Third(CustomerBaseHandler):
 			jpush_id=str(self.args["jpush_id"])
 			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
 			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
-			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id).all()
+			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=0).first()
 			new_device=1
-			for x in qq:
-					if x.jpush_id==jpush_id:
-						new_device=0
-						break
+			if qq:
+				if qq.jpush_id==jpush_id:
+					new_device=0
 			if new_device==1 and q:
 				print(new_device,'new_device')
 				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=0,jpush_id=jpush_id)
