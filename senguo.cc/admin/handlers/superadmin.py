@@ -696,7 +696,7 @@ class OrderManage(SuperBaseHandler):
 		orders = q.all()
 		subpage = self._action
 
-		return self.render("superAdmin/order-manage.html", context=dict(
+		return self.render("superAdmin/order-manage.html",level=level, context=dict(
 			orders = orders,subpage = subpage,count=count))
 
 	@tornado.web.authenticated
@@ -2527,7 +2527,7 @@ class ApplyCash(SuperBaseHandler):
 			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
 				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = \
-				self.current_user.id,available_balance = shop.available_balance,shop_province=shop.shop_province)
+				self.current_user.id,available_balance = shop.available_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success(history = history)
