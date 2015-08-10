@@ -664,6 +664,7 @@ class OrderManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
+		level = self.current_user.level
 		q_all = self.session.query(models.SystemOrder).filter_by(
 			order_status = models.SYS_ORDER_STATUS.SUCCESS)
 		q_new = q_all.filter_by(have_read=False)
