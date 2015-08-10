@@ -339,7 +339,7 @@
 .cancel-goods{position: absolute;right: 0;top: -6px;width: 80px;height: 24px;text-align:center;border-radius:4px;display: inline-block;line-height: 24px;font-size: 14px;color: #fff;background-color: #48b6a4;}
 .goods-time{line-height: 24px;text-indent: 10px; font-size: 12px;}
 .second-tab-list .goods-status{background-color: #b2dfdb;font-weight: bold;padding-left: 12px;-webkit-box-sizing: border-box;text-align: left;}
-.second-tab-list .turn{position: relative;display:none;left: 2px;width: 8px;height: 12px;top: 1px;background-image: url('/static/m-admin/img/i_turn.png');-webkit-transition:all .2s ease-in-out;}
+.second-tab-list .turn{position: relative;display:none;left: 2px;width: 6px;height: 12px;top: 1px;background-image: url('/static/m-admin/img/i_turn.png');-webkit-transition:all .2s ease-in-out;}
 .second-tab-list .imenu{position: relative;left: 2px;width: 14px;height: 10px;background-image: url('/static/m-admin/img/menu.png');}
 .second-tab-list .active .turn{display: inline-block;}
 .wrap-goods-menu{width: 25%;height: 160px;}
