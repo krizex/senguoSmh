@@ -2615,12 +2615,18 @@ class CheckCash(SuperBaseHandler):
 			check_profit_len = check_profit.count()
 
 			if check_profit_len == 0:
-				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first().create_time
+				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first()
+				if not check_update_start:
+					page_sum = 0
+					output_data = []
+					return self.send_success(output_data=output_data,page_sum = page_sum)
+				check_update_start = check_update_start.create_time				
 				check_update_start  = check_update_start - datetime.timedelta(1)
 				check_update_start = datetime.datetime(check_update_start.year, check_update_start.month, check_update_start.day, 23,59,59)
 			else:
 				check_profit_last  = check_profit.first().create_time
 				check_update_start = datetime.datetime(check_profit_last.year, check_profit_last.month, check_profit_last.day, 23,59,59)
+
 			# add by jyj 2015-7-7
 			now_time = time.localtime(time.time())
 			now_time = datetime.datetime(*now_time[:6])
