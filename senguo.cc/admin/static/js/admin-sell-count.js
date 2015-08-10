@@ -653,6 +653,9 @@ function show_all_single_chart(start_date,end_date){
 		start_date:getDateStr(start_date),
 		end_date:getDateStr(end_date)
 	};
+	setTimeout(function(){
+
+	}, 500);
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
@@ -753,7 +756,9 @@ function show_all_chart(start_date,end_date){
 		start_date:getDateStr(start_date),
 		end_date:getDateStr(end_date)
 	};
+	setTimeout(function(){
 
+	}, 500);
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
@@ -1417,6 +1422,9 @@ function show_chart(action,start_date,end_date,name){
 		type_name:name,
 		goods_name:name
 	};
+	setTimeout(function(){
+
+	}, 500);
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
