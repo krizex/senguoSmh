@@ -306,7 +306,7 @@ $(document).ready(function(){
     if(isEditor=="true"){
         if(editor){
             $("#ueditor").css("width","100%");
-            editor.body.innerHTML=$(this).attr("data-text");
+            editor.body.innerHTML=$(this).attr("data-text")||"";
             $(".pop-editor").show();
         }else{
             initEditor($(this));
@@ -396,6 +396,7 @@ $(document).ready(function(){
 }).on("click",".ok-editor",function(){
     curEditor.attr("data-text",editor.body.innerHTML);
     $(".pop-editor").hide();
+    editor.body.innerHTML="";
 }).on("click",".pre-page",function(){//上页
     if(pn==0){
         return Tip("当前已经是第一页");
@@ -613,7 +614,7 @@ function dealGoods($item,type){
             $('.ok-edit-goods').attr("data-flag","on");
             return Tip("商品图文详情过长，请精简一下");
         }else{
-            detail_describe = editor.body.innerHTML;
+            detail_describe = $item.find(".show-txtimg").attr("data-text");
         }
     }
     //商品限购、排序优先级

@@ -243,10 +243,11 @@ class Home(CustomerBaseHandler):
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
 		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname)
+		wx_username = self.current_user.accountinfo.wx_username if self.current_user.accountinfo.phone else ""
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int")
+	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int","wx_username:str")
 	def post(self):
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
@@ -262,8 +263,16 @@ class Home(CustomerBaseHandler):
 		if not check_msg_token(phone=self.args['phone'], code=int(self.args["code"])):
 			return self.send_fail(error_text="验证码过期或者不正确")
 
+		if len(self.args["phone"])>11:
+			return self.send_fail("手机号格式错误")
+		if len(self.args["realname"])>20:
+			return self.send_fail("真实姓名请不要超过20个字")
+		if len(self.args["wx_username"])>20:
+			return self.send_fail("微信号请不要超过20个字")
+
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
+		self.current_user.accountinfo.wx_username=self.args["wx_username"]
 		self.session.add(models.ShopAdmin(id=self.current_user.id))
 		self.session.commit()
 		return self.send_success()

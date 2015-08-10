@@ -21,14 +21,19 @@ $(document).ready(function(){
     var tel = $.trim($("#tel").val());
     var name = $.trim($("#name").val());
     var code = $.trim($("#code").val());
+    var wx_username = $.trim($("#wx-username").val());
     if(tel == "" || name == "" || code == ""){
         return Tip("姓名、手机号及验证码都不能为空");
+    }
+    if(!wx_username){
+        return Tip("填写个人微信号，方便我们将您加入卖家交流群，获得更多行业信息与资源");
     }
     var args={
         _xsrf:window.dataObj._xsrf,
         phone:tel,
         realname:name,
-        code:code
+        code:code,
+        wx_username:wx_username
     };
     $(this).attr("data-flag","off");
     $.ajax({

@@ -1,7 +1,7 @@
 var page=0;
 $(document).ready(function(){
     $.ajaxSetup({'async':false});
-    $.getItem(item_link+'/user-item.html?v=20150613',function(data){item=data;});
+    $.getItem(item_link+'/user-item.html?v=20150808',function(data){item=data;});
     getContent('all',0);
     classify($('.all'),'all');
     classify($('.admin'),'admin');
@@ -80,12 +80,12 @@ function getContent(action,page){
     $.postJson(url,args,
         function (res) {
            if(res.success){
+                $(".pager").show();
                $('.user-list').empty();
                 var users=res.data;
                 for(var i=0;i<users.length;i++){
                     var $item=$(item);
                     var user=users[i];
-
                     //add by jyj 2015-6-22
                     var user_id = user[0];
                     //
@@ -97,19 +97,22 @@ function getContent(action,page){
                     var sex=user[3];
                     var province=user[4];
                     var city=user[5];
-
                     var phone=user[6];
+                    var wx_username=user[8];
 
                     //add by jyj 2015-6-22
-                    var birthday = user[8];
+                    var birthday = user[9];
                     if(birthday == 0){
-                            birthday = "未填写";
+                        birthday = "未填写";
+                    }
+                    if(!wx_username){
+                        wx_username = "未填写";
                     }
                     $item.find('.user-id').text(user_id);
                     $item.find('.birthday').text(birthday);
-                    //
+                    $item.find('.wx-username').text(wx_username);
                      //change by jyj 2015-6-24
-                    var fshop=user[9];
+                    var fshop=user[10];
                     if(fshop.length != 0){
                         if(fshop[0][2].length != 0){
                             for(j= 0;j< fshop.length;j++){
@@ -127,7 +130,7 @@ function getContent(action,page){
                     }
                     //
                     
-                    var oshop=user[10];
+                    var oshop=user[11];
 
                     if(!phone) phone='未绑定';
                     $item.find('.img').attr({'src':img});
@@ -170,6 +173,12 @@ function getSearchContent(action,inputinfo,page){
     $.postJson(url,args,
         function (res) {
            if(res.success){
+                if(action == "out_link"){
+                    $(".pager").hide();
+                }
+                else{
+                     $(".pager").show();
+                }
                $('.user-list').empty();
                 var users=res.data;
                 for(var i=0;i<users.length;i++){
@@ -189,9 +198,14 @@ function getSearchContent(action,inputinfo,page){
                     var city=user[5];
 
                     var phone=user[6];
+                    var wx_username=user[8];
+                    if(!wx_username){
+                        wx_username = "未填写";
+                    }
+                    $item.find('.wx-username').text(wx_username);
 
                     //add by jyj 2015-6-22
-                    var birthday = user[8];
+                    var birthday = user[9];
                     if(birthday == 0){
                             birthday = "未填写";
                     }
@@ -200,7 +214,7 @@ function getSearchContent(action,inputinfo,page){
                     //
 
                     //change by jyj 2015-6-24
-                    var fshop=user[9];
+                    var fshop=user[10];
                     if(fshop.length != 0){
                         if(fshop[0][2].length != 0){
                             for(j= 0;j< fshop.length;j++){
@@ -218,7 +232,7 @@ function getSearchContent(action,inputinfo,page){
                     }
                     //
 
-                    var oshop=user[10];
+                    var oshop=user[11];
 
                     if(!phone) phone='未绑定';
                     $item.find('.img').attr({'src':img});

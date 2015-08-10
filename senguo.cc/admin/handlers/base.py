@@ -1085,14 +1085,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 6,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 6,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 7,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 7,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		#增 与订单总额相等的积分
@@ -1184,7 +1184,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 	def get_shop_count(self):
 		try:
 			shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set',models.Shop.status !=0).count()
+				models.Shop.shop_code !='not set').count()
 		except:
 			return self.send_fail("[FruitzoneBaseHandler]get_shop_count: shop count error")
 		return shop_count
@@ -1207,7 +1207,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		from sqlalchemy import func
 		try:
 			shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
-			filter(models.Shop.shop_code != 'not set',models.Shop.status!=0).group_by(models.Shop.shop_province).all()
+			filter(models.Shop.shop_code != 'not set').group_by(models.Shop.shop_province).all()
 		except:
 			return self.send_fail('[FruitzoneBaseHandler]get_shop_group: group error')
 		# print("[FruitzoneBaseHandler]get_shop_group: type(shop_count):",type(shop_count))

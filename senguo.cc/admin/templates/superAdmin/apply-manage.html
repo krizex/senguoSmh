@@ -44,7 +44,7 @@
                     <img src="{{shop.admin.accountinfo.headimgurl_small or '/static/images/TDSG.png'}}" class="w60"/>
                 </span>
                 <div class="tit1 ml10">
-                    <a href="{{reverse_url('superUser')}}" target="_blank"><p class="text-blue">{{shop.admin.accountinfo.nickname}}</p></a>
+                    <a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{shop.admin.accountinfo.id}}" target="_blank" title="点击查看用户详细信息"><p class="text-blue">{{shop.admin.accountinfo.nickname}}</p></a>
                     <p>{{shop.admin.accountinfo.wx_province}}  {{shop.admin.accountinfo.wx_city}}</p>
                 </div>
                 <div class="tit1 ml10">

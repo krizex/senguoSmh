@@ -1123,7 +1123,7 @@ function show_chart(action,start_date,end_date,id){
 
 		);
 	}
-	
+
 	$.postJson(url,args,
 		function(res){
 			if(res.success){
