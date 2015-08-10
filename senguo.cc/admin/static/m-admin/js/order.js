@@ -13,11 +13,13 @@ $(document).ready(function(){
             $(".third-item").html("已完成");
             $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
+            $(".order-lists").addClass("pt50");
         }else{
             $(".second-item").html("处理中");
             $(".third-item").html("已送达");
             $(".wrap-self-choose").addClass("hide");
             $(".second-tab").removeClass("mt40");
+            $(".order-lists").removeClass("pt50");
         }
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
@@ -56,6 +58,7 @@ $(document).ready(function(){
             $(".third-item").html("已完成");
             $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
+            $(".order-lists").addClass("pt50");
         }
         var index = parseInt($.getUrlParam("type"));
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
