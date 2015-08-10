@@ -1084,7 +1084,7 @@ class OrderStatic(AdminBaseHandler):
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
 		start_date = datetime.datetime(start_date.year,start_date.month,start_date.day,23,59,59)
 		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
-		print("[AdminOrderStatic]start_date:",start_date,", end_date:",end_date,end_date-start_date)
+		# print("[AdminOrderStatic]order_table: start_date:",start_date,", end_date:",end_date,end_date-start_date)
 
 		# 以15天为一次查询，查询:日期，日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
@@ -1095,7 +1095,7 @@ class OrderStatic(AdminBaseHandler):
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
-		print(s)
+		# print("[AdminOrderStatic]start_date: s:",s)
 
 		# 总订单数
 		# 截止到end_date的:总订单总价,总订单数
@@ -1130,8 +1130,8 @@ class OrderStatic(AdminBaseHandler):
 			# print("[AdminOrderStatic]date:",date.strftime('%Y-%m-%d'))
 			# print(s[0])
 			# if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
-			if i < len(s):
-				print('haha',s[i][0].strftime('%Y-%m-%d'),date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d')==date.strftime('%Y-%m-%d'))
+			# if i < len(s):
+			#	print('haha',s[i][0].strftime('%Y-%m-%d'),date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d')==date.strftime('%Y-%m-%d'))
 			if i < len(s) and (s[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 				if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(float(s[i][2]),'.2f'), format(float(total[0]),'.2f'), s_old[j][1], old_total))
@@ -1230,7 +1230,7 @@ class FollowerStatic(AdminBaseHandler):
 			i = 0
 			for x in range(0, 15):
 				date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
-				print(date)
+				# print("[FollowerStatic]date:",date)
 				if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total))
 					total -= s[i][1]
@@ -2400,7 +2400,6 @@ class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
 	def post(self):
-		print("###,here is post function")
 		action = self.args["action"]
 		data = self.args["data"]
 		current_shop = self.current_shop
@@ -2939,8 +2938,8 @@ class GoodsImport(AdminBaseHandler):
 			if len(self.current_shop.fruits) + len(datalist) >200:
 				return self.send_fail("一家店铺最多可添加200种商品")
 			for data in datalist:
-				print(data["imgs"])
-				print(data.get("imgs",""))
+				# print("[GoodsImport]data["imgs"]:",data["imgs"])
+				# print("[GoodsImport]data.get("imgs",""):",data.get("imgs",""))
 				new_good = models.Fruit(shop_id = self.current_shop.id , fruit_type_id = 999,name = data.get("name",""),
 				storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
 				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 3,num = 1,market_price = None))
@@ -3923,7 +3922,7 @@ class ShopConfig(AdminBaseHandler):
 				self_shop_address = self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,if_default=2).first()
 			except:
 				self_shop_address = None
-			print(shop_address_detail)
+			# print("[ShopConfig]shop_address_detail:",shop_address_detail)
 			if self_shop_address:
 				self_shop_address.address = shop_address_detail
 				self_shop_address.lat = lat
