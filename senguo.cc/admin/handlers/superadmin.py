@@ -2836,6 +2836,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 			record = ''
 			order_num = ''
 			order_num_txt = ''
+			user_id = 0
 			if temp.balance_type == 3:
 				record = temp.balance_record[0:4] + ':'
 				if temp.balance_record[5:7] == '支付':
