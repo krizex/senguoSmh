@@ -39,16 +39,20 @@ class ShopList(FruitzoneBaseHandler):
 		# print("[ShopList]initialize")
 		self.remote_ip = self.request.headers.get('X-Forwarded_For',\
 			self.request.headers.get('X-Real-Ip',self.request.remote_ip))
-	@FruitzoneBaseHandler.check_arguments('action?:str')
 
+	@FruitzoneBaseHandler.check_arguments('action?:str','province?:str')
 	def get(self):
+		province = self.args.get('province',None)
 		remote_ip = self.remote_ip
 		# print("[ShopList]remote_ip:",remote_ip)
 		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
 		res =  requests.get(url,headers = {"connection":"close"})
 		content = res.text
 		# print("[ShopList]content:",content)
-		t = json.loads(content)
+		try:
+			t = json.loads(content)
+		except:
+			t = {}
 		data = t.get('data',None)
 		if data:
 			city = data.get('city',None)
@@ -64,23 +68,27 @@ class ShopList(FruitzoneBaseHandler):
 		# for f_t in self.session.query(models.FruitType).all():
 		#     fruit_types.append(f_t.safe_props())
 		# print(city_id+"===========")
-		return self.render("fruitzone/list.html", context=dict(province_count=province_count,\
+		return self.render("fruitzone/list.html", context=dict(province_count=province_count,province=province,
 			city = city ,city_id = city_id,shop_count=shop_count,subpage="home"))
 
 	@unblock
-	@FruitzoneBaseHandler.check_arguments("action")
+	@FruitzoneBaseHandler.check_arguments("action",'province?:int')
 	def post(self):
+		print(self.args)
 		action = self.args["action"]
+		province = self.args.get('province',None)
+		province = int(province) if province else None
+		# province = 420000
 		if action == "filter":
-			return self.handle_filter()
+			return self.handle_filter(province)
 		elif action == "search":
-			return self.handle_search()
+			return self.handle_search(province)
 		elif action == "qsearch":
-			return self.handle_qsearch()
+			return self.handle_qsearch(province)
 		elif action =="shop":
-			return self.handle_shop()
+			return self.handle_shop(province)
 		elif action == 'admin_shop':
-			return self.handle_admin_shop()
+			return self.handle_admin_shop(province)
 		else:
 			return self.send_error(403)
 
@@ -123,12 +131,15 @@ class ShopList(FruitzoneBaseHandler):
 		return shops
 
 	@FruitzoneBaseHandler.check_arguments("page:int")
-	def handle_shop(self):
-
+	def handle_shop(self,province):
 		_page_count =15
 		page=self.args["page"]-1
 		nomore = False
-		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc())\
+		if province:
+			q = self.session.query(models.Shop).filter_by(shop_province=province)
+		else:
+			q = self.session.query(models.Shop)
+		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc())\
 		.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 			models.Shop.shop_code !='not set' ,models.Shop.status !=0 )
 		shop_count = q.count()
@@ -142,22 +153,32 @@ class ShopList(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments("skip?:int","limit?:int","province?:int",
 									  "city?:int", "service_area?:int", "live_month?:int",
 									  "onsalefruit_ids?:list","page:int","key_word?:int",'lat?:str','lon?:str')
-	def handle_filter(self):
+	def handle_filter(self,province):
 		# 按什么排序？暂时采用id排序
 		_page_count = 15
 		page = self.args["page"] - 1
+		# page = 1
+		# print(self.args)
 		nomore = False
-		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
-			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set',models.Shop.status !=0 )
+		# print(province)
+		if province:
+			q = self.session.query(models.Shop).filter_by(shop_province=province)
+		else:
+			q = self.session.query(models.Shop)
+		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).filter(
+			models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,
+			models.Shop.shop_code !='not set',models.Shop.status !=0 )
+		# print(q.count(),'店铺总数',page)
 		shops = []
 
 		if "service_area" in self.args:
+			# print('service service_area')
 			service_area = int(self.args['service_area'])
 			if service_area > 0:
 				q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 			# q = q.filter_by(shop_service_area = service_area)
 		if "city" in self.args:
+			# print('city')
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
 			# print('shop_count',shop_count)
@@ -167,37 +188,25 @@ class ShopList(FruitzoneBaseHandler):
 
 		elif "province" in self.args:
 			# print('province')
+			# print('province')
+			# print(q.count(),'before')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
+			# print(shop_count,'after')
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 
-		# if "live_month" in self.args:
-		#     q = q.filter(models.Shop.shop_start_timestamp < time.time()-self.args["live_month"]*(30*24*60*60))
-
-		# if "onsalefruit_ids" in self.args and self.args["onsalefruit_ids"]:
-		#     q = q.filter(models.Shop.id.in_(
-		#         select([models.ShopOnsalefruitLink.shop_id]).\
-		#         where(models.ShopOnsalefruitLink.fruit_id.in_(
-		#             self.args["onsalefruit_ids"]))
-		#     ))
-
-		# if "skip" in self.args:
-		#     q = q.offset(self.args["skip"])
-
-		# if "limit" in self.args:
-		#     q = q.limit(self.args["limit"])
-		# else:
-		#     q = q.limit(self._page_count)
 		shops = self.get_data(q)
-		if "key_word" in self.args:
-			key_word = int(self.args['key_word'])
-			lat1 = None
-			lon1 = None
-			if self.args["lat"] != '[]':
-				lat1 = float(self.args['lat'])
-			if self.args["lon"] != '[]' :
-				lon1 = float(self.args['lon'])
+		# print(len(shops),'shoplist len')
+
+		# 当限制为具体某省店铺列表时，默认按距离排序
+		lat1 = None
+		lon1 = None
+		if self.args["lat"] != '[]':
+			lat1 = float(self.args['lat'])
+		if self.args["lon"] != '[]' :
+			lon1 = float(self.args['lon'])
+		if province:
 			for shop in shops:
 				lat2 = shop['lat']
 				lon2 = shop['lon']
@@ -205,10 +214,26 @@ class ShopList(FruitzoneBaseHandler):
 					shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
 				else:
 					shop['distance'] = 9999999
+			shops.sort(key = lambda shop:shop['distance'])
+
+		if "key_word" in self.args:
+			key_word = int(self.args['key_word'])
+			print(len(shops),'key_word')
+			
+			for shop in shops:
+				lat2 = shop['lat']
+				lon2 = shop['lon']
+				if lat1 and lon1 and lat2 and lon2:
+					#当省份不在过滤条件中时，计算全国店铺的距离计算量巨大，且没有实际意义,故此时将店铺距离设为一个默认值
+					if 'province' in self.args:          
+						shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+					else:
+						shop['distance'] = 100
+				else:
+					shop['distance'] = 9999999
 			if key_word == 1: #商品最多
 				shops.sort(key = lambda shop:shop['goods_count'],reverse = True)
 			elif key_word == 2: #距离最近
-
 				shops.sort(key = lambda shop:shop['distance'])
 			elif key_word == 3: #满意度最高
 				shops.sort(key = lambda shop:shop['satisfy'],reverse = True)
@@ -216,7 +241,7 @@ class ShopList(FruitzoneBaseHandler):
 				shops.sort(key = lambda shop:shop['comment_count'],reverse = True)
 			else:
 				return self.send_fail(error_text = 'key_word error')
-		shops = shops[_page_count*page:_page_count*page+_page_count]
+		# shops = shops[_page_count*page:_page_count*page+_page_count]
 		# print(shops,"***********shops********")
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
@@ -233,11 +258,15 @@ class ShopList(FruitzoneBaseHandler):
 		return self.send_success(shops=shops)
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
-	def handle_search(self):
+	def handle_search(self,province):
 		_page_count = 15
 		page = self.args["page"] - 1
 		nomore = False
-		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
+		if province:
+			q = self.session.query(models.Shop).filter_by(shop_province=province)
+		else:
+			q = self.session.query(models.Shop)
+		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   models.Shop.shop_code !='not set',models.Shop.status !=0 )
@@ -252,8 +281,12 @@ class ShopList(FruitzoneBaseHandler):
 
 	# 快速搜索
 	@FruitzoneBaseHandler.check_arguments("q")
-	def handle_qsearch(self):
-		q = self.session.query(models.Shop).order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
+	def handle_qsearch(self,province):
+		if province:
+			q = self.session.query(models.Shop).filter_by(shop_province=province)
+		else:
+			q = self.session.query(models.Shop)
+		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 				   models.Shop.shop_code !='not set',models.Shop.status !=0 )
@@ -981,7 +1014,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop.shop_name)
 		self.session.add(balance_history)
 		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()
@@ -1142,7 +1175,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province,shop_name=shop.shop_name)
 		self.session.add(balance_history)
 		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()

@@ -120,7 +120,7 @@ class Shop(AdminBaseHandler):
 		self_count = order_list.filter_by(type=3,status=1).count()
 		comment_count = order_list.filter_by(status = 6).count()
 		staff_count = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1).count()
-		goods_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		goods_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).count()
 
 		return self.render("m-admin/shop-profile.html", new_order_sum=new_order_sum, order_sum=order_sum,
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,show_balance = show_balance,\
@@ -217,7 +217,18 @@ class Order(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		self.if_current_shops()
-		return self.render("m-admin/order.html")
+		self_address_list=[]
+		try:
+			self_address=self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id).\
+			filter(models.SelfAddress.active!=0).order_by(models.SelfAddress.if_default.desc()).all()
+		except:
+			self_address=None
+		if self_address:
+			try:
+				self_address_list=[x for x in self_address]
+			except:
+				self_address_list=None
+		return self.render("m-admin/order.html",self_address_list=self_address_list,)
 
 # 移动后台 - 订单详情
 class OrderDetail(AdminBaseHandler):
@@ -331,23 +342,137 @@ class Comment(AdminBaseHandler):
 class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/goods.html")
+		shop_id     = self.get_secure_cookie("shop_id")
+		data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						data.append({'id':0,'name':'','intro':'','num':default_count})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							first_text = _group.name[0:1]
+							data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count,"first_text":first_text})
+		else:
+			data.append({'id':0,'name':'','intro':'','num':default_count})
+		return self.render("m-admin/goods.html",data=data,record_count=record_count)
 #商品搜索
 class GoodsSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/goods-search.html")
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("name:str")
+	def post(self):
+		if "name" not in self.args:
+			return self.send_error(403)
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		name = self.args["name"]
+		goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
+		count = goods.count()
+		return self.send_success(count=count)
 #商品新建
 class GoodsAdd(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/goods-add.html")
+		token = self.get_qiniu_token("shopAuth_cookie","goodsadd")
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						data.append({'id':0,'name':'','intro':'','num':default_count})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+		else:
+			data.append({'id':0,'name':'','intro':'','num':default_count})
+		return self.render("m-admin/goods-add.html",token=token,edit=False,data=data,record_count=record_count)
 #商品编辑
 class GoodsEdit(AdminBaseHandler):
 	@tornado.web.authenticated
+	def get(self,id):
+		token = self.get_qiniu_token("shopAuth_cookie","goodsedit")
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		data = []
+		group_data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,id=id).filter(models.Fruit.active!=0).all()
+		if not goods:
+			return self.send_error(404)
+		data = self.getGoodsData(goods,"one")
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						group_data.append({'id':0,'name':'','intro':''})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							group_data.append({'id':_group.id,'name':_group.name,'intro':_group.intro})
+		return self.render("m-admin/goods-edit.html",token=token,edit=True,data=data,group_data=group_data)
+#批量管理
+class GoodsBatch(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("gid")
 	def get(self):
-		return self.render("m-admin/goods-edit.html")
-
+		if "gid" in self.args:
+			_id = int(self.args["gid"])
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		group_data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						group_data.append({'id':0,'name':'','intro':'','num':default_count})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							group_data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+		else:
+			group_data.append({'id':0,'name':'','intro':'','num':default_count})
+		group_goods = self.session.query(models.Fruit.id,models.Fruit.name,models.Fruit.img_url).filter(models.Fruit.active!=0).filter_by(shop_id=shop_id,group_id=_id).all()
+		goods_data = []
+		for good in group_goods:
+			if good[2]:
+				imgurl = good[2].split(";")[0]
+			else:
+				imgurl = ""
+			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
+		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data,record_count=record_count)
 
 
 

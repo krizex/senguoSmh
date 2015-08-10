@@ -357,8 +357,10 @@ class GlobalBaseHandler(BaseHandler):
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
+					unit_num = int(charge.unit_num) if charge.unit_num else 0
+					select_num = int(charge.select_num) if charge.select_num else 0
 					charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-						'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+						'num':charge.num,'unit_num':unit_num,'market_price':market_price,'select_num':select_num})
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
@@ -1085,14 +1087,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 6,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 6,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 7,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 7,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		#增 与订单总额相等的积分
@@ -1184,7 +1186,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 	def get_shop_count(self):
 		try:
 			shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set' ).count()
+				models.Shop.shop_code !='not set').count()
 		except:
 			return self.send_fail("[FruitzoneBaseHandler]get_shop_count: shop count error")
 		return shop_count

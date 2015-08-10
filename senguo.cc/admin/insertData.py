@@ -57,7 +57,7 @@ session = models.DBSession()
 #           shop.shop_address="湖北省武汉市"+address
 #       session.commit()
 
-# # 插入店铺自提时间段
+# # 插入店铺自提时间段和地址
 # def addSome():
 #     print("Start Inserting Self Period to Database...")
 #     shops = session.query(models.Shop).all()
@@ -75,16 +75,18 @@ session = models.DBSession()
 # 插入余额记录店铺省份
 def balancehistory_province():
 	print("Start Inserting Province into Database balancehistory...")
-	balance_history = session.query(models.BalanceHistory).all()
+	balance_history = session.query(models.BalanceHistory).filter(models.BalanceHistory != None).all()
 	total = len(balance_history)
 	i = 0
 	for item in balance_history:
-		shop_id = item.shop_id
-		shop = session.query(models.Shop).filter_by(id=shop_id).first()
-		if shop:
-			item.shop_province = shop.shop_province
-		i = i+1
-		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
+		if not item.shop_name:
+			shop_id = item.shop_id
+			shop = session.query(models.Shop).filter_by(id=shop_id).first()
+			if shop:
+#				item.shop_province = shop.shop_province
+				item.shop_name     = shop.shop_name
+			i = i+1
+			print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
 	session.commit()
 
 # 插入提现申请店铺省份
@@ -102,6 +104,27 @@ def applycash_province():
 		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
 	session.commit()
 
-g = multiprocessing.Process(name='applycash_province',target=applycash_province)
+# 添加店铺默认自提地址
+def setShopSelfAddress():
+	print("Start Inserting Self Address to Database...")
+	shops = session.query(models.Shop).all()
+	total = len(shops)
+	i = 0
+	for shop in shops:
+		try:
+			self_shop_address = session.query(models.SelfAddress).filter_by(config_id=shop.config.id,lat=shop.lat,lon=shop.lon).first()
+		except:
+			self_shop_address = None
+		if self_shop_address:
+			if self_shop_address.active == 0:
+				self_shop_address.active = 1
+			self_shop_address.if_default=2
+		else:
+			session.add(models.SelfAddress(config_id=shop.config.id, if_default=2,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+		session.commit()
+		i = i+1
+		print("Processing [",i,"/",total,"] => Insert Self Address Success, shop_id:",shop.id)
+
+g = multiprocessing.Process(name='setShopSelfAddress',target=balancehistory_province)
 g.start()
 g.join()

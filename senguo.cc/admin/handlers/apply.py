@@ -112,7 +112,9 @@ class WxMessage(CustomerBaseHandler):
 			elif Content == '打印机':
 				reply_message = 'senguo.cc/bbs/detail/8'
 			else:
-				reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
+				MsgType = 'transfer_customer_service'
+				reply_message = None
+				# reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
 			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 			reply = ET.tostring(reply,encoding='utf8',method='xml')
 			# print("[ApplyWxMessage]reply:",reply)
@@ -121,8 +123,9 @@ class WxMessage(CustomerBaseHandler):
 		if event == 'subscribe' or 'scan' or 'SCAN':
 			if event == 'subscribe':
 				scene_id = int(eventkey.split('_')[1]) if eventkey and eventkey.find('qrscene') !=-1 else None
+
 			elif event == 'scan' or 'SCAN':
-				scene_id = int(eventkey)  if eventkey else None
+				scene_id = int(eventkey)  if eventkey and eventkey.isdigit() else None
 			else:
 				return self.send_success(error_text = 'error')
 			if openid and scene_id:
@@ -165,9 +168,21 @@ class WxMessage(CustomerBaseHandler):
 					admin.accountinfo = account_info
 					self.session.add(admin)
 					self.session.commit()
+			if event == 'subscribe':
+				ToUserName = data.get('ToUserName',None) #开发者微信号
+				FromUserName = data.get('FromUserName',None) # 发送方openid
+				CreateTime  = data.get('CreateTime',None) #接受消息时间
+				MsgType = 'text'
+				reply_message = '再小的水果店，也要有自己的O2O平台！\n互联网时代，水果零售一站式解决方案！\n---------\n赶紧点击http://senguo.cc/apply申请接入,拥有属于你的水果O2O店铺吧\n你也可以点击http://senguo.cc/list进入水果商城 开始选购水果'
+				reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
+				reply = ET.tostring(reply,encoding='utf8',method='xml')
+				# print("[ApplyWxMessage]reply:",reply)
+				self.write(reply)
+
+				
 
 	@classmethod
-	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content):
+	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content=None):
 		root = ET.Element('xml')
 		first = ET.Element('ToUserName')
 		first.text = ToUserName
@@ -175,13 +190,15 @@ class WxMessage(CustomerBaseHandler):
 		second.text = FromUserName
 		third = ET.Element('CreateTime')
 		third.text=CreateTime
-		forth = ET.Element('CreateTime')
-		forth.text = CreateTime
-		fifth = ET.Element('MsgType')
-		fifth.text = MsgType
-		sixth = ET.Element('Content')
-		sixth.text = Content
-		root.extend((first,second,third,forth,fifth,sixth))
+		forth = ET.Element('MsgType')
+		forth.text = MsgType
+		data = [first,second,third,forth]
+		if Content:
+			fifth = ET.Element('Content')
+			fifth.text = Content
+			data.append(fifth)
+		data = tuple(data)
+		root.extend(data)
 		return root
 
 	@classmethod
@@ -226,10 +243,11 @@ class Home(CustomerBaseHandler):
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
 		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname)
+		wx_username = self.current_user.accountinfo.wx_username if self.current_user.accountinfo.phone else ""
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int")
+	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int","wx_username:str")
 	def post(self):
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
@@ -245,8 +263,16 @@ class Home(CustomerBaseHandler):
 		if not check_msg_token(phone=self.args['phone'], code=int(self.args["code"])):
 			return self.send_fail(error_text="验证码过期或者不正确")
 
+		if len(self.args["phone"])>11:
+			return self.send_fail("手机号格式错误")
+		if len(self.args["realname"])>20:
+			return self.send_fail("真实姓名请不要超过20个字")
+		if len(self.args["wx_username"])>20:
+			return self.send_fail("微信号请不要超过20个字")
+
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
+		self.current_user.accountinfo.wx_username=self.args["wx_username"]
 		self.session.add(models.ShopAdmin(id=self.current_user.id))
 		self.session.commit()
 		return self.send_success()
@@ -412,7 +438,7 @@ class CreateShop(AdminBaseHandler):
 		shop.shop_start_timestamp = time.time()
 		self.session.add(shop)
 		self.session.flush()  # 要flush一次才有shop.id
-		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=1,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+		self.session.add(models.SelfAddress(config_id=shop.config.id, if_default=2,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
 		self.session.commit()
 
 	def create_staff(self,shop):

@@ -84,30 +84,30 @@
     </div>
     <div class="white-box">
         <p class="box-title">
-            <a href="{{reverse_url('MadminOrder')}}" class="more fr">更多</a>
+            <a href="{{reverse_url('MadminOrder')}}?type=0" class="more fr">更多</a>
             <span class="box-icon data-order">订单管理</span>
         </p>
         <ul class="group stat-order-list pm8">
-            <a href="{{reverse_url('MadminOrder')}}">
+            <a href="{{reverse_url('MadminOrder')}}?type=0">
                 <li>
                     <p class="name">立即送</p>
                     <p class="num"><span class="tip-num">{{intime_count}}</span></p>
                 </li>
             </a>
-             <a href="{{reverse_url('MadminOrder')}}">
+             <a href="{{reverse_url('MadminOrder')}}?type=1">
                 <li>
                     <p class="name">按时达</p>
                     <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
                 </li>
             </a>
-            <a href="{{reverse_url('MadminOrder')}}">
+            <a href="{{reverse_url('MadminOrder')}}?type=2">
                 <li>
                     <p class="name">自提</p>
                     <p class="num"><span class="tip-num">{{self_count}}</span></p>
                 </li>
             </a>
         </ul>
-        <a href="javascript:;" class="developing">
+        <a href="/madmin/goods">
             <p class="box-title btf5">
                 <span class="more fr">&nbsp;</span>
                 <span class="fr c000">{{goods_count}}</span>

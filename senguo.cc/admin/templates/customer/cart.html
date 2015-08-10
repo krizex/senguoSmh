@@ -100,6 +100,8 @@
                                 </span>
                                 <input type="hidden" class="time_startHour" value="{{period.start_time.hour}}"/>
                                 <input type="hidden" class="time_startMin" value="{{period.start_time.minute}}"/>
+                                <input type="hidden" class="time_endHour" value="{{period.end_time.hour}}"/>
+                                <input type="hidden" class="time_endMin" value="{{period.end_time.minute}}"/>
                             </li>
                             {% end %}
                         </ul>
@@ -137,10 +139,12 @@
                                 </span>
                                 <input type="hidden" class="time_startHour" value="{{period.start_time.hour}}"/>
                                 <input type="hidden" class="time_startMin" value="{{period.start_time.minute}}"/>
+                                <input type="hidden" class="time_endHour" value="{{period.end_time.hour}}"/>
+                                <input type="hidden" class="time_endMin" value="{{period.end_time.minute}}"/>
                             </li>
                         {% end %}
                         </ul>
-                        <p class="item-tit2 text-greyc font12">（注：下单15分钟内不可自提）</p>
+                        <p class="item-tit2 text-greyc font12">（注：下单{{config.self_end_time}}分钟内不可自提）</p>
                         <p class="item-tit">自提地址</p>
                         <ul class="self-address-list type-choose font12 m-b5 clearfix">
                             {% for address in self_address_list%}

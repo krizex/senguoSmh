@@ -491,7 +491,7 @@ class CouponProfile(CustomerBaseHandler):
 				current_shop_id=shop.id
 				self.set_cookie("market_shop_id",str(current_shop_id))
 			except:
-				return self.send_error(404)
+				return self.render("coupon/coupon-profile.html",output_data=[])
 			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]
@@ -556,7 +556,7 @@ class CouponList(CustomerBaseHandler):
 				if q1.use_goods==-1:
 					use_goods="所有商品"
 				else:
-					q2=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=q1.use_goods).first()
+					q2=self.session.query(models.Fruit).filter_by(id=q1.use_goods).first()
 					use_goods=q2.name
 				x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":x.coupon_status}
 				data.append(x_coupon)

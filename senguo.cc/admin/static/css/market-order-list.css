@@ -8,20 +8,20 @@
 .order-list-item header{border-bottom:1px solid #eee;padding:5px 0 10px;line-height:18px;}
 .order-list-item header .icon{height:20px;width:auto;float:right;}
 .order-list-item header p{font-size:16px;margin:0;display:inline-block;}
-.order-list-item .cancel{color:#fe6565}
+.order-list-item .cancel{color:#fe6565;}
 .order-list-item .cancel.disabled{color:#888}
 .order-list-item p{margin-bottom:10px !important;font-size:small}
-.order-list-item .p2{color:#888}
+.order-list-item .p2{color:#888;}
 .order-list-item .price-box{display:inline-block;position:relative;bottom:0;text-shadow:0 1px 1px #ddd;}
-.order-list-item .price-box .price{margin-right:3px}
-.order-list-item a{color:#444}
+.order-list-item .price-box .price{margin-right:3px;line-height:18px;}
+.order-list-item a{color:#444;}
 .order-list-item .status-bar-box{font-size:15px;margin:0 0 30px 0;}
 .order-list-item .status-bar-box .circle-icon{width:14px;height:14px;border-radius:8px;padding:0;background-color:#33cc66;position:absolute;margin-left:-7px;margin-top:-5px;box-shadow:inset 0 -1px 5px #888}
 .order-list-item .status-bar-box .status-box{position:absolute;display:inline-block;color:#33cc66;text-shadow:0 1px 1px #ececec;padding:15px 0;overflow:visible;margin-left:-24px;}
 .order-list-item .status-bar-box .status-box .status{position:relative;left:0;display:block;width:120px;text-align:center;line-height:20px;}
 .order-list-item .status-bar-box .status-bar{position:relative;width:95%;margin:0 auto;height:4px;background-color:#d9d9d9;border-radius:2px;box-shadow:inset 0 1px 2px #c3c3c3}
 .order-list-item .status-bar-box .status-bar .inner{height:4px;position:absolute;display:inline-block;background-color:#33cc66;box-shadow:inset 0 -1px 2px #999;border-radius:2px;}
-.order-list-item .completed{background-color:#eee;padding-bottom:5px}
+.order-list-item .completed{background-color:#eee;padding-bottom:5px;}
 .order-list-item .status-bar-box .left0{left:0;}
 .order-list-item .status-bar-box .left50{left:50%;}
 .order-list-item .status-bar-box .left100{left:100%;}

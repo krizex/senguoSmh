@@ -14,7 +14,7 @@
           {% if list.shop_type==1 %}
             <ul class="cert-shop group">
                 <li class=".clip">店铺：<a href="javascript:;">{{list.shop.shop_name}}</a></li>
-                <li class=".clip">管理员：<a href="javascript:;">{{list.shop.admin.accountinfo.realname}}</a></li>
+                <li class=".clip">管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{list.shop.admin.accountinfo.id}}" target="_blank" title="点击查看用户详细信息">{{list.shop.admin.accountinfo.realname}}</a></li>
                 <li class=".clip">申请时间：<span>{{list.create_time}}</span></li>
                 <li class=".clip">认证类型：<span>个人认证</span></li>
                 <li class=".clip">姓名：<span>{{list.realname}}</span></li>
@@ -31,7 +31,7 @@
             {% else %}
             <ul class="cert-shop group">
                   <li class=".clip">店铺：<a href="javascript:;">{{list.shop.shop_name}}</a></li>
-                <li class=".clip">管理员：<a href="javascript:;">{{list.shop.admin.accountinfo.realname}}</a></li>
+                <li class=".clip">管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{list.shop.admin.accountinfo.id}}" target="_blank" title="点击查看用户详细信息">{{list.shop.admin.accountinfo.realname}}</a></li>
                 <li class=".clip">申请时间：<span>{{list.create_time}}</span></li>
                 <li class=".clip">认证类型：<span>企业认证</span></li>
                 <li class=".clip">企业名称：<span>{{list.company_name}}</span></li>
