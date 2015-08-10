@@ -53,6 +53,14 @@ class Login(CustomerBaseHandler):
 			# print("[ApplyLogin]False")
 			return self.send_success(login=False)
 
+class WxOpen(CustomerBaseHandler):
+	def get(self):
+		return self.send_success()
+	def post(self):
+		data = self.request.body
+		print(data)
+		return self.write('success')
+
 # 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
 class WxMessage(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments('signature?:str','timestamp?','nonce?','echostr')
