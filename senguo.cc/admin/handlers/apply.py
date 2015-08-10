@@ -123,6 +123,7 @@ class WxMessage(CustomerBaseHandler):
 		if event == 'subscribe' or 'scan' or 'SCAN':
 			if event == 'subscribe':
 				scene_id = int(eventkey.split('_')[1]) if eventkey and eventkey.find('qrscene') !=-1 else None
+
 			elif event == 'scan' or 'SCAN':
 				scene_id = int(eventkey)  if eventkey and eventkey.isdigit() else None
 			else:
@@ -167,6 +168,18 @@ class WxMessage(CustomerBaseHandler):
 					admin.accountinfo = account_info
 					self.session.add(admin)
 					self.session.commit()
+			if event == 'subscribe':
+				ToUserName = data.get('ToUserName',None) #开发者微信号
+				FromUserName = data.get('FromUserName',None) # 发送方openid
+				CreateTime  = data.get('CreateTime',None) #接受消息时间
+				MsgType = 'text'
+				reply_message = '再小的水果店，也要有自己的O2O平台！\n互联网时代，水果零售一站式解决方案！\n---------\n赶紧点击http://senguo.cc/apply申请接入,拥有属于你的水果O2O店铺吧\n你也可以点击http://senguo.cc/list进入水果商城 开始选购水果'
+				reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
+				reply = ET.tostring(reply,encoding='utf8',method='xml')
+				# print("[ApplyWxMessage]reply:",reply)
+				self.write(reply)
+
+				
 
 	@classmethod
 	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content=None):
@@ -230,10 +243,11 @@ class Home(CustomerBaseHandler):
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
 		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname)
+		wx_username = self.current_user.accountinfo.wx_username if self.current_user.accountinfo.phone else ""
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int")
+	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int","wx_username:str")
 	def post(self):
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
@@ -249,8 +263,16 @@ class Home(CustomerBaseHandler):
 		if not check_msg_token(phone=self.args['phone'], code=int(self.args["code"])):
 			return self.send_fail(error_text="验证码过期或者不正确")
 
+		if len(self.args["phone"])>11:
+			return self.send_fail("手机号格式错误")
+		if len(self.args["realname"])>20:
+			return self.send_fail("真实姓名请不要超过20个字")
+		if len(self.args["wx_username"])>20:
+			return self.send_fail("微信号请不要超过20个字")
+
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
+		self.current_user.accountinfo.wx_username=self.args["wx_username"]
 		self.session.add(models.ShopAdmin(id=self.current_user.id))
 		self.session.commit()
 		return self.send_success()

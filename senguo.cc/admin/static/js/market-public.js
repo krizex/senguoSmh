@@ -64,9 +64,10 @@ $(document).ready(function(){
 
     var shop_marketing=parseInt(getCookie('shop_marketing'));
     var shop_auth=parseInt(getCookie('shop_auth'));
-    if(shop_auth==0 || shop_marketing==0){
-       /* $('.discover-tab').hide();
-        $('.bottom-nav li').removeClass('w20').addClass('w25');*/
+    var coupon_active=parseInt(getCookie('coupon_active'));
+    if(shop_auth==0 || (shop_marketing==0 && coupon_active==0)){
+        $('.discover-tab').hide();
+        $('.bottom-nav li').removeClass('w20').addClass('w25');
     }
 });
 

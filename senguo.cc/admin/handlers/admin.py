@@ -1532,7 +1532,7 @@ class Order(AdminBaseHandler):
 		return count
 
 	@tornado.web.authenticated
-	@unblock
+	# @unblock
 	@AdminBaseHandler.check_arguments("action", "data")
 	def post(self):
 		action = self.args["action"]
@@ -1547,6 +1547,14 @@ class Order(AdminBaseHandler):
 				config_type = 0
 			elif action == "add_self_period":
 				config_type = 1
+			
+			periods = self.session.query(models.Period).filter_by(config_id=self.current_shop.id)
+			periods_count = 0
+			if periods.count()>0:
+					periods_count = periods.filter_by(config_type=config_type).count()
+			if periods_count>=10:
+				return self.send_fail("至多只能添加10个时间段")
+
 			period = models.Period(config_id=self.current_shop.id,
 								   name=data["name"],
 								   start_time=start_time,
@@ -1769,7 +1777,7 @@ class Order(AdminBaseHandler):
 					balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.totalPrice,balance_record = '余额退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
-						shop_follow.shop_balance,shop_province = self.current_shop.shop_province)
+						shop_follow.shop_balance,shop_province = self.current_shop.shop_province,shop_name=self.current_shop.shop_name)
 					self.session.add(balance_history)
 				self.session.commit()
 
@@ -2132,32 +2140,78 @@ class Goods(AdminBaseHandler):
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 
-				if order_status1 =="group":
-					case_one = 'models.Fruit.group_id'
-				elif order_status1 =="classify":
-					case_one = 'models.Fruit.fruit_type_id'
+				# add by jyj 2015-8-8
+				if order_status1 == "all":
+					if order_status2 == "add_time":
+						goods = goods.order_by(models.Fruit.add_time.desc())
+					elif order_status2 == "name":
+						goods = goods.order_by(models.Fruit.name.desc())
+					elif order_status2 == "saled":
+						goods = goods.order_by(models.Fruit.saled.desc())
+					elif order_status2 == "saled_desc":
+						goods = goods.order_by(models.Fruit.saled)
+					elif order_status2 == "storage":
+						goods = goods.order_by(models.Fruit.storage.desc())
+					elif order_status2 == "storage_desc":
+						goods = goods.order_by(models.Fruit.storage
+					elif order_status2 == "current_saled":
+						goods = goods.order_by(models.Fruit.current_saled.desc())
+				else:
+					if order_status1 =="group":
+						case_one = 'models.Fruit.group_id'
+					elif order_status1 =="classify":
+						case_one = 'models.Fruit.fruit_type_id'
 
-				if order_status2 == "add_time":
-					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
-				elif order_status2 == "add_time_desc":
-					goods = goods.order_by(models.Fruit.add_time,eval(case_one))
-				elif order_status2 == "name":
-					goods = goods.order_by(models.Fruit.name.desc(),eval(case_one))
-				elif order_status2 == "saled":
-					goods = goods.order_by(models.Fruit.saled.desc(),eval(case_one))
-				elif order_status2 == "saled_desc":
-					goods = goods.order_by(models.Fruit.saled,eval(case_one))
-				elif order_status2 == "storage":
-					goods = goods.order_by(models.Fruit.storage.desc(),eval(case_one))
-				elif order_status2 == "storage_desc":
-					goods = goods.order_by(models.Fruit.storage,eval(case_one))
-				elif order_status2 == "current_saled":
-					goods = goods.order_by(models.Fruit.current_saled.desc(),eval(case_one))
+					# changed by jyj 2015-8-7
+					if order_status2 == "add_time":
+						goods = goods.order_by(eval(case_one),models.Fruit.add_time.desc())
+					elif order_status2 == "add_time_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.add_time)
+					elif order_status2 == "name":
+						goods = goods.order_by(eval(case_one),models.Fruit.name.desc())
+					elif order_status2 == "saled":
+						goods = goods.order_by(eval(case_one),models.Fruit.saled.desc())
+					elif order_status2 == "saled_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.saled)
+					elif order_status2 == "storage":
+						goods = goods.order_by(eval(case_one),models.Fruit.storage.desc())
+					elif order_status2 == "storage_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.storage)
+					elif order_status2 == "current_saled":
+						goods = goods.order_by(eval(case_one),models.Fruit.current_saled.desc())
+					##
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-				datalist = goods.offset(offset).limit(page_size).all()
-				data = self.getGoodsData(datalist,"all")
+
+
+				# added by jyj 2015-8-8 (for sorting by the data-item's name order by pinyin)
+				if order_status2 == "name":
+					from operator import itemgetter
+					data_all_list = goods.all()
+					data_all_tmp = self.getGoodsData(data_all_list,"all")
+					data_all = []
+
+					for i in range(len(data_all_tmp)):
+						name_code = data_all_tmp[i]["name"].encode('gbk')
+						data_all_tmp[i]["name_gbk"] = name_code
+
+					if order_status1 =="group":
+						data_all_tmp.sort(key = itemgetter('group_id','name_gbk'),reverse = False)
+					elif order_status1 == "classify":
+						data_all_tmp.sort(key = itemgetter('fruit_type_id','name_gbk'),reverse = False)
+					elif order_status1 == "all":
+						data_all_tmp.sort(key = itemgetter('name_gbk'),reverse = False)
+
+					for i in range(len(data_all_tmp)):
+						data_all_tmp[i]["name_gbk"] = str(data_all_tmp[i]["name_gbk"])
+
+					data = data_all_tmp[offset : offset+page_size]
+				else:
+					datalist = goods.offset(offset).limit(page_size).all()
+					data = self.getGoodsData(datalist,"all")
+				##
+
 				return self.send_success(data=data,count=count)
 
 			group_list = []
@@ -2290,7 +2344,7 @@ class Goods(AdminBaseHandler):
 				return self.send_success(data=datalist)
 			else:
 				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
-		# 商品分组
+		# # 商品分组
 		elif action == "group":
 			data = []
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
@@ -2316,6 +2370,7 @@ class Goods(AdminBaseHandler):
 			else:
 				data.append({'id':0,'name':'','intro':'','num':default_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
+			
 		# 商品删除
 		elif action == "delete":
 			if "page" in self.args:
@@ -2350,6 +2405,7 @@ class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data", "charge_type_id?:int")
 	def post(self):
+		print("###,here is post function")
 		action = self.args["action"]
 		data = self.args["data"]
 		current_shop = self.current_shop

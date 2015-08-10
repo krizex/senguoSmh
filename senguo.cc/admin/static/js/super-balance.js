@@ -196,6 +196,8 @@ $(document).ready(function(){
             }
         }
     })
+}).on("click","#search-banlance",function(){
+    history('all_history',1);
 });
 
 var num=1;
@@ -203,9 +205,15 @@ var page_sum;
 function history(action,page){
     var url='';
     var action=action;
+    if($("#shop-name").val()!=undefined){
+        var shop_name=$("#shop-name").val().trim();
+    }else{
+        var shop_name="";
+    }
     var args={
         action:action,
-        page:page
+        page:page,
+        shop_name:shop_name
     };
     $('.list-pagination').attr({'data-action':action});
     $('.tb-account').find('.con').remove();

@@ -137,6 +137,7 @@ class ShopManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("action","search","shop_auth:int","shop_status:int","shop_status:int","shop_sort_key:int","if_reverse:int","page?:int","flag:int")
 	def get(self):
+
 		action = self.args["action"]
 		flag=self.args["flag"]
 
@@ -186,6 +187,7 @@ class ShopManage(SuperBaseHandler):
 			return self.send_fail('level error')
 
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
+
 		if 'search' in self.args:
 			from sqlalchemy.sql import or_
 			search = self.args["search"]
@@ -203,13 +205,13 @@ class ShopManage(SuperBaseHandler):
 					q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
 					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
 					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					   	models.Shop.shop_code !='not set').all()
 					shops = q
 				elif level == 1:
 					q = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province,or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
 					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
 					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
+					   	models.Shop.shop_code !='not set').all()
 					shops = q
 				else:
 					return self.send_fail('level error')
@@ -384,6 +386,11 @@ class ShopManage(SuperBaseHandler):
 				data["auth_type"] = auth_type_array[shop.shop_auth]
 
 				data["admin_nickname"] = shop.admin.accountinfo.nickname
+
+				# added by jyj 2015-8-7
+				data["admin_id"] = shop.admin.accountinfo.id
+				# #
+
 				data["shop_address_detail"] = shop.shop_address_detail
 				data["shop_code"] = shop.shop_code
 				shop_status_array = ['关闭','营业中','筹备中','休息中']
@@ -657,6 +664,7 @@ class OrderManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
+		level = self.current_user.level
 		q_all = self.session.query(models.SystemOrder).filter_by(
 			order_status = models.SYS_ORDER_STATUS.SUCCESS)
 		q_new = q_all.filter_by(have_read=False)
@@ -689,7 +697,7 @@ class OrderManage(SuperBaseHandler):
 		orders = q.all()
 		subpage = self._action
 
-		return self.render("superAdmin/order-manage.html", context=dict(
+		return self.render("superAdmin/order-manage.html",level=level, context=dict(
 			orders = orders,subpage = subpage,count=count))
 
 	@tornado.web.authenticated
@@ -749,14 +757,14 @@ class User(SuperBaseHandler):
 			#change by jyj 2015-6-22
 			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
 					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
-					models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
+					models.Accountinfo.birthday,"%Y-%m-%d"),models.Accountinfo.wx_username).order_by(desc(models.Accountinfo.id))
 		elif level == 1:
 			# shop_province = 420000
 			shop_province = self.code_to_text('province',shop_province)  #将省由code转换为汉字
 			shop_province = shop_province[0:len(shop_province)-1]        #去掉‘省’字
 			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
 					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
-					models.Accountinfo.birthday,"%Y-%m-%d")).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(desc(models.Accountinfo.id))
+					models.Accountinfo.birthday,"%Y-%m-%d"),models.Accountinfo.wx_username).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(desc(models.Accountinfo.id))
 		else:
 			return self.send_fail('level error')
 		##
@@ -775,6 +783,10 @@ class User(SuperBaseHandler):
 		elif action == "search":
 			inputinfo = self.args["inputinfo"]
 			q = q.filter(or_(models.Accountinfo.nickname.like("%{0}%".format(inputinfo)),(func.concat(models.Accountinfo.id,'')).like("%{0}%".format(inputinfo))))
+		# added by jyj 2015-8-7:
+		elif action == "out_link":
+			admin_id = int(self.args["inputinfo"])
+			q = q.filter(models.Accountinfo.id == admin_id)
 		else:
 			return self.send_error(404)
 		users = q.offset(page*page_size).limit(page_size).all()
@@ -1597,6 +1609,7 @@ class Comment(SuperBaseHandler):
 			shop_name = shop.shop_name
 			has_done = comment_apply.has_done
 			admin_name= shop.admin.accountinfo.nickname
+			admin_id = shop.admin.accountinfo.id
 			# order info
 			customer_id = order.customer_id
 			customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -1610,8 +1623,8 @@ class Comment(SuperBaseHandler):
 			create_date = comment_apply.create_date
 			order_info = dict(
 				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
-				comment = comment)
-			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
+				comment = comment,customer_id = customer_id)
+			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id,admin_id])
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
@@ -1694,6 +1707,8 @@ class CommentInfo(SuperBaseHandler):
 			data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 						filter(models.Accountinfo.id == order.customer_id).first()[0]
 			data["nickname"] = self.session.query(models.Accountinfo.nickname).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
+			data["user_id"] = self.session.query(models.Accountinfo.id).\
 						filter(models.Accountinfo.id == order.customer_id).first()[0]
 			if len(data["nickname"]) > 6:
 				data["nickname"] = data["nickname"][0:6] + '...'
@@ -1810,6 +1825,9 @@ class CommentInfo(SuperBaseHandler):
 
 				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
+
+				data["user_id"] = self.session.query(models.Accountinfo.id).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
 				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
@@ -1887,6 +1905,8 @@ class CommentInfo(SuperBaseHandler):
 
 				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				data["user_id"] = self.session.query(models.Accountinfo.id).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
 				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
@@ -1966,6 +1986,8 @@ class CommentInfo(SuperBaseHandler):
 
 				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
+				data["user_id"] = self.session.query(models.Accountinfo.id).\
+						filter(models.Accountinfo.id == order.customer_id).first()[0]
 				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
 							filter(models.Accountinfo.id == order.customer_id).first()[0]
 				if len(data["nickname"]) > 6:
@@ -2179,12 +2201,13 @@ class Balance(SuperBaseHandler):
 			total_balance=total_balance,cash_on=cash_on,level=level,context=dict(page="detail"))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action','page:int')
+	@SuperBaseHandler.check_arguments('action','page:int','shop_name')
 	def post(self):
 		# 当level=1时，表示区域管理员，只显示该区域的数据
 		# woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
+
 
 		history = []
 		page =0
@@ -2193,6 +2216,9 @@ class Balance(SuperBaseHandler):
 		count=0
 		action = self.args['action']
 		page = self.args['page']-1
+		shop_name = self.args.get('shop_name','')
+		# shop_name = ''
+		# print(shop_name,'shop_name')
 		history_list = []
 		total = 0
 		times = 0
@@ -2200,27 +2226,45 @@ class Balance(SuperBaseHandler):
 		pay = 0
 		left = 0
 		if level == 0:
-			balance_history = self.session.query(models.BalanceHistory).order_by(desc(models.BalanceHistory.create_time))
+			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+				).order_by(desc(models.BalanceHistory.create_time))
 		elif level == 1:
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_province=shop_province).order_by(desc(models.BalanceHistory.create_time))
+			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_province==shop_province,
+				models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).order_by(desc(models.BalanceHistory.create_time))
 		else:
 			return self.send_fail('level error')
 		if action == 'all_history':
-			history_list =balance_history .offset(page*page_size).limit(page_size).all()
+			history_list =balance_history.offset(page*page_size).limit(page_size).all()
 			count = balance_history.count()
 		elif action == 'recharge':
 			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).\
-				order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 0).all()
-				q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1,is_cancel = 0).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type == 0,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)
+					).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type == 0,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+				q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
+					models.BalanceHistory.balance_type == 1,
+					models.BalanceHistory.is_cancel == 0,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=0,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=0,
-					shop_province=shop_province).all()
-				q1= self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type=1,is_cancel=0,
-					shop_province=shop_province).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type==0,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type==0,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+				q1= self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
+					models.BalanceHistory.balance_type==1,
+					models.BalanceHistory.is_cancel==0,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			else:
 				return self.send_fail('level error')
 
@@ -2235,34 +2279,66 @@ class Balance(SuperBaseHandler):
 			left = format(left,'.2f')
 		elif action == 'online':
 			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3)\
-				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
-				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type == 3,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type ==3,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+
+				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter(
+					models.BalanceHistory.balance_type == 3,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).count()
 			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=3,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
-					shop_province=shop_province).all()
-				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
-					shop_province=shop_province).count()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type==3,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type==3,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).all()
+
+				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter(
+					models.BalanceHistory.balance_type==3,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).count()
 			else:
 				return self.send_fail('level error')
 			if q[0][0]:
 				total = q[0][0]
-			total = format(total,'.2f')
-			count = q[0][1]
+				total = format(total,'.2f')
+			else:
+				total = 0
+			count = q[0][1] if q[0][1] else 0
 			times = count
 		elif action == 'cash_history':
 			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 2)\
-				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 2).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type == 2,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type == 2,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=2,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=2,
-					shop_province=shop_province).all()
+				history_list = self.session.query(models.BalanceHistory).filter(
+					models.BalanceHistory.balance_type==2,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+
+				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
+					models.BalanceHistory.balance_type==2,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
 			else:
 				return self.send_fail('level error')
 
@@ -2275,12 +2351,18 @@ class Balance(SuperBaseHandler):
 		# add by jyj 2015-7-4:
 		elif action == 'balance_list':
 			if level == 0:
-				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
-						filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
+				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
+					models.BalanceHistory.shop_totalPrice >= 0,
+					models.BalanceHistory.shop_totalPrice != None,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time))
 			elif level == 1:
 				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
-					models.BalanceHistory.shop_totalPrice >=0,models.BalanceHistory.shop_totalPrice != None,models.Shop.shop_province==shop_province).order_by(
-					desc(models.BalanceHistory.create_time))
+					models.BalanceHistory.shop_totalPrice >=0,
+					models.BalanceHistory.shop_totalPrice != None,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
+					).order_by(desc(models.BalanceHistory.create_time))
 			else:
 				return self.send_fail('level error')
 			history_list = balance_list.all()
@@ -2455,7 +2537,7 @@ class ApplyCash(SuperBaseHandler):
 			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
 				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = \
-				self.current_user.id,available_balance = shop.available_balance,shop_province=shop.shop_province)
+				self.current_user.id,available_balance = shop.available_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success(history = history)
@@ -2533,12 +2615,18 @@ class CheckCash(SuperBaseHandler):
 			check_profit_len = check_profit.count()
 
 			if check_profit_len == 0:
-				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first().create_time
+				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first()
+				if not check_update_start:
+					page_sum = 0
+					output_data = []
+					return self.send_success(output_data=output_data,page_sum = page_sum)
+				check_update_start = check_update_start.create_time				
 				check_update_start  = check_update_start - datetime.timedelta(1)
 				check_update_start = datetime.datetime(check_update_start.year, check_update_start.month, check_update_start.day, 23,59,59)
 			else:
 				check_profit_last  = check_profit.first().create_time
 				check_update_start = datetime.datetime(check_profit_last.year, check_profit_last.month, check_profit_last.day, 23,59,59)
+
 			# add by jyj 2015-7-7
 			now_time = time.localtime(time.time())
 			now_time = datetime.datetime(*now_time[:6])
@@ -2748,6 +2836,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 			record = ''
 			order_num = ''
 			order_num_txt = ''
+			user_id = 0
 			if temp.balance_type == 3:
 				record = temp.balance_record[0:4] + ':'
 				if temp.balance_record[5:7] == '支付':
@@ -2755,6 +2844,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 				else:
 					order_num = temp.balance_record[11:32]
 				name = temp.name[0:6]
+				user_id = temp.customer_id
 				order_num_txt = "-订单编号"
 			elif temp.balance_type == 2:
 				record = "提现:"
@@ -2762,12 +2852,13 @@ class ShopBalanceDetail(SuperBaseHandler):
 			elif temp.balance_type == 0:
 				record = "用户充值:"
 				name = temp.name
+				user_id = temp.customer_id
 
 			balance_value = format(temp.balance_value,'.2f')
 
 			history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
 					'balance_value':balance_value,'type':temp.balance_type,'record':record,'order_num':order_num,\
-					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying})
+					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying,'user_id':user_id})
 		return self.send_success(page_sum=page_sum,history = history)
 ##
 

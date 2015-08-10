@@ -940,7 +940,6 @@ class Market(CustomerBaseHandler):
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
-
 		if shop.admin.has_mp:
 			# print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
@@ -977,8 +976,14 @@ class Market(CustomerBaseHandler):
 		shop_auth = shop.shop_auth
 		if shop.marketing:
 			shop_marketing = shop.marketing.confess_active
+			coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
+			if coupon_have==0:
+				coupon_active=0
+			else :
+				coupon_active=shop.marketing.coupon_active
 		else:
 			shop_marketing = 0
+			coupon_active=1
 
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -986,7 +991,7 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
-
+		self.set_cookie("coupon_active", str(coupon_active))
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -1661,7 +1666,7 @@ class Cart(CustomerBaseHandler):
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=1).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:
-				if period.start_time.hour*60 + period.start_time.minute - \
+				if period.end_time.hour*60 + period.end_time.minute - \
 					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
 					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择其他时间段")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
@@ -1907,7 +1912,7 @@ class Cart(CustomerBaseHandler):
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
-				customer_totalPrice = shop_follow.shop_balance)
+				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.flush()
 		self.session.commit()
@@ -2160,7 +2165,7 @@ class Order(CustomerBaseHandler):
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.new_totalprice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
-						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province)
+						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 				self.session.add(balance_history)
 			self.session.commit()
 			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -2724,7 +2729,7 @@ class payTest(CustomerBaseHandler):
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
-				shop_province=shop.shop_province)
+				shop_province=shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			# print("[WxCharge]balance_history:",balance_history)
 			self.session.commit()
@@ -2815,26 +2820,30 @@ class InsertData(CustomerBaseHandler):
 		import json
 		shop_list , good_list = self.get_data()
 		# print(shop_list)
-		for shop in shop_list:
-			try:
-				link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
-			except:
-				link_exist = None
-			if not link_exist:
-				temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
-					shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
-					delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-					delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
-					lon = shop['lon'],shop_province = 420000,shop_city = 420100)
-				self.session.add(temp_shop)
-		self.session.flush()
+		# for shop in shop_list:
+		# 	try:
+		# 		link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
+		# 	except:
+		# 		link_exist = None
+		# 	if not link_exist:
+		# 		temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
+		# 			shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
+		# 			delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
+		# 			delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
+		# 			lon = shop['lon'],shop_province = 420000,shop_city = 420100)
+		# 		self.session.add(temp_shop)
+		# self.session.flush()
 
-		for good in good_list:
-			temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
-				sales = good['sales'],goods_name = good['goods_name'])
-			self.session.add(temp_good)
-		self.session.commit()
-		
+		# for good in good_list:
+		# 	temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
+		# 		sales = good['sales'],goods_name = good['goods_name'])
+		# 	self.session.add(temp_good)
+		# self.session.commit()
+		shop = self.session.query(models.Shop).filter(models.Shop.shop_name.like('%%%s%%' % '')).count()
+		print(shop)
+		shop_all = self.session.query(models.Shop).count()
+		print(shop_all)
+
 		# session = DBSession()
 
 		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
@@ -2852,7 +2861,7 @@ class InsertData(CustomerBaseHandler):
 		# print(shop3.shop_balance)
 
 
-		return self.send_success()
+		return self.send_success(shop=shop,shop_all=shop_all)
 		# import multiprocessing
 		# from multiprocessing import Process
 		# import datetime

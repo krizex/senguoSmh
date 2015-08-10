@@ -56,6 +56,12 @@ function showCheckHistory(page,action){
 	};
 	$.postJson(url,args,function(res){
 		if(res.success){
+			var history = res.output_data;
+			if (history.length == 0){
+				$(".tb-history").empty().append('<p class="no-record">数据库没有相关记录！</p>');
+				$(".pager").hide();
+				return false;
+			}
 			var page_sum_now = parseInt(res.page_sum);
 			if(page_sum_now < res.page_sum){
 				page_sum_now = page_sum_now + 1;
@@ -63,8 +69,9 @@ function showCheckHistory(page,action){
 			page_sum = page_sum_now;
 			$(".PageNow").text('-'+page+'/'+page_sum+'-');
 
-			var history = res.output_data;
+			
 			$(".tb-history").empty();
+			// console.log(history);
 			for(var i = 0;i < history.length;i++){
 				var his = history[i];
 
@@ -244,9 +251,10 @@ function showCheckHistory(page,action){
 
 			alert(res.error_text);
 		}
-	}
-	// 此处有问题，为什么余额详情页面加载的时候会弹出这个错误提示？？！只好先注释掉
-	// function(){alert('aaaa-网络好像不给力呢~ ( >O< ) ~');}	
+	},
+	//此处有问题，为什么余额详情页面加载的时候会弹出这个错误提示？？！只好先注释掉
+	//问题已经解决，原因是在一个作为公共继承的html文件中多余地引入了checkbalance的js文件，删掉即可
+	function(){alert('网络好像不给力呢~ ( >O< ) ~');}	
 	);
 
 }

@@ -237,6 +237,7 @@ $(document).ready(function(){
     $this.addClass('active').siblings().removeClass('active');
 }).on("click",".send_type_item",function(){
     var $this=$(this);
+    pulse($this);
     var _type=$this.attr("data-type");
     var _status=$this.attr('data-config');
     $this.siblings(".item_period").hide();
@@ -251,8 +252,10 @@ $(document).ready(function(){
             $(".mincharge-send").text(_mincharge_now);
             $(".freigh_time").text(_freigh_now);
         }else{
-            $(".mincharge-send").text(_mincharge_intime);
-            $(".freigh_time").text(_freigh_ontime);
+            if($(".ontime-period-choose").length>0){
+                $(".mincharge-send").text(_mincharge_intime);
+                $(".freigh_time").text(_freigh_ontime);
+            }
         }
     }else{
         if($(".ontime_send_day .type-tomorrow").hasClass("active")){
@@ -266,8 +269,11 @@ $(document).ready(function(){
                 freightNow();
                 $(".ontime-period-choose .available").removeClass("active");
             }else{
-               minIntime();
-               freightIntime();
+                 if($(".ontime-period-choose").length>0){
+                    minIntime();
+                    freightIntime();
+                 }
+               
             }
         }
     }
@@ -278,61 +284,11 @@ $(document).ready(function(){
         $this.addClass('active').siblings().removeClass('active');
     }
 }).on('click',".type-today",function(){
-    var _item=$(this).parents(".type-choose").siblings(".period-choose").find(".item");
-    var _time=new Date();
-    var time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-    var stop_range=Int($(this).parents(".type-choose").siblings('.stop-range').val().trim());
-    _item.each(function(){
-        var $this=$(this);
-        var intime_startHour=Int($this.find('.time_startHour').val());
-        var intime_startMin=Int($this.find('.time_startMin').val());
-        var time;
-        if(intime_startMin==0){
-            intime_startHour=intime_startHour-1;
-        }
-        if(stop_range<=intime_startMin){
-            time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-        }
-       else{
-            n = parseInt(stop_range/60)
-            time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
-        }
-        if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
-    });
-    if($(".send-intime").hasClass("active")){
-        if($('.send-now').attr('data-config')!=undefined){
-            $(".send-now").show();
-            if($(".send-now").hasClass("available")){
-                var stop_now_time=$(".now_startMin").val();
-                var stop_now=parseInt($(".now_stop").val());
-                var _time_now;
-                if(_time.getMinutes()+stop_now>=60){
-                    _time_now=checkTime(_time.getHours()+1)+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-                }else{
-                    _time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
-                }
-                if(stop_now_time>_time_now){
-                    $(".send-now").show().addClass("active");
-                    $(this).parents(".type-choose").siblings(".period-choose").find(".available").removeClass("active");
-                    if(_total_price<_mincharge_now){
-                        $('.mincharge_now').removeClass("hidden");
-                        $('.mincharge_intime').addClass("hidden");
-                    }
-                    minNow();
-                }else{
-                    $(".send-now").removeClass("active").addClass("not_available").removeClass("available");
-                }   
-            }
-            
-        }else{
-            var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
-            available.addClass('active').siblings().removeClass('active');  
-        }
-    }else if($(".send-self").hasClass("active")){
-        var available=$(this).parents(".type-choose").siblings(".period-choose").find(".available").first();
-        available.addClass('active').siblings().removeClass('active');
+    var _type=$(".send_type_item.active").attr("data-type"); 
+    todayChoose();
+    if(_type=="ontime"&&$(".send-now").attr("data-config")!=undefined){
+        $(".send-now").show();
     }
-    
 }).on('click',".type-tomorrow",function(){
     var _item=$(this).parents(".item_period").find(".period-choose .item");
     _item.each(function(){
@@ -370,7 +326,7 @@ $(document).ready(function(){
     if(index != 0){
         $(".wrap-online-lst").addClass("hidden");
     }else{
-         $(".wrap-online-lst").toggleClass("hidden");
+        $(".wrap-online-lst").toggleClass("hidden");
     }
     pulse($(this));
     $(".pay_type li").removeClass("active");
@@ -393,6 +349,7 @@ $(document).ready(function(){
     $(this).children("a").addClass("checkboxed");
 }).on("click",".coupon_type li",function(){//优惠券
     var index = $(this).index();
+    pulse($(this));
     if($(this).hasClass("active")){
         $(this).removeClass("active");
         $(this).children("a").removeClass("checkboxed");
@@ -447,50 +404,55 @@ function minIntime(){
 }
 
 function freightIntime(){
-     if(_total_price<_mincharge_intime){
+    if(_total_price<_mincharge_intime){
         $('.mincharge_intime').removeClass("hidden");
     }
 }
 
 function todayChoose(){
+    var ontime_on=$('.ontime-period-choose').attr('data-config');
     var now_on=$('.send-now').attr('data-config');
     var _type=$(".send_type_item.active").attr("data-type");  
     var _time=new Date();
     var time_now=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
     var $send_item=$(".send_type_item.active").next(".item_period").find(".send_day");
     var today=$send_item.find('.active').data('id');
-    var stop_range=Int($send_item.siblings('.stop-range').val().trim());
+    var stop_range = 0;
+    if($send_item.length>0){
+        stop_range=Int($send_item.siblings('.stop-range').val().trim());
+    }
+    
     if(_type=="ontime"){
         if(today==1){
-            $send_item.siblings(".period-choose").find(".item").each(function(){
-                var $this=$(this);
-                var intime_startHour=Int($this.find('.time_startHour').val());
-                var intime_startMin=Int($this.find('.time_startMin').val());
-                var time;
-                if(intime_startMin==0){
-                    intime_startHour=intime_startHour-1;
-                }
-                if(stop_range<=intime_startMin){
-                    time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-                }
-                else{
-                    n = parseInt(stop_range/60)
-                    time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
-                }
-                if (time < time_now) {
-                    $this.removeClass('available').addClass('not_available').removeClass('active');
-                }
-                $this.on('click',function(){
-                    if($this.hasClass('available')) {
-                        var today_now = $('#sendDay').find('.active').data('id');
-                        if (today_now == 1 && time >= time_now) {
-                            $this.addClass('active');
-                        }
-                    }else{
-                        noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this);
+            if(ontime_on!=undefined){
+                $send_item.siblings(".period-choose").find(".item").each(function(){
+                    var $this=$(this);
+                    var intime_startHour=Int($this.find('.time_startHour').val());
+                    var intime_startMin=Int($this.find('.time_startMin').val());
+                    var time;
+                    if(intime_startMin==0){
+                        intime_startHour=intime_startHour-1;
                     }
-               });
-            });
+                    if(stop_range<=intime_startMin){
+                        time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
+                    }
+                   else{
+                        n = parseInt(stop_range/60)
+                        time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
+                    }
+                    if (time < time_now) {$this.removeClass('available').addClass('not_available').removeClass('active');}
+                    $this.on('click',function(){
+                        if($this.hasClass('available')) {
+                            var today_now = $('#sendDay').find('.active').data('id');
+                            if (today_now == 1 && time >= time_now) {
+                                $this.addClass('active');
+                            }
+                        }else{
+                            noticeBox('抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！',$this);
+                        }
+                   });
+                });
+            }
             if(now_on!=undefined){
                 var start_now_time=$(".now_startHour").val();
                 var stop_now_time=$(".now_startMin").val();
@@ -500,13 +462,14 @@ function todayChoose(){
                 var time_n=parseInt(stop_now/60);
                 var lef_minute=stop_now%60;
                 if(_time.getMinutes()+lef_minute>=60){
-                     _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute-60)+':'+checkTime(_time.getSeconds());
+                     _time_now=checkTime(_time.getHours()+time_n+1)+':'+checkTime(_time.getMinutes()+lef_minute-60)+':'+checkTime(_time.getSeconds());
                 }else{
                     _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute)+':'+checkTime(_time.getSeconds());
 
                 }
                 if(stop_now_time>_time_now&&_time_now_real>start_now_time){
                     $(".send-now").show().addClass("active").addClass("available");
+                    $send_item.siblings(".period-choose").find(".available").removeClass("active");
                     minNow();
                     freightNow();
                 }else{
@@ -525,27 +488,51 @@ function todayChoose(){
                 available.addClass('active').siblings("li").removeClass('active');
             }
         }else{
-            $(".send-now").hide();  
-            $send_item.siblings(".period-choose").find(".item").first().addClass("active").siblings("li").removeClass("active");
-            minIntime();
-            freightIntime();
+            if(today!=undefined){
+                $(".send-now").hide();
+                $send_item.siblings(".period-choose").find(".item").first().addClass("active").siblings("li").removeClass("active");
+                minIntime();
+                freightIntime();
+            }else{
+                if(now_on!=undefined){
+                    minNow();
+                    freightNow();
+                    var start_now_time=$(".now_startHour").val();
+                    var stop_now_time=$(".now_startMin").val();
+                    var stop_now=parseInt($(".now_stop").val());
+                    var _time_now;
+                    var _time_now_real=checkTime(_time.getHours())+':'+checkTime(_time.getMinutes())+':'+checkTime(_time.getSeconds());
+                    var time_n=parseInt(stop_now/60);
+                    var lef_minute=stop_now%60;
+                    if(_time.getMinutes()+lef_minute>=60){
+                         _time_now=checkTime(_time.getHours()+time_n+1)+':'+checkTime(_time.getMinutes()+lef_minute-60)+':'+checkTime(_time.getSeconds());
+                    }else{
+                        _time_now=checkTime(_time.getHours()+time_n)+':'+checkTime(_time.getMinutes()+lef_minute)+':'+checkTime(_time.getSeconds());
+
+                    }
+                    if(stop_now_time>_time_now&&_time_now_real>start_now_time){
+                        $(".send-now").show().addClass("active").addClass("available");
+                    }else{
+                        $(".send-now").addClass("not_available").removeClass("available").removeClass("active");
+                    }
+                }else{
+                    $(".send-now").addClass("not_available").removeClass("available").removeClass("active");     
+                }
+            }
         } 
     }else if(_type=="self"){
         if(today==1){
             $send_item.siblings(".period-choose").find(".item").each(function(){
                 var $this=$(this);
-                var intime_startHour=Int($this.find('.time_startHour').val());
-                var intime_startMin=Int($this.find('.time_startMin').val());
+                var intime_endHour=Int($this.find('.time_endHour').val());
+                var intime_endMin=Int($this.find('.time_endMin').val());
                 var time;
-                if(intime_startMin==0){
-                    intime_startHour=intime_startHour-1;
-                }
-                if(stop_range<=intime_startMin){
-                    time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-                }
-                else{
-                    n = parseInt(stop_range/60)
-                    time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
+                var n = parseInt(stop_range/60)
+                var lef_minute=stop_range%60;
+                if(intime_endMin>lef_minute){
+                    time=checkTime(intime_endHour-n)+':'+checkTime(intime_endMin-lef_minute)+':00';
+                }else{
+                    time=checkTime(intime_endHour-n-1)+':'+checkTime(60-lef_minute+intime_endMin)+':00';
                 }
                 if (time < time_now) {
                     $this.removeClass('available').addClass('not_available').removeClass('active');
@@ -620,7 +607,7 @@ function goodsNum(target,action){
         charge_type_id:charge_type_id
     };
     if(action==2){
-         if(limit_num>0&&num==limit_num){
+        if(limit_num>0&&num==limit_num){
             return  noticeBox('商品限购数量'+limit_num);
         }
     }
@@ -635,7 +622,6 @@ function goodsNum(target,action){
                 }
                 if(action==2)
                 {
-                   
                     num++;
                     item.val(num);
                     total=mathFloat(num*price);
@@ -858,7 +844,7 @@ function orderSubmit(target){
         if(!period_id) return noticeBox('请选择自提时间段！',target);
         if(!self_address_id) return noticeBox('请选择自提地址！',target);
     }
-    if(!type){return noticeBox('请选择送货时段！',target)}
+    if(!type){return noticeBox('请选择送货时段！',target);}
     $('#submitOrder').addClass('bg-grey text-grey3').text('提交中...').attr({'disabled':'true'});
     var args={
         fruits:fruits,
@@ -880,7 +866,7 @@ function orderSubmit(target){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-           // window.location.href= '/notice/success'
+            // window.location.href= '/notice/success'
             var url='/customer/cartback';
             var args={order_id:res.order_id};
             $.postJson(url,args,function(data) {
@@ -891,11 +877,11 @@ function orderSubmit(target){
                     }else{
                         window.location.href=window.dataObj.success_href; 
                     }
-                 }
-                 else{
+                }
+                else{
                     $('#submitOrder').removeClass('bg-grey text-grey3').text('提交订单').removeAttr('disabled'); 
                     return noticeBox(res.error_text);
-                 }
+                }
             });
         }else {
             noticeBox(res.error_text,target);
@@ -938,7 +924,6 @@ function Vrify(phone){
                 time($('#getVrify'));
                 noticeBox('验证码已发送到您的手机，请注意查收！');
                 $('#getVrify').removeAttr('disabled');
-
             }
             else return noticeBox(res.error_text);
         },
