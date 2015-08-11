@@ -56,7 +56,7 @@
             <div class="col-lg-5 col-md-5 boder-rd">
                 <!-- change 6.8am by jyj -->
                 <p>
-                    <a href="/{{data["shop_code"]}}" target="_blank"> <span class="text-blue tit2 shop_name">{{data['shop_name']}}</span></a>
+                    <a href="/{{data['shop_code']}}" target="_blank" title="点击进入店铺商品首页"> <span class="text-blue tit2 shop_name">{{data['shop_name']}}</span></a>
                     <span class="auth_type">{{data["auth_type"]}}</span>
                     <a href="{{reverse_url('superShopAuth')}}?page=0&&out_link=true&&data_id={{data['shop_id']}}" target="_blank" title="点击查看店铺详细认证信息"> <span class="text-blue">认证信息</span></a>
                 </p>
@@ -119,7 +119,7 @@
         <div class="col-lg-5 col-md-5 boder-rd">
             <!-- change 6.8am by jyj -->
             <p>
-                <a href="" target="_blank" class="ushop_code_link text-blue tit2"></a>
+                <a href="" target="_blank" class="ushop_code_link text-blue tit2" title="点击进入店铺商品首页"></a>
                 <span class="uauth_type"></span>
                 <a target="_blank" title="点击查看店铺详细认证信息" class="auth-link"><span class="text-blue">认证信息</span></a>
             </p>

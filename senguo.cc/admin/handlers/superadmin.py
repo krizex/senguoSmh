@@ -2090,6 +2090,7 @@ class ShopAuthenticate(SuperBaseHandler):
 			all_shop = self.session.query(models.Shop).count()
 			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
 			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+			
 		elif level == 1:
 			if out_link != 'true':
 				apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id

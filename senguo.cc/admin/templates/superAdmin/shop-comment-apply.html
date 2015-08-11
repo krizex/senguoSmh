@@ -18,7 +18,7 @@
         {% for  data in context['data']%}
             <li data-id="{{data[7]}}" class="item">
                 <ul class="com-attr group">
-                    <li>店铺：<a href="/{{data[0]}}"  target="_blank">{{data[1]}}</a></li>
+                    <li>店铺：<a href="/{{data[0]}}"  target="_blank" title="点击进入店铺商品首页">{{data[1]}}</a></li>
                     <li>管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data[8]}}" target="_blank" title="点击查看用户详细信息">{{data[2]}}</a></li>
                     <li>申请时间：<span>{{data[3]}}</span></li>
                 </ul>
