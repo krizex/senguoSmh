@@ -72,7 +72,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .f16{font-size: 16px !important;}
 /*盒模型*/
 .pl10{padding-left: 10px !important;}
-.pt15{padding-top:15px!important;}
+.pt15{padding-top:15px !important;}
 .pm8{padding-bottom: 8px;}
 .pt0{padding: 0 !important;}
 .pt5{padding-top: 5px;}
@@ -82,11 +82,12 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .ptm6{padding: 6px 0;}
 .pt10{padding-top: 10px !important;}
 .pt30{padding-top: 30px;}
-.pt70{padding-top: 70px !important;}
+.pt40{padding-top: 40px !important;}
 .pt50{padding-top: 50px !important;}
+.pt70{padding-top: 70px !important;}
 .pm80{padding-bottom: 80px;}
 .pb45{padding-bottom:45px;}
-.mt0{margin-top: 0!important;}
+.mt0{margin-top: 0 !important;}
 .mt2{margin-top: 2px;}
 .mt4{margin-top: 4px;}
 .mt6{margin-top: 6px;}
