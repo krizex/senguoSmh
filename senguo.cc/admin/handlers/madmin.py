@@ -342,7 +342,7 @@ class Comment(AdminBaseHandler):
 class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		shop_id     = self.get_secure_cookie("shop_id")
+		shop_id = self.get_secure_cookie("shop_id")
 		data = []
 		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
 		default_count = goods.filter_by(group_id=0).count()
@@ -474,9 +474,24 @@ class GoodsBatch(AdminBaseHandler):
 			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
 		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data,record_count=record_count)
 
-
-
-
+# 用户管理
+class User(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user.html")
+#用户详情
+class UserDetail(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user-detail.html")
+#用户搜索
+class UserSearch(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user-search.html")
 
 
 

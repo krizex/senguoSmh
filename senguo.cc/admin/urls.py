@@ -281,7 +281,9 @@ handlers = [
 	(r"/madmin/goodsAdd", handlers.madmin.GoodsAdd, {}, "MadminGoodsAdd"),
 	(r"/madmin/goodsEdit/(\w+)", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
 	(r"/madmin/goodsBatch", handlers.madmin.GoodsBatch, {}, "MadminGoodsBatch"),
-
+	(r"/madmin/user", handlers.madmin.User, {}, "MadminUser"),
+	(r"/madmin/userDetail", handlers.madmin.UserDetail, {}, "MadminUserDetail"),
+	(r"/madmin/usearch", handlers.madmin.UserSearch, {}, "MadminUserSearch"),
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
 	# (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次

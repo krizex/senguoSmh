@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block title %}搜索用户{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <div class="wrap-order-tab">
+        <ul class="group order-type-list">
+            <div class="wrap-ipt"><input type="text" class="search-ipt" placeholder="请输入商品名称" id="search-ipt"/></div>
+        </ul>
+    </div>
+    <a href="javascript:;" class="head-right search" id="search-goods"><em></em></a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container">
+<div class="order-list-box">
+    <ul class="search-lst hide" id="goods-lists">
+        <li>
+            <a href="javascript:;" id="search_link">
+                <span class="c666 fr"><span class="dgreen" id="goods_num">0</span>个</span>
+                <span class="c666">商品名称：</span>
+                <span class="dgreen" id="goods_name"></span>
+            </a>
+        </li>
+    </ul>
+    <div class="no-goods-box hide">
+        <img src="/static/m-admin/img/no_search.png" alt="无结果"/>
+        <p class="c666 txt-center mt15">没有查询到与<span id="search_name" class="dgreen">“大苹果”</span>相关的任何商品</p>
+        <a href="/madmin/goodsAdd" class="add-btn add-new-goods">+添加新商品</a>
+    </div>
+</div>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script src="{{static_url('m-admin/js/goods-search.js')}}"></script>
+{% end %}

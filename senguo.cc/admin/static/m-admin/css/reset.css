@@ -64,6 +64,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .dgreen{color: #48B6A4!important;}
 .c84{color: #848484 !important;}
 .yellow{color: #fec306 !important;}
+.cfff{color: #fff !important;}
 /*背景色*/
 .bg-white{background-color: #fff !important;}
 /*字体*/
@@ -105,6 +106,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .ml5{margin-left: 5px;}
 .mr10{margin-right: 10px;}
 .mr5{margin-right: 5px;}
+.ml4{margin-left: 4px;}
 .mt-100{margin-top: -100px;}
 .mb8{margin-bottom: 8px;}
 /*高度*/

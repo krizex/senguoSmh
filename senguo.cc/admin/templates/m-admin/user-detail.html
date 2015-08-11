@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+{% block title %}用户详情{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback"></a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-user-detail pm80">
+    <div class="user-top">
+        <div class="wrap-user-img txt-center">
+            <span class="img-border">
+                <img src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
+            </span>
+        </div>
+        <p class="mt6 txt-center"><span class="cfff bold">毕福剑</span><i class="sex-mark ml4 w-sex"></i></p>
+        <p class="mt6 txt-center clip">
+            <span class="user-umark"><i class="i-mark"></i>无备注</span>
+        </p>
+        <div class="wrap-userinfo">
+            <ul class="userinfo group">
+                <li>
+                    <p class="bold cfff">25.00元</p>
+                    <p class="info-name">用户余额</p>
+                </li>
+                <li>
+                    <p class="bold cfff">10分</p>
+                    <p class="info-name">用户积分</p>
+                </li>
+                <li>
+                    <p class="bold cfff">123456</p>
+                    <p class="info-name">用户ID</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <ul class="data-list udata-list">
+        <li>
+            <a href="javascript:;">
+                <span class="fr c666">王乾隆</span>
+                <span class="item-left i-gset">姓名</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <span class="fr c666">15336362323</span>
+                <span class="item-left"><i class="user-ui i-tel"></i>手机</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <span class="fr c666">2015-06-04</span>
+                <span class="item-left"><i class="user-ui i-birth"></i>生日</span>
+            </a>
+        </li>
+        <li class="hauto">
+            <a href="javascript:;">
+                <span class="fr c666">剑桥春天9栋2单元202</span>
+                <span class="item-left"><i class="user-ui i-address"></i>送货地址1</span>
+            </a>
+            <a href="javascript:;">
+                <span class="fr c666">15155151744</span>
+            </a>
+        </li>
+        <li class="hauto other-address">
+            <a href="javascript:;">
+                <span class="fr c666">剑桥春天9栋2单元202</span>
+                <span>送货地址2</span>
+            </a>
+            <a href="javascript:;">
+                <span class="fr c666">15155151744</span>
+            </a>
+        </li>
+    </ul>
+    <div class="uuser-row mt10">
+        <span class="u-arrow arrow-up"></span>
+        <span><span class="user-ui i-shop"></span>关注的店铺</span>
+    </div>
+    <ul class="u-shop-list group">
+        <li>
+            <div class="us-item clip">
+                <img src="/static/images/TDSG.png" alt="店铺logo"/>
+                <span class="c666">森果体验店</span>
+            </div>
+        </li>
+        <li>
+            <div class="us-item clip">
+                <img src="/static/images/TDSG.png" alt="店铺logo"/>
+                <span class="c666">森果体验店</span>
+            </div>
+        </li>
+        <li>
+            <div class="us-item clip">
+                <img src="/static/images/TDSG.png" alt="店铺logo"/>
+                <span class="c666">森果体验店</span>
+            </div>
+        </li>
+    </ul>
+    <div class="uuser-row">
+        <span class="u-arrow"></span>
+        <span><span class="user-ui i-order"></span>历史订单</span>
+    </div>
+    <ul class="u-order-list mt10">
+        <li>
+            <div class="uorder-top">
+                <i class="user-ui i-uorder"></i>
+                <a href="javascript:;" class="uorder-status clip">已评价</a>
+                <p class="c333">编号：66666666</p>
+                <p class="c666"><span class="yellow">￥10.0</span><span class="ml4">货到付款</span></p>
+            </div>
+            <div class="uorder-bm">
+                <p>
+                    <span class="fr c666">华中科技大学愠苑</span>
+                    <span class="c666">送至</span>
+                </p>
+                <p>
+                    <span class="fr c666">森果体验店</span>
+                    <span class="c666">预计</span>
+                </p>
+            </div>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center" id="g_title">编辑分组</h3>
+        <div class="wp-ipt mt20">
+            <p class="c333 mt10">分组名称</p>
+            <input class="mt10 c666" id="group_name" type="text" placeholder="不得多于10个字"/>
+            <p class="c333 mt18">分组说明</p>
+            <input class="mt10 c666" id="group_info" type="text" placeholder="不得多于20个字"/>
+        </div>
+        <div class="wrap-bbtns txt-center">
+            <a href="javascript:;" class="ok-bbtn dgreen" data-flag="on" id="opreate_group">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set.js')}}"></script>
+{% end %}
