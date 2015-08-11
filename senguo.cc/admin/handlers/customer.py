@@ -416,7 +416,7 @@ class Discover(CustomerBaseHandler):
 		a=0
 		now_date=int(time.time())
 		for x in q :
-			if now_date>=x.from_get_date:
+			if now_date>=x.from_get_date and now_date<=x.to_get_date:
 				a+=1
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=1).all()
 		b=0

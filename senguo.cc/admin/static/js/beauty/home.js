@@ -151,9 +151,10 @@ $(document).ready(function(){
 }).on('click','.number-plus',function(){
     var $this=$(this);
     if($this.parents('.charge-item').find('.to-add').hasClass('hidden')){
-       var parent=$this.parents('.goods-list-item');
+        var parent=$this.parents('.goods-list-item');
         var num=Int($this.siblings('.number-input').val().trim());
         var storage=parseFloat(parent.attr('data-storage'));
+        var unit_num=parseFloat(parent.find('.num_box').siblings('.charge-type').find('.num').text());
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
         var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
@@ -164,7 +165,7 @@ $(document).ready(function(){
             $this.siblings('.number-input').val(1);
             return noticeBox('商品数量只能为整数！',$this);
         }
-        if(storage-num<0){
+        if(storage-unit_num<0){
             return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
         }else if(storage-num==0){
             $this.siblings('.number-change').find('.number-input').val(0);
@@ -408,7 +409,7 @@ function goodsNum(target,action){
             }
             num++;
             item.val(num);
-            storage=storage-change_num;
+            storage=storage-change_num*num;
             parent.attr({'data-storage':storage});
         }
     }
@@ -420,7 +421,7 @@ function goodsNum(target,action){
             num--;
             item.val(num);
             //console.log(change_num);
-            if(num<=0){
+            if(num<0){
                 storage = change_num;
             }else{
                 storage=storage+change_num;  
