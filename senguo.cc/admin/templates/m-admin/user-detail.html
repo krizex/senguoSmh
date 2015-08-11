@@ -8,16 +8,16 @@
 </div>
 {% end %}
 {% block content %}
-<div class="wrap-user-detail pm80">
+<div class="wrap-user-detail pm80" data-id="{{data['id']}}">
     <div class="user-top">
         <div class="wrap-user-img txt-center">
             <span class="img-border">
-                <img src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
+                <img src="{{data['headimgurl'] or '/static/m-admin/img/sender_holder.png'}}?imageView2/1/w/120/h/120" alt="用户头像"/>
             </span>
         </div>
-        <p class="mt6 txt-center"><span class="cfff bold">毕福剑</span><i class="sex-mark ml4 w-sex"></i></p>
+        <p class="mt6 txt-center"><span class="cfff bold">{{data['nickname']}}</span><i class="sex-mark ml4 {% if data['sex'] ==1 %}m-sex{% else %}w-sex{% end %}"></i></p>
         <p class="mt6 txt-center clip">
-            <span class="user-umark"><i class="i-mark"></i>无备注</span>
+            <span class="user-umark"><i class="i-mark"></i>{{data['remak'] or '无备注'}}</span>
         </p>
         <div class="wrap-userinfo">
             <ul class="userinfo group">
