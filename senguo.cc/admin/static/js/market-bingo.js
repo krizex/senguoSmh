@@ -1,4 +1,5 @@
 $(document).ready(function(){
+    $('.bottom-nav').find('li').addClass('add_cart');
     var width = $("#swiper-container").width();
     var height = $(window).height();
     $(".notice-item").width("100%");
@@ -163,24 +164,25 @@ $(document).ready(function(){
     var unit_num=parseFloat(parent.attr('data-unitnum'));
     var change_num=relate*unit_num*1;
     var buy_today=parent.attr('data-buy');
-    var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
     if(change_num==NaN){
         change_num=0;
     }
-    if(buy_today=='True'&&allow_num<=0){
+    if(buy_today=='True'){
         return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
     if(storage>0) {
         if(storage-change_num<0){
             return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
         }else if(storage-change_num==0){
-            $this.siblings('.number-change').find('.number-input').text(0);
+            parent.find('.number-input').text(0);
         }else{
-            $this.siblings('.number-change').find('.number-input').text(0); 
+            parent.find('.number-input').text(0); 
         }
-        pulse($this.siblings('.number-change').find('.number-plus'));
-        goodsNum($this.siblings('.number-change').find('.number-plus'),2);
-        $this.addClass('hidden').siblings('.number-change').removeClass('hidden');
+        pulse(parent.find('.number-plus'));
+        goodsNum(parent.find('.number-plus'),2);
+        $this.addClass('hidden').siblings('.roll-btn').removeClass('hidden');
+        parent.find(".wrap-src-price").addClass("hidden");
+        parent.find(".wrap-bug-text").removeClass("hidden");
         //果篮显示商品种类数
         if(window.dataObj.cart_count==0) {$('.cart_num').removeClass('hidden');}
         if($this.hasClass('add_cart_num')){
@@ -201,18 +203,17 @@ $(document).ready(function(){
     goodsNum($this,1);
 }).on('click','.number-plus',function(){
     var $this=$(this);
-    if($this.parents('.charge-item').find('.to-add').hasClass('hidden')){
-        var parent=$this.parents('.goods_item_item');
-        var num=Int($this.siblings('.number-input').text());
+    var parent=$this.parents('.goods_item_item');
+    if(parent.find('.to-add').hasClass('hidden')){
+        var num=Int(parent.find('.number-input').text());
         var storage=parseFloat(parent.attr('data-storage'));
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
-        var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
-        if(buy_today=='True'&&num>=allow_num){
+        if(buy_today=='True'){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
         if(!regNum.test(num)) {
-            $this.siblings('.number-input').val(storage);
+            parent.find('.number-input').text(storage);
             return noticeBox('商品数量只能为整数！',$this);
         }
         if(num<999) {pulse($this);goodsNum($this,2);}
@@ -254,6 +255,16 @@ $(document).ready(function(){
     stopDefault(e);
     var link=$(this).attr('href');
     addCart(link);
+}).on("click",".goods-img-box",function(){
+    var $this=$(this);
+    var storage=Number($this.parents(".goods_item_item").attr('data-num'));
+    var id=$this.parents(".goods_item_item").attr('data-id');
+    var shop_code=$('#shop_code').val();
+    if (storage > 0) {
+        addCart("/"+shop_code+"/goods/"+id);
+    }else if(storage<=0){
+        return noticeBox("当前商品已经卖完啦");
+    }
 });
 var _action=6;
 var _finished=true;
@@ -381,16 +392,20 @@ var fruitItem=function(box,fruits,type){
     if(!intro){
         intro=" ";
     }
-    if(!charge_type){
+    if(charge_type){
         var relate=charge_type.relate;
-        var unitnum=charge-type.num;
-        var limit_today=charge-type.limit_today;
+        var unitnum=charge_type.num;
+        var limit_today=charge_type.limit_today;
+        var charge_id=charge_type.id;
+        var charge_price=charge_type.price;
     }else{
         var relate=0;
         var unitnum=0;
         var limit_today=false;
+        var charge_id = 0;
+        var charge_price=0;
     }
-    $item.attr({"data-id":id,"data-num":storage,"data-storage":storage,"data-limit":limit_num,"data-favour":favour_today,"data-relate":relate,"data-unitnum":unitnum,"data-buy":limit_today}).addClass(code);
+    $item.attr({"data-id":id,"data-num":storage,"data-storage":storage,"data-limit":limit_num,"data-favour":favour_today,"data-relate":relate,"data-unitnum":unitnum,"data-buy":limit_today,"data-charge":charge_id,"data-price":charge_price}).addClass(code);
     $item.find(".g-name").html(name);
     $item.find(".g-detail").html(intro);
     $item.find(".goods_img").attr("src",ori_img);
@@ -404,50 +419,50 @@ var fruitItem=function(box,fruits,type){
         $item.find(".price-all-num").html(charge_type.price);
     }
     $item.find(".status-tip").addClass(tag);
+    if(storage<=0){
+        $item.find(".sold-out").removeClass("hidden");
+        $item.find(".goods-img-box").addClass("desaturate");
+        $item.find(".goods-attr-box").addClass("desaturate")
+    }
     box.append($item);
 };
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
 function cartNum(cart_ms,list){
-    var item_list=$(list);
+    var item_list=$(list).children(".goods_item_item");
     for(var key in cart_ms) {
         for(var i=0;i<item_list.length;i++){
-            var item=item_list.eq(i).find('.charge-type');
-            for(var j=0;j<item.length;j++){
-                var charge = item.eq(j);
-                var id = charge.parents('.charge-item').attr('data-id');
-                var add = charge.siblings('.num_box').find('.to-add');
-                var change = charge.siblings('.num_box').find('.number-change');
-                var input = change.find('.number-input');
-                if (id == cart_ms[key][0]) {
-                    var $parent=charge.parents('.goods_item_item');
-                    var storage=$parent.attr('data-num');
-                    add.addClass('hidden');
-                    change.removeClass('hidden');
-                    input.text(cart_ms[key][1]);
-                    var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
-                    var unit_num=parseFloat(charge.find('.num').text());
-                    var change_num=relate*unit_num*cart_ms[key][1];
-                    $parent.attr({'data-storage':storage-change_num});
-                }
+            var $item=item_list.eq(i);
+            var id = Number($item.attr('data-charge'));
+            var price = Number($item.attr('data-price'));
+            if (id == cart_ms[key][0]) {
+                var storage=$item.attr('data-num');
+                $item.find('.to-add').addClass('hidden').siblings(".roll-btn").removeClass("hidden");
+                $item.find('.number-input').text(cart_ms[key][1]);
+                $item.find(".wrap-src-price").addClass("hidden");
+                $item.find(".wrap-bug-text").removeClass("hidden");
+                $item.find(".price-all-num").text(cart_ms[key][1]*price);
+                var relate=parseFloat($item.attr('data-relate'));
+                var unit_num=parseFloat($item.attr('data-unitnum'));
+                var change_num=relate*unit_num*cart_ms[key][1];
+                $item.attr({'data-storage':storage-change_num});
             }
         }
     }
 }
 
 function goodsNum(target,action){
-    var item=target.siblings('.number-input');
-    var change=target.parents('.number-change');
-    var num=parseInt(item.val());
     var parent=target.parents('.goods_item_item');
     var storage=parseFloat(parent.attr('data-storage'));
+    var item=parent.find('.number-input');
     var type_list=target.parents('.bingo-list');
-    var id=target.parents('.charge-item').attr('data-id');
-    var relate=parseFloat(target.parents('.charge-item').attr('data-relate'));
-    var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
+    var id=parseInt(parent.attr('data-charge'));
+    var relate=parseFloat(parent.attr('data-relate'));
+    var unit_num=parseFloat(parent.attr('data-unitnum'));
     var change_num=relate*unit_num*1;
     var limit_num=parseInt(parent.attr('data-limit'));
-    //console.log(storage);
+    var num=parseInt(item.text());
+    var price = Number(parent.attr('data-price'));
     if(action==1&&num<=0) {num=0;target.addClass('disable');}
     if(action==2)
     {
@@ -462,19 +477,20 @@ function goodsNum(target,action){
                 return  noticeBox('商品限购数量'+limit_num);
             }
             num++;
-            item.val(num);
+            item.text(num);
             storage=storage-change_num;
             parent.attr({'data-storage':storage});
+            parent.find(".price-all-num").text(num*price);
         }
     }
     else if(action==1)
     {
-        var val=parseInt(item.val());
+        var val=parseInt(item.text());
         if(val>0)
         {
             num--;
-            item.val(num);
-            if(num<=0){
+            item.text(num);
+            if(num<0){
                 storage = change_num
             }else{
               storage=storage+change_num;  
@@ -482,7 +498,9 @@ function goodsNum(target,action){
             parent.attr({'data-storage':storage});
             if(val==1){
                 target.removeClass('anim-pulse');
-                change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
+                parent.find(".roll-btn").addClass('hidden');
+                parent.find(".wrap-src-price").removeClass("hidden").siblings(".wrap-bug-text").addClass("hidden");
+                parent.find('.to-add').removeClass('hidden').addClass('add_cart_num');
                 if(window.dataObj.cart_count==1) {
                     window.dataObj.cart_count=0;
                     $('.cart_num').text(window.dataObj.cart_count).addClass('hidden');
@@ -495,6 +513,7 @@ function goodsNum(target,action){
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
             }
+            parent.find(".price-all-num").text(num*price);
         }
     }
     if(type_list.hasClass('fruit-list')) {window.dataObj.fruits[id]=num; fruits_num();}

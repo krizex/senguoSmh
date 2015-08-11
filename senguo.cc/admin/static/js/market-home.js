@@ -526,7 +526,7 @@ function goodsNum(target,action){
         {
             num--;
             item.val(num);
-            if(num<=0){
+            if(num<0){
                 storage = change_num
             }else{
               storage=storage+change_num;  
