@@ -3004,13 +3004,9 @@ class Follower(AdminBaseHandler):
 				charge_list = []
 				for item in query_list:
 					charge_list.append(item[0])
-				print("&&&&&&&&",len(charge_list))
 				charge_list = set(charge_list)
-				print("&&&&&&&&",len(charge_list))
 				q = self.session.query(models.Customer).outerjoin(models.CustomerShopFollow).\
-					filter(models.Customer.id.in_(charge_list)).distinct()
-				# q = q.distinct()
-				print("@#@#",q.count())
+					filter(models.Customer.id.in_(charge_list),models.CustomerShopFollow.shop_id == self.current_shop.id).distinct()
 
 			if if_reverse == 1:
 				if order_by == "time":
@@ -3028,17 +3024,13 @@ class Follower(AdminBaseHandler):
 					q = q.order_by(models.CustomerShopFollow.shop_balance)
 			else:
 				if order_by == "time":
-					# q = q.join(models.CustomerShopFollow)
-					# q = q.distinct()
-					# q = q.order_by(desc(models.CustomerShopFollow.create_time))
-					pass
+					q = q.order_by(desc(models.CustomerShopFollow.create_time))
 				elif order_by == "point":
 					q = q.order_by(desc(models.CustomerShopFollow.shop_point))
 				elif order_by == "balance":
 					q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
 
 			count = q.count()
-			print("@@@@",count)
 			customers = q.offset(page*page_size).limit(page_size).all()
 
 		##################################################################

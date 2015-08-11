@@ -2,7 +2,7 @@ var page=0;
 var item;
 var action='all';
 var input = $("#inputinfo");
-var 
+var input_info = input.text();
 $(document).ready(function(){
     $.ajaxSetup({'async':false});
     $.getItem(item_link+'/user-item.html?v=20150808',function(data){item=data;});
@@ -48,69 +48,7 @@ $(document).ready(function(){
         page=0;
         getSearchContent('out_link',data_id,page);
     }
-    // 
     
-    // if(page==0)
-    // {
-    //     pre.addClass('hidden');
-    // }
-    // if($('.item-list').find('li').length<20)
-    // {
-    //     next.addClass('hidden');
-    // }
-    // pre.on('click',function(){
-    //      if(inputinfo==""){
-    //        if(page>0){
-    //         page--;
-    //         // var action_text = $(".left-choose-list").find(".active").attr("data-id");
-    //         // if (action_text == '1'){
-    //         //     action = 'all';
-    //         // }
-    //         // else if (action_text == '2'){
-    //         //     action = 'admin';
-    //         // }
-    //         // else if (action_text == '3'){
-    //         //     action = 'customer';
-    //         // }
-    //         // else if (action_text == '4'){
-    //         //     action = 'phone';
-    //         // }
-    //         getContent(action,page);
-    //        }
-    //        else  return Tip("当前已经是第一页");
-    //     }
-    //     else{
-    //           if(page>0){
-    //         page--;
-    //         getSearchContent('search',$("#inputinfo").val(),page);
-    //        }
-    //        else  return Tip("当前已经是第一页");
-    //     }
-    // });
-    // next.on('click',function(){
-    //      // if(inputinfo==""){
-    //      //     page++;
-    //      //    //  var action_text = $(".left-choose-list").find(".active").attr("data-id");
-    //      //    // if (action_text == '1'){
-    //      //    //     action = 'all';
-    //      //    // }
-    //      //    // else if (action_text == '2'){
-    //      //    //     action = 'admin';
-    //      //    // }
-    //      //    // else if (action_text == '3'){
-    //      //    //     action = 'customer';
-    //      //    // }
-    //      //    // else if (action_text == '4'){
-    //      //    //     action = 'phone';
-    //      //    // }
-    //      //    console.log("#####################");
-    //      //    getContent(action,page);
-    //     }
-    //     else{
-    //         page++;
-    //         getSearchContent('search',$("#inputinfo").val(),page);
-    //     }
-    // });
 }).on('click','.nav_item',function(){
         var $this=$(this);
         var action_text = $this.attr("data-id");
@@ -124,7 +62,7 @@ $(document).ready(function(){
             $this.addClass('active').siblings('.nav_item').removeClass('active');
             getContent(action,0);
         }
-        else if (inputinfoaction_text == '3'){
+        else if (action_text == '3'){
             action = 'customer';
             $this.addClass('active').siblings('.nav_item').removeClass('active');
             getContent(action,0);
@@ -136,25 +74,23 @@ $(document).ready(function(){
         }
         console.log(action);
 }).on('click','#PrePage',function(){
-
+     if(input_info.length == 0){
+            if(page>0){
+                page--;
+                getContent(action,page);
+           }
+           else  return Tip("当前已经是第一页");
+    }
+     else{
+              if(page>0){
+            page--;
+            getSearchContent('search',$("#inputinfo").val(),page);
+           }
+           else  return Tip("当前已经是第一页");
+    }
 }).on('click','#NextPage',function(){
-    console.log(typeof input);
-    if(input==""){
+    if(input_info.length==0){
              page++;
-            //  var action_text = $(".left-choose-list").find(".active").attr("data-id");
-            // if (action_text == '1'){
-            //     action = 'all';
-            // }
-            // else if (action_text == '2'){
-            //     action = 'admin';
-            // }
-            // else if (action_text == '3'){
-            //     action = 'customer';
-            // }
-            // else if (action_text == '4'){
-            //     action = 'phone';
-            // }
-            console.log("#####################");
             getContent(action,page);
     }
     else{
@@ -165,7 +101,6 @@ $(document).ready(function(){
 
 function classify(target,act){
     target.on('click',function(){getContent(act,0);action=act;page=0;});
-    console.log(action);
 }
 
 function getContent(action,page){

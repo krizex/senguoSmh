@@ -120,6 +120,6 @@ $(document).ready(function(){
 });
 
 function ShowPage(action,order_by,page,if_reverse){
-        var url = "/admin/follower?action=" + action + "&&order_by=" + order_by  + "&&if_reverse=" + if_reverse+ "&&page=" + page;
+        var url = "/admin/follower?action=" + action + "&&order_by=" + order_by  + "&&if_reverse=" + if_reverse+ "&&page=0";
         window.location.href = url;
 }
