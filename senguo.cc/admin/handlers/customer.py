@@ -73,12 +73,19 @@ class Access(CustomerBaseHandler):
 			return self.send_error(404)
 
 	#@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone", "password", "next?","jpush_id?")
+	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		jpush_id=self.args["jpush_id"]
-		user_type=int(self.args["user_type"])
+		next_url=self.args["next"]
+		user_type=-1
+		jpush_id=None
+		if next_url.find('madmin?jpush_id')!=-1:
+			user_type=0
+			jpush_id=next_url[next_url.find('=')+1:]
+		if next_url.find('customer/profile?jpush_id')!=-1:
+			user_type=1
+			jpush_id=next_url[next_url.find('=')+1:]
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print("[PhoneLogin]Customer ID:",u.id)
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
@@ -93,11 +100,15 @@ class Access(CustomerBaseHandler):
 				if qq.jpush_id==jpush_id:
 					new_device=0			
 			if new_device==1:
-				self.session.update(user_id=u.accountinfo.id,user_type=user_type,jpush_id=jpush_id)
+				if qq:
+					qq.update(self.session,user_id=u.accountinfo.id,user_type=user_type,jpush_id=jpush_id)
+				else:
+					new_jpushinfo=models.Jpushinfo(user_id=u.id,user_type=user_type,jpush_id=jpush_id)
+					self.session.add(new_jpushinfo)
 				self.session.commit()
 			if user_type==0:
 				return self.send_success(come_from=0)
-			return self.redirect(come_from=1)
+			return self.send_success(come_from=1)
 		return self.send_success(come_from=3)
 
 	@CustomerBaseHandler.check_arguments("code")
@@ -147,6 +158,7 @@ class Third(CustomerBaseHandler):
 			headimgurl=str(self.args["headimgurl"])
 			nickname=str(self.args["nickname"])
 			sex=int(self.args["sex"])
+			jpush_id=self.args["jpush_id"]
 			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
 			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
 			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=1).first()
@@ -155,7 +167,6 @@ class Third(CustomerBaseHandler):
 				if qq.jpush_id==jpush_id:
 					new_device=0
 			if new_device==1 and q:
-				print(new_device,'new_device')
 				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=1,jpush_id=jpush_id)
 				self.session.add(new_jpushinfo)
 				self.session.commit()
@@ -177,11 +188,12 @@ class Third(CustomerBaseHandler):
 			jpush_id=str(self.args["jpush_id"])
 			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
 			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
-			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=0).first()
 			new_device=1
-			if qq:
-				if qq.jpush_id==jpush_id:
-					new_device=0
+			if q:
+				qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=0).first()
+				if qq:
+					if qq.jpush_id==jpush_id:
+						new_device=0
 			if new_device==1 and q:
 				print(new_device,'new_device')
 				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=0,jpush_id=jpush_id)
