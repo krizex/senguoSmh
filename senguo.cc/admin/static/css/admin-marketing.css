@@ -106,3 +106,12 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-newcoupon{font-size: 14px;}
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
+
+/*added by jyj for seckill*/
+.font14{font-size: 14px !important;}
+.mt20{margin-top: 20px !important;}
+.mt50{margin-top: 50px;}
+.pull-left{float: left !important;}
+.mt10{margin-top: 10px;}
+.ml{margin-left: 10px;}
+/**/

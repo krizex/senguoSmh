@@ -4333,6 +4333,10 @@ class Marketing(AdminBaseHandler):
 			q.closed=1
 			self.session.commit()
 			return self.send_success()
+		elif action == 'seckill':
+			seckill_active = 1
+
+			return self.render("admin/seckill.html",seckill_active = seckill_active,context=dict(subpage='marketing',subpage2='seckill'))
 
 	@AdminBaseHandler.check_arguments("action:str","data?","coupon_id?:int","select_rule?:int","coupon_type?:int")
 	def post(self):

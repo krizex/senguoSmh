@@ -1,0 +1,76 @@
+<!-- created by jyj 2015-8-11 -->
+{% extends 'market-base.html' %}
+{% block title%}商品秒杀{% end %}
+
+{% block setcontent %}
+<div class="clearfix top-box">
+               <div class="col-sm-9 col-md-9">
+                             <p>商品秒杀是给商家提供的一个店铺营销工具，适用于新品上市、水果促销、节假日活动等场合。</p>
+                             <p>可以更好地招徕用户、提高品牌影响力。</p>
+                             <p class="mt20"><a href="/bbs/detail/88" target="_blank" class="font14">点击查看使用教程</a></p>
+               </div>  
+               <div class="col-sm-3 col-md-3">
+                             <a class="mode  pull-right mt10 confess-only" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_only}}"><span class="tit">已启用</span><span class="circle"></span></a>
+               </div>
+</div>
+
+<div class="category-list mt50">
+               <div>
+                             <span class="c999">商品秒杀</span>
+                             <span class="c333"> / 秒杀管理</span>
+                             <span class="wrap-newbtn">
+                                           <a href="javascript:;" class="newbtn add-btn  mt6 mr10 new-seckill">+新建秒杀</a>
+                             </span>
+               </div>
+               <div class="subnav-box group mt20">
+                             <ul class="subnav chinav furit-type pull-left">
+                                           <li class="txt-center active" data-type="nostart"><a href="javascript:;">未开始</a></li>
+                                           <li class="txt-center" data-type="killing"><a href="javascript:;">进行中</a></li>
+                                           <li class="txt-center" data-type="finished"><a href="javascript:;">已结束</a></li>
+                                           <li class="txt-center" data-type="stoped"><a href="javascript:;">已停用</a></li>
+                             </ul>
+                             
+               </div>　　　　
+               <div class="wrap-tb mt10">
+                             <table class="tb-enty tb-active">
+                                           <colgroup>
+                                                          <col width="20%"/>
+                                                          <col width="10%"/>
+                                                          <col width="35%"/>
+                                                          <col width="15%"/>
+                                                          <col width="20%"/>
+                                           </colgroup>
+                                           <thead>
+                                                          <tr class="thead">
+                                                                        <td>秒杀开始时间</td>
+                                                                        <td>持续时间</td>
+                                                                        <td>秒杀商品（10）</td>
+                                                                        <td>领取 / 下单</td>
+                                                                        <td>操作</td>
+                                                          </tr>
+                                            </thead>
+                                            <tbody>
+                                                          <tr>
+                                                                        <td colspan="5" class="txt-center c999 font14">当前没有秒杀活动</td>
+                                                          </tr>
+                                                          <tr>　　 
+                                                                        <td colspan="1"> 2015-08-08 00:00:00</td>
+                                                                        <td colspan="1">00:05:00</td>
+                                                                        <td colspan="1">烟台大苹果、小猕猴桃、大菠萝、榴莲香蕉、哈密瓜、爪哇国鸡翅、美国大碗牛肉面等19种商品</td>
+                                                                        <td colspan="1">100 / 70</td>
+                                                                        <td colspan="1">　　
+                                                                                       <a href="javascript:;">编辑</a>
+                                                                                       <a href="javascript:;" class="ml">推广</a>
+                                                                                       <a href="javascript:;" class="ml">停用</a>
+                                                                        </td>
+                                                          </tr>
+                                            </tbody>
+                             </table>    
+              </div>
+</div>
+    
+{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/admin-marketing.js')}}"></script>
+{% end %}
