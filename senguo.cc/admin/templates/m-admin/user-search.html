@@ -7,7 +7,7 @@
     <a href="javascript:;" class="back goback">返回</a>
     <div class="wrap-order-tab">
         <ul class="group order-type-list">
-            <div class="wrap-ipt"><input type="text" class="search-ipt" placeholder="请输入商品名称" id="search-ipt"/></div>
+            <div class="wrap-ipt"><input type="text" class="search-ipt" placeholder="请输入用户手机号、昵称或者姓名" id="search-ipt"/></div>
         </ul>
     </div>
     <a href="javascript:;" class="head-right search" id="search-goods"><em></em></a>
@@ -16,19 +16,60 @@
 {% block setcontent %}
 <div class="container">
 <div class="order-list-box">
-    <ul class="search-lst hide" id="goods-lists">
-        <li>
-            <a href="javascript:;" id="search_link">
-                <span class="c666 fr"><span class="dgreen" id="goods_num">0</span>个</span>
-                <span class="c666">商品名称：</span>
-                <span class="dgreen" id="goods_name"></span>
-            </a>
-        </li>
-    </ul>
-    <div class="no-goods-box hide">
-        <img src="/static/m-admin/img/no_search.png" alt="无结果"/>
-        <p class="c666 txt-center mt15">没有查询到与<span id="search_name" class="dgreen">“大苹果”</span>相关的任何商品</p>
-        <a href="/madmin/goodsAdd" class="add-btn add-new-goods">+添加新商品</a>
+    <div class="boxs order-list-box">
+        <div class="goods-item item">
+            <ul class="order-lists user-lists pt10" id="user-all-list">
+                <li>
+                    <a href="javascript:;" class="goods-goods-edit">
+                        <div class="goods-row">
+                            <dl class="gdl udl">
+                                <dt>
+                                    <img class="cur-goods-img" src="/static/images/TDSG.png" alt="用户头像"/>
+                                </dt>
+                                <dd>
+                                    <i class="more"></i>
+                                    <p class="clip">
+                                        <span class="user-name f14 c333 bold">李易峰</span>
+                                        <span class="sex-mark man-mark"></span>
+                                        <span class="user-mark f12 c666 clip">李易峰研制超高啊</span>
+                                    </p>
+                                    <p class="c333 mt4 f12 bold user-balance">余额 25.00元</p>
+                                    <p class="mt4 c999 clip">
+                                        <span class="mr10">用户积分 10分</span>
+                                        <span>用户ID 6652</span>
+                                    </p>
+                                </dd>
+                            </dl>
+                        </div>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript:;" class="goods-goods-edit">
+                        <div class="goods-row">
+                            <dl class="gdl udl">
+                                <dt>
+                                    <img class="cur-goods-img" src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
+                                </dt>
+                                <dd>
+                                    <i class="more"></i>
+                                    <p class="clip">
+                                        <span class="user-name f14 c333 bold">李易峰</span>
+                                        <span class="sex-mark woman-mark"></span>
+                                        <span class="user-mark f12 c666 clip">李易峰研制超高啊</span>
+                                    </p>
+                                    <p class="c333 mt4 f12 bold user-balance">余额 25.00元</p>
+                                    <p class="mt4 c999 clip">
+                                        <span class="mr10">用户积分 10分</span>
+                                        <span>用户ID 6652</span>
+                                    </p>
+                                </dd>
+                            </dl>
+                        </div>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="no-result hide">页面加载中...</div>
     </div>
 </div>
 </div>

@@ -506,11 +506,11 @@
 .u-shop-list>li{width: 50%;-webkit-box-sizing: border-box;padding: 0 10px 10px 0;float: left;}
 .us-item{background-color: #fff;padding-left: 8px;vertical-align: middle;height: 26px;}
 .us-item>img{height: 24px;width: 24px;border-radius: 24px;margin-right: 4px;}
-.u-order-list>li{background-color: #fff;padding: 10px;}
+.u-order-list>li{background-color: #fff;padding: 10px;margin-bottom: 10px;}
 .u-order-list>li p{height: 20px;line-height: 20px;}
 .uorder-top{position: relative;padding: 0 100px 6px 30px;}
 .i-uorder{position: absolute;left: 0;top: 4px;width: 16px;height: 16px;background:url('/static/m-admin/img/user_list.png') no-repeat left -200px;background-size: 16px;}
-.uorder-status{width: 90px;text-align: center;display: inline-block;height: 26px;line-height: 26px;position: absolute;top: 4px;right: 0;border-radius: 4px; border: 1px solid #999;color: #666 !important;}
+.uorder_status{width: 90px;text-align: center;display: inline-block;height: 26px;line-height: 26px;position: absolute;top: 4px;right: 0;border-radius: 4px; border: 1px solid #999;color: #666 !important;}
 .udata-list .item-left{position: relative;}
 .udata-list .i-gset{background-image: url('/static/m-admin/img/4.png');}
 .user-ui{position: absolute;left: 0;top: 10px;width: 22px;height: 22px;background-image: url('/static/m-admin/img/user_list.png');background-size: 22px;}
