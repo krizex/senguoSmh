@@ -405,6 +405,7 @@ class ShopManage(SuperBaseHandler):
 				#satisfy
 				satisfy = 0.0
 				shop_id = shop.id
+				data["shop_id"] = shop_id
 				orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
 				commodity_quality = 0
 				send_speed = 0
@@ -2065,28 +2066,39 @@ class CommentInfo(SuperBaseHandler):
 # 店铺 - 店铺认证申请
 class ShopAuthenticate(SuperBaseHandler):
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('page')
+	@SuperBaseHandler.check_arguments('page:str','out_link?:str','data_id?:int')
 	def get(self):
-		page=int(self.args["page"])
+		page=self.args["page"]
 		page_size = 10
 		page_area = page*page_size
+		out_link = ''
+		if 'out_link' in self.args:
+			if self.args['out_link'] == 'true':
+				shop_id = self.args['data_id']
+				out_link = 'true'
 		# woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
 		# level = 1
 		# shop_province = 420000
 		if  level == 0:
-			apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
-
+			if out_link != 'true':
+				apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			else:
+				apply_list=self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 			q_temp = self.session.query(models.ShopTemp).count()
 			all_shop = self.session.query(models.Shop).count()
 			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
-
 			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
 		elif level == 1:
-			apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
-				).filter(models.Shop.shop_province==shop_province).distinct(models.ShopAuthenticate.id
-				).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			if out_link != 'true':
+				apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
+						).filter(models.Shop.shop_province==shop_province).distinct(models.ShopAuthenticate.id
+						).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			else:
+				apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
+						).filter(models.Shop.shop_province==shop_province,models.ShopAuthenticate.shop_id == shop_id).distinct(models.ShopAuthenticate.id
+						).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
 			q_temp = self.session.query(models.ShopTemp).count()
 			all_shop = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
 			comment = self.session.query(models.Order).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Order.status==6,

@@ -58,10 +58,10 @@
                 <p>
                     <a href="/{{data["shop_code"]}}" target="_blank"> <span class="text-blue tit2 shop_name">{{data['shop_name']}}</span></a>
                     <span class="auth_type">{{data["auth_type"]}}</span>
-                    <a href="{{reverse_url('superShopAuth')}}?page=0" target="_blank"> <span class="text-blue">认证信息</span></a>
+                    <a href="{{reverse_url('superShopAuth')}}?page=0&&out_link=true&&data_id={{data['shop_id']}}" target="_blank" title="点击查看店铺详细认证信息"> <span class="text-blue">认证信息</span></a>
                 </p>
                 <p>
-                    <span class="tit2">店铺管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data["admin_id"]}}" target="_blank" class="admin-link"  title="点击查看用户详细信息"><span class="text-blue admin_nickname">{{data["admin_nickname"]}}</span></a></span>
+                    <span class="tit2">店铺管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data['admin_id']}}" target="_blank" class="admin-link"  title="点击查看用户详细信息"><span class="text-blue admin_nickname">{{data["admin_nickname"]}}</span></a></span>
                 </p>
                 <p>
                     <span  class="shop_address">店铺地址：{{data["shop_address_detail"]}}</span></span>
@@ -121,10 +121,10 @@
             <p>
                 <a href="" target="_blank" class="ushop_code_link text-blue tit2"></a>
                 <span class="uauth_type"></span>
-                <a href="{{reverse_url('superShopAuth')}}?page=0" target="_blank"><span class="text-blue">认证信息</span></a>
+                <a target="_blank" title="点击查看店铺详细认证信息" class="auth-link"><span class="text-blue">认证信息</span></a>
             </p>
             <p>
-                <span class="tit2">店铺管理员：<a href="" target="_blank" class="uadmin_link"><span class="text-blue uadmin_nickname"></span></a></span>
+                <span class="tit2">店铺管理员：<a href="" target="_blank" class="uadmin_link" title="点击查看用户详细信息"><span class="text-blue uadmin_nickname"></span></a></span>
             </p>
             <p>
                 <span  class="ushop_address">店铺地址：<span class="ushop_address_name"></span></span></span>
