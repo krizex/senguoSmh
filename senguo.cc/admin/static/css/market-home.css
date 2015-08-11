@@ -165,13 +165,13 @@
 .wrap-src-price{position: absolute;bottom:-12px;right: 0;padding-right: 40px;}
 .bug-num{color: #33CC66;font-size: 30px;}
 .price-all{color: #333;font-size: 14px;}
-.wrap-tab-group{padding: 10px 10px 20px 10px;background-color: #72D6B3;}
+.wrap-tab-group{padding: 10px 10px 20px 10px;background-color: #81E2C0;}
 .mt-20{margin-top: -20px !important;}
 .tab-group{border-radius: 8px;}
 .tab-group>li{float: left;background-color:#fff;position:relative;border-right:1px solid #ddd;-webkit-box-sizing:border-box;cursor: pointer;width: 33.33%;height: 40px;color: #333;line-height: 40px;text-align: center;white-space: nowrap;overflow:hidden;text-overflow: ellipsis;font-size: 16px;}
-.tab-group>li:last-child{border-right:none;border-top-right-radius: 6px;border-bottom-right-radius: 6px;overflow:visible;}
-.tab-group>li:first-child{border-top-left-radius: 6px;border-bottom-left-radius: 6px;}
-.tab-group .active{background-color: #63C5A2;color: #fff;}
+.tab-group>li:last-child{border-right:none;border-top-right-radius: 20px;border-bottom-right-radius: 20px;overflow:visible;}
+.tab-group>li:first-child{border-top-left-radius: 20px;border-bottom-left-radius: 20px;}
+.tab-group .active{background-color: #44C798;color: #fff;}
 .tab-group .active .i-cert{border-top-color: #fff;}
 .more-group{position: absolute;top: 100%;left: -1px;width: 100%;max-height: 200px;overflow: hidden;overflow-y: auto;-webkit-overflow-scrolling:touch;background-color: #63C5A2;z-index:999;}
 .more-group>li{height: 34px;line-height: 34px;text-align: center;color: #fff;border-bottom: 1px solid #CCCCCC;padding: 0 4px;white-space: nowrap;}
