@@ -127,7 +127,7 @@ class GlobalBaseHandler(BaseHandler):
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,customer_id=current_customer_id).with_lockmode('update').all()
 		for x in q:
-			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,closed=0).with_lockmode('update').first()
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id).with_lockmode('update').first()
 			if  qq!=None:
 				if now_date>qq.to_get_date:
 					qq.closed=1
@@ -357,8 +357,10 @@ class GlobalBaseHandler(BaseHandler):
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
+					unit_num = int(charge.unit_num) if charge.unit_num else 0
+					select_num = int(charge.select_num) if charge.select_num else 0
 					charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-						'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+						'num':charge.num,'unit_num':unit_num,'market_price':market_price,'select_num':select_num})
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
@@ -496,7 +498,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('[WxAuth]login in get_weixin_oauth_link2, next_url:',self,next_url)
+		# print('[WxAuth]login in get_weixin_oauth_link2, next_url:',self,next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -832,7 +834,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
-		print(order)
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
@@ -1085,14 +1086,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 6,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 6,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 7,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 7,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		#增 与订单总额相等的积分
@@ -1991,7 +1992,6 @@ class WxOauth2:
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
-		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
 			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',

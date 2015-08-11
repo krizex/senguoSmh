@@ -346,10 +346,12 @@ $(document).ready(function(){
     $item.find(".price-unit").html(current_unit).attr("data-id",current_unit_id);
     $(this).closest("p").before($item);
 }).on("click",".del-price-type",function(){//删除售价方式
-    var id=$(this).parents('.wrap-add-price').attr('data-id');
-    $(this).closest(".wrap-add-price").remove();
-    if(id){
-        del_list.push(parseInt(id));
+    if(confirm("确认删除该售价方式？")){
+        var id=$(this).parents('.wrap-add-price').attr('data-id');
+        if(id){
+            del_list.push(parseInt(id));
+        }
+        $(this).closest(".wrap-add-price").remove();
     }
 }).on('click','.furit-type li',function(){/*水果分类*/
     var $this=$(this);

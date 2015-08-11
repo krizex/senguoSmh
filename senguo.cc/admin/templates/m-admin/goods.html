@@ -5,7 +5,7 @@
 {% end %}
 {% block header %}
 <div class="header">
-    <a href="{{reverse_url('MadminShop')}}" class="back">返回</a>
+    <a href="/madmin/shop" class="back">返回</a>
     <div class="wrap-order-tab">
         <ul class="group order-type-list goods-all-list">
             <li class="active item" data-id="1">所有商品</li>
@@ -21,10 +21,10 @@
 <div class="container pt70 pm80">
 <div class="second-tab goods_tab">
     <ul class="second-tab-list goods_list group pt0">
-        <li class="goods-status goods_status dgreen" data-id="1">已上架<i class="imenu"></i></li>
-        <li class="gitem active" data-id="2">添加时间<i class="turn"></i></li>
-        <li class="gitem" data-id="3">库存<i class="turn"></i></li>
-        <li class="gitem" data-id="5">销量<i class="turn"></i></li>
+        <li class="goods-status goods_status dgreen" data-id="1"><span id="filter_status" data-id="all">所有</span><i class="imenu"></i></li>
+        <li class="gitem active" data-id="add_time" data-sid="add_time">添加时间<i class="turn"></i></li>
+        <li class="gitem" data-id="storage" data-sid="storage">库存<i class="turn"></i></li>
+        <li class="gitem" data-id="saled" data-sid="saled">销量<i class="turn"></i></li>
         <li class="tab-line l25"></li>
     </ul>
     <div class="wrap-menu-list wrap-goods-menu wrap_goods_menu hide">
@@ -34,15 +34,16 @@
             <li data-id="off">已下架</li>
             <li data-id="sold_out">已售完</li>
             <li data-id="current_sell">待成交</li>
+            <li data-id="delete">已删除</li>
         </ul>
     </div>
 </div>
 <div class="second-tab class_tab hide">
     <ul class="second-tab-list class_list group pt0">
-        <li class="goods-status class_status dgreen clip" data-id="1">颜色<i class="imenu"></i></li>
-        <li class="gitem active" data-id="2">水果</li>
-        <li class="gitem" data-id="3">干果</li>
-        <li class="gitem" data-id="5">其它</li>
+        <li class="goods-status class_status dgreen clip" data-id="1"><span id="class_type" data-id="color">颜色</span><i class="imenu"></i></li>
+        <li class="gitem active" data-id="fruit">水果</li>
+        <li class="gitem" data-id="ganguo">干果</li>
+        <li class="gitem" data-id="other">其它</li>
         <li class="tab-line l25"></li>
     </ul>
     <div class="wrap-menu-list wrap-goods-menu wrap_class_menu hide">
@@ -56,213 +57,104 @@
 </div>
 <div class="boxs order-list-box">
     <div class="goods-item item">
-        <ul class="order-lists pt10" id="goods_status">
-             <li class="mb8">
-                 <p class="c999 goods-time">添加时间 : 2015-01-23 10:29:22</p>
-                 <a href="javascript:;">
-                     <div class="goods-row">
-                         <dl class="gdl">
-                             <dt>
-                                 <img src="/static/images/TDSG.png" alt="商品图片"/>
-                             </dt>
-                             <dd>
-                                 <i class="more"></i>
-                                 <span class="switch-btn switch-abtn switch-goods"  data-id=""><i></i><span>已启用</span></span>
-                                 <p class="dgreen clip goods-name">
-                                     <span>广东山竹好好好吃啊哈哈哈哈哈哈哈</span>
-                                 </p>
-                                 <p class="c666 mt4 clip">
-                                     <span class="mr10"><span class="yellow">￥</span>15.00元/斤</span>
-                                     <span class="mr10"><span class="yellow">￥</span>150.00元/箱</span>
-                                 </p>
-                                 <p class="mt4 c999 clip">
-                                     <span class="mr10">库存500斤</span>
-                                     <span class="mr10">待成交500斤</span>
-                                     <span class="mr10">销量500斤</span>
-                                 </p>
-                             </dd>
-                         </dl>
-                     </div>
-                 </a>
-             </li>
-            <li class="mb8">
-                <p class="c999 goods-time">添加时间 : 2015-01-23 10:29:22</p>
-                <a href="javascript:;">
-                    <div class="goods-row">
-                        <dl class="gdl">
-                            <dt>
-                                <img src="/static/images/TDSG.png" alt="商品图片"/>
-                            </dt>
-                            <dd>
-                                <i class="more"></i>
-                                <span class="switch-btn switch-abtn switch-goods"  data-id=""><i></i><span>已启用</span></span>
-                                <p class="dgreen clip goods-name">
-                                    <span>广东山竹好好好吃啊哈哈哈哈哈哈哈</span>
-                                </p>
-                                <p class="c666 mt4 clip">
-                                    <span class="mr10"><span class="yellow">￥</span>15.00元/斤</span>
-                                    <span class="mr10"><span class="yellow">￥</span>150.00元/箱</span>
-                                </p>
-                                <p class="mt4 c999 clip">
-                                    <span class="mr10">库存500斤</span>
-                                    <span class="mr10">待成交500斤</span>
-                                    <span class="mr10">销量500斤</span>
-                                </p>
-                            </dd>
-                        </dl>
-                    </div>
-                </a>
-            </li>
-        </ul>
-    </div>
-    <div class="goods-item item hide">
-        <ul class="order-lists pt10" id="goods_time">
-        </ul>
-    </div>
-    <div class="goods-item item hide">
-        <ul class="order-lists pt10" id="goods_storage">
-        </ul>
-    </div>
-    <div class="goods-item item hide">
-        <ul class="order-lists pt10" id="goods_sales">
+        <ul class="order-lists pt10" id="goods-all-list">
         </ul>
     </div>
     <div class="no-result">页面加载中...</div>
 </div>
 <div class="boxs wrap-goods-group mt10 hide">
-    <ul class="group-list">
-        <li>
+    <ul class="group-list" data-code="{{handler.current_shop.shop_code}}">
+        <li data-url="/madmin/goodsBatch?gid=-1" data-num="{{record_count}}">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">
                         <dt>
-                            <div class="wrap-gi tuijian"></div>
+                        <div class="wrap-gi tuijian"></div>
                         </dt>
                         <dd>
-                            <p class="c333">店铺推荐(19)</p>
-                            <p class="c666 mt6">该分组最多加入6个商品，分组排序优先级最高</p>
-                        </dd>
-                    </dl>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:;">
-                <div class="goods-row">
-                    <dl class="godl">
-                        <dt>
-                            <div class="wrap-gi default"></div>
-                        </dt>
-                        <dd>
-                            <p class="c333">默认分组(19)</p>
-                            <p class="c666 mt6">若不设置分组，商品会默认进入该分组</p>
-                        </dd>
-                    </dl>
-                </div>
-            </a>
-        </li>
-        <li>
-            <a href="javascript:;">
-                <div class="goods-row">
-                    <dl class="godl">
-                        <dt>
-                            <div class="wrap-gi default"></div>
-                        </dt>
-                        <dd>
-                            <i class="more"></i>
-                            <div class="c333">
-                                <div class="wrap-operates fr hide">
-                                    <span class="del-group">删除</span>
-                                    <span class="share-group" data-url="http://senguo.cc">分享</span>
-                                    <span class="edit-group">编辑</span>
-                                </div>
-                                <span><span class="go-name">国外分组</span>(19)</span>
+                            <i class="more default-more"></i>
+                            <div class="c333 f14">
+                                <span><span class="go-name">店铺推荐</span> ({{record_count}})</span>
                             </div>
-                            <p class="c666 mt6 clip go-info">若不设置分组，商品会默认进入该分组该分组该分组</p>
+                            <p class="c666 mt6 clip go-info">该分组最多加入6个商品，分组排序优先级最高</p>
                         </dd>
                     </dl>
                 </div>
             </a>
         </li>
-        <li>
+        {% for d in data %}
+        <li data-url="/madmin/goodsBatch?gid={{d['id']}}" data-num="{{d['num']}}">
             <a href="javascript:;">
                 <div class="goods-row">
                     <dl class="godl">
                         <dt>
-                            <div class="wrap-gi"><span class="group-text">水</span></div>
+                            <div class="wrap-gi {% if d['id']==0 %}default{% end %}">{% if d['id']>0 %}<span class="group-text">{{d['first_text']}}</span>{% end %}</div>
                         </dt>
                         <dd>
-                            <i class="more"></i>
-                            <div class="c333">
-                                <div class="wrap-operates fr hide">
-                                    <span class="del-group">删除</span>
-                                    <span class="share-group" data-url="http://senguo.cc">分享</span>
-                                    <span class="edit-group">编辑</span>
-                                </div>
-                                <span><span class="go-name">水果拼盘</span>(19)</span>
+                            {% if d['id']==0 %}
+                            <i class="more default-more"></i>
+                            <div class="c333 f14">
+                                <span><span class="go-name">默认分组</span> ({{d['num']}})</span>
                             </div>
-                            <p class="c666 mt6 clip go-info">清凉一夏！可口美味的水果拼盘来了</p>
+                            <p class="c666 mt6 clip go-info">若不设置分组，商品会默认进入该分组</p>
+                            {% else %}
+                            <i class="more"></i>
+                            <div class="c333 f14">
+                                <div class="wrap-operates fr hide">
+                                    <span class="del-group" data-id="{{d['id']}}">删除</span>
+                                    <span class="share-group" data-url="http://senguo.cc/{{handler.current_shop.shop_code}}?group={{d['id']}}">分享</span>
+                                    <span class="edit-group" data-id="{{d['id']}}">编辑</span>
+                                </div>
+                                <span><span class="go-name">{{d['name']}}</span> ({{d['num']}})</span>
+                            </div>
+                            <p class="c666 mt6 clip go-info">{{d['intro']}}</p>
+                            {% end %}
                         </dd>
                     </dl>
                 </div>
             </a>
         </li>
+        {% end %}
     </ul>
 </div>
 <div class="boxs wrap-classify hide">
     <div class="wrap-coupon-ipt">
-        <input type="text" class="coupon-ipt" placeholder="搜索商品类目">
-        <a href="javascrpipt:;" class="convert-btn" id="convert-btn">搜索</a>
+        <input type="text" class="coupon-ipt" placeholder="搜索商品类目" id="class_con">
+        <a href="javascript:;" class="convert-btn" id="convert-btn">搜索</a>
     </div>
     <ul class="classify-list mt10">
-        <li>
-            <div class="class-row">
-                <span class="class-left red-bg">红色</span>
-                <span class="class-right slide-class arrow-up">已添加4种</span>
-            </div>
-            <ul class="class-lst group red">
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-            </ul>
-        </li>
-        <li>
-            <div class="class-row">
-                <span class="class-left yellow-bg">黄色</span>
-                <span class="class-right slide-class">已添加4种</span>
-            </div>
-            <ul class="class-lst group yellow hide">
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-            </ul>
-        </li>
-        <li>
-            <div class="class-row">
-                <span class="class-left green-bg">黄色</span>
-                <span class="class-right slide-class">已添加4种</span>
-            </div>
-            <ul class="class-lst group green hide">
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span class="selected">苹果(1)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-                <li><span>苹果(0)</span></li>
-            </ul>
-        </li>
     </ul>
 </div>
 </div>
+<ul class="clone-goods hide">
+    <li class="mb8">
+        <p class="c999 goods-time">添加时间 : <span class="goods-add-time"></span></p>
+        <a href="javascript:;" class="goods-goods-edit">
+            <div class="goods-row">
+                <dl class="gdl">
+                    <dt>
+                        <img class="cur-goods-img" src="/static/images/TDSG.png" alt="商品图片"/>
+                    </dt>
+                    <dd>
+                        <i class="more"></i>
+                        <span class="switch-btn switch-goods"><i></i><span>已<span class="s_off">下</span><span class="s_on">上</span>架</span></span>
+                        <span class="cancel-goods hide">撤销删除</span>
+                        <p class="dgreen clip goods-name">
+                            <span class="goods-goods-name f14"></span>
+                        </p>
+                        <p class="c666 mt4 clip goods-price-list">
+                        </p>
+                        <p class="mt4 c999 clip">
+                            <span class="mr10">库存<span class="stock-num">500</span><span class="stock-name">kg</span></span>
+                            <span class="mr10">待成交<span class="stay-num">500</span><span class="stock-name">kg</span></span>
+                            <span class="mr10">销量<span class="goods-vol">500</span><span class="stock-name">kg</span></span>
+                        </p>
+                    </dd>
+                </dl>
+            </div>
+        </a>
+    </li>
+</ul>
 {% end %}
 {% block fix %}
 <div class="qa-btn bm60 hide" id="qa">?</div>
@@ -291,7 +183,7 @@
             <input class="mt10 c666" id="group_info" type="text" placeholder="不得多于20个字"/>
         </div>
         <div class="wrap-bbtns txt-center">
-            <a href="javascript:;" class="ok-bbtn dgreen">完成</a>
+            <a href="javascript:;" class="ok-bbtn dgreen" data-flag="on" id="opreate_group">完成</a>
             <a href="javascript:;" class="cancel-bbtn c666">取消</a>
         </div>
     </div>
@@ -301,7 +193,7 @@
         <div class="b-close"></div>
         <img class="code2-logo code2group" src="/static/images/admin_logo1.png" alt="森果logo"/>
         <p class="c666 mt10">分组链接(长按链接复制到剪切板)</p>
-        <p class="dgreen mt6">http://senguo.cc/list?action=shop&id=1</p>
+        <p class="dgreen mt6 shop_url"></p>
         <p class="c666 mt10">列表二维码(长按二维码保存本地或识别)</p>
         <div class="big-code2 mt10" id="big-code2">
 
@@ -317,23 +209,32 @@
         </div>
     </div>
 </div>
+<div class="pop-bwin pop-delg hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center">确认撤销删除该商品？</h3>
+        <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="del_goods">确认</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
 <div class="wrap-bm-btns">
-    <ul class="btns-list group" id="add_goods">
+    <ul class="btns-list" id="add_goods">
         <li>
             <a href="/madmin/goodsAdd" class="bm-btn add-goods">添加新商品</a>
         </li>
     </ul>
-    <ul class="btns-list group hide" id="group_manage">
+    <ul class="btns-list hide" id="group_manage">
         <li>
-            <a href="javascritp:;" class="bm-btn add-goods">添加新商品</a>
+            <a href="javascript:;" class="bm-btn add-group">添加新分组</a>
         </li>
         <li>
-            <a href="javascritp:;" class="bm-btn manage-group">分组管理</a>
+            <a href="javascript:;" class="bm-btn manage-group">分组管理</a>
         </li>
     </ul>
-    <ul class="btns-list group hide" id="finish_group">
+    <ul class="btns-list hide" id="finish_group">
         <li>
-            <a href="javascritp:;" class="bm-btn finish-group">完成</a>
+            <a href="javascript:;" class="bm-btn finish-group">完成</a>
         </li>
     </ul>
 </div>
