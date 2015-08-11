@@ -145,10 +145,10 @@
 .tag3{background-image: url("/static/images/tag3.png");}
 .tag4{background-image: url("/static/images/tag4.png");}
 .tag5{background-image: url("/static/images/tag5.png");}
-.goods-attr-box{position: relative;padding: 12px 6px;background:#fff;border-bottom-left-radius:6px;border-bottom-right-radius:6px;min-height:70px;}
+.goods-attr-box{position: relative;padding: 11px 6px;background:#fff;border-bottom-left-radius:6px;border-bottom-right-radius:6px;min-height:70px;}
 .attr-left{padding-right: 140px;}
-.attr-left .g-name{color: #333;font-size: 14px;font-weight: bold;}
-.attr-left .g-detail{color: #8b8b8b;font-size: 12px;padding-top: 8px;}
+.attr-left .g-name{color: #333;font-size: 16px;font-weight: bold;}
+.attr-left .g-detail{color: #8b8b8b;font-size: 14px;padding-top: 8px;}
 .attr-right{position: absolute;top: 0;right: 0;width: 140px;-webkit-box-sizing: border-box;min-height: 52px;}
 .src-price{color: #a8a8a8;font-size: 12px;text-decoration: line-through;height: 18px;line-height: 18px;margin-top: 10px;}
 .cur-price{color: #ee413e;font-size: 16px;}
