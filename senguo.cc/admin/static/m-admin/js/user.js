@@ -153,23 +153,8 @@ function pageGoods(action,type_id,value){
     });
 }
 function getGoodsItem(action,type_id,value){
-    var url;
-    var filter_status = $("#filter_status").attr("data-id");
-    var order_status1 = "group";
-    var order_status2 = $(".goods_list").find(".active").attr("data-id");
-    var filter_status2 = -2;
     var pn = page;
-    if(filter_status=="delete"){
-        url="/admin/goods/delete?page="+pn;
-    }else{
-        if(action=="classify"){
-            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
-        }else if(action=="goods_search"){
-            url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
-        }else{
-            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
-        }
-    }
+    var url = "";
     $.ajax({
         url:url,
         type:"get",

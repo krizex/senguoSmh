@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}用户管理{% end %}
 {% block head %}
-
 {% end %}
 {% block header %}
 <div class="header">
@@ -89,6 +88,32 @@
     <div class="no-result hide">页面加载中...</div>
 </div>
 </div>
+<ul class="hide" id="goods_item">
+    <li>
+        <a href="javascript:;" class="goods-goods-edit">
+            <div class="goods-row">
+                <dl class="gdl udl">
+                    <dt>
+                        <img class="cur-goods-img" src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
+                    </dt>
+                    <dd>
+                        <i class="more"></i>
+                        <p class="clip">
+                            <span class="user-name f14 c333 bold">李易峰</span>
+                            <span class="sex-mark woman-mark"></span>
+                            <span class="user-mark f12 c666 clip">李易峰研制超高啊</span>
+                        </p>
+                        <p class="c333 mt4 f12 bold user-balance">余额 25.00元</p>
+                        <p class="mt4 c999 clip">
+                            <span class="mr10">用户积分 10分</span>
+                            <span>用户ID 6652</span>
+                        </p>
+                    </dd>
+                </dl>
+            </div>
+        </a>
+    </li>
+</ul>
 {% end %}
 {% block fix %}
 <div class="wrap-loading-box hide">
