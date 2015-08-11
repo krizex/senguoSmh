@@ -3,7 +3,7 @@
  */
 $(document).ready(function(){
     var height = $(window).height();
-    $(".container").css("minHeight",height-40);
+    $(".container").css("height",height-40-48);
     //店铺状态
     var status = parseInt($("#shop_status").attr("data-status"),10);
     if(status==0){
