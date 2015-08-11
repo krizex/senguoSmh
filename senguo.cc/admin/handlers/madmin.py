@@ -483,9 +483,32 @@ class User(AdminBaseHandler):
 #用户详情
 class UserDetail(AdminBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
-		data = []
-		return self.render("m-admin/user-detail.html")
+	def get(self,_id):
+		try:
+			user=self.session.query(models.Customer,models.CustomerShopFollow)\
+			.join(models.CustomerShopFollow,models.Customer.id==models.CustomerShopFollow.customer_id)\
+			.filter(models.Customer.id==_id,models.CustomerShopFollow.shop_id==self.current_shop.id).first()
+		except:
+			user = None
+			return self.write("该用户不存在")
+		data={}
+		if user:
+			shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.customer_id == _id).all()
+			userinfo=user[0]
+			usershopinfo=user[1]
+			data["id"]=userinfo.id
+			data["nickname"]=userinfo.accountinfo.nickname
+			data["headimgurl"]=userinfo.accountinfo.headimgurl_small
+			data["sex"]=userinfo.accountinfo.sex
+			data["realname"]=userinfo.accountinfo.realname
+			data["phone"]=userinfo.accountinfo.phone
+			data["birthday"]=userinfo.accountinfo.birthday
+			data["address"]=userinfo.addresses
+			data["shop_point"]=usershopinfo.shop_point
+			data["shops"]=shop_names
+		print(data)
+		return self.render("m-admin/user-detail.html",data=data)
 #用户搜索
 class UserSearch(AdminBaseHandler):
 	@tornado.web.authenticated
