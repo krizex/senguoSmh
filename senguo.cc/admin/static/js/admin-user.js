@@ -93,8 +93,8 @@ $(document).ready(function(){
     var $this=$(this);
     $this.addClass("active").siblings("li").removeClass("active");
     var action=$this.attr("data-url");
-    var order_by=$this.attr("data-id");
-    var if_reverse= $this.attr("data-id");
+    var order_by=$("#cur-sort-way").attr("data-id");
+    var if_reverse=$("#cur-sort-reverse").attr("data-id");
     getItem(action,order_by,if_reverse,0);
 }).on("click",".next-page",function(){
     var if_reverse=$("#cur-sort-reverse").attr("data-id");
