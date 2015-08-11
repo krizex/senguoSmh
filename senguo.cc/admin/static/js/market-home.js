@@ -3,7 +3,7 @@ $(document).ready(function(){
     var height = $(window).height();
     //$(".container").height(height).css("overflow","hidden").css("paddingBottom","0");
     //$("#wrap-home-box").height(height-50);
-    $(".notice-item").width(width).css("minHeight","120px");
+    $(".notice-item").width("100%");
     if($(".swiper-slide").size()>1){
         $(".swiper-wrapper").width(width*$(".swiper-slide").size());
         new Swiper('#swiper-container',{

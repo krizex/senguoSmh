@@ -1,7 +1,7 @@
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();
-    $(".notice-item").width(width).css("minHeight","120px");
+    $(".notice-item").width("100%");
     if($(".swiper-slide").size()>1){
         $(".swiper-wrapper").width(width*$(".swiper-slide").size());
         new Swiper('#swiper-container',{
@@ -21,7 +21,7 @@ $(document).ready(function(){
     if(link_group!= null){
         window.dataObj.page=1;
         _action=6;
-        var _group_id = parseInt(link_group);
+        _group_id = Number(link_group);
         goodsList(1,6,_group_id);
     }
     else if(link_search != null){
@@ -39,8 +39,8 @@ $(document).ready(function(){
         $('.more-group li').each(function(){
             var $this=$(this);
             var id = Number($this.attr('data-id'));
-            var _group_id = id;
-            if(_finished==true){
+            _group_id = parseInt(id);
+            if(_finished==true&&_group_id!=-2){
                 goodsList(1,6,_group_id); 
                 scrollLoading(_group_id);
             }
@@ -75,7 +75,7 @@ $(document).ready(function(){
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
-}).on('click','.goods-list-item',function(e){
+}).on('click','.goods_item_item',function(e){
     var $this=$(this);
     var storage=Number($this.attr('data-num'));
     var detail_no=$this.attr('data-detail');
@@ -91,15 +91,15 @@ $(document).ready(function(){
 }).on('click','.check-lg-img',function(){
     //查看大图
     var $this=$(this);
-    var parent=$this.parents('.goods-list-item');
-    var type=$this.parents('.goods-list-item').data('type');
-    var id=$this.parents('.goods-list-item').data('id');
+    var parent=$this.parents('.goods_item_item');
+    var type=$this.parents('.goods_item_item').data('type');
+    var id=$this.parents('.goods_item_item').data('id');
     var img_url=$this.find('.img').attr('src');
     //var img_type=$this.find('.img').attr('data-img');
     var fruit_name=parent.find('.fruit-name').text();
     var fruit_intro=parent.find('.fruit_intro').val();
     var large_box=$('#large_imgbox');
-    var if_favour=$this.parents('.goods-list-item').attr('data-favour');
+    var if_favour=$this.parents('.goods_item_item').attr('data-favour');
     if(img_url!='') {
         if(img_url.indexOf('/design_img')) img_url=img_url.replace('.png','_l.png');
         img_url=img_url.replace('w/170/h/170','w/560/h/560');
@@ -136,24 +136,13 @@ $(document).ready(function(){
     var $this=$(this);
     $this.find('.icon').toggle();
     $('.goods-class-choose').toggle();
-}).on('click','.more-group li',function(){
-    $('.more-group').toggle();
-    var $this=$(this);
-    var text=$this.text();
-    $('#classify').text(text);
-    var group_id=Number($this.attr('data-id'));
-    var top=$('.classify-'+group_id).offset().top;
-    if(group_id==-1){
-        top=$('.goods-list--1').offset().top-40;
-    }
-    $.scrollTo({endY:top,duration:500,callback:function(){}});
 }).on('click','body',function(e){
     if($(e.target).closest('.to-hide').length == 0){
         $('.classify-list').hide();
     }
 }).on('click','#all_goods',function(){
     //get all goods
-    $('.goods-list').empty();
+    $('.bingo-list').empty();
     window.dataObj.page=1;
     _action=5;
     goodsList(1,5);
@@ -168,12 +157,12 @@ $(document).ready(function(){
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
-    var parent=$this.parents('.goods-list-item');
+    var parent=$this.parents('.goods_item_item');
     var storage=parseFloat(parent.attr('data-storage'));
-    var relate=parseFloat($this.parents('.charge-item').attr('data-relate'));
-    var unit_num=parseFloat($this.parents('.num_box').siblings('.charge-type').find('.num').text());
+    var relate=parseFloat(parent.attr('data-relate'));
+    var unit_num=parseFloat(parent.attr('data-unitnum'));
     var change_num=relate*unit_num*1;
-    var buy_today=$this.parents('.charge-item').attr('data-buy');
+    var buy_today=parent.attr('data-buy');
     var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
     if(change_num==NaN){
         change_num=0;
@@ -185,9 +174,9 @@ $(document).ready(function(){
         if(storage-change_num<0){
             return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
         }else if(storage-change_num==0){
-            $this.siblings('.number-change').find('.number-input').val(0);
+            $this.siblings('.number-change').find('.number-input').text(0);
         }else{
-            $this.siblings('.number-change').find('.number-input').val(0); 
+            $this.siblings('.number-change').find('.number-input').text(0); 
         }
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
@@ -213,8 +202,8 @@ $(document).ready(function(){
 }).on('click','.number-plus',function(){
     var $this=$(this);
     if($this.parents('.charge-item').find('.to-add').hasClass('hidden')){
-        var parent=$this.parents('.goods-list-item');
-        var num=Int($this.siblings('.number-input').val().trim());
+        var parent=$this.parents('.goods_item_item');
+        var num=Int($this.siblings('.number-input').text());
         var storage=parseFloat(parent.attr('data-storage'));
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
@@ -231,29 +220,35 @@ $(document).ready(function(){
             return noticeBox('最多只能添加999哦！',$this);
         } 
     }
-}).on("click",".add-gds",function(){
-
-}).on("click",".minus-gds",function(){
-    $(".wrap-operate").children(".roll-btn").addClass("hidden");
-    $(".wrap-operate").children(".buy-gds").removeClass("hidden");
-    $(".wrap-src-price").removeClass("hidden");
-    $(".wrap-bug-text").addClass("hidden");
-}).on("click",".buy-gds",function(){
-    $(".wrap-operate").children(".roll-btn").removeClass("hidden");
-    $(".wrap-operate").children(".buy-gds").addClass("hidden");
-    $(".wrap-src-price").addClass("hidden");
-    $(".wrap-bug-text").removeClass("hidden");
 }).on("click",".tab-group>li",function(){
-    var index = $(this).index();
-    if(index == 2){
-        if($(this).hasClass("active")){
-            $(".more-group").toggleClass("hidden");
+    var $this=$(this);
+    var index=$this.index();
+    $this.addClass("active").siblings("li").removeClass("active");
+    var group_id=Number($this.attr("data-id"));
+    if(index!=2){
+        if(group_id==-2){
+        $(".bingo-list").removeClass("hidden");
+        }else{
+            $(".bingo-list").addClass("hidden");
+            $(".goods-list-"+group_id).removeClass("hidden");
         }
+        $("#cur_group").text($this.text());
+        _group_id=group_id;
     }
-    $(".tab-group li").removeClass("active").eq(index).addClass("active");
-}).on("click",".more-group li",function(){
+}).on('click','.more-group li',function(){
+    var $this=$(this);
+    var text=$this.text();
+    var group_id=Number($this.attr('data-id'));
+    if(group_id==-2){
+        $(".bingo-list").removeClass("hidden");
+    }else{
+        $(".bingo-list").addClass("hidden");
+        $('.goods-list-'+group_id).removeClass("hidden");
+        _group_id=group_id;
+    }
     $("#cur_group").html($(this).html()).attr("data-id",$(this).attr("data-id"));
     $(".more-group").addClass("hidden");
+    // $.scrollTo({endY:top,duration:500,callback:function(){}});
 }).on('click','._add_cart',function(e){
     //添加到购物车
     stopDefault(e);
@@ -263,6 +258,7 @@ $(document).ready(function(){
 var _action=6;
 var _finished=true;
 var _search;
+var _group_id;
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(_group_id){
     $(window).scroll(function(){
@@ -270,16 +266,16 @@ var scrollLoading=function(_group_id){
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
         var totalheight = 0;
         var main = $('.goods-list-'+_group_id);              //主体元素
-        var nomore=$('.goods-list-'+_group_id).attr("data-nomore");
+        var nomore=main.attr("data-nomore");
         var page=parseInt($('.goods-list-'+_group_id).attr("data-page"));
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false') {
+        if(_finished&&(main.height()-range) <= totalheight  && nomore=="false") {
             _finished=false;
             page = page+1;
             $('.goods-list-'+_group_id).attr("data-page",page);
             goodsList(page,_action,_group_id);
         }
-        else if(nomore==true){
+        else if(nomore=="true"){
             if(_action==9){
                 $('.loading').html("~没有更多结果了 ( > < )~").show();
             }else{
@@ -311,6 +307,7 @@ var goodsList=function(page,action,_group_id){
             {
                 var nomore = res.nomore
                 initData(res.data);
+                $('.goods-list-'+_group_id).attr({"data-nomore":nomore})
                 if(nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
@@ -336,7 +333,7 @@ var goodsList=function(page,action,_group_id){
             };
             cartNum(c_fs,'.fruit-list');
             _finished=true;
-            $(".wrap-loading-box").addClass("hidden");
+            $(".wrap-loading-box").remove();
         }
 };
 
@@ -366,9 +363,9 @@ var fruitItem=function(box,fruits,type){
         heart='gray-heart';
     }
     if(!img_url){
-        ori_img='/static/design_img/'+code+'.png';
+        ori_img='/static/design_img/'+code+'_l.png';
     }else{
-        ori_img=img_url+'?imageView2/1/w/170/h/170';
+        ori_img=img_url+'?imageView2/1/w/800/h/400';
     }
     if(tag==2){//限时
         tag='tag2';
@@ -384,17 +381,28 @@ var fruitItem=function(box,fruits,type){
     if(!intro){
         intro=" ";
     }
-    $item.attr("data-id",id).addClass(code);
+    if(!charge_type){
+        var relate=charge_type.relate;
+        var unitnum=charge-type.num;
+        var limit_today=charge-type.limit_today;
+    }else{
+        var relate=0;
+        var unitnum=0;
+        var limit_today=false;
+    }
+    $item.attr({"data-id":id,"data-num":storage,"data-storage":storage,"data-limit":limit_num,"data-favour":favour_today,"data-relate":relate,"data-unitnum":unitnum,"data-buy":limit_today}).addClass(code);
     $item.find(".g-name").html(name);
     $item.find(".g-detail").html(intro);
     $item.find(".goods_img").attr("src",ori_img);
-    if(charge_type.market_price){
-        $item.find(".src-price-num").html(charge_type.market_price+"元/"+charge_type.num+charge_type.unit);
-    }else{
-        $item.find(".src-price-num").addClass("hidden");
+    if(charge_type){
+         if(charge_type.market_price){
+            $item.find(".src-price-num").html(charge_type.market_price+"元/"+charge_type.num+charge_type.unit);
+        }else{
+            $item.find(".src-price-num").html(charge_type.price+"元/"+charge_type.num+charge_type.unit);
+        }
+        $item.find(".cur-price-num").html(charge_type.price+"元/"+charge_type.num+charge_type.unit);
+        $item.find(".price-all-num").html(charge_type.price);
     }
-    $item.find(".cur-price-num").html(charge_type.price+"元/"+charge_type.num+charge_type.unit);
-    $item.find(".price-all-num").html(charge_type.price);
     $item.find(".status-tip").addClass(tag);
     box.append($item);
 };
@@ -412,11 +420,11 @@ function cartNum(cart_ms,list){
                 var change = charge.siblings('.num_box').find('.number-change');
                 var input = change.find('.number-input');
                 if (id == cart_ms[key][0]) {
-                    var $parent=charge.parents('.goods-list-item');
+                    var $parent=charge.parents('.goods_item_item');
                     var storage=$parent.attr('data-num');
                     add.addClass('hidden');
                     change.removeClass('hidden');
-                    input.val(cart_ms[key][1]);
+                    input.text(cart_ms[key][1]);
                     var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
                     var unit_num=parseFloat(charge.find('.num').text());
                     var change_num=relate*unit_num*cart_ms[key][1];
@@ -431,9 +439,9 @@ function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var change=target.parents('.number-change');
     var num=parseInt(item.val());
-    var parent=target.parents('.goods-list-item');
+    var parent=target.parents('.goods_item_item');
     var storage=parseFloat(parent.attr('data-storage'));
-    var type_list=target.parents('.goods-list');
+    var type_list=target.parents('.bingo-list');
     var id=target.parents('.charge-item').attr('data-id');
     var relate=parseFloat(target.parents('.charge-item').attr('data-relate'));
     var unit_num=parseFloat(target.parents('.num_box').siblings('.charge-type').find('.num').text());
@@ -546,7 +554,7 @@ function great(type,id){
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                $('.goods-list-item').each(function(){
+                $('.goods_item_item').each(function(){
                     var $this=$(this);
                     var type=$this.data('type');
                     var goods_id=$this.data('id');
