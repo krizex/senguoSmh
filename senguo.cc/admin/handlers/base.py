@@ -127,7 +127,7 @@ class GlobalBaseHandler(BaseHandler):
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,customer_id=current_customer_id).with_lockmode('update').all()
 		for x in q:
-			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,closed=0).with_lockmode('update').first()
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id).with_lockmode('update').first()
 			if  qq!=None:
 				if now_date>qq.to_get_date:
 					qq.closed=1
@@ -498,7 +498,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('[WxAuth]login in get_weixin_oauth_link2, next_url:',self,next_url)
+		# print('[WxAuth]login in get_weixin_oauth_link2, next_url:',self,next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -834,7 +834,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
-		print(order)
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
@@ -1995,7 +1994,6 @@ class WxOauth2:
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
-		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
 			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',

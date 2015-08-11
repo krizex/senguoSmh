@@ -13,13 +13,13 @@ $(document).ready(function(){
             $(".third-item").html("已完成");
             $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
-            $(".order-lists").addClass("pt50");
+            $(".order-lists").addClass("pt40");
         }else{
             $(".second-item").html("处理中");
             $(".third-item").html("已送达");
             $(".wrap-self-choose").addClass("hide");
             $(".second-tab").removeClass("mt40");
-            $(".order-lists").removeClass("pt50");
+            $(".order-lists").removeClass("pt40");
         }
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
@@ -243,7 +243,7 @@ var getOrder=function(page,flag){
                     }else{
                         pay_type = "在线支付";
                     }
-                     switch (order_status){
+                    switch (order_status){
                         case -1:
                             $("#status-txt").text('未支付');
                             width='order-w0';
