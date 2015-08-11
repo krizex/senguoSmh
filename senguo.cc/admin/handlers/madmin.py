@@ -506,6 +506,7 @@ class UserDetail(AdminBaseHandler):
 			data["birthday"]=userinfo.accountinfo.birthday
 			data["address"]=userinfo.addresses
 			data["shop_point"]=usershopinfo.shop_point
+			data["remark"]=usershopinfo.remark
 			data["shops"]=shop_names
 		print(data)
 		return self.render("m-admin/user-detail.html",data=data)
