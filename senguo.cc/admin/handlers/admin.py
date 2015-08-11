@@ -2997,6 +2997,7 @@ class Follower(AdminBaseHandler):
 			count = 0
 			page_sum = 0
 			shop_id = self.current_shop.id
+			nomore = False
 			if action in ("all","old","charge"):
 				if action == "all":  # 所有用户
 					q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
@@ -3081,6 +3082,8 @@ class Follower(AdminBaseHandler):
 				customers[x].remark = shop_point.remark
 
 			page_sum=count/page_size
+			if page == page_sum:
+				nomore = True
 			if page_sum == 0:
 				page_sum=1
 			customer_list=[]
