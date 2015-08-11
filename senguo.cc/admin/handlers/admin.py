@@ -2980,7 +2980,7 @@ class editorFileManage(AdminBaseHandler):
 # 用户管理
 class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
+	@AdminBaseHandler.check_arguments("action:str", "order_by:str","if_reverse?:int", "page:int", "wd?:str")
 	def get(self):
 		self.if_current_shops()
 		# if self.is_pc_browser()==False:
@@ -2988,6 +2988,10 @@ class Follower(AdminBaseHandler):
 		action = self.args["action"]
 		order_by = self.args["order_by"]
 		page = self.args["page"]
+		if "if_reverse" in self.args:
+			if_reverse = self.args["if_reverse"]
+		else:
+			if_reverse = None
 		page_size = 10
 		count = 0
 		page_sum = 0
@@ -2996,18 +3000,40 @@ class Follower(AdminBaseHandler):
 			if action == "all":  # 所有用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
-				if order_by == "time":
-					q = q.order_by(desc(models.CustomerShopFollow.create_time))
 			elif action == "old":  # 老用户
 				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 					filter(models.CustomerShopFollow.shop_id == self.current_shop.id,models.CustomerShopFollow.shop_new == 1)
 			elif action == "charge":
-				q = self.session.query(models.Customer).join(models.BalanceHistory,models.Customer.id == models.BalanceHistory.customer_id).\
-					filter(models.BalanceHistory.shop_id == self.current_shop.id,models.BalanceHistory.balance_type==1).distinct()
-			if order_by == "credits":
-				q = q.order_by(desc(models.Customer.credits))
-			elif order_by == "balance":
-				q = q.order_by(desc(models.Customer.balance))
+				query_list = self.session.query(models.BalanceHistory.customer_id).filter_by(shop_id = self.current_shop.id,balance_type = 0).all()
+				charge_list = []
+				for item in query_list:
+					charge_list.append(item[0])
+				charge_list = set(charge_list)
+				q = self.session.query(models.Customer).outerjoin(models.CustomerShopFollow).\
+					filter(models.Customer.id.in_(charge_list),models.CustomerShopFollow.shop_id == self.current_shop.id).distinct()
+
+			if if_reverse == 1:
+				if order_by == "time":
+					q = q.order_by(desc(models.CustomerShopFollow.create_time))
+				elif order_by == "point":
+					q = q.order_by(desc(models.CustomerShopFollow.shop_point))
+				elif order_by == "balance":
+					q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
+			elif if_reverse == 0:
+				if order_by == "time":
+					q = q.order_by(models.CustomerShopFollow.create_time)
+				elif order_by == "point":
+					q = q.order_by(models.CustomerShopFollow.shop_point)
+				elif order_by == "balance":
+					q = q.order_by(models.CustomerShopFollow.shop_balance)
+			else:
+				if order_by == "time":
+					q = q.order_by(desc(models.CustomerShopFollow.create_time))
+				elif order_by == "point":
+					q = q.order_by(desc(models.CustomerShopFollow.shop_point))
+				elif order_by == "balance":
+					q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
+
 			count = q.count()
 			customers = q.offset(page*page_size).limit(page_size).all()
 
