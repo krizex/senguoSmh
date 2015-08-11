@@ -32,7 +32,7 @@ import requests
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
-
+	@CustomerBaseHandler.check_arguments("jpush_id?")
 	def get(self):
 		next_url = self.get_argument('next', '')
 		# print("[CustomerAccess]Redirect URL:",next_url)
@@ -73,7 +73,7 @@ class Access(CustomerBaseHandler):
 			return self.send_error(404)
 
 	#@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone", "password", "next?","jpush_id?")
+	@CustomerBaseHandler.check_arguments("phone", "password", "next?")
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
@@ -147,6 +147,7 @@ class Third(CustomerBaseHandler):
 			headimgurl=str(self.args["headimgurl"])
 			nickname=str(self.args["nickname"])
 			sex=int(self.args["sex"])
+			jpush_id=str(self.args["jpush_id"])
 			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
 			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
 			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=1).first()
