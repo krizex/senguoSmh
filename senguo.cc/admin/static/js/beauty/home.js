@@ -192,7 +192,6 @@ $(document).ready(function(){
 var _search;
 var _action=6;
 var _finished=true;
-var _search;
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(_group_id){
     $(window).scroll(function(){

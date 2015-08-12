@@ -1,3 +1,4 @@
+var gArr = [],sid=0;
 $(document).ready(function(){
     $('.bottom-nav').find('li').addClass('add_cart');
     var width = $("#swiper-container").width();
@@ -19,32 +20,28 @@ $(document).ready(function(){
     if(link_group!= null){
         window.dataObj.page=1;
         _action=6;
-        _group_id = Number(link_group);
+        var _group_id = Number(link_group);
+        sid = _group_id;
         goodsList(1,6,_group_id);
+        scrollLoading();
     }else{
         if($('.more-group li').length==0){
             $(".wrap-loading-box").addClass("hidden");
             $('.tab-group li').each(function(){
-                var $this=$(this);
-                var id = Number($this.attr('data-id'));
-                _group_id = parseInt(id);
-                if(_finished==true&&_group_id!=-2){
-                    goodsList(1,6,_group_id); 
-                    scrollLoading(_group_id);
+                if($(this).attr('data-id')!=-2){
+                    gArr.push($(this).attr('data-id'));
                 }
             });
         }else{
              $('.more-group li').each(function(){
-                var $this=$(this);
-                var id = Number($this.attr('data-id'));
-                _group_id = parseInt(id);
-                if(_finished==true&&_group_id!=-2){
-                    goodsList(1,6,_group_id); 
-                    scrollLoading(_group_id);
-                }
+                 if($(this).attr('data-id')!=-2){
+                     gArr.push($(this).attr('data-id'));
+                 }
              });
         }
-       
+        allList(1,6,gArr[0]);
+        sid = gArr[0];
+        scrollLoading();
         $('.tab-group li').first().addClass("active");
     }
     var shop_logo=$('#shop_imgurl').attr('data-img');
@@ -101,12 +98,6 @@ $(document).ready(function(){
     }else{
         $('.classify-list').toggle();
     }
-}).on('click','#all_goods',function(){
-    //get all goods
-    $('.bingo-list').empty();
-    window.dataObj.page=1;
-    _action=5;
-    goodsList(1,5);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
@@ -187,7 +178,6 @@ $(document).ready(function(){
             $(".bingo-list").addClass("hidden");
             $(".goods-list-"+group_id).removeClass("hidden");
         }
-        _group_id=group_id;
     }
     $this.addClass("active").siblings("li").removeClass("active");
 }).on('click','.more-group li',function(){
@@ -199,7 +189,6 @@ $(document).ready(function(){
     }else{
         $(".bingo-list").addClass("hidden");
         $('.goods-list-'+group_id).removeClass("hidden");
-        _group_id=group_id;
     }
     $("#cur_group").html($(this).html()).attr("data-id",$(this).attr("data-id"));
     $(".more-group").addClass("hidden");
@@ -223,21 +212,54 @@ $(document).ready(function(){
 var _action=6;
 var _finished=true;
 var _search;
-var _group_id;
+var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}">'+
+        '<div class="goods-img-box {{desaturate}}">'+
+            '<img class="goods_img lazy_img" src="/static/images/holder_fruit.png" alt="{{name}}" data-original="{{img_url}}"/>'+
+            '<div class="goods-img-hover"></div>'+
+            '<div class="status-tip {{tag}}"></div>'+
+        '</div>'+
+        '<div class="goods-attr-box {{desaturate}}">'+
+            '<div class="attr-left">'+
+                '<p class="g-name clip">{{name}}</p>'+
+                '<p class="g-detail clip">{{intro}}</p>'+
+            '</div>'+
+            '<div class="attr-right">'+
+                '<div class="wrap-operate">'+
+                    '<span href="javascript:;" class="roll-btn minus-gds number-minus hidden"></span>'+
+                    '<span href="javascript:;" class="roll-btn add-gds number-plus hidden"></span>'+
+                    '<span href="javascript:;" class="roll-btn buy-gds to-add add_cart_num">买</span>'+
+                '</div>'+
+                '<div class="wrap-src-price">'+
+                    '<p class="src-price"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
+                    '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span></p>'+
+                '</div>'+
+                '<div class="wrap-bug-text hidden">'+
+                    '<span class="bug-num"><span class="font16">x </span><span class="buy-num number-input">1</span></span>'+
+                    '<span class="price-all">小计 ￥<span class="price-all-num">{{price_all}}</span>元</span>'+
+                '</div>'+
+            '</div>'+
+        '</div>'+
+        '<div class="sold-out {{sold_out}}" style="background-color:rgba(0,0,0,0.1)"><div class="out"></div></div>'+
+    '</li>';
 $('.loading').html("~努力加载中 ( > < )~").show();
-var scrollLoading=function(_group_id){
+var scrollLoading=function(){
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
-        var main = $('.goods-list-'+_group_id);              //主体元素
+        //var main = $('.goods-list-'+_group_id);              //主体元素
+        var main = $('.goods-list-'+sid);
         var nomore=main.attr("data-nomore");
-        var page=parseInt($('.goods-list-'+_group_id).attr("data-page"));
+        var page=parseInt($('.goods-list-'+sid).attr("data-page"));
         var totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
         if(_finished&&(main.height()-range) <= totalheight  && nomore=="false") {
             _finished=false;
             page = page+1;
-            $('.goods-list-'+_group_id).attr("data-page",page);
-            goodsList(page,_action,_group_id);
+            $('.goods-list-'+sid).attr("data-page",page);
+            goodsList(page,_action,sid);
+        }else if(_finished&&(main.height()-range) <= totalheight  && nomore=="true"){
+            if(main.index()<gArr.length){
+                sid = gArr[parseInt(main.index())+1];
+            }
         }
         else if(nomore=="true"){
             if(_action==9){
@@ -248,7 +270,48 @@ var scrollLoading=function(_group_id){
         }
     });
 }
-
+var aindex = 0;
+var allList=function(page,action,_group_id){
+    $(".wrap-loading-box").removeClass("hidden");
+    var url='';
+    var action = action;
+    var args={
+        action:action,
+        page:page
+    };
+    if(action==6){
+        args.group_id = _group_id;
+    }
+    $.postJson(url,args,function(res){
+        $(".wrap-loading-box").remove();
+        if(res.success)
+        {
+            aindex++;
+            var nomore = res.nomore
+            $('.goods-list-'+_group_id).attr({"data-nomore":nomore})
+            initData(res.data);
+            if(aindex<gArr.length){
+                allList(1,6,gArr[aindex]);
+            }
+        }
+        else {
+            noticeBox(res.error_text);
+        }
+    });
+    var initData=function(data){
+        var data=data;
+        for(var key in data){
+            fruitItem($('.goods-list-'+_group_id),data[key]);//fruits information
+        }
+        var fruits=window.dataObj.fruits;
+        var c_fs=[];
+        for(var key in fruits){
+            c_fs.push([key,fruits[key]]);
+        };
+        cartNum(c_fs,'.fruit-list');
+        $(".wrap-loading-box").remove();
+    }
+};
 var goodsList=function(page,action,_group_id){
     $(".wrap-loading-box").removeClass("hidden");
     var url='';
@@ -266,7 +329,9 @@ var goodsList=function(page,action,_group_id){
     if(action==9){
         args.search = _search;
     }
+    _finished = false;
     $.postJson(url,args,function(res){
+        $(".wrap-loading-box").addClass("hidden");
             if(res.success)
             {
                 var nomore = res.nomore
@@ -277,13 +342,11 @@ var goodsList=function(page,action,_group_id){
                     }else{
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
-                }else{
-                    initData(res.data);
                 }
+                initData(res.data);
             }
             else {
                 noticeBox(res.error_text);
-                $(".wrap-loading-box").addClass("hidden");
             }
         });
         var initData=function(data){
@@ -303,7 +366,7 @@ var goodsList=function(page,action,_group_id){
 };
 
 var fruitItem=function(box,fruits,type){
-    var $item = $("#goods_item").children("li").clone();
+    var render = template.compile(__item);
     var id=fruits['id'];
     var storage=fruits['storage'];
     var code=fruits['code'];
@@ -320,6 +383,10 @@ var fruitItem=function(box,fruits,type){
     var heart='';
     var sold_out='';
     var ori_img='';
+    var desaturate="";
+    var src_price=0;
+    var cur_price=0;
+    var price_all=0;
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
     if(favour_today=='true'){
@@ -359,27 +426,48 @@ var fruitItem=function(box,fruits,type){
         var charge_id = 0;
         var charge_price=0;
     }
-    $item.attr({"data-id":id,"data-num":storage,"data-storage":storage,"data-limit":limit_num,"data-favour":favour_today,"data-relate":relate,"data-unitnum":unitnum,"data-buy":limit_today,"data-charge":charge_id,"data-price":charge_price}).addClass(code);
-    $item.find(".g-name").html(name);
-    $item.find(".g-detail").html(intro);
-    $item.find(".goods_img").attr("data-original",ori_img);
     if(charge_type){
          if(charge_type.market_price){
-            $item.find(".src-price-num").html(charge_type.market_price+"元/"+charge_type.num+charge_type.unit);
+            src_price=charge_type.market_price+"元/"+charge_type.num+charge_type.unit;
         }else{
-            $item.find(".src-price-num").html(charge_type.price+"元/"+charge_type.num+charge_type.unit);
+            src_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
         }
-        $item.find(".cur-price-num").html(charge_type.price+"元/"+charge_type.num+charge_type.unit);
-        $item.find(".price-all-num").html(charge_type.price);
+        cur_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
+        price_all=charge_type.price
     }
-    $item.find(".status-tip").addClass(tag);
     if(storage<=0){
-        $item.find(".sold-out").removeClass("hidden");
-        $item.find(".goods-img-box").addClass("desaturate");
-        $item.find(".goods-attr-box").addClass("desaturate")
+        sold_out="";
+        desaturate="desaturate";
+    }else{
+        sold_out="hidden";
+        desaturate="";
     }
-    $item.find('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
-    box.append($item);
+    var html=render({
+        id:id,
+        storage:storage,
+        code:code,
+        tag:tag,
+        img_url:ori_img,
+        intro:intro,
+        name:name,
+        saled:saled,
+        favour:favour,
+        favour_today:favour_today,
+        limit_num:limit_num,
+        ori_img:ori_img,
+        src_price:src_price,
+        cur_price:cur_price,
+        price_all:price_all,
+        sold_out:sold_out,
+        desaturate:desaturate,
+        unitnum:unitnum,
+        relate:relate,
+        limit_today:limit_today,
+        charge_id:charge_id,
+        charge_price:charge_price
+    });
+    box.append(html);
+    $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
