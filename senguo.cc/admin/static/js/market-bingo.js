@@ -271,6 +271,35 @@ var _action=6;
 var _finished=true;
 var _search;
 var _group_id;
+var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}">'+
+        '<div class="goods-img-box {{desaturate}}">'+
+            '<img class="goods_img lazy_img" src="/static/images/holder_fruit.jpg" alt="水果图片" data-original="{{img_url}}"/>'+
+            '<div class="goods-img-hover"></div>'+
+            '<div class="status-tip {{tag}}"></div>'+
+        '</div>'+
+        '<div class="goods-attr-box {{desaturate}}">'+
+            '<div class="attr-left">'+
+                '<p class="g-name clip">{{name}}</p>'+
+                '<p class="g-detail clip">{{intro}}</p>'+
+            '</div>'+
+            '<div class="attr-right">'+
+                '<div class="wrap-operate">'+
+                    '<span href="javascript:;" class="roll-btn minus-gds number-minus hidden"></span>'+
+                    '<span href="javascript:;" class="roll-btn add-gds number-plus hidden"></span>'+
+                    '<span href="javascript:;" class="roll-btn buy-gds to-add add_cart_num">买</span>'+
+                '</div>'+
+                '<div class="wrap-src-price">'+
+                    '<p class="src-price"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
+                    '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span></p>'+
+                '</div>'+
+                '<div class="wrap-bug-text hidden">'+
+                    '<span class="bug-num"><span class="font16">x </span><span class="buy-num number-input">1</span></span>'+
+                    '<span class="price-all">小计 ￥<span class="price-all-num">{{price_all}}</span>元</span>'+
+                '</div>'+
+            '</div>'+
+        '</div>'+
+        '<div class="sold-out {{sold_out}}" style="background-color:rgba(0,0,0,0.1)"><div class="out"></div></div>'+
+    '</li>';
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(_group_id){
     $(window).scroll(function(){
@@ -350,7 +379,7 @@ var goodsList=function(page,action,_group_id){
 };
 
 var fruitItem=function(box,fruits,type){
-    var $item = $("#goods_item").children("li").clone();
+    var render = template.compile(__item);
     var id=fruits['id'];
     var storage=fruits['storage'];
     var code=fruits['code'];
@@ -367,6 +396,10 @@ var fruitItem=function(box,fruits,type){
     var heart='';
     var sold_out='';
     var ori_img='';
+    var desaturate="";
+    var src_price=0;
+    var cur_price=0;
+    var price_all=0;
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
     if(favour_today=='true'){
@@ -406,27 +439,48 @@ var fruitItem=function(box,fruits,type){
         var charge_id = 0;
         var charge_price=0;
     }
-    $item.attr({"data-id":id,"data-num":storage,"data-storage":storage,"data-limit":limit_num,"data-favour":favour_today,"data-relate":relate,"data-unitnum":unitnum,"data-buy":limit_today,"data-charge":charge_id,"data-price":charge_price}).addClass(code);
-    $item.find(".g-name").html(name);
-    $item.find(".g-detail").html(intro);
-    $item.find(".goods_img").attr("data-original",ori_img);
     if(charge_type){
          if(charge_type.market_price){
-            $item.find(".src-price-num").html(charge_type.market_price+"元/"+charge_type.num+charge_type.unit);
+            src_price=charge_type.market_price+"元/"+charge_type.num+charge_type.unit;
         }else{
-            $item.find(".src-price-num").html(charge_type.price+"元/"+charge_type.num+charge_type.unit);
+            src_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
         }
-        $item.find(".cur-price-num").html(charge_type.price+"元/"+charge_type.num+charge_type.unit);
-        $item.find(".price-all-num").html(charge_type.price);
+        cur_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
+        price_all=charge_type.price
     }
-    $item.find(".status-tip").addClass(tag);
     if(storage<=0){
-        $item.find(".sold-out").removeClass("hidden");
-        $item.find(".goods-img-box").addClass("desaturate");
-        $item.find(".goods-attr-box").addClass("desaturate")
+        sold_out="";
+        desaturate="desaturate";
+    }else{
+        sold_out="hidden";
+        desaturate="";
     }
-    $item.find('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
-    box.append($item);
+    var html=render({
+        id:id,
+        storage:storage,
+        code:code,
+        tag:tag,
+        img_url:ori_img,
+        intro:intro,
+        name:name,
+        saled:saled,
+        favour:favour,
+        favour_today:favour_today,
+        limit_num:limit_num,
+        ori_img:ori_img,
+        src_price:src_price,
+        cur_price:cur_price,
+        price_all:price_all,
+        sold_out:sold_out,
+        desaturate:desaturate,
+        unitnum:unitnum,
+        relate:relate,
+        limit_today:limit_today,
+        charge_id:charge_id,
+        charge_price:charge_price
+    });
+    box.append(html);
+    $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
