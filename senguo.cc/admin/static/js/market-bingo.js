@@ -66,7 +66,7 @@ $(document).ready(function(){
         }
     });
     $(document).on('click','#backTop',function(){
-        $.scrollTo({endY:0,duration:500,callback:function() {}});
+        $(".container").scrollTop(0);
     });
     //置顶监听
     $(".container").on('scroll',function(){
