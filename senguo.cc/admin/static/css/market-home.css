@@ -139,7 +139,7 @@
 .bingo-list{padding: 10px 8px;}
 .bingo-list>li{border: 1px solid #63C5A2;border-radius: 6px;margin-bottom: 10px;position:relative;}
 .goods-img-box{min-height: 130px;max-height: 160px;overflow: hidden;position: relative;}
-.goods-img-box img{width: 100%;min-height: 130px;border-top-left-radius: 6px;border-top-right-radius: 6px;}
+.goods-img-box img{width: 100%;min-height: 130px;border-top-left-radius: 6px;border-top-right-radius: 6px;-webkit-user-select:none;}
 .status-tip{position:absolute;width:50px;height:50px;top:15px;left:15px;background-size: 50px;background-repeat: no-repeat;background-position:center center;}
 .tag2{background-image: url("/static/images/tag2.png");}
 .tag3{background-image: url("/static/images/tag3.png");}
