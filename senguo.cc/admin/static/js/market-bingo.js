@@ -408,7 +408,7 @@ var fruitItem=function(box,fruits,type){
     $item.attr({"data-id":id,"data-num":storage,"data-storage":storage,"data-limit":limit_num,"data-favour":favour_today,"data-relate":relate,"data-unitnum":unitnum,"data-buy":limit_today,"data-charge":charge_id,"data-price":charge_price}).addClass(code);
     $item.find(".g-name").html(name);
     $item.find(".g-detail").html(intro);
-    $item.find(".goods_img").attr("src",ori_img);
+    $item.find(".goods_img").attr("data-original",ori_img);
     if(charge_type){
          if(charge_type.market_price){
             $item.find(".src-price-num").html(charge_type.market_price+"元/"+charge_type.num+charge_type.unit);
@@ -424,6 +424,7 @@ var fruitItem=function(box,fruits,type){
         $item.find(".goods-img-box").addClass("desaturate");
         $item.find(".goods-attr-box").addClass("desaturate")
     }
+    $item.find('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
     box.append($item);
 };
 window.dataObj.fruits={};
