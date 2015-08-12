@@ -51,13 +51,14 @@
         </div>#}
             <div class="wrap-tab-group">
                 <ul class="tab-group group">
+                    {% if len(context['group_list'])>1%}
                     <li data-id="-2">所有商品</li>
                     <li data-id="{{context['group_list'][0]['id']}}">{{context['group_list'][0]['name'][0:5]}}</li>
-                    <li class="more-group-btn">
-                        {% if len(context['group_list']) >1%}
+                    <li class="more-group-btn" data-id="{{context['group_list'][1]['id']}}">
+                        {% if len(context['group_list']) >2%}
                         <span class="i-cert"></span>
                         {% end %}
-                        <span id="cur_group">所有商品</span>
+                        <span id="cur_group">{{context['group_list'][1]['name'][0:5]}}</span>
                         <ul class="more-group hidden">
                             <li data-id="-2">所有商品</li>
                             {% for group in context['group_list'] %}
@@ -65,6 +66,9 @@
                             {% end %}
                         </ul>
                     </li>
+                    {% else %}
+                    <li data-id="{{context['group_list'][0]['id']}}" class="only-one">{{context['group_list'][0]['name'][0:5]}}</li>
+                    {% end %}
                 </ul>
             </div>
         </div>
