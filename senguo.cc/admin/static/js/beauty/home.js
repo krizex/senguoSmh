@@ -18,8 +18,14 @@ $(document).ready(function(){
     $('.groupt-list li').first().addClass('active');
 
     var link_search=$.getUrlParam("search");
+    var link_group=$.getUrlParam("group");
     var link_action=$.getUrlParam("action");
-    if(link_search != null){
+    if(link_group!= null){
+        window.dataObj.page=1;
+        _action=6;
+        var _group_id = Number(link_group);
+        goodsList(1,6,_group_id);
+    }else if(link_search != null){
         window.dataObj.page=1;
         window.dataObj.action=9;
         _search = link_search;

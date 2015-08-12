@@ -225,8 +225,8 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{s
             '</div>'+
             '<div class="attr-right">'+
                 '<div class="wrap-operate">'+
-                    '<span href="javascript:;" class="roll-btn minus-gds number-minus hidden"></span>'+
-                    '<span href="javascript:;" class="roll-btn add-gds number-plus hidden"></span>'+
+                    '<span href="javascript:;" class="roll-btn minus-gds number-minus hidden">&nbsp;</span>'+
+                    '<span href="javascript:;" class="roll-btn add-gds number-plus hidden">&nbsp;</span>'+
                     '<span href="javascript:;" class="roll-btn buy-gds to-add add_cart_num">买</span>'+
                 '</div>'+
                 '<div class="wrap-src-price">'+
