@@ -15,7 +15,7 @@ $(document).ready(function(){
     $('.search-btn').on('click',function(){
         var search=$('.search-con').val().trim();
         if(!search){return Tip('搜索内容不能为空')};
-        getItem(action,order_by,if_reverse,0,search);
+        getItem("search",order_by,if_reverse,0,search);
     });
     $('.search-con').on('keydown',function(){
         var $this=$(this);
@@ -23,7 +23,7 @@ $(document).ready(function(){
         {
             var con=$('.search-con').val().trim();
             if(!con){return Tip('搜索内容不能为空')};
-            getItem(action,order_by,if_reverse,0,con);
+            getItem("search",order_by,if_reverse,0,con);
         }
     });
     //导航active样式
