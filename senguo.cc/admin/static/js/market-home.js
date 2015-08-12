@@ -206,18 +206,13 @@ $(document).ready(function(){
     if(buy_today=='True'&&allow_num<=0){
         return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
-    // if(storage==1){
-    //    $this.siblings('.number-change').find('.number-input').val(1); 
-    // }else{
-    //     $this.siblings('.number-change').find('.number-input').val(0);
-    // }
     if(storage>0) {
         if(storage-change_num<0){
             return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
         }else if(storage-change_num==0){
-            $this.siblings('.number-change').find('.number-input').val(0);
+            $this.siblings('.number-change').find('.number-input').text(0);
         }else{
-            $this.siblings('.number-change').find('.number-input').val(0); 
+            $this.siblings('.number-change').find('.number-input').text(0); 
         }
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
@@ -244,7 +239,7 @@ $(document).ready(function(){
     var $this=$(this);
     if($this.parents('.charge-item').find('.to-add').hasClass('hidden')){
         var parent=$this.parents('.goods-list-item');
-        var num=Int($this.siblings('.number-input').val().trim());
+        var num=Int($this.siblings('.number-input').text());
         var storage=parseFloat(parent.attr('data-storage'));
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
@@ -253,7 +248,7 @@ $(document).ready(function(){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
         if(!regNum.test(num)) {
-            $this.siblings('.number-input').val(storage);
+            $this.siblings('.number-input').text(storage);
             return noticeBox('商品数量只能为整数！',$this);
         }
         if(num<999) {pulse($this);goodsNum($this,2);}
@@ -376,7 +371,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                                         '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
                                         '<span class="pull-right p0 number-change hidden forbid_click">'+
                                             '<button class="minus-plus pull-right number-plus bg_change"></button>'+
-                                            '<input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"readonly/>'+
+                                            '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
                                             '<button class="minus-plus pull-right number-minus bg_change"></button>'+
                                         '</span>'+
                                     '</span>'+
@@ -468,7 +463,7 @@ function cartNum(cart_ms,list){
                     var storage=$parent.attr('data-num');
                     add.addClass('hidden');
                     change.removeClass('hidden');
-                    input.val(cart_ms[key][1]);
+                    input.text(cart_ms[key][1]);
                     var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
                     var unit_num=parseFloat(charge.find('.num').text());
                     var change_num=relate*unit_num*cart_ms[key][1];
@@ -488,7 +483,7 @@ function cartNum(cart_ms,list){
 function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var change=target.parents('.number-change');
-    var num=parseInt(item.val());
+    var num=parseInt(item.text());
     var parent=target.parents('.goods-list-item');
     var storage=parseFloat(parent.attr('data-storage'));
     var type_list=target.parents('.goods-list');
@@ -512,18 +507,18 @@ function goodsNum(target,action){
                 return  noticeBox('商品限购数量'+limit_num);
             }
             num++;
-            item.val(num);
+            item.text(num);
             storage=storage-change_num;
             parent.attr({'data-storage':storage});
         }
     }
     else if(action==1)
     {
-        var val=parseInt(item.val());
+        var val=parseInt(item.text());
         if(val>0)
         {
             num--;
-            item.val(num);
+            item.text(num);
             if(num<0){
                 storage = change_num
             }else{

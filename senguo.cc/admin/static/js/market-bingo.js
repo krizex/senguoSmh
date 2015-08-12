@@ -34,16 +34,27 @@ $(document).ready(function(){
     }else{
         if($('.more-group li').length==0){
             $(".wrap-loading-box").addClass("hidden");
+            $('.tab-group li').each(function(){
+                var $this=$(this);
+                var id = Number($this.attr('data-id'));
+                _group_id = parseInt(id);
+                if(_finished==true&&_group_id!=-2){
+                    goodsList(1,6,_group_id); 
+                    scrollLoading(_group_id);
+                }
+            });
+        }else{
+             $('.more-group li').each(function(){
+                var $this=$(this);
+                var id = Number($this.attr('data-id'));
+                _group_id = parseInt(id);
+                if(_finished==true&&_group_id!=-2){
+                    goodsList(1,6,_group_id); 
+                    scrollLoading(_group_id);
+                }
+             });
         }
-        $('.more-group li').each(function(){
-            var $this=$(this);
-            var id = Number($this.attr('data-id'));
-            _group_id = parseInt(id);
-            if(_finished==true&&_group_id!=-2){
-                goodsList(1,6,_group_id); 
-                scrollLoading(_group_id);
-            }
-         });
+       
         $('.tab-group li').first().addClass("active");
     }
     var shop_logo=$('#shop_imgurl').attr('data-img');
@@ -65,8 +76,6 @@ $(document).ready(function(){
             $(".more-group").addClass("hidden");
         }
     });
-}).on("click",".more-group-btn",function(){
-    $(".more-group").toggleClass("hidden");
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -130,14 +139,6 @@ $(document).ready(function(){
         addCart(link);
     }else{
         $('.classify-list').toggle();
-    }
-}).on('click','.choose-classify',function(){
-    var $this=$(this);
-    $this.find('.icon').toggle();
-    $('.goods-class-choose').toggle();
-}).on('click','body',function(e){
-    if($(e.target).closest('.to-hide').length == 0){
-        $('.classify-list').hide();
     }
 }).on('click','#all_goods',function(){
     //get all goods
@@ -222,18 +223,20 @@ $(document).ready(function(){
 }).on("click",".tab-group>li",function(){
     var $this=$(this);
     var index=$this.index();
-    $this.addClass("active").siblings("li").removeClass("active");
+    if(index==2&&$this.hasClass("active")&&$(".i-cert").length>0){
+        $(".more-group").removeClass("hidden");
+    }
     var group_id=Number($this.attr("data-id"));
-    if(index!=2){
+    if(!$this.hasClass("active")){
         if(group_id==-2){
-        $(".bingo-list").removeClass("hidden");
+            $(".bingo-list").removeClass("hidden");
         }else{
             $(".bingo-list").addClass("hidden");
             $(".goods-list-"+group_id).removeClass("hidden");
         }
-        $("#cur_group").text($this.text());
         _group_id=group_id;
     }
+    $this.addClass("active").siblings("li").removeClass("active");
 }).on('click','.more-group li',function(){
     var $this=$(this);
     var text=$this.text();
