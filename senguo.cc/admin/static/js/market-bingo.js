@@ -216,7 +216,7 @@ var _finished=true;
 var _search;
 var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}">'+
         '<div class="goods-img-box {{desaturate}}">'+
-            '<img class="goods_img lazy_img" src="{{img_url}}" origin="/static/images/holder_fruit.png" alt="{{name}}" data-original="{{img_url}}"/>'+
+            '<img class="goods_img lazy_img" src="{{img_url}}" alt="{{name}}" data-original="{{img_url}}"/>'+
             '<div class="goods-img-hover"></div>'+
             '<div class="status-tip {{tag}}"></div>'+
         '</div>'+
@@ -245,8 +245,8 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{s
     '</li>';
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){
-    $(window).scroll(function(){
-        var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+    $(".container").scroll(function(){
+        var srollPos = $(".container").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
         //var main = $('.goods-list-'+_group_id);              //主体元素
         var main = $('.goods-list-'+sid);
@@ -294,6 +294,8 @@ var allList=function(page,action,_group_id){
             initData(res.data);
             if(aindex<gArr.length){
                 allList(1,6,gArr[aindex]);
+            }else{
+                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
             }
         }
         else {
