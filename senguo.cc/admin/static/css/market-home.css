@@ -165,7 +165,7 @@
 .wrap-operate .add-gds{font-size: 40px;background-image: url("/static/images/add.png");background-size: 60px;background-repeat: no-repeat;}
 .wrap-bug-text{position: absolute;bottom:-12px;right: 6px;padding-right: 6px;white-space:nowrap;}
 .wrap-src-price{position: absolute;bottom:-12px;right: 0;padding-right: 40px;white-space:nowrap;}
-.bug-num{color: #44C798;font-size: 30px;}
+.bug-num{color: #44C798;font-size: 30px;margin-right: 5px;}
 .price-all{color: #333;font-size: 14px;}
 .wrap-tab-group{padding: 10px 10px 20px 10px;background-color: #81E2C0;}
 .mt-20{margin-top: -20px !important;}
