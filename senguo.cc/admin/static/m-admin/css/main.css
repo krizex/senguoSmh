@@ -483,11 +483,11 @@
 .user-lists>li:last-child .goods-row{border-bottom: none;}
 .bold{font-weight: bold;}
 .sex-mark{display: inline-block;width: 14px;height:16px;vertical-align: -2px;background:url('/static/m-admin/img/icon_u.png') no-repeat;background-size: 14px;}
-.man-mark{background-position: 0 4px;}
+.man-mark{background-position: 0 3px;}
 .woman-mark{background-position: 0 -14px;}
-.m-sex{background-image: url('/static/m-admin/img/user_sex.png');background-position: 0 4px;}
-.w-sex{background-image: url('/static/m-admin/img/user_sex.png');background-position: 0 -14px;}
-.user-mark{display: inline-block;max-width: 150px;margin-left: 6px;vertical-align: -4px;}
+.m-sex{background-image: url('/static/m-admin/img/user_sex.png');background-position: 0 3px;}
+.w-sex{background-image: url('/static/m-admin/img/user_sex.png');background-position: 0 -16px;}
+.user-mark{display: inline-block;max-width: 150px;margin-left: 6px;vertical-align: bottom;}
 .user-balance{padding-left: 16px;background: url('/static/m-admin/img/icon_u.png') no-repeat left -34px;background-size: 14px;}
 .user_list>li:first-child{width: 30%;}
 .user_list .uitem{width: 70%;font-weight: bold;}
@@ -502,11 +502,11 @@
 .userinfo>li>p{text-align: center;}
 .info-name{color: #b2dfdb;font-size: 12px;}
 .userinfo>li:last-child{border-right:none;}
-.u-arrow{display: inline-block;padding-right: 16px;height:30px;background: url('/static/images/arrow-down.gif') no-repeat right center;background-size: 14px 8px;position: absolute;right:10px;}
+.u-arrow{display: inline-block;padding-right: 16px;height:40px;background: url('/static/images/arrow-down.gif') no-repeat right center;background-size: 14px 8px;position: absolute;right:10px;}
 .arrow-up{background-image: url('/static/images/arrow-up.gif');}
 .u-shop-list{padding: 10px 0 10px 10px;}
 .u-shop-list>li{width: 50%;-webkit-box-sizing: border-box;padding: 0 10px 10px 0;float: left;}
-.us-item{background-color: #fff;padding-left: 8px;vertical-align: middle;height: 26px;}
+.us-item{background-color: #fff;padding-left: 8px;vertical-align: middle;height: 26px;line-height: 26px;}
 .us-item>img{height: 24px;width: 24px;border-radius: 24px;margin-right: 4px;}
 .u-order-list>li{background-color: #fff;padding: 10px;margin-bottom: 10px;}
 .u-order-list>li p{height: 20px;line-height: 20px;}
@@ -515,14 +515,14 @@
 .uorder_status{width: 90px;text-align: center;display: inline-block;height: 26px;line-height: 26px;position: absolute;top: 4px;right: 0;border-radius: 4px; border: 1px solid #999;color: #666 !important;}
 .udata-list .item-left{position: relative;}
 .udata-list .i-gset{background-image: url('/static/m-admin/img/4.png');}
-.user-ui{position: absolute;left: 0;top: 10px;width: 22px;height: 22px;background-image: url('/static/m-admin/img/user_list.png');background-size: 22px;}
+.user-ui{position: absolute;left: 0;top: 9px;width: 22px;height: 22px;background-image: url('/static/m-admin/img/user_list.png');background-size: 22px;}
 .i-tel{background-position: 0 0;}
 .i-birth{background-position: 0 -25px;}
 .i-address{background-position: 0 -50px;}
-.i-shop{background-position: 0 -75px;left: 10px;top: 4px;}
-.i-order{background-position: 0 -100px;left: 10px;top: 4px;}
+.i-shop{background-position: 0 -75px;left: 10px;top: 8px;}
+.i-order{background-position: 0 -100px;left: 10px;top: 8px;}
 .i-uorder{background-position: 0 -125px;top: 6px;}
-.uuser-row{height: 30px;background-color: #fff;padding-left: 36px;padding-right:10px;line-height: 30px;position: relative;}
+.uuser-row{height: 40px;background-color: #fff;padding-left: 36px;padding-right:10px;line-height: 40px;position: relative;}
 .wrap-user-detail .fr{max-width: 200px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
 .hauto{height: auto !important;border-bottom: none !important;}
 .other-address{padding-left: 26px;}

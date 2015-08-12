@@ -50,7 +50,7 @@ function insertGoods(data){
         $item.find(".user-link").attr("href","/madmin/userDetail/"+goods.id);
         $item.find(".user-name").html(goods.nickname);
         if(goods.headimgurl_small){
-            $item.find(".cur-user-img").attr("src",goods.headimgurl_small+"?imageView2/1/w/100/h/100");
+            $item.find(".cur-user-img").attr("src",goods.headimgurl_small);
         }
         if(goods.sex==1){
             $item.find(".sex-mark").addClass("man-mark");
