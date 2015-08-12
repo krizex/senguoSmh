@@ -216,7 +216,7 @@ var _finished=true;
 var _search;
 var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}">'+
         '<div class="goods-img-box {{desaturate}}">'+
-            '<img class="goods_img lazy_img" src="/static/images/holder_fruit.png" alt="{{name}}" data-original="{{img_url}}"/>'+
+            '<img class="goods_img lazy_img" src="{{img_url}}" origin="/static/images/holder_fruit.png" alt="{{name}}" data-original="{{img_url}}"/>'+
             '<div class="goods-img-hover"></div>'+
             '<div class="status-tip {{tag}}"></div>'+
         '</div>'+
@@ -469,7 +469,7 @@ var fruitItem=function(box,fruits,type){
         charge_price:charge_price
     });
     box.append(html);
-    $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
+    //$('.lazy_img').lazyload({threshold:200,effect:"fadeIn"});
 };
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
