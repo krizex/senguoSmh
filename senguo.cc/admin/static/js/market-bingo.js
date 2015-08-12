@@ -377,7 +377,7 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'_l.png';
     }else{
-        ori_img=img_url+'?imageView2/1/w/800/h/400';
+        ori_img=img_url+'?imageView2/1/w/800';
     }
     if(tag==2){//限时
         tag='tag2';
@@ -493,9 +493,9 @@ function goodsNum(target,action){
             num--;
             item.text(num);
             if(num<0){
-                storage = change_num
+                storage = change_num;
             }else{
-              storage=storage+change_num;  
+                storage=storage+change_num;  
             }
             parent.attr({'data-storage':storage});
             if(val==1){
