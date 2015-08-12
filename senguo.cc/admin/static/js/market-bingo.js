@@ -240,12 +240,12 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{s
                 '<p class="g-name clip">{{name}}</p>'+
                 '<p class="g-detail clip">{{intro}}</p>'+
             '</div>'+
+            '<div class="wrap-operate">'+
+                '<span href="javascript:;" class="roll-btn minus-gds number-minus hidden">&nbsp;</span>'+
+                '<span href="javascript:;" class="roll-btn add-gds number-plus hidden">&nbsp;</span>'+
+                '<span href="javascript:;" class="roll-btn buy-gds to-add add_cart_num">买</span>'+
+            '</div>'+
             '<div class="attr-right">'+
-                '<div class="wrap-operate">'+
-                    '<span href="javascript:;" class="roll-btn minus-gds number-minus hidden">&nbsp;</span>'+
-                    '<span href="javascript:;" class="roll-btn add-gds number-plus hidden">&nbsp;</span>'+
-                    '<span href="javascript:;" class="roll-btn buy-gds to-add add_cart_num">买</span>'+
-                '</div>'+
                 '<div class="wrap-src-price">'+
                     '<p class="src-price"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
                     '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span></p>'+
@@ -306,7 +306,7 @@ var allList=function(page,action,_group_id){
             aindex++;
             var nomore = res.nomore
             $('.goods-list-'+_group_id).attr({"data-nomore":nomore})
-            initData(res.data);
+            initData(res.data,_group_id);
             if(aindex<gArr.length){
                 allList(1,6,gArr[aindex]);
             }else{
@@ -317,10 +317,10 @@ var allList=function(page,action,_group_id){
             noticeBox(res.error_text);
         }
     });
-    var initData=function(data){
+    var initData=function(data,id){
         var data=data;
         for(var key in data){
-            fruitItem($('.goods-list-'+_group_id),data[key]);//fruits information
+            fruitItem($('.goods-list-'+id),data[key]);//fruits information
         }
         var fruits=window.dataObj.fruits;
         var c_fs=[];
@@ -362,16 +362,16 @@ var goodsList=function(page,action,_group_id){
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
                 }
-                initData(res.data);
+                initData(res.data,_group_id);
             }
             else {
                 noticeBox(res.error_text);
             }
         });
-        var initData=function(data){
+        var initData=function(data,id){
             var data=data;
             for(var key in data){
-                fruitItem($('.goods-list-'+_group_id),data[key]);//fruits information
+                fruitItem($('.goods-list-'+id),data[key]);//fruits information
             }
             var fruits=window.dataObj.fruits;
             var c_fs=[];
@@ -380,7 +380,6 @@ var goodsList=function(page,action,_group_id){
             };
             cartNum(c_fs,'.fruit-list');
             _finished=true;
-            $(".wrap-loading-box").remove();
         }
 };
 
