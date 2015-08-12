@@ -23,7 +23,7 @@ $(document).ready(function(){
         var _group_id = Number(link_group);
         sid = _group_id;
         goodsList(1,6,_group_id);
-        scrollLoading();
+        //scrollLoading();
     }else{
         if($('.more-group li').length==0){
             $(".wrap-loading-box").addClass("hidden");
@@ -41,7 +41,7 @@ $(document).ready(function(){
         }
         allList(1,6,gArr[0]);
         sid = gArr[0];
-        scrollLoading();
+        //scrollLoading();
         $('.tab-group li').first().addClass("active");
     }
     var shop_logo=$('#shop_imgurl').attr('data-img');
