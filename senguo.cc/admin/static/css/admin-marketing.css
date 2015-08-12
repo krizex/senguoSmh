@@ -69,6 +69,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .pop-bm>a{display:inline-block;background-color: #41b546;color: #fff;width: 86px;height: 28px;font-size:12px;line-height: 28px;text-align: center;border-radius: 2px;margin: 0 20px;}
 .coupon-active{margin-top: 13px;}
 .furit-type{padding-left: 100px;}
+.furit-type-discount{padding-left: 40px;}
 .chinav li{width: 120px;}
 .chinav li:hover{border-width:3px;}
 .chinav .active{border-width:3px;}
@@ -106,3 +107,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-newcoupon{font-size: 14px;}
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
+
+/*限时折扣添加样式*/
+.week-btn{width: 50px;display:inline-block;margin-left:20px;font-size: 14px;background-color: #ccc;color: #fff;text-align: center;height: 28px;line-height: 28px;border-radius: 2px;}
+.back_green{background-color: #52b43f;}

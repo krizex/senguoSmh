@@ -1,0 +1,173 @@
+{% extends 'base.html' %}
+{% block title%}限时折扣{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-reset.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
+{% block content %}
+{% set shop_code = current_shop.shop_code %}
+<div class="wrap-newcoupon">
+    <p class="c333 mt10 choose-text">
+        <a href="javasript:;" class="c999 cancel-add-goods back-coupon">限时折扣</a>
+        <span class="c333"> / 新折扣商品</span>
+    </p>
+</div>
+<div class="wrap-newcoupon mt20">
+    <div class="newcoupon-box group">
+        <div class="wrap-coupontb fl">
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="14%"/>
+                    <col width="86%"/>
+                </colgroup>
+                <thead>
+                <tr>
+                    <td class="">折扣时间</td>
+                    <td>
+                        <a href="javascript:;" class="radio radio-active" data-id="0"></a><span>单次</span>
+                        </div>
+                    </td>
+                </tr>
+                </thead>
+            </table>
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="16%"/>
+                    <col width="84%"/>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="">
+                            <a href="javascript:;" class="radio radio-active hidden" data-id="0"></a>开始时间 <input type="text" class="Wdate from_get_date" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'})">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                         <a href="javascript:;" class="radio radio-active hidden" data-id="0"></a>结束时间 <input type="text" class="Wdate to_get_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})">
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="14%"/>
+                    <col width="86%"/>
+                </colgroup>
+                <thead>
+                <tr>
+                    <td class=""></td>
+                    <td>
+                        <a href="javascript:;" class="radio radio-active" data-id="0"></a><span>开启周期（多选）</span>
+                    </td>
+                </tr>
+                </thead>
+            </table>
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="14%"/>
+                    <col width="86%"/>
+                </colgroup>
+                <thead>
+                <td class=""></td>
+                    <td>
+                        <a href="javascript:;" class=" week-btn back_green mt6 mr10" back_green>周一</a><a href="javascript:;" class=" week-btn back_green mt6 mr10">周二</a><a href="javascript:;" class=" week-btn  mt6 mr10">周三</a><a href="javascript:;" class=" week-btn  mt6 mr10">周四</a><a href="javascript:;" class=" week-btn  mt6 mr10">周五</a><a href="javascript:;" class=" week-btn  mt6 mr10">周六</a><a href="javascript:;" class=" week-btn  mt6 mr10">周日</a>
+                    </td>
+                </thead>
+            </table>
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="16%"/>
+                    <col width="84%"/>
+                </colgroup>
+                <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="">
+                            <a href="javascript:;" class="radio radio-active hidden" data-id="0"></a>开始时间 <input type="text" class="Wdate from_get_date" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'})">
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                        <div class="">
+                             <a href="javascript:;" class="radio radio-active hidden" data-id="0"></a>结束时间 <input type="text" class="Wdate to_get_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})">
+                        </div>
+                        <p class="c999 f12 mt6">开始结束时间均为选择的日期当天内的时间段</p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="14%"/>
+                    <col width="86%"/>
+                </colgroup>
+                <tbody class="coupon1">
+                <tr>
+                    <td class="ver-top"><span class="ver-5">折扣商品<br></span></td>
+                    <td>商品１</td>
+                </tr>
+                <tr>
+                        <td></td>    
+                        <td>
+                        <div class="iblock">
+                            <span class="mr10 ver7">商品名称</span>
+                            <div class="dropdown slide-down-select w130 mr10">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 use_goods_group" data-id="-2">所有分组</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu18">
+                                    {% for group in output_data%}
+                                    <li class="presentation" role="presentation">
+                                        <a class="item" href="javascript:;" data-id="{{group['group_id']}}">{{group['group_name']}}</a>
+                                    </li>
+                                    {% end %}
+                                </ul>
+                            </div>
+                            <div class="dropdown slide-down-select w130">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 use_goods" data-id="-1">所有商品</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w130 use_goods_lst" role="menu" aria-labelledby="dropdownMenu18">
+                                </ul>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>原价(多选)<span><a href="javascript:;" class=" week-btn back_green mt6 mr10" back_green>周一</a><a href="javascript:;" class=" week-btn back_green mt6 mr10">周二</a><a href="javascript:;" class=" week-btn  mt6 mr10">周三</a><a href="javascript:;" class=" week-btn  mt6 mr10">周四</a><a href="javascript:;" class=" week-btn  mt6 mr10">周五</a><a href="javascript:;" class=" week-btn  mt6 mr10">周六</a><a href="javascript:;" class=" week-btn  mt6 mr10">周日</a></span>   </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>
+                       活动折扣<input type="text"><span>折</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td>新建</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="wrap-pop-btn wrap-edit-item">
+        <a href="javascript:;" class="ok-btn ok-coupon" data-flag="on">确定</a>
+        <a href="javascript:;" class="cancel-btn cancel-edit-goods goback">取消</a>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="{{static_url('js/third/datepicker/WdatePicker.js')}}"></script>
+<script src="{{static_url('js/admin-coupon.js')}}"></script>
+{% end %}

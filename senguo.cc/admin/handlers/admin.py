@@ -4791,3 +4791,18 @@ class WirelessPrint(AdminBaseHandler):
 				# print(r.url)
 				# print(r.status_code)
 				# print(r.text)
+
+
+# 限时折扣
+class Discount(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action?:str", "discount_status?:int")
+	def get(self):
+		action=self.args["action"]
+		if action=="discount":
+			return self.render("admin/discount-main.html",discount_active_cm=0,output_data=[],context=dict(subpage='marketing',subpage2='discount_active'))
+		elif action=="newdiscountpage":
+			return self.render("admin/discount-new.html",discount_active_cm=0,output_data=[],context=dict(subpage='marketing',subpage2='discount_active'))
+		elif action=="detail":
+			return self.render("admin/discount-detail.html",output_data=[],data1={"total":2},context=dict(subpage='marketing',subpage2='discount_active'))
+			
