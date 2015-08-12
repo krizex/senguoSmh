@@ -270,7 +270,6 @@ var goodsList=function(page,action,_group_id){
             if(res.success)
             {
                 var nomore = res.nomore
-                initData(res.data);
                 $('.goods-list-'+_group_id).attr({"data-nomore":nomore})
                 if(nomore == true){
                     if(action==9){
@@ -278,6 +277,8 @@ var goodsList=function(page,action,_group_id){
                     }else{
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
+                }else{
+                    initData(res.data);
                 }
             }
             else {
