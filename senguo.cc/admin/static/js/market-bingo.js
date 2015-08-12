@@ -20,7 +20,7 @@ $(document).ready(function(){
     if(link_group!= null){
         window.dataObj.page=1;
         _action=6;
-        _group_id = Number(link_group);
+        var _group_id = Number(link_group);
         goodsList(1,6,_group_id);
     }
     else if(link_search != null){
@@ -37,7 +37,7 @@ $(document).ready(function(){
             $('.tab-group li').each(function(){
                 var $this=$(this);
                 var id = Number($this.attr('data-id'));
-                _group_id = parseInt(id);
+                var _group_id = parseInt(id);
                 if(_finished==true&&_group_id!=-2){
                     goodsList(1,6,_group_id); 
                     scrollLoading(_group_id);
@@ -47,7 +47,7 @@ $(document).ready(function(){
              $('.more-group li').each(function(){
                 var $this=$(this);
                 var id = Number($this.attr('data-id'));
-                _group_id = parseInt(id);
+                var _group_id = parseInt(id);
                 if(_finished==true&&_group_id!=-2){
                     goodsList(1,6,_group_id); 
                     scrollLoading(_group_id);
@@ -234,7 +234,6 @@ $(document).ready(function(){
             $(".bingo-list").addClass("hidden");
             $(".goods-list-"+group_id).removeClass("hidden");
         }
-        _group_id=group_id;
     }
     $this.addClass("active").siblings("li").removeClass("active");
 }).on('click','.more-group li',function(){
@@ -246,7 +245,6 @@ $(document).ready(function(){
     }else{
         $(".bingo-list").addClass("hidden");
         $('.goods-list-'+group_id).removeClass("hidden");
-        _group_id=group_id;
     }
     $("#cur_group").html($(this).html()).attr("data-id",$(this).attr("data-id"));
     $(".more-group").addClass("hidden");
@@ -270,7 +268,6 @@ $(document).ready(function(){
 var _action=6;
 var _finished=true;
 var _search;
-var _group_id;
 var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}">'+
         '<div class="goods-img-box {{desaturate}}">'+
             '<img class="goods_img lazy_img" src="/static/images/holder_fruit.png" alt="水果图片" data-original="{{img_url}}"/>'+
@@ -346,7 +343,7 @@ var goodsList=function(page,action,_group_id){
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                var nomore = res.nomore
+                nomore = res.nomore;
                 initData(res.data);
                 $('.goods-list-'+_group_id).attr({"data-nomore":nomore})
                 if(nomore == true){
