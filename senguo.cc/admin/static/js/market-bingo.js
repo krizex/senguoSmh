@@ -14,6 +14,7 @@ $(document).ready(function(){
             autoplayDisableOnInteraction:false
         });
     }
+    
     //分类显示
     var top_title=$('.top-title');
     //get infomations of goods and push into html
