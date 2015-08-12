@@ -25,9 +25,6 @@ $(document).ready(function(){
         var id=$this.data('id');
         unitText($this,id);
     });
-    $(document).on('click','#backTop',function(){
-        $.scrollTo({endY:0,duration:500,callback:function() {}});
-    });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
     //window.dataObj.shop_name=getCookie('shop_name');
@@ -38,6 +35,9 @@ $(document).ready(function(){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
+    $(document).on('click','#backTop',function(){
+        $.scrollTo({endY:0,duration:500,callback:function() {}});
+    });
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);

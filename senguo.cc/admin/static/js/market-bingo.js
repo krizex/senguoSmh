@@ -65,6 +65,21 @@ $(document).ready(function(){
             $(".more-group").addClass("hidden");
         }
     });
+    $(document).on('click','#backTop',function(){
+        $.scrollTo({endY:0,duration:500,callback:function() {}});
+    });
+    //置顶监听
+    $(".container").on('scroll',function(){
+        var $this=$(this);
+        var clientHeight= $(window).height();
+        var scrollTop=$(".container").scrollTop();
+        if(scrollTop>=clientHeight/2){
+            $('.little_pear').css("display","block");
+        }
+        else{
+            $('.little_pear').css("display","none");
+        }
+    });
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
