@@ -1,12 +1,6 @@
 $(document).ready(function(){
     toggle('.show-info','.hide-info');
     //用户性别
-    $('.user-sex').each(function(){
-        var $this=$(this);
-        var sex=$this.data('id');
-        if(sex==2) $this.addClass('women');
-        else $this.addClass('men');
-    });
     //翻页
     var user_number=$('.users-list-item').length;
     var if_reverse=$("#cur-sort-reverse").attr("data-id");
@@ -135,7 +129,7 @@ var item='<li class="users-list-item  clearfix" data-id="{{id}}">'+
         '<div class="show-info set-w100-fle">'+
             '<img class="user-img pull-left" src="{{headimgurl}}"/>'+
             '<div class="user-info pull-left">'+
-                '<span class="user-name set-inl-blo">{{nickname}}<i class="user-sex pull-right set-inl-blo" data-id="{{sex}}"></i></span>'+
+                '<span class="user-name set-inl-blo">{{nickname}}<i class="user-sex pull-right set-inl-blo {{sex}}"></i></span>'+
                 '<div class="user-info-con">'+
                     '<span class="user-account text-grey2">{{shop_balance}} 元</span>'+
                     '<span class="ml10">用户积分：{{shop_point}}</span>'+
@@ -216,6 +210,11 @@ function getItem(action,order_by,if_reverse,page,wd){
                         var shop_names=datalist[i]['shop_names'];
                         var addresses=datalist[i]['address'];
                         var remark=datalist[i]['remark'];
+                        if(sex==2){
+                            sex="women";
+                        }else{
+                            sex="men";
+                        }
                         var list_item =render({
                             id:id,
                             headimgurl:headimgurl,
