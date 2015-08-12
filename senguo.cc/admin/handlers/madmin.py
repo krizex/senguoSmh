@@ -342,7 +342,7 @@ class Comment(AdminBaseHandler):
 class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		shop_id     = self.get_secure_cookie("shop_id")
+		shop_id = self.get_secure_cookie("shop_id")
 		data = []
 		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
 		default_count = goods.filter_by(group_id=0).count()
@@ -474,9 +474,48 @@ class GoodsBatch(AdminBaseHandler):
 			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
 		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data,record_count=record_count)
 
-
-
-
+# 用户管理
+class User(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user.html")
+#用户详情
+class UserDetail(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self,_id):
+		try:
+			user=self.session.query(models.Customer,models.CustomerShopFollow)\
+			.join(models.CustomerShopFollow,models.Customer.id==models.CustomerShopFollow.customer_id)\
+			.filter(models.Customer.id==_id,models.CustomerShopFollow.shop_id==self.current_shop.id).first()
+		except:
+			user = None
+			return self.write("该用户不存在")
+		data={}
+		if user:
+			shop_names = self.session.query(models.Shop.shop_name,models.Shop.shop_trademark_url).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.customer_id == _id).all()
+			userinfo=user[0]
+			usershopinfo=user[1]
+			data["id"]=userinfo.id
+			data["nickname"]=userinfo.accountinfo.nickname
+			data["headimgurl"]=userinfo.accountinfo.headimgurl_small
+			data["sex"]=userinfo.accountinfo.sex
+			data["realname"]=userinfo.accountinfo.realname
+			data["phone"]=userinfo.accountinfo.phone
+			data["birthday"]=userinfo.accountinfo.birthday
+			data["address"]=userinfo.addresses
+			data["shop_point"]=usershopinfo.shop_point
+			data["shop_balance"]=usershopinfo.shop_balance
+			data["remark"]=usershopinfo.remark
+			data["shops"]=shop_names
+		return self.render("m-admin/user-detail.html",data=data)
+#用户搜索
+class UserSearch(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user-search.html")
 
 
 

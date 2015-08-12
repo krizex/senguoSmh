@@ -1,0 +1,137 @@
+{% extends 'base.html' %}
+{% block title %}用户详情{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="/madmin/user" class="back"></a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-user-detail pm80" data-id="{{data['id']}}">
+    <div class="user-top">
+        <div class="wrap-user-img txt-center">
+            <span class="img-border">
+                <img src="{{data['headimgurl'] or '/static/m-admin/img/sender_holder.png'}}?imageView2/1/w/120/h/120" alt="用户头像"/>
+            </span>
+        </div>
+        <p class="mt6 txt-center"><span class="cfff bold">{{data['nickname']}}</span><i class="sex-mark ml4 {% if data['sex'] ==1 %}m-sex{% else %}w-sex{% end %}"></i></p>
+        <p class="mt6 txt-center clip">
+            <span class="user-umark"><i class="i-mark"></i><span class="mark-text">{{data['remark'] or '无备注'}}</span></span>
+        </p>
+        <div class="wrap-userinfo">
+            <ul class="userinfo group">
+                <li>
+                    <p class="bold cfff">{{data['shop_balance']}}元</p>
+                    <p class="info-name">用户余额</p>
+                </li>
+                <li>
+                    <p class="bold cfff">{{data['shop_point']}}分</p>
+                    <p class="info-name">用户积分</p>
+                </li>
+                <li>
+                    <p class="bold cfff">{{data['id']}}</p>
+                    <p class="info-name">用户ID</p>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <ul class="data-list udata-list">
+        <li>
+            <a href="javascript:;">
+                <span class="fr c666">{{data['realname'] or '无'}}</span>
+                <span class="item-left i-gset">姓名</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <span class="fr c666">{{data['phone'] or '无'}}</span>
+                <span class="item-left"><i class="user-ui i-tel"></i>手机</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;">
+                <span class="fr c666">{{data['birthday'] or '无'}}</span>
+                <span class="item-left"><i class="user-ui i-birth"></i>生日</span>
+            </a>
+        </li>
+        {% if data['address']%}
+        {% for index,address in enumerate(data['address']) %}
+        <li class="hauto">
+            <a href="javascript:;">
+                <span class="fr c666">{{address.address_text}}</span>
+                <span class="item-left"><i class="user-ui i-address"></i>送货地址{{index+1}}</span>
+            </a>
+            <a href="javascript:;">
+                <span class="fr c666">{{address.phone}}</span>
+            </a>
+        </li>
+        {% end %}
+        {% else %}
+        <li class="hauto other-address">
+            <a href="javascript:;">
+                <span class="fr c666">无</span>
+                <span>送货地址</span>
+            </a>
+        </li>
+        {% end %}
+    </ul>
+    <div class="uuser-row mt10">
+        <span class="u-arrow"></span>
+        <span><span class="user-ui i-shop"></span>关注的店铺</span>
+    </div>
+    <ul class="u-shop-list group hide">
+        {% for key in data['shops']%}
+        <li>
+            <div class="us-item clip">
+                <img src="{{key[1] or '/static/images/TDSG.png'}}" alt="{{key[0]}}"/>
+                <span class="c666">{{key[0]}}</span>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+    <div class="uuser-row mt10">
+        <span class="u-arrow"></span>
+        <span><span class="user-ui i-order"></span>历史订单</span>
+    </div>
+    <ul class="u-order-list mt10 hide" id="uorder-list">
+    </ul>
+</div>
+<ul class="hide" id="uorder_item">
+    <li>
+        <div class="uorder-top">
+            <i class="user-ui i-uorder"></i>
+            <a href="javascript:;" class="uorder_status clip"></a>
+            <p class="c333">编号：<span class="order_code"></span></p>
+            <p class="c666"><span class="yellow">￥<span class="order_money"></span></span><span class="ml4 order_type"></span></p>
+        </div>
+        <div class="uorder-bm">
+            <p>
+                <span class="fr c666 order_address"></span>
+                <span class="c666">送至</span>
+            </p>
+            <p>
+                <span class="fr c666 order_time"></span>
+                <span class="c666">预计</span>
+            </p>
+        </div>
+    </li>
+</ul>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center" id="g_title">编辑备注</h3>
+        <div class="wp-ipt mt20">
+            <input class="mt10 c666" id="user_remark" type="text" placeholder="请输入备注"/>
+        </div>
+        <div class="wrap-bbtns txt-center">
+            <a href="javascript:;" class="ok-bbtn dgreen" data-flag="on" id="edit_remark">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/user-detail.js')}}"></script>
+{% end %}
