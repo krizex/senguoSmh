@@ -10,20 +10,20 @@
                              <p class="mt20"><a href="/bbs/detail/88" target="_blank" class="font14">点击查看使用教程</a></p>
                </div>  
                <div class="col-sm-3 col-md-3">
-                             <a class="mode  pull-right mt10 open-switch" data-flag="on" title="点击切换状态" data-status="1"><span class="tit">已启用</span><span class="circle"></span></a>
+                             <a class="mode  pull-right mt10 open-switch work-mode" data-flag="on" title="点击切换状态" data-status="1"><span class="tit">已启用</span><span class="circle"></span></a>
                </div>
 </div>
 
-<div class="category-list mt50">
+<div class="category-list mt50 seckill-manage">
                <div>
                              <span class="c999">商品秒杀</span>
                              <span class="c333"> / 秒杀管理</span>
                              <span class="wrap-newbtn">
-                                           <a href="javascript:;" class="newbtn add-btn  mt6 mr10 new-seckill">+新建秒杀</a>
+                                           <a href="{{reverse_url('adminMarketing')}}?action=seckill_new" class="newbtn add-btn  mt6 mr10 new-seckill">+新建秒杀</a>
                              </span>
                </div>
                <div class="subnav-box group mt20">
-                             <ul class="subnav chinav furit-type pull-left">
+                             <ul class="status-choose subnav chinav furit-type pull-left">
                                            <li class="txt-center active" data-type="nostart"><a href="javascript:;">未开始</a></li>
                                            <li class="txt-center" data-type="killing"><a href="javascript:;">进行中</a></li>
                                            <li class="txt-center" data-type="finished"><a href="javascript:;">已结束</a></li>
@@ -49,9 +49,9 @@
                                                                         <td>操作</td>
                                                           </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody class="seckill-list">
                                                           <tr>
-                                                                        <td colspan="5" class="txt-center c999 font14">当前没有秒杀活动</td>
+                                                                        <td colspan="5" class="txt-center c999 font14">没有当前状态的秒杀活动</td>
                                                           </tr>
                                                           <tr>　　 
                                                                         <td colspan="1"> 2015-08-08 00:00:00</td>
@@ -60,8 +60,8 @@
                                                                         <td colspan="1">100 / 70</td>
                                                                         <td colspan="1">　　
                                                                                        <a href="javascript:;">编辑</a>
-                                                                                       <a href="javascript:;" class="ml">推广</a>
-                                                                                       <a href="javascript:;" class="ml">停用</a>
+                                                                                       <a href="javascript:;" class="ml10">推广</a>
+                                                                                       <a href="javascript:;" class="ml10">停用</a>
                                                                         </td>
                                                           </tr>
                                             </tbody>

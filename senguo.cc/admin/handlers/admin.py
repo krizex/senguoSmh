@@ -4335,8 +4335,42 @@ class Marketing(AdminBaseHandler):
 			return self.send_success()
 		elif action == 'seckill':
 			seckill_active = 1
-
 			return self.render("admin/seckill.html",seckill_active = seckill_active,context=dict(subpage='marketing',subpage2='seckill'))
+		elif action == 'seckill_new':
+			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
+								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
+			goods_group_id_name.append((-1,'推荐分组'))
+			goods_group_id_name.append((0,'默认分组'))
+			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
+
+			goods_group_id_name=dict(goods_group_id_name)
+			
+			group_fruit_dict = {}
+			for group_id in list(goods_group_id_name.keys()):
+				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2]),models.Fruit.group_id == group_id).all()
+				group_fruit_dict[group_id] = query_list
+
+			fruit_id_list = []
+			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
+			for item in query_list:
+				fruit_id_list.append(item[0])
+
+			fruit_id_storage = {}
+			for fruit_id in fruit_id_list:
+				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
+				storage = list(storage)
+				storage[1] = self.getUnit(storage[1])
+				if storage[0] == 0:
+					continue
+				fruit_id_storage[fruit_id] = storage
+
+
+			print(fruit_id_storage)
+
+			# print(fruit_id_storage)	
+			return self.render("admin/seckill-new.html",context=dict(subpage='marketing'))
+		elif action == 'seckill_detail':
+			return self.render("admin/seckill-detail.html",context=dict(subpage='marketing'))
 
 	@AdminBaseHandler.check_arguments("action:str","data?","coupon_id?:int","select_rule?:int","coupon_type?:int")
 	def post(self):
