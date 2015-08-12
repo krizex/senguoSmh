@@ -493,17 +493,18 @@ class UserDetail(AdminBaseHandler):
 			return self.write("该用户不存在")
 		data={}
 		if user:
-			shop_names = self.session.query(models.Shop.shop_name,models.Shop.shop_trademark_url).join(models.CustomerShopFollow).\
-				filter(models.CustomerShopFollow.customer_id == _id).all()
 			userinfo=user[0]
 			usershopinfo=user[1]
+			shop_names = self.session.query(models.Shop.shop_name,models.Shop.shop_trademark_url).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.customer_id == _id).all()
+			birthday = datetime.datetime.fromtimestamp(userinfo.accountinfo.birthday).strftime('%Y-%m-%d') if userinfo.accountinfo.birthday else ""
 			data["id"]=userinfo.id
 			data["nickname"]=userinfo.accountinfo.nickname
 			data["headimgurl"]=userinfo.accountinfo.headimgurl_small
 			data["sex"]=userinfo.accountinfo.sex
 			data["realname"]=userinfo.accountinfo.realname
 			data["phone"]=userinfo.accountinfo.phone
-			data["birthday"]=userinfo.accountinfo.birthday
+			data["birthday"]=birthday
 			data["address"]=userinfo.addresses
 			data["shop_point"]=usershopinfo.shop_point
 			data["shop_balance"]=usershopinfo.shop_balance

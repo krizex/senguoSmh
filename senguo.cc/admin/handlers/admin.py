@@ -3059,6 +3059,7 @@ class Follower(AdminBaseHandler):
 													models.Address.receiver.like("%%%s%%" % wd))).all()
 
 				customer_list=[]
+				count = len(customers)
 				for customer in customers:
 					if customer not in customer_list:
 						customer_list.append(customer)
