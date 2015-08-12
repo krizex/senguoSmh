@@ -133,6 +133,7 @@
 .swiper-active-switch{background-color: #80c092;}
 .notice-title{position: absolute;bottom:0;max-width:800px;padding-left: 15px;height: 30px;font-size:14px;line-height: 30px;color: #fff;background-color: rgba(0, 0, 0, 0.2);z-index:20;}
 /*binguo*/
+.over{overflow: hidden;overflow-y: scroll;-webkit-overflow-scrolling:touch;overflow-scrolling:touch;}
 .f12{font-size: 12px !important;}
 .clip{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .i-cert{position: absolute;width: 0;height: 0;border: 5px solid transparent;border-top-color: #666;top: 18px;right: 8px;}

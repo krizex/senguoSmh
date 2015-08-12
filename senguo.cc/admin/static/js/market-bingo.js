@@ -3,6 +3,8 @@ $(document).ready(function(){
     $('.bottom-nav').find('li').addClass('add_cart');
     var width = $("#swiper-container").width();
     var height = $(window).height();
+    $("html,body").css("overflow","hidden").css("height",height+"px");
+    $(".container").css("height",height+"px").addClass("over");
     $(".notice-item").width("100%");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
     new Swiper('#swiper-container',{
