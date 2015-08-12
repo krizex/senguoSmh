@@ -16,21 +16,11 @@ $(document).ready(function(){
     var top_title=$('.top-title');
     //get infomations of goods and push into html
     var link_group=$.getUrlParam("group");
-    var link_search=$.getUrlParam("search");
     if(link_group!= null){
         window.dataObj.page=1;
         _action=6;
         _group_id = Number(link_group);
         goodsList(1,6,_group_id);
-    }
-    else if(link_search != null){
-        window.dataObj.page=1;
-        _action=9;
-        _search = link_search;
-        goodsList(1,9);
-        $('#classify').text('搜索结果');
-        $('.wrap-goods-box').css('margin-top','40px');
-        $('.classify-title').hide();
     }else{
         if($('.more-group li').length==0){
             $(".wrap-loading-box").addClass("hidden");
@@ -96,40 +86,11 @@ $(document).ready(function(){
             return noticeBox("当前商品已经卖完啦");
         }
     }
-}).on('click','.check-lg-img',function(){
-    //查看大图
-    var $this=$(this);
-    var parent=$this.parents('.goods_item_item');
-    var type=$this.parents('.goods_item_item').data('type');
-    var id=$this.parents('.goods_item_item').data('id');
-    var img_url=$this.find('.img').attr('src');
-    //var img_type=$this.find('.img').attr('data-img');
-    var fruit_name=parent.find('.fruit-name').text();
-    var fruit_intro=parent.find('.fruit_intro').val();
-    var large_box=$('#large_imgbox');
-    var if_favour=$this.parents('.goods_item_item').attr('data-favour');
-    if(img_url!='') {
-        if(img_url.indexOf('/design_img')) img_url=img_url.replace('.png','_l.png');
-        img_url=img_url.replace('w/170/h/170','w/560/h/560');
-    }
-    var check_large=new Modal('large_imgbox');
-    check_large.modal('show');
-    large_box.attr({'data-id':id,'data-type':type});
-    large_box.find('#largeImg').attr({'src':img_url});
-    large_box.find('.modal-title').text(fruit_name);
-    large_box.find('.intro').text(fruit_intro);
-    if(if_favour=='True') {large_box.find('.click-great').addClass('clicked').removeClass('able_click')}
-    else {large_box.find('.click-great').removeClass('clicked').addClass('able_click');}
-}).on('click','.clicked',function(){
-    noticeBox('亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦');
 }).on('click','.add_cart a',function(e){
     //添加到购物车
     stopDefault(e);
     var link=$(this).attr('href');
     addCart(link);
-}).on('click','.focus-btn',function(){
-    //关注店铺
-    focus();
 }).on('click','.classify-icon',function(){
     var link_search=$.getUrlParam("search");
      if(link_search != null){
@@ -146,14 +107,6 @@ $(document).ready(function(){
     window.dataObj.page=1;
     _action=5;
     goodsList(1,5);
-}).on('click','.able_click',function(e){
-    //点赞
-    var $this=$(this);
-    $this.unbind('click');
-    var large_box=$('.large-img-box');
-    var type=large_box.attr('data-type');
-    var id=large_box.attr('data-id');
-    great(type,id);
 }).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
@@ -276,11 +229,10 @@ var scrollLoading=function(_group_id){
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
-        var totalheight = 0;
         var main = $('.goods-list-'+_group_id);              //主体元素
         var nomore=main.attr("data-nomore");
         var page=parseInt($('.goods-list-'+_group_id).attr("data-page"));
-        totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+        var totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
         if(_finished&&(main.height()-range) <= totalheight  && nomore=="false") {
             _finished=false;
             page = page+1;
