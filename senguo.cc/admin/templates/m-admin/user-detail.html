@@ -77,10 +77,10 @@
         {% end %}
     </ul>
     <div class="uuser-row mt10">
-        <span class="u-arrow arrow-up"></span>
+        <span class="u-arrow"></span>
         <span><span class="user-ui i-shop"></span>关注的店铺</span>
     </div>
-    <ul class="u-shop-list group">
+    <ul class="u-shop-list group hide">
         {% for key in data['shops']%}
         <li>
             <div class="us-item clip">
@@ -90,11 +90,11 @@
         </li>
         {% end %}
     </ul>
-    <div class="uuser-row">
+    <div class="uuser-row mt10">
         <span class="u-arrow"></span>
         <span><span class="user-ui i-order"></span>历史订单</span>
     </div>
-    <ul class="u-order-list mt10" id="uorder-list">
+    <ul class="u-order-list mt10 hide" id="uorder-list">
     </ul>
 </div>
 <ul class="hide" id="uorder_item">

@@ -48,8 +48,8 @@
 .goods-menu-list{height: auto !important;}
 /*bbs首页*/
 .bbs-menu{background-image: url('/static/bbs/img/icon_menu.png');background-size: 20px;padding-left: 26px;}
-.wrap-menu-list{position: absolute;width: 112px;background-color: rgba(72,182,164,0.8);top:100%;left: 0;height: 200px;z-index:99;}
-.menu-list{padding: 5px 0;height: 200px;z-index:99;}
+.wrap-menu-list{position: absolute;width: 112px;background-color: rgba(72,182,164,0.8);top:100%;left: 0;z-index:99;}
+.menu-list{padding: 5px 0;z-index:99;}
 .menu-list>li{cursor: pointer;height: 26px;line-height: 26px;text-align: center;color: #fff;margin: 5px 0;}
 .atical-list{background-color: #fff;}
 .atical-list>li{padding: 10px;position: relative;}

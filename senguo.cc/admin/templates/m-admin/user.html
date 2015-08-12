@@ -6,10 +6,10 @@
 <div class="header">
     <a href="/madmin/shop" class="back">返回</a>
     <div class="wrap-order-tab">
-        <ul class="group order-type-list goods-all-list">
-            <li class="active item" data-id="1">所有用户</li>
-            <li class="item" data-id="2">老用户</li>
-            <li class="item" data-id="3">充值用户</li>
+        <ul class="group order-type-list user-all-list">
+            <li class="active item" data-id="all">所有用户</li>
+            <li class="item" data-id="old">老用户</li>
+            <li class="item" data-id="charge">充值用户</li>
             <li class="tab-bg"></li>
         </ul>
     </div>
@@ -20,93 +20,45 @@
 <div class="container pt70 pm80">
 <div class="second-tab goods_tab">
     <ul class="second-tab-list user_list group pt0">
-        <li class="goods-status goods_status dgreen clip" data-id="1"><span id="filter_status" data-id="all">排序规则</span><i class="imenu"></i></li>
-        <li class="uitem">用户数量（2）</li>
+        <li class="goods-status goods_status dgreen clip" data-id="1"><span id="filter_status" data-id="sort-time">关注时间</span><i class="imenu"></i></li>
+        <li class="uitem">用户数量（<span id="user_num"></span>）</li>
     </ul>
     <div class="wrap-menu-list wrap-user-menu wrap_goods_menu hide">
         <ul class="menu-list goods-menu-list goods_menu_list">
-            <li data-id="all">所有</li>
-            <li data-id="on">关注时间</li>
-            <li data-id="off">用户积分</li>
-            <li data-id="sold_out">账户余额</li>
+            <li data-id="sort-time">关注时间</li>
+            <li data-id="point">用户积分</li>
+            <li data-id="balance">账户余额</li>
         </ul>
     </div>
 </div>
 <div class="boxs order-list-box">
     <div class="goods-item item">
         <ul class="order-lists user-lists pt10" id="user-all-list">
-            <li>
-                <a href="javascript:;" class="goods-goods-edit">
-                    <div class="goods-row">
-                        <dl class="gdl udl">
-                            <dt>
-                                <img class="cur-goods-img" src="/static/images/TDSG.png" alt="用户头像"/>
-                            </dt>
-                            <dd>
-                                <i class="more"></i>
-                                <p class="clip">
-                                    <span class="user-name f14 c333 bold">李易峰</span>
-                                    <span class="sex-mark man-mark"></span>
-                                    <span class="user-mark f12 c666 clip">李易峰研制超高啊</span>
-                                </p>
-                                <p class="c333 mt4 f12 bold user-balance">余额 25.00元</p>
-                                <p class="mt4 c999 clip">
-                                    <span class="mr10">用户积分 10分</span>
-                                    <span>用户ID 6652</span>
-                                </p>
-                            </dd>
-                        </dl>
-                    </div>
-                </a>
-            </li>
-            <li>
-                <a href="javascript:;" class="goods-goods-edit">
-                    <div class="goods-row">
-                        <dl class="gdl udl">
-                            <dt>
-                                <img class="cur-goods-img" src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
-                            </dt>
-                            <dd>
-                                <i class="more"></i>
-                                <p class="clip">
-                                    <span class="user-name f14 c333 bold">李易峰</span>
-                                    <span class="sex-mark woman-mark"></span>
-                                    <span class="user-mark f12 c666 clip">李易峰研制超高啊</span>
-                                </p>
-                                <p class="c333 mt4 f12 bold user-balance">余额 25.00元</p>
-                                <p class="mt4 c999 clip">
-                                    <span class="mr10">用户积分 10分</span>
-                                    <span>用户ID 6652</span>
-                                </p>
-                            </dd>
-                        </dl>
-                    </div>
-                </a>
-            </li>
+
         </ul>
     </div>
-    <div class="no-result hide">页面加载中...</div>
+    <div class="no-result">页面加载中...</div>
 </div>
 </div>
-<ul class="hide" id="goods_item">
+<ul class="hide" id="user_item">
     <li>
-        <a href="javascript:;" class="goods-goods-edit">
+        <a href="javascript:;" class="user-link">
             <div class="goods-row">
                 <dl class="gdl udl">
                     <dt>
-                        <img class="cur-goods-img" src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
+                        <img class="cur-user-img" src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
                     </dt>
                     <dd>
                         <i class="more"></i>
                         <p class="clip">
-                            <span class="user-name f14 c333 bold">李易峰</span>
-                            <span class="sex-mark woman-mark"></span>
-                            <span class="user-mark f12 c666 clip">李易峰研制超高啊</span>
+                            <span class="user-name f14 c333 bold"></span>
+                            <span class="sex-mark man-mark"></span>
+                            <span class="user-mark f12 c666 clip"></span>
                         </p>
-                        <p class="c333 mt4 f12 bold user-balance">余额 25.00元</p>
+                        <p class="c333 mt4 f12 bold user-balance">余额 <span class="ubalance"></span>元</p>
                         <p class="mt4 c999 clip">
-                            <span class="mr10">用户积分 10分</span>
-                            <span>用户ID 6652</span>
+                            <span class="mr10">用户积分 <span class="upoint"></span>分</span>
+                            <span>用户ID <span class="uid"></span></span>
                         </p>
                     </dd>
                 </dl>

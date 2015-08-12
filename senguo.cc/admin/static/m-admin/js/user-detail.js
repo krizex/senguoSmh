@@ -4,22 +4,6 @@ $(document).ready(function(){
     $(".wrap-user-detail").css({minHeight:(minheight-80)+"px"});
     var id = $(".wrap-user-detail").attr("data-id");
     getGoodsItem(id);
-    /*$(window).scroll(function(){
-        return false;
-        var totalheight = $(window).height() + $(window).scrollTop() +150;
-        if(finished && $(".container").height() <= totalheight) {
-            $(".no-result").html("数据加载中...");
-            finished=false;
-            page++;
-            if($.getUrlParam("search")){
-                pageGoods("goods_search",0,$.getUrlParam("search"));
-            }else if($.getUrlParam("classify")) {
-                pageGoods("classify",$.getUrlParam("classify"));
-            }else{
-                pageGoods("all",0);
-            }
-        }
-    });*/
 }).on("click",".user-umark",function(){
     if($(".mark-text").html()=="无备注"){
         $("#user_remark").val("");
@@ -31,6 +15,11 @@ $(document).ready(function(){
 }).on("click","#edit_remark",function(){
     var mark = $("#user_remark").val();
     userMark(mark,$(this));
+}).on("click",".cancel-bbtn",function(){
+    $(this).closest(".pop-bwin").addClass("hide");
+}).on("click",".uuser-row",function(){
+    $(this).children(".u-arrow").toggleClass("arrow-up");
+    $(this).next("ul").toggleClass("hide");
 });
 function userMark(mark,$obj){
     if(!mark){
@@ -62,44 +51,6 @@ function userMark(mark,$obj){
             }
         }
     );
-}
-//翻页加载
-function pageGoods(action,type_id,value){
-    var url;
-    var filter_status = $("#filter_status").attr("data-id");
-    var order_status1 = "group";
-    var order_status2 = $(".goods_list").find(".active").attr("data-id");
-    var filter_status2 = -2;
-    var pn = page;
-    if(filter_status=="delete"){
-        url="/admin/goods/delete?page="+pn;
-    }else{
-        if(action=="classify"){
-            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&type=classify&sub_type="+type_id+"&page="+pn;
-        }else if(action=="goods_search"){
-            url="/admin/goods/all?type=goods_search&content="+value+"&page="+pn;
-        }else{
-            url = "/admin/goods/all?filter_status="+filter_status+"&order_status1="+order_status1+"&order_status2="+order_status2+"&filter_status2="+filter_status2+"&page="+pn;
-        }
-    }
-    $.ajax({
-        url:url,
-        type:"get",
-        success:function(res){
-            if(res.success){
-                var data = res.data;
-                if(data.length==0){
-                    $(".no-result").html("没有更多商品了");
-                    finished = false;
-                }else{
-                    insertGoods(data);
-                    finished = true;
-                }
-            }else{
-                Tip(res.error_text);
-            }
-        }
-    });
 }
 function getGoodsItem(id){
     var url;
