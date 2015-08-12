@@ -136,6 +136,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pop-content .button-box button{background:#48b6a4;color:#fff;border-radius:20px;width:35%;height:30px;}
 .pop-content .title{font-size:16px;color:#666;text-align:left;}
 .pop-content .close-btn{position:absolute;right:10px;top:10px;font-size:16px;color:#48b6a4;font-weight:bold;}
+.pop-tpl-bg{background-color: rgba(0,0,0,.7);}
 /*页面提示文字*/
 .no-result{font-size: 14px;text-align: center;color: #999;width: 100%;}
 .order-list-box>p{position: absolute;top: 100px;min-width: 320px;}
