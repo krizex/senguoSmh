@@ -160,7 +160,7 @@
 .a8{color: #a8a8a8;}
 .e4{color: #ee413e;}
 .rmb{position: relative;display: inline-block;top: -6px;}
-.wrap-operate{position: absolute;bottom: 23px;right: 6px;width: 60px;z-index:20;}
+.wrap-operate{position: absolute;bottom: 23px;right: 6px;width: 60px;z-index:90;}
 .wrap-operate .roll-btn{display: inline-block;width: 60px;height: 60px;margin-top:10px;color:#fff;cursor:pointer;border-radius: 50%;text-align: center;line-height: 60px;font-size: 30px;background-color:#72D6B3;}
 .wrap-operate .minus-gds{background-color:#F13C62;font-size: 40px;background-image: url("/static/images/minus.png");background-size: 60px;background-repeat: no-repeat;}
 .wrap-operate .add-gds{font-size: 40px;background-image: url("/static/images/add.png");background-size: 60px;background-repeat: no-repeat;}
