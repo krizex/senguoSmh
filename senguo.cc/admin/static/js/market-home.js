@@ -4,17 +4,15 @@ $(document).ready(function(){
     //$(".container").height(height).css("overflow","hidden").css("paddingBottom","0");
     //$("#wrap-home-box").height(height-50);
     $(".notice-item").width("100%");
-    if($(".swiper-slide").size()>1){
-        $(".swiper-wrapper").width(width*$(".swiper-slide").size());
-        new Swiper('#swiper-container',{
-            mode: 'horizontal',
-            loop:true,
-            grabCursor: true,
-            pagination: '.pagination',
-            autoplay:"3000",
-            autoplayDisableOnInteraction:false
-        });
-    }
+    $(".swiper-wrapper").width(width*$(".swiper-slide").size());
+    new Swiper('#swiper-container',{
+        mode: 'horizontal',
+        loop:true,
+        grabCursor: true,
+        pagination: '.pagination',
+        autoplay:"3000",
+        autoplayDisableOnInteraction:false
+    });
     //分类显示
     var top_title=$('.top-title');
     //get infomations of goods and push into html
