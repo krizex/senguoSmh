@@ -17,6 +17,8 @@ from libs.utils import Logger
 import hashlib
 import chardet
 
+from WXBizMsgCrypt import WXBizMsgCrypt
+
 try:
 	import xml.etree.cElementTree as ET
 except:
@@ -56,10 +58,42 @@ class Login(CustomerBaseHandler):
 class WxOpen(CustomerBaseHandler):
 	def get(self):
 		return self.send_success()
+	@CustomerBaseHandler.check_arguments('timestamp?:str','signature?:str','nonce?:str','encrypt_type?:str','msg_signature?:str','')
 	def post(self):
-		data = self.request.body
-		print(data)
+		encodingAESKey = '1bvcmN6qGFEvM2zKfT7jDFy54rZt9senguo123WmmnJ'
+		token = 'senguotest'
+		appid = 'wxc30d9acccf942f82'
+		appsecret = '0c79e1fa963cd80cc0be99b20a18faeb'
+
+		timestamp = self.args.get('timestamp',None)
+		signature = self.args.get('signature',None)
+		nonce     = self.args.get('nonce',None)
+		encrypt_type = self.args.get('encrypt_type',None)
+		msg_signature= self.args.get('msg_signature',None)
+
+		decrypt_test = WXBizMsgCrypt(token,encodingAESKey,appid)
+
+		raw_data = self.request.body
+		print(raw_data)
+		data = self.xmlToDic(raw_data)
+		AppId = data.get('AppId',None)
+		Encrypt = data.get('Encrypt',None)
+		print(AppId,Encrypt)
+		ret,decryp_xml = decrypt_test.DecryptMsg(raw_data.decode('utf-8'),msg_signature,timestamp,nonce)
+		print(ret,decryp_xml)
 		return self.write('success')
+
+	@classmethod
+	def xmlToDic(self,xmlstr):
+		if isinstance(xmlstr,bytes):
+			xmlstr = xmlstr.decode('utf-8')
+		else:
+			xmlstr = xmlstr
+		data = {}
+		tree = ET.fromstring(xmlstr)
+		for child in tree:
+			data[child.tag] = child.text
+		return data	
 
 # 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
 class WxMessage(CustomerBaseHandler):
