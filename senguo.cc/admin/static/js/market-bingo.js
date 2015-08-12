@@ -3,8 +3,8 @@ $(document).ready(function(){
     $('.bottom-nav').find('li').addClass('add_cart');
     var width = $("#swiper-container").width();
     var height = $(window).height();
-    $("html,body").css("overflow","hidden").css("height",height+"px");
-    $(".container").css("height",height+"px").addClass("over");
+    //$("html,body").css("overflow","hidden").css("height",height+"px");
+    //$(".container").css("height",height+"px").addClass("over");
     $(".notice-item").width("100%");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
     new Swiper('#swiper-container',{
@@ -65,7 +65,7 @@ $(document).ready(function(){
             $(".more-group").addClass("hidden");
         }
     });
-    $(document).on('click','#backTop',function(){
+    /*$(document).on('click','#backTop',function(){
         $(".container").scrollTop(0);
     });
     //置顶监听
@@ -79,7 +79,7 @@ $(document).ready(function(){
         else{
             $('.little_pear').css("display","none");
         }
-    });
+    });*/
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -260,8 +260,9 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{s
     '</li>';
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){
-    $(".container").scroll(function(){
-        var srollPos = $(".container").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+    $(window).scroll(function(){
+        //var srollPos = $(".container").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+        var srollPos = $(window).scrollTop();
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
         //var main = $('.goods-list-'+_group_id);              //主体元素
         var main = $('.goods-list-'+sid);
