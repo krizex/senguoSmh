@@ -1441,7 +1441,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
-			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
+			return self.render("customer/cart-empty.html",shop_tpl=shop.shop_tpl,context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
 			fruit = cart_f[item].get('charge_type').fruit
