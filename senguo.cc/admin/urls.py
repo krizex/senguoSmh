@@ -52,9 +52,9 @@ handlers = [
 	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
 	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
 	# 限时折扣
-	(r"/discount/main",handlers.admin.Discount,{},"DiscountMain"),
-	(r"/discount/newdiscount",handlers.admin.Discount,{},"DiscountNew"),
-	(r"/discount/discountdetail",handlers.admin.Discount,{},"DiscountDetail"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountMain"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountNew"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountDetail"),
 	
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),

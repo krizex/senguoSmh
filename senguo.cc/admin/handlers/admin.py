@@ -4795,14 +4795,189 @@ class WirelessPrint(AdminBaseHandler):
 
 # 限时折扣
 class Discount(AdminBaseHandler):
+	def  getdiscount(self,data,status):
+		current_shop_id=self.current_shop.id
+		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=status).order_by(desc(models.DiscountShopGroup.create_date)).all()
+		for x in q:
+			weeks=''
+			if x.discount_way==0:
+				start_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.start_date))
+				end_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.end_date))
+				for y in x.weeks:
+					if y==1:
+						weeks+=',周一'
+					if y==2:
+						weeks+=',周二'
+					if y==3:
+						weeks+=',周三'
+					if y==4:
+						weeks+=',周四'
+					if y==5:
+						weeks+=',周五'
+					if y==6:
+						weeks+=',周六'
+					if y==7:
+						weeks+=',周日'
+				weeks=weeks[1:]  #去掉最开始的那个‘,’
+			else:
+				start_date=time.strftime('%H:%M:%S',time.localtime(x.f_time))
+				end_date=time.strftime('%H:%M:%S',time.localtime(x.t_time))
+			goods=''
+			qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id).all()
+			if len(qq)>=10:
+				for x in xrange(0,10):
+					if qq[x].use_goods_group==0:
+						use_goods_group="默认分组"
+					elif qq[x].use_goods_group==-1:
+						use_goods_group="店铺推荐"
+					elif qq[x].use_goods_group==-2:
+						use_goods_group="所有分组"
+					else:
+						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=qq[x].use_goods_group).first()
+						use_goods_group=q1.name
+					if qq[x].use_goods==-1:
+						use_goods="所有商品"
+					else:
+						q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=qq[x].use_goods).first()
+						use_goods=q1.name
+					goods+=','+use_goods_group+':'+use_goods
+				goods+='等10类商品'
+			else:
+				for y in qq:
+					if y.use_goods_group==0:
+						use_goods_group="默认分组"
+					elif y.use_goods_group==-1:
+						use_goods_group="店铺推荐"
+					elif y.use_goods_group==-2:
+						use_goods_group="所有分组"
+					else:
+						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=y.use_goods_group).first()
+						use_goods_group=q1.name
+					if y.use_goods==-1:
+						use_goods="所有商品"
+					else:
+						q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=y.use_goods).first()
+						use_goods=q1.name
+					goods+=','+use_goods_group+':'+use_goods
+			goods=goods[1:]
+			data_tmp={"discount_id":x.discount_id,"discount_way":x.discount_way,"start_date":start_date,"end_date":end_date,"incart_num":x.incart_num,"ordered_num":x.ordered_num,"weeks":weeks,"goods":goods}
+			data.append(data_tmp)
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action?:str", "discount_status?:int")
+	@AdminBaseHandler.check_arguments("action?:str")
 	def get(self):
 		action=self.args["action"]
+		current_shop_id=self.current_shop.id
+		current_shop=self.current_shop
 		if action=="discount":
-			return self.render("admin/discount-main.html",discount_active_cm=0,output_data=[],context=dict(subpage='marketing',subpage2='discount_active'))
+			# 下面四个data对应于４种状态的限时折扣
+			data=[]
+			for x in range(0,4):
+				data_tmp=[]
+				self.getdiscount(data_tmp,x)
+				data.append(data_tmp)
+			discount_active_cm=self.session.query(models.Marketing).filter_by(id=current_shop_id).first().discount_active
+			return self.render("admin/discount-main.html",discount_active_cm=discount_active_cm,output_data=data,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="newdiscountpage":
-			return self.render("admin/discount-new.html",discount_active_cm=0,output_data=[],context=dict(subpage='marketing',subpage2='discount_active'))
+			data=[]
+			data0=[]
+			data1=[]
+			chargetype=[]
+			chargesingle=[]
+			chargegroup=[]
+			x_goodsgroup={"group_id":0,"group_name":"默认分组"}
+			data.append(x_goodsgroup)
+			q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=0,active=1)
+			for y in q1:
+				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
+				data0.append(x_goodsgroup)
+				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id).all()
+				for x in Chargetype:
+					x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
+					chargesingle.append(x_charge)
+				chargegroup.append(chargesingle)
+				chargesingle=[]
+			chargetype.append(chargegroup)
+			chargegroup=[]
+			data1.append(data0)
+			data0=[]
+			x_goodsgroup={"group_id":-1,"group_name":"店铺推荐"}
+			data.append(x_goodsgroup)
+			q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=-1,active=1)
+			for y in q1:
+				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
+				data0.append(x_goodsgroup)
+				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id).all()
+				for x in Chargetype:
+					x_charge={"charge_id":x.id,"charge":x.price+'元/'+x.num+self.getUnit(x.unit)}
+					chargesingle.append(x_charge)
+				chargegroup.append(chargesingle)
+				chargesingle=[]
+			chargetype.append(chargegroup)
+			chargegroup=[]
+			data1.append(data0)
+			data0=[]
+			q=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,status=1).all()
+			for x in q:
+				x_goodsgroup={"group_id":x.id,"group_name":x.name}
+				data.append(x_goodsgroup)
+				q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=x.id,active=1)
+				for y in q1:
+					x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
+					data0.append(x_goodsgroup)
+					Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id).all()
+					for z in Chargetype:
+						x_charge={"charge_id":z.id,"charge":z.price+'元/'+z.num+self.getUnit(z.unit)}
+						chargesingle.append(x_charge)
+					chargegroup.append(chargesingle)
+					chargesingle=[]
+				chargetype.append(chargegroup)
+				chargegroup=[]
+				data1.append(data0)
+				data0=[]
+			return self.render("admin/discount-new.html",discount_active_cm=0,output_data=data,data1=data1,chargetype=chargetype,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="detail":
 			return self.render("admin/discount-detail.html",output_data=[],data1={"total":2},context=dict(subpage='marketing',subpage2='discount_active'))
-			
+	@AdminBaseHandler.check_arguments("action?:str", "data?")
+	def post(self):
+		action=self.args["action"]
+		current_shop_id=self.current_shop.id
+		if action=="close_all":
+			q=self.session.query(models.Marketing).filter_by(id=current_shop_id).with_lockmode('update').first()
+			discount_active_cm=q.discount_active
+			if discount_active_cm==0:
+				q.update(self.session,discount_active=1)
+			else:
+				q.update(self.session,discount_active=0)
+			self.session.commit()
+			return self.send_success(discount_active_cm=discount_active_cm)
+		elif action=='newdiscount':
+			data=self.args["data"]
+			create_date=time.time()
+			discount_way=int(data["discount_way"])
+			start_date=data["start_date"]
+			end_date=data["end_date"]
+			if discount_way==0:
+				start_date=int(time.mktime(time.strptime(start_date,'%Y-%m-%d %H:%M:%S')))
+				end_date=int(time.mktime(time.strptime(end_date,'%Y-%m-%d %H:%M:%S')))
+				if create_date<start_date:
+					status=0
+				elif create_date>end_date:
+					status=2
+				else:
+					status=1
+			else:
+				status=1		
+			f_time=data["f_time"]
+			t_time=data["t_time"]
+			weeks=data["weeks"]
+			discount_goods=data["discount_goods"]
+			# 向数据库中插入数据
+			discount_id=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).count()+1
+			new_discount=models.DiscountShopGroup(shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,weeks=str(weeks),\
+				discount_way=discount_way,f_time=f_time,t_time=t_time,status=status,create_date=create_date,incart_num=0,ordered_num=0)
+			self.session.add(new_discount)
+			for x in discount_goods:
+				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
+				self.session.add(new_discount)
+			self.session.commit()
+			return self.send_success()
