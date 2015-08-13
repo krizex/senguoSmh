@@ -94,20 +94,20 @@ $(document).ready(function(){
     var if_reverse=$("#cur-sort-reverse").attr("data-id");
     var action = $(".user-type .active").attr("data-url");
     var order_by=$("#cur-sort-way").attr("data-id");
-    var page=parseInt($(".page-now").text())+1;
+    var page=parseInt($(".page-now").text());
     var page_total=parseInt($(".page-total").text());
     if(page<=page_total){
         getItem(action,order_by,if_reverse,page);
-        $(".page-now").text(page);
+        $(".page-now").text(page+1);
     }
 }).on("click",".pre-page",function(){
     var if_reverse=$("#cur-sort-reverse").attr("data-id");
     var action = $(".user-type .active").attr("data-url");
     var order_by=$("#cur-sort-way").attr("data-id");
-    var page=parseInt($(".page-now").text())-1;
-    if(page>0){
+    var page=parseInt($(".page-now").text())-2;
+    if(page>=0){
         getItem(action,order_by,if_reverse,page);
-        $(".page-now").text(page);
+        $(".page-now").text(page+1);
     }
     
 }).on("click",".jump-to",function(){
@@ -120,7 +120,7 @@ $(document).ready(function(){
         return Tip('页数只能为正整数！')
     }
     var page=parseInt($(".input-page").val().trim());
-    if(1<page<page_total){
+    if(1<page<=page_total){
         getItem(action,order_by,if_reverse,page-1);
         $(".page-now").text(page);
     }
@@ -187,8 +187,10 @@ function getItem(action,order_by,if_reverse,page,wd){
                     $(".notice").addClass("hidden");
                     $(".users-pagination").addClass("hidden");
                 }else{
-                    $(".notice").removeClass("hidden");
                     $(".users-pagination").removeClass("hidden");
+                }
+                if(datalist.length==0){
+                    $(".notice").removeClass("hidden");  
                 }
                 $(".user-count").text(res.count);
                 $(".page-total").text(page_sum);
