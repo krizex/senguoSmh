@@ -81,8 +81,18 @@ class WxOpen(CustomerBaseHandler):
 		AppId = data.get('AppId',None)
 		Encrypt = data.get('Encrypt',None)
 		print(AppId,Encrypt)
-		ret,decryp_xml = decrypt_test.DecryptMsg(raw_data.decode('utf-8'),msg_signature,timestamp,nonce)
+		ret,decryp_xml = decrypt_test.DecryptMsg(raw_data,msg_signature,timestamp,nonce)
 		print(ret,decryp_xml)
+		if isinstance(decryp_xml,bytes):
+			decryp_xml = decryp_xml.decode('utf-8')
+		index = decryp_xml.find('<ComponentVerifyTicket>')
+		end   = decryp_xml.find('</ComponentVerifyTicket>')
+		length = len('<ComponentVerifyTicket><![CDATA[')
+		if index != -1 and end != -1:
+			ComponentVerifyTicket = decryp_xml[index+length:end-3]
+			print('ComponentVerifyTicket correct:',ComponentVerifyTicket)
+		else:
+			print('get ComponentVerifyTicket error')
 		return self.write('success')
 
 	@classmethod
