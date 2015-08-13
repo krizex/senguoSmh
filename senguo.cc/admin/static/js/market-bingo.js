@@ -238,15 +238,13 @@ $(document).ready(function(){
 var myScroll;
 function loaded() {
     myScroll = new IScroll('#scroller', {
-        bounce: false,
         deceleration: 0.0025,
         scrollbars: true,
         mouseWheel: true,
         interactiveScrollbars: true,
         shrinkScrollbars: 'scale',
         fadeScrollbars: true,
-        probeType: 3,
-        snap:false
+        probeType: 3
     });
     /*初始化iscroll*/
     myScroll.on("scroll",function(){
