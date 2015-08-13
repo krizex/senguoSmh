@@ -1,8 +1,10 @@
 <!-- created by jyj 2015-8-11 -->
 {% extends 'market-base.html' %}
 {% block title%}商品秒杀{% end %}
+{% set action = action%}
 
 {% block setcontent %}
+<div class="action-div hidden" data-value="{{action}}"></div>
 <div class="clearfix top-box">
                <div class="col-sm-9 col-md-9">
                              <p>商品秒杀是给商家提供的一个店铺营销工具，适用于新品上市、水果促销、节假日活动等场合。</p>
@@ -19,7 +21,7 @@
                              <span class="c999">商品秒杀</span>
                              <span class="c333"> / 秒杀管理</span>
                              <span class="wrap-newbtn">
-                                           <a href="{{reverse_url('adminMarketing')}}?action=seckill_new" class="newbtn add-btn  mt6 mr10 new-seckill">+新建秒杀</a>
+                                           <a href="{{reverse_url('adminMarketingSeckill')}}?action=seckill_new" class="newbtn add-btn  mt6 mr10 new-seckill">+新建秒杀</a>
                              </span>
                </div>
                <div class="subnav-box group mt20">

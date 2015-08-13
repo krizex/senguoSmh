@@ -4333,44 +4333,6 @@ class Marketing(AdminBaseHandler):
 			q.closed=1
 			self.session.commit()
 			return self.send_success()
-		elif action == 'seckill':
-			seckill_active = 1
-			return self.render("admin/seckill.html",seckill_active = seckill_active,context=dict(subpage='marketing',subpage2='seckill'))
-		elif action == 'seckill_new':
-			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
-								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
-			goods_group_id_name.append((-1,'推荐分组'))
-			goods_group_id_name.append((0,'默认分组'))
-			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
-
-			goods_group_id_name=dict(goods_group_id_name)
-			
-			group_fruit_dict = {}
-			for group_id in list(goods_group_id_name.keys()):
-				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2]),models.Fruit.group_id == group_id).all()
-				group_fruit_dict[group_id] = query_list
-
-			fruit_id_list = []
-			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
-			for item in query_list:
-				fruit_id_list.append(item[0])
-
-			fruit_id_storage = {}
-			for fruit_id in fruit_id_list:
-				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
-				storage = list(storage)
-				storage[1] = self.getUnit(storage[1])
-				if storage[0] == 0:
-					continue
-				fruit_id_storage[fruit_id] = storage
-
-
-			print(fruit_id_storage)
-
-			# print(fruit_id_storage)	
-			return self.render("admin/seckill-new.html",context=dict(subpage='marketing'))
-		elif action == 'seckill_detail':
-			return self.render("admin/seckill-detail.html",context=dict(subpage='marketing'))
 
 	@AdminBaseHandler.check_arguments("action:str","data?","coupon_id?:int","select_rule?:int","coupon_type?:int")
 	def post(self):
@@ -4875,3 +4837,114 @@ class WirelessPrint(AdminBaseHandler):
 				# print(r.url)
 				# print(r.status_code)
 				# print(r.text)
+
+# added by jyj 2015-8-12
+# seckill
+class MarketingSeckill(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","page?:int")
+	def get(self):
+		self.if_current_shops()
+		action = self.args["action"]
+		current_shop_id=self.current_shop.id
+		current_shop=self.current_shop
+
+		if action == 'seckill':
+			seckill_active = 1
+			return self.render("admin/seckill.html",action=action,seckill_active = seckill_active,context=dict(subpage='marketing',subpage2='seckill'))
+		elif action == 'seckill_new':
+			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
+								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
+			goods_group_id_name.append((-1,'推荐分组'))
+			goods_group_id_name.append((0,'默认分组'))
+			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
+
+			for i in range(len(goods_group_id_name)):
+				goods_group_id_name[i] = list(goods_group_id_name[i])
+				goods_group_id_name[i][0] = str(goods_group_id_name[i][0])
+
+			goods_group_id_name=dict(goods_group_id_name)
+
+			
+			group_fruit_dict = {}
+			for group_id in list(goods_group_id_name.keys()):
+				group_id = int(group_id)
+				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2]),models.Fruit.group_id == group_id).all()
+				group_fruit_dict[str(group_id)] = query_list
+
+			fruit_id_list = []
+			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2])).all()
+			for item in query_list:
+				fruit_id_list.append(item[0])
+
+			fruit_id_storage = {}
+			for fruit_id in fruit_id_list:
+				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
+				storage = list(storage)
+				storage[1] = self.getUnit(storage[1])
+				if storage[0] == 0:
+					continue
+				fruit_id_storage[str(fruit_id)] = storage
+
+			fruit_id_usable_list = list(fruit_id_storage.keys())
+			group_usable_fruit_dict = {}
+			for key in group_fruit_dict:
+				group_usable_fruit_dict[key] = []
+				for item in group_fruit_dict[key]:
+					if str(item[0]) in fruit_id_usable_list:
+						group_usable_fruit_dict[key].append([item[0],item[1]])
+
+			fruit_id_charge_type = {}
+			for fruit_id in fruit_id_usable_list:
+				fruit_id = int(fruit_id)
+				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
+							            filter(models.ChargeType.fruit_id == fruit_id).all()
+				for i in range(len(query_list)):
+					query_list[i] = list(query_list[i])
+					query_list[i][2] = self.getUnit(query_list[i][2])
+					storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					query_list[i].append(storage_piece)
+				fruit_id_charge_type[str(fruit_id)] = query_list
+			
+			return self.render("admin/seckill-new.html",action=action,goods_group_id_name=goods_group_id_name,group_usable_fruit_dict=[group_usable_fruit_dict],\
+								fruit_id_storage=[fruit_id_storage],fruit_id_charge_type=[fruit_id_charge_type],context=dict(subpage='marketing'))
+		elif action == 'seckill_detail':
+			return self.render("admin/seckill-detail.html",context=dict(subpage='marketing'))
+
+	@AdminBaseHandler.check_arguments("action:str","data?")
+	def post(self):
+		action = self.args["action"]
+		current_shop_id = self.current_shop.id
+		current_shop=self.current_shop
+		current_customer_id=self.current_user.id
+
+		if action == "seckill_new":
+			data = self.args["data"]
+
+			start_time = str(data["start_time"])
+			continue_time_hour = int(data["continue_time_hour"])
+			continue_time_minute = int(data["continue_time_minute"])
+			continue_time_second = int(data["continue_time_second"])
+			fruit_id = int(data["fruit_id"])
+			charge_type_id = int(data["charge_type_id"])
+			former_price = float(data["former_price"])
+			seckill_price = float(data["seckill_price"])
+			storage_piece = int(data["storage_piece"])
+			activity_piece = int(data["activity_piece"])
+
+			 
+			shop_id = current_shop_id
+			start_time = int(time.mktime(time.strptime(start_time,'%Y-%m-%d %H:%M:%S')))
+			activity_id = int(str(shop_id)+str(start_time))
+			continue_time = continue_time_second + continue_time_minute*60 + continue_time_hour*60*60
+			end_time = start_time + continue_time
+			activity_status = 1
+
+			not_pick = activity_piece
+			picked = 0
+			ordered = 0
+			deleted = 0
+		else:
+			return self.send_fail('something must wrong')
+
+		return self.send_success()

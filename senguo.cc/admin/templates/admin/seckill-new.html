@@ -4,12 +4,14 @@
 <link rel="stylesheet" href="{{static_url('css/admin-reset.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
 {% end %}
+{% set action = action%}
+
 
 {% block content %}
-{% set shop_code = current_shop.shop_code %}
+<div class="action-div hidden" data-value="{{action}}"></div>
 <div class="font14">
                <p class="c333 mt10 choose-text">
-                             <a href="{{reverse_url('adminMarketing')}}?action=seckill" class="c999 cancel-add-goods">商品秒杀</a>
+                             <a href="javascript:;" class="c999 cancel-add-goods go-back-page" title="点击返回秒杀管理页面">商品秒杀</a>
                              <span class="c333"> / 新建秒杀商品</span>
                </p>
 </div>
@@ -27,7 +29,7 @@
                                                                                        <td class="ver-top"><span class="ver-5">开始时间</span></td>
                                                                                        <td>
                                                                                                      <div class="">
-                                                                                                                    <input type="text" class="Wdate start-time" id="" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss'})" />
+                                                                                                                    <input type="text" class="Wdate start-time" id="" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d %H:#{\%m+5}:%s'})" />
                                                                                                      </div>
                                                                                        </td>
                                                                         </tr>
@@ -70,7 +72,7 @@
                                                                                                                     </button>
                                                                                                                     <ul class="dropdown-menu dropdown-menu-right w110 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
                                                                                                                                   <li class="presentation choose-continue-time" role="presentation">
-                                                                                                                                                {% for i in range(0,60,5)%}
+                                                                                                                                                {% for i in range(60)%}
                                                                                                                                                  <a class="item" href="javascript:;">{{i}}</a>
                                                                                                                                                 {% end %}
                                                                                                                                   </li>
@@ -82,7 +84,7 @@
                                                                         <tr>
                                                                                        <td class="ver-top"><span class="ver-5">秒杀商品</span></td>
                                                                                        <td class="ver-top">
-                                                                                                     <span class="ver-5 text-red">*领取限制：活动期间每个用户仅限领取一份。</span>
+                                                                                                     <span class="ver-5 text-red">*领取限制：活动期间每种商品每个用户仅限秒杀一份。</span>
                                                                                        </td>
                                                                         </tr>
 
@@ -109,41 +111,37 @@
                                                                                                                                                                                             </button>
                                                                                                                                                                                             <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
                                                                                                                                                                                                           <li class="presentation choose-goods-group" role="presentation">
-                                                                                                                                                                                                                         <a class="item" href="javascript:;">AAAAA</a>
-                                                                                                                                                                                                                         <a class="item" href="javascript:;">BBBB</a>
-                                                                                                                                                                                                                         <a class="item" href="javascript:;">CCCC</a>
+                                                                                                                                                                                                                        {% for key in goods_group_id_name %}
+                                                                                                                                                                                                                         <a class="item" href="javascript:;" data-id="{{key}}">{{goods_group_id_name[key]}}</a>
+                                                                                                                                                                                                                         {% end %}
                                                                                                                                                                                                           </li>
                                                                                                                                                                                             </ul>
                                                                                                                                                                              </div>
                                                                                                                                                                              <div class="dropdown slide-down-select w130 mr10">
-                                                                                                                                                                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn choose-goods-btn" type="button" data-toggle="dropdown" data-flag="0">
+                                                                                                                                                                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn choose-goods-btn" type="button" data-toggle="dropdown" data-flag="">
                                                                                                                                                                                                           <em class="pull-left c333 cur-goods" data-id="">选择商品</em>
                                                                                                                                                                                                           <span class="caret pull-right no-margin-left rotate0"></span>
                                                                                                                                                                                             </button>
                                                                                                                                                                                             <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
-                                                                                                                                                                                                          <li class="presentation choose-goods hidden" role="presentation">
-                                                                                                                                                                                                                         <a class="item" href="javascript:;">1111</a>
-                                                                                                                                                                                                                         <a class="item" href="javascript:;">2222</a>
-                                                                                                                                                                                                                         <a class="item" href="javascript:;">3333</a>
+                                                                                                                                                                                                          <li class="presentation choose-goods hidden" role="presentation" data-value="{{group_usable_fruit_dict}}">
+
                                                                                                                                                                                                           </li>
                                                                                                                                                                                             </ul>
                                                                                                                                                                              </div>
                                                                                                                                                                </td>
                                                                                                                                                 </tr>
                                                                                                                                                 <tr>　　
-                                                                                                                                                               <td class="ver-top"><span class="ver-5">原价（单选）</span></td>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5 former-price" data-id="">原价（单选）</span></td>
                                                                                                                                                                <td class="ver-top">
-                                                                                                                                                                             <div class="choose-price send-day clearfix hidden choose-charge-type">  
-                                                                                                                                                                                           <button class="btn btn-default" data-id="0">5元/斤</button>
-                                                                                                                                                                                           <button class="btn btn-default" data-id="1">10元/瓶子</button>
-                                                                                                                                                                                           <button class="btn btn-default" data-id="2">20元/箱</button>  
+                                                                                                                                                                             <div class="choose-price send-day clearfix hidden choose-charge-type" data-value="{{fruit_id_charge_type}}" data-flag="">  
+
                                                                                                                                                                              </div>
                                                                                                                                                                </td>
                                                                                                                                                 </tr>
                                                                                                                                                 <tr>
                                                                                                                                                                <td class="ver-top"><span class="ver-5">秒杀价</span></td>
                                                                                                                                                                <td class="ver-top hidden seckill-charge-price">
-                                                                                                                                                                             <input type="text" class="w130 seckill-price-input"/><span class="ml10 cur-charge-type">元/2斤<span>
+                                                                                                                                                                             <input type="text" class="w130 seckill-price-input"/><span class="ml10 cur-charge-type"><span>
                                                                                                                                                                </td>
                                                                                                                                                 </tr>
                                                                                                                                                 <tr>
@@ -152,7 +150,7 @@
                                                                                                                                                 </tr>
                                                                                                                                                 <tr>
                                                                                                                                                                <td class="ver-top"><span class="ver-5">活动库存</span></td>
-                                                                                                                                                               <td class="activity-store hidden"><input type="text" class="w130 activity-store-input"/><span class="ml10">份</span></td>
+                                                                                                                                                               <td class="activity-store hidden"><input type="text" class="w130 activity-store-input"/><span class="ml10 activity-store-charge-type"></span></td>
                                                                                                                                                 </tr>
                                                                                                                                   </tbody>
                                                                                                                     </table>

@@ -127,7 +127,15 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 
 .send-day .btn{padding:5px 10px;font-size:12px;margin-right:5px;}
 .send-day .active{background:#44b549;color:#fff;border: none;}
-
+.send-day:active{border:none;}
+.send-day:hover{border:none;}
+.send-day:focus{border:none;}
+.send-day .btn:active{border: none;}
+.send-day .btn:hover{border: none;}
+.send-day .btn:focus{border: none;}
+.send-day .btn-default:active{border: none;}
+.send-day .btn-default:hover{border: none;}
+.send-day .btn-default:focus{border: none;}
 .ver-8 {vertical-align: 8px;}
 .w110{width: 110px;}
 

@@ -243,6 +243,7 @@ handlers = [
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
+	(r"/admin/marketing/seckill",handlers.admin.MarketingSeckill,{},"adminMarketingSeckill"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
 	(r"/admin",handlers.admin.SwitchShop,{},"switchshop"),
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),

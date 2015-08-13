@@ -1908,3 +1908,27 @@ class CouponsCustomer(MapBase, _CommonApi):
 	uneffective_time=Column(Integer)
 	coupon_status=Column(Integer,default=0)
 	order_id=Column(Integer)
+
+# 秒杀活动表
+class Seckill(MapBase,_CommonApi):
+	__tablename__='seckill'
+	id=Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	activity_id=Column(Integer,nullable=False)    #秒杀活动id,可以有多行的activity_id相同;设定activity_id为当前秒杀的店铺id字符串加上当前秒杀活动的整形时间戳字符串
+	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+	fruit_id = Column(Integer,ForeignKey(Fruit.id,nullable=False))
+
+	start_time=Column(Integer,nullable=False)
+	end_time=Column(Integer)
+	continue_time=Column(Integer)  #秒杀持续的时间
+	
+	charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的计价方式id
+	former_price=Column(Float) 	#原价
+	seckill_price=Column(Float,nullable=False)  	#秒杀价,计价方式与former_price相同
+	storage_piece=Column(Integer)    #当前商品剩余库存换算成当前计价方式的份数，取整
+	activity_piece=Column(Integer)		#活动库存的份数
+	activity_status = Column(TINYINT,default=1,nullable=False)	#当前秒杀活动的状态,取值：-1(已停用)，0(已结束),1(未开始)，2(进行中)
+
+	not_pick=Column(Integer)	#未领取的商品的份数，默认等于当前活动库存的份数
+	picked=Column(Integer,default=0)	#已经领取的商品的份数，默认为0
+	ordered=Column(Integer,default=0)	#已经下单的商品的份数，默认为0
+	deleted=Column(Integer,default=0)	#已经被从该秒杀活动中删除的商品的份数，默认为0
