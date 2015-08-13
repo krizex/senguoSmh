@@ -17,7 +17,7 @@ from libs.utils import Logger
 import hashlib
 import chardet
 
-from WXBizMsgCrypt import WXBizMsgCrypt
+from  handlers.WXBizMsgCrypt import WXBizMsgCrypt
 
 try:
 	import xml.etree.cElementTree as ET
@@ -70,6 +70,8 @@ class WxOpen(CustomerBaseHandler):
 		nonce     = self.args.get('nonce',None)
 		encrypt_type = self.args.get('encrypt_type',None)
 		msg_signature= self.args.get('msg_signature',None)
+
+		print(timestamp,signature,nonce,encrypt_type,msg_signature)
 
 		decrypt_test = WXBizMsgCrypt(token,encodingAESKey,appid)
 
