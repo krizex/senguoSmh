@@ -923,7 +923,7 @@ function Vrify(phone){
             {
                 time($('#getVrify'));
                 noticeBox('验证码已发送到您的手机，请注意查收！');
-                $('#getVrify').removeAttr('disabled');
+                $('#submitOrder').removeAttr('disabled').removeClass("un_tie").removeClass("bg-greyc");
             }
             else return noticeBox(res.error_text);
         },
@@ -953,7 +953,7 @@ function TiePhone(evt){
                 var tie_box=new Modal('tieBox');
                 tie_box.modal('hide');
                 $('.first_notice').remove();
-                $('.un_tie').attr({'id':'submitOrder'}).removeClass('bg-grey99 un_tie').addClass('bg-green');
+                $("#submitOrder").removeAttr("disabled")
             }
             else noticeBox(res.error_text);
         },

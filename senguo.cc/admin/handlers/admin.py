@@ -2980,110 +2980,125 @@ class editorFileManage(AdminBaseHandler):
 # 用户管理
 class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str", "order_by:str","if_reverse?:int", "page:int", "wd?:str")
+	@AdminBaseHandler.check_arguments("action:str", "order_by:str","if_reverse?:int", "page?:int", "wd?:str")
 	def get(self):
 		self.if_current_shops()
 		# if self.is_pc_browser()==False:
 		# 	return self.redirect(self.reverse_url("MadminComment"))
 		action = self.args["action"]
 		order_by = self.args["order_by"]
-		page = self.args["page"]
-		if "if_reverse" in self.args:
-			if_reverse = self.args["if_reverse"]
-		else:
-			if_reverse = None
-		page_size = 10
-		count = 0
-		page_sum = 0
-		shop_id = self.current_shop.id
-		if action in ("all","old","charge"):
-			if action == "all":  # 所有用户
-				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
-			elif action == "old":  # 老用户
-				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id,models.CustomerShopFollow.shop_new == 1)
-			elif action == "charge":
-				query_list = self.session.query(models.BalanceHistory.customer_id).filter_by(shop_id = self.current_shop.id,balance_type = 0).all()
-				charge_list = []
-				for item in query_list:
-					charge_list.append(item[0])
-				charge_list = set(charge_list)
-				q = self.session.query(models.Customer).outerjoin(models.CustomerShopFollow).\
-					filter(models.Customer.id.in_(charge_list),models.CustomerShopFollow.shop_id == self.current_shop.id).distinct()
-
-			if if_reverse == 1:
-				if order_by == "time":
-					q = q.order_by(desc(models.CustomerShopFollow.create_time))
-				elif order_by == "point":
-					q = q.order_by(desc(models.CustomerShopFollow.shop_point))
-				elif order_by == "balance":
-					q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
-			elif if_reverse == 0:
-				if order_by == "time":
-					q = q.order_by(models.CustomerShopFollow.create_time)
-				elif order_by == "point":
-					q = q.order_by(models.CustomerShopFollow.shop_point)
-				elif order_by == "balance":
-					q = q.order_by(models.CustomerShopFollow.shop_balance)
+		if "page" in self.args and self.args["page"] !=[]:
+			page = self.args["page"]
+			if "if_reverse" in self.args:
+				if_reverse = self.args["if_reverse"]
 			else:
-				if order_by == "time":
-					q = q.order_by(desc(models.CustomerShopFollow.create_time))
-				elif order_by == "point":
-					q = q.order_by(desc(models.CustomerShopFollow.shop_point))
-				elif order_by == "balance":
-					q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
+				if_reverse = None
+			page_size = 10
+			count = 0
+			page_sum = 0
+			shop_id = self.current_shop.id
+			nomore = False
+			if action in ("all","old","charge"):
+				if action == "all":  # 所有用户
+					q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+						filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
+				elif action == "old":  # 老用户
+					q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+						filter(models.CustomerShopFollow.shop_id == self.current_shop.id,models.CustomerShopFollow.shop_new == 1)
+				elif action == "charge":
+					query_list = self.session.query(models.BalanceHistory.customer_id).filter_by(shop_id = self.current_shop.id,balance_type = 0).all()
+					charge_list = []
+					for item in query_list:
+						charge_list.append(item[0])
+					charge_list = set(charge_list)
+					q = self.session.query(models.Customer).outerjoin(models.CustomerShopFollow).\
+						filter(models.Customer.id.in_(charge_list),models.CustomerShopFollow.shop_id == self.current_shop.id).distinct()
 
-			count = q.count()
-			customers = q.offset(page*page_size).limit(page_size).all()
+				if if_reverse == 1:
+					if order_by == "time":
+						q = q.order_by(desc(models.CustomerShopFollow.create_time))
+					elif order_by == "point":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_point))
+					elif order_by == "balance":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
+				elif if_reverse == 0:
+					if order_by == "time":
+						q = q.order_by(models.CustomerShopFollow.create_time)
+					elif order_by == "point":
+						q = q.order_by(models.CustomerShopFollow.shop_point)
+					elif order_by == "balance":
+						q = q.order_by(models.CustomerShopFollow.shop_balance)
+				else:
+					if order_by == "time":
+						q = q.order_by(desc(models.CustomerShopFollow.create_time))
+					elif order_by == "point":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_point))
+					elif order_by == "balance":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
 
-		##################################################################
-		# Modify by Sky - 2015.6.1
-		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
-		# TODO: 搜索性能需改进，应进行多表联合查询
-		##################################################################
-		elif action == "search":
-			wd = self.args["wd"]
+				count = q.count()
+				customers = q.offset(page*page_size).limit(page_size).all()
 
-			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-				join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
-													models.Accountinfo.id.like("%%%s%%" % wd),
-													models.Accountinfo.nickname.like("%%%s%%" % wd),
-													models.Accountinfo.realname.like("%%%s%%" % wd))).all()
-			customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
-				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-				join(models.Address).filter(or_(models.Address.phone.like("%%%s%%" % wd),
-												models.Address.receiver.like("%%%s%%" % wd))).all()
+			##################################################################
+			# Modify by Sky - 2015.6.1
+			# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
+			# TODO: 搜索性能需改进，应进行多表联合查询
+			##################################################################
+			elif action == "search":
+				wd = self.args["wd"]
 
+				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+					join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
+														models.Accountinfo.id.like("%%%s%%" % wd),
+														models.Accountinfo.nickname.like("%%%s%%" % wd),
+														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+				customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+					join(models.Address).filter(or_(models.Address.phone.like("%%%s%%" % wd),
+													models.Address.receiver.like("%%%s%%" % wd))).all()
+
+				customer_list=[]
+				count = len(customers)
+				for customer in customers:
+					if customer not in customer_list:
+						customer_list.append(customer)
+				customers = customer_list
+
+			elif action =="filter":
+				wd = self.args["wd"]
+				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+						filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+						join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
+			else:
+				return self.send_error(404)
+			for x in range(0, len(customers)):  #
+				shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
+				shop_point = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customers[x].id,\
+					shop_id = shop_id).first()
+				customers[x].shop_point = int(shop_point.shop_point) if shop_point.shop_point else 0
+				customers[x].shop_names = [y[0] for y in shop_names]
+				customers[x].shop_balance = format(shop_point.shop_balance,".2f") if shop_point.shop_balance else 0
+				customers[x].remark = shop_point.remark
+
+			page_sum=count/page_size
+			if page == page_sum:
+				nomore = True
+			if page_sum == 0:
+				page_sum=1
 			customer_list=[]
 			for customer in customers:
-				if customer not in customer_list:
-					customer_list.append(customer)
-			customers = customer_list
-
-		elif action =="filter":
-			wd = self.args["wd"]
-			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
-		else:
-			return self.send_error(404)
-		for x in range(0, len(customers)):  #
-			shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
-				filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
-			shop_point = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customers[x].id,\
-				shop_id = shop_id).first()
-			customers[x].shop_point = int(shop_point.shop_point)
-			customers[x].shop_names = [y[0] for y in shop_names]
-			customers[x].shop_balance = format(shop_point.shop_balance,".2f")
-			customers[x].remark = shop_point.remark
-
-		page_sum=count/page_size
-		if page_sum == 0:
-			page_sum=1
-		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=page_sum,
-						   context=dict(subpage='user'))
+				address=[]
+				birthday = datetime.datetime.fromtimestamp(customer.accountinfo.birthday).strftime('%Y-%m-%d') if customer.accountinfo.birthday else ""
+				for addr in customer.addresses:
+					address.append({"address":addr.address_text,"phone":addr.phone,"receiver":addr.receiver})
+				customer_list.append({"id":customer.accountinfo.id,"headimgurl_small":customer.accountinfo.headimgurl_small\
+					,"nickname":customer.accountinfo.nickname,"sex":customer.accountinfo.sex,"shop_balance":customer.shop_balance\
+					,"shop_point":customer.shop_point,"remark":customer.remark,"realname":customer.accountinfo.realname,\
+					"phone":customer.accountinfo.phone,"birthday":birthday,"shop_names":customer.shop_names,"address":address})
+			return self.send_success(customer_list=customer_list,page_sum=page_sum,count=count)
+		return self.render("admin/user-manage.html",context=dict(subpage='user'))
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "data")
 	def post(self):

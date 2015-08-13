@@ -3,10 +3,26 @@
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+{% if shop_tpl == 1 %}
+<style>
+.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_beauty.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+</style>
+{% elif shop_tpl == 2 %}
+<style>
+.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_bingo.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+.bottom-nav .active a, .bottom-nav li:hover a{color:#44C798!important;}
+</style>
+{% end %}
 {% end %}
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{handler.shop_code}}"></span>
-    <div class="rainshed bg_change fix-title"></div>
+    {% if shop_tpl == 0 %}
+    <div class="rainshed fix-title"></div>
+    {% elif shop_tpl == 1 %}
+    <div class="rainshed_beauty fix-title"></div>
+    {% else %}
+    <div class="rainshed_bingo fix-title"></div>
+    {% end %}
     <div class="bg-box">
         <p class="text-left text-grey9 font14  pl10 cart-titles">商品列表</p>
         <ul class="cart-list set-w100-fle m-b0">
@@ -266,21 +282,20 @@
             </div>
             {%end%}
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
-            {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
-            <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
-            <div class="first_notice center-block clearfix mt10">
-                <span class="pull-left">第一次下单?</span>
-                <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
-            </div>
-            {% else %}
-            {% end %}
         </div>
         <div class="bottom-line"></div>
     </div>
     <div class="pay-bill">
+        {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
+        <button  class="first_notice sure_btn  text-center  pull-left ml10" id="phoneNumber">绑定手机号?</button>
+        {% end %}
         <span class="pull-left coupon-text hidden">已优惠 <span id="coupon-money"></span>元</span>
         <span class="yellow-text">总计：<span class="yellow-text"><span class="final_price yellow-text" id="total_price"></span></span> 元</span>
+        {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
+        <a id="submitOrder" class="sub-btn sure_btn order-submit un_tie bg-greyc" href="javascript:;" disabled="true">提交订单</a>
+        {% else %}
         <a id="submitOrder" class="sub-btn sure_btn order-submit" href="javascript:;">提交订单</a>
+        {% end %}
     </div>
 {% end %}
 {% block bottom %}

@@ -4,6 +4,10 @@
 <link rel="stylesheet" href="/static/css/idangerous.swiper.css"/>
 <link rel="stylesheet" href="{{static_url('css/market-home.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
+<style>
+.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_bingo.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+.bottom-nav .active a, .bottom-nav li:hover a{color:#44C798!important;}
+</style>
 {% end %}
 {% block content %}
 {% set notices=context['notices']%}
@@ -17,57 +21,61 @@
 <input type="hidden" id="shop_name" value="{{context['shop_name']}}"/>
 <input type="hidden" id="shop_code" value="{{handler.shop_code}}"/>
 <span id="shop_imgurl" data-img="{{context['shop_logo']}}"></span>
-<div class="wrap-notice-box">
-    <div class="notice-box">
-        {% if notices %}
-        <div class="img-list">
-            <div class="swiper-container" id="swiper-container">
-                <div class="swiper-wrapper">
-                    {% for notice in notices%}
-                    <div class="swiper-slide item notice-item">
-                        <img src="{{notice[2] or '/static/images/banner.png'}}?imageView2/1/w/800/h/320" alt=""/>
-                        <p class="notice-title">{{notice[0]}}</p>
-                        <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
+<div class="wrap-home-box" id="scroller">
+    <div class="wrap-home">
+        <div class="wrap-notice-box">
+            <div class="notice-box">
+                {% if notices %}
+                <div class="img-list">
+                    <div class="swiper-container" id="swiper-container">
+                        <div class="swiper-wrapper">
+                            {% for notice in notices%}
+                            <div class="swiper-slide item notice-item">
+                                <img src="{{notice[2] or '/static/images/banner.png'}}?imageView2/1/w/800/h/320" alt=""/>
+                                <p class="notice-title">{{notice[0]}}</p>
+                                <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
+                            </div>
+                            {% end %}
+                        </div>
                     </div>
-                    {% end %}
+                    <div class="pagination"></div>
                 </div>
+                {% else %}
+                <img src="/static/images/banner.png" class="default-img img"/>
+                {% end %}
             </div>
-            <div class="pagination"></div>
+            <div class="wrap-tab-group">
+                <ul class="tab-group group">
+                    {% if len(context['group_list'])>1%}
+                    <li data-id="-2">所有商品</li>
+                    <li data-id="{{context['group_list'][0]['id']}}">{{context['group_list'][0]['name'][0:5]}}</li>
+                    <li class="more-group-btn" data-id="{{context['group_list'][1]['id']}}">
+                        {% if len(context['group_list']) >2%}
+                        <span class="i-cert"></span>
+                        {% end %}
+                        <span id="cur_group">{{context['group_list'][1]['name'][0:5]}}</span>
+                        <ul class="more-group hidden">
+                            <li data-id="-2">所有商品</li>
+                            {% for group in context['group_list'] %}
+                            <li data-id="{{group['id']}}">{{group['name'][0:5]}}</li>
+                            {% end %}
+                        </ul>
+                    </li>
+                    {% else %}
+                    <li data-id="{{context['group_list'][0]['id']}}" class="only-one">{{context['group_list'][0]['name'][0:5]}}</li>
+                    {% end %}
+                </ul>
+            </div>
         </div>
-        {% else %}
-        <img src="/static/images/banner.png" class="default-img img"/>
-        {% end %}
-    </div>
-    <div class="no-mar-btom top-title">
-        <div class="inner text-white bg-green" id="fruitPosition">
-            <a href="{{reverse_url('customerGoodsSearch')}}" class="search-btn _add_cart" id="search-btn"><em></em></a>
-            <a href="javascript:;"  class="text-white tit choose-classify set-w100-fle text-center">
-                <span class="classify text-center set-inl-blo font18"><span id="classify">{% if len(context['group_list'])>0 %}{{context['group_list'][0]['name']}}{% end %}</span><!-- <em class="icon up font16" style="display:none;"></em><em class="icon down font16" ></em> --></span>
-            </a>
-            <a href="javascript:;" class="pull-left classify-icon text-white to-hide"> <span>分组</span><em class="set-inl-blo pull-right"></em></a>
+        <div class="wrap-goods-box" id="wrap-goods-box">
+            <div class="goods-box mt-20">
+                {% for group in context['group_list'] %}
+                <ul class="goods-list-{{group['id']}} fruit-list bingo-list"  data-page="1" data-nomore="false"></ul>
+                {% end %}
+            </div>
+            <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
         </div>
-        <!--  <ul class="font14 goods-class-choose type-choose clearfix set-w100-fle anim-bounceDown" style="display:none">  
-            <li class="text-grey6 bg-white pull-left text-center" data-id="-2">全部商品</li>
-            {% for group in context['group_list'] %}
-            <li class="text-grey6 bg-white pull-left text-center" data-id="{{group['id']}}">{{group['name']}}</li>
-            {% end %}
-        </ul> -->  
     </div>
-</div>
-<ul class="classify-list bg-green text-white anim-bounceDown to-hide" style="display:none;">
-    {% for group in context['group_list'] %}
-    <li class="pull-left" data-id="{{group['id']}}">{{group['name']}}</li>
-    {% end %}
-</ul>
-<div class="wrap-goods-box" id="wrap-goods-box">
-    <div class="goods-box">
-        {% for group in context['group_list'] %}
-        <p class="text-white no-mar-btom classify-title font18 text-center bg-green hidden classify-{{group['id']}}">{{group['name']}}</p>
-        <ul class="goods-list-{{group['id']}} fruit-list goods-list" >
-        </ul> 
-        {% end %}
-    </div>
-    <div class="loading text-center text-grey9 font12 mt10" style="display:none">~努力加载中 ( > < )~</div>
 </div>
 <div class="wrap-loading-box">
     <div class="loading-box">
@@ -91,6 +99,7 @@
             <div class="modal-body set-width-float text-center">
                 <img src="" id="largeImg" class="mt42"/>
                 <p class="intro font14 text-center">哈哈哈哈哈哈<a href="javascript:;" class="pull-right mr10 mt10 text-grey3">商品详情>></a></p>
+
             </div>
             <div class="modal-footer bg-white set-width-float">
                 <a href="javascript:;" class="click-great text-center font16 text-grey3 able_click"><em class="bg_change"></em>赞一个</a>
@@ -132,5 +141,7 @@
 {% end %}
 {% block bottom %}
 <script src="/static/js/third/idangerous.swiper.min.js"></script>
-<script src="{{static_url('js/market-home.js')}}"></script>
+<script src="/static/js/third/iscroll-probe.min.js"></script>
+<script src="{{static_url('js/market-bingo.js')}}"></script>
 {% end %}
+
