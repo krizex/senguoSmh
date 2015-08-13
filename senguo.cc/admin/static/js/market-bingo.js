@@ -63,7 +63,6 @@ $(document).ready(function(){
     }
     //已在购物车里的商品
     var cart_fs=window.dataObj.cart_fs;
-    // var cart_ms=window.dataObj.cart_ms;
     for(var key in cart_fs) {
         window.dataObj.fruits[cart_fs[key][0]]=cart_fs[key][1];
         fruits_num();
@@ -305,10 +304,8 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{s
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(){
     $(window).scroll(function(){
-        //var srollPos = $(".container").scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
         var srollPos = $(window).scrollTop();
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
-        //var main = $('.goods-list-'+_group_id);              //主体元素
         var main = $('.goods-list-'+sid);
         var nomore=main.attr("data-nomore");
         var page=parseInt($('.goods-list-'+sid).attr("data-page"));
