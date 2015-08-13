@@ -74,7 +74,7 @@ class ShopList(FruitzoneBaseHandler):
 	@unblock
 	@FruitzoneBaseHandler.check_arguments("action",'province?:int')
 	def post(self):
-		print(self.args)
+		# print("[ShopList]self.args:",self.args)
 		action = self.args["action"]
 		province = self.args.get('province',None)
 		province = int(province) if province else None
@@ -85,7 +85,7 @@ class ShopList(FruitzoneBaseHandler):
 			return self.handle_search(province)
 		elif action == "qsearch":
 			return self.handle_qsearch(province)
-		elif action =="shop":
+		elif action == "shop":
 			return self.handle_shop(province)
 		elif action == 'admin_shop':
 			return self.handle_admin_shop(province)
@@ -218,7 +218,7 @@ class ShopList(FruitzoneBaseHandler):
 
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
-			print(len(shops),'key_word')
+			# print(len(shops),'key_word')
 			
 			for shop in shops:
 				lat2 = shop['lat']

@@ -2,7 +2,7 @@ var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
     $("html,body").addClass("h100");
     width = $(window).width();
-    var minheight = $(window).height()-80;
+    var minheight = $(window).height()-70;
     $(".order-lists").css({minHeight:minheight+"px"});
 
     $(".order-type-list .item").on("click",function(){
@@ -13,13 +13,13 @@ $(document).ready(function(){
             $(".third-item").html("已完成");
             $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
-            $(".order-lists").addClass("pt50");
+            $(".order-lists").addClass("pt40");
         }else{
             $(".second-item").html("处理中");
             $(".third-item").html("已送达");
             $(".wrap-self-choose").addClass("hide");
             $(".second-tab").removeClass("mt40");
-            $(".order-lists").removeClass("pt50");
+            $(".order-lists").removeClass("pt40");
         }
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
@@ -58,7 +58,7 @@ $(document).ready(function(){
             $(".third-item").html("已完成");
             $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
-            $(".order-lists").addClass("pt50");
+            $(".order-lists").addClass("pt40");
         }
         var index = parseInt($.getUrlParam("type"));
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
@@ -243,7 +243,7 @@ var getOrder=function(page,flag){
                     }else{
                         pay_type = "在线支付";
                     }
-                     switch (order_status){
+                    switch (order_status){
                         case -1:
                             $("#status-txt").text('未支付');
                             width='order-w0';

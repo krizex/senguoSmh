@@ -23,17 +23,33 @@
 {% if len(customers) != 0%}
 <div class="users-list-action clearfix bg-grey2 mt10">
     <span class="pull-left move font14">用户数 ({{count}})</span>
-    <div class="input-group-btn group-select move-to pull-right set-right10">
-        <button type="button" class="btn dropdown-toggle font12" data-toggle="dropdown">
-            <span>排序规则</span>
-            <span class="caret"></span>
-        </button>
-        <ul class="dropdown-menu user-order-by font12" role="menu">
-            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0">关注时间</a></li>
-            <!--<li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=credits&&page=0">商城积分</a></li>
-            <li class="text-center"><a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=balance&&page=0">账户余额</a></li>-->
-        </ul>
-    </div>
+    <li class="pull-right set-right10"> 
+        <div class="tit cate-title ml20">降序/升序：</div>
+        <div class="dropdown slide-down-select w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    <em class="pull-left filter_status" id="cur-sort-reverse" data-id="1">降序</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="if-reverse">
+                        <li data-id="1"><a class="item reverse">降序</a></li>
+                        <li data-id="0"><a class="item not-reverse">升序</a></li>
+                </ul>
+            </div>
+    </li>
+    <li class="pull-right set-right10"> 
+        <div class="tit cate-title">排序规则：</div>
+        <div class="dropdown slide-down-select w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    <em class="pull-left filter_status" id="cur-sort-way" data-id="time">关注时间</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="sort-way-list">
+                        <li data-id="time"><a class="item sort-time">关注时间</a></li>
+                        <li data-id="point"><a class="item sort-point">用户积分</a></li>
+                        <li data-id="balance"><a class="item sort-balance">账户余额</a></li>
+                </ul>
+            </div>
+    </li>
 </div>
 <ul class="users-list clearfix">
     {% import time %}
