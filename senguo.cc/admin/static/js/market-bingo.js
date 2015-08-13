@@ -75,6 +75,11 @@ $(document).ready(function(){
     if(NA == "ios"){
         document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
     }
+    $(document).on('click','#backTop',function(){
+        if(NA=="ios"){
+            myScroll.scrollTo(0, 0 ,500);
+        }
+    });
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -244,6 +249,13 @@ function loaded() {
     /*初始化iscroll*/
     myScroll.on("scroll",function(){
         var scrollTop = Math.abs(this.y);
+        //置顶监听
+        if(scrollTop>=$(window).height()/2){
+            $('.little_pear').css("display","block");
+        }
+        else{
+            $('.little_pear').css("display","none");
+        }
         var srollPos = scrollTop;
         var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
         var main = $('.goods-list-'+sid);
