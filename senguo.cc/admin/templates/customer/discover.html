@@ -4,7 +4,12 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-<div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
+{% if shop_tpl == 0 %}
+<div class="rainshed2 fix-title"></div>
+{% else %}
+<div class="rainshed_beauty fix-title"></div>
+{% end %}
+
 <div class="mt42"></div>
 <ul class="mt20 discover-list">
 {% if shop_auth != 0%}

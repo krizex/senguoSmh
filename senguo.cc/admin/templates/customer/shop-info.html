@@ -16,7 +16,11 @@
 {% set color='bg-greyc' %}
 {% end %}
 <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
-<div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
+{% if shop_tpl == 0 %}
+<div class="rainshed text-center font18 text-black fix-title">店铺详情</div>
+{% else %}
+<div class="rainshed_beauty text-center font18 text-black fix-title">店铺详情</div>
+{% end %}
 <div class="info1 bg-white clearfix mt42 pt20">
     <div class="shop-logo pull-left">
         <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/170/h/170">
