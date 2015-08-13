@@ -521,7 +521,7 @@
 .i-address{background-position: 0 -50px;}
 .i-shop{background-position: 0 -75px;left: 10px;top: 8px;}
 .i-order{background-position: 0 -100px;left: 10px;top: 8px;}
-.i-uorder{background-position: 0 -125px;top: 6px;}
+.i-uorder{background-position: 0 -126px;top: 6px;}
 .uuser-row{height: 40px;background-color: #fff;padding-left: 36px;padding-right:10px;line-height: 40px;position: relative;}
 .wrap-user-detail .fr{max-width: 200px;overflow: hidden;white-space: nowrap;text-overflow: ellipsis;}
 .hauto{height: auto !important;border-bottom: none !important;}
