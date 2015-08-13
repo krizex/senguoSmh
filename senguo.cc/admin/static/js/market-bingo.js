@@ -3,12 +3,12 @@ $(document).ready(function(){
     $('.bottom-nav').find('li').addClass('add_cart');
     var width = $("#swiper-container").width();
     var height = $(window).height();
-    NA = isNA();
-    if(NA=="ios"){
-        $("html,body").css("overflow","hidden").css("height",height+"px");
-        $(".wrap-home").addClass("pm60");
-        $("#scroller").height(height-50).addClass("cona");
-    }
+    // NA = isNA();
+    // if(NA=="ios"){
+    //     $("html,body").css("overflow","hidden").css("height",height+"px");
+    //     $(".wrap-home").addClass("pm60");
+    //     $("#scroller").height(height-50).addClass("cona");
+    // }
     $(".notice-item").width("100%");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
     new Swiper('#swiper-container',{
@@ -29,9 +29,9 @@ $(document).ready(function(){
         var _group_id = Number(link_group);
         sid = _group_id;
         goodsList(1,6,_group_id);
-        if(NA == "android"){
+        //if(NA == "android"){
             scrollLoading();
-        }
+        //}
     }else{
         if($('.more-group li').length==0){
             $(".wrap-loading-box").addClass("hidden");
@@ -49,9 +49,9 @@ $(document).ready(function(){
         }
         allList(1,6,gArr[0]);
         sid = gArr[0];
-        if(NA == "android"){
+        //if(NA == "android"){
             scrollLoading();
-        }
+        //}
         $('.tab-group li').first().addClass("active");
     }
     var shop_logo=$('#shop_imgurl').attr('data-img');
@@ -72,14 +72,14 @@ $(document).ready(function(){
             $(".more-group").addClass("hidden");
         }
     });
-    if(NA == "ios"){
-        document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-    }
-    $(document).on('click','#backTop',function(){
-        if(NA=="ios"){
-            myScroll.scrollTo(0, 0 ,500);
-        }
-    });
+    // if(NA == "ios"){
+    //     document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+    // }
+    // $(document).on('click','#backTop',function(){
+    //     if(NA=="ios"){
+    //         myScroll.scrollTo(0, 0 ,500);
+    //     }
+    // });
 }).on('click','.notice-item',function(){
         //公告详情
         var $this=$(this);
@@ -138,7 +138,7 @@ $(document).ready(function(){
         }else{
             parent.find('.number-input').text(0); 
         }
-        pulse(parent.find('.number-plus'));
+        //pulse(parent.find('.number-plus'));
         goodsNum(parent.find('.number-plus'),2);
         $this.addClass('hidden').siblings('.roll-btn').removeClass('hidden');
         parent.find(".wrap-src-price").addClass("hidden");
@@ -158,7 +158,7 @@ $(document).ready(function(){
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
-    pulse($this);
+    //pulse($this);
     goodsNum($this,1);
 }).on('click','.number-plus',function(){
     var $this=$(this);
@@ -175,7 +175,10 @@ $(document).ready(function(){
             parent.find('.number-input').text(storage);
             return noticeBox('商品数量只能为整数！',$this);
         }
-        if(num<999) {pulse($this);goodsNum($this,2);}
+        if(num<999) {
+            //pulse($this);
+            goodsNum($this,2);
+        }
         else {
             return noticeBox('最多只能添加999哦！',$this);
         } 
@@ -196,11 +199,11 @@ $(document).ready(function(){
         }
     }
     $this.addClass("active").siblings("li").removeClass("active");
-    if(NA == "ios"){
-        setTimeout(function () {
-            myScroll.refresh();
-        }, 0);
-    }
+    // if(NA == "ios"){
+    //     setTimeout(function () {
+    //         myScroll.refresh();
+    //     }, 0);
+    // }
 }).on('click','.more-group li',function(){
     var $this=$(this);
     var text=$this.text();
@@ -213,11 +216,11 @@ $(document).ready(function(){
     }
     $("#cur_group").html($(this).html()).attr("data-id",$(this).attr("data-id"));
     $(".more-group").addClass("hidden");
-    if(NA == "ios"){
-        setTimeout(function () {
-            myScroll.refresh();
-        }, 0);
-    }
+    // if(NA == "ios"){
+    //     setTimeout(function () {
+    //         myScroll.refresh();
+    //     }, 0);
+    // }
     // $.scrollTo({endY:top,duration:500,callback:function(){}});
 }).on('click','._add_cart',function(e){
     //添加到购物车
@@ -341,16 +344,16 @@ var scrollLoading=function(){
         }
     });
 }
-function isNA(){
-    var u = navigator.userAgent, app = navigator.appVersion;
-    var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
-    var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
-    if(isiOS){
-        return "ios";
-    }else{
-        return "android";
-    }
-}
+// function isNA(){
+//     var u = navigator.userAgent, app = navigator.appVersion;
+//     var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+//     var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+//     if(isiOS){
+//         return "ios";
+//     }else{
+//         return "android";
+//     }
+// }
 var aindex = 0;
 var allList=function(page,action,_group_id){
     $(".wrap-loading-box").removeClass("hidden");
@@ -374,9 +377,9 @@ var allList=function(page,action,_group_id){
             if(aindex<gArr.length){
                 allList(1,6,gArr[aindex]);
             }else{
-                if(NA=="ios"){
-                    loaded();
-                }
+                // if(NA=="ios"){
+                //     loaded();
+                // }
                 $('.loading').html("~没有更多商品了呢 ( > < )~").show();
             }
         }
@@ -430,11 +433,11 @@ var goodsList=function(page,action,_group_id){
                     }
                 }
                 initData(res.data,_group_id);
-                if(NA == "ios"){
-                    setTimeout(function () {
-                        myScroll.refresh();
-                    }, 0);
-                }
+                // if(NA == "ios"){
+                //     setTimeout(function () {
+                //         myScroll.refresh();
+                //     }, 0);
+                // }
             }
             else {
                 noticeBox(res.error_text);
