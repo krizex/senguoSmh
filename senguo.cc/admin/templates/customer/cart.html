@@ -106,7 +106,7 @@
                         </ul>
                         {% if config.ontime_on == True%}
                         {% if ontime_periods %}
-                        <ul class="period-choose ontime-period-choose">
+                        <ul class="period-choose ontime-period-choose" data-config="{{config.ontime_on}}">
                             {% for period in ontime_periods %}<!--按时达-->
                             <li data-id="{{period.id}}" class="list-group-item available seth-50 item text-grey">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
