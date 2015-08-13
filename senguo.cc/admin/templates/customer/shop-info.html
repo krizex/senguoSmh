@@ -3,6 +3,16 @@
 {% block head %}
 <link rel="stylesheet" href="/static/css/baguetteBox.css"/>
 <link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>
+{% if shop_tpl == 1 %}
+<style>
+.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_beauty.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+</style>
+{% elif shop_tpl == 2 %}
+<style>
+.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_bingo.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+.bottom-nav .active a, .bottom-nav li:hover a{color:#44C798!important;}
+</style>
+{% end %}
 {% end %}
 {% block content %}
 {% set shop_auth ='' %}
@@ -18,8 +28,10 @@
 <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
 {% if shop_tpl == 0 %}
 <div class="rainshed text-center font18 text-black fix-title">店铺详情</div>
-{% else %}
+{% elif shop_tpl == 1 %}
 <div class="rainshed_beauty text-center font18 text-black fix-title">店铺详情</div>
+{% else %}
+<div class="rainshed_bingo text-center font18 text-black fix-title">店铺详情</div>
 {% end %}
 <div class="info1 bg-white clearfix mt42 pt20">
     <div class="shop-logo pull-left">
