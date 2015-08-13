@@ -282,21 +282,20 @@
             </div>
             {%end%}
             <input id="messageCon" class="message-input input-sty box-style center-block font14 bg-white bg-grey" type="text" value="" placeholder="留个言调戏下客服吧？(⊙_⊙)">
-            {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
-            <button  class="sub-btn w-per6 bg-grey99 text-white text-center center-block btn mt10 clearfix un_tie sure_btn">提交订单</button>
-            <div class="first_notice center-block clearfix mt10">
-                <span class="pull-left">第一次下单?</span>
-                <button  class="sure_btn  text-center  pull-right" id="phoneNumber">绑定手机号</button>
-            </div>
-            {% else %}
-            {% end %}
         </div>
         <div class="bottom-line"></div>
     </div>
     <div class="pay-bill">
+        {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
+        <button  class="first_notice sure_btn  text-center  pull-left ml10" id="phoneNumber">绑定手机号?</button>
+        {% end %}
         <span class="pull-left coupon-text hidden">已优惠 <span id="coupon-money"></span>元</span>
         <span class="yellow-text">总计：<span class="yellow-text"><span class="final_price yellow-text" id="total_price"></span></span> 元</span>
+        {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
+        <a id="submitOrder" class="sub-btn sure_btn order-submit un_tie bg-greyc" href="javascript:;" disabled="true">提交订单</a>
+        {% else %}
         <a id="submitOrder" class="sub-btn sure_btn order-submit" href="javascript:;">提交订单</a>
+        {% end %}
     </div>
 {% end %}
 {% block bottom %}
