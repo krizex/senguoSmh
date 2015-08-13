@@ -28,12 +28,11 @@ body{font-size: 14px;}
 .red .bg{background-color: #ea655d;}
 .yellow .bg{background-color: #f0c83f;}
 .wrap-home{position:relative;}
-.header{position: fixed;top: 0;z-index:999;width: 100%;max-width:800px;min-width:320px;background-color: #fff;height: 40px;line-height:40px;color: #afd6a4;text-align: center;font-size: 16px;}
+.header{position: fixed;top: 0;z-index:999;width: 100%;max-width:800px;min-width:320px;background-color: #fff;height: 40px;line-height:40px;color: #afd6a4;text-align: center;font-size: 16px;border-bottom: 1px solid #eee;}
 .menu{display: inline-block;height: 40px;min-width:60px;line-height:40px;background-image: url('/static/images/goods_category_grey.png');background-size: 18px;position: absolute;left: 0;top: 0;background-position: 12px center;background-repeat: no-repeat;}
 .menu-active{background-image: url('/static/images/goods_category_green.png');}
 .head-right{display: block;height: 40px;width: 60px;background-size: 20px;position: absolute;right: 0;top: 0;background-position: 26px center;background-repeat: no-repeat;}
 .search{background-image: url('/static/images/list_search_grey.png');background-size: 20px;}
-.fruit-list{border-top: 1px solid #eee;}
 .fruit-list>li{margin-bottom: 10px;height: 120px;overflow: hidden;position: relative;cursor: pointer;}
 .fruit-list>li img{width: 100%;padding-right:120px;}
 .fruit-right{position: absolute;right: 0;top: 0;width: 150px;height: 100%;padding-left: 10px;background-color: #fff;border-bottom-right-radius: 26%;}
