@@ -1,3 +1,7 @@
+var _search;
+var _action=6;
+var _finished=true;
+var _group_finished=true;
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();
@@ -98,6 +102,7 @@ $(document).ready(function(){
     }
     
 }).on("click",".groupt-list li",function(){
+    _group_finished=false;
     var $this=$(this);
     $("#menu").removeClass("menu-active");
     var index =$this.index();
@@ -106,7 +111,11 @@ $(document).ready(function(){
     $('#classify').text(text);
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
-    $.scrollTo({endY:top,duration:500,callback:function(){}});
+    $.scrollTo({endY:top,duration:500,callback:function(){
+         setTimeout(function(){
+            _group_finished=true;
+        },500)
+    }});
     $('.list-box').animate({"left":"0"},100);
     $("#groupt-list").animate({"margin-left":"-75px","opacity":0},100);
 }).on('click','.to-add',function(){
@@ -195,9 +204,6 @@ $(document).ready(function(){
     var link=$(this).attr('href');
     addCart(link);
 });
-var _search;
-var _action=6;
-var _finished=true;
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(_group_id){
     $(window).scroll(function(){
@@ -208,7 +214,7 @@ var scrollLoading=function(_group_id){
         var nomore=$('.goods-list-'+_group_id).attr("data-nomore");
         var page=parseInt($('.goods-list-'+_group_id).attr("data-page"));
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false') {
+        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false'&&_group_finished==true) {
             _finished=false;
             page = page+1;
             $('.goods-list-'+_group_id).attr("data-page",page);
