@@ -27,6 +27,11 @@ from functools import partial, wraps
 import chardet
 import random
 
+# 导入推送关的类
+import jpush as jpush
+from libs.phonepush.jpush.push import core,payload,audience
+from libs.phonepush.conf import app_key, master_secret
+
 
 # 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
