@@ -27,11 +27,6 @@ from functools import partial, wraps
 import chardet
 import random
 
-# 导入推送关的类
-import jpush as jpush
-from libs.phonepush.jpush.push import core,payload,audience
-from libs.phonepush.conf import app_key, master_secret
-
 
 # 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
@@ -810,7 +805,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			elif wireless_type == 1:
 				_action = "fyprint"
 			self.autoPrint(session,order.id,order.shop,_action)
-		
 
 		# 给管理员app端推送订单生成提示
 		_jpush = jpush.JPush(app_key, master_secret)

@@ -4,6 +4,10 @@
 $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height-40+"px");
+}).on("click",".backset",function(){
+    if(confirm("当前公告未完成，确定返回吗？")){
+        window.location.href="/madmin/shopattr?action=notice";
+    }
 }).on("click",".del-img",function(){
     $("#notice-temp-img").addClass("hidden");
     $("#add-notice-img").removeClass("hidden");
