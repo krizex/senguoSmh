@@ -48,7 +48,7 @@ $(document).ready(function(){
 
 		$('.sec-page-total').text(sec_page_sum);
 	}
-	else if (cur_action == 'seckill_new'){
+	else if (cur_action == 'seckill_new' ||cur_action == 'seckill_edit'){
 		$new_seckill_item = $('.new-seckill-item').clone();
 		group_fruit = eval($('.choose-goods').attr('data-value'))[0];
 		fruit_id_charge_type = eval($('.choose-charge-type').attr('data-value'))[0];
@@ -355,7 +355,10 @@ $(document).ready(function(){
 }).on('click','.edit-activity',function(e){
 	e.stopPropagation();
 	var $this = $(this);
-	console.log($this.closest('tr').attr('data-id'));
+	var activity_id = $this.closest('tr').attr('data-id');
+	var status = $.getUrlParam('status');
+	var url = '/admin/marketing/seckill?action=seckill_edit&activity_id=' + activity_id + '&status=' + status;
+	window.location.href = url;
 });
 
 function show_seckill_list(status,page){
@@ -467,7 +470,7 @@ function createSeckill(){
 
 function cancelSeckill(){
 	if (confirm("当前编辑的秒杀商品还没有保存，您确定退出编辑吗？")){
-        		window.location.href="/admin/marketing/seckill?action=seckill&page=0";
+        		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status=1";
         	}
 }
 
@@ -506,8 +509,8 @@ function getActivityItem(action,status,page){
                                                                         +'<td colspan="1">{{picked}} / {{ordered}}</td>'
                                                                         +'<td colspan="1">'
                                                                                        +'<a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>'
-                                                                                       +'<a href="javascript:;" class="ml10">推广</a>'
-                                                                                       +'<a href="javascript:;" class="ml10">停用</a>'
+                                                                                       +'<a href="javascript:;" class="ml10  spread-activity" title="点击推广此秒杀活动">推广</a>'
+                                                                                       +'<a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>'
                                                                         +'</td>'
                                                           	+'</tr>';
                                                           var render=template.compile(tr_item);

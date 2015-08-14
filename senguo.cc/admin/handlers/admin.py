@@ -5009,6 +5009,108 @@ class MarketingSeckill(AdminBaseHandler):
 				output_data.append(goods_item)
 
 			return self.render("admin/seckill-detail.html",page_sum=page_sum,action=action,output_data=output_data,context=dict(subpage='marketing'))
+		elif action == 'seckill_edit':
+			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
+								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
+			goods_group_id_name.append((-1,'推荐分组'))
+			goods_group_id_name.append((0,'默认分组'))
+			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
+
+			for i in range(len(goods_group_id_name)):
+				goods_group_id_name[i] = list(goods_group_id_name[i])
+				goods_group_id_name[i][0] = str(goods_group_id_name[i][0])
+
+			goods_group_id_name=dict(goods_group_id_name)
+
+			
+			group_fruit_dict = {}
+			for group_id in list(goods_group_id_name.keys()):
+				group_id = int(group_id)
+				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2]),models.Fruit.group_id == group_id).all()
+				group_fruit_dict[str(group_id)] = query_list
+
+			fruit_id_list = []
+			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2])).all()
+			for item in query_list:
+				fruit_id_list.append(item[0])
+
+			fruit_id_storage = {}
+			for fruit_id in fruit_id_list:
+				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
+				storage = list(storage)
+				storage[1] = self.getUnit(storage[1])
+				if storage[0] == 0:
+					continue
+				fruit_id_storage[str(fruit_id)] = storage
+
+			fruit_id_usable_list = list(fruit_id_storage.keys())
+			group_usable_fruit_dict = {}
+			for key in group_fruit_dict:
+				group_usable_fruit_dict[key] = []
+				for item in group_fruit_dict[key]:
+					if str(item[0]) in fruit_id_usable_list:
+						group_usable_fruit_dict[key].append([item[0],item[1]])
+
+			fruit_id_charge_type = {}
+			for fruit_id in fruit_id_usable_list:
+				fruit_id = int(fruit_id)
+				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
+							            filter(models.ChargeType.fruit_id == fruit_id).all()
+				for i in range(len(query_list)):
+					query_list[i] = list(query_list[i])
+					query_list[i][2] = self.getUnit(query_list[i][2])
+					storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					query_list[i].append(storage_piece)
+				fruit_id_charge_type[str(fruit_id)] = query_list
+
+
+			activity_id = self.args['activity_id']
+			status = self.args['status']
+
+			activity_data = {}
+			query_activity = self.session.query(models.SeckillActivity).filter_by(id = activity_id).first()
+			activity_data['start_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(query_activity.start_time))
+			continue_time_stamp = query_activity.continue_time
+			activity_data['hour'] = continue_time_stamp//3600
+			activity_data['minute'] = (continue_time_stamp%3600)//60
+			activity_data['second'] = continue_time_stamp%60
+
+			goods_data_list = []
+			query_goods_list = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).all()
+			for goods in query_goods_list:
+				goods_item = {}
+				goods_item['seckill_goods_id'] = goods.id
+				fruit_id = goods.fruit_id
+				goods_item['fruit_id'] = fruit_id
+				goods_item['fruit_name'] = self.session.query(models.Fruit.name).filter_by(id=fruit_id).first()[0]
+				group_id = self.session.query(models.Fruit.group_id).filter_by(id=fruit_id).first()[0]
+				if group_id == -1:
+					group_name = '推荐分组'
+				elif group_id == 0:
+					group_name = '默认分组'
+				else:
+					group_name = self.session.query(models.GoodsGroup.name).filter_by(id=group_id).first()[0]
+				goods_item['group_id'] = group_id
+				goods_item['group_name'] = group_name
+
+				goods_item['charge_type_id'] = goods.charge_type_id
+				goods_item['charge_type_list'] = []
+				charge_type_list = fruit_id_charge_type[str(fruit_id)];
+				for charge_type_item in charge_type_list:
+					item = {}
+					charge_type_text = str(charge_type_item[0]) + '元/' +  str(charge_type_item[1]) + charge_type_item[2]
+					charge_type_id = charge_type_item[4]
+					if charge_type_id == goods.charge_type_id:
+						storage_piece = charge_type_item[5]
+						goods_item['storage_piece'] = storage_piece
+						goods_item['cur_charge_type_text'] = charge_type_text
+						print("@@@@",charge_type_text)
+					item['charge_type_id'] = charge_type_id
+					item['charge_type_text'] = charge_type_text
+					goods_item['charge_type_list'].append(item)
+					
+			return self.render("admin/seckill-edit.html",action=action,goods_group_id_name=goods_group_id_name,group_usable_fruit_dict=[group_usable_fruit_dict],\
+								fruit_id_storage=[fruit_id_storage],fruit_id_charge_type=[fruit_id_charge_type],context=dict(subpage='marketing'))
 
 	@AdminBaseHandler.check_arguments("action:str","data?","page?:int","status?:int","activity_id?:int")
 	def post(self):
