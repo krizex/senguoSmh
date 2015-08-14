@@ -7,14 +7,17 @@ $(document).ready(function(){
     var height = $(window).height();
     $(".wrap-notice-box").css("minHeight",height);
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
-    new Swiper('#swiper-container',{
+    var swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
         loop:true,
         grabCursor: true,
         pagination: '.pagination',
-        autoplay:"3000",
+        autoplay:"4000",
         autoplayDisableOnInteraction:false
     });
+    if($(".swiper-slide").size()==3){
+        swiper.stopAutoplay();
+    }
     var width = $("#swiper-container").width();
     var height = $(window).height();
     $(".groupt-list").height(height-86);

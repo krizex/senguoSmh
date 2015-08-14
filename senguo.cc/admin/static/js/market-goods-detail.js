@@ -135,6 +135,7 @@ $(document).ready(function(){
     for(var key in cart_fs) {
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
+    
 }).on("click","#dianzan",function(){
     var $this = $(this);
     if($this.attr("data-flag")=="True"){

@@ -9,14 +9,17 @@ $(document).ready(function(){
     //$("#wrap-home-box").height(height-50);
     $(".notice-item").width("100%");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
-    new Swiper('#swiper-container',{
+    var swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
         loop:true,
         grabCursor: true,
         pagination: '.pagination',
-        autoplay:"3000",
+        autoplay:"4000",
         autoplayDisableOnInteraction:false
     });
+    if($(".swiper-slide").size()==3){
+        swiper.stopAutoplay();
+    }
     //分类显示
     var top_title=$('.top-title');
     //get infomations of goods and push into html
