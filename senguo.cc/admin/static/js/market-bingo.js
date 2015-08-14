@@ -239,7 +239,6 @@ var myScroll;
 function loaded() {
     myScroll = new IScroll('#scroller', {
         deceleration: 0.0025,
-        scrollbars: true,
         mouseWheel: true,
         interactiveScrollbars: true,
         shrinkScrollbars: 'scale',
