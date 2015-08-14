@@ -138,9 +138,9 @@ $(document).ready(function(){
     for(var key in cart_fs) {
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
-    window.onbeforeunload = function(){
-        setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 0);
-    }
+    $(window).bind('beforeunload', function (e) {
+         setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 0);
+    })
 }).on("click","#dianzan",function(){
     var $this = $(this);
     if($this.attr("data-flag")=="True"){
