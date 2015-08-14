@@ -1,4 +1,5 @@
 
+var seckill_active = 0;
 var create_seckill_lock = "off";
 var cur_action='';
 var switch_status = 1;
@@ -7,9 +8,47 @@ var group_fruit;
 var fruit_id_charge_type;
 var cur_fruit_id;
 var cur_storage_piece;
+
+var sec_page_sum = parseInt($('.sec-pager').attr('page-sum'));
+var cur_sec_page = 0;
+var detail_page_sum = parseInt($('.detail-pager').attr('page-sum'));
+var cur_detail_page = 0;
 $(document).ready(function(){
 	cur_action = $('.action-div').attr('data-value');
-	if (cur_action == 'seckill_new'){
+	if (cur_action == 'seckill'){
+		seckill_active = $('.open-switch').attr('data-status');
+		if (seckill_active == 0){
+			$(".seckill-manage").hide();
+			$('.open-switch').addClass('stop-mode').removeClass('work-mode').find('.tit').text('未启用');
+		}
+		else if (seckill_active == 1){
+			$(".seckill-manage").show();
+			$('.open-switch').removeClass('stop-mode').addClass('work-mode').find('.tit').text('已启用');
+		}
+
+		var status = $.getUrlParam("status");
+		switch(status){
+		case '1':
+			$('.nostart').addClass('active');
+			$('.nostart').siblings('.active').removeClass("active");
+			break;
+		case '2':
+			$('.killing').addClass('active');
+			$('.killing').siblings('.active').removeClass("active");
+			break;
+		case '0':
+			$('.finished').addClass('active');
+			$('.finished').siblings('.active').removeClass("active");
+			break;
+		case '-1':
+			$('.stoped').addClass('active');
+			$('.stoped').siblings('.active').removeClass("active");
+			break;
+		}
+
+		$('.sec-page-total').text(sec_page_sum);
+	}
+	else if (cur_action == 'seckill_new'){
 		$new_seckill_item = $('.new-seckill-item').clone();
 		group_fruit = eval($('.choose-goods').attr('data-value'))[0];
 		fruit_id_charge_type = eval($('.choose-charge-type').attr('data-value'))[0];
@@ -19,22 +58,31 @@ $(document).ready(function(){
     	var $this = $(this);
     	switch_status = parseInt($this.attr("data-status"));
     	if (switch_status == 1){
+    		changeSeckillActive('seckill_off');
     		$this.attr("data-status","0");
     		$(".seckill-manage").hide();
     		$this.attr({'data-status': 0}).addClass('stop-mode').removeClass('work-mode').find('.tit').text('未启用');
+
     	}
     	else if (switch_status ==0) {
+    		changeSeckillActive('seckill_on');
     		$this.attr("data-status","1");
     		$(".seckill-manage").show();
     		$this.attr({'data-status': 1}).removeClass('stop-mode').addClass('work-mode').find('.tit').text('已启用');
     	}
 }).on('click','.seckill-list tr',function(){
 	var $this = $(this);
-	var url = '/admin/marketing/seckill?action=seckill_detail&page=0';
-	window.location.href = url;
+	if ($this.find('td').attr("data-id") != '0'){
+		var activity_id = $this.attr('data-id');
+		var url = '/admin/marketing/seckill?action=seckill_detail&activity_id='+activity_id+'&page=0';
+		window.location.href = url;
+	}
+	
 }).on('mouseover','.seckill-list tr',function(){
 	var $this = $(this);
-	$this.attr("title","点击查看秒杀详情");
+	if ($this.find('td').attr("data-id") != '0'){
+		$this.attr("title","点击查看秒杀详情");
+	}
 }).on('click','.status-choose li',function(){
 	var $this = $(this);
 	$this.siblings('.active').removeClass("active");
@@ -150,8 +198,9 @@ $(document).ready(function(){
 	$this.closest('.choose-charge-type').attr('data-flag','1');
 
 	cur_charge_type = '元' + cur_charge_type.substr(i,cur_charge_type.length-1);
+	cur_charge_type_text = '元/份 （每份含：' + cur_charge_type.substr(2,cur_charge_type.length-1) + '）';
 	$this.closest(".new-seckill-item").find('.seckill-charge-price').removeClass('hidden')
-	$this.closest(".new-seckill-item").find('.cur-charge-type').text(cur_charge_type);
+	$this.closest(".new-seckill-item").find('.cur-charge-type').text(cur_charge_type_text);
 	$this.closest(".new-seckill-item").find('.seckill-price-input').removeClass('hidden');
 	$this.closest(".new-seckill-item").find(".activity-store").removeClass('hidden');
 
@@ -172,9 +221,9 @@ $(document).ready(function(){
 		$this.val('');
 		Tip('秒杀价必须是正数，请重新输入！');
 	}
-	if (input_text.length != 0 && !isNaN(input_text) && parseFloat(input_text) <= 0){
+	if (input_text.length != 0 && !isNaN(input_text) && parseFloat(input_text) < 0.01){
 		$this.val('');
-		Tip('秒杀价必须是正数，请重新输入！');
+		Tip('秒杀价必须是大于或等于0.01元的正数，请重新输入！');
 	}
 	
 }).on('blur','.activity-store-input',function(){
@@ -192,10 +241,141 @@ $(document).ready(function(){
 		Tip('活动库存必须小于或等于剩余库存，请重新输入！');
 	}
 
+}).on('click','.sec-pre-page',function(){
+	var $this = $(this);
+	if (cur_sec_page+1 == sec_page_sum){
+		$('.sec-next-page').show();
+	}
+	cur_sec_page--;
+	$('.sec-page-now').text(cur_sec_page+1);
+	if (cur_sec_page == 0){
+		$this.hide();
+	}
+	var status = $.getUrlParam('status');
+	getActivityItem('get_sec_item',status,cur_sec_page);
+
+}).on('click','.sec-next-page',function(){
+	var $this = $(this);
+	if (cur_sec_page == 0){
+		$('.sec-pre-page').removeClass('hidden').show();
+	}
+	cur_sec_page++;
+
+	$('.sec-page-now').text(cur_sec_page+1);
+	if (cur_sec_page+1 == sec_page_sum){
+		$this.hide();
+	}
+
+	var status = $.getUrlParam('status');
+
+	getActivityItem('get_sec_item',status,cur_sec_page);
+
+}).on('click','.sec-jump-to',function(){
+	if ($('.sec-input-page').val().length == 0){
+		return false;
+	}
+	var page_jump = parseInt($('.sec-input-page').val());
+	if (page_jump < 1 || page_jump > sec_page_sum || isNaN(page_jump)){
+		$('.sec-input-page').val('');
+		Tip('输入的页码不正确，请重写输入');
+		return false;
+	}
+	cur_sec_page = page_jump-1;
+	$('.sec-page-now').text(page_jump);
+	if (page_jump == 1){
+		$('.sec-pre-page').hide();
+		$('.sec-next-page').show();
+	}
+	else if (page_jump == sec_page_sum){
+		$('.sec-pre-page').removeClass('hidden').show();
+		$('.sec-next-page').hide();
+	}
+	else{
+		$('.sec-pre-page').removeClass('hidden').show();
+		$('.sec-next-page').show();
+	}
+	var status = $.getUrlParam('status');
+	getActivityItem('get_sec_item',status,cur_sec_page);
+	$('.sec-input-page').val('');
+}).on('click','.detail-pre-page',function(){
+	var $this = $(this);
+	if (cur_detail_page+1 == detail_page_sum){
+		$('.detail-next-page').show();
+	}
+	cur_detail_page--;
+	$('.detail-page-now').text(cur_detail_page+1);
+	if (cur_detail_page == 0){
+		$this.hide();
+	}
+	var activity_id = $.getUrlParam('activity_id');
+	getDetailItem('get_detail_item',activity_id,cur_detail_page);
+
+}).on('click','.detail-next-page',function(){
+	var $this = $(this);
+	if (cur_detail_page == 0){
+		$('.detail-pre-page').removeClass('hidden').show();
+	}
+	cur_detail_page++;
+
+	$('.detail-page-now').text(cur_detail_page+1);
+	if (cur_detail_page+1 == detail_page_sum){
+		$this.hide();
+	}
+
+	var activity_id = $.getUrlParam('activity_id');
+	getDetailItem('get_detail_item',activity_id,cur_detail_page);
+
+}).on('click','.detail-jump-to',function(){
+	if ($('.detail-input-page').val().length == 0){
+		return false;
+	}
+	var page_jump = parseInt($('.detail-input-page').val());
+	if (page_jump < 1 || page_jump > detail_page_sum || isNaN(page_jump)){
+		$('.detail-input-page').val('');
+		Tip('输入的页码不正确，请重写输入');
+		return false;
+	}
+	cur_detail_page = page_jump-1;
+	$('.detail-page-now').text(page_jump);
+	if (page_jump == 1){
+		$('.detail-pre-page').hide();
+		$('.detail-next-page').show();
+	}
+	else if (page_jump == detail_page_sum){
+		$('.detail-pre-page').removeClass('hidden').show();
+		$('.detail-next-page').hide();
+	}
+	else{
+		$('.detail-pre-page').removeClass('hidden').show();
+		$('.detail-next-page').show();
+	}
+	var activity_id = $.getUrlParam('activity_id');
+	getDetailItem('get_detail_item',activity_id,cur_detail_page);
+	$('.detail-input-page').val('');
+}).on('click','.edit-activity',function(e){
+	e.stopPropagation();
+	var $this = $(this);
+	console.log($this.closest('tr').attr('data-id'));
 });
 
 function show_seckill_list(status,page){
-
+	var activity_status = 1;
+	switch(status){
+		case 'nostart':
+			activity_status = 1;
+			break;
+		case 'killing':
+			activity_status = 2;
+			break;
+		case 'finished':
+			activity_status = 0;
+			break;
+		case 'stoped':
+			activity_status = -1;
+			break;
+	}
+	var url = '/admin/marketing/seckill?action=seckill&status=' + activity_status + '&page=' + page;
+	window.location.href = url;
 }
 
 function createSeckill(){
@@ -263,7 +443,7 @@ function createSeckill(){
 		};
 		$.postJson(url,args,function(res){
 			if(res.success){
-				// console.log('@@success!');
+
 			}
 			else{
 				Tip(res.error_text);
@@ -291,3 +471,120 @@ function cancelSeckill(){
         	}
 }
 
+function changeSeckillActive(action){
+	var url = '';
+	var args = {
+		action : action
+	};
+	$.postJson(url,args,function(res){
+		if (res.success){
+
+		}
+		else{
+				Tip(res.error_text);
+			}
+		},function(){Tip('网络好像不给力呢~ ( >O< ) ~');});
+}
+
+function getActivityItem(action,status,page){
+	var url = "";
+	var args = {
+		action:action,
+		status:status,
+		page:page
+	};
+	$.postJson(url,args,function(res){
+		if(res.success){
+			var output_data = res.output_data;
+			$('.seckill-list').empty();
+			for (var i = 0;i < output_data.length;i++){
+				var data = output_data[i];
+				var tr_item = '<tr data-id="{{activity_id}}">'　 
+                                                                        +'<td colspan="1">{{start_time}}</td>'
+                                                                        +'<td colspan="1">{{continue_time}}</td>'
+                                                                        +'<td colspan="1">{{goods_list}}</td>'
+                                                                        +'<td colspan="1">{{picked}} / {{ordered}}</td>'
+                                                                        +'<td colspan="1">'
+                                                                                       +'<a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>'
+                                                                                       +'<a href="javascript:;" class="ml10">推广</a>'
+                                                                                       +'<a href="javascript:;" class="ml10">停用</a>'
+                                                                        +'</td>'
+                                                          	+'</tr>';
+                                                          var render=template.compile(tr_item);
+
+                                                          var activity_id = data['activity_id'];
+                                                          var start_time = data['start_time'];
+                                                          var continue_time = data['continue_time'];
+                                                          var goods_list = data['goods_list'];
+                                                          var picked = data['picked'];
+                                                          var ordered = data['ordered'];
+
+                                                          var list_item =render({
+		           	 		activity_id:activity_id,
+		           	 		start_time:start_time,
+		           	 		continue_time:continue_time,
+		           	 		goods_list:goods_list,
+		           	 		picked:picked,
+		           	 		ordered:ordered
+		        		});
+
+		        		$('.seckill-list').append(list_item);
+			}	
+		}
+		else{
+			Tip(res.error_text);
+		}
+	},function(){Tip('网络好像不给力呢~ ( >O< ) ~');stop_flag = true;});
+}
+
+function getDetailItem(action,activity_id,page){
+	var url = "";
+	var args = {
+		action:action,
+		activity_id:activity_id,
+		page:page
+	};
+	$.postJson(url,args,function(res){
+		if(res.success){
+			var output_data = res.output_data;
+			$('.detail-list').empty();
+			for (var i = 0;i < output_data.length;i++){
+		        		var data = output_data[i];
+				var tr_item = '<tr>'　 
+                                                          	+'<td colspan="1">{{fruit_name}}</td>'
+                                                          	+'<td colspan="1">{{seckill_price}} / {{former_price}} {{charge_type}}</td>'
+                                                          	+'<td colspan="1">{{discount}}</td>'
+                                                          	+'<td colspan="1">{{picked}} / {{ordered}} / {{storage_piece}} {{storage_type}}</td>'
+                                            	 	+'</tr>';
+                                                          var render=template.compile(tr_item);
+
+                                                          var fruit_name = data['fruit_name'];
+                                                          var seckill_price = data['seckill_price'];
+                                                          var former_price = data['former_price'];
+                                                          var charge_type = data['charge_type']
+                                                          var discount = data['discount'];
+                                                          var picked = data['picked'];
+                                                          var ordered = data['ordered'];
+                                                          var storage_piece = data['storage_piece'];
+                                                          var storage_type = data['storage_type'];
+
+                                                          var list_item =render({
+		           	 		fruit_name:fruit_name,
+		           	 		seckill_price:seckill_price,
+		           	 		former_price:former_price,
+		           	 		charge_type:charge_type,
+		           	 		discount:discount,
+		           	 		picked:picked,
+		           	 		ordered:ordered,
+		           	 		storage_piece:storage_piece,
+		           	 		storage_type:storage_type
+		        		});
+
+		        		$('.detail-list').append(list_item);
+			}
+		}
+		else{
+			Tip(res.error_text);
+		}
+	},function(){Tip('网络好像不给力呢~ ( >O< ) ~');stop_flag = true;});
+}
