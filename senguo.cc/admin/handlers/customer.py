@@ -57,8 +57,11 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
-			user_type=int(self.args["user_type"])
-			jpush_id=self.args["jpush_id"]
+			try:
+				user_type=int(self.args["user_type"])
+				jpush_id=self.args["jpush_id"]
+			except:
+				jpush_id=None
 			if jpush_id:
 				q=self.session.query(models.Jpushinfo).filter_by(user_type=user_type,user_id=self.current_user.id).first()
 				if q:
@@ -84,15 +87,19 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		next_url=self.args["next"]
+		try:
+			next_url=self.args["next"]
+		except:
+			next_url=None
 		user_type=-1
 		jpush_id=None
-		if next_url.find('madmin?jpush_id')!=-1:
-			user_type=0
-			jpush_id=next_url[next_url.find('=')+1:]
-		if next_url.find('customer/profile?jpush_id')!=-1:
-			user_type=1
-			jpush_id=next_url[next_url.find('=')+1:]
+		if next_url:
+			if next_url.find('madmin?jpush_id')!=-1:
+				user_type=0
+				jpush_id=next_url[next_url.find('=')+1:]
+			if next_url.find('customer/profile?jpush_id')!=-1:
+				user_type=1
+				jpush_id=next_url[next_url.find('=')+1:]
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print("[PhoneLogin]Customer ID:",u.id)
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
