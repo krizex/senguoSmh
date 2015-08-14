@@ -2,6 +2,7 @@ var goods_number=1;
 var goods_list=null;
 var index1=0;
 var new_discount_item;
+var current_tab=0;// 标记当前选中的tab标签
 $(document).ready(function () {
     $('.switch-btn-c').each(function () {
         var $this = $(this);
@@ -237,6 +238,28 @@ $(document).ready(function () {
     $('.t-minute').text($(this).text()).attr("data-id",$(this).text());
 }).on('click','.t-discount-second-items li .item',function(){
     $('.t-second').text($(this).text()).attr("data-id",$(this).text());
+}).on("click",".detail-tr",function(e){//点击看详情
+    if($(e.target).closest(".sw-er-tip").size()>0){
+         return false;
+    }
+    var id = $(this).attr("data-id");
+    var status=parseInt($('.furit-type-discount').find('.active').attr('data-id'));
+    current_tab=status;
+    window.location.href="/admin/discount?action=details&discount_id="+id+"&page=1"+"&status="+status;
+}).on('click','.go-back',function(){
+    window.history.back();
+}).on('click','.ok-edit',function(){
+    if(confirm("你已经修改了该批限时折扣，你确定保存修改吗？")){
+        //发送编辑情请求 
+    }
+}).on('click','.cancel-edit',function(){
+    if(confirm("你还没有保存所做修改，确定放弃修改并返回到限时折扣主页面吗？")){
+        // 放弃修改
+    }
+}).on('click','.discount_close',function(){
+    if(confirm("一旦停用将不能重新开启，你确定要停用该条限时折扣吗？")){
+        $(this).closest('tbody').remove();
+    }
 });
 
 

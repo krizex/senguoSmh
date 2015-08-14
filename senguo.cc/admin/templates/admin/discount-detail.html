@@ -5,7 +5,7 @@
 {% set shop_code = current_shop.shop_code %}
 <div class="wrap-coupontitle">
     <div class="c333 mt10 choose-text">
-        <a href="/discount?action=discount" class="c999 cancel-add-goods ">限时折扣</a>
+        <a href="javascript:;" class="c999 go-back">限时折扣</a>
         <span class="c333"> / 折扣详情</span>
     </div>
 </div>
@@ -18,20 +18,17 @@
             <col width="10%"/>
         </colgroup>
             <tr class="thead">
-                <td>商品名（１０）</td>
+                <td>商品名{{data1["total"]}}</td>
                 <td>折扣</td>
-                <td>领取/下单</td>
+                <td>加入购物车/下单</td>
             </tr>
         </thead>
         <tbody id="list-coupons">
         {% for data in output_data %}
         <tr>
-            <td class="relative"><span>{{data["coupon_key"]}}</span></span><span class="copy-coupon-code">复制</span></td>
-            <td>{{data["coupon_money"]}}</td>
-            <td>{{data["nickname"]}}<br>ID:{{data["customer_id"]}}</td>
-            <td>{{data["get_date"]}}</td>
-            <td>{{data["use_date"]}}</td>
-            <td>订单号:<a href="{{reverse_url("adminSearchOrder")}}?action=order&&id={{data["order_id"]}}">{{data["order_id"] or '无'}}</a></td>
+            <td>{{data["goods"]}}</td>
+            <td>{{data["discount_rate"]}}</td>
+            <td>{{data["incart_num"]}}/{{data["ordered_num"]}}</td>
         </tr>
         {% end %}
         </tbody>
@@ -40,7 +37,7 @@
             <ul>
                 <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
                 <li>
-                    <span class="page-now">1</span>/<span class="page-total">{{data1["total"]}}</span>
+                    <span class="page-now">1</span>/<span class="page-total">{{data1["totalpage"]}}</span>
                 </li>
                 <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
                 <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>

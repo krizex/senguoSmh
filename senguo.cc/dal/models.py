@@ -1941,6 +1941,7 @@ class DiscountShop(MapBase, _CommonApi):
 	__tablename__="discount_shop"
 	id=Column(Integer,primary_key=True,autoincrement=True)
 	discount_id=Column(Integer)
+	inner_id=Column(Integer) # 每一批限时折扣的商品id 用于使用在编辑界面的时候
 	shop_id=Column(Integer)
 	use_goods_group=Column(Integer,default=-2) #商品分组
 	use_goods=Column(Integer,default=-1) #商品名称
@@ -1948,3 +1949,4 @@ class DiscountShop(MapBase, _CommonApi):
 	discount_rate=Column(Float) #折扣率
 	incart_num=Column(Integer) 
 	ordered_num=Column(Integer)
+	status=Column(Integer) # ０：未开始　　１：进行中　２：衣结束　　３：已停用

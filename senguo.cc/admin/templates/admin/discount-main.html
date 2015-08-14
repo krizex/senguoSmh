@@ -5,8 +5,8 @@
 <div class="clearfix top-box">
     <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="javascript:;" class="ml10 f14 show-detail">查看详情</a></p>
     <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
+     <a class="mode-cm pull-right mt10 close_all {%if discount_active_cm==0%}work-mode{%else%}stop-mode{%end%}" data-flag="on" title="点击切换状态" data-status="{{discount_active_cm}}" ><span class="tit">{%if discount_active_cm==0%}已启用{%else%}已停用{%end%}</span><span class="circle"></span></a>
     <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
-    <a class="mode-cm pull-right mt10 close_all {%if discount_active_cm==0%}work-mode{%else%}stop-mode{%end%}" data-flag="on" title="点击切换状态" data-status="{{discount_active_cm}}" ><span class="tit">{%if discount_active_cm==0%}已启用{%else%}已停用{%end%}</span><span class="circle"></span></a>
 </div>
 <div class="{%if discount_active_cm==1%}hidden{%end%}" id="discount_hidden">
 {%if output_data==[]%}
@@ -21,10 +21,10 @@
     <div class="c999">限时折扣<span class="c333"> /管理</span></div>
     <div class="subnav-box group mt20">
         <ul class="subnav chinav pull-left furit-type-discount">
-            <li class="txt-center active" data-type="notstart"><a href="javascript:;">未开始</a></li>
-            <li class="txt-center" data-type="continue"><a href="javascript:;">进行中</a></li>
-            <li class="txt-center" data-type="finish"><a href="javascript:;">已结束</a></li>
-            <li class="txt-center" data-type="closed"><a href="javascript:;">已停用</a></li>
+            <li class="txt-center active" data-id=0><a href="javascript:;">未开始</a></li>
+            <li class="txt-center" data-id=1><a href="javascript:;">进行中</a></li>
+            <li class="txt-center" data-id=2><a href="javascript:;">已结束</a></li>
+            <li class="txt-center" data-id=3><a href="javascript:;">已停用</a></li>
         </ul>
         <div class="wrap-newbtn fr">
             <a href="{{reverse_url("DiscountNew")}}?action=newdiscountpage" class="newbtn add-btn  mt6 mr10 cm_new_discout">+新建折扣</a>
@@ -54,11 +54,11 @@
             {%else%}
             {% for discount in output_data[0] %}
                 <tr class="detail-tr " data-id="{{discount['discount_id']}}">
-                    <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
+                    <td>{%if discount["discount_way"]==1 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
                     <td class="operate">
-                        <a href="#" class="mr10 coupon-edit" data-id="{{discount['discount_id']}}">编辑</a>
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
                         <a href="javascript:;" class="mr10 spread-btn">推广</a>
                         <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
                         <span class="stop">已停用</span>
@@ -110,7 +110,7 @@
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
                     <td class="operate">
-                        <a href="#" class="mr10 coupon-edit" data-id="{{discount['discount_id']}}">编辑</a>
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
                         <a href="javascript:;" class="mr10 spread-btn">推广</a>
                         <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
                         <span class="stop">已停用</span>
@@ -163,7 +163,7 @@
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
                     <td class="operate">
-                        <a href="#" class="mr10 coupon-edit" data-id="{{discount['discount_id']}}">编辑</a>
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
                         <a href="javascript:;" class="mr10 spread-btn">推广</a>
                         <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
                         <span class="stop">已停用</span>
@@ -216,7 +216,7 @@
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
                     <td class="operate">
-                        <a href="#" class="mr10 coupon-edit" data-id="{{discount['discount_id']}}">编辑</a>
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
                         <a href="javascript:;" class="mr10 spread-btn">推广</a>
                         <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
                         <span class="stop">已停用</span>
