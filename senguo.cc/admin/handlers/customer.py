@@ -32,7 +32,7 @@ import requests
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
-	@CustomerBaseHandler.check_arguments("jpush_id?:str","user_type?:int")
+
 	def get(self):
 		next_url = self.get_argument('next', '')
 		# print("[CustomerAccess]Redirect URL:",next_url)
@@ -57,16 +57,6 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
-			try:
-				user_type=int(self.args["user_type"])
-				jpush_id=self.args["jpush_id"]
-			except:
-				jpush_id=None
-			if jpush_id:
-				q=self.session.query(models.Jpushinfo).filter_by(user_type=user_type,user_id=self.current_user.id).first()
-				if q:
-					self.session.delete(q)
-					self.session.commit()
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("customerLogin"))
 		elif self._action == "oauth":
@@ -87,19 +77,7 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		try:
-			next_url=self.args["next"]
-		except:
-			next_url=None
-		user_type=-1
-		jpush_id=None
-		if next_url:
-			if next_url.find('madmin?jpush_id')!=-1:
-				user_type=0
-				jpush_id=next_url[next_url.find('=')+1:]
-			if next_url.find('customer/profile?jpush_id')!=-1:
-				user_type=1
-				jpush_id=next_url[next_url.find('=')+1:]
+
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print("[PhoneLogin]Customer ID:",u.id)
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
@@ -107,23 +85,7 @@ class Access(CustomerBaseHandler):
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		if jpush_id:
-			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id,user_type=user_type).with_lockmode('update').first()
-			new_device=1
-			if qq:
-				if qq.jpush_id==jpush_id:
-					new_device=0			
-			if new_device==1:
-				if qq:
-					qq.update(self.session,user_id=u.accountinfo.id,user_type=user_type,jpush_id=jpush_id)
-				else:
-					new_jpushinfo=models.Jpushinfo(user_id=u.id,user_type=user_type,jpush_id=jpush_id)
-					self.session.add(new_jpushinfo)
-				self.session.commit()
-			if user_type==0:
-				return self.send_success(come_from=0)
-			return self.send_success(come_from=1)
-		return self.send_success(come_from=3)
+		return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("code")
 	def handle_qq_oauth(self,next_url):
@@ -156,77 +118,19 @@ class Access(CustomerBaseHandler):
 class Third(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
-	@CustomerBaseHandler.check_arguments("openid?","unionid?","country?","province?","city?","headimgurl?","nickname?","sex?","jpush_id?")
 	def get(self):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
-
-		
-		elif self._action=="weixinphone":
-			openid=str(self.args["openid"])
-			unionid=str(self.args["unionid"])
-			country=str(self.args["country"])
-			province=str(self.args["province"])
-			city=str(self.args["city"])
-			headimgurl=str(self.args["headimgurl"])
-			nickname=str(self.args["nickname"])
-			sex=int(self.args["sex"])
-			jpush_id=self.args["jpush_id"]
-			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
-			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
-			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=1).first()
-			new_device=1
-			if qq:
-				if qq.jpush_id==jpush_id:
-					new_device=0
-			if new_device==1 and q:
-				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=1,jpush_id=jpush_id)
-				self.session.add(new_jpushinfo)
-				self.session.commit()
-			if  q==None:
-				u = models.Customer.register_with_wx(self.session,userinfo)
-				self.set_current_user(u,domain = ROOT_HOST_NAME)
-			else:
-				self.set_current_user(q,domain = ROOT_HOST_NAME)
-			return self.redirect(self.reverse_url("customerProfile"))
-		elif self._action=="weixinphoneadmin":
-			openid=str(self.args["openid"])
-			unionid=str(self.args["unionid"])
-			country=str(self.args["country"])
-			province=str(self.args["province"])
-			city=str(self.args["city"])
-			headimgurl=str(self.args["headimgurl"])
-			nickname=str(self.args["nickname"])
-			sex=int(self.args["sex"])
-			jpush_id=str(self.args["jpush_id"])
-			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
-			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
-			new_device=1
-			if q:
-				qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=0).first()
-				if qq:
-					if qq.jpush_id==jpush_id:
-						new_device=0
-			if new_device==1 and q:
-				print(new_device,'new_device')
-				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=0,jpush_id=jpush_id)
-				self.session.add(new_jpushinfo)
-				self.session.commit()
-			if  q==None:
-				u = models.Customer.register_with_wx(self.session,userinfo)
-				self.set_current_user(u,domain = ROOT_HOST_NAME)
-				new_jpushinfo=models.Jpushinfo(user_id=u.accountinfo.id,user_type=0,jpush_id=jpush_id)
-				self.session.add(new_jpushinfo)
-				self.session.commit()
-				return self.redirect(self.reverse_url("ApplyHome"))
-			else:
-				self.set_current_user(q,domain = ROOT_HOST_NAME)
-				haveshop=self.session.query(models.ShopAdmin).filter_by(id=q.id).count()
-				if haveshop==0:
-					return self.redirect(self.reverse_url("ApplyHome"))	
-				else:
-					return self.redirect(self.reverse_url("MadminHome"))
+		# elif self._action=="weixinphone":
+		# 	user_info=self.args["user_info"]
+		# 	wx_unionid=user_info["wx_unionid"]
+		# 	q=self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_unionid).first()
+		# 	if  q==None:
+		# 		u = models.Customer.register_with_qq(self.session,userinfo)
+		# 		self.set_current_user(u,domain = ROOT_HOST_NAME)
+		# 	self.set_current_user(q,domain = ROOT_HOST_NAME)
+		# 	return self.redirect(self.reverse_url("customerProfile"))
 
 # 商品详情
 class customerGoods(CustomerBaseHandler):

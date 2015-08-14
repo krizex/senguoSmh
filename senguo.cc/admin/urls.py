@@ -29,8 +29,6 @@ handlers = [
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 
-	(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
-
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
@@ -69,7 +67,6 @@ handlers = [
 	(r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
 	(r"/customer/weixinphone", handlers.customer.Third, {"action":"weixinphone"}, "customerWeixinphone"),
-	(r"/customer/weixinphoneadmin", handlers.customer.Third, {"action":"weixinphoneadmin"}, "customerWeixinphoneadmin"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
 	(r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
 
@@ -224,7 +221,6 @@ handlers = [
 
 	(r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
 	(r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
-	(r"/admin/weixinphoneadmin", handlers.admin.Access, {"action":"weixinphoneadmin"}, "weixinphoneadmin"),
 	(r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
 	(r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
 	(r"/admin/home", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
