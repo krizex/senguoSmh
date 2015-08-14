@@ -806,6 +806,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				_action = "fyprint"
 			self.autoPrint(session,order.id,order.shop,_action)
 
+		# 给管理员app端推送订单生成提示
+		_jpush = jpush.JPush(app_key, master_secret)
+		push = _jpush.create_push()
+		push = _jpush.create_push()
+		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
+		push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+		push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
+		push.notification = jpush.notification(alert="您收到了一条新订单，点击查看详情")
+		push.platform = jpush.platform("android")
+		push.send()
+
 	# 发送订单完成模版消息给用户
 	@classmethod
 	def order_done_msg(self,session,order):
