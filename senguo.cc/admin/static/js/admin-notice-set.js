@@ -3,7 +3,7 @@ $(document).ready(function(){
     //添加公告
     $('.add-new-notice').on('click',function(){
         if(NoticeEdit){
-            return Tip("hahahah")
+            return Tip("请先完成正在编辑的公告");
         }
         noticeAdd();
     });
@@ -28,7 +28,7 @@ $(document).ready(function(){
     window.onbeforeunload = function(){
         if(NoticeEdit==true){
             setTimeout(function(){zb_t = setTimeout(onunloadcancel, 0)}, 0);
-            return "当前有商品正在编辑还未保存，确定离开此页？";
+            return "当前有公告正在编辑还未保存，确定离开此页？";
         }
     }
     window.onunloadcancel = function(){
@@ -85,12 +85,16 @@ $(document).ready(function(){
         }
     }
 });
+}).on("click",".add-new-address1",function(){
+    if(NoticeEdit){
+        return Tip("请先完成正在编辑的公告");
+    }
+    $("#noticeBox").modal("show");
 }).on('click','.notice-edit',function(){
     if(NoticeEdit){
-        Tip("hahahah");
+        Tip("请先完成正在编辑的公告");
         return false;
     }
-    console.log(233333);
     NoticeEdit=true;
     var $this=$(this);
     var parent=$this.parents('.set-list-item');

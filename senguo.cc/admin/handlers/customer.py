@@ -152,6 +152,8 @@ class customerGoods(CustomerBaseHandler):
 			return self.send_error(404)
 			
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
+		if not good:
+			return self.send_error(404)
 		try:
 			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
 		except:

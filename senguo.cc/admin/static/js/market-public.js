@@ -1,3 +1,10 @@
+var if_fromdetail = parseInt(getCookie('fromdetail'));
+if(if_fromdetail==1){
+    $(".wrap-loading-box").removeClass("hidden");
+    SetCookie("fromdetail","")
+    window.location.reload();
+}
+
 $(document).ready(function(){
     window.dataObj.shop_href='/customer/shopProfile';
     window.dataObj.market_href='/shop/none';

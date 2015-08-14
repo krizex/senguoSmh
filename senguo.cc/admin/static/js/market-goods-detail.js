@@ -135,7 +135,9 @@ $(document).ready(function(){
     for(var key in cart_fs) {
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
-    
+    window.onbeforeunload = function(){
+        setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 0);
+    }
 }).on("click","#dianzan",function(){
     var $this = $(this);
     if($this.attr("data-flag")=="True"){
@@ -146,6 +148,7 @@ $(document).ready(function(){
     }
 }).on('click','.add-cart',function(){
     var link=$(this).attr('data-href');
+    SetCookie("fromdetail","")
     addCart(link);
 });
 //点赞
@@ -184,8 +187,10 @@ function addCart(link){
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success)
-            {
-                window.location.href=link;
+            {   if(link){
+                    window.location.href=link;
+                }
+                
             }
             else return noticeBox(res.error_text);
         }
