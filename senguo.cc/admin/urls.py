@@ -29,7 +29,7 @@ handlers = [
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 
-	(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
+	#(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
 
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
