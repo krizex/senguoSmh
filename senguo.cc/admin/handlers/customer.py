@@ -32,7 +32,7 @@ import requests
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
-
+	@CustomerBaseHandler.check_arguments("jpush_id?:str","user_type?:int")
 	def get(self):
 		next_url = self.get_argument('next', '')
 		# print("[CustomerAccess]Redirect URL:",next_url)
@@ -57,6 +57,13 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
+			user_type=int(self.args["user_type"])
+			jpush_id=self.args["jpush_id"]
+			if jpush_id:
+				q=self.session.query(models.Jpushinfo).filter_by(user_type=user_type,user_id=self.current_user.id).first()
+				if q:
+					self.session.delete(q)
+					self.session.commit()
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("customerLogin"))
 		elif self._action == "oauth":
