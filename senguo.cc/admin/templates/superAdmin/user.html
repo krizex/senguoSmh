@@ -4,26 +4,26 @@
 {% block content %}
 <div class="row">
     <div class="admin-left pull-left">
-        <ul class="nav nav-stacked shop-manage-nav text-right" role="tablist">
-            <li class="all nav_item active">
+        <ul class="nav nav-stacked shop-manage-nav text-right left-choose-list" role="tablist">
+            <li class="all nav_item active" data-id="1">
                 <a href="javascript:;">
                     所有用户
                     (<span class="count">{{sum['all']}}</span>)
                 </a>
             </li>
-            <li class="admin nav_item">
+            <li class="admin nav_item" data-id="2">
                 <a href="javascript:;">
                     卖家
                     (<span class="count">{{sum['admin']}}</span>)
                 </a>
             </li>
-            <li class="customer nav_item">
+            <li class="customer nav_item" data-id="3">
                 <a href="javascript:;">
                     商城用户
                     (<span class="count">{{sum['customer']}}</span>)
                 </a>
             </li>
-            <li class="phone nav_item">
+            <li class="phone nav_item" data-id="4">
                 <a href="javascript:;">
                     已绑定手机号
                     (<span class="count">{{sum['phone']}}</span>)

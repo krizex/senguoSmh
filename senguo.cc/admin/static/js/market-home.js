@@ -1,19 +1,24 @@
+var _action=6;
+var _finished=true;
+var _search;
+var _group_finished=true;
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();
     //$(".container").height(height).css("overflow","hidden").css("paddingBottom","0");
     //$("#wrap-home-box").height(height-50);
-    $(".notice-item").width(width).css("minHeight","120px");
-    if($(".swiper-slide").size()>1){
-        $(".swiper-wrapper").width(width*$(".swiper-slide").size());
-        new Swiper('#swiper-container',{
-            mode: 'horizontal',
-            loop:true,
-            grabCursor: true,
-            pagination: '.pagination',
-            autoplay:"3000",
-            autoplayDisableOnInteraction:false
-        });
+    $(".notice-item").width("100%");
+    $(".swiper-wrapper").width(width*$(".swiper-slide").size());
+    var swiper = new Swiper('#swiper-container',{
+        mode: 'horizontal',
+        loop:true,
+        grabCursor: true,
+        pagination: '.pagination',
+        autoplay:"4000",
+        autoplayDisableOnInteraction:false
+    });
+    if($(".swiper-slide").size()==3){
+        swiper.stopAutoplay();
     }
     //分类显示
     var top_title=$('.top-title');
@@ -157,6 +162,7 @@ $(document).ready(function(){
     $this.find('.icon').toggle();
     $('.goods-class-choose').toggle();
 }).on('click','.classify-list li',function(){
+    _group_finished=false;
     $('.classify-list').toggle();
     var $this=$(this);
     var text=$this.text();
@@ -166,7 +172,11 @@ $(document).ready(function(){
     if(group_id==-1){
         top=$('.goods-list--1').offset().top-40;
     }
-    $.scrollTo({endY:top,duration:500,callback:function(){}});
+    $.scrollTo({endY:top,duration:500,callback:function(){
+        setTimeout(function(){
+            _group_finished=true;
+        },500)
+    }});
 }).on('click','body',function(e){
     if($(e.target).closest('.to-hide').length == 0){
         $('.classify-list').hide();
@@ -208,18 +218,13 @@ $(document).ready(function(){
     if(buy_today=='True'&&allow_num<=0){
         return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
     }
-    // if(storage==1){
-    //    $this.siblings('.number-change').find('.number-input').val(1); 
-    // }else{
-    //     $this.siblings('.number-change').find('.number-input').val(0);
-    // }
     if(storage>0) {
         if(storage-change_num<0){
             return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
         }else if(storage-change_num==0){
-            $this.siblings('.number-change').find('.number-input').val(0);
+            $this.siblings('.number-change').find('.number-input').text(0);
         }else{
-            $this.siblings('.number-change').find('.number-input').val(0); 
+            $this.siblings('.number-change').find('.number-input').text(0); 
         }
         pulse($this.siblings('.number-change').find('.number-plus'));
         goodsNum($this.siblings('.number-change').find('.number-plus'),2);
@@ -246,7 +251,7 @@ $(document).ready(function(){
     var $this=$(this);
     if($this.parents('.charge-item').find('.to-add').hasClass('hidden')){
         var parent=$this.parents('.goods-list-item');
-        var num=Int($this.siblings('.number-input').val().trim());
+        var num=Int($this.siblings('.number-input').text());
         var storage=parseFloat(parent.attr('data-storage'));
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
@@ -255,7 +260,7 @@ $(document).ready(function(){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
         if(!regNum.test(num)) {
-            $this.siblings('.number-input').val(storage);
+            $this.siblings('.number-input').text(storage);
             return noticeBox('商品数量只能为整数！',$this);
         }
         if(num<999) {pulse($this);goodsNum($this,2);}
@@ -263,123 +268,12 @@ $(document).ready(function(){
             return noticeBox('最多只能添加999哦！',$this);
         } 
     }
-   
-}).on('change','.number-input',function(){
-    var $this=$(this);
-    var num=$this.val();
-    var change=$this.parents('.number-change');
-    var regNum=/^[0-9]*$/;
-    var parent=$this.parents('.goods-list-item');
-    var storage_origin=parseFloat(parent.data('num'));
-    var storage=parseFloat(parent.data('storage'));
-    var storage_now;
-    var num_item=parent.find('.number-input');
-    var index=$this.index();
-    var result=storage-num;
-    if(num_item.length>0){
-        for(var i=0;i<num_item.length;i++){
-            if(i!=index){
-                if(num_item.eq(i).val()<storage){
-                    storage_now=storage-num_item.eq(i).val();
-                }
-                else{
-                    storage_now=storage;
-                }
-            }
-        }
-    }
-    else {
-        storage_now=storage;
-    };
-    if(!regNum.test(num)) {
-        $this.val(0);
-        change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
-        window.dataObj.cart_count--;
-        $('.cart_num').text(window.dataObj.cart_count);
-        SetCookie('cart_count',window.dataObj.cart_count);
-        return noticeBox('商品数量只能为整数！┑(￣▽ ￣)┍',$this);
-        parent.attr({'data-storage':storage_now});
-    }
-    if(num==0){
-        parent.attr({'data-storage':storage_now});
-        change.addClass('hidden').siblings('.to-add').removeClass('hidden').addClass('add_cart_num');
-        if(window.dataObj.cart_count==1) {
-            $('.cart_num').text(window.dataObj.cart_count);
-            SetCookie('cart_count',0);
-        }
-        else {
-            window.dataObj.cart_count--;
-            wobble($('.cart_num'));
-            $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
-            SetCookie('cart_count',window.dataObj.cart_count);
-        }
-    }
-    else if(0<num<999){
-        if(num>=storage) {
-            if(storage_now<=0){
-                $this.val(0);
-            }
-            else if(storage_now>0){
-                window.dataObj.cart_count++;
-                wobble($('.cart_num'));
-                $('.cart_num').text(window.dataObj.cart_count).removeClass('hidden');
-                SetCookie('cart_count',window.dataObj.cart_count);
-                $this.val(Int(storage_now));
-                if(num_item.length>0){
-                    storage_origin=storage_origin-storage;
-                    for(var i=0;i<num_item.length;i++){
-                        storage_now=storage_origin-num_item.eq(i).val();
-                    }
-                }
-                else {
-                    storage_now=0;
-                };
-                parent.attr({'data-storage':storage_now});
-                if(storage_now<num) {return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);}
-            }
-        }
-        else if(num<storage){
-            $this.val(num);
-            storage_now=storage_now-num;
-            parent.attr({'data-storage':storage_now});
-        }
-    }
-    else if(num>=999) {
-        if(result>0) {parent.attr({'data-storage':result});}
-        else parent.attr({'data-storage':0});
-        if(storage<999) {
-            $this.val(Int(storage_now));
-            return noticeBox('只有这么多了哦！┑(￣▽ ￣)┍',$this);
-        }
-        else {
-            $this.val(999);
-            storage_now=storage_now-999;
-            parent.attr({'data-storage':storage_now});
-            return noticeBox('最多只能添加999哦！┑(￣▽ ￣)┍',$this);
-        }
-    }
-    //}).on('click','.toggle',function(e){
-    //计价方式折叠/显示
-    //stopPropagation(e);
-    //var target  = $(e.target);
-    //var $this=$(this);
-    //var $parent=$this.parents('.goods-list-item');
-    //var $charge_list=$this.parents('.goods-list-item').find('.charge-list');
-    //if(target.closest('.forbid_click').length == 0){
-    //    $parent.find('.back-shape').toggleClass('hidden');
-    //    $charge_list.toggle();
-    //    $parent.find('.toggle_icon').toggleClass('arrow');
-    //    $parent.toggleClass('pr35');
-    //};
 }).on('click','._add_cart',function(e){
     //添加到购物车
     stopDefault(e);
     var link=$(this).attr('href');
     addCart(link);
 });
-var _action=6;
-var _finished=true;
-var _search;
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(_group_id){
     $(window).scroll(function(){
@@ -390,7 +284,7 @@ var scrollLoading=function(_group_id){
         var nomore=$('.goods-list-'+_group_id).attr("data-nomore");
         var page=parseInt($('.goods-list-'+_group_id).attr("data-page"));
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false') {
+        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false'&&_group_finished==true) {
             _finished=false;
             page = page+1;
             $('.goods-list-'+_group_id).attr("data-page",page);
@@ -486,7 +380,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                                         '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
                                         '<span class="pull-right p0 number-change hidden forbid_click">'+
                                             '<button class="minus-plus pull-right number-plus bg_change"></button>'+
-                                            '<input type="text" value="" class="number-input pull-right text-green text-center line34 height34 bg_change"readonly/>'+
+                                            '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
                                             '<button class="minus-plus pull-right number-minus bg_change"></button>'+
                                         '</span>'+
                                     '</span>'+
@@ -578,7 +472,7 @@ function cartNum(cart_ms,list){
                     var storage=$parent.attr('data-num');
                     add.addClass('hidden');
                     change.removeClass('hidden');
-                    input.val(cart_ms[key][1]);
+                    input.text(cart_ms[key][1]);
                     var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
                     var unit_num=parseFloat(charge.find('.num').text());
                     var change_num=relate*unit_num*cart_ms[key][1];
@@ -598,7 +492,7 @@ function cartNum(cart_ms,list){
 function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var change=target.parents('.number-change');
-    var num=parseInt(item.val());
+    var num=parseInt(item.text());
     var parent=target.parents('.goods-list-item');
     var storage=parseFloat(parent.attr('data-storage'));
     var type_list=target.parents('.goods-list');
@@ -622,19 +516,19 @@ function goodsNum(target,action){
                 return  noticeBox('商品限购数量'+limit_num);
             }
             num++;
-            item.val(num);
+            item.text(num);
             storage=storage-change_num;
             parent.attr({'data-storage':storage});
         }
     }
     else if(action==1)
     {
-        var val=parseInt(item.val());
+        var val=parseInt(item.text());
         if(val>0)
         {
             num--;
-            item.val(num);
-            if(num<=0){
+            item.text(num);
+            if(num<0){
                 storage = change_num
             }else{
               storage=storage+change_num;  

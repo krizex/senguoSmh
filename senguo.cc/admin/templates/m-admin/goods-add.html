@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block title %}添加新商品{% end %}
 {% block head %}
-
+<link href="/static/js/ueditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
 {% end %}
 {% block header %}
-<input type="hidden" id="token" value="rewrewfdsfdsfewrewrfd"/>
+<input type="hidden" id="token" value="{{token}}"/>
 <div class="header">
-    <a href="javascript:;" class="back goback">返回</a>
+    <a href="javascript:;" class="back gogoods">返回</a>
     <span>添加新商品</span>
     <a href="javascript:;" class="head-right finish-btn" id="finish_btn">完成</a>
 </div>
@@ -25,35 +25,35 @@
             <li>
                 <div class="add-row">
                     <span class="add-left">商品名称</span>
-                <span class="add-right borderm nodownm">
-                    <input type="text" class="add-ipt" placeholder="输入商品名称，12字以内"/>
-                </span>
+                    <span class="add-right borderm nodownm">
+                        <input type="text" class="add-ipt goods-goods-name" placeholder="输入商品名称，12字以内"/>
+                    </span>
                 </div>
             </li>
             <li>
                 <div class="add-row">
                     <span class="add-left">商品分组</span>
-                <span class="add-right borderm">
-                    默认分组
-                </span>
+                    <span class="add-right borderm choose-group" data-id="0">
+                        默认分组
+                    </span>
                 </div>
             </li>
             <li class="group">
                 <div class="w50 add-row fl">
                     <span class="add-left">库存</span>
-                <span class="add-right nodownm">
-                    <input type="number" class="add-ipt" placeholder="请输入库存"/>
-                </span>
+                    <span class="add-right nodownm">
+                        <input type="tel" class="add-ipt stock-num" placeholder="请输入库存"/>
+                    </span>
                 </div>
                 <div class="w50 add-row fl borderl">
                     <span class="add-left pl10">库存单位</span>
-                <span class="add-right pl10 current-unit">kg</span>
+                    <span class="add-right pl10 current-unit" data-id="4">kg</span>
                 </div>
             </li>
         </ul>
-        <p class="c666 add-title mt6">商品图片 : <span class="f12">第一张图片会默认为封面</span></p>
+        <p class="c666 add-title mt6">商品图片<span class="f12">（第一张图片会默认为封面）</span></p>
         <ul class="img-list group" id="img_list">
-            <li class="" id="img-lst">
+            <li id="img-lst">
                 <img src="/static/m-admin/img/add_img.png" alt="添加商品图片" id="add-img"/>
             </li>
         </ul>
@@ -67,22 +67,22 @@
                     <li>
                         <div class="add-row">
                             <span class="add-left">售出单位</span>
-                            <span class="add-right borderm price-unit">kg</span>
+                            <span class="add-right borderm price-unit" data-id="4">kg</span>
                         </div>
                     </li>
                     <li class="group">
                         <div class="w50 add-row fl">
                             <span class="add-left">售价</span>
                         <span class="add-right nodownm borderm">
-                            <span class="textr mr10">元</span>
-                            <input type="number" class="add-ipt current-price" placeholder="请输入售价"/>
+                            <span class="textr mr5">元</span>
+                            <input type="text" class="add-ipt current-price" placeholder="请输入售价"/>
                         </span>
                         </div>
                         <div class="w50 add-row fl borderl borderm">
                             <span class="add-left pl10">数量</span>
-                        <span class="add-right pl10 nodownm">
-                            <span class="textr"></span>
-                            <input type="number" class="add-ipt price-num" placeholder="请输入数量"/>
+                        <span class="add-right nodownm">
+                            <span class="textr price-text">kg</span>
+                            <input type="tel" class="add-ipt price-num" placeholder="请输入数量"/>
                         </span>
                         </div>
                     </li>
@@ -91,7 +91,7 @@
                             <span class="add-left">市场价</span>
                         <span class="add-right nodownm">
                             <span class="textr">元</span>
-                            <input type="number" class="add-ipt market-price" placeholder="请输入市场价"/>
+                            <input type="text" class="add-ipt market-price" placeholder="请输入市场价"/>
                         </span>
                         </div>
                     </li>
@@ -99,46 +99,47 @@
             </div>
         </div>
         <p class="dgreen add-title" id="add_price">+新建售价方式</p>
-        <p class="c666 add-title mt10">商品简介(可选)</p>
+        <p class="c666 add-title mt10">商品简介<span class="f12">（可选）</span></p>
         <div class="wrap-info-ipt">
-            <textarea class="mtextarea" placeholder="请输入商品简介，100字以内"></textarea>
+            <textarea class="mtextarea goods-info" placeholder="请输入商品简介，100字以内"></textarea>
         </div>
+        <p class="dgreen add-title mt10" id="add_detail" data-flag="true">+商品图文详情<span class="f12 c666">（买家会在商品的详情页里看到）</span></p>
         <div class="slide-more mt10 slide_more">
             <span class="c666 add-right">展开高级设置</span>
         </div>
         <ul class="add-list hide" id="goods_set">
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">商品限购</span>
                 <span class="add-right nodownm pt4">
                     <div class="wrap-more-set">
-                        <input type="tel" class="num-ipt" value="0"/>
-                        <p class="num-info">输入商品限购数量，0为默认<br>不限购</p>
+                        <input type="tel" class="num-ipt limit_num" value="0"/>
+                        <p class="num-info">输入商品限购数量，0为<br>默认不限购</p>
                     </div>
                 </span>
                 </div>
             </li>
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">优先级</span>
                 <span class="add-right nodownm pt4">
                     <div class="wrap-more-set">
-                        <input type="tel" class="num-ipt" value="5"/>
-                        <p class="num-info">输入0-9的数字，数字越大，商品排序越靠前</p>
+                        <input type="tel" class="num-ipt goods-priority" value="5"/>
+                        <p class="num-info">输入0-9的数字，数字越大，<br>商品排序越靠前</p>
                     </div>
                 </span>
                 </div>
             </li>
             <li>
-                <div class="add-row">
+                <div class="add-row high-row">
                     <span class="add-left">商品标签</span>
-                <span class="add-right nodownm pt0">
+                <span class="add-right nodownm">
                     <div class="wrap-mark-set">
-                        <span class="mark-choose w24 active" data-id="">无</span>
-                        <span class="mark-choose" data-id="">限时折扣</span>
-                        <span class="mark-choose" data-id="">热卖中</span>
-                        <span class="mark-choose" data-id="">今日特价</span>
-                        <span class="mark-choose" data-id="">新品</span>
+                        <span class="mark-choose w24 active" data-id="1">无</span>
+                        <span class="mark-choose" data-id="2">限时折扣</span>
+                        <span class="mark-choose" data-id="3">热卖中</span>
+                        <span class="mark-choose" data-id="4">今日特价</span>
+                        <span class="mark-choose" data-id="5">新品</span>
                     </div>
                 </span>
                 </div>
@@ -148,10 +149,10 @@
     <div class="boxs wrap-classify pt30 hide">
         <div class="second-tab class_tab">
             <ul class="second-tab-list class_list group pt0">
-                <li class="goods-status class_status dgreen clip" data-id="1">颜色<i class="imenu"></i></li>
-                <li class="gitem active" data-id="2">水果</li>
-                <li class="gitem" data-id="3">干果</li>
-                <li class="gitem" data-id="5">其它</li>
+                <li class="goods-status class_status dgreen clip" data-id="1"><span id="class_type" data-id="color">颜色</span><i class="imenu"></i></li>
+                <li class="gitem active" data-id="fruit">水果</li>
+                <li class="gitem" data-id="ganguo">干果</li>
+                <li class="gitem" data-id="other">其它</li>
                 <li class="tab-line l25"></li>
             </ul>
             <div class="wrap-menu-list wrap-goods-menu wrap_class_menu hide">
@@ -168,51 +169,7 @@
             <a href="javascrpipt:;" class="convert-btn" id="convert-btn">搜索</a>
         </div>
         <ul class="classify-list mt10">
-            <li>
-                <div class="class-row">
-                    <span class="class-left red-bg">红色</span>
-                    <span class="class-right slide-class arrow-up">已添加4种</span>
-                </div>
-                <ul class="class-lst group red">
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                </ul>
-            </li>
-            <li>
-                <div class="class-row">
-                    <span class="class-left yellow-bg">黄色</span>
-                    <span class="class-right slide-class">已添加4种</span>
-                </div>
-                <ul class="class-lst group yellow hide">
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                </ul>
-            </li>
-            <li>
-                <div class="class-row">
-                    <span class="class-left green-bg">黄色</span>
-                    <span class="class-right slide-class">已添加4种</span>
-                </div>
-                <ul class="class-lst group green hide">
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem selected" data-id="1"><span>苹果</span>(1)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                    <li><span class="citem" data-id="1"><span>苹果</span>(0)</span></li>
-                </ul>
-            </li>
+
         </ul>
     </div>
 </div>
@@ -227,8 +184,8 @@
                 <input type="tel" class="f12 unit-ipt" id="first_num" placeholder="填整数"/><span class="c333" id="now-unit">kg</span>&nbsp;&nbsp;=&nbsp;&nbsp;
                 <input type="tel" class="f12 unit-ipt" id="second_num" placeholder="填整数"/><span class="c333" id="stock-unit">kg</span>
             </div>
-            <p class="c666 f12 mt10">换算案例：库存单位为kg，售出单位为份时</p>
-            <p class="c666 text-dent f12">5kg苹果有3份，则填写<span class="dgreen">5kg=3份</span></p>
+            <p class="c666 f12 mt10">换算案例：售出单位为份，库存单位为kg时</p>
+            <p class="c666 text-dent f12">3份苹果有5kg，则填写<span class="dgreen">3份=5kg</span></p>
         </div>
         <div class="wrap-bbtns txt-center">
             <a href="javascript:;" class="ok-bbtn dgreen" id="sure_conver">确定</a>
@@ -236,24 +193,14 @@
         </div>
     </div>
 </div>
-<div class="pop-bwin pop-del hide">
-    <div class="pop-bcontent">
-        <h3 class="txt-center">是否确认删除该分组？</h3>
-        <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
-            <a href="javascript:;" class="ok-bbtn dgreen" id="del_group">确认</a>
+<div class="pop-bwin pop-editor hide">
+    <div class="wrap-kindeditor">
+        <script type="text/plain" id="ueditor" style="width:100%;height:300px;max-height:300px;"></script>
+        <div class="wrap-bbtns txt-center wrap-bbtns-editor">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="ok-editor">确定</a>
             <a href="javascript:;" class="cancel-bbtn c666">取消</a>
         </div>
     </div>
-</div>
-<div class="wrap-bm-btns">
-    <ul class="btns-list group">
-        <li>
-            <a href="javascritp:;" class="bm-btn down-goods">下架商品</a>
-        </li>
-        <li>
-            <a href="javascritp:;" class="bm-btn del-goods">删除商品</a>
-        </li>
-    </ul>
 </div>
 <div class="pop-bwin pop-unit hide">
     <div class="pop-bcontent">
@@ -268,11 +215,26 @@
             <li data-id="7" class="">箱</li>
             <li data-id="8" class="">盒</li>
             <li data-id="9" class="">件</li>
-            <li data-id="10" class="">框</li>
+            <li data-id="10" class="">筐</li>
             <li data-id="11" class="">包</li>
         </ul>
         <div class="wrap-bbtns txt-center">
             <a href="javascript:;" class="ok-bbtn dgreen" id="sure_unit">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+<div class="pop-bwin pop-group hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center unit-title">选择分组</h3>
+        <ul class="status-list group_list">
+            <li data-id="-1" class="">店铺推荐</li>
+            {% for d in data %}
+            <li data-id="{{d['id']}}" class="{% if d['id']==0 %}active{% end %}">{% if d['id']==0 %}默认分组{% else %}{{d['name']}}{% end %}</li>
+            {% end %}
+        </ul>
+        <div class="wrap-bbtns txt-center">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="sure_group" data-id="0" data-name="默认分组">确定</a>
             <a href="javascript:;" class="cancel-bbtn c666">取消</a>
         </div>
     </div>
@@ -289,9 +251,14 @@
 </div>
 {% end %}
 {% block bottom %}
+<script src="/static/js/jquery.min.js"></script>
 <script src="/static/js/plupload/plupload.full.min.js"></script>
-<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/template.js"></script>
 <script src="/static/js/exif.min.js"></script>
 <script src="/static/js/qiniu.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/ueditor/umeditor.min.js"></script>
+<script src="/static/js/ueditor/umeditor.config.js"></script>
+<script src="/static/js/ueditor/lang/zh-cn/zh-cn.js"></script>
 <script src="{{static_url('m-admin/js/goods-add.js')}}"></script>
 {% end %}

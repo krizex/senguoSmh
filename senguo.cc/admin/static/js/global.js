@@ -11,6 +11,19 @@ function Tip(text){
         $("#zb-tip").addClass("hidden");
     },3000);
 }
+$(document).ready(function(){
+    if($(".scrollUpf").size()>0){
+        $(window).scroll(function(){
+            if($(window).scrollTop()>150){
+                $(".scrollUpf").show();
+            }else{
+                $(".scrollUpf").hide();
+            }
+        });
+    }
+}).on("click","#scrollUp",function(){
+    $('html,body').animate({scrollTop: '0px'}, 300);
+});
 (function ($) {
     $.getUrlParam = function (name, default_value) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");

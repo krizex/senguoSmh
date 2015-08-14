@@ -10,15 +10,16 @@ $(document).ready(function(){
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
-    if($(".swiper-slide").size()>1){
-        new Swiper('#swiper-container',{
-            mode: 'horizontal',
-            loop:true,
-            grabCursor: true,
-            pagination: '.pagination',
-            autoplay:"3000",
-            autoplayDisableOnInteraction:false
-        });
+    var swiper = new Swiper('#swiper-container',{
+        mode: 'horizontal',
+        loop:true,
+        grabCursor: true,
+        pagination: '.pagination',
+        autoplay:"4000",
+        autoplayDisableOnInteraction:false
+    });
+    if($(".swiper-slide").size()==3){
+        swiper.stopAutoplay();
     }
     //初始化购物车数量
     if(getCookie("cart_count")!=''){
@@ -137,6 +138,9 @@ $(document).ready(function(){
     for(var key in cart_fs) {
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
+    window.onbeforeunload = function(){
+        setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 0);
+    }
 }).on("click","#dianzan",function(){
     var $this = $(this);
     if($this.attr("data-flag")=="True"){
@@ -147,6 +151,7 @@ $(document).ready(function(){
     }
 }).on('click','.add-cart',function(){
     var link=$(this).attr('data-href');
+    SetCookie("fromdetail","")
     addCart(link);
 });
 //点赞
@@ -185,8 +190,10 @@ function addCart(link){
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success)
-            {
-                window.location.href=link;
+            {   if(link){
+                    window.location.href=link;
+                }
+                
             }
             else return noticeBox(res.error_text);
         }

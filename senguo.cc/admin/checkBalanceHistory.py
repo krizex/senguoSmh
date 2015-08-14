@@ -389,7 +389,18 @@ def Check():
 			available_balance =  item[9]
 			is_cancel =  item[10]
 
+			# added by jyj 2015-8-10
+			shop_province = session.query(models.Shop.shop_province).filter_by(id = shop_id).all()[0][0]
+			shop_name = session.query(models.Shop.shop_name).filter_by(id = shop_id).all()[0][0]
+			##
+
 			history_record = session.query(models.BalanceHistory).filter_by(id = id).with_lockmode("update").first()
+
+			# added by jyj 2015-8-10
+			history_record.shop_province = shop_province
+			history_record.shop_name = shop_name
+			##
+
 			if history_record.is_cancel != 1:
 				history_record.is_cancel = 0
 			if balance_type == 1:

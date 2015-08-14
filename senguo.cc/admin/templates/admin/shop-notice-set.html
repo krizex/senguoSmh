@@ -25,7 +25,11 @@
             <td class="col-lg-3 address-edit" style="display:none;"><textarea class="notice_summary">{{notice.summary}}</textarea></td>
             <td class="col-lg-4 address-show detail">{{notice.detail.strip() or '无'}}</td>
             <td class="col-lg-4 address-edit" style="display:none;"> <textarea class="notice_detail">{{notice.detail}}</textarea></td>
-            <td class="col-lg-3 address-show img_url"><img src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" class="notice_img"/></td>
+            <td class="col-lg-3 address-show img_url">
+                <div class="notice_img_box">
+                    <img src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" class="notice_img"/>
+                </div>
+            </td>
             <td class="col-lg-3 address-edit"  style="display:none;">
                 <div class="notice_img_box" id="wrap-legal-img">
                     <img class="notice_img preview-img" src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" alt="背景" url="{{notice.img_url}}"/>
@@ -33,15 +37,15 @@
                 </div>
             </td>
             <td class="address-show">
-                <a href="javascript:;" class="edit-btn2 info-edit">编辑</a>
+                <a href="javascript:;" class="edit-btn2 notice-edit">编辑</a>
             </td>
             <td class="address-edit" style="display:none;">
-                <a href="javascript:;" class="edit-btn2 info-sure notice_edit">确定</a>
+                <a href="javascript:;" class="edit-btn2 info-sure notice_edit bg-green text-white text-center">确定</a>
             </td>
         </tr>
         {% end %}
     </table>
-    <a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建公告消息</a>
+    <a href="javascript:;" class="add-new-address1  add-btn-sty">+ 新建公告消息</a>
     <div class="modal fade text-grey3" id="noticeBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
