@@ -3,26 +3,9 @@
 {% block head %}
 <link rel="stylesheet" href="{{static_url('css/market-cart.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
-{% if shop_tpl == 1 %}
-<style>
-.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_beauty.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
-</style>
-{% elif shop_tpl == 2 %}
-<style>
-.bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_bingo.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
-.bottom-nav .active a, .bottom-nav li:hover a{color:#44C798!important;}
-</style>
-{% end %}
 {% end %}
 {% block content %}
     <span id="shop_imgurl" data-img="{{shop_logo}}" data-code="{{handler.shop_code}}"></span>
-    {% if shop_tpl == 0 %}
-    <div class="rainshed fix-title"></div>
-    {% elif shop_tpl == 1 %}
-    <div class="rainshed_beauty fix-title"></div>
-    {% else %}
-    <div class="rainshed_bingo fix-title"></div>
-    {% end %}
     <div class="bg-box">
         <p class="text-left text-grey9 font14  pl10 cart-titles">商品列表</p>
         <ul class="cart-list set-w100-fle m-b0">

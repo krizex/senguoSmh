@@ -1548,6 +1548,55 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
 		return self._shop_code
 
+	@property
+	def shop_marketing(self):
+		if hasattr(self, "_shop_marketing"):
+			return self._shop_marketing
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_marketing = shop.marketing.confess_active+shop.marketing.coupon_active
+		else:
+			self._shop_marketing = None
+
+		return self._shop_marketing
+
+	@property
+	def shop_auth(self):
+		if hasattr(self, "_shop_auth"):
+			return self._shop_auth
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_auth = shop.shop_auth
+		else:
+			self._shop_auth = None
+
+		return self._shop_auth
+
+	@property
+	def shop_tpl(self):
+		if hasattr(self, "_shop_tpl"):
+			return self._shop_tpl
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_tpl = shop.shop_tpl
+		else:
+			self._shop_tpl = None
+
+		return self._shop_tpl
+
+
 	def get_phone(self,customer_id):
 		try:
 			account_info  = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()

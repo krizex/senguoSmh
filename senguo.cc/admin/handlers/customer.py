@@ -397,16 +397,12 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			if shop.marketing:
-				shop_marketing = shop.marketing.confess_active
 				confess_active = shop.marketing.confess_active
 			else:
-				shop_marketing = 0
 				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
-			self.set_cookie("shop_marketing", str(shop_marketing))
-			self.set_cookie("shop_auth", str(shop_auth))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -429,7 +425,8 @@ class Discover(CustomerBaseHandler):
 				if qq!=None:
 					b+=1
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
-		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b,shop_tpl=shop.shop_tpl)
+		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
+			confess_active=confess_active,confess_count=confess_count,a=a,b=b)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -691,7 +688,7 @@ class ShopProfile(CustomerBaseHandler):
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
-						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo,shop_tpl=shop.shop_tpl)
+						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
@@ -1443,7 +1440,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
-			return self.render("customer/cart-empty.html",shop_tpl=shop.shop_tpl,context=dict(subpage='cart'))
+			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
 			fruit = cart_f[item].get('charge_type').fruit
@@ -1506,7 +1503,7 @@ class Cart(CustomerBaseHandler):
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list\
-						   ,shop_tpl=shop.shop_tpl,context=dict(subpage='cart'))
+						   ,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
