@@ -148,8 +148,10 @@ function insertShop(page){
                                     } 
                                     //delete by jyj 2015-6-22    
 
+                                    var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
                                     $item.find(".uauth_type").html(shop.auth_type);
                                     $item.find(".uadmin_nickname").html(shop.admin_nickname);
+                                     $item.find(".uadmin_link").attr("href",admin_link_url);
                                     $item.find(".ushop_address_name").html(shop.shop_address_detail);
                                     $item.find(".ushop_code").html(shop.shop_code);
                                     $item.find(".ushop_status").html(shop.shop_shop_status);
@@ -343,6 +345,8 @@ function searchshop(page){
                                         }else{
                                             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                         }     
+                                        var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                                        $item.find(".uadmin_link").attr("href",admin_link_url);
                                         $item.find(".uauth_type").html(shop.auth_type);
                                         $item.find(".uadmin_nickname").html(shop.admin_nickname);
                                         $item.find(".ushop_address_name").html(shop.shop_address_detail);

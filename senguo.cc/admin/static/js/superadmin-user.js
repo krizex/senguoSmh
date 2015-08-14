@@ -22,6 +22,15 @@ $(document).ready(function(){
         getSearchContent('search',$("#inputinfo").val(),page);
     });
     //jyj
+
+    // added by jyj 2015-8-7
+    var out_link = $.getUrlParam("out_link");
+    if (out_link == "true"){
+        var data_id = $.getUrlParam("data_id");
+        page=0;
+        getSearchContent('out_link',data_id,page);
+    }
+    // 
     
     // if(page==0)
     // {

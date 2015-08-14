@@ -49,7 +49,8 @@ $(document).ready(function(){
     $(this).closest(".right-link").children(".sw-er-tip").toggleClass("invisible");
 }).on("mousedown mousemove",".sw-er-tip",function(e){
     e.stopPropagation();
-}).on("click",".del-group",function(){
+}).on("click",".del-group",function(e){
+    e.stopPropagation();
     curGroup = $(this).closest("li");
     $("#del-win").modal('show');
 }).on("click",".ok-del-group",function(){
@@ -183,6 +184,7 @@ $(document).ready(function(){
 }).on("click","#add-goods",function(){//添加商品
     window.location.href="/admin/goods/all?do=addgoods";
 });
+
 //drag
 function drag(obj){
     obj.onmousedown=function(ev){

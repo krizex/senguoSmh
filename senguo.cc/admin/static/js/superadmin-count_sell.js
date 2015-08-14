@@ -1298,6 +1298,7 @@ function getCount(action,options,myChart,output_data){
 
 	options.xAxis[0].data = []
 	options.yAxis[0].data = [];
+
 	myChart.clear();
 	if(action == "type"){
 		options.series[0].data = [];

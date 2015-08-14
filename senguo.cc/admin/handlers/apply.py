@@ -17,6 +17,8 @@ from libs.utils import Logger
 import hashlib
 import chardet
 
+from  handlers.WXBizMsgCrypt import WXBizMsgCrypt
+
 try:
 	import xml.etree.cElementTree as ET
 except:
@@ -52,6 +54,58 @@ class Login(CustomerBaseHandler):
 		else:
 			# print("[ApplyLogin]False")
 			return self.send_success(login=False)
+
+class WxOpen(CustomerBaseHandler):
+	def get(self):
+		return self.send_success()
+	@CustomerBaseHandler.check_arguments('timestamp?:str','signature?:str','nonce?:str','encrypt_type?:str','msg_signature?:str','')
+	def post(self):
+		encodingAESKey = '1bvcmN6qGFEvM2zKfT7jDFy54rZt9senguo123WmmnJ'
+		token = 'senguotest'
+		appid = 'wxc30d9acccf942f82'
+		appsecret = '0c79e1fa963cd80cc0be99b20a18faeb'
+
+		timestamp = self.args.get('timestamp',None)
+		signature = self.args.get('signature',None)
+		nonce     = self.args.get('nonce',None)
+		encrypt_type = self.args.get('encrypt_type',None)
+		msg_signature= self.args.get('msg_signature',None)
+
+		print(timestamp,signature,nonce,encrypt_type,msg_signature)
+
+		decrypt_test = WXBizMsgCrypt(token,encodingAESKey,appid)
+
+		raw_data = self.request.body
+		print(raw_data)
+		data = self.xmlToDic(raw_data)
+		AppId = data.get('AppId',None)
+		Encrypt = data.get('Encrypt',None)
+		print(AppId,Encrypt)
+		ret,decryp_xml = decrypt_test.DecryptMsg(raw_data,msg_signature,timestamp,nonce)
+		print(ret,decryp_xml)
+		if isinstance(decryp_xml,bytes):
+			decryp_xml = decryp_xml.decode('utf-8')
+		index = decryp_xml.find('<ComponentVerifyTicket>')
+		end   = decryp_xml.find('</ComponentVerifyTicket>')
+		length = len('<ComponentVerifyTicket><![CDATA[')
+		if index != -1 and end != -1:
+			ComponentVerifyTicket = decryp_xml[index+length:end-3]
+			print('ComponentVerifyTicket correct:',ComponentVerifyTicket)
+		else:
+			print('get ComponentVerifyTicket error')
+		return self.write('success')
+
+	@classmethod
+	def xmlToDic(self,xmlstr):
+		if isinstance(xmlstr,bytes):
+			xmlstr = xmlstr.decode('utf-8')
+		else:
+			xmlstr = xmlstr
+		data = {}
+		tree = ET.fromstring(xmlstr)
+		for child in tree:
+			data[child.tag] = child.text
+		return data	
 
 # 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
 class WxMessage(CustomerBaseHandler):
@@ -123,6 +177,7 @@ class WxMessage(CustomerBaseHandler):
 		if event == 'subscribe' or 'scan' or 'SCAN':
 			if event == 'subscribe':
 				scene_id = int(eventkey.split('_')[1]) if eventkey and eventkey.find('qrscene') !=-1 else None
+
 			elif event == 'scan' or 'SCAN':
 				scene_id = int(eventkey)  if eventkey and eventkey.isdigit() else None
 			else:
@@ -167,6 +222,18 @@ class WxMessage(CustomerBaseHandler):
 					admin.accountinfo = account_info
 					self.session.add(admin)
 					self.session.commit()
+			if event == 'subscribe':
+				ToUserName = data.get('ToUserName',None) #开发者微信号
+				FromUserName = data.get('FromUserName',None) # 发送方openid
+				CreateTime  = data.get('CreateTime',None) #接受消息时间
+				MsgType = 'text'
+				reply_message = '再小的水果店，也要有自己的O2O平台！\n互联网时代，水果零售一站式解决方案！\n---------\n赶紧点击http://senguo.cc/apply申请接入,拥有属于你的水果O2O店铺吧\n你也可以点击http://senguo.cc/list进入水果商城 开始选购水果'
+				reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
+				reply = ET.tostring(reply,encoding='utf8',method='xml')
+				# print("[ApplyWxMessage]reply:",reply)
+				self.write(reply)
+
+				
 
 	@classmethod
 	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content=None):

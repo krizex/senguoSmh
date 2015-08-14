@@ -23,7 +23,6 @@ $(document).ready(function(){
         localStorage.setItem("add",'0');
     }
     var sub_type=parseInt($.getUrlParam("type_id"));
-    console.log(link_type);
     if(link_type=="classify"){//分类跳转
         getGoodsItem(link_type,0,sub_type);
     }else if(link_type=="goodsearch"){//搜索跳转
@@ -33,11 +32,9 @@ $(document).ready(function(){
     }else if(link_type=="group"){
         var gid=parseInt($.getUrlParam("gid"));
         $(".filter_status2").attr("data-id",gid);
-        console.log(gid);
         $("#group-goods-lst li").each(function(){
             var $this=$(this).find("a");
             var id= parseInt($this.attr("data-id"));
-            console.log(id);
             if(id==gid){
                 $(".filter_status2").text($this.text());
             }
@@ -152,7 +149,11 @@ $(document).ready(function(){
         }
         isSearch = false;
         $(this).closest("ul").prev("button").children("em").html(price_unit).attr("data-id",$(this).attr("data-id"));
-        getGoodsItem("all",pn,"");
+
+        // chaged by jyj 2015-8-7
+        getGoodsItem("all",0,"");
+        pn = 0;
+        // 
     }else if($(this).closest("ul").hasClass("batch-group-list")){//批量分组
         if(goodsEdit){
             return Tip("请先完成正在编辑的商品");
