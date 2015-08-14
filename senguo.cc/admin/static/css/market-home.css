@@ -184,7 +184,7 @@
 .more-group>li{height: 40px;line-height: 40px;text-align: center;color: #fff;border-bottom: 1px solid #CCCCCC;padding: 0 4px;white-space: nowrap;}
 .more-group>li:last-child{border-bottom: none;}
 .desaturate{color:#ccc;}
-.desaturate .roll-btn{background-color:#ccc;}
+.desaturate .wrap-operate .roll-btn{background-color:#ccc;}
 
 
 
