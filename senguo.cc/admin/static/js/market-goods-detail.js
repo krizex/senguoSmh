@@ -3,7 +3,7 @@ $(document).ready(function(){
     var _shop_code = $("#shop_code").val();
     var _url='/'+_shop_code;
     setTimeout(function(){
-        window.addEventListener('popstate', onPopState);
+        window.addEventListener('pagehide', onPopState);
     },1000);
     function onPopState(){
         SetCookie("fromdetail",1);
