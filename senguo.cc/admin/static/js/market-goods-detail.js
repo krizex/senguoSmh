@@ -76,7 +76,7 @@ $(document).ready(function(){
     $(".add-num").on("click",function(){
         var $this=$(this);
         var id=parseInt($this.parents(".want-num").attr('data-id'));
-        var num = parseInt($this.prev("input").val());
+        var num = parseInt($this.prev(".input").text());
         var relate=parseFloat($this.parents(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
@@ -98,7 +98,7 @@ $(document).ready(function(){
             noticeBox("别调戏我哦，请输入数字类型");
         }else{           
             num++;
-            $(this).prev("input").val(num);
+            $(this).prev(".input").text(num);
             num_list[id]=num;
             fruits_num();
         }
@@ -107,7 +107,7 @@ $(document).ready(function(){
     $(".minus-num").on("click",function(){
         var $this=$(this);
         var id=parseInt($this.parents(".want-num").attr('data-id'));
-        var num = parseInt($(this).next("input").val());
+        var num = parseInt($(this).next(".input").text());
         var relate=parseFloat($this.parents(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
@@ -136,7 +136,7 @@ $(document).ready(function(){
                 return false;
             }
             num--;
-            $(this).next("input").val(num);
+            $(this).next(".input").text(num);
         }
         num_list[id]=num;
         fruits_num();
@@ -218,7 +218,7 @@ function cartNum(cart_ms){
             if (id == cart_ms[key][0]) {
                     $(".now-buy").eq(j).addClass("r70");
                     $(".now-buy").eq(j).prev(".want-num").show().addClass("w90");
-                    charge.find('input').val(cart_ms[key][1]);
+                    charge.find('.input').text(cart_ms[key][1]);
                // charge.siblings('.now-buy').hide();
             }
         }
