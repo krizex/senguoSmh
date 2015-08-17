@@ -248,7 +248,7 @@ class ShopList(FruitzoneBaseHandler):
 		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments('id:int')
-	def handle_admin_shop(self):
+	def handle_admin_shop(self,province):
 		admin_id = int(self.args['id'])
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
 		if not shop_admin:
