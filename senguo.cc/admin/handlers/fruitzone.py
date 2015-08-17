@@ -224,11 +224,8 @@ class ShopList(FruitzoneBaseHandler):
 				lat2 = shop['lat']
 				lon2 = shop['lon']
 				if lat1 and lon1 and lat2 and lon2:
-					#当省份不在过滤条件中时，计算全国店铺的距离计算量巨大，且没有实际意义,故此时将店铺距离设为一个默认值
-					if 'province' in self.args:          
-						shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
-					else:
-						shop['distance'] = 100
+					#当省份不在过滤条件中时，计算全国店铺的距离计算量巨大，且没有实际意义,故此时将店铺距离设为一个默认值       
+					shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
 				else:
 					shop['distance'] = 9999999
 			if key_word == 1: #商品最多
