@@ -2,17 +2,13 @@ var num_list={};
 $(document).ready(function(){
     var _shop_code = $("#shop_code").val();
     var _url='/'+_shop_code;
-    window.addEventListener('popstate', onPopState);
+    setTimeout(function(){
+        window.addEventListener('popstate', onPopState);
+    },1000);
     function onPopState(){
         SetCookie("fromdetail",1);
         return addCart(_url);
     }
-    /*XBack.listen(function(){
-        alert(233333);
-        console.log(2333);
-        addCart(_url);
-        SetCookie("fromdetail",1);
-    });*/
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
     if(mWidth>800){
@@ -234,35 +230,3 @@ function fruits_num(){
     if(num_list[key]==0){delete num_list[key];}
     }
 }
-
-
-;!function(pkg, undefined){
-    var STATE = new Date().getTime()+"";
-    var element;
-
-    var onPopState = function(event){
-        event.state === STATE && fire();
-    }
-
-    var record = function(state){
-        history.pushState(state, null, location.href);
-    }
-
-    var fire = function(){
-        var event = document.createEvent('Events');
-        event.initEvent(STATE, false, false);
-        element.dispatchEvent(event);
-    }
-
-    var listen = function(listener){
-        element.addEventListener(STATE, listener, false);
-    }
-
-    !function(){
-        element = document.createElement('span');
-        window.addEventListener('popstate', onPopState);
-        this.listen = listen;
-        record(STATE);
-    }.call(window[pkg] = window[pkg] || {});
-
-}('XBack');
