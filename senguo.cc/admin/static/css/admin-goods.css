@@ -113,9 +113,9 @@ textarea{border-color:#eee;padding: 2px 5px;}
 .short-slide{float: left;margin-right: 10px;top: -4px;}
 .short-slide em{width: 100%;}
 .short-slide .caret{position: absolute;top:0;right:4px;}
-.short-slide .slide-down-select{width: 52px;}
-.short-slide .slide-btn{width: 50px;}
-.short-slide .dropdown-menu{width: 52px;}
+.short-slide .slide-down-select{width:62px;}
+.short-slide .slide-btn{width: 60px;}
+.short-slide .dropdown-menu{width: 62px;}
 .edit-item-top .cate-title{color: #333;}
 .short-title-slide{float: right;margin-right: 186px;top: 3px;}
 .wrap-more-set{background-color: #f5f5f5;padding: 15px;border: 1px solid #eee;border-top:none;border-bottom:none;display: none;}

@@ -202,7 +202,7 @@ $(document).ready(function(){
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?v=20150715",function(data){
+    $.getItem("/static/items/admin/goods-item.html?v=20150816",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -251,7 +251,7 @@ $(document).ready(function(){
     var class_id = $(this).attr("data-id");
     var goods_code = $(this).attr("data-code");
     if(cur_type=="add"){
-        $.getItem("/static/items/admin/goods-item.html?v=20150615",function(data){
+        $.getItem("/static/items/admin/goods-item.html?v=20150816",function(data){
             var goodsItem = data;
             var $item = $(goodsItem).clone();
             $item.find(".goods-classify").html(classify).attr("data-id",class_id);

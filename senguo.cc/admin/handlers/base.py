@@ -321,6 +321,10 @@ class GlobalBaseHandler(BaseHandler):
 			name ='筐'
 		elif unit == 11 :
 			name ='包'
+		elif unit == 12:
+			name ='今天价'
+		elif unit == 13:
+			name ='明天价'
 		else:
 			name =''
 		return name

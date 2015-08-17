@@ -1,5 +1,9 @@
 var num_list={};
 $(document).ready(function(){
+    XBack.listen(function(){
+        addCart();
+        SetCookie("fromdetail",1);
+    });
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
     if(mWidth>800){
@@ -221,3 +225,35 @@ function fruits_num(){
     if(num_list[key]==0){delete num_list[key];}
     }
 }
+
+
+;!function(pkg, undefined){
+    var STATE = 'x-back';
+    var element;
+
+    var onPopState = function(event){
+        event.state === STATE && fire();
+    }
+
+    var record = function(state){
+        history.pushState(state, null, location.href);
+    }
+
+    var fire = function(){
+        var event = document.createEvent('Events');
+        event.initEvent(STATE, false, false);
+        element.dispatchEvent(event);
+    }
+
+    var listen = function(listener){
+        element.addEventListener(STATE, listener, false);
+    }
+
+    !function(){
+        element = document.createElement('span');
+        window.addEventListener('popstate', onPopState);
+        this.listen = listen;
+        record(STATE);
+    }.call(window[pkg] = window[pkg] || {});
+
+}('XBack');
