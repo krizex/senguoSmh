@@ -527,6 +527,3 @@
 .hauto{height: auto !important;border-bottom: none !important;}
 .other-address{padding-left: 26px;}
 .other-address>a:first-child{border-top: 1px solid #e7e7e7;}
-.self-choose{padding-left: 75px;height:35px;}
-.self-choose .add-left{height: 35px;line-height: 35px;color: #9f9f9f;}
-.self-choose .add-right{height: 35px;line-height: 35px;border-bottom: 1px solid #aaa;-webkit-box-sizing: border-box;}
