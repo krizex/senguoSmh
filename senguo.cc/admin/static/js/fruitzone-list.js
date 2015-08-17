@@ -1,5 +1,6 @@
 var ulat = 0,ulng =0,first=true;
 $(document).ready(function(){
+    var area=window.dataObj.area;
     var link_action=$.getUrlParam('action');
     var link_province=$.getUrlParam('province');
     if(link_action){
@@ -14,6 +15,10 @@ $(document).ready(function(){
             window.dataObj.action='filter';
             filter(link_province,'province');
             $(".whole_country").hide();
+            if(area[link_province]){
+                var province_name=area[link_province]['name'];
+            }
+            $('.city_name').text(province_name).attr("data-id",link_province);
         }
     }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
@@ -34,7 +39,6 @@ $(document).ready(function(){
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
     //province and city
-    var area=window.dataObj.area;
     //province data
     for(var key in area){
         var $item=$('<li><span class="name pull-left ml10"></span><em class="arrow pull-right mr10"></em><span class="num pull-right mr10"></span></li>');
@@ -57,9 +61,29 @@ $(document).ready(function(){
         }
         var p_num=$this.find('.num').text();
         if(!p_num) $this.find('.num').text(0);
-        if(link_action=="province"&&code!=link_province){
-
-            $this.hide();
+        if(link_action=="province"){
+            if(code!=link_province){
+                $this.hide();
+            }else{
+                var province_name=$this.find('.name').text();
+                var if_city=$this.attr('data-city');
+                var pro_num=$this.find('.num').text();
+                $('.all_city').attr({'data-code':code,'data-name':province_name}).find('.num').text(pro_num);
+                $('.city_list').removeClass('hidden');
+                if(if_city=='true'){
+                    $('.citylist').empty();
+                    for(var key in area){
+                        var city=area[key]['city'];
+                        if(key==code&&city){
+                            for(var c_code in city){
+                                var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+                                $item.attr({'data-code':c_code}).find('.name').text(city[c_code]['name']);
+                                $('.citylist').append($item);
+                            }
+                        }
+                    }
+                }
+            }
         }
     });
     //choose province
@@ -108,6 +132,9 @@ $(document).ready(function(){
         else{
             add_bg();
             $('.province_list').removeClass('hidden');
+            if(link_action=="province"){
+                $('.city_list').removeClass('hidden');
+            }
             $this.addClass('city_choosed');
         }
     });
