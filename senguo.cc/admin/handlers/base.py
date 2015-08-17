@@ -730,19 +730,26 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送新订单模版消息给管理员 & 自动打印订单
 	@classmethod
 	def send_admin_message(self,session,order,other_access_token = None):
+		# session = models.DBSession()
 		access_token = other_access_token if other_access_token else None
 		admin_name = order.shop.admin.accountinfo.nickname
+		touser     = order.shop.admin.accountinfo.wx_openid
 		customer_id = order.customer_id
 		admin_id    = order.shop.admin.id
+		print(admin_id,customer_id)
 		if order.shop.admin.has_mp:
-			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
+			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
 			if mp_customer:
-				touser = mp_customer.wx_openid
+				c_touser = mp_customer.wx_openid
+				print(c_touser,'other openid')
 			else:
-				touser = order.shop.admin.accountinfo.wx_openid
+				print('get mp_customer error')
+				c_touser = order.shop.admin.accountinfo.wx_openid
 
 		else:
-			touser = order.shop.admin.accountinfo.wx_openid
+			c_touser = order.shop.admin.accountinfo.wx_openid
+			print(c_touser,'openid')
+		print(c_touser,'which openid')
 		shop_id    = order.shop.id
 		shop_name  = order.shop.shop_name
 		order_id   = order.num
@@ -759,7 +766,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			customer = session.query(models.Customer).filter_by(id = customer_id).first()
 		except NoResultFound:
 			return self.send_fail('customer not found')
-		c_tourse   =customer.accountinfo.wx_openid
+		# c_tourse   =customer.accountinfo.wx_openid
+
 		goods = []
 		f_d = eval(order.fruits)
 		for f in f_d:
@@ -792,7 +800,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				other_touser = info.wx_openid
 			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
 				send_time,goods,phone,address,access_token)
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
+		WxOauth2.order_success_msg(c_touser,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
 
 		auto_print = order.shop.config.auto_print
 		print_type = order.shop.config.receipt_type
@@ -815,11 +823,22 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_name = order.shop.shop_name
 		order_id = order.id
 		# print('[TempMsg]order_num:',order_num,', order_sendtime:',order_sendtime,', shop_phone:',shop_phone)
-		try:
-			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
-		except NoResultFound:
-			return self.send_fail('[TempMsg]order_done_msg: customer not found')
-		touser = customer_info.wx_openid
+		if order.shop.admin.has_mp:
+			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
+			if mp_customer:
+				touser = mp_customer.wx_openid
+				print(touser,'other openid')
+			else:
+				print('get mp_customer error')
+				touser = order.shop.admin.accountinfo.wx_openid
+
+		else:
+			touser = order.shop.admin.accountinfo.wx_openid
+		# try:
+		# 	customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		# except NoResultFound:
+		# 	return self.send_fail('[TempMsg]order_done_msg: customer not found')
+		# touser = customer_info.wx_openid
 		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
 
 	# 发送店铺认证状态更新模版消息给管理员
@@ -972,12 +991,16 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	@classmethod
 	def get_other_accessToken(self,session,admin_id):
 		now = datetime.datetime.now().timestamp()
+		print(now,'now',admin_id)
+		session = models.DBSession()
 		try:
-			admin_info = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+			admin_info = session.query(models.ShopAdmin).filter_by(id = int(admin_id)).first()
 		except:
+			print('get admin_info error')
 			return None
 		if admin_info.mp_name and admin_info.mp_appid and admin_info.mp_appsecret:
 			if admin_info.access_token and now - admin_info.token_creatime < 3600:
+				print(admin_info.token_creatime,'token_creatime')
 				print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token,", token_creatime:",admin_info.token_creatime)
 				return admin_info.access_token
 			else:
@@ -993,9 +1016,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token)
 					return data['access_token']
 				else:
-					# print("[WxAuth]Token error")
+					print("[WxAuth]Token error")
 					return None
 		else:
+			print('has no mp!~~~~~~~~~~~~~~~~~~~~~~~~~`')
 			return None
 
 	##############################################################################################
@@ -2001,6 +2025,7 @@ class WxOauth2:
 	@classmethod
 	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		print(touser,access_token,'wx_openid and access_token')
 		template_id_short = 'OPENTM200746866'
 		template_id = cls.get_template_id(template_id_short,access_token)
 		if not template_id:

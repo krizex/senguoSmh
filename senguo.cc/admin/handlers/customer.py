@@ -937,9 +937,9 @@ class Market(CustomerBaseHandler):
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
-		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
+		print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 		if shop.admin.has_mp:
-			# print('[CustomerMarket]login shop.admin.has_mp')
+			print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
@@ -953,7 +953,7 @@ class Market(CustomerBaseHandler):
 				if self.is_wexin_browser():
 					# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 					wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
-					# print(wx_openid,appid,appsecret)
+					print(wx_openid,appid,appsecret)
 					if wx_openid:
 						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
 						self.session.add(admin_customer_openid)
@@ -1854,25 +1854,26 @@ class Cart(CustomerBaseHandler):
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
-		self.cart_callback(order.id)
+		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
-	def cart_callback(self,order_id):
+	@classmethod
+	def cart_callback(self,session,order_id):
 		# print("[CustomerCart]cart_callback: order_id:",order_id)
 		# try:
 		# 	order_id = int(self.args['order_id'])
 		# except:
 		# 	Logger.error("CartCallback: get order_id error")
 		# 	return self.send_fail("CartCallback: get order_id error")
-		order = self.session.query(models.Order).filter_by(id = int(order_id)).first()
+		order = session.query(models.Order).filter_by(id = int(order_id)).first()
 		if not order:
 			# print("[CustomerCart]cart_callback: order not found")
 			return self.send_fail("[CustomerCart]cart_callback: order not found")
 		totalPrice = order.new_totalprice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
-		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-		shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		customer = session.query(models.Customer).filter_by(id = customer_id).first()
+		shop     = session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
 			# print("[CustomerCart]cart_callback: shop/customer not found")
 			return self.send_fail('[CustomerCart]cart_callback: shop/customer not found')
@@ -1883,13 +1884,15 @@ class Cart(CustomerBaseHandler):
 		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
 			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
 		else:
 			access_token = None
+
 
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(self.session,order,access_token)
+			self.send_admin_message(session,order,access_token)
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -1899,21 +1902,21 @@ class Cart(CustomerBaseHandler):
 		####################################################
 		# print("[CustomerCart]cart_callback: pay_type:",self.args['pay_type'])
 		if order.pay_type == 2:
-			shop_follow = self.session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
+			shop_follow = session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
 				return self.send_fail('[CustomerCart]cart_callback: shop_follow not found')
 			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-			self.session.flush()
+			session.flush()
 			#生成一条余额交易记录
 			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
 				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
-			self.session.add(balance_history)
-			self.session.flush()
-		self.session.commit()
+			session.add(balance_history)
+			session.flush()
+		session.commit()
 		return True
 
 	@classmethod
