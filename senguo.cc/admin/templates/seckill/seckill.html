@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% block title %}秒杀活动{% end %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back goback"></a>
+    <span>秒杀活动</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-seckill pm40">
+    <div class="wrap-time-top">
+        <ul class="seckill-time-list group">
+            <li>
+                <span class="sp-date">今天<i class="tri-r"></i></span>
+                <ul class="stime-list fl">
+                    <li class="active">
+                        <span class="dgreen">11:30</span>
+                        <i class="c-time cur-time"></i>
+                    </li>
+                    <li>
+                        <span>13:30</span>
+                        <i class="c-time"></i>
+                    </li>
+                    <li>
+                        <span>13:30</span>
+                        <i class="c-time"></i>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="sp-date">明天<i class="tri-r"></i></span>
+                <ul class="stime-list fl">
+                    <li class="">
+                        <span class="dgreen">11:30</span>
+                        <i class="c-time cur-time"></i>
+                    </li>
+                    <li>
+                        <span>13:30</span>
+                        <i class="c-time"></i>
+                    </li>
+                    <li>
+                        <span>13:30</span>
+                        <i class="c-time"></i>
+                    </li>
+                </ul>
+            </li>
+            <li>
+                <span class="sp-date">8月20号<i class="tri-r"></i></span>
+                <ul class="stime-list fl">
+                    <li class="">
+                        <span class="dgreen">11:30</span>
+                        <i class="c-time cur-time"></i>
+                    </li>
+                    <li>
+                        <span>13:30</span>
+                        <i class="c-time"></i>
+                    </li>
+                    <li>
+                        <span>13:30</span>
+                        <i class="c-time"></i>
+                    </li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    <div class="show-time-box">
+        <span class="time-status">抢购中</span>
+        <span class="ml4">距离结束00:01:59</span>
+    </div>
+    <div class="show-time-box no-seckill-time">
+        <span class="time-status">蓄势待发</span>
+        <span class="ml4">距开始00:01:59</span>
+    </div>
+    <ul class="nm-list">
+        <li>
+            <dl class="nm-dl">
+                <dt>
+                    <img src="/static/images/TDSG.png" alt="商品图片"/>
+                    <div class="cover-img"></div>
+                </dt>
+                <dd>
+                    <span class="tr-num">还剩12份</span>
+                    <p class="c333 clip nm-name p0">水晶大葡萄，非常好吃哦</p>
+                    <p class="no-goods mt20">
+                        <span class="price-bo">1元/kg</span>
+                        <span class="price-tip">省7元</span>
+                    </p>
+                    <span class="seckill-btn hide">抢!</span>
+                    <span class="seckill-btn-more">更多惊喜</span>
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl class="nm-dl">
+                <dt>
+                    <img src="/static/images/TDSG.png" alt="商品图片"/>
+                    <div class="cover-img hide"></div>
+                </dt>
+                <dd>
+                    <span class="tr-num">还剩12份</span>
+                    <p class="c333 clip nm-name">水晶大葡萄，非常好吃哦</p>
+                    <p class="mt20">
+                        <span class="price-bo">1元/kg</span>
+                        <span class="price-tip">省7元</span>
+                    </p>
+                    <span class="seckill-btn">抢!</span>
+                    <span class="seckill-btn-more hide">更多惊喜</span>
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl class="nm-dl">
+                <dt>
+                    <img src="/static/images/TDSG.png" alt="商品图片"/>
+                <div class="cover-img hide"></div>
+                </dt>
+                <dd>
+                    <p class="c333 clip nm-name">水晶大葡萄，非常好吃哦</p>
+                    <p class="mt20">
+                        <span class="price-bo">1元/kg</span>
+                        <span class="price-tip">省7元</span>
+                    </p>
+                    <span class="seckill-btn-first">抢先看</span>
+                </dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+<a href="javascript:;" class="go-cart">
+    <span class="cart-num">10</span>
+</a>
+<ul class="hide" id="seckill-item">
+
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/seckill-buy.js')}}"></script>
+{% end %}

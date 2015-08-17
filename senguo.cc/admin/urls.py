@@ -28,7 +28,12 @@ handlers = [
 	(r"/lovewall/list/(\w+)", handlers.activity.ConfessionList, {}, "ConfessionList"),
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
-
+	#秒杀折扣预售团购
+	(r"/seckill", handlers.activity.Seckill, {}, "ConfessionSeckill"),
+	(r"/discount", handlers.activity.Discount, {}, "ConfessionDiscount"),
+	(r"/gbuy", handlers.activity.Gbuy, {}, "ConfessionGbuy"),
+	(r"/presell", handlers.activity.Presell, {}, "ConfessionPresell"),
+	(r"/(\w+)/presell/(\w+)", handlers.activity.PresellDetail, {}, "ConfessionPresellDetail"),
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),

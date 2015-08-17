@@ -719,5 +719,92 @@ class CouponCustomer(CustomerBaseHandler):
 				return self.send_success(coupon_money=qq.coupon_money,coupon_key=q.coupon_key)
 			else:
 				return self.send_fail("对不起，这批优惠券已经被抢空了，下次再来哦！")
+#秒杀
+class Seckill(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("seckill/seckill.html")
+#折扣
+class Discount(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("seckill/discount.html")
+#团购
+class Gbuy(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("seckill/gbuy.html")
+#预售
+class Presell(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("seckill/presell.html")
+#预售详情
+class PresellDetail(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,shop_code,goods_id):
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+		except:
+			return self.send_error(404)
 
+		if shop:
+			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+			self._shop_code = shop.shop_code
+			self.set_cookie("market_shop_code",str(shop.shop_code))
+			shop_name = shop.shop_name
+			shop_code = shop.shop_code
+		else:
+			shop_name =''
+			return self.send_error(404)
+			
+		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
+		try:
+			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
+		except:
+			favour = None
+		if favour is None:
+			good.favour_today = False
+		else:
+			good.favour_today = favour.create_date == datetime.date.today()
 
+		if good:
+			if good.img_url:
+				img_url= good.img_url.split(";")
+			else:
+				img_url= ''
+		else:
+			good = []
+			img_url = ''
+
+		charge_types= []
+		for charge_type in good.charge_types:
+			if charge_type.active != 0:
+				unit  = charge_type.unit
+				unit =self.getUnit(unit)
+				limit_today = False
+				allow_num = ''
+				try:
+					limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
+					.order_by(models.GoodsLimit.create_time.desc()).first()
+				except:
+					limit_if = None
+				if limit_if and good.limit_num !=0:
+					time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+					create_time = limit_if.create_time.strftime('%Y-%m-%d')
+					if time_now == create_time:
+						limit_today = True
+						if limit_if.limit_num == good.limit_num:
+							allow_num = limit_if.allow_num
+						else:
+							allow_num = good.limit_num - limit_if.buy_num
+				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
+			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
+			self.session.commit()
+		cart_f = self.read_cart(shop.id)
+		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		cart_count = len(cart_f)
+		self.set_cookie("cart_count", str(cart_count))
+		return self.render('seckill/presell-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)	
