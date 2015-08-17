@@ -7,6 +7,7 @@ $(document).ready(function(){
     $(".add-btn").hide();
     $(".import-btn").hide();
     getGoods(parseInt($(".shop_name").attr("data-id")));
+    type=$(".import-type .active").index();
 }).on("click",".import-type li",function(){
     var index = $(this).index();
     // if(index==1){
@@ -21,6 +22,7 @@ $(document).ready(function(){
         $(".shop-list").empty();
     }
 }).on("click","#commit",function(){
+    type=$(".import-type .active").index()
     if(parseInt($("#choose_txt").html())==0){
         Tip("您还未选中任何商品");
         return false;

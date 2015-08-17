@@ -139,7 +139,7 @@ $(document).ready(function(){
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
     window.onbeforeunload = function(){
-        setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 0);
+        setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 2);
     }
 }).on("click","#dianzan",function(){
     var $this = $(this);

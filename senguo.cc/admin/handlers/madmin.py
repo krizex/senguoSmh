@@ -364,7 +364,8 @@ class Goods(AdminBaseHandler):
 		else:
 			data.append({'id':0,'name':'','intro':'','num':default_count})
 		return self.render("m-admin/goods.html",data=data,record_count=record_count)
-#商品搜索
+
+# 商品搜索
 class GoodsSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -382,7 +383,8 @@ class GoodsSearch(AdminBaseHandler):
 		goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
 		count = goods.count()
 		return self.send_success(count=count)
-#商品新建
+
+# 商品新建
 class GoodsAdd(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -410,12 +412,13 @@ class GoodsAdd(AdminBaseHandler):
 		else:
 			data.append({'id':0,'name':'','intro':'','num':default_count})
 		return self.render("m-admin/goods-add.html",token=token,edit=False,data=data,record_count=record_count)
+
 #商品编辑
 class GoodsEdit(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,id):
 		token = self.get_qiniu_token("shopAuth_cookie","goodsedit")
-		shop_id     = self.get_secure_cookie("shop_id")
+		shop_id = self.get_secure_cookie("shop_id")
 		if not shop_id :
 			return self.send_error(404)
 		data = []
@@ -436,7 +439,8 @@ class GoodsEdit(AdminBaseHandler):
 						if _group:
 							group_data.append({'id':_group.id,'name':_group.name,'intro':_group.intro})
 		return self.render("m-admin/goods-edit.html",token=token,edit=True,data=data,group_data=group_data)
-#批量管理
+
+# 批量管理
 class GoodsBatch(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("gid")
@@ -480,7 +484,8 @@ class User(AdminBaseHandler):
 	def get(self):
 		data = []
 		return self.render("m-admin/user.html")
-#用户详情
+
+# 用户详情
 class UserDetail(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,_id):
@@ -511,7 +516,8 @@ class UserDetail(AdminBaseHandler):
 			data["remark"]=usershopinfo.remark
 			data["shops"]=shop_names
 		return self.render("m-admin/user-detail.html",data=data)
-#用户搜索
+
+# 用户搜索
 class UserSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
