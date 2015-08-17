@@ -1,5 +1,6 @@
 var num_list={};
 $(document).ready(function(){
+    window.history.forward(1);
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
     if(mWidth>800){
