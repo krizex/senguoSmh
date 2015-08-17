@@ -515,7 +515,6 @@ class UserDetail(AdminBaseHandler):
 			data["shop_balance"]=usershopinfo.shop_balance
 			data["remark"]=usershopinfo.remark
 			data["shops"]=shop_names
-			print(data)
 		return self.render("m-admin/user-detail.html",data=data)
 
 # 用户搜索
