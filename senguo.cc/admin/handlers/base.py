@@ -1734,6 +1734,17 @@ class WxOauth2:
 			return None
 		else:
 			return data['openid']
+	@classmethod
+	def get_template_id(cls,template_id_short,access_token):
+		url = 'https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token={0}'.format(access_token)
+		data = json.dumps({"template_id_short":template_id_short})
+		r = requests.post(url,data=data)
+		s = r.text
+		if isinstance(s,bytes):
+			s = s.decode('utf-8')
+		s = json.loads(s)
+		template_id = s.get('template_id',None)
+		return template_id
 
 	# 获取微信 jsapi
 	@classmethod
@@ -1798,7 +1809,9 @@ class WxOauth2:
 
 	# 店铺申请成功模版消息（发送给申请者）
 	@classmethod
-	def post_template_msg(cls, touser, shop_name, name, phone):
+	def post_template_msg(cls, touser, shop_name, name):
+
+		template_id_short = 'OPENTM201136105'
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
@@ -1873,7 +1886,12 @@ class WxOauth2:
 		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
 
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-
+		template_id_short = 'TM00351'
+		template_id = cls.get_template_id(template_id_short,access_token)
+		if not template_id:
+			return False
+		else:
+			print('template_id get success',template_id)
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1882,7 +1900,8 @@ class WxOauth2:
 			   + "请及时登录森果后台处理订单。"
 		postdata = {
 			'touser' : touser,
-			'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
+			# 'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
+			'template_id':template_id,
 			"url":"http://i.senguo.cc/madmin/orderDetail/"+order_id,
 			"topcolor":"#FF0000",
 			"data":{
@@ -1906,8 +1925,14 @@ class WxOauth2:
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 		order_totalPrice,send_time,phone,address,other_access_token = None):
-
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		template_id_short = 'TM00351'
+		template_id = cls.get_template_id(template_id_short,access_token)
+		if not template_id:
+			return False
+		else:
+			print('template_id get success',template_id)
+
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -1917,7 +1942,8 @@ class WxOauth2:
 		order_type = "立即送" if order_type_temp == 1 else "按时达"
 		postdata = {
 			'touser':touser,
-			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			# 'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			'template_id':'template_id',
 			'url':staff_order_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
@@ -1938,10 +1964,20 @@ class WxOauth2:
 
 	# 批量新订单模版消息（发送给配送员）
 	@classmethod
-	def post_batch_msg(cls,touser,staff_name,shop_name,count):
+	def post_batch_msg(cls,touser,staff_name,shop_name,count,other_access_token = None):
+		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		template_id_short = 'TM00351'
+		template_id = cls.get_template_id(template_id_short,access_token)
+		if not template_id:
+			return False
+		else:
+			print('template_id get success',template_id)
+
+
 		postdata = {
 			'touser':touser,
-			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			# 'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			'template_id':template_id,
 			'url':staff_order_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#44b549"},
@@ -1953,7 +1989,7 @@ class WxOauth2:
 				"remark":{"value":"\n有多个订单需要配送，具体信息请点击“详情”进入查看。","color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
+		# access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
@@ -1965,9 +2001,17 @@ class WxOauth2:
 	@classmethod
 	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		template_id_short = 'OPENTM200746866'
+		template_id = cls.get_template_id(template_id_short,access_token)
+		if not template_id:
+			return False
+		else:
+			print('template_id get success',template_id)
+
 		postdata = {
 			'touser' : touser,
-			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
+			# 'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
+			'template_id':template_id,
 			'url'    : 'http://i.senguo.cc/customer/orders/detail/' + str(order_realid),
 			'topcolor': "#FF0000",
 			"data":{
@@ -1990,11 +2034,18 @@ class WxOauth2:
 	@classmethod
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		template_id_short = 'OPENTM202521011'
+		template_id = cls.get_template_id(template_id_short,access_token)
+		if not template_id:
+			return False
+		else:
+			print('template_id get success',template_id)
 		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
 		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
-			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
+			# 'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
+			'template_id':template_id,
 			'url':'http://i.senguo.cc/customer/orders/detail/' + str(order_id),
 			'topcolor':'#FF0000',
 			"data":{
@@ -2015,9 +2066,17 @@ class WxOauth2:
 	@classmethod
 	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		template_id_short = 'OPENTM201449108'
+		template_id = cls.get_template_id(template_id_short,access_token)
+		if not template_id:
+			return False
+		else:
+			print('template_id get success',template_id)
+
 		postdata = {
 			'touser':touser,
-			'template_id':'EcqyvbnALGmeG8O-SJw_XCIlMvBOH5mB8YM_qCsgSwE',
+			# 'template_id':'EcqyvbnALGmeG8O-SJw_XCIlMvBOH5mB8YM_qCsgSwE',
+			'template_id':template_id,
 			'url':'i.senguo.cc/admin',
 			'topcolor':'#FF0000',
 			'data':{

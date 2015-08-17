@@ -930,6 +930,7 @@ class Market(CustomerBaseHandler):
 		# fruits=''
 		# page_size = 10
 		# return self.send_success()
+		print(self.current_user.id)
 
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
