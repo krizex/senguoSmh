@@ -2,6 +2,7 @@ var num_list={};
 $(document).ready(function(){
     XBack.listen(function(){
         addCart();
+        SetCookie("fromdetail",1);
     });
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
