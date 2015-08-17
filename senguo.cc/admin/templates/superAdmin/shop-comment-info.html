@@ -29,7 +29,7 @@
             </div>
             <div class="col-lg-7 col-md-7">
                 <p>
-                    <a href="{{reverse_url('superUser')}}" target="_blank"> <span class="text-blue tit7">{{data["nickname"]}}</span></a>
+                    <a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data['user_id']}}" target="_blank" title="点击查看用户详细信息"> <span class="text-blue tit7">{{data["nickname"]}}</span></a>
                     <span class="tit6 grey-txt">下单 <span class="create-date">{{data["create_date"]}}</span></span>
                     <span class="grey-txt">评论 <span class="comment-create-date">{{data["comment_create_date"]}}</span></span>
                 </p>
@@ -76,7 +76,7 @@
             </div>
             <div class="col-lg-7 col-md-7">
                 <p>
-                    <a href="{{reverse_url('superUser')}}" target="_blank"> <span class="nickname text-blue tit7">{{data["nickname"]}}</span></a>
+                    <a href="{{reverse_url('superUser')}}" target="_blank"  title="点击查看用户详细信息" class="user-out-link"> <span class="nickname text-blue tit7">{{data["nickname"]}}</span></a>
                     <span class="tit6 grey-txt">下单 <span class="create-date">{{data["create_date"]}}</span></span>
                     <span class="grey-txt">评论 <span class="comment-create-date">{{data["comment_create_date"]}}</span></span>
                 </p>

@@ -334,7 +334,7 @@ function orderItem(page){
                     if(shop_new!=1) {
                         $item.find('.new').show();
                     }
-                    $item.find('.name').text(nickname).attr('href','/admin/follower?action=filter&&order_by=time&&page=0&&wd='+customer_id);
+                    $item.find('.name').text(nickname).attr('href','/admin/follower?action=filter&&order_by=time&&if_reverse=1&&page=0&&wd='+customer_id);
                     $item.find('.receiver').text(receiver);
                     $item.attr({'data-id':id,'data-type':type});
                     $item.find('.send-time').text(send_time);

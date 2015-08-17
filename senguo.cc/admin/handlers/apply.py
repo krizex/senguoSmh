@@ -17,6 +17,8 @@ from libs.utils import Logger
 import hashlib
 import chardet
 
+#from handlers.WXBizMsgCrypt import WXBizMsgCrypt
+
 try:
 	import xml.etree.cElementTree as ET
 except:
@@ -52,6 +54,58 @@ class Login(CustomerBaseHandler):
 		else:
 			# print("[ApplyLogin]False")
 			return self.send_success(login=False)
+
+# class WxOpen(CustomerBaseHandler):
+# 	def get(self):
+# 		return self.send_success()
+# 	@CustomerBaseHandler.check_arguments('timestamp?:str','signature?:str','nonce?:str','encrypt_type?:str','msg_signature?:str','')
+# 	def post(self):
+# 		encodingAESKey = '1bvcmN6qGFEvM2zKfT7jDFy54rZt9senguo123WmmnJ'
+# 		token = 'senguotest'
+# 		appid = 'wxc30d9acccf942f82'
+# 		appsecret = '0c79e1fa963cd80cc0be99b20a18faeb'
+
+# 		timestamp = self.args.get('timestamp',None)
+# 		signature = self.args.get('signature',None)
+# 		nonce     = self.args.get('nonce',None)
+# 		encrypt_type = self.args.get('encrypt_type',None)
+# 		msg_signature= self.args.get('msg_signature',None)
+
+# 		print(timestamp,signature,nonce,encrypt_type,msg_signature)
+
+# 		decrypt_test = WXBizMsgCrypt(token,encodingAESKey,appid)
+
+# 		raw_data = self.request.body
+# 		print(raw_data)
+# 		data = self.xmlToDic(raw_data)
+# 		AppId = data.get('AppId',None)
+# 		Encrypt = data.get('Encrypt',None)
+# 		print(AppId,Encrypt)
+# 		ret,decryp_xml = decrypt_test.DecryptMsg(raw_data,msg_signature,timestamp,nonce)
+# 		print(ret,decryp_xml)
+# 		if isinstance(decryp_xml,bytes):
+# 			decryp_xml = decryp_xml.decode('utf-8')
+# 		index = decryp_xml.find('<ComponentVerifyTicket>')
+# 		end   = decryp_xml.find('</ComponentVerifyTicket>')
+# 		length = len('<ComponentVerifyTicket><![CDATA[')
+# 		if index != -1 and end != -1:
+# 			ComponentVerifyTicket = decryp_xml[index+length:end-3]
+# 			print('ComponentVerifyTicket correct:',ComponentVerifyTicket)
+# 		else:
+# 			print('get ComponentVerifyTicket error')
+# 		return self.write('success')
+
+# 	@classmethod
+# 	def xmlToDic(self,xmlstr):
+# 		if isinstance(xmlstr,bytes):
+# 			xmlstr = xmlstr.decode('utf-8')
+# 		else:
+# 			xmlstr = xmlstr
+# 		data = {}
+# 		tree = ET.fromstring(xmlstr)
+# 		for child in tree:
+# 			data[child.tag] = child.text
+# 		return data	
 
 # 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
 class WxMessage(CustomerBaseHandler):
@@ -243,10 +297,11 @@ class Home(CustomerBaseHandler):
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
 		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname)
+		wx_username = self.current_user.accountinfo.wx_username if self.current_user.accountinfo.phone else ""
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int")
+	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int","wx_username:str")
 	def post(self):
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
@@ -262,8 +317,16 @@ class Home(CustomerBaseHandler):
 		if not check_msg_token(phone=self.args['phone'], code=int(self.args["code"])):
 			return self.send_fail(error_text="验证码过期或者不正确")
 
+		if len(self.args["phone"])>11:
+			return self.send_fail("手机号格式错误")
+		if len(self.args["realname"])>20:
+			return self.send_fail("真实姓名请不要超过20个字")
+		if len(self.args["wx_username"])>20:
+			return self.send_fail("微信号请不要超过20个字")
+
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
+		self.current_user.accountinfo.wx_username=self.args["wx_username"]
 		self.session.add(models.ShopAdmin(id=self.current_user.id))
 		self.session.commit()
 		return self.send_success()

@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title %}搜索用户{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <div class="wrap-order-tab">
+        <ul class="group order-type-list">
+            <div class="wrap-ipt"><input type="text" class="search-ipt" placeholder="请输入用户手机号、昵称或者姓名" id="search-ipt"/></div>
+        </ul>
+    </div>
+    <a href="javascript:;" class="head-right search" id="search-goods"><em></em></a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container">
+<div class="order-list-box">
+    <div class="boxs order-list-box">
+        <div class="goods-item item">
+            <ul class="order-lists user-lists pt10" id="user-all-list">
+
+            </ul>
+        </div>
+    <div class="no-result"></div>
+    </div>
+</div>
+</div>
+<ul class="hide" id="user_item">
+    <li>
+        <a href="javascript:;" class="user-link">
+            <div class="goods-row">
+                <dl class="gdl udl">
+                    <dt>
+                        <img class="cur-user-img" src="/static/m-admin/img/sender_holder.png" alt="用户头像"/>
+                    </dt>
+                    <dd>
+                        <i class="more"></i>
+                        <p class="clip">
+                            <span class="user-name f14 c333 bold"></span>
+                            <span class="sex-mark man-mark"></span>
+                            <span class="user-mark f12 c666 clip"></span>
+                        </p>
+                        <p class="c333 mt4 f12 bold user-balance">余额 <span class="ubalance"></span>元</p>
+                        <p class="mt4 c999 clip">
+                            <span class="mr10">用户积分 <span class="upoint"></span>分</span>
+                            <span>用户ID <span class="uid"></span></span>
+                        </p>
+                    </dd>
+                </dl>
+            </div>
+        </a>
+    </li>
+</ul>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script src="{{static_url('m-admin/js/user-search.js')}}"></script>
+{% end %}

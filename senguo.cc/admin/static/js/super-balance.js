@@ -205,7 +205,11 @@ var page_sum;
 function history(action,page){
     var url='';
     var action=action;
-    var shop_name=$("#shop-name").val().trim();
+    if($("#shop-name").val()!=undefined){
+        var shop_name=$("#shop-name").val().trim();
+    }else{
+        var shop_name="";
+    }
     var args={
         action:action,
         page:page,

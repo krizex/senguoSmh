@@ -28,7 +28,7 @@
         <div class="pagination"></div>
     </div>
     <div class="wrap-goods-info">
-        <p class="goods-title">{{good.name or ''}}</p>
+        <p class="goods-title">{{good.name or ''}}{% if good.tag>1 %}<span class="goods-tag">{% if good.tag==2 %}限时折扣{% elif good.tag==3 %}热销水果{% elif good.tag==4 %}今日特价{% else %}新品上架{% end %}</span>{% end %}</p>
         <p class="goods-info">{{good.intro or ''}}</p>
         <p class="goods-num">
             <span id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}"><span class="zan {% if good.favour_today %}zaned{% end %}"></span><span class="num">{{good.favour or 0}}</span></span>

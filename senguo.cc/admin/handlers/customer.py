@@ -32,7 +32,7 @@ import requests
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
-
+	@CustomerBaseHandler.check_arguments("jpush_id?:str","user_type?:int")
 	def get(self):
 		next_url = self.get_argument('next', '')
 		# print("[CustomerAccess]Redirect URL:",next_url)
@@ -57,6 +57,16 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
+			try:
+				user_type=int(self.args["user_type"])
+				jpush_id=self.args["jpush_id"]
+			except:
+				jpush_id=None
+			if jpush_id:
+				q=self.session.query(models.Jpushinfo).filter_by(user_type=user_type,user_id=self.current_user.id).first()
+				if q:
+					self.session.delete(q)
+					self.session.commit()
 			self.clear_current_user()
 			return self.redirect(self.reverse_url("customerLogin"))
 		elif self._action == "oauth":
@@ -77,7 +87,19 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-
+		try:
+			next_url=self.args["next"]
+		except:
+			next_url=None
+		user_type=-1
+		jpush_id=None
+		if next_url:
+			if next_url.find('madmin?jpush_id')!=-1:
+				user_type=0
+				jpush_id=next_url[next_url.find('=')+1:]
+			if next_url.find('customer/profile?jpush_id')!=-1:
+				user_type=1
+				jpush_id=next_url[next_url.find('=')+1:]
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print("[PhoneLogin]Customer ID:",u.id)
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
@@ -85,7 +107,23 @@ class Access(CustomerBaseHandler):
 		if not u:
 			return self.send_fail(error_text = '用户不存在或密码不正确 ')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
-		return self.send_success()
+		if jpush_id:
+			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id,user_type=user_type).with_lockmode('update').first()
+			new_device=1
+			if qq:
+				if qq.jpush_id==jpush_id:
+					new_device=0			
+			if new_device==1:
+				if qq:
+					qq.update(self.session,user_id=u.accountinfo.id,user_type=user_type,jpush_id=jpush_id)
+				else:
+					new_jpushinfo=models.Jpushinfo(user_id=u.id,user_type=user_type,jpush_id=jpush_id)
+					self.session.add(new_jpushinfo)
+				self.session.commit()
+			if user_type==0:
+				return self.send_success(come_from=0)
+			return self.send_success(come_from=1)
+		return self.send_success(come_from=3)
 
 	@CustomerBaseHandler.check_arguments("code")
 	def handle_qq_oauth(self,next_url):
@@ -118,19 +156,77 @@ class Access(CustomerBaseHandler):
 class Third(CustomerBaseHandler):
 	def initialize(self, action):
 		self._action = action
+	@CustomerBaseHandler.check_arguments("openid?","unionid?","country?","province?","city?","headimgurl?","nickname?","sex?","jpush_id?")
 	def get(self):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
-		# elif self._action=="weixinphone":
-		# 	user_info=self.args["user_info"]
-		# 	wx_unionid=user_info["wx_unionid"]
-		# 	q=self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_unionid).first()
-		# 	if  q==None:
-		# 		u = models.Customer.register_with_qq(self.session,userinfo)
-		# 		self.set_current_user(u,domain = ROOT_HOST_NAME)
-		# 	self.set_current_user(q,domain = ROOT_HOST_NAME)
-		# 	return self.redirect(self.reverse_url("customerProfile"))
+
+		
+		elif self._action=="weixinphone":
+			openid=str(self.args["openid"])
+			unionid=str(self.args["unionid"])
+			country=str(self.args["country"])
+			province=str(self.args["province"])
+			city=str(self.args["city"])
+			headimgurl=str(self.args["headimgurl"])
+			nickname=str(self.args["nickname"])
+			sex=int(self.args["sex"])
+			jpush_id=self.args["jpush_id"]
+			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
+			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
+			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=1).first()
+			new_device=1
+			if qq:
+				if qq.jpush_id==jpush_id:
+					new_device=0
+			if new_device==1 and q:
+				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=1,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
+			if  q==None:
+				u = models.Customer.register_with_wx(self.session,userinfo)
+				self.set_current_user(u,domain = ROOT_HOST_NAME)
+			else:
+				self.set_current_user(q,domain = ROOT_HOST_NAME)
+			return self.redirect(self.reverse_url("customerProfile"))
+		elif self._action=="weixinphoneadmin":
+			openid=str(self.args["openid"])
+			unionid=str(self.args["unionid"])
+			country=str(self.args["country"])
+			province=str(self.args["province"])
+			city=str(self.args["city"])
+			headimgurl=str(self.args["headimgurl"])
+			nickname=str(self.args["nickname"])
+			sex=int(self.args["sex"])
+			jpush_id=str(self.args["jpush_id"])
+			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
+			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
+			new_device=1
+			if q:
+				qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=0).first()
+				if qq:
+					if qq.jpush_id==jpush_id:
+						new_device=0
+			if new_device==1 and q:
+				print(new_device,'new_device')
+				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=0,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
+			if  q==None:
+				u = models.Customer.register_with_wx(self.session,userinfo)
+				self.set_current_user(u,domain = ROOT_HOST_NAME)
+				new_jpushinfo=models.Jpushinfo(user_id=u.accountinfo.id,user_type=0,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
+				return self.redirect(self.reverse_url("ApplyHome"))
+			else:
+				self.set_current_user(q,domain = ROOT_HOST_NAME)
+				haveshop=self.session.query(models.ShopAdmin).filter_by(id=q.id).count()
+				if haveshop==0:
+					return self.redirect(self.reverse_url("ApplyHome"))	
+				else:
+					return self.redirect(self.reverse_url("MadminHome"))
 
 # 商品详情
 class customerGoods(CustomerBaseHandler):
@@ -140,6 +236,7 @@ class customerGoods(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
 			return self.send_error(404)
+
 		if shop:
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self._shop_code = shop.shop_code
@@ -148,7 +245,11 @@ class customerGoods(CustomerBaseHandler):
 			shop_code = shop.shop_code
 		else:
 			shop_name =''
+			return self.send_error(404)
+			
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
+		if not good:
+			return self.send_error(404)
 		try:
 			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
 		except:
@@ -197,7 +298,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render(self.tpl_path(shop.shop_tpl)+'/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
@@ -353,7 +454,7 @@ class Home(CustomerBaseHandler):
 		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			a=a,show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
+			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
@@ -392,16 +493,12 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			if shop.marketing:
-				shop_marketing = shop.marketing.confess_active
 				confess_active = shop.marketing.confess_active
 			else:
-				shop_marketing = 0
 				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
-			self.set_cookie("shop_marketing", str(shop_marketing))
-			self.set_cookie("shop_auth", str(shop_auth))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -413,7 +510,7 @@ class Discover(CustomerBaseHandler):
 		a=0
 		now_date=int(time.time())
 		for x in q :
-			if now_date>=x.from_get_date:
+			if now_date>=x.from_get_date and now_date<=x.to_get_date:
 				a+=1
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=1).all()
 		b=0
@@ -424,7 +521,8 @@ class Discover(CustomerBaseHandler):
 				if qq!=None:
 					b+=1
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
-		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b)
+		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
+			confess_active=confess_active,confess_count=confess_count,a=a,b=b)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -682,7 +780,7 @@ class ShopProfile(CustomerBaseHandler):
 		session = self.session
 		w_id = self.current_user.id
 		session.commit()
-		return self.render(self.tpl_path(shop.shop_tpl)+"/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
+		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
@@ -1438,7 +1536,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
-			return self.render(self.tpl_path(shop.shop_tpl)+"/cart-empty.html",context=dict(subpage='cart'))
+			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
 			fruit = cart_f[item].get('charge_type').fruit
@@ -1497,10 +1595,11 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
-		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
+		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
-						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,context=dict(subpage='cart'))
+						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list\
+						   ,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
