@@ -1,9 +1,18 @@
 var num_list={};
 $(document).ready(function(){
-    XBack.listen(function(){
-        addCart();
+    var _shop_code = $("#shop_code").val();
+    var _url='/'+_shop_code;
+    window.addEventListener('popstate', onPopState);
+    function onPopState(){
         SetCookie("fromdetail",1);
-    });
+        return addCart(_url);
+    }
+    /*XBack.listen(function(){
+        alert(233333);
+        console.log(2333);
+        addCart(_url);
+        SetCookie("fromdetail",1);
+    });*/
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
     if(mWidth>800){
@@ -143,7 +152,7 @@ $(document).ready(function(){
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
     window.onbeforeunload = function(){
-        setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 2);
+        setTimeout(function(){addCart(_url);SetCookie("fromdetail",1)}, 2);
     }
 }).on("click","#dianzan",function(){
     var $this = $(this);
@@ -228,7 +237,7 @@ function fruits_num(){
 
 
 ;!function(pkg, undefined){
-    var STATE = 'x-back';
+    var STATE = new Date().getTime()+"";
     var element;
 
     var onPopState = function(event){
