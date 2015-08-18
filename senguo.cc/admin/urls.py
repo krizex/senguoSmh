@@ -30,7 +30,7 @@ handlers = [
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 
 	#秒杀折扣预售团购
-	(r"/seckill", handlers.activity.Seckill, {}, "ConfessionSeckill"),
+	(r"/seckill/(\w+)", handlers.activity.Seckill, {}, "ConfessionSeckill"),
 	(r"/discount", handlers.activity.Discount, {}, "ConfessionDiscount"),
 	(r"/gbuy", handlers.activity.Gbuy, {}, "ConfessionGbuy"),
 	(r"/presell", handlers.activity.Presell, {}, "ConfessionPresell"),

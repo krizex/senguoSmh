@@ -508,7 +508,9 @@ class Discover(CustomerBaseHandler):
 			confess_count = 0
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=0).all()
 		a=0
+
 		now_date=int(time.time())
+
 		for x in q :
 			if now_date>=x.from_get_date and now_date<=x.to_get_date:
 				a+=1
@@ -521,8 +523,17 @@ class Discover(CustomerBaseHandler):
 				if qq!=None:
 					b+=1
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
+
+		# added by jyj 2015-8-18 for seckill
+		shop_id = shop.id
+		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active
+		# if seckill_active == 1:
+			
+		# print("####",shop_code)
+		##
+
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
-			confess_active=confess_active,confess_count=confess_count,a=a,b=b)
+			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
