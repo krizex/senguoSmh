@@ -215,10 +215,12 @@ function initLocation(){
                     initProviceAndCityCode(addComp.province, addComp.city);
                     if(link_action=="province"){
                         var _province=$("#city-name").val().trim();
-                        initProviceAndCityCode(_province, addComp.city)
-                        $(".city_name").text(addComp.city);
-                        window.dataObj.type='city';
-                        filter($("#city_id").val());
+                        if(initProviceAndCityCode(_province, addComp.city)){
+                            $(".city_name").text(addComp.city);
+                            window.dataObj.type='city';
+                            filter($("#city_id").val());
+                        }
+                        
                     }else{
                         $(".city_name").text(addComp.city);
                         window.dataObj.type='city';
