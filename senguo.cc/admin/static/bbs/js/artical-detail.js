@@ -17,6 +17,13 @@ $(document).ready(function(){
         $('.reply-btn').attr("id","comment").attr("data-id",id);
         $(".reply-ipt").focus();
     });
+    $("#backa").on("click",function(){
+        if(history.length<=2){
+            window.location.href="/bbs";
+        }else{
+            history.back();
+        }
+    });
     commentList(0);
     scrollLoading();
 }).on("click",".del-comment",function(){  

@@ -1,5 +1,11 @@
 var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
+    if(parseInt(cookie.getCookie("mdetail"))==1){
+        cookie.removeCookie("mdetail");
+        $('.wrap-loading-box').removeClass('hide');
+        $(".no-result").html("数据正在加载中...");
+        window.location.reload();
+    }
     $("html,body").addClass("h100");
     width = $(window).width();
     var minheight = $(window).height()-70;

@@ -342,7 +342,7 @@ class Comment(AdminBaseHandler):
 class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		shop_id     = self.get_secure_cookie("shop_id")
+		shop_id = self.get_secure_cookie("shop_id")
 		data = []
 		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
 		default_count = goods.filter_by(group_id=0).count()
@@ -364,7 +364,8 @@ class Goods(AdminBaseHandler):
 		else:
 			data.append({'id':0,'name':'','intro':'','num':default_count})
 		return self.render("m-admin/goods.html",data=data,record_count=record_count)
-#商品搜索
+
+# 商品搜索
 class GoodsSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -382,7 +383,8 @@ class GoodsSearch(AdminBaseHandler):
 		goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
 		count = goods.count()
 		return self.send_success(count=count)
-#商品新建
+
+# 商品新建
 class GoodsAdd(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -410,12 +412,13 @@ class GoodsAdd(AdminBaseHandler):
 		else:
 			data.append({'id':0,'name':'','intro':'','num':default_count})
 		return self.render("m-admin/goods-add.html",token=token,edit=False,data=data,record_count=record_count)
+
 #商品编辑
 class GoodsEdit(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,id):
 		token = self.get_qiniu_token("shopAuth_cookie","goodsedit")
-		shop_id     = self.get_secure_cookie("shop_id")
+		shop_id = self.get_secure_cookie("shop_id")
 		if not shop_id :
 			return self.send_error(404)
 		data = []
@@ -436,7 +439,8 @@ class GoodsEdit(AdminBaseHandler):
 						if _group:
 							group_data.append({'id':_group.id,'name':_group.name,'intro':_group.intro})
 		return self.render("m-admin/goods-edit.html",token=token,edit=True,data=data,group_data=group_data)
-#批量管理
+
+# 批量管理
 class GoodsBatch(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("gid")
@@ -474,9 +478,51 @@ class GoodsBatch(AdminBaseHandler):
 			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
 		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data,record_count=record_count)
 
+# 用户管理
+class User(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user.html")
 
+# 用户详情
+class UserDetail(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self,_id):
+		try:
+			user=self.session.query(models.Customer,models.CustomerShopFollow)\
+			.join(models.CustomerShopFollow,models.Customer.id==models.CustomerShopFollow.customer_id)\
+			.filter(models.Customer.id==_id,models.CustomerShopFollow.shop_id==self.current_shop.id).first()
+		except:
+			user = None
+			return self.write("该用户不存在")
+		data={}
+		if user:
+			userinfo=user[0]
+			usershopinfo=user[1]
+			shop_names = self.session.query(models.Shop.shop_name,models.Shop.shop_trademark_url).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.customer_id == _id).all()
+			birthday = datetime.datetime.fromtimestamp(userinfo.accountinfo.birthday).strftime('%Y-%m-%d') if userinfo.accountinfo.birthday else ""
+			data["id"]=userinfo.id
+			data["nickname"]=userinfo.accountinfo.nickname
+			data["headimgurl"]=userinfo.accountinfo.headimgurl_small
+			data["sex"]=userinfo.accountinfo.sex
+			data["realname"]=userinfo.accountinfo.realname
+			data["phone"]=userinfo.accountinfo.phone
+			data["birthday"]=birthday
+			data["address"]=userinfo.addresses
+			data["shop_point"]=usershopinfo.shop_point
+			data["shop_balance"]=usershopinfo.shop_balance
+			data["remark"]=usershopinfo.remark
+			data["shops"]=shop_names
+		return self.render("m-admin/user-detail.html",data=data)
 
-
+# 用户搜索
+class UserSearch(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user-search.html")
 
 
 

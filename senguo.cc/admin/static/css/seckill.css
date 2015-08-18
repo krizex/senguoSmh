@@ -1,4 +1,6 @@
 body{background-color: #f5f5f5;}
+.lgreen{color: #59D5AA !important;}
+.f30{font-size: 30px;}
 .header{background-color: #33CC66;max-width: 800px;min-width: 320px;left: 50%;-webkit-transform:translate(-50%,0);}
 .container{margin: 0 auto;max-width: 800px;min-width: 320px;-webkit-box-sizing: border-box;}
 /*秒杀*/
@@ -42,6 +44,32 @@ body{background-color: #f5f5f5;}
 .wrap-operate .add-btn{right: -14px;}
 /*团购*/
 .gbuy-btn{position:absolute;cursor:pointer;right:0;bottom:0;width: 70px;height: 28px;line-height: 28px;color: #fff;text-align: center;font-weight: bold;border-radius: 4px;background-color: #59D5AA;}
+.progress-box{padding: 0 10px;background-color: #fff;}
+.gbuy-ntxt{height: 36px;line-height: 36px;}
+.gbuy-progress{border-top:1px solid #e7e7e7;padding: 16px 0;position: relative;}
+.wrap-progress-line{height: 36px;background-color: #fff;position: absolute;bottom:40px;left: 0;width: 80%;left: 50%;-webkit-transform:translate(-50%,0);}
+.p-line{height: 4px;background-color: #e7e7e7;border-radius: 4px;position: absolute;top: 24px;width: 100%;}
+.s-line{display:inline-block;width: 50%;height: 4px;background-color: #59D5AA;border-radius: 4px;position: absolute;top: 0px;}
+.pro-bm{margin-top: 36px;}
+.roll-back{position: fixed;left: 10px;top: 10px;}
+.roll-back>i{position: absolute;width: 10px;height: 18px;background-image: url('/static/images/goodsdetail_back.png'); top: 8px;left: 10px;}
+.wrap-goods-info{background-color: #f0f4f0;}
+.wrap-choose-goods{background-color: #fff !important;}
+.progress-box{border-top: 10px solid #f0f4f0;}
+.progress-num{bottom:0;right: 24px;}
+.wrap-line-num{position: absolute;right: -5px;bottom:-5px;width: 10px;height: 10px;border: 2px solid #59D5AA;border-radius: 50%;background-color: #fff;}
+.ver-line{display:inline-block;width: 1px;height: 13px;background-color: #59D5AA;position: absolute;bottom:100%;left: 5px;}
+.cur-num{display:inline-block;font-size: 18px;font-weight: bold;bottom: 20px;left: 50%;-webkit-transform:translate(-50%,0);white-space: nowrap;position: absolute;}
+.num-box{position: absolute;right: 60%;bottom:-4px;width: 10px;height: 10px;border-radius: 50%;background-color: #59D5AA;}
+.ver-tline{display:inline-block;width: 1px;height: 13px;background-color: #59D5AA;position: absolute;bottom:100%;left: 5px;}
+.cur-tnum{display:inline-block;font-size: 14px;height:16px;line-height:16px;padding:0 2px;border:1px solid #59D5AA;bottom: 22px;left: 50%;-webkit-transform:translate(-50%,0);white-space: nowrap;position: absolute;}
+.ver-bline{display:inline-block;width: 1px;height: 13px;background-color: #FFC107;position: absolute;top:100%;left: 5px;}
+.cur-bnum{display:inline-block;font-size: 12px;text-align:center;width:16px;height:16px;line-height:16px;border-radius:50%;background-color:#FFC107;color:#fff;top: 22px;left: 50%;-webkit-transform:translate(-50%,0);white-space: nowrap;position: absolute;}
+.no-num-box{opacity: .3;background-color: #e7e7e7;}
+.no-num-box .ver-tline,.no-num-box .ver-bline{display: none;}
+.r80{right: 80%;}
+.more-get{font-size: 12px;line-height: 14px;background-color: #FFC107 !important;right: 60px !important;color: #fff;text-align: center !important;}
+.sca-txt{-webkit-transform:scale(.9);font-size: 12px;margin-top: 2px;}
 /*预售*/
 .pre-price{position: absolute;bottom:18px;left: 76px;-webkit-transform:scale(.9);}
 

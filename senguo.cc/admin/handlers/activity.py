@@ -739,8 +739,8 @@ class Presell(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("seckill/presell.html")
-#预售详情
-class PresellDetail(CustomerBaseHandler):
+#团购详情
+class GbuyDetail(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code,goods_id):
 		try:
@@ -807,4 +807,4 @@ class PresellDetail(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render('seckill/presell-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)	
+		return self.render('seckill/gbuy-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)	

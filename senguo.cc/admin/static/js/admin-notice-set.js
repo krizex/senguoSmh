@@ -1,6 +1,10 @@
+var NoticeEdit;
 $(document).ready(function(){
     //添加公告
     $('.add-new-notice').on('click',function(){
+        if(NoticeEdit){
+            return Tip("请先完成正在编辑的公告");
+        }
         noticeAdd();
     });
     //公告启用状态显示
@@ -20,6 +24,16 @@ $(document).ready(function(){
     $('.notice_edit').on('click',function(){
         noticeEdit($(this));
     });
+    var zb_t;
+    window.onbeforeunload = function(){
+        if(NoticeEdit==true){
+            setTimeout(function(){zb_t = setTimeout(onunloadcancel, 0)}, 0);
+            return "当前有公告正在编辑还未保存，确定离开此页？";
+        }
+    }
+    window.onunloadcancel = function(){
+        clearTimeout(zb_t);
+    }
    var uploader1 = Qiniu.uploader({
     runtimes: 'html5,flash,html4',
     browse_button: 'upload-add',
@@ -71,9 +85,21 @@ $(document).ready(function(){
         }
     }
 });
-}).on('click','.info-edit',function(){
+}).on("click",".add-new-address1",function(){
+    if(NoticeEdit){
+        return Tip("请先完成正在编辑的公告");
+    }
+    $("#noticeBox").modal("show");
+}).on('click','.notice-edit',function(){
+    if(NoticeEdit){
+        Tip("请先完成正在编辑的公告");
+        return false;
+    }
+    NoticeEdit=true;
     var $this=$(this);
     var parent=$this.parents('.set-list-item');
+    parent.find('.address-show').hide();
+    parent.find('.address-edit').show();
     parent.find('.edit-img').attr("id","upload-per");
     parent.siblings('.set-list-item').find('.edit-img').attr("id","");
     parent.siblings('.set-list-item').find(".address-show").show().siblings(".address-edit").hide();
@@ -192,6 +218,7 @@ function noticeEdit(target){
                 parent.find('.detail').text(detail);
                 parent.find('.address-edit').hide();
                 parent.find('.address-show').show();
+                NoticeEdit=false;
             }
             else return Tip(res.error_text);
         },
