@@ -11,6 +11,8 @@ $(document).ready(function(){
             var id=$.getUrlParam('id');
             return shopsList(0,id,'admin_shop');
         }else if(link_action=="province"){
+            $('.city_name').text(province_name).attr("data-id",link_province);
+            $(".comm_name").attr("data-key",2).text("离我最近");
             window.dataObj.type='province';
             window.dataObj.action='filter';
             filter(link_province,'province');
@@ -18,7 +20,7 @@ $(document).ready(function(){
             if(area[link_province]){
                 var province_name=area[link_province]['name'];
             }
-            $('.city_name').text(province_name).attr("data-id",link_province);
+
         }
     }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
