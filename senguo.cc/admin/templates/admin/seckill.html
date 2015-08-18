@@ -46,7 +46,7 @@
                                                           <tr class="thead">
                                                                         <td>秒杀开始时间</td>
                                                                         <td>持续时间</td>
-                                                                        <td>秒杀商品（10）</td>
+                                                                        <td>秒杀商品</td>
                                                                         <td>领取 / 下单</td>
                                                                         <td>操作</td>
                                                           </tr>
@@ -57,7 +57,38 @@
                                                                         <td colspan="5" class="txt-center c999 font14" data-id="0">没有当前状态的秒杀活动</td>
                                                           </tr>
                                                           {% else %}
-                                                          {% for data in output_data%}
+                                                                 {% if status == 1%}
+                                                                 {% for data in output_data%}
+                                                          <tr data-id="{{data['activity_id']}}">　　 
+                                                                        <td colspan="1">{{data['start_time']}}</td>
+                                                                        <td colspan="1">{{data['continue_time']}}</td>
+                                                                        <td colspan="1">{{data['goods_list']}}</td>
+                                                                        <td colspan="1">{{data['picked']}} / {{data['ordered']}}</td>
+                                                                        <td colspan="1" class="operate">　　
+                                                                                       <a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>
+                                                                                       <a href="javascript:;" class="ml10 spread-activity" title="点击推广此秒杀活动">推广</a>
+                                                                                       <a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>
+                                                                                       <div class="sw-er-tip spread-position invisible" title="">
+                                                                                              <div class="top-arr">
+                                                                                                     <span class="line1"></span>
+                                                                                                     <span class="line2"></span>
+                                                                                              </div>
+                                                                                              <p class="er-text">活动链接</p>
+                                                                                              <div class="wrap-ipt">
+                                                                                                     <input type="text" class="sw-link-txt" value="http://www.baidu.com" disabled="">
+                                                                                                     <input type="button" class="sw-link-copy" value="复制链接">
+                                                                                              </div>
+                                                                                              <div class="wrap-er group">
+                                                                                                     <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                                                                                                     <div class="er-text lh80 fl">链接二维码</div>
+                                                                                                     <div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>
+                                                                                              </div>
+                                                                                       </div>
+                                                                        </td>
+                                                          </tr>
+                                                                 {% end %}
+                                                                 {% elif status == 2%}
+                                                                 {% for data in output_data%}
                                                           <tr data-id="{{data['activity_id']}}">　　 
                                                                         <td colspan="1">{{data['start_time']}}</td>
                                                                         <td colspan="1">{{data['continue_time']}}</td>
@@ -66,10 +97,34 @@
                                                                         <td colspan="1">　　
                                                                                        <a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>
                                                                                        <a href="javascript:;" class="ml10 spread-activity" title="点击推广此秒杀活动">推广</a>
-                                                                                       <a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>
                                                                         </td>
                                                           </tr>
-                                                          {% end %}
+                                                                 {% end %}
+                                                                 {% elif status == 0%}
+                                                                 {% for data in output_data%}
+                                                          <tr data-id="{{data['activity_id']}}" class="dis-seckill">　　 
+                                                                        <td colspan="1">{{data['start_time']}}</td>
+                                                                        <td colspan="1">{{data['continue_time']}}</td>
+                                                                        <td colspan="1">{{data['goods_list']}}</td>
+                                                                        <td colspan="1">{{data['picked']}} / {{data['ordered']}}</td>
+                                                                        <td colspan="1">　　
+                                                                                       <span>已结束</span>
+                                                                        </td>
+                                                          </tr>
+                                                                 {% end %}
+                                                                 {% elif status == -1%}
+                                                                 {% for data in output_data%}
+                                                          <tr data-id="{{data['activity_id']}}" class="dis-seckill">　　 
+                                                                        <td colspan="1">{{data['start_time']}}</td>
+                                                                        <td colspan="1">{{data['continue_time']}}</td>
+                                                                        <td colspan="1">{{data['goods_list']}}</td>
+                                                                        <td colspan="1">{{data['picked']}} / {{data['ordered']}}</td>
+                                                                        <td colspan="1">　　
+                                                                                       <span>已停用</span>
+                                                                        </td>
+                                                          </tr>
+                                                                 {% end %}
+                                                                 {% end %}
                                                           {% end %}
                                             </tbody>
                              </table>    
@@ -90,5 +145,6 @@
 {% end %}
 
 {% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
 <script src="{{static_url('js/admin-marketing-seckill.js')}}"></script>
 {% end %}

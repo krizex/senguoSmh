@@ -13,6 +13,10 @@ var sec_page_sum = parseInt($('.sec-pager').attr('page-sum'));
 var cur_sec_page = 0;
 var detail_page_sum = parseInt($('.detail-pager').attr('page-sum'));
 var cur_detail_page = 0;
+
+var sec_global_status = '1';
+var spread_btn_status = 0;
+
 $(document).ready(function(){
 	cur_action = $('.action-div').attr('data-value');
 	if (cur_action == 'seckill'){
@@ -47,9 +51,40 @@ $(document).ready(function(){
 		}
 
 		$('.sec-page-total').text(sec_page_sum);
+
+		$(document).on("click",function(e){
+			if($(e.target).closest(".sw-er-tip").size()==0){
+			               $(".sw-er-tip").addClass("invisible");
+			}
+		});  
+
+		$(".sw-link-copy").zclip({
+		               path: "/static/js/third/ZeroClipboard.swf",
+		               copy: function(){
+		                             return $(this).prev('input').val();
+		               },
+		              afterCopy:function(){
+		                             Tip("秒杀活动链接已经复制到剪切板");
+		              }
+		});
+
+		$(".er-code-img").each(function(){
+			var _this = $(this);
+			$(this).empty();
+			new QRCode(this, {
+			            width : 80,
+			            height : 80
+			}).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
+		});
 	}
-	else if (cur_action == 'seckill_new' ||cur_action == 'seckill_edit'){
+	else if (cur_action == 'seckill_new'){
 		$new_seckill_item = $('.new-seckill-item').clone();
+		group_fruit = eval($('.choose-goods').attr('data-value'))[0];
+		fruit_id_charge_type = eval($('.choose-charge-type').attr('data-value'))[0];
+	}
+	else if (cur_action == 'seckill_edit'){
+		$new_seckill_item = $('.new-seckill-item-clone').clone();
+		$new_seckill_item.removeClass('hidden');
 		group_fruit = eval($('.choose-goods').attr('data-value'))[0];
 		fruit_id_charge_type = eval($('.choose-charge-type').attr('data-value'))[0];
 	}
@@ -74,7 +109,7 @@ $(document).ready(function(){
 	var $this = $(this);
 	if ($this.find('td').attr("data-id") != '0'){
 		var activity_id = $this.attr('data-id');
-		var url = '/admin/marketing/seckill?action=seckill_detail&activity_id='+activity_id+'&page=0';
+		var url = '/admin/marketing/seckill?action=seckill_detail&activity_id='+activity_id+'&status='+ sec_global_status +'&page=0';
 		window.location.href = url;
 	}
 	
@@ -91,12 +126,21 @@ $(document).ready(function(){
 	show_seckill_list(status,0);
 }).on('click','.new-ok-btn',function(){
 	if(create_seckill_lock == "off"){
-		createSeckill();	
+		createSeckill('seckill_new');	
 	}
 	else{
 		return false;
 	}
 }).on('click','.new-cancel-btn',function(){
+	cancelSeckill();
+}).on('click','.edit-ok-btn',function(){
+	if(create_seckill_lock == "off"){
+		createSeckill('seckill_edit');	
+	}
+	else{
+		return false;
+	}
+}).on('click','.edit-cancel-btn',function(){
 	cancelSeckill();
 }).on('click','.go-back-page',function(){
 	cancelSeckill();
@@ -110,16 +154,21 @@ $(document).ready(function(){
 	var goods_num_pre = parseInt($this.closest('tr').find(".goods-num").text());
 	var goods_num_new = goods_num_pre + 1;
 	$new_more_item.find(".goods-num").text(goods_num_new);
+	$new_more_item.addClass("new-seckill-item");
+	$new_more_item.attr("seckill-goods-id","-1");
+
 	$this.hide();
 	$(".new-seckill-list").append($new_more_item);
 	$(".delete-link").removeClass('hidden').show();
 }).on('click','.delete-link',function(){
 	var $this = $(this);
 	if (confirm("删除之后剩余正在编辑的商品将会重新编号，您确定删除吗？")){
+		var seckill_goods_id = $this.closest('.new-seckill-item').attr('seckill-goods-id');
+		onDeleteClick(seckill_goods_id);
 		if ($(".new-seckill-item").index($this.closest('tr')) == $(".new-seckill-item").length - 1){
-			$this.closest('tr').prev(".new-seckill-item").find('.add-link').removeClass('hidden').show();
+			$this.closest('.new-seckill-item').prev(".new-seckill-item").find('.add-link').removeClass('hidden').show();
 		}
-		$this.closest('tr').remove();
+		$this.closest('.new-seckill-item').remove();
 		for (var i = 0;i < $(".new-seckill-item").length;i++){
 			$(".new-seckill-item:eq(" + i+ ")").find('.goods-num').text(i+1);
 		}
@@ -138,6 +187,8 @@ $(document).ready(function(){
 	$this.closest(".new-seckill-item").find(".cur-goods-group").text(cur_goods_group);
 	$this.closest(".new-seckill-item").find(".cur-goods-group").attr("data-id",$this.attr('data-id'));
 	$this.closest(".new-seckill-item").find(".choose-goods").removeClass("hidden");
+	$this.closest(".new-seckill-item").find(".cur-goods").text('选择商品');
+	$this.closest(".new-seckill-item").find(".cur-goods").attr("data-id","");
 	$('.choose-goods-btn').attr('data-flag','1');
 	var group_id = $this.attr('data-id');
 	var choose_goods_list = group_fruit[group_id];
@@ -172,6 +223,11 @@ $(document).ready(function(){
 		Tip("请先选择商品分组");
 	}
 }).on('click','.choose-charge-type button',function(){
+	var status = $.getUrlParam('status');
+	if(status == '2'){
+		return false;
+
+	}
 	var $this = $(this);
 	var cur_charge_type = $this.text();
 	var former_price = 0;
@@ -251,7 +307,7 @@ $(document).ready(function(){
 	if (cur_sec_page == 0){
 		$this.hide();
 	}
-	var status = $.getUrlParam('status');
+	var status = sec_global_status;
 	getActivityItem('get_sec_item',status,cur_sec_page);
 
 }).on('click','.sec-next-page',function(){
@@ -266,7 +322,7 @@ $(document).ready(function(){
 		$this.hide();
 	}
 
-	var status = $.getUrlParam('status');
+	var status = sec_global_status;
 
 	getActivityItem('get_sec_item',status,cur_sec_page);
 
@@ -294,7 +350,7 @@ $(document).ready(function(){
 		$('.sec-pre-page').removeClass('hidden').show();
 		$('.sec-next-page').show();
 	}
-	var status = $.getUrlParam('status');
+	var status = sec_global_status;
 	getActivityItem('get_sec_item',status,cur_sec_page);
 	$('.sec-input-page').val('');
 }).on('click','.detail-pre-page',function(){
@@ -356,32 +412,51 @@ $(document).ready(function(){
 	e.stopPropagation();
 	var $this = $(this);
 	var activity_id = $this.closest('tr').attr('data-id');
-	var status = $.getUrlParam('status');
+	var status = sec_global_status;
 	var url = '/admin/marketing/seckill?action=seckill_edit&activity_id=' + activity_id + '&status=' + status;
 	window.location.href = url;
+}).on('click','.stop-activity',function(e){
+	e.stopPropagation();
+	var $this = $(this);
+	var activity_id = $this.closest('tr').attr('data-id');
+	if (confirm("确实要停用吗？")){
+        		onStopActivityClick(activity_id,sec_global_status);
+		$this.closest('tr').remove();
+        	}
+	
+}).on("click",".spread-activity",function(e){
+	e.stopPropagation();
+	$(".sw-er-tip").addClass("invisible");
+    	$(this).closest(".operate").children(".sw-er-tip").removeClass("invisible");
+	
+}).on("click",".sw-link-copy",function(e){
+	e.stopPropagation();
 });
 
 function show_seckill_list(status,page){
 	var activity_status = 1;
 	switch(status){
 		case 'nostart':
-			activity_status = 1;
+			activity_status = '1';
 			break;
 		case 'killing':
-			activity_status = 2;
+			activity_status = '2';
 			break;
 		case 'finished':
-			activity_status = 0;
+			activity_status = '0';
 			break;
 		case 'stoped':
-			activity_status = -1;
+			activity_status = '-1';
 			break;
 	}
-	var url = '/admin/marketing/seckill?action=seckill&status=' + activity_status + '&page=' + page;
-	window.location.href = url;
+
+	sec_global_status = activity_status;
+	var cutover = 'true';
+	getActivityItem('get_sec_item',sec_global_status,0,cutover);
+
 }
 
-function createSeckill(){
+function createSeckill(action){
 	create_seckill_lock = "on";
 	var stop_flag = false;
 	if ($('.start-time').val().length == 0){
@@ -412,6 +487,9 @@ function createSeckill(){
 		create_seckill_lock = "off";
 		return false;
 	}
+	if (action == 'seckill_edit'){
+		var activity_id = $(".new-seckill-list").attr("activity-id");
+	}
 	var start_time = $(".start-time").val();
 	var continue_time_hour = $(".choose-hour").text();
 	var continue_time_minute = $(".choose-minute").text();
@@ -419,6 +497,10 @@ function createSeckill(){
 
 	$('.new-seckill-item').each(function(){
 		var $this = $(this);
+		
+		if (action == 'seckill_edit'){
+			var seckill_goods_id = parseInt($this.attr("seckill-goods-id"));
+		}
 		
 		var fruit_id = $this.find(".cur-goods").attr("data-id");
 		var charge_type_id = $this.find(".activity-store-charge-type").attr("charge_type_id");
@@ -428,22 +510,46 @@ function createSeckill(){
 		var activity_piece = $this.find('.activity-store-input').val();
 
 		var url = "";
-		var data = {
-			start_time: start_time,
-			continue_time_hour : continue_time_hour,
-			continue_time_minute : continue_time_minute,
-			continue_time_second : continue_time_second,
-			fruit_id : fruit_id,
-			charge_type_id : charge_type_id,
-			former_price : former_price,
-			seckill_price : seckill_price,
-			storage_piece : storage_piece,
-			activity_piece : activity_piece
-		};
-		var args={
-			data : data,
-			action : 'seckill_new'
-		};
+
+		if (action == 'seckill_edit'){
+			var data = {
+				seckill_goods_id : seckill_goods_id,
+				start_time : start_time,
+				continue_time_hour : continue_time_hour,
+				continue_time_minute : continue_time_minute,
+				continue_time_second : continue_time_second,
+				fruit_id : fruit_id,
+				charge_type_id : charge_type_id,
+				former_price : former_price,
+				seckill_price : seckill_price,
+				storage_piece : storage_piece,
+				activity_piece : activity_piece
+			};
+			var args={
+				data : data,
+				activity_id : activity_id,
+				action : action
+			};
+		}
+		else{
+			var data = {
+				start_time : start_time,
+				continue_time_hour : continue_time_hour,
+				continue_time_minute : continue_time_minute,
+				continue_time_second : continue_time_second,
+				fruit_id : fruit_id,
+				charge_type_id : charge_type_id,
+				former_price : former_price,
+				seckill_price : seckill_price,
+				storage_piece : storage_piece,
+				activity_piece : activity_piece
+			};
+			var args={
+				data : data,
+				action : action
+			};
+		}
+		
 		$.postJson(url,args,function(res){
 			if(res.success){
 
@@ -460,17 +566,18 @@ function createSeckill(){
 	}
 	create_seckill_lock = "off";
 
-	Tip('恭喜您，创建秒杀活动成功！')
-
+	Tip('恭喜您，编辑秒杀活动成功！')
+	var activity_status = $.getUrlParam('status');
 	setTimeout(function(){
-		window.location.href="/admin/marketing/seckill?action=seckill&page=0";
+		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status=" + activity_status;
 	}, 300);
 	
 }
 
 function cancelSeckill(){
+	console.log(sec_global_status);
 	if (confirm("当前编辑的秒杀商品还没有保存，您确定退出编辑吗？")){
-        		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status=1";
+        		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status="+sec_global_status ;
         	}
 }
 
@@ -489,7 +596,7 @@ function changeSeckillActive(action){
 		},function(){Tip('网络好像不给力呢~ ( >O< ) ~');});
 }
 
-function getActivityItem(action,status,page){
+function getActivityItem(action,status,page,cutover){
 	var url = "";
 	var args = {
 		action:action,
@@ -500,19 +607,113 @@ function getActivityItem(action,status,page){
 		if(res.success){
 			var output_data = res.output_data;
 			$('.seckill-list').empty();
+			if(output_data.length == 0){
+				var tr_item = '<tr>'+
+                                                                                 '<td colspan="5" class="txt-center c999 font14" data-id="0">没有当前状态的秒杀活动</td>'+
+                                                          	         '</tr>';
+                                                          $('.seckill-list').append(tr_item);
+                                                          if(cutover == 'true'){
+		        			cur_sec_page = 0;
+					$('.sec-page-now').text(cur_sec_page+1);
+					$(".sec-pre-page").hide();
+					var page_sum = res.page_sum;
+					sec_page_sum = res.page_sum;
+					$(".sec-next-page").show();
+					$('.sec-page-total').text(sec_page_sum);
+					if (sec_page_sum == 0){
+						sec_page_sum = 1;
+						$(".sec-next-page").hide();
+						$('.sec-page-total').text(1);
+					}
+		        		}
+                                                          return false;
+			}
 			for (var i = 0;i < output_data.length;i++){
 				var data = output_data[i];
-				var tr_item = '<tr data-id="{{activity_id}}">'　 
-                                                                        +'<td colspan="1">{{start_time}}</td>'
-                                                                        +'<td colspan="1">{{continue_time}}</td>'
-                                                                        +'<td colspan="1">{{goods_list}}</td>'
-                                                                        +'<td colspan="1">{{picked}} / {{ordered}}</td>'
-                                                                        +'<td colspan="1">'
-                                                                                       +'<a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>'
-                                                                                       +'<a href="javascript:;" class="ml10  spread-activity" title="点击推广此秒杀活动">推广</a>'
-                                                                                       +'<a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>'
-                                                                        +'</td>'
-                                                          	+'</tr>';
+
+				var tr_item = "";
+				switch(status){
+					case '1':
+						tr_item = '<tr data-id="{{activity_id}}">'　 
+	                                                                        +'<td colspan="1">{{start_time}}</td>'
+	                                                                        +'<td colspan="1">{{continue_time}}</td>'
+	                                                                        +'<td colspan="1">{{goods_list}}</td>'
+	                                                                        +'<td colspan="1">{{picked}} / {{ordered}}</td>'
+	                                                                        +'<td colspan="1" class="operate">'
+	                                                                                       +'<a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>'
+	                                                                                       +'<a href="javascript:;" class="ml10  spread-activity" title="点击推广此秒杀活动">推广</a>'
+	                                                                                       +'<a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>'
+	                                                                                       +'<div class="sw-er-tip spread-position invisible" title="">'+
+                                                                                              		'<div class="top-arr">'+
+                                                                                                     		'<span class="line1"></span>'+
+                                                                                                     		'<span class="line2"></span>'+
+                                                                                              		'</div>'+
+                                                                                              		'<p class="er-text">活动链接</p>'+
+                                                                                              		'<div class="wrap-ipt">'+
+		                                                                                                     '<input type="text" class="sw-link-txt" value="http://www.baidu.com" disabled="">'+
+		                                                                                                     '<input type="button" class="sw-link-copy" value="复制链接">'+
+                                                                                              		'</div>'+
+                                                                                              		'<div class="wrap-er group">'+
+		                                                                                                     '<img class="er-logo" src="/static/images/favicon.ico" alt="">'+
+		                                                                                                     '<div class="er-text lh80 fl">链接二维码</div>'+
+		                                                                                                     '<div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>'+
+                                                                                              		'</div>'+
+                                                                                       	'</div>'
+	                                                                        +'</td>'
+	                                                          	+'</tr>';
+						break;
+					case '2':
+						tr_item = '<tr data-id="{{activity_id}}">'　 
+	                                                                        +'<td colspan="1">{{start_time}}</td>'
+	                                                                        +'<td colspan="1">{{continue_time}}</td>'
+	                                                                        +'<td colspan="1">{{goods_list}}</td>'
+	                                                                        +'<td colspan="1">{{picked}} / {{ordered}}</td>'
+	                                                                        +'<td colspan="1" class="operate">'
+	                                                                                       +'<a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>'
+	                                                                                       +'<a href="javascript:;" class="ml10  spread-activity" title="点击推广此秒杀活动">推广</a>'
+	                                                                                       +'<div class="sw-er-tip spread-position invisible" title="">'+
+                                                                                              		'<div class="top-arr">'+
+                                                                                                     		'<span class="line1"></span>'+
+                                                                                                     		'<span class="line2"></span>'+
+                                                                                              		'</div>'+
+                                                                                              		'<p class="er-text">活动链接</p>'+
+                                                                                              		'<div class="wrap-ipt">'+
+		                                                                                                     '<input type="text" class="sw-link-txt" value="http://www.baidu.com" disabled="">'+
+		                                                                                                     '<input type="button" class="sw-link-copy" value="复制链接">'+
+                                                                                              		'</div>'+
+                                                                                              		'<div class="wrap-er group">'+
+		                                                                                                     '<img class="er-logo" src="/static/images/favicon.ico" alt="">'+
+		                                                                                                     '<div class="er-text lh80 fl">链接二维码</div>'+
+		                                                                                                     '<div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>'+
+                                                                                              		'</div>'+
+                                                                                       	'</div>'
+	                                                                        +'</td>'
+	                                                          	+'</tr>';
+						break;
+					case '0':
+						tr_item = '<tr data-id="{{activity_id}}" class="dis-seckill">'　 
+	                                                                        +'<td colspan="1">{{start_time}}</td>'
+	                                                                        +'<td colspan="1">{{continue_time}}</td>'
+	                                                                        +'<td colspan="1">{{goods_list}}</td>'
+	                                                                        +'<td colspan="1">{{picked}} / {{ordered}}</td>'
+	                                                                        +'<td colspan="1">'
+	                                                                                       +'<span>已结束</span>'
+	                                                                        +'</td>'
+	                                                          	+'</tr>';
+						break;
+					case '-1':
+						tr_item = '<tr data-id="{{activity_id}}" class="dis-seckill">'　 
+	                                                                        +'<td colspan="1">{{start_time}}</td>'
+	                                                                        +'<td colspan="1">{{continue_time}}</td>'
+	                                                                        +'<td colspan="1">{{goods_list}}</td>'
+	                                                                        +'<td colspan="1">{{picked}} / {{ordered}}</td>'
+	                                                                        +'<td colspan="1">'
+	                                                                                       +'<span>已停用</span>'
+	                                                                        +'</td>'
+	                                                          	+'</tr>';
+						break;
+				}
+				
                                                           var render=template.compile(tr_item);
 
                                                           var activity_id = data['activity_id'];
@@ -532,6 +733,44 @@ function getActivityItem(action,status,page){
 		        		});
 
 		        		$('.seckill-list').append(list_item);
+
+		        		$(document).on("click",function(e){
+					if($(e.target).closest(".sw-er-tip").size()==0){
+					               $(".sw-er-tip").addClass("invisible");
+					}
+				});  
+
+				$(".sw-link-copy").zclip({
+				               path: "/static/js/third/ZeroClipboard.swf",
+				               copy: function(){
+				                             return $(this).prev('input').val();
+				               },
+				              afterCopy:function(){
+				                             Tip("秒杀活动链接已经复制到剪切板");
+				              }
+				});
+
+				$(".er-code-img").each(function(){
+					var _this = $(this);
+					$(this).empty();
+					new QRCode(this, {
+					            width : 80,
+					            height : 80
+					}).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
+				});
+
+		        		if(cutover == 'true'){
+		        			cur_sec_page = 0;
+					$('.sec-page-now').text(cur_sec_page+1);
+					$(".sec-pre-page").hide();
+					var page_sum = res.page_sum;
+					sec_page_sum = res.page_sum;
+					$(".sec-next-page").removeClass('hidden').show();
+					if (sec_page_sum == 1){
+						$(".sec-next-page").hide();
+					}
+					$('.sec-page-total').text(page_sum);
+		        		}
 			}	
 		}
 		else{
@@ -590,4 +829,40 @@ function getDetailItem(action,activity_id,page){
 			Tip(res.error_text);
 		}
 	},function(){Tip('网络好像不给力呢~ ( >O< ) ~');stop_flag = true;});
+}
+
+function onDeleteClick(seckill_goods_id){
+	var url = "";
+	var args = {
+		data : seckill_goods_id,
+		action : 'edit_delete'
+	};
+	$.postJson(url,args,function(res){
+		if(res.success){
+
+		}
+		else{
+			Tip(res.error_text);
+		}
+	},function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
+}
+
+function onStopActivityClick(activity_id,status){
+	var url = "";
+	var args = {
+		activity_id:activity_id,
+		status:status,
+		action:'stop_activity'
+	};
+	$.postJson(url,args,function(res){
+		if(res.success){
+			
+		}
+		else{
+			Tip(res.error_text);
+		}
+	},function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
+
+	var cutover = 'true';
+	getActivityItem('get_sec_item',sec_global_status,0,cutover);
 }

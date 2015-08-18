@@ -142,4 +142,10 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .edit-activity{z-index: 2999;font-size: 16px;}
 .spread-activity{z-index: 2999;font-size: 16px;}
 .stop-activity{z-index: 2999;font-size: 16px;}
+
+.ver-10{vertical-align: 10px !important;}
+
+.dis-seckill>td{color: #999;}
+
+.spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
 /**/
