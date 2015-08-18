@@ -142,7 +142,7 @@ class Access(CustomerBaseHandler):
 		# todo: handle state
 		code = self.args["code"]
 		mode = self.args["mode"]
-		if mode not in ["mp", "kf"]:
+		if mode not in ["mp", "kf", "iOS"]:
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
