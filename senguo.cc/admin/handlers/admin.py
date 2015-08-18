@@ -5104,10 +5104,18 @@ class MarketingSeckill(AdminBaseHandler):
 						storage_piece = charge_type_item[5]
 						goods_item['storage_piece'] = storage_piece
 						goods_item['cur_charge_type_text'] = charge_type_text
-						print("@@@@",charge_type_text)
+						i = 0
+						for i in range(len(charge_type_text)):
+							if charge_type_text[i] == '/':
+								break
+						goods_item['cur_seckill_text'] = '元/份 （每份含：' + charge_type_text[i+1:] + '）'
+						goods_item['cur_activity_piece_text'] = '份 （每份含：' + charge_type_text[i+1:] + '）'
+						goods_item['cur_remain_storage_piece_text'] = '份 （每份含：' + charge_type_text[i+1:] + '）'
+						print("@@@@",goods_item['cur_seckill_text'],goods_item['cur_activity_piece_text'] )
 					item['charge_type_id'] = charge_type_id
 					item['charge_type_text'] = charge_type_text
 					goods_item['charge_type_list'].append(item)
+				print("###",goods_item)
 					
 			return self.render("admin/seckill-edit.html",action=action,goods_group_id_name=goods_group_id_name,group_usable_fruit_dict=[group_usable_fruit_dict],\
 								fruit_id_storage=[fruit_id_storage],fruit_id_charge_type=[fruit_id_charge_type],context=dict(subpage='marketing'))
