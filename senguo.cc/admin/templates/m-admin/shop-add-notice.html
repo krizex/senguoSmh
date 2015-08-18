@@ -5,7 +5,7 @@
 {% block header %}
 <input type="hidden" id="token" value="{{token}}"/>
 <div class="header">
-    <a href="javascript:;" class="back goback">返回</a>
+    <a href="javascript:;" class="back backset">返回</a>
     <span>添加公告</span>
     <a href="javascript:;" class="head-right finish-btn" id="finish_btn" data-action="{% if notice %}edit{% else %}add{% end %}" data-id="{% if notice %}{{notice.id}}{% end %}">完成</a>
 </div>

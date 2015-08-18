@@ -18,6 +18,16 @@
             _xsrf: "{{handler.xsrf_token}}"};
     </script>
     {% block head %}{% end %}
+    {% if handler.shop_tpl == 1 %}
+    <style>
+    .bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_beauty.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+    </style>
+    {% elif handler.shop_tpl == 2 %}
+    <style>
+    .bottom-nav li a em{display:inline-block;background:url('/static/svg/icon_list_bingo.png') no-repeat;width:21px;height:21px;margin:0 auto;background-size:140px;overflow:hidden;}
+    .bottom-nav .active a, .bottom-nav li:hover a{color:#44C798!important;}
+    </style>
+    {% end %}
 </head>
 <body>
 {% set subpage = context.get("subpage", "home")%}
@@ -39,35 +49,42 @@
 {% elif subpage == "discover"%}
 {% set dis_active = "active"%}
 {% end %}
+
+{% set discover_show="" %}
+{% set w25="w20" %}
+{% if handler.shop_marketing == 0 or handler.shop_auth == 0 %}
+{% set discover_show="hidden" %}
+{% set w25="w25" %}
+{% end %}
     <div class="bottom-nav navbar-fixed-bottom font12 bg-grey9" id="nav">
         <ul class="row select-list group">
-            <li class="w20 pull-left {{shop_active}}">
+            <li class="{{w25}} pull-left {{shop_active}}">
                 <a href="{{reverse_url('customerShopProfile',handler.shop_code)}}" class="text-grey shop_href home">
                     <em class="bg_change"></em>
                     <p class="text-center">店铺</p>
                 </a>
             </li>
-            <li class="w20 pull-left {{home_active}}">
+            <li class="{{w25}} pull-left {{home_active}}">
                 <a href="{{reverse_url('Market',handler.shop_code)}}" class="text-grey goods" >
                     <em class="bg_change"></em>
                     <p class="text-center">商品</p>
                 </a>
             </li>
-             <li class="w20 pull-left {{dis_active}} discover-tab">
+             <li class="{{w25}} pull-left {{dis_active}} discover-tab {{discover_show}}">
                 <a href="{{reverse_url('customerDiscover',handler.shop_code)}}" class="text-grey discover" >
                     <em class="bg_change"></em>
                      <span class="discover-new circle bg-pink hidden"></span>
                     <p class="text-center">发现</p>
                 </a>
             </li>
-            <li class="w20 pull-left {{cart_active}} cart_item">
+            <li class="{{w25}} pull-left {{cart_active}} cart_item">
                 <a href="{{reverse_url('customerCart',handler.shop_code)}}" class="text-grey cart" >
                     <em class="bg_change"></em>
                     <span class="cart_num bg-pink text-white hidden">0</span>
                     <p class="text-center">购物篮</p>
                 </a>
             </li>
-            <li class="w20 pull-left {{center_active}}">
+            <li class="{{w25}} pull-left {{center_active}}">
                 <a href="{{reverse_url('customerHome',handler.shop_code)}}" class="text-grey my">
                     <em class="bg_change"></em>
                     <p class="text-center">我的</p>
@@ -77,6 +94,15 @@
     </div>
     <div class="body-container" id="container">
         <div class="container phone-box">
+            {% block topHeader %}
+                {% if handler.shop_tpl == 0 %}
+                <div class="rainshed2 fix-title"></div>
+                {% elif handler.shop_tpl == 1 %}
+                <div class="rainshed_beauty fix-title"></div>
+                {% else %}
+                <div class="rainshed_bingo fix-title"></div>
+                {% end %}
+            {% end %}
             {% block content %}{% end %}
         </div>
     </div>

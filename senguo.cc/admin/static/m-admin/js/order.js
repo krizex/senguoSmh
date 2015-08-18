@@ -1,8 +1,14 @@
 var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
 $(document).ready(function(){
+    if(parseInt(cookie.getCookie("mdetail"))==1){
+        cookie.removeCookie("mdetail");
+        $('.wrap-loading-box').removeClass('hide');
+        $(".no-result").html("数据正在加载中...");
+        window.location.reload();
+    }
     $("html,body").addClass("h100");
     width = $(window).width();
-    var minheight = $(window).height()-80;
+    var minheight = $(window).height()-70;
     $(".order-lists").css({minHeight:minheight+"px"});
 
     $(".order-type-list .item").on("click",function(){
@@ -58,7 +64,7 @@ $(document).ready(function(){
             $(".third-item").html("已完成");
             $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
-            $(".order-lists").addClass("pt50");
+            $(".order-lists").addClass("pt40");
         }
         var index = parseInt($.getUrlParam("type"));
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");

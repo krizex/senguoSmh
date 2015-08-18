@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+{% block title %}限时折扣{% end %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back goback"></a>
+    <span>限时折扣</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-seckill pm40">
+    <div class="show-time-box no-seckill-time txt-al">
+        <span>距结束&nbsp;<span id="day"></span><span id="hour"></span><span id="minute"></span><span id="second"></span></span>
+    </div>
+    <ul class="nm-list">
+        <li>
+            <dl class="nm-dl">
+                <dt>
+                    <img src="/static/images/TDSG.png" alt="商品图片"/>
+                    <div class="cover-img"></div>
+                </dt>
+                <dd>
+                    <p class="c333 clip nm-name pt0">水晶大葡萄，非常好吃哦</p>
+                    <p class="no-goods mt20">
+                        <span class="price-bo">1元/kg</span>
+                        <span class="price-tip">8折</span>
+                    </p>
+                    <div class="wrap-operate" data-num="5">
+                        <span class="roll-btn minus-btn">-</span>
+                        <span class="num-txt">5</span>
+                        <span class="roll-btn add-btn">+</span>
+                    </div>
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl class="nm-dl">
+                <dt>
+                    <img src="/static/images/TDSG.png" alt="商品图片"/>
+                    <div class="cover-img hide"></div>
+                </dt>
+                <dd>
+                    <p class="c333 clip nm-name pt0">水晶大葡萄，非常好吃哦</p>
+                    <p class="mt20">
+                        <span class="price-bo">1元/kg</span>
+                        <span class="price-tip">9折</span>
+                    </p>
+                    <div class="wrap-operate" data-num="5">
+                        <span class="roll-btn minus-btn">-</span>
+                        <span class="num-txt">1</span>
+                        <span class="roll-btn add-btn">+</span>
+                    </div>
+                </dd>
+            </dl>
+        </li>
+        <li>
+            <dl class="nm-dl">
+                <dt>
+                    <img src="/static/images/TDSG.png" alt="商品图片"/>
+                <div class="cover-img hide"></div>
+                </dt>
+                <dd>
+                    <p class="c333 clip nm-name pt0">水晶大葡萄，非常好吃哦</p>
+                    <p class="mt20">
+                        <span class="price-bo">1元/kg</span>
+                        <span class="price-tip">8折</span>
+                    </p>
+                    <div class="wrap-operate"  data-num="0">
+                        <span class="roll-btn minus-btn hide">-</span>
+                        <span class="num-txt hide">1</span>
+                        <span class="roll-btn add-btn">+</span>
+                    </div>
+                </dd>
+            </dl>
+        </li>
+    </ul>
+</div>
+<a href="javascript:;" class="go-cart">
+    <span class="cart-num">10</span>
+</a>
+<ul class="hide" id="seckill-item">
+
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/seckill-buy.js')}}"></script>
+{% end %}
