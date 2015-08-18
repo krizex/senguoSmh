@@ -1,8 +1,8 @@
 var ulat = 0,ulng =0,first=true;
+var link_action=$.getUrlParam('action');
+var link_province=$.getUrlParam('province');
 $(document).ready(function(){
     var area=window.dataObj.area;
-    var link_action=$.getUrlParam('action');
-    var link_province=$.getUrlParam('province');
     if(link_action){
         if(link_action=='shop'){
             $(".filter_search").addClass("hidden");
@@ -213,9 +213,18 @@ function initLocation(){
                 geoc.getLocation(point, function(rs){
                     var addComp = rs.addressComponents;
                     initProviceAndCityCode(addComp.province, addComp.city);
-                    $(".city_name").text(addComp.city);
-                    window.dataObj.type='city';
-                    filter($("#city_id").val());
+                    if(link_action=="province"){
+                        var _province=$("#city-name").val().trim();
+                        initProviceAndCityCode(_province, addComp.city)
+                        $(".city_name").text(addComp.city);
+                        window.dataObj.type='city';
+                        filter($("#city_id").val());
+                    }else{
+                        $(".city_name").text(addComp.city);
+                        window.dataObj.type='city';
+                        filter($("#city_id").val());
+                    }
+                    
                 });
             });
         },function(error){
@@ -441,8 +450,6 @@ function filter(data){
    window.dataObj.action="filter";
    var action="filter";
    window.dataObj.page=1;
-   var link_action=$.getUrlParam('action');
-   var link_province=$.getUrlParam('province');
     var page = window.dataObj.page;
     var url="";
     var args={
@@ -472,15 +479,12 @@ function filter(data){
     $.postJson(url,args,
         function(res){
             if(res.success)
-            {   
-                
-                if(link_action!="province"){
-                   if(first){
-                        setTimeout(function(){
-                            initLocation();
-                        },10);
-                    } 
-                }
+            {    
+               if(first){
+                    setTimeout(function(){
+                        initLocation();
+                    },10);
+                } 
                 $(".wrap-loading-box").addClass("hidden");
                 remove_bg();
                 var shops=res.shops;
