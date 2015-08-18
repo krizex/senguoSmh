@@ -300,7 +300,7 @@ function Reject(evt){
 
 function delComment(apply_id,target){
      var action="commit";
-    var url='/super/comment';
+    var url='/super/comment_apply';
     var args={
         action:action,
         apply_id:apply_id,
@@ -319,7 +319,7 @@ function delComment(apply_id,target){
 
 function rejectDel(){
      var action="decline";
-    var url='/super/comment';
+    var url='/super/comment_apply';
     var apply_id=$(".wrap-com-pop").attr('data-id');
     var index=$(".wrap-com-pop").attr('data-index');
     var decline_reason=$('#com-cont').val();
