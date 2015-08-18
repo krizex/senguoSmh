@@ -215,20 +215,9 @@ function initLocation(){
                 geoc.getLocation(point, function(rs){
                     var addComp = rs.addressComponents;
                     initProviceAndCityCode(addComp.province, addComp.city);
-                    if(link_action=="province"){
-                        var _province=$("#city-name").val().trim();
-                        if(initProviceAndCityCode(_province, addComp.city)){
-                            $(".city_name").text(addComp.city);
-                            window.dataObj.type='city';
-                            filter($("#city_id").val());
-                        }
-                        
-                    }else{
-                        $(".city_name").text(addComp.city);
-                        window.dataObj.type='city';
-                        filter($("#city_id").val());
-                    }
-                    
+                    $(".city_name").text(addComp.city);
+                    window.dataObj.type='city';
+                    filter($("#city_id").val());
                 });
             });
         },function(error){
