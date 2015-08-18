@@ -106,3 +106,40 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-newcoupon{font-size: 14px;}
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
+
+/*added by jyj for seckill*/
+.font14{font-size: 14px !important;}
+.mt20{margin-top: 20px !important;}
+.mt50{margin-top: 50px;}
+.pull-left{float: left !important;}
+.pull-right{float: right !important;}
+.mt10{margin-top: 10px !important;}
+.ml10{margin-left: 10px;}
+.ml20{margin-left: 20px !important;}
+.input-width{width: 40px !important;}
+.seckill-new-div{margin-top: 10px;margin-right: 50px;margin-bottom: 0px;padding: 15px;background-color:#FFF;}
+.mb30{margin-bottom: 30px !important;}
+.w130{width: 130px !important;}
+.scroll-bar{overflow: hidden;max-height: 1500px;overflow-y: auto;}
+
+.add-link{float:left !important;color:#33CC66;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
+.delete-link{float: right !important;color:#ff0000;margin-right: 50px;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
+
+.send-day .btn{padding:5px 10px;font-size:12px;margin-right:5px;}
+.send-day .active{background:#44b549;color:#fff;border: none;}
+.send-day:active{border:none;}
+.send-day:hover{border:none;}
+.send-day:focus{border:none;}
+.send-day .btn:active{border: none;}
+.send-day .btn:hover{border: none;}
+.send-day .btn:focus{border: none;}
+.send-day .btn-default:active{border: none;}
+.send-day .btn-default:hover{border: none;}
+.send-day .btn-default:focus{border: none;}
+.ver-8 {vertical-align: 8px;}
+.w110{width: 110px;}
+
+.edit-activity{z-index: 2999;font-size: 16px;}
+.spread-activity{z-index: 2999;font-size: 16px;}
+.stop-activity{z-index: 2999;font-size: 16px;}
+/**/

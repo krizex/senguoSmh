@@ -42,7 +42,7 @@
                 </p>
                 <p class="mt5">
                     {% for imgi in data["comment_image_list"] %}
-                        <a href="{{imgi}}" target="_blank" class="comment-img-big"><img src="{{imgi}}" class="pull-left w80 comment-img-big"></a>
+                        <a href="{{imgi}}" target="_blank" class="comment-img-big" title="点击查看大图"><img src="{{imgi}}" class="pull-left w80 comment-img-big"></a>
                     {% end %}
                     <br><br><br><br>
                 </p>
@@ -53,7 +53,7 @@
             </div>
             <div class="col-lg-4 col-md-4">
                 <p>
-                    <span class="tit7"><span class="grey-txt">店铺：</span><a href="/{{data["shop_code"]}}" target="_blank"><span class="text-blue">{{data["shop_name"]}}</span></a></span>
+                    <span class="tit7"><span class="grey-txt">店铺：</span><a href="/{{data['shop_code']}}" target="_blank" title="点击进入店铺商品首页"><span class="text-blue">{{data["shop_name"]}}</span></a></span>
                 </p>
                 <p class="mt5">
                     <span><span class="grey-txt">订单号：</span><span class="text-blue">{{data["order_num"]}}</span></span>
@@ -95,7 +95,7 @@
             </div>
             <div class="col-lg-4 col-md-4">
                 <p>
-                    <span class="tit7"><span class="grey-txt">店铺：</span><a class="shop-link" href="/{{data["shop_code"]}}" target="_blank"><span class="shop-name text-blue">{{data["shop_name"]}}</span></a></span>
+                    <span class="tit7"><span class="grey-txt">店铺：</span><a class="shop-link" href="/{{data['shop_code']}}" target="_blank" title="点击进入店铺商品首页"><span class="shop-name text-blue">{{data["shop_name"]}}</span></a></span>
                 </p>
                 <p class="mt5">
                     <span><span class="grey-txt">订单号：</span><span class="order-num text-blue">{{data["order_num"]}}</span></span>

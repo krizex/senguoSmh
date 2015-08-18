@@ -1591,6 +1591,7 @@ class Marketing(MapBase, _CommonApi):
 	confess_notice = Column(String(500))
 	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
 	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
+	seckill_active=Column(TINYINT,default=0)  #控制店铺秒杀活动是否开启  0:关闭  1:开启
 
 # 商城首页的公告
 class Notice(MapBase):
@@ -1916,3 +1917,32 @@ class Jpushinfo(MapBase, _CommonApi):
 	user_id=Column(Integer,nullable=False)
 	user_type=Column(Integer,nullable=False)  #0  admin 1 customer
 	jpush_id=Column(String(128),nullable=False)
+# 秒杀活动表
+class SeckillActivity(MapBase, _CommonApi):
+	__tablename__='seckill_activity'
+	id=Column(BigInteger,nullable=False,primary_key=True)    #秒杀活动id;设定activity_id为当前秒杀的店铺id字符串加上当前秒杀活动的整形时间戳字符串
+	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+
+	start_time=Column(Integer,nullable=False)
+	end_time=Column(Integer)
+	continue_time=Column(Integer)  #秒杀持续的时间
+
+	activity_status = Column(TINYINT,default=1,nullable=False)	#当前秒杀活动的状态,取值：-1(已停用)，0(已结束),1(未开始)，2(进行中)
+
+# 秒杀商品表
+class SeckillGoods(MapBase, _CommonApi):
+	__tablename__='seckill_goods'
+	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	fruit_id = Column(Integer,ForeignKey(Fruit.id),nullable=False)
+	activity_id=Column(BigInteger,ForeignKey(SeckillActivity.id),nullable=False)   
+
+	charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的计价方式id
+	former_price=Column(Float) 	#原价
+	seckill_price=Column(Float,nullable=False)  	#秒杀价,计价方式与former_price相同
+	storage_piece=Column(Integer)    #当前商品剩余库存换算成当前计价方式的份数，取整
+	activity_piece=Column(Integer)		#活动库存的份数
+	
+	not_pick=Column(Integer)	#未领取的商品的份数，默认等于当前活动库存的份数
+	picked=Column(Integer,default=0)	#已经领取的商品的份数，默认为0
+	ordered=Column(Integer,default=0)	#已经下单的商品的份数，默认为0
+	deleted=Column(Integer,default=0)	#已经被从该秒杀活动中删除的商品的份数，默认为0

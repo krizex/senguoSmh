@@ -1,4 +1,4 @@
-page_shop=1,inputinfo=$("#inputinfo").val();
+var page_shop=1,inputinfo=$("#inputinfo").val();
 var apply_page = 1;
 var apply_status = "all_temp";
 $(document).ready(function(){
@@ -32,6 +32,22 @@ $(document).ready(function(){
             searchshop(page_shop);
         }
     });
+    // added by jyj 2015-8-11
+    var out_link = $.getUrlParam('out_link');
+    if (out_link == 'true'){
+          var data_id = $.getUrlParam('data_id');
+          var if_stop='true';
+          var url = '/super/shopauth?page=0&&out_link=true&&data_id=' + data_id + '&&if_stop=' + if_stop;
+          $("#authPrePage").hide();
+          $("#authNextPage").hide();
+
+          var stop_flag = $.getUrlParam('if_stop');
+          if (stop_flag != 'true'){
+                window.location.href = url;
+          }
+    }
+    // 
+
     /*if(localStorage.getItem("itemIndex")){
         $(".shop-manage-nav li").removeClass("active").eq(localStorage.getItem("itemIndex")).addClass("active");
     }else{
@@ -149,6 +165,11 @@ function insertShop(page){
                                     //delete by jyj 2015-6-22    
 
                                     var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                                    if (shop.auth_type != '未认证'){
+                                         var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
+                                        $item.find(".auth-link").attr("href",auth_link_url);
+                                    }
+    
                                     $item.find(".uauth_type").html(shop.auth_type);
                                     $item.find(".uadmin_nickname").html(shop.admin_nickname);
                                      $item.find(".uadmin_link").attr("href",admin_link_url);
@@ -346,6 +367,11 @@ function searchshop(page){
                                             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                         }     
                                         var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                                        if (shop.auth_type != '未认证'){
+                                             var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
+                                            $item.find(".auth-link").attr("href",auth_link_url);
+                                        }
+
                                         $item.find(".uadmin_link").attr("href",admin_link_url);
                                         $item.find(".uauth_type").html(shop.auth_type);
                                         $item.find(".uadmin_nickname").html(shop.admin_nickname);
