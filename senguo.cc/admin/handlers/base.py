@@ -27,6 +27,11 @@ from functools import partial, wraps
 import chardet
 import random
 
+# 导入推送关的类
+import jpush as jpush
+from libs.phonepush.jpush.push import core,payload,audience
+from libs.phonepush.conf import app_key, master_secret
+
 
 # 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
@@ -316,6 +321,10 @@ class GlobalBaseHandler(BaseHandler):
 			name ='筐'
 		elif unit == 11 :
 			name ='包'
+		elif unit == 12:
+			name ='今天价'
+		elif unit == 13:
+			name ='明天价'
 		else:
 			name =''
 		return name
@@ -805,6 +814,18 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			elif wireless_type == 1:
 				_action = "fyprint"
 			self.autoPrint(session,order.id,order.shop,_action)
+
+		# 给管理员app端推送订单生成提示
+		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
+		if devices:
+			_jpush = jpush.JPush(app_key, master_secret)
+			push = _jpush.create_push()
+			push = _jpush.create_push()
+			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
+			push.notification = jpush.notification(alert="您收到了一条新订单，点击查看详情")
+			push.platform = jpush.platform("android")
+			push.send()
 
 	# 发送订单完成模版消息给用户
 	@classmethod
@@ -1548,6 +1569,55 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
 		return self._shop_code
 
+	@property
+	def shop_marketing(self):
+		if hasattr(self, "_shop_marketing"):
+			return self._shop_marketing
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_marketing = shop.marketing.confess_active+shop.marketing.coupon_active
+		else:
+			self._shop_marketing = None
+
+		return self._shop_marketing
+
+	@property
+	def shop_auth(self):
+		if hasattr(self, "_shop_auth"):
+			return self._shop_auth
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_auth = shop.shop_auth
+		else:
+			self._shop_auth = None
+
+		return self._shop_auth
+
+	@property
+	def shop_tpl(self):
+		if hasattr(self, "_shop_tpl"):
+			return self._shop_tpl
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_tpl = shop.shop_tpl
+		else:
+			self._shop_tpl = None
+
+		return self._shop_tpl
+
+
 	def get_phone(self,customer_id):
 		try:
 			account_info  = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -1595,6 +1665,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		tpl_path = ""
 		if tpl_id == 1:
 			tpl_path = "beauty"
+		elif tpl_id == 2:
+			tpl_path = "bingo"
 		else:
 			tpl_path = "customer"
 		return tpl_path

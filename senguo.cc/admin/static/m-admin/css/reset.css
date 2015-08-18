@@ -64,6 +64,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .dgreen{color: #48B6A4!important;}
 .c84{color: #848484 !important;}
 .yellow{color: #fec306 !important;}
+.cfff{color: #fff !important;}
 /*背景色*/
 .bg-white{background-color: #fff !important;}
 /*字体*/
@@ -106,6 +107,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .ml5{margin-left: 5px;}
 .mr10{margin-right: 10px;}
 .mr5{margin-right: 5px;}
+.ml4{margin-left: 4px;}
 .mt-100{margin-top: -100px;}
 .mb8{margin-bottom: 8px;}
 /*高度*/
@@ -134,11 +136,12 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pop-content .button-box button{background:#48b6a4;color:#fff;border-radius:20px;width:35%;height:30px;}
 .pop-content .title{font-size:16px;color:#666;text-align:left;}
 .pop-content .close-btn{position:absolute;right:10px;top:10px;font-size:16px;color:#48b6a4;font-weight:bold;}
+.pop-tpl-bg{background-color: rgba(0,0,0,.7);}
 /*页面提示文字*/
 .no-result{font-size: 14px;text-align: center;color: #999;width: 100%;}
 .order-list-box>p{position: absolute;top: 100px;min-width: 320px;}
 /*加载中动画*/
-.wrap-loading-box{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 0;left: 0;z-index:9999;}
+.wrap-loading-box{width: 100%;height: 100%;position: fixed;background-color: rgba(255,255,255,.4);top: 40px;left: 0;z-index:9999;}
 .loading-box{position: fixed;z-index:9999;top: 50%;left:50%;-webkit-transform:translate(-50%, -50%);display: -webkit-flex;display: flex;-webkit-justify-content: center;justify-content: center;}
 .loading-box .loader {-webkit-align-self: center;align-self: center;width: 99px; text-indent: -9999em;}
 .loading-box .ball {border-radius: 50%;background-color: #fe6a7c;width: 10px; height: 10px;position: absolute;top: 0;left: 0;-webkit-animation: loading 1.2s linear infinite; animation: loading 1.2s linear infinite;}

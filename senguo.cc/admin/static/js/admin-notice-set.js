@@ -1,6 +1,10 @@
+var NoticeEdit;
 $(document).ready(function(){
     //添加公告
     $('.add-new-notice').on('click',function(){
+        if(NoticeEdit){
+            return Tip("请先完成正在编辑的公告");
+        }
         noticeAdd();
     });
     //公告启用状态显示
@@ -20,9 +24,82 @@ $(document).ready(function(){
     $('.notice_edit').on('click',function(){
         noticeEdit($(this));
     });
-}).on('click','.info-edit',function(){
+    var zb_t;
+    window.onbeforeunload = function(){
+        if(NoticeEdit==true){
+            setTimeout(function(){zb_t = setTimeout(onunloadcancel, 0)}, 0);
+            return "当前有公告正在编辑还未保存，确定离开此页？";
+        }
+    }
+    window.onunloadcancel = function(){
+        clearTimeout(zb_t);
+    }
+   var uploader1 = Qiniu.uploader({
+    runtimes: 'html5,flash,html4',
+    browse_button: 'upload-add',
+    container: 'wrap-legal-img',
+    max_file_size: '4mb',
+    filters : {
+        max_file_size : '4mb',//限制图片大小
+        mime_types: [
+            {title : "image type", extensions : "jpg,jpeg,png"}
+        ]
+    },
+    flash_swf_url: 'static/js/plupload/Moxie.swf',
+    dragdrop: false,
+    chunk_size: '4mb',
+    domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
+    uptoken: $('#data').val(),
+    unique_names: false,
+    save_key: false,
+    auto_start: true,
+    init: {
+        'FilesAdded': function (up, files) {
+            var file = files[0];
+            !function(){
+                previewImage(file,function(imgsrc){
+                    $("#add-img").attr("src",imgsrc);
+                })
+            }();
+        },
+        'UploadProgress': function (up, file) {
+        },
+        'FileUploaded': function (up, file, info) {
+            $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
+        },
+        'Error': function (up, err, errTip) {
+            if (err.code == -600) {
+                alert("图片大小不能超过4M哦");
+            } else if (err.code == -601) {
+                alert("图片格式不对哦");
+            } else if (err.code == -200) {
+                alert("当前页面过期，请刷新页面再上传");
+            } else {
+                alert(err.code + ": " + err.message);
+            }
+            up.removeFile(err.file.id);
+        },
+        'Key': function (up, file) {
+            var key = file.id;
+            return key;
+        }
+    }
+});
+}).on("click",".add-new-address1",function(){
+    if(NoticeEdit){
+        return Tip("请先完成正在编辑的公告");
+    }
+    $("#noticeBox").modal("show");
+}).on('click','.notice-edit',function(){
+    if(NoticeEdit){
+        Tip("请先完成正在编辑的公告");
+        return false;
+    }
+    NoticeEdit=true;
     var $this=$(this);
     var parent=$this.parents('.set-list-item');
+    parent.find('.address-show').hide();
+    parent.find('.address-edit').show();
     parent.find('.edit-img').attr("id","upload-per");
     parent.siblings('.set-list-item').find('.edit-img').attr("id","");
     parent.siblings('.set-list-item').find(".address-show").show().siblings(".address-edit").hide();
@@ -141,6 +218,7 @@ function noticeEdit(target){
                 parent.find('.detail').text(detail);
                 parent.find('.address-edit').hide();
                 parent.find('.address-show').show();
+                NoticeEdit=false;
             }
             else return Tip(res.error_text);
         },

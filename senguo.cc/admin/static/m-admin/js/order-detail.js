@@ -3,6 +3,7 @@ $(document).ready(function(){
     width = $(window).width(); 
     //订单状态
     statusText(parseInt($('#status-txt').attr('data-id')));
+    cookie.setCookie("mdetail",1);
 }).on("click","#sure-staff",function(){
     var $this=$(this);
     orderEdit($this,'edit_SH2',$this.attr("data-id")); 
