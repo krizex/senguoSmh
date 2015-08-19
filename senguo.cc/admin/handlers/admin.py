@@ -5218,6 +5218,11 @@ class MarketingSeckill(AdminBaseHandler):
 				seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,former_price=former_price,seckill_price=seckill_price,\
 									storage_piece=storage_piece,activity_piece=activity_piece,not_pick=not_pick,picked=picked,ordered=ordered,deleted=deleted)
 				self.session.add(seckill_goods)
+
+				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
+				sec_fruit.activity_status = 1
+				sec_fruit.seckill_charge_type = charge_type_id
+
 				self.session.commit()
 		elif action == 'seckill_on':
 			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
@@ -5342,64 +5347,81 @@ class MarketingSeckill(AdminBaseHandler):
 			if seckill_goods_id != -1:
 				seckill_goods = self.session.query(models.SeckillGoods).filter_by(id=seckill_goods_id).with_lockmode("update").first()
 				seckill_goods.status = 0
+
+				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
+				sec_fruit.activity_status = 0
+				sec_fruit.seckill_charge_type = 0
+
 				self.session.commit()
 		elif action == 'seckill_edit':
-			activity_id = self.args['activity_id']
-			data = self.args["data"]
-			cur_activity_seckill_goods_id = []
-			query_list = self.session.query(models.SeckillGoods.id).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
-			for item in query_list:
-				cur_activity_seckill_goods_id.append(item[0])
-
-			seckill_goods_id = int(data["seckill_goods_id"])
-			start_time = str(data["start_time"])
-			continue_time_hour = int(data["continue_time_hour"])
-			continue_time_minute = int(data["continue_time_minute"])
-			continue_time_second = int(data["continue_time_second"])
-			fruit_id = int(data["fruit_id"])
-			charge_type_id = int(data["charge_type_id"])
-			former_price = float(data["former_price"])
-			seckill_price = float(data["seckill_price"])
-			storage_piece = int(data["storage_piece"])
-			activity_piece = int(data["activity_piece"])
-
-			 
+			data_array = self.args["data"]
+			activity_data = data_array[0]
+			activity_id = int(activity_data['activity_id'])
 			shop_id = current_shop_id
+
+			start_time = str(activity_data["start_time"])
 			start_time = int(time.mktime(time.strptime(start_time,'%Y-%m-%d %H:%M:%S')))
-			activity_id = activity_id
+			continue_time_hour = int(activity_data["continue_time_hour"])
+			continue_time_minute = int(activity_data["continue_time_minute"])
+			continue_time_second = int(activity_data["continue_time_second"])
 			continue_time = continue_time_second + continue_time_minute*60 + continue_time_hour*60*60
 			end_time = start_time + continue_time
-			activity_status = 1
 
-			not_pick = activity_piece
-			picked = 0
-			ordered = 0
-			deleted = 0
+			activity_query = self.session.query(models.SeckillActivity).filter_by(id=activity_id).with_lockmode('update').first()
+			activity_query.start_time = start_time
+			activity_query.end_time = end_time
+			activity_query.continue_time = continue_time
+			self.session.commit()
 
-			if seckill_goods_id not in cur_activity_seckill_goods_id:
-				seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,former_price=former_price,seckill_price=seckill_price,\
-								storage_piece=storage_piece,activity_piece=activity_piece,not_pick=not_pick,picked=picked,ordered=ordered,deleted=deleted)
-				self.session.add(seckill_goods)
-				self.session.commit()
-			else:
-				seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode("update").first()
-				seckill_goods.fruit_id = fruit_id
-				seckill_goods.activity_id = activity_id
-				seckill_goods.charge_type_id = charge_type_id
-				seckill_goods.former_price = former_price
-				seckill_goods.seckill_price = seckill_price
-				seckill_goods.storage_piece = storage_piece
-				seckill_goods.activity_piece = activity_piece
-				seckill_goods.not_pick = not_pick
-				seckill_goods.picked = picked
-				seckill_goods.ordered = ordered
-				seckill_goods.deleted = deleted
+			for i in range(1,len(data_array)):
+				data = data_array[i]
+				seckill_goods_id = data['seckill_goods_id']
+
+				goods_query = self.session.query(models.SeckillGoods).filter_by(id=seckill_goods_id).with_lockmode('update').first()
+
+				fruit_id = int(data["fruit_id"])
+				charge_type_id = int(data["charge_type_id"])
+				former_price = float(data["former_price"])
+				seckill_price = float(data["seckill_price"])
+				storage_piece = int(data["storage_piece"])
+				activity_piece = int(data["activity_piece"])
+				not_pick = activity_piece
+				picked = 0
+				ordered = 0
+				deleted = 0
+
+				goods_query.fruit_id = fruit_id
+				goods_query.charge_type_id = charge_type_id
+				goods_query.former_price = former_price
+				goods_query.seckill_price = seckill_price
+				goods_query.storage_piece = storage_piece
+				goods_query.activity_piece = activity_piece
+				goods_query.not_pick = not_pick
+				goods_query.picked = picked
+				goods_query.ordered = ordered
+				goods_query.deleted = deleted
+
+				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
+				sec_fruit.activity_status = 1
+				sec_fruit.seckill_charge_type = charge_type_id
+
 				self.session.commit()
 		elif action == 'stop_activity':
 			activity_id = self.args['activity_id']
 			status = self.args['status']
 			seckill_activity = self.session.query(models.SeckillActivity).filter_by(id=activity_id).with_lockmode("update").first()
 			seckill_activity.activity_status = -1
+
+			fruit_stop_list = []
+			fruit_query = self.session.query(models.SeckillGoods.fruit_id).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
+			for item in fruit_query:
+				fruit_stop_list.append(item[0])
+
+			fruit_stop_query = self.session.query(models.Fruit).filter(models.Fruit.id.in_(fruit_stop_list)).with_lockmode("update").all()
+			for item in fruit_stop_query:
+				item.activity_status = 0
+				item.seckill_charge_type = 0
+
 			self.session.commit()
 
 			page_size = 2
@@ -5410,7 +5432,6 @@ class MarketingSeckill(AdminBaseHandler):
 				page_sum = page_sum//page_size + 1
 			if page_sum == 0:
 				page_sum = 1
-			print("####",page_sum)
 			return self.send_success(page_sum = page_sum)
 
 		else:

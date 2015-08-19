@@ -527,13 +527,38 @@ class Discover(CustomerBaseHandler):
 		# added by jyj 2015-8-18 for seckill
 		shop_id = shop.id
 		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active
-		# if seckill_active == 1:
-			
-		# print("####",shop_code)
-		##
+		seckill_text = ''
+		seckill_display_flag = 0
+		if seckill_active == 1:
+			now_time = int(time.time())
+			query1 = self.session.query(models.SeckillActivity.id).filter(models.SeckillActivity.activity_status == 2,models.SeckillActivity.shop_id == shop_id).all()
+			if query1:
+				activity_id = query1[0][0]
+				goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
+				seckill_text = str(goods_count) + '件商品正在火热秒杀中'
+				seckill_display_flag = 1
+			else:
+				one_day_time = 24*60*60
+				now_time = int(time.time())
+				continue_time = int(time.time()) + one_day_time
+				query2 = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status == 1,models.SeckillActivity.start_time > now_time,models.SeckillActivity.start_time < continue_time).\
+								order_by(models.SeckillActivity.start_time).all()
+				if query2:
+					activity_id = query2[0].id
+					goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
+					seckill_time = time.strftime('%H:%M:%S',time.localtime(query2[0].start_time))
+					hh = int(seckill_time[0:2])
+					hour = time.strftime('%H:%M:%S',time.localtime(now_time))
+					hour = int(hour[0:2])
+					if hour <= hh:
+						day = '今天'
+					else:
+						day = '明天'
+					seckill_text = str(goods_count) + '件商品' + day + seckill_time +'大开杀戒'
+					seckill_display_flag = 1
 
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
-			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active)
+			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,seckill_display_flag=seckill_display_flag)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):

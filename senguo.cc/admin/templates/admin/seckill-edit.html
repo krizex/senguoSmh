@@ -24,7 +24,7 @@
                                                                         <col width="14%"/>
                                                                         <col width="86%"/>
                                                           </colgroup>
-                                                          <tbody class="new-seckill-list" activity-id="{{activity_data['activity_id']}}">
+                                                          <tbody class="new-seckill-list" activity-id="{{activity_data['activity_id']}}" activity-data="{{activity_data}}" activity-status="{{status}}">
                                                                         <tr>
                                                                                        <td class="ver-top"><span class="ver-5">开始时间</span></td>
                                                                                        <td>
@@ -233,14 +233,14 @@
                                                                                                                                                 </tr>
                                                                                                                                                 <tr>
                                                                                                                                                                <td class="ver-top"><span class="ver-5">活动库存</span></td>
-                                                                                                                                                               <td class="activity-store"><input type="text" class="w130 activity-store-input" value="{{goods_item['cur_activity_piece']}}" data-id="{{goods_item['storage_piece']}}"/><span class="ml10 activity-store-charge-type" charge_type_id="{{goods_item['charge_type_id']}}">{{goods_item['cur_activity_piece_text']}}</span></td>
+                                                                                                                                                               <td class="activity-store" activity-piece-value="{{goods_item['cur_activity_piece']}}"><input type="text" class="w130 activity-store-input" value="{{goods_item['cur_activity_piece']}}" data-id="{{goods_item['storage_piece']}}"/><span class="ml10 activity-store-charge-type" charge_type_id="{{goods_item['charge_type_id']}}">{{goods_item['cur_activity_piece_text']}}</span></td>
                                                                                                                                                 </tr>
                                                                                                                                   </tbody>
                                                                                                                     </table>
                                                                                                      </div>
                                                                                                       <div>　
-                                                                                                                    <a href="javascript:;" class="add-link {% if i < len(goods_data_list) - 1%} hidden {% end %}" >+新建</a>
-                                                                                                                    <a href="javascript:;" class="delete-link {% if len(goods_data_list) == 1%}hidden{% end %}">删除</a>
+                                                                                                                    <a href="javascript:;" class="add-link {% if i < len(goods_data_list) - 1%} hidden {% end %} {% if status == 2%}hidden{% end %}" >+新建</a>
+                                                                                                                    <a href="javascript:;" class="delete-link {% if len(goods_data_list) == 1%}hidden{% end %} {% if status == 2%}hidden{% end %}">删除</a>
                                                                                                      </div> 
                                                                                        </td>
                                                                         </tr>
