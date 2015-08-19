@@ -5182,44 +5182,43 @@ class MarketingSeckill(AdminBaseHandler):
 		current_customer_id=self.current_user.id
 
 		if action == "seckill_new":
-			data = self.args["data"]
-
-			start_time = str(data["start_time"])
-			continue_time_hour = int(data["continue_time_hour"])
-			continue_time_minute = int(data["continue_time_minute"])
-			continue_time_second = int(data["continue_time_second"])
-			fruit_id = int(data["fruit_id"])
-			charge_type_id = int(data["charge_type_id"])
-			former_price = float(data["former_price"])
-			seckill_price = float(data["seckill_price"])
-			storage_piece = int(data["storage_piece"])
-			activity_piece = int(data["activity_piece"])
-
-			 
+			data_array = self.args["data"]
+			activity_data = data_array[0]
 			shop_id = current_shop_id
+
+			start_time = str(activity_data["start_time"])
 			start_time = int(time.mktime(time.strptime(start_time,'%Y-%m-%d %H:%M:%S')))
-			activity_id = int(str(shop_id)+str(start_time))
+			continue_time_hour = int(activity_data["continue_time_hour"])
+			continue_time_minute = int(activity_data["continue_time_minute"])
+			continue_time_second = int(activity_data["continue_time_second"])
 			continue_time = continue_time_second + continue_time_minute*60 + continue_time_hour*60*60
 			end_time = start_time + continue_time
 			activity_status = 1
 
-			not_pick = activity_piece
-			picked = 0
-			ordered = 0
-			deleted = 0
-
-			seckill_activity_list = []
-			query_list = self.session.query(models.SeckillActivity.id).all()
-			for item in query_list:
-				seckill_activity_list.append(item[0])
-			if activity_id not in seckill_activity_list:
-				seckill_activity = models.SeckillActivity(id=activity_id,shop_id=shop_id,start_time=start_time,end_time=end_time,continue_time=continue_time,activity_status=activity_status)
-				self.session.add(seckill_activity)
-				self.session.commit()
-			seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,former_price=former_price,seckill_price=seckill_price,\
-								storage_piece=storage_piece,activity_piece=activity_piece,not_pick=not_pick,picked=picked,ordered=ordered,deleted=deleted)
-			self.session.add(seckill_goods)
+			seckill_activity = models.SeckillActivity(shop_id=shop_id,start_time=start_time,end_time=end_time,continue_time=continue_time,activity_status=activity_status)
+			self.session.add(seckill_activity)
 			self.session.commit()
+
+			activity_id = self.session.query(models.SeckillActivity.id).order_by(desc(models.SeckillActivity.id)).with_lockmode("update").first()[0]
+
+			for i in range(1,len(data_array)):
+				data = data_array[i]
+
+				fruit_id = int(data["fruit_id"])
+				charge_type_id = int(data["charge_type_id"])
+				former_price = float(data["former_price"])
+				seckill_price = float(data["seckill_price"])
+				storage_piece = int(data["storage_piece"])
+				activity_piece = int(data["activity_piece"])
+				not_pick = activity_piece
+				picked = 0
+				ordered = 0
+				deleted = 0
+
+				seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,former_price=former_price,seckill_price=seckill_price,\
+									storage_piece=storage_piece,activity_piece=activity_piece,not_pick=not_pick,picked=picked,ordered=ordered,deleted=deleted)
+				self.session.add(seckill_goods)
+				self.session.commit()
 		elif action == 'seckill_on':
 			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
 			query.seckill_active = 1
@@ -5227,6 +5226,10 @@ class MarketingSeckill(AdminBaseHandler):
 		elif action == 'seckill_off':
 			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
 			query.seckill_active = 0
+
+			query_list = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status.in_([1,2])).with_lockmode("update").all()
+			for item in query_list:
+				item.activity_status = -1
 			self.session.commit()
 		elif action == 'get_sec_item':
 			page = self.args['page']

@@ -17,6 +17,8 @@ var cur_detail_page = 0;
 var sec_global_status = '1';
 var spread_btn_status = 0;
 
+var data_array = new Array();
+
 $(document).ready(function(){
 	cur_action = $('.action-div').attr('data-value');
 	if (cur_action == 'seckill'){
@@ -93,17 +95,22 @@ $(document).ready(function(){
     	var $this = $(this);
     	switch_status = parseInt($this.attr("data-status"));
     	if (switch_status == 1){
-    		changeSeckillActive('seckill_off');
-    		$this.attr("data-status","0");
-    		$(".seckill-manage").hide();
-    		$this.attr({'data-status': 0}).addClass('stop-mode').removeClass('work-mode').find('.tit').text('未启用');
-
+    		if (confirm("停用以后，当前未开始和进行中的所有秒杀活动都将停用并且不能重新开启。您确认停用吗？")){
+			changeSeckillActive('seckill_off');
+	    		$this.attr("data-status","0");
+	    		$(".seckill-manage").hide();
+	    		$this.attr({'data-status': 0}).addClass('stop-mode').removeClass('work-mode').find('.tit').text('未启用');
+		}
+    		
     	}
     	else if (switch_status ==0) {
-    		changeSeckillActive('seckill_on');
-    		$this.attr("data-status","1");
-    		$(".seckill-manage").show();
-    		$this.attr({'data-status': 1}).removeClass('stop-mode').addClass('work-mode').find('.tit').text('已启用');
+    		if (confirm("开启商品秒杀即可使用商品秒杀功能，开展商品秒杀活动。您确定开启吗？")){
+	    		changeSeckillActive('seckill_on');
+	    		getActivityItem('get_sec_item',sec_global_status,0);
+	    		$this.attr("data-status","1");
+	    		$(".seckill-manage").show();
+	    		$this.attr({'data-status': 1}).removeClass('stop-mode').addClass('work-mode').find('.tit').text('已启用');
+    		}
     	}
 }).on('click','.seckill-list tr',function(){
 	var $this = $(this);
@@ -419,7 +426,7 @@ $(document).ready(function(){
 	e.stopPropagation();
 	var $this = $(this);
 	var activity_id = $this.closest('tr').attr('data-id');
-	if (confirm("确实要停用吗？")){
+	if (confirm("该秒杀活动停用以后将不能重新开启，您确认停用吗？")){
         		onStopActivityClick(activity_id,sec_global_status);
 		$this.closest('tr').remove();
         	}
@@ -495,6 +502,15 @@ function createSeckill(action){
 	var continue_time_minute = $(".choose-minute").text();
 	var continue_time_second = $(".choose-second").text();
 
+	var activity_data = {
+		start_time:start_time,
+		continue_time_hour:continue_time_hour,
+		continue_time_minute:continue_time_minute,
+		continue_time_second:continue_time_second
+	}
+	data_array[0] = activity_data;
+
+	var i = 1;
 	$('.new-seckill-item').each(function(){
 		var $this = $(this);
 		
@@ -511,13 +527,10 @@ function createSeckill(action){
 
 		var url = "";
 
+		var data = {};
 		if (action == 'seckill_edit'){
-			var data = {
+			data = {
 				seckill_goods_id : seckill_goods_id,
-				start_time : start_time,
-				continue_time_hour : continue_time_hour,
-				continue_time_minute : continue_time_minute,
-				continue_time_second : continue_time_second,
 				fruit_id : fruit_id,
 				charge_type_id : charge_type_id,
 				former_price : former_price,
@@ -525,18 +538,10 @@ function createSeckill(action){
 				storage_piece : storage_piece,
 				activity_piece : activity_piece
 			};
-			var args={
-				data : data,
-				activity_id : activity_id,
-				action : action
-			};
+			
 		}
 		else{
-			var data = {
-				start_time : start_time,
-				continue_time_hour : continue_time_hour,
-				continue_time_minute : continue_time_minute,
-				continue_time_second : continue_time_second,
+			data = {
 				fruit_id : fruit_id,
 				charge_type_id : charge_type_id,
 				former_price : former_price,
@@ -544,29 +549,53 @@ function createSeckill(action){
 				storage_piece : storage_piece,
 				activity_piece : activity_piece
 			};
-			var args={
-				data : data,
-				action : action
-			};
+			
 		}
-		
-		$.postJson(url,args,function(res){
-			if(res.success){
-
-			}
-			else{
-				Tip(res.error_text);
-				stop_flag = true;
-			}
-		},function(){Tip('网络好像不给力呢~ ( >O< ) ~');stop_flag = true;});
+		data_array[i] = data;
+		i ++;	
 	});
+	
+	var args = {};
+	var url = "";
+	if (action == 'seckill_edit'){
+		args={
+			data : data_array,
+			activity_id : activity_id,
+			action : action
+		};
+	}
+	else if (action == 'seckill_new'){
+		args={
+			data : data_array,
+			action : action
+		};
+	}
+
+	$.postJson(url,args,function(res){
+		if(res.success){
+
+		}
+		else{
+			Tip(res.error_text);
+			stop_flag = true;
+		}
+	},function(){Tip('网络好像不给力呢~ ( >O< ) ~');stop_flag = true;});
+
+
 	if (stop_flag){
 		create_seckill_lock = "off";
 		return false;
 	}
 	create_seckill_lock = "off";
 
-	Tip('恭喜您，编辑秒杀活动成功！')
+	var action = $.getUrlParam('action');
+	if (action == 'seckill_new'){
+		Tip('恭喜您，新建秒杀活动成功！')
+	}
+	else if (action == 'seckill_edit'){
+		Tip('恭喜您，编辑秒杀活动成功！')
+	}
+	
 	var activity_status = $.getUrlParam('status');
 	setTimeout(function(){
 		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status=" + activity_status;
@@ -671,6 +700,7 @@ function getActivityItem(action,status,page,cutover){
 	                                                                        +'<td colspan="1" class="operate">'
 	                                                                                       +'<a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>'
 	                                                                                       +'<a href="javascript:;" class="ml10  spread-activity" title="点击推广此秒杀活动">推广</a>'
+	                                                                                       +'<a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>'
 	                                                                                       +'<div class="sw-er-tip spread-position invisible" title="">'+
                                                                                               		'<div class="top-arr">'+
                                                                                                      		'<span class="line1"></span>'+

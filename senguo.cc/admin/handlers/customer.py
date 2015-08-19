@@ -140,9 +140,9 @@ class Access(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
 		# todo: handle state
-		code =self.args["code"]
+		code = self.args["code"]
 		mode = self.args["mode"]
-		if mode not in ["mp", "kf"]:
+		if mode not in ["mp", "kf", "iOS"]:
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
@@ -161,7 +161,6 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
-
 		
 		elif self._action=="weixinphone":
 			openid=str(self.args["openid"])
@@ -190,6 +189,7 @@ class Third(CustomerBaseHandler):
 			else:
 				self.set_current_user(q,domain = ROOT_HOST_NAME)
 			return self.redirect(self.reverse_url("customerProfile"))
+
 		elif self._action=="weixinphoneadmin":
 			openid=str(self.args["openid"])
 			unionid=str(self.args["unionid"])
