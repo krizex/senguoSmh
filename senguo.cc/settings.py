@@ -2,11 +2,16 @@ ROOT_HOST_NAME = "senguo.cc"
 # 森果开放平台 微信开放平台网站
 KF_APPID = "wxcaaf6943cacada36"
 KF_APPSECRET = "a60b4e98ad74ac23bdb9dd81db8423b1"
-APP_OAUTH_CALLBACK_URL = "http://auth.senguo.cc"
 
 # 森果服务号公众平台
 MP_APPID = "wx0ed17cdc9020a96e"
 MP_APPSECRET = "cef2c4c6a59e6d0ae8b5a3f741a9c788"
+
+# 森果开放平台 iOS登录
+iOS_APPID = "wxd340871770d3504d"
+iOS_APPSECRET = "da39bd460fc65116d3cbae6ae9de6173"
+
+APP_OAUTH_CALLBACK_URL = "http://auth.senguo.cc"
 
 # QQ授权
 QQ_APPID = '101221864'

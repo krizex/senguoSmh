@@ -7,6 +7,7 @@ $(document).ready(function(){
     $(".add-btn").hide();
     $(".import-btn").hide();
     getGoods(parseInt($(".shop_name").attr("data-id")));
+    type=$(".import-type .active").index();
 }).on("click",".import-type li",function(){
     var index = $(this).index();
     // if(index==1){
@@ -21,6 +22,7 @@ $(document).ready(function(){
         $(".shop-list").empty();
     }
 }).on("click","#commit",function(){
+    type=$(".import-type .active").index()
     if(parseInt($("#choose_txt").html())==0){
         Tip("您还未选中任何商品");
         return false;
@@ -32,7 +34,6 @@ $(document).ready(function(){
         if(type==4){
            importYouzan($(this)); 
         }
-        
     }
 }).on("click",".shop-list li",function(){
     $(this).toggleClass("active");
@@ -71,7 +72,7 @@ $(document).ready(function(){
 });
 var goods_item='<li data-id={{id}}>'+
                     '<i class="checkbox-btn"></i>'+
-                    '<img class="shop-img" src="{{logo}}" alt="店铺logo"/>'+
+                    '<img class="shop-img" src="{{logo}}?imageView2/1/w/100/h/100" alt="商品图片"/>'+
                     '<div class="shop-item">'+
                         '<p class="c333" title="{{name}}">{{name}}</p>'+
                         '{{ if charge_types }}<p class="c666">价格{{charge_types["price"]}}元/{{charge_types["unit"]}}</p>{{/if}}'+
@@ -79,7 +80,7 @@ var goods_item='<li data-id={{id}}>'+
                 '</li>';
 var goods_item2='<li>'+
                     '<i class="checkbox-btn"></i>'+
-                    '<img class="shop-img" src="" alt="店铺logo"/>'+
+                    '<img class="shop-img" src="" alt="商品图片"/>'+
                     '<div class="shop-item">'+
                         '<p class="c333 name" title=""></p>'+
                         '<p class="c666">价格<span class="price"></span>元/<span class="unit"></span></p>'+
@@ -95,9 +96,9 @@ function getGoods(shop_id){
     var url = "";
     $(".shop-list").empty();
     $.postJson(url,args,function(res){
-         if(res.success){
-             var goods_list=res.goods_list;
-             for(var key in goods_list){
+        if(res.success){
+            var goods_list=res.goods_list;
+            for(var key in goods_list){
                 var good=goods_list[key];
                 var render=template.compile(goods_item);
                 var html=render({
@@ -108,10 +109,10 @@ function getGoods(shop_id){
                     intro:good["intro"]
                 });
                 $(".shop-list").append(html);
-             }
-         }else{
+            }
+        }else{
             return Tip(res.error_text);
-         }
+        }
     });
 }
 
@@ -134,15 +135,15 @@ function importGoods($btn){
     };
     $btn.attr("data-flag","off");
     $.postJson(url,args,function(res){
-         if(res.success){
+        if(res.success){
             Tip("导入成功");
-             setTimeout(function(){
-                 window.location.href='/admin/goods/all';
-             },1500);
-         }else{
+            setTimeout(function(){
+                window.location.href='/admin/goods/all';
+            },1500);
+        }else{
             $btn.attr("data-flag","on");
             return Tip(res.error_text);
-         }
+        }
     });
 }
 
@@ -169,9 +170,9 @@ function checkyouzan($btn){
     $(".shop-list").empty();
     $btn.attr("data-flag","off");
     $.postJson(url,args,function(res){
-         if(res.success){
-             var goods_list=res.goods_list;
-             for(var key in goods_list){
+        if(res.success){
+            var goods_list=res.goods_list;
+            for(var key in goods_list){
                 var good=goods_list[key];
                 var $item=$(goods_item2);
                 var logo=good["imgurl"];
@@ -182,17 +183,17 @@ function checkyouzan($btn){
                 var imgs=good["imgs"];
                 //console.log(name);
                 $item.attr({"data-id":key,"data-imgs":imgs,"data-intro":intro,"data-name":name,"data-price":charge_types["price"]});
-                $item.find(".shop-img").attr("src",logo);
+                $item.find(".shop-img").attr("src",logo+"?imageView2/1/w/100/h/100");
                 $item.find(".name").text(name);
                 $item.find(".price").text(charge_types["price"]);
                 $item.find(".unit").text(charge_types["unit"]);
                 $(".shop-list").append($item);
-             }
+            }
             $btn.attr("data-flag","on");
-         }else{
-             $btn.attr("data-flag","on");
+        }else{
+            $btn.attr("data-flag","on");
             return Tip(res.error_text);
-         }
+        }
     });
 }
 
@@ -220,14 +221,14 @@ function importYouzan($btn){
     };
     $btn.attr("data-flag","off");
     $.postJson(url,args,function(res){
-         if(res.success){
+        if(res.success){
             Tip("导入成功");
-             setTimeout(function(){
-                 window.location.href='/admin/goods/all';
-             },1500);
-         }else{
+            setTimeout(function(){
+                window.location.href='/admin/goods/all';
+            },1500);
+        }else{
             $btn.attr("data-flag","on");
             return Tip(res.error_text);
-         }
+        }
     });
 }

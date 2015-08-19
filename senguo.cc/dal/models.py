@@ -536,7 +536,7 @@ class Shop(MapBase, _CommonApi):
 	area_type = Column(Integer,default=0) #区域类型
 	roundness = Column(String(50)) #圆心
 	area_radius = Column(Integer,default=0) #半径
-	area_list = Column(String(1000)) #区域数组
+	area_list = Column(String(2048)) #区域数组
 
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)

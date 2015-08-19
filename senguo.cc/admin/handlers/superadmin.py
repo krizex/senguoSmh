@@ -504,9 +504,9 @@ class ShopManage(SuperBaseHandler):
 				if shop_frist.shop_auth==0:
 					return self.send_fail("该商家第一个店铺还未进行认证")
 				elif shop_frist.shop_auth in [1,4] and shops.count() >= 5:
-					return self.send_fail("该商家第首个店铺为个人认证,最多只可申请5个店铺")
+					return self.send_fail("该商家第首个店铺为个人认证，最多只可申请5个店铺")
 				elif shop_frist.shop_auth in [2,3] and shops.count() >= 15:
-					return self.send_fail("该商家第首个店铺为企业认证,最多只可申请15个店铺")
+					return self.send_fail("该商家第首个店铺为企业认证，最多只可申请15个店铺")
 
 		if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
 			shop_temp.update(self.session, shop_status=3,
