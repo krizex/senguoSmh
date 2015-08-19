@@ -1920,7 +1920,7 @@ class Jpushinfo(MapBase, _CommonApi):
 # 秒杀活动表
 class SeckillActivity(MapBase, _CommonApi):
 	__tablename__='seckill_activity'
-	id=Column(BigInteger,nullable=False,primary_key=True)    #秒杀活动id;设定activity_id为当前秒杀的店铺id字符串加上当前秒杀活动的整形时间戳字符串
+	id=Column(Integer,nullable=False,primary_key=True,autoincrement=True)    #秒杀活动id;
 	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
 
 	start_time=Column(Integer,nullable=False)
@@ -1934,7 +1934,7 @@ class SeckillGoods(MapBase, _CommonApi):
 	__tablename__='seckill_goods'
 	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
 	fruit_id = Column(Integer,ForeignKey(Fruit.id),nullable=False)
-	activity_id=Column(BigInteger,ForeignKey(SeckillActivity.id),nullable=False)   
+	activity_id=Column(Integer,ForeignKey(SeckillActivity.id),nullable=False)   
 
 	charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的计价方式id
 	former_price=Column(Float) 	#原价
