@@ -518,7 +518,7 @@ class ShopApply(FruitzoneBaseHandler):
 			return self.send_success()
 
 class ShopApplyImg(FruitzoneBaseHandler):
-	def get(self)
+	def get(self):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
 		token = q.upload_token(BUCKET_SHOP_IMG, expires=120)
 		return self.send_success(token=token, key=str(time.time()))
