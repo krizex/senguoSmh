@@ -339,12 +339,12 @@ class Home(CustomerBaseHandler):
 	def get(self):
 		if not self.current_user:
 			return self.redirect(self.reverse_url("ApplyLogin"))
-		try:
-			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
-		except:
-			if_admin = None
-		if if_admin:
-			return self.redirect(self.reverse_url("switchshop"))
+		# try:
+		# 	if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		# except:
+		# 	if_admin = None
+		# if if_admin:
+		# 	return self.redirect(self.reverse_url("switchshop"))
 		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
