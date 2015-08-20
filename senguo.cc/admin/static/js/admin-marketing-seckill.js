@@ -22,6 +22,9 @@ $(document).ready(function(){
 	cur_action = $('.action-div').attr('data-value');
 	if (cur_action == 'seckill'){
 		sec_global_status = $.getUrlParam('status');
+		if (!sec_global_status){
+			sec_global_status = '1';
+		}
 		seckill_active = $('.open-switch').attr('data-status');
 		if (seckill_active == 0){
 			$(".seckill-manage").hide();

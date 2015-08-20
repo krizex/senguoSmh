@@ -5312,6 +5312,7 @@ class MarketingSeckill(AdminBaseHandler):
 					activity_item['goods_list'] += split_list[len(split_list)-1]
 
 				output_data.append(activity_item)
+
 			return self.send_success(output_data = output_data,page_sum=page_sum)
 		elif action == 'get_detail_item':
 			activity_id = self.args['activity_id']

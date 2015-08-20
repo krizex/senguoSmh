@@ -767,6 +767,7 @@ class Seckill(CustomerBaseHandler):
 				else:
 					tmp = output_data[i][1][j]['date_text'] 
 					output_data[i][1][j]['date_text'] = str(int(tmp[5:7])) + '月' + str(int(tmp[8:10]))  +'日'
+		print(output_data)
 		return self.render("seckill/seckill.html",output_data=output_data,shop_code=shop_code)
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
@@ -793,7 +794,7 @@ class Seckill(CustomerBaseHandler):
 			goods_item['price_dif'] = goods.former_price - goods.seckill_price
 			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)
-			
+
 		return self.send_success(output_data = output_data)
 
 #折扣
