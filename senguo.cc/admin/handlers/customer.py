@@ -137,7 +137,7 @@ class Access(CustomerBaseHandler):
 		self.set_current_user(u,domain = ROOT_HOST_NAME)
 		return self.redirect(next_url)
 
-	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode", "user_type?", "jpush_id?")
 	def handle_oauth(self,next_url):
 		# todo: handle state
 		code = self.args["code"]
@@ -149,6 +149,21 @@ class Access(CustomerBaseHandler):
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
+
+		# 如果通过iOS微信登录，则注册推送设备信息
+		if mode == "iOS":
+			user_id = u.id
+			user_type = int(self.args["user_type"])
+			jpush_id = self.args["jpush_id"]
+			q = self.session.query(models.Jpushinfo).filter_by(user_id=user_id,user_type=user_type).first()
+			if q:
+				q.update(self.session,jpush_id=jpush_id)
+				self.session.commit()
+			else:
+				new_jpushinfo = models.Jpushinfo(user_id=user_id,user_type=user_type,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
+
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		return self.redirect(next_url)
 
