@@ -1,4 +1,3 @@
-
 var seckill_active = 0;
 var create_seckill_lock = "off";
 var cur_action='';
@@ -22,6 +21,7 @@ var data_array = new Array();
 $(document).ready(function(){
 	cur_action = $('.action-div').attr('data-value');
 	if (cur_action == 'seckill'){
+		sec_global_status = $.getUrlParam('status');
 		seckill_active = $('.open-switch').attr('data-status');
 		if (seckill_active == 0){
 			$(".seckill-manage").hide();
@@ -85,6 +85,7 @@ $(document).ready(function(){
 		fruit_id_charge_type = eval($('.choose-charge-type').attr('data-value'))[0];
 	}
 	else if (cur_action == 'seckill_edit'){
+		sec_global_status = $.getUrlParam('status');
 		$new_seckill_item = $('.new-seckill-item-clone').clone();
 		$new_seckill_item.removeClass('hidden');
 		group_fruit = eval($('.choose-goods').attr('data-value'))[0];
@@ -142,6 +143,25 @@ $(document).ready(function(){
 	cancelSeckill();
 }).on('click','.edit-ok-btn',function(){
 	if(create_seckill_lock == "off"){
+		var status = $.getUrlParam('status');
+		if (status == '2'){
+			var activity_data = $('.new-seckill-list').attr('activity-data');
+			activity_data = eval("("+activity_data+")");
+			var hour = parseInt(activity_data['hour']);
+			var minute = parseInt(activity_data['minute']);
+			var second = parseInt(activity_data['second']);
+			var former_time = hour*3600 + minute*60 + second;
+			var hh = parseInt($('.choose-hour').text());
+			var mm = parseInt($('.choose-minute').text());
+			var ss = parseInt($('.choose-second').text());
+			var now_time = hh*3600 + mm * 60 + ss;
+			
+			if (now_time < former_time){
+				Tip('修改后的持续时间必须不短于修改前的持续时间,请重新设置持续时间！');
+				return false;
+			}
+
+		}
 		createSeckill('seckill_edit');	
 	}
 	else{
@@ -489,6 +509,15 @@ function createSeckill(action){
 			stop_flag = true;
 			Tip(goods_name+'的秒杀信息填写不完整！');
 		}
+		var activity_status = $.getUrlParam('status');
+		if (action == 'seckill_edit' && activity_status == '2'){
+			var former_activity_piece = parseInt($this.find('.activity-store').attr('activity-piece-value'));
+			var now_activity_piece = parseInt($this.find('.activity-store-input').val());
+			if (now_activity_piece < former_activity_piece){
+				stop_flag = true;
+				Tip('修改后的活动库存必须不少于修改前的活动库存，请重新填写！');
+			}
+		}
 	});
 	if (stop_flag){
 		create_seckill_lock = "off";
@@ -507,6 +536,15 @@ function createSeckill(action){
 		continue_time_hour:continue_time_hour,
 		continue_time_minute:continue_time_minute,
 		continue_time_second:continue_time_second
+	}
+	if (action == 'seckill_edit'){
+		activity_data = {
+			activity_id:activity_id,
+			start_time:start_time,
+			continue_time_hour:continue_time_hour,
+			continue_time_minute:continue_time_minute,
+			continue_time_second:continue_time_second
+		}
 	}
 	data_array[0] = activity_data;
 
@@ -557,19 +595,11 @@ function createSeckill(action){
 	
 	var args = {};
 	var url = "";
-	if (action == 'seckill_edit'){
-		args={
-			data : data_array,
-			activity_id : activity_id,
-			action : action
-		};
-	}
-	else if (action == 'seckill_new'){
-		args={
-			data : data_array,
-			action : action
-		};
-	}
+
+	args={
+		data : data_array,
+		action : action
+	};
 
 	$.postJson(url,args,function(res){
 		if(res.success){
@@ -596,15 +626,13 @@ function createSeckill(action){
 		Tip('恭喜您，编辑秒杀活动成功！')
 	}
 	
-	var activity_status = $.getUrlParam('status');
 	setTimeout(function(){
-		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status=" + activity_status;
+		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status=" + sec_global_status;
 	}, 300);
 	
 }
 
 function cancelSeckill(){
-	console.log(sec_global_status);
 	if (confirm("当前编辑的秒杀商品还没有保存，您确定退出编辑吗？")){
         		window.location.href="/admin/marketing/seckill?action=seckill&page=0&status="+sec_global_status ;
         	}

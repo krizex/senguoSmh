@@ -29,9 +29,15 @@ $(document).ready(function(){
         $parent.children(".num-txt").html(num);
     }
     $parent.attr("data-num",num);
-}).on("click",".stime-list li",function(){
+}).on("click",".stime-list li",function(){//选择时间段
     $(".stime-list li").removeClass("active");
     $(this).addClass("active");
+}).on("click",".seckill-btn",function(){//抢
+    $(this).addClass("hide");
+    $(".seckill-btn-more").removeClass("hide");
+}).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
+    var shop_code = $("#shop_code").val();
+    window.location.href="/"+shop_code;
 });
 
 function getList(id){
@@ -41,32 +47,38 @@ function getList(id){
     var url = "";
     $.getJSON(url,args,function(res){
         if(res.success){
-
+            var data = res.data;
+            insertGoods(data);
         }
     });
 }
 function insertGoods(data){
     for(var i=0; i<data.length; i++){
         var $item = $("#seckill-item").children("li").clone();
-
+        $item.attr("seckill-id",data.goods_seckill_id).attr("fruit-id",data.fruit_id).attr("charge_type_id",data.charge_type_id);
+        $item.find(".image").attr("src",data.img_url);
+        $item.find(".store-num").html(data.activity_piece);
+        $item.find(".nm-name").html(data.goods_name);
+        $item.find(".price-bo").html(data.charge_type_text);
+        $item.find(".price-dif").html(data.price_dif);
         $("#seckill_list").append($item);
     }
 }
 
-function countTime(){
-    var time_end = new Date("2015-08-20 11:21:00").getTime();
+function countTime(time){
+    var time_end = new Date("2015-08-21 11:21:00").getTime();
     var time_now = new Date().getTime();
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
     if(time_distance >= 0){
         // 天时分秒换算
-        int_day = Math.floor(time_distance/86400000)
+        int_day = Math.floor(time_distance/86400000);
         time_distance -= int_day * 86400000;
-        int_hour = Math.floor(time_distance/3600000)
+        int_hour = Math.floor(time_distance/3600000);
         time_distance -= int_hour * 3600000;
-        int_minute = Math.floor(time_distance/60000)
+        int_minute = Math.floor(time_distance/60000);
         time_distance -= int_minute * 60000;
-        int_second = Math.floor(time_distance/1000)
+        int_second = Math.floor(time_distance/1000);
         // 时分秒为单数时、前面加零站位
         if(int_hour < 10)
             int_hour = "0" + int_hour;
@@ -84,5 +96,8 @@ function countTime(){
         setTimeout("countTime()",1000);
     }else{
         Tip("结束了");
+        setTimeout(function(){
+            window.location.reload(true);
+        },1000);
     }
 }

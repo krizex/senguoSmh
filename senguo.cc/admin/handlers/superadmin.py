@@ -2563,8 +2563,6 @@ class CheckCash(SuperBaseHandler):
 		if level == 1:
 			return self.send_error(404)
 
-		print(self.timestamp_to_str(99999999))
-
 		return self.render("superAdmin/balance-check.html",level=level,context=dict(page='check'))
 
 	@tornado.web.authenticated

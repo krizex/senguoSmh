@@ -30,12 +30,12 @@
     {% end %}
     {%end%}
 
-    {% if seckill_active == 1%}
+    {% if seckill_active == 1 and seckill_display_flag == 1%}
     <li class="title clearfix bg-white font14 seckill">
-        <a href="{% if a==0%}/coupon/profile?action=get_one&coupon_id=-1{% else %}/coupon/profile?action=get_all{% end %}" class="text-grey3 confess-wall">
+        <a href="{{reverse_url('ConfessionSeckill',handler.shop_code)}}" class="text-grey3 confess-wall">
             <span class="pull-right imore"></span>
             <i class="pull-left"></i>
-            <span class="pull-left confess-text">秒杀活动<span class="font12 text-grey ml6">15件商品11点大开杀戒</span></span>
+            <span class="pull-left confess-text">秒杀活动<span class="font12 text-grey ml6">{{seckill_text}}</span></span>
             <span class="confess-circle circle bg-pink text-white hidden">10</span>
         </a>
     </li>

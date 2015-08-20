@@ -1413,6 +1413,11 @@ class Fruit(MapBase, _CommonApi):
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
 
+	# added by jyj 2015-8-19 for seckill
+	activity_status = Column(TINYINT,default=0)  #0(该商品未参与任何活动),1(参与秒杀活动),2(参与限时折扣),...(等待扩展中)
+	seckill_charge_type = Column(Integer,default=0) #秒杀活动中该商品所使用的计价方式id
+	##
+
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
@@ -1917,6 +1922,7 @@ class Jpushinfo(MapBase, _CommonApi):
 	user_id=Column(Integer,nullable=False)
 	user_type=Column(Integer,nullable=False)  #0  admin 1 customer
 	jpush_id=Column(String(128),nullable=False)
+
 # 秒杀活动表
 class SeckillActivity(MapBase, _CommonApi):
 	__tablename__='seckill_activity'

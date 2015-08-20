@@ -7,6 +7,7 @@
 </div>
 {% end %}
 {% block content %}
+<input type="hidden" id="shop_code"/>
 <div class="wrap-seckill pm40">
     <div class="wrap-time-top">
         <ul class="seckill-time-list group">
@@ -133,15 +134,15 @@
     <li>
         <dl class="nm-dl">
             <dt>
-                <img src="/static/images/TDSG.png" alt="商品图片"/>
+                <img class="image" src="" alt="商品图片"/>
             <div class="cover-img"></div>
             </dt>
             <dd>
-                <span class="tr-num">还剩12份</span>
+                <span class="tr-num">还剩<span class="store-num"></span>份</span>
                 <p class="c333 clip nm-name p0">水晶大葡萄，非常好吃哦</p>
                 <p class="no-goods mt20">
                     <span class="price-bo">1元/kg</span>
-                    <span class="price-tip">省7元</span>
+                    <span class="price-tip">省<span class="price-dif"></span>元</span>
                 </p>
                 <span class="seckill-btns seckill-btn">抢!</span>
                 <span class="seckill-btns seckill-btn-more hide">更多惊喜</span>
