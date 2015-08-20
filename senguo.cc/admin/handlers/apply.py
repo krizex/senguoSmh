@@ -339,12 +339,12 @@ class Home(CustomerBaseHandler):
 	def get(self):
 		if not self.current_user:
 			return self.redirect(self.reverse_url("ApplyLogin"))
-		# try:
-		# 	if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
-		# except:
-		# 	if_admin = None
-		# if if_admin:
-		# 	return self.redirect(self.reverse_url("switchshop"))
+		try:
+			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		except:
+			if_admin = None
+		if if_admin:
+			return self.redirect(self.reverse_url("switchshop"))
 		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
@@ -374,9 +374,9 @@ class Home(CustomerBaseHandler):
 		challenge = self.get_argument("geetest_challenge")
 		validate = self.get_argument("geetest_validate")
 		seccode = self.get_argument("geetest_seccode")
-		# print (challenge,)
-		# print (seccode)
-		# print (validate,'validate')
+		print (challenge,)
+		print (seccode)
+		print (validate,'validate')
 		if len(challenge) <2 or len(seccode) <2 or len(validate) <2:
 			return self.send_fail('请先完成图形验证')
 		gt = geetest.geetest(captcha_id, private_key)
