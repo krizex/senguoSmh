@@ -836,7 +836,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def order_done_msg(self,session,order):
 		# print('[TempMsg]login order_done_msg')
 		order_num = order.num
-		order_sendtime = order.arrival_day  + " " + order.arrival_time
+		order_sendtime = order.arrival_day + " " + order.arrival_time
 		shop_phone = order.shop.shop_phone
 		customer_id= order.customer_id
 		shop_name = order.shop.shop_name
