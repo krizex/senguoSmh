@@ -7,6 +7,13 @@ $(document).ready(function(){
     setTimeout(function(){
         countTime();
     },1000);
+
+   var url = "";
+   var args = {
+        action:"show_activity",
+        activity_id:6
+   };
+
 }).on("click",".add-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));

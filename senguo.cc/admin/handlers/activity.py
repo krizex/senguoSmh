@@ -726,36 +726,76 @@ class Seckill(CustomerBaseHandler):
 		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
 		activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id).filter(models.SeckillActivity.activity_status.in_([1,2])).order_by(models.SeckillActivity.start_time).all()
 
-		output_data = []
+		start_date_list = []
+		for activity in activity_list:
+			date_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[0:10]
+			start_date_list.append(date_text)
+		start_date_list = set(start_date_list)
+
+		daily_list = {}
+		for start_date in start_date_list:
+			daily_list[start_date] = []
+
 		for activity in activity_list:
 			data = {}
 			activity_id = activity.id
 			data['activity_id'] = activity_id
 			data['start_time'] = activity.start_time
+			data['start_time_text'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[11:16]
 			data['continue_time'] = activity.continue_time
+			date_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[0:10]
+			data['date_text'] = date_text
+			daily_list[date_text].append(data)
 
-			data['goods_list'] = []
-			goods_list = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).filter(models.SeckillGoods.status != 0).all()
-			for goods in goods_list:
-				goods_item = {}
-				goods_seckill_id = goods.id
-				goods_item['goods_seckill_id'] = goods_seckill_id
-				goods_item['fruit_id'] = goods.fruit_id
-
-				cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
-				goods_item['img_url'] = cur_goods.img_url
-				goods_item['goods_name'] = cur_goods.name
-				goods_item['charge_type_id'] = goods.charge_type_id
-
-				cur_charge_type = self.session.query(models.ChargeType).filter_by(id = goods.charge_type_id).first()
-				goods_item['charge_type_text'] = str(cur_charge_type.price) + '元' + '/' + str(cur_charge_type.num) + self.getUnit(cur_charge_type.unit)
-				goods_item['price_dif'] = goods.former_price - goods.seckill_price
-				goods_item['activity_piece'] = goods.activity_piece
-				data['goods_list'].append(goods_item)
+		output_data = []
+		for key in daily_list:
+			data = ['',[]]
+			data[0] = key
+			data[1] = daily_list[key]
 			output_data.append(data)
-		for data in output_data:
-			print(data)
-		return self.render("seckill/seckill.html",output_data=output_data)
+		output_data.sort(key = lambda item:item[0],reverse=False)
+
+		for i in range(len(output_data)):
+			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
+			for j in range(len(output_data[i][1])):
+				item = output_data[i][1][j]
+				now_time_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(int(time.time())))[0:10]
+				if item['date_text'] == now_time_text:
+					output_data[i][1][j]['date_text'] = '今天'
+				elif item['date_text'][0:8] == now_time_text[0:8] and int(item['date_text'][8:10]) == int(now_time_text[8:10])+1:
+					output_data[i][1][j]['date_text'] = '明天'
+				else:
+					tmp = output_data[i][1][j]['date_text'] 
+					output_data[i][1][j]['date_text'] = str(int(tmp[5:7])) + '月' + str(int(tmp[8:10]))  +'日'
+		return self.render("seckill/seckill.html",output_data=output_data,shop_code=shop_code)
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
+	def post(self,shop_code):
+		action = self.args['action']
+		activity_id = self.args['activity_id']
+		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
+
+		output_data = []
+		goods_list = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).filter(models.SeckillGoods.status != 0).all()
+		for goods in goods_list:
+			goods_item = {}
+			goods_seckill_id = goods.id
+			goods_item['goods_seckill_id'] = goods_seckill_id
+			goods_item['fruit_id'] = goods.fruit_id
+
+			cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
+			goods_item['img_url'] = cur_goods.img_url
+			goods_item['goods_name'] = cur_goods.name
+			goods_item['charge_type_id'] = goods.charge_type_id
+
+			cur_charge_type = self.session.query(models.ChargeType).filter_by(id = goods.charge_type_id).first()
+			goods_item['charge_type_text'] = str(cur_charge_type.price) + '元' + '/' + str(cur_charge_type.num) + self.getUnit(cur_charge_type.unit)
+			goods_item['price_dif'] = goods.former_price - goods.seckill_price
+			goods_item['activity_piece'] = goods.activity_piece
+			output_data.append(goods_item)
+			
+		return self.send_success(output_data = output_data)
+
 #折扣
 class Discount(CustomerBaseHandler):
 	@tornado.web.authenticated
