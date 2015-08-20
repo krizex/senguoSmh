@@ -47,9 +47,10 @@ $(document).ready(function(){
     window.location.href="/"+shop_code;
 });
 
-function getList(id){
+function getList(activity_id){
     var args = {
-        time_id:id
+        action:"seckill",
+        time_id:activity_id
     };
     var url = "";
     $.getJSON(url,args,function(res){
