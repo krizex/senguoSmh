@@ -195,7 +195,7 @@ $(document).ready(function(){
     var type=large_box.attr('data-type');
     var id=large_box.attr('data-id');
     great(type,id);
-}).on('click','.to-add',function(){
+}).on('click','.to-add,.seckill-goods',function(){
     //首次添加商品
     var $this=$(this);
     var parent=$this.parents('.goods-list-item');
@@ -242,6 +242,10 @@ $(document).ready(function(){
     }
     else {return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
     parent.attr({'data-storage':storage-change_num});
+    if($(this).hasClass("seckill-goods")){
+        $(this).addClass("hidden");
+        $(this).next(".seckill-btn-yes").removeClass("hidden");
+    }
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -317,7 +321,6 @@ var goodsList=function(page,action,_group_id){
     if(action==9){
         args.search = _search;
     }
-    // alert('i am here');
     $.postJson(url,args,function(res){
             if(res.success)
             {
@@ -359,16 +362,19 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                             '<a href="javascript:;" class="check-lg-img">'+
                                 '<img src="/static/images/holder.png" class="img lazy_img" data-original="{{ori_img}}">'+
                                 '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
+                                '<span class="status-goods status-discount"></span>'+
                             '</a>'+
                         '</div>'+
                         '<div class="goods-info pull-left">'+
                             '<p class="clearfix">'+
                                 '<span class="pull-left color fruit-name font14">{{name}}</span>'+
-                                '<span class="pull-right text-grey sale font12">销量: <span class="color number">{{saled}}</span></span>'+
+                                '<span class="pull-right text-grey sale font12 hidden">销量: <span class="color number">{{saled}}</span></span>'+
+                                '<span class="pull-right text-grey sale font12">库存: <span class="color number">{{saled}}</span>份</span>'+
                             '</p>'+
                             '<p class="great-number font12">'+
-                                '<em class="bg_change heart {{heart}}" data-id="{{favour}}"></em>'+
-                                '<span class="great">{{favour}}</span>'+
+                                '<em class="bg_change heart {{heart}} hidden" data-id="{{favour}}"></em>'+
+                                '<span class="great hidden">{{favour}}</span>'+
+                                '<span class="">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{each charge_types as key}}'+
@@ -376,14 +382,21 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                         '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
                                     '</span>'+
+                                    '{{if name=="腰果"}}'+
+                                    '<span class="forbid_click pull-right num_box">'+
+                                        '<span class="seckill-btn seckill-goods add_cart_num">抢!</span>'+
+                                        '<span class="seckill-btn seckill-btn-yes hidden">已抢</span>'+
+                                    '</span>'+
+                                    '{{else}}'+
                                     '<span class="forbid_click pull-right num_box">'+
                                         '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
                                         '<span class="pull-right p0 number-change hidden forbid_click">'+
-                                            '<button class="minus-plus pull-right number-plus bg_change"></button>'+
-                                            '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
-                                            '<button class="minus-plus pull-right number-minus bg_change"></button>'+
+                                        '<button class="minus-plus pull-right number-plus bg_change"></button>'+
+                                        '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
+                                        '<button class="minus-plus pull-right number-minus bg_change"></button>'+
                                         '</span>'+
                                     '</span>'+
+                                    '{{/if}}'+
                                 '</li>'+
                                 '{{/each}}'+
                             '</ul>'+
@@ -451,9 +464,52 @@ var fruitItem=function(box,fruits,type){
         sold_out:sold_out,
         ori_img:ori_img
     });
-    box.append(html);
+    var $obj = $(html);
+    box.append($obj);
+    if(name=="腰果"){
+        countTime($obj);
+    }
+    if(name=="好吃的荔枝"){
+        countTime($obj);
+    }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
+function countTime($obj){
+    var time_end = new Date("2015-08-21 11:21:00").getTime();
+    var time_now = new Date().getTime();
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
+    if(time_distance >= 0){
+        // 天时分秒换算
+        int_day = Math.floor(time_distance/86400000)
+        time_distance -= int_day * 86400000;
+        int_hour = Math.floor(time_distance/3600000)
+        time_distance -= int_hour * 3600000;
+        int_minute = Math.floor(time_distance/60000)
+        time_distance -= int_minute * 60000;
+        int_second = Math.floor(time_distance/1000)
+        // 时分秒为单数时、前面加零站位
+        if(int_hour < 10)
+            int_hour = "0" + int_hour;
+        if(int_minute < 10)
+            int_minute = "0" + int_minute;
+        if(int_second < 10)
+            int_second = "0" + int_second;
+        // 显示时间
+        if(int_day>0){
+            $("#day").html(int_day+"天");
+        }
+        $obj.find(".day").html(int_day+"天");
+        $obj.find(".hour").html(int_hour+"时");
+        $obj.find(".minute").html(int_minute+"分");
+        $obj.find(".second").html(int_second+"秒");
+        setTimeout(function(){
+            countTime($obj);
+        },1000);
+    }else{
+        Tip("结束了");
+    }
+}
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
 function cartNum(cart_ms,list){
