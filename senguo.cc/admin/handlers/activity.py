@@ -758,16 +758,17 @@ class Seckill(CustomerBaseHandler):
 
 		output_data = []
 		for key in daily_list:
-			data = ['',[]]
+			data = ['',[],0]
 			data[0] = daily_list[key][0]['date_text']
 			data[1] = daily_list[key]
+			data[2] = daily_list[key][0]['start_time'] #just for sorting
 			output_data.append(data)
-		output_data.sort(key = lambda item:item[0],reverse=False)
+		output_data.sort(key = lambda item:item[2],reverse=False)
 
 		for i in range(len(output_data)):
 			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
 
-		print(output_data)
+		# print(output_data)
 		return self.render("seckill/seckill.html",output_data=output_data,shop_code=shop_code)
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
