@@ -1769,7 +1769,6 @@ class WxOauth2:
 			print("[WxOauth2]get_userinfo: Oauth2 Error, get userinfo failed")
 			# traceback.print_exc()
 			return None
-
 		return userinfo_data
 
 	# 获取用户微信 OpenID
@@ -1780,7 +1779,10 @@ class WxOauth2:
 		if mode == "kf": # 从PC来的登录请求
 			token_url = cls.token_url.format(
 				code=code, appid=KF_APPID, appsecret=KF_APPSECRET)
-		else :
+		elif mode == "iOS": # 从iOS来的登录请求
+			token_url = cls.token_url.format(
+				code=code, appid=iOS_APPID, appsecret=iOS_APPSECRET)
+		else:
 			token_url = cls.token_url.format(
 				code=code, appid=MP_APPID, appsecret=MP_APPSECRET)
 		# 获取access_token

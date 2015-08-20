@@ -62,7 +62,7 @@
                         </ul>
                     </li>
                     {% else %}
-                    <li data-id="{{context['group_list'][0]['id']}}" class="only-one">{{context['group_list'][0]['name'][0:5]}}</li>
+                    <li data-id="{{context['group_list'][0]['id'] if context['group_list'] else 0}}" class="only-one">{{context['group_list'][0]['name'][0:5] if context['group_list'] else "默认分组" }}</li>
                     {% end %}
                 </ul>
             </div>

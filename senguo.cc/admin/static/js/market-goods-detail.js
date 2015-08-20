@@ -1,9 +1,14 @@
 var num_list={};
 $(document).ready(function(){
-    XBack.listen(function(){
-        addCart();
+    var _shop_code = $("#shop_code").val();
+    var _url='/'+_shop_code;
+    setTimeout(function(){
+        window.addEventListener('pagehide', onPopState);
+    },1000);
+    function onPopState(){
         SetCookie("fromdetail",1);
-    });
+        return addCart(_url);
+    }
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
     if(mWidth>800){
@@ -71,7 +76,7 @@ $(document).ready(function(){
     $(".add-num").on("click",function(){
         var $this=$(this);
         var id=parseInt($this.parents(".want-num").attr('data-id'));
-        var num = parseInt($this.prev("input").val());
+        var num = parseInt($this.prev(".input").text());
         var relate=parseFloat($this.parents(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
@@ -93,7 +98,7 @@ $(document).ready(function(){
             noticeBox("别调戏我哦，请输入数字类型");
         }else{           
             num++;
-            $(this).prev("input").val(num);
+            $(this).prev(".input").text(num);
             num_list[id]=num;
             fruits_num();
         }
@@ -102,7 +107,7 @@ $(document).ready(function(){
     $(".minus-num").on("click",function(){
         var $this=$(this);
         var id=parseInt($this.parents(".want-num").attr('data-id'));
-        var num = parseInt($(this).next("input").val());
+        var num = parseInt($(this).next(".input").text());
         var relate=parseFloat($this.parents(".want-num").attr('data-relate'));
         var unit_num=parseFloat($this.parents("li").find('.number').text());
         var storage=parseFloat($this.parents("li").find('.now-buy').attr("data-storage"));
@@ -131,7 +136,7 @@ $(document).ready(function(){
                 return false;
             }
             num--;
-            $(this).next("input").val(num);
+            $(this).next(".input").text(num);
         }
         num_list[id]=num;
         fruits_num();
@@ -143,7 +148,7 @@ $(document).ready(function(){
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
     window.onbeforeunload = function(){
-        setTimeout(function(){addCart();SetCookie("fromdetail",1)}, 2);
+        setTimeout(function(){addCart(_url);SetCookie("fromdetail",1)}, 2);
     }
 }).on("click","#dianzan",function(){
     var $this = $(this);
@@ -213,7 +218,7 @@ function cartNum(cart_ms){
             if (id == cart_ms[key][0]) {
                     $(".now-buy").eq(j).addClass("r70");
                     $(".now-buy").eq(j).prev(".want-num").show().addClass("w90");
-                    charge.find('input').val(cart_ms[key][1]);
+                    charge.find('.input').text(cart_ms[key][1]);
                // charge.siblings('.now-buy').hide();
             }
         }
@@ -225,35 +230,3 @@ function fruits_num(){
     if(num_list[key]==0){delete num_list[key];}
     }
 }
-
-
-;!function(pkg, undefined){
-    var STATE = 'x-back';
-    var element;
-
-    var onPopState = function(event){
-        event.state === STATE && fire();
-    }
-
-    var record = function(state){
-        history.pushState(state, null, location.href);
-    }
-
-    var fire = function(){
-        var event = document.createEvent('Events');
-        event.initEvent(STATE, false, false);
-        element.dispatchEvent(event);
-    }
-
-    var listen = function(listener){
-        element.addEventListener(STATE, listener, false);
-    }
-
-    !function(){
-        element = document.createElement('span');
-        window.addEventListener('popstate', onPopState);
-        this.listen = listen;
-        record(STATE);
-    }.call(window[pkg] = window[pkg] || {});
-
-}('XBack');
