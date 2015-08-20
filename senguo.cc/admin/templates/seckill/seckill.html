@@ -14,7 +14,7 @@
                 <span class="sp-date">今天<i class="tri-r"></i></span>
                 <ul class="stime-list fl">
                     <li class="active">
-                        <span class="dgreen">11:30</span>
+                        <span>11:30</span>
                         <i class="c-time cur-time"></i>
                     </li>
                     <li>
@@ -31,7 +31,7 @@
                 <span class="sp-date">明天<i class="tri-r"></i></span>
                 <ul class="stime-list fl">
                     <li class="">
-                        <span class="dgreen">11:30</span>
+                        <span>11:30</span>
                         <i class="c-time cur-time"></i>
                     </li>
                     <li>
@@ -48,7 +48,7 @@
                 <span class="sp-date">8月20号<i class="tri-r"></i></span>
                 <ul class="stime-list fl">
                     <li class="">
-                        <span class="dgreen">11:30</span>
+                        <span>11:30</span>
                         <i class="c-time cur-time"></i>
                     </li>
                     <li>
@@ -65,13 +65,13 @@
     </div>
     <div class="show-time-box">
         <span class="time-status">抢购中</span>
-        <span class="ml4">距离结束00:01:59</span>
+        <span class="ml4">距结束&nbsp;<span id="day"></span><span id="hour"></span><span id="minute"></span><span id="second"></span></span>
     </div>
-    <div class="show-time-box no-seckill-time">
+    <div class="show-time-box no-seckill-time hide">
         <span class="time-status">蓄势待发</span>
         <span class="ml4">距开始00:01:59</span>
     </div>
-    <ul class="nm-list">
+    <ul class="nm-list" id="seckill_list">
         <li>
             <dl class="nm-dl">
                 <dt>
@@ -126,11 +126,29 @@
         </li>
     </ul>
 </div>
-<a href="javascript:;" class="go-cart">
+<a href="/customer/cart/zhoubing" class="go-cart">
     <span class="cart-num">10</span>
 </a>
 <ul class="hide" id="seckill-item">
-
+    <li>
+        <dl class="nm-dl">
+            <dt>
+                <img src="/static/images/TDSG.png" alt="商品图片"/>
+            <div class="cover-img"></div>
+            </dt>
+            <dd>
+                <span class="tr-num">还剩12份</span>
+                <p class="c333 clip nm-name p0">水晶大葡萄，非常好吃哦</p>
+                <p class="no-goods mt20">
+                    <span class="price-bo">1元/kg</span>
+                    <span class="price-tip">省7元</span>
+                </p>
+                <span class="seckill-btns seckill-btn">抢!</span>
+                <span class="seckill-btns seckill-btn-more hide">更多惊喜</span>
+                <span class="seckill-btns seckill-btn-first hide">抢先看</span>
+            </dd>
+        </dl>
+    </li>
 </ul>
 {% end %}
 {% block bottom %}

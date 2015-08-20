@@ -34,11 +34,27 @@ $(document).ready(function(){
     $(this).addClass("active");
 });
 
+function getList(id){
+    var args = {
+        time_id:id
+    };
+    var url = "";
+    $.getJSON(url,args,function(res){
+        if(res.success){
+
+        }
+    });
+}
+function insertGoods(data){
+    for(var i=0; i<data.length; i++){
+        var $item = $("#seckill-item").children("li").clone();
+
+        $("#seckill_list").append($item);
+    }
+}
+
 function countTime(){
-    var h = parseInt($("#hour").html());
-    var m = parseInt($("#minute").html());
-    var s = parseInt($("#second").html());
-    var time_end = new Date("2015-08-15 11:21:00").getTime();
+    var time_end = new Date("2015-08-20 11:21:00").getTime();
     var time_now = new Date().getTime();
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
@@ -59,7 +75,9 @@ function countTime(){
         if(int_second < 10)
             int_second = "0" + int_second;
         // 显示时间
-        $("#day").html(int_day+"天");
+        if(int_day>0){
+            $("#day").html(int_day+"天");
+        }
         $("#hour").html(int_hour+"时");
         $("#minute").html(int_minute+"分");
         $("#second").html(int_second+"秒");

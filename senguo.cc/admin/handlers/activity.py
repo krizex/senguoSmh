@@ -722,7 +722,7 @@ class CouponCustomer(CustomerBaseHandler):
 #秒杀
 class Seckill(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
+	def get(self,shop_code):
 		return self.render("seckill/seckill.html")
 #折扣
 class Discount(CustomerBaseHandler):

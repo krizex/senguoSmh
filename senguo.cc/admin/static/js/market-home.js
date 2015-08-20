@@ -374,7 +374,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                             '<p class="great-number font12">'+
                                 '<em class="bg_change heart {{heart}} hidden" data-id="{{favour}}"></em>'+
                                 '<span class="great hidden">{{favour}}</span>'+
-                                '<span>距结束&nbsp;<span id="day">2天</span><span id="hour">3时</span><span id="minute">30分</span><span id="second">56秒</span></span>'+
+                                '<span class="">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{each charge_types as key}}'+
@@ -464,9 +464,52 @@ var fruitItem=function(box,fruits,type){
         sold_out:sold_out,
         ori_img:ori_img
     });
-    box.append(html);
+    var $obj = $(html);
+    box.append($obj);
+    if(name=="腰果"){
+        countTime($obj);
+    }
+    if(name=="好吃的荔枝"){
+        countTime($obj);
+    }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
+function countTime($obj){
+    var time_end = new Date("2015-08-21 11:21:00").getTime();
+    var time_now = new Date().getTime();
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
+    if(time_distance >= 0){
+        // 天时分秒换算
+        int_day = Math.floor(time_distance/86400000)
+        time_distance -= int_day * 86400000;
+        int_hour = Math.floor(time_distance/3600000)
+        time_distance -= int_hour * 3600000;
+        int_minute = Math.floor(time_distance/60000)
+        time_distance -= int_minute * 60000;
+        int_second = Math.floor(time_distance/1000)
+        // 时分秒为单数时、前面加零站位
+        if(int_hour < 10)
+            int_hour = "0" + int_hour;
+        if(int_minute < 10)
+            int_minute = "0" + int_minute;
+        if(int_second < 10)
+            int_second = "0" + int_second;
+        // 显示时间
+        if(int_day>0){
+            $("#day").html(int_day+"天");
+        }
+        $obj.find(".day").html(int_day+"天");
+        $obj.find(".hour").html(int_hour+"时");
+        $obj.find(".minute").html(int_minute+"分");
+        $obj.find(".second").html(int_second+"秒");
+        setTimeout(function(){
+            countTime($obj);
+        },1000);
+    }else{
+        Tip("结束了");
+    }
+}
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
 function cartNum(cart_ms,list){
