@@ -4957,11 +4957,11 @@ class MarketingSeckill(AdminBaseHandler):
 				split_list = activity_item['goods_list'].split(';')
 				goods_len =  len(split_list)
 				activity_item['goods_list'] = ''
-				if len(split_list) > 5:
+				if len(split_list)-1 > 5:
 					for i in range(0,4):
 						activity_item['goods_list'] += split_list[i] + ';'
 					activity_item['goods_list'] += split_list[4]
-					activity_item['goods_list'] += '等' + str(goods_len) + '种商品'
+					activity_item['goods_list'] += '等' + str(goods_len-1) + '种商品'
 				else:
 					for i in range(0,len(split_list)-1):
 						activity_item['goods_list'] += split_list[i] + ';'
@@ -5301,11 +5301,11 @@ class MarketingSeckill(AdminBaseHandler):
 				split_list = activity_item['goods_list'].split(';')
 				goods_len =  len(split_list)
 				activity_item['goods_list'] = ''
-				if len(split_list) > 5:
+				if len(split_list)-1 > 5:
 					for i in range(0,4):
 						activity_item['goods_list'] += split_list[i] + ';'
 					activity_item['goods_list'] += split_list[4]
-					activity_item['goods_list'] += '等' + str(goods_len) + '种商品'
+					activity_item['goods_list'] += '等' + str(goods_len-1) + '种商品'
 				else:
 					for i in range(0,len(split_list)-1):
 						activity_item['goods_list'] += split_list[i] + ';'
