@@ -744,29 +744,30 @@ class Seckill(CustomerBaseHandler):
 			data['start_time_text'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[11:16]
 			data['continue_time'] = activity.continue_time
 			date_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[0:10]
-			data['date_text'] = date_text
+
+			now_time_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(int(time.time())))[0:10]
+			if date_text == now_time_text:
+				data['date_text'] = '今天'
+			elif date_text[0:8] == now_time_text[0:8] and int(date_text[8:10]) == int(now_time_text[8:10])+1:
+				data['date_text'] = '明天'
+			else:
+				tmp = date_text
+				data['date_text'] = str(int(tmp[5:7])) + '月' + str(int(tmp[8:10]))  +'日'
+
 			daily_list[date_text].append(data)
 
 		output_data = []
 		for key in daily_list:
 			data = ['',[]]
-			data[0] = key
+			data[0] = daily_list[key][0]['date_text']
 			data[1] = daily_list[key]
 			output_data.append(data)
 		output_data.sort(key = lambda item:item[0],reverse=False)
 
 		for i in range(len(output_data)):
 			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
-			for j in range(len(output_data[i][1])):
-				item = output_data[i][1][j]
-				now_time_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(int(time.time())))[0:10]
-				if item['date_text'] == now_time_text:
-					output_data[i][1][j]['date_text'] = '今天'
-				elif item['date_text'][0:8] == now_time_text[0:8] and int(item['date_text'][8:10]) == int(now_time_text[8:10])+1:
-					output_data[i][1][j]['date_text'] = '明天'
-				else:
-					tmp = output_data[i][1][j]['date_text'] 
-					output_data[i][1][j]['date_text'] = str(int(tmp[5:7])) + '月' + str(int(tmp[8:10]))  +'日'
+			
+		print(output_data,"================")
 		return self.render("seckill/seckill.html",output_data=output_data,shop_code=shop_code)
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")

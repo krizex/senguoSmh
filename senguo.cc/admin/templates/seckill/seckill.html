@@ -7,61 +7,25 @@
 </div>
 {% end %}
 {% block content %}
-<input type="hidden" id="shop_code"/>
+<input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm40">
     <div class="wrap-time-top">
         <ul class="seckill-time-list group">
+            {% for i in range(len(output_data))%}
+            {% set sec = output_data[i]%}
             <li>
-                <span class="sp-date">今天<i class="tri-r"></i></span>
+                <span class="sp-date">{{sec[0]}}<i class="tri-r"></i></span>
                 <ul class="stime-list fl">
-                    <li class="active">
-                        <span>11:30</span>
-                        <i class="c-time cur-time"></i>
+                    {% for j in range(len(sec[1])) %}
+                    {% set time = sec[1][j] %}
+                    <li class="{% if i==0 and j==0 %}active{% end %}">
+                        <span>{{time['start_time_text']}}</span>
+                        <i class="c-time {% if i==0 and j==0 %}cur-time{% end %}"></i>
                     </li>
-                    <li>
-                        <span>13:30</span>
-                        <i class="c-time"></i>
-                    </li>
-                    <li>
-                        <span>13:30</span>
-                        <i class="c-time"></i>
-                    </li>
+                    {% end %}
                 </ul>
             </li>
-            <li>
-                <span class="sp-date">明天<i class="tri-r"></i></span>
-                <ul class="stime-list fl">
-                    <li class="">
-                        <span>11:30</span>
-                        <i class="c-time cur-time"></i>
-                    </li>
-                    <li>
-                        <span>13:30</span>
-                        <i class="c-time"></i>
-                    </li>
-                    <li>
-                        <span>13:30</span>
-                        <i class="c-time"></i>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <span class="sp-date">8月20号<i class="tri-r"></i></span>
-                <ul class="stime-list fl">
-                    <li class="">
-                        <span>11:30</span>
-                        <i class="c-time cur-time"></i>
-                    </li>
-                    <li>
-                        <span>13:30</span>
-                        <i class="c-time"></i>
-                    </li>
-                    <li>
-                        <span>13:30</span>
-                        <i class="c-time"></i>
-                    </li>
-                </ul>
-            </li>
+            {% end %}
         </ul>
     </div>
     <div class="show-time-box">

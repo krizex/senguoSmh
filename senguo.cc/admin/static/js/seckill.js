@@ -4,5 +4,4 @@ $(document).ready(function(){
     $(document).on("click",".goback",function(){
         history.back();
     });
-
 });
