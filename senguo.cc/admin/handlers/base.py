@@ -822,7 +822,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			push = _jpush.create_push()
 			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
 
-			ios_msg = jpush.ios(alert="您收到了一条新订单，查看详情>>", badge="+1", extras={'order_num':order.num})
+			ios_msg = jpush.ios(alert="您收到了新的森果订单，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'order_num':order.num})
 			android_msg = jpush.android(alert="您收到了一条新订单，点击查看详情")
 			
 			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
