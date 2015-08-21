@@ -732,6 +732,8 @@ class Seckill(CustomerBaseHandler):
 		else:
 			activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id).filter(models.SeckillActivity.activity_status.in_([1,2])).order_by(models.SeckillActivity.start_time).all()
 
+		activity_num = len(activity_list)
+
 		start_date_list = []
 		for activity in activity_list:
 			date_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[0:10]
@@ -774,8 +776,8 @@ class Seckill(CustomerBaseHandler):
 		for i in range(len(output_data)):
 			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
 
-		# print(output_data)
-		return self.render("seckill/seckill.html",output_data=output_data,shop_code=shop_code)
+		print(output_data)
+		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code)
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
 	def post(self,shop_code):

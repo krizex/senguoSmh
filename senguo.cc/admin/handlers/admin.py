@@ -4947,7 +4947,7 @@ class MarketingSeckill(AdminBaseHandler):
 					fruit_name = self.session.query(models.Fruit.name).filter_by(id=fruit_id).first()[0]
 					group_id = self.session.query(models.Fruit.group_id).filter_by(id=fruit_id).first()[0]
 					if group_id == -1:
-						group_name = '推荐分组'
+						group_name = '店铺推荐'
 					elif group_id == 0:
 						group_name = '默认分组'
 					else:
@@ -4977,7 +4977,7 @@ class MarketingSeckill(AdminBaseHandler):
 		elif action == 'seckill_new':
 			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
 								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
-			goods_group_id_name.append((-1,'推荐分组'))
+			goods_group_id_name.append((-1,'店铺推荐'))
 			goods_group_id_name.append((0,'默认分组'))
 			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
 
@@ -4991,11 +4991,11 @@ class MarketingSeckill(AdminBaseHandler):
 			group_fruit_dict = {}
 			for group_id in list(goods_group_id_name.keys()):
 				group_id = int(group_id)
-				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2]),models.Fruit.group_id == group_id).all()
+				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1,models.Fruit.group_id == group_id).all()
 				group_fruit_dict[str(group_id)] = query_list
 
 			fruit_id_list = []
-			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2])).all()
+			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
 			for item in query_list:
 				fruit_id_list.append(item[0])
 
@@ -5067,7 +5067,7 @@ class MarketingSeckill(AdminBaseHandler):
 		elif action == 'seckill_edit':
 			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
 								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
-			goods_group_id_name.append((-1,'推荐分组'))
+			goods_group_id_name.append((-1,'店铺推荐'))
 			goods_group_id_name.append((0,'默认分组'))
 			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
 
@@ -5081,11 +5081,11 @@ class MarketingSeckill(AdminBaseHandler):
 			group_fruit_dict = {}
 			for group_id in list(goods_group_id_name.keys()):
 				group_id = int(group_id)
-				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2]),models.Fruit.group_id == group_id).all()
+				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1,models.Fruit.group_id == group_id).all()
 				group_fruit_dict[str(group_id)] = query_list
 
 			fruit_id_list = []
-			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active.in_([1,2])).all()
+			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
 			for item in query_list:
 				fruit_id_list.append(item[0])
 
@@ -5141,7 +5141,7 @@ class MarketingSeckill(AdminBaseHandler):
 				goods_item['fruit_name'] = self.session.query(models.Fruit.name).filter_by(id=fruit_id).first()[0]
 				group_id = self.session.query(models.Fruit.group_id).filter_by(id=fruit_id).first()[0]
 				if group_id == -1:
-					group_name = '推荐分组'
+					group_name = '店铺推荐'
 				elif group_id == 0:
 					group_name = '默认分组'
 				else:
@@ -5295,7 +5295,7 @@ class MarketingSeckill(AdminBaseHandler):
 					fruit_name = self.session.query(models.Fruit.name).filter_by(id=fruit_id).first()[0]
 					group_id = self.session.query(models.Fruit.group_id).filter_by(id=fruit_id).first()[0]
 					if group_id == -1:
-						group_name = '推荐分组'
+						group_name = '店铺推荐'
 					elif group_id == 0:
 						group_name = '默认分组'
 					else:
