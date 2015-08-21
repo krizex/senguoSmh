@@ -1959,4 +1959,3 @@ class SeckillGoods(MapBase, _CommonApi):
 	deleted=Column(Integer,default=0)	#已经被从该秒杀活动中删除的商品的份数，默认为0
 
 	status = Column(TINYINT,default=1,nullable=False)  #该商品的状态值，0(已删除),1(正常)
-
