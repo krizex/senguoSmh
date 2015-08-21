@@ -36,6 +36,7 @@ def sendTemplateSMS(to,datas,tempId):
 
 		print ('login sendTemplateSMS')
 		flag = False
+		msg = ''
 		
 		#³õÊ¼»¯REST SDK
 		rest = REST(serverIP,serverPort,softVersion)
@@ -46,7 +47,6 @@ def sendTemplateSMS(to,datas,tempId):
 		result = rest.sendTemplateSMS(to,datas,tempId)
 		print(result)
 		for k in result: 
-				
 				if k=='templateSMS' :
 								for k1 in result.get(k): 
 										print ('%s:%s' % (k1, result.get(k).get(k1)))
@@ -54,9 +54,13 @@ def sendTemplateSMS(to,datas,tempId):
 					if result.get(k) == '000000':
 						flag = True
 						print('send success')
+					else:
+						flag = False
+				elif k == 'statusMsg':
+					msg = result.get(k)
 				else:
 						print ('%s:%s' % (k, result.get(k)))
-		return flag
+		return flag,msg
 	 
 # flag = sendTemplateSMS('13163263783',{'1234','5678'},32417)
 # print(flag)
