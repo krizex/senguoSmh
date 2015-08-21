@@ -130,13 +130,13 @@ function insertGoods(data){
 function countTime(time,start_time){
     var time_end = time;
     var time_now = new Date().getTime();
-    if(start_time*1000<=time_now){//未开始
+    if(start_time*1000<=time_now){//正在进行
         $(".seckill-ing").removeClass("hide");
         $(".no-seckill-time").addClass("hide");
-        time_end = start_time;
     }else{
         $(".seckill-ing").addClass("hide");
         $(".no-seckill-time").removeClass("hide");
+        time_end = start_time*1000;
     }
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
@@ -167,7 +167,7 @@ function countTime(time,start_time){
             countTime(time,start_time);
         },1000);
     }else{
-        Tip("这场秒杀结束啦~~");
+        //Tip("这场秒杀结束啦~~");
         setTimeout(function(){
             window.location.reload(true);
         },1000);
