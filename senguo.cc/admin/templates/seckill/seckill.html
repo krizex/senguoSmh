@@ -15,7 +15,7 @@
             {% set sec = output_data[i]%}
             <li>
                 <span class="sp-date">{{sec[0]}}<i class="tri-r"></i></span>
-                <ul class="stime-list fl">
+                <ul class="stime-list">
                     {% for j in range(len(sec[1])) %}
                     {% set time = sec[1][j] %}
                     <li class="{% if i==0 and j==0 %}active{% end %}" data-id="{{time['activity_id']}}" data-start="{{time['start_time']}}" data-continue="{{time['continue_time']}}">

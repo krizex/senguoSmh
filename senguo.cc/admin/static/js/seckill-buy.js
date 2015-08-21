@@ -6,6 +6,13 @@ $(document).ready(function(){
         history.back();
     });
     if($("#seckill").size()>0){//获取秒杀
+        if($(".seckill-time-list").hasClass("hide")){
+            $(".no-result").html("该活动结束了~~").removeClass("hide");
+            return false;
+        }
+        $(".stime-list").each(function(){
+            $(this).closest("li").width($(this).width()+60);
+        });
         getList($(".cur-time").closest('li').attr("data-id"));
         var start_time = parseInt($(".cur-time").closest('li').attr("data-start"));
         var continue_time = parseInt($(".cur-time").closest('li').attr("data-continue"));
