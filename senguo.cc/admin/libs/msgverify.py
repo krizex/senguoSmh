@@ -11,6 +11,8 @@ from dal.models import _VerifyCode
 import requests
 import json
 
+from libs.SendTemplateSMS import sendTemplateSMS
+
 url = 'http://106.ihuyi.cn/webservice/sms.php?method=Submit'     # message'url
 
 #############################################
@@ -44,40 +46,76 @@ def user_subscribe(openid):
 # 短信平台 自带验证过程，因此去掉本地的检测过程，避免因不必要的错误导致用户发不出去
 # 3.12
 # woody
+# 如果106平台短信发送失败，则改为云通讯平台发消息 8.22
 ##################################################################################
 def gen_msg_token(phone):
 	s = DBSession()
 	code = "".join(random.sample("123456789",4))
+	flag = False
 
 	url = "http://106.ihuyi.cn/webservice/sms.php?method=Submit&account={account}&password={password}&mobile={phone}&content={content}".format(account=account,password=password,phone=phone,content=url_escape(content.format(code=code)))
 	h = HTTPClient()
-	res = h.fetch(url)
+	try:
+		res = h.fetch(url,connect_time = 5.0)
+	except:
+		sendTemplateSMS(phone,code,32417)
+		update_code(phone,code)
+		return True
 	h.close()
 	root = ElementTree.fromstring(res.body.decode())
 	if not root[0].text == '2':
 		# print("[VerifyMsg]Send error:",root[0].text,root[1].text)
-		return root[1].text
+		#如果发送失败，则改用云通讯发送
+		if sendTemplateSMS(phone,code,32417):
+			update_code(phone,code)
+			return True
 	else:
-		try:
-			print("[VerifyMsg]VerifyCode",code,"have sent to phone:",phone)
-			q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
-		except:
-			q = None
-
-		if q is not None:
-			q.code = code
-			q.create_time = datetime.datetime.now()
-			q.count = 1
-			# q.phone = phone
-		else:
-			v = _VerifyCode()
-			v.phone = phone
-			v.code = code
-			v.count = 1          # when count = 1,code is usefull
-			s.add(v)
-		s.commit()
-		s.close()
+		update_code(phone,code)
 		return True
+		# try:
+		# 	print("[VerifyMsg]VerifyCode",code,"have sent to phone:",phone)
+		# 	q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
+		# except:
+		# 	q = None
+
+		# if q is not None:
+		# 	q.code = code
+		# 	q.create_time = datetime.datetime.now()
+		# 	q.count = 1
+		# 	# q.phone = phone
+		# else:
+		# 	v = _VerifyCode()
+		# 	v.phone = phone
+		# 	v.code = code
+		# 	v.count = 1          # when count = 1,code is usefull
+		# 	s.add(v)
+		# s.commit()
+		# s.close()
+		# return True
+
+def update_code(phone,code):
+	s = DBSession()
+	try:
+		print("[VerifyMsg]VerifyCode",code,"have sent to phone:",phone)
+		q = s.query(_VerifyCode).filter(_VerifyCode.phone == phone).one()
+	except:
+		q = None
+	if q is not None:
+		q.code = code
+		q.create_time = datetime.datetime.now()
+		q.count = 1
+		# q.phone = phone
+	else:
+		v = _VerifyCode()
+		v.phone = phone
+		v.code = code
+		v.count = 1          # when count = 1,code is usefull
+		s.add(v)
+	s.commit()
+	s.close()
+	return True
+
+
 
 # def gen_msg_token(wx_id, phone):
 #     s = DBSession()

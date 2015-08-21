@@ -17,7 +17,7 @@ import datetime
 # import urllib2
 import urllib.request as urllib2
 import json
-from lib.xmltojson import xmltojson
+from libs.xmltojson import xmltojson
 from xml.dom import minidom 
 import requests
 
