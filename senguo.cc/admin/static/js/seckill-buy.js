@@ -4,16 +4,12 @@ $(document).ready(function(){
     $(document).on("click",".goback",function(){
         history.back();
     });
-    setTimeout(function(){
-        countTime();
-    },1000);
-
-   var url = "";
-   var args = {
-        action:"show_activity",
-        activity_id:6
-   };
-
+    if($("#seckill").size()>0){//获取秒杀
+        getList($(".cur-time").closest('li').attr("data-id"));
+        var start_time = parseInt($(".cur-time").attr("data-start"));
+        var continue_time = parseInt($(".cur-time").attr("data-continue"));
+        countTime((continue_time+start_time)*1000,start_time);
+    }
 }).on("click",".add-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
@@ -37,47 +33,99 @@ $(document).ready(function(){
     }
     $parent.attr("data-num",num);
 }).on("click",".stime-list li",function(){//选择时间段
+    var id = $(this).attr("data-id");
+    var start_time = parseInt($(this).attr("data-start"));
+    var continue_time = parseInt($(this).attr("data-continue"));
     $(".stime-list li").removeClass("active");
     $(this).addClass("active");
+    countTime((continue_time+start_time)*1000,start_time);//倒计时
 }).on("click",".seckill-btn",function(){//抢
+    var id = $(this).closest("li").attr("charge_type_id");
+    window.dataObj.fruits[id]=1;
     $(this).addClass("hide");
     $(".seckill-btn-more").removeClass("hide");
+    $(".cart-num").removeClass("hide");
+    setTimeout(function(){
+        $(".cart-num").removeClass("origin-cart");
+    },20);
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
     window.location.href="/"+shop_code;
 });
-
+window.dataObj.fruits={};
+//加入购物车
+function addCart(link){
+    var url='/'+$("#shop_code").val();
+    var action = 4;
+    fruits_num();
+    var fruits=window.dataObj.fruits;
+    var args={
+        action:action,
+        fruits:fruits
+    };
+    if(!isEmptyObj(fruits)){fruits={}}
+    $.postJson(url,args,function(res){
+            if(res.success)
+            {
+                window.location.href=link;
+            }
+            else return noticeBox(res.error_text);
+        }
+    );
+}
+function fruits_num(){
+    for(var key in window.dataObj.fruits){
+        if(window.dataObj.fruits[key]==0){delete window.dataObj.fruits[key];}
+    }
+}
 function getList(activity_id){
     var args = {
         action:"seckill",
-        time_id:activity_id
+        activity_id:activity_id
     };
     var url = "";
-    $.getJSON(url,args,function(res){
+    $.postJson(url,args,function(res){
         if(res.success){
-            var data = res.data;
+            var data = res.output_data;
             insertGoods(data);
         }
     });
 }
 function insertGoods(data){
-    for(var i=0; i<data.length; i++){
-        var $item = $("#seckill-item").children("li").clone();
-        $item.attr("seckill-id",data.goods_seckill_id).attr("fruit-id",data.fruit_id).attr("charge_type_id",data.charge_type_id);
-        $item.find(".image").attr("src",data.img_url);
-        $item.find(".store-num").html(data.activity_piece);
-        $item.find(".nm-name").html(data.goods_name);
-        $item.find(".price-bo").html(data.charge_type_text);
-        $item.find(".price-dif").html(data.price_dif);
-        $("#seckill_list").append($item);
+    if(data.length==0){
+        $(".no-result").removeClass("hide");
+        return false;
+    }else{
+        $(".no-result").addClass("hide");
+        for(var i=0; i<data.length; i++){
+            var data = data[i];
+            var $item = $("#seckill-item").children("li").clone();
+            $item.attr("seckill-id",data.goods_seckill_id).attr("fruit-id",data.fruit_id).attr("charge_type_id",data.charge_type_id);
+            $item.find(".image").attr("src",data.img_url);
+            $item.find(".store-num").html(data.activity_piece);
+            $item.find(".nm-name").html(data.goods_name);
+            $item.find(".price-bo").html(data.charge_type_text);
+            $item.find(".price-dif").html(data.price_dif);
+            if(data.activity_piece==0){
+                $item.find(".cover-img").removeClass("hide");
+            }
+            $("#seckill_list").append($item);
+        }
     }
 }
 
-function countTime(time){
-    var time_end = new Date("2015-08-21 11:21:00").getTime();
+function countTime(time,start_time){
+    var time_end = time;
     var time_now = new Date().getTime();
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
+    if(start_time*1000<=time_now){
+        $(".seckill-ing").removeClass("hide");
+        $(".no-seckill-time").addClass("hide");
+    }else{
+        $(".seckill-ing").addClass("hide");
+        $(".no-seckill-time").removeClass("hide");
+    }
     if(time_distance >= 0){
         // 天时分秒换算
         int_day = Math.floor(time_distance/86400000);
@@ -96,16 +144,18 @@ function countTime(time){
             int_second = "0" + int_second;
         // 显示时间
         if(int_day>0){
-            $("#day").html(int_day+"天");
+            $(".day").html(int_day+"天");
         }
-        $("#hour").html(int_hour+"时");
-        $("#minute").html(int_minute+"分");
-        $("#second").html(int_second+"秒");
-        setTimeout("countTime()",1000);
-    }else{
-        Tip("结束了");
+        $(".hour").html(int_hour+"时");
+        $(".minute").html(int_minute+"分");
+        $(".second").html(int_second+"秒");
         setTimeout(function(){
-            window.location.reload(true);
+            countTime(time,start_time);
         },1000);
+    }else{
+        Tip("该场结束了");
+        /*setTimeout(function(){
+            window.location.reload(true);
+        },1000);*/
     }
 }

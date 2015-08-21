@@ -639,7 +639,9 @@ function addCart(link){
         action:action,
         fruits:fruits
     };
-    if(!isEmptyObj(fruits)){fruits={}}
+    if(!isEmptyObj(fruits)){
+        fruits={};
+    }
     $.postJson(url,args,function(res){
             if(res.success)
             {
@@ -649,7 +651,10 @@ function addCart(link){
         }
     );
 }
-
+function isEmptyObj(obj){
+    for(var n in obj){return false}
+    return true;
+}
 function great(type,id){
     var url='';
     var menu_type;

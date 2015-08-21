@@ -786,6 +786,7 @@ class Seckill(CustomerBaseHandler):
 
 			cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
 			goods_item['img_url'] = cur_goods.img_url
+			goods_item['img_url'] = goods_item['img_url'].split(';')[0]
 			goods_item['goods_name'] = cur_goods.name
 			goods_item['charge_type_id'] = goods.charge_type_id
 
