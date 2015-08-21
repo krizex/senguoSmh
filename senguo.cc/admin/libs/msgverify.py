@@ -56,7 +56,7 @@ def gen_msg_token(phone):
 	url = "http://106.ihuyi.cn/webservice/sms.php?method=Submit&account={account}&password={password}&mobile={phone}&content={content}".format(account=account,password=password,phone=phone,content=url_escape(content.format(code=code)))
 	h = HTTPClient()
 	try:
-		res = h.fetch(url,connect_time = 5.0)
+		res = h.fetch(url,connect_timeout = 5.0)
 	except:
 		sendTemplateSMS(phone,code,32417)
 		update_code(phone,code)
