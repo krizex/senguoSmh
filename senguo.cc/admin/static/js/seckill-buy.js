@@ -106,6 +106,7 @@ function getList(activity_id){
         if(res.success){
             $("#seckill_list").empty();
             var data = res.output_data;
+            console.log(data);
             insertGoods(data);
         }
     });
@@ -116,15 +117,14 @@ function insertGoods(data){
         return false;
     }else{
         $(".no-result").addClass("hide");
-        for(var i=0; i<data.length; i++){
-            var data = data[i];
+        for(var key in data){
             var $item = $("#seckill-item").children("li").clone();
-            $item.attr("seckill-id",data.goods_seckill_id).attr("fruit-id",data.fruit_id).attr("charge_type_id",data.charge_type_id);
-            $item.find(".image").attr("src",data.img_url || '/static/images/TDSG.png');
-            $item.find(".store-num").html(data.activity_piece);
-            $item.find(".nm-name").html(data.goods_name);
-            $item.find(".price-bo").html(data.charge_type_text);
-            $item.find(".price-dif").html(data.price_dif);
+            $item.attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id);
+            $item.find(".image").attr("src",data[key].img_url || '/static/images/TDSG.png');
+            $item.find(".store-num").html(data[key].activity_piece);
+            $item.find(".nm-name").html(data[key].goods_name);
+            $item.find(".price-bo").html(data[key].charge_type_text);
+            $item.find(".price-dif").html(data[key].price_dif);
             if(data.activity_piece==0){
                 $item.find(".cover-img").removeClass("hide");
                 $item.find(".goods-price-row").addClass("no-goods");
