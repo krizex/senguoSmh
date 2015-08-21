@@ -722,10 +722,15 @@ class CouponCustomer(CustomerBaseHandler):
 #秒杀
 class Seckill(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("activity_id?:int")
 	def get(self,shop_code):
 		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
 		self.update_seckill()
-		activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id).filter(models.SeckillActivity.activity_status.in_([1,2])).order_by(models.SeckillActivity.start_time).all()
+		if 'activity_id' in self.args:
+			activity_id = self.args['activity_id']
+			activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,id = activity_id).filter(models.SeckillActivity.activity_status.in_([1,2])).all()
+		else:
+			activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id).filter(models.SeckillActivity.activity_status.in_([1,2])).order_by(models.SeckillActivity.start_time).all()
 
 		start_date_list = []
 		for activity in activity_list:

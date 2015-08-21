@@ -4906,7 +4906,10 @@ class MarketingSeckill(AdminBaseHandler):
 				page_sum = page_sum//page_size
 			else:
 				page_sum = page_sum//page_size + 1
-			query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).offset(page*page_size).limit(page_size).all()
+			if status in [1,2]:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(models.SeckillActivity.start_time).offset(page*page_size).limit(page_size).all()
+			else:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(desc(models.SeckillActivity.start_time)).offset(page*page_size).limit(page_size).all()
 			for item in query_list:
 				activity_item = {}
 				activity_item['activity_id'] = item.id
@@ -5249,8 +5252,10 @@ class MarketingSeckill(AdminBaseHandler):
 				page_sum = page_sum//page_size
 			else:
 				page_sum = page_sum//page_size + 1
-
-			query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).offset(page*page_size).limit(page_size).all()
+			if status in [1,2]:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(models.SeckillActivity.start_time).offset(page*page_size).limit(page_size).all()
+			else:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(desc(models.SeckillActivity.start_time)).offset(page*page_size).limit(page_size).all()
 			for item in query_list:
 				activity_item = {}
 				activity_item['activity_id'] = item.id
