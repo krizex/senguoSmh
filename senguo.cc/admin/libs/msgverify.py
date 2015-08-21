@@ -69,7 +69,7 @@ def gen_msg_token(phone):
 	if not root[0].text == '2':
 		# print("[VerifyMsg]Send error:",root[0].text,root[1].text)
 		#如果发送失败，则改用云通讯发送
-		flag,msg =  sendTemplateSMS(phone,code,32417):
+		flag,msg =  sendTemplateSMS(phone,code,32417)
 		if flag:
 			update_code(phone,code)
 			return True
