@@ -1174,7 +1174,7 @@ class Market(CustomerBaseHandler):
 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
 		# print("[CustomerMarket]cart_fs:",cart_fs)
-		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+		
 		self.set_cookie("cart_count", str(cart_count))
 		# print("[CustomerMarket]notices:",notices)
 		group_list=[]
@@ -1230,8 +1230,10 @@ class Market(CustomerBaseHandler):
 					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
+		# added by jyj 2015-8-21
 		has_seckill_activity = 0
 		seckill_img_url = ''
+		notices = []
 		if seckill_active == 1:
 			shop_id = shop.id
 			self.update_seckill()			
@@ -1240,11 +1242,19 @@ class Market(CustomerBaseHandler):
 				has_seckill_activity = 1
 				activity_query = activity_query[0]
 				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
+				notices.append(('','',seckill_img_url))
+				for x in shop.config.notices:
+					if x.active == 1:
+						notices.append((x.summary, x.detail,x.img_url))
+			else:
+				notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+		else:
+			notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
-							has_seckill_activity=has_seckill_activity,seckill_img_url = seckill_img_url))
+							has_seckill_activity=has_seckill_activity))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1359,11 +1369,24 @@ class Market(CustomerBaseHandler):
 				# added by jyj 2015-8-21
 				data_item = {}
 
+				data_item['id'] = fruit.id
+				data_item['shop_id'] = fruit.shop_id
+				data_item['active'] = fruit.active
+				data_item['code'] = fruit.fruit_type.code
+
+				data_item['tag'] = fruit.tag
+				data_item['img_url'] = img_url
+				data_item['intro'] = fruit.intro
+				data_item['name'] = fruit.name
+				data_item['favour_today'] = str(favour_today)
+				data_item['group_id'] = fruit.group_id
+				data_item['detail_no'] = str(detail_no)
+
 				fruit_id = fruit.id
 				if fruit_id in killing_fruit_id:
 					sekill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
 								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
-					data_item['is_seckill'] = 1
+					data_item['is_activity'] = 1
 					data_item['activity_id'] = sekill_info.activity_id
 					data_item['seckill_goods_id'] = sekill_info.id
 					data_item['charge_type_id'] = sekill_info.charge_type_id
@@ -1377,43 +1400,19 @@ class Market(CustomerBaseHandler):
 
 					data_item['price_dif'] = sekill_info.former_price - sekill_info.seckill_price
 					data_item['activity_piece'] = sekill_info.activity_piece
-
-					data_item['id'] = fruit.id
-					data_item['shop_id'] = fruit.shop_id
-					data_item['active'] = fruit.active
-					data_item['code'] = fruit.fruit_type.code
-
-					data_item['tag'] = fruit.tag
-					data_item['img_url'] = img_url
-					data_item['intro'] = fruit.intro
-					data_item['name'] = fruit.name
-					data_item['favour_today'] = str(favour_today)
-					data_item['group_id'] = fruit.group_id
-					data_item['detail_no'] = str(detail_no)
-
 				else:
-					data_item['is_seckill'] = 0
+					data_item['is_activity'] = 0
 
-					data_item['id'] = fruit.id
-					data_item['shop_id'] = fruit.shop_id
-					data_item['active'] = fruit.active
-					data_item['code'] = fruit.fruit_type.code
 					data_item['charge_types'] = charge_types
 					data_item['storage'] = fruit.storage
-					data_item['tag'] = fruit.tag
-					data_item['img_url'] = img_url
-					data_item['intro'] = fruit.intro
-					data_item['name'] = fruit.name
 					data_item['saled'] = saled
 					data_item['favour'] = fruit.favour
-					data_item['favour_today'] = str(favour_today)
-					data_item['group_id'] = fruit.group_id
 					data_item['limit_num'] = fruit.limit_num
-					data_item['detail_no'] = str(detail_no)
 			
 				##
 
 				data.append(data_item)
+
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
