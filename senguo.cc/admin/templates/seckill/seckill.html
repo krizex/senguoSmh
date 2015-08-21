@@ -10,12 +10,12 @@
 <input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm40">
     <div class="wrap-time-top">
-        <ul class="seckill-time-list group {% if len(output_data)==0 %}hide{% end %}">
+        <ul class="seckill-time-list group {% if len(output_data)<=1 %}hide{% end %}">
             {% for i in range(len(output_data))%}
             {% set sec = output_data[i]%}
             <li>
                 <span class="sp-date">{{sec[0]}}<i class="tri-r"></i></span>
-                <ul class="stime-list fl">
+                <ul class="stime-list">
                     {% for j in range(len(sec[1])) %}
                     {% set time = sec[1][j] %}
                     <li class="{% if i==0 and j==0 %}active{% end %}" data-id="{{time['activity_id']}}" data-start="{{time['start_time']}}" data-continue="{{time['continue_time']}}">

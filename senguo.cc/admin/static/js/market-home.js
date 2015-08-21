@@ -488,7 +488,6 @@ function countTime($obj){
         int_minute = Math.floor(time_distance/60000)
         time_distance -= int_minute * 60000;
         int_second = Math.floor(time_distance/1000)
-        // 时分秒为单数时、前面加零站位
         if(int_hour < 10)
             int_hour = "0" + int_hour;
         if(int_minute < 10)
@@ -507,7 +506,8 @@ function countTime($obj){
             countTime($obj);
         },1000);
     }else{
-        Tip("结束了");
+        noticeBox("结束了");
+
     }
 }
 window.dataObj.fruits={};
