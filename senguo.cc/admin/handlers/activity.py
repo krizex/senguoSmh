@@ -801,7 +801,11 @@ class Seckill(CustomerBaseHandler):
 			goods_item['charge_type_id'] = goods.charge_type_id
 
 			cur_charge_type = self.session.query(models.ChargeType).filter_by(id = goods.charge_type_id).first()
-			goods_item['charge_type_text'] = str(cur_charge_type.price) + '元' + '/' + str(cur_charge_type.num) + self.getUnit(cur_charge_type.unit)
+			if int(cur_charge_type.num) == cur_charge_type.num:
+				cur_charge_type_num = int(cur_charge_type.num)
+			else:
+				cur_charge_type_num = cur_charge_type.num
+			goods_item['charge_type_text'] = str(cur_charge_type.price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 			goods_item['price_dif'] = goods.former_price - goods.seckill_price
 			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)
