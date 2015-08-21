@@ -1112,9 +1112,17 @@ class Market(CustomerBaseHandler):
 				coupon_active=0
 			else :
 				coupon_active=shop.marketing.coupon_active
+
+			# added by jyj 2015-8-21
+			seckill_active = shop.marketing.seckill_active
+			##
 		else:
 			shop_marketing = 0
 			coupon_active=1
+
+			# added by jyj 2015-8-21
+			seckill_active = 0
+			##
 
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -1123,6 +1131,9 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
 		self.set_cookie("coupon_active", str(coupon_active))
+		# added by jyj 2015-8-21
+		self.set_cookie("seckill_active", str(seckill_active))
+		##
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -1166,7 +1177,6 @@ class Market(CustomerBaseHandler):
 		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 		# print("[CustomerMarket]notices:",notices)
-
 		group_list=[]
 
 		# try:
@@ -1220,9 +1230,21 @@ class Market(CustomerBaseHandler):
 					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
+		has_seckill_activity = 0
+		seckill_img_url = ''
+		if seckill_active == 1:
+			shop_id = shop.id
+			self.update_seckill()			
+			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
+			if activity_query:
+				has_seckill_activity = 1
+				activity_query = activity_query[0]
+				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
+
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
-							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
+							has_seckill_activity=has_seckill_activity,seckill_img_url = seckill_img_url))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1266,9 +1288,26 @@ class Market(CustomerBaseHandler):
 			return self.search_list()
 	# @classmethod
 	def w_getdata(self,session,m,customer_id):
+			self.update_seckill()
 			data = []
 			w_tag = ''
 			# print("[CustomerMarket]customer_id:",customer_id)
+
+			# added by jyj 2015-8-21
+			shop_id = m[0].shop_id
+			killing_activity_id = []
+			killing_fruit_id = []
+			query_list = session.query(models.SeckillActivity.id).filter_by(shop_id = shop_id,activity_status = 2).all()
+			if query_list:
+				for item in query_list:
+					killing_activity_id.append(item[0])
+				
+				query_goods = session.query(models.SeckillGoods.fruit_id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
+				if query_goods:
+					for item in query_goods:
+						killing_fruit_id.append(item[0])
+			# print('*******',killing_fruit_id)
+			##
 			for fruit in m:
 				try:
 					# print('[CustomerMarket]fruit id:',fruit.id)
@@ -1317,9 +1356,64 @@ class Market(CustomerBaseHandler):
 				else:
 					detail_no = False
 
-				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
-					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no)})
+				# added by jyj 2015-8-21
+				data_item = {}
+
+				fruit_id = fruit.id
+				if fruit_id in killing_fruit_id:
+					sekill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
+								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
+					data_item['is_seckill'] = 1
+					data_item['activity_id'] = sekill_info.activity_id
+					data_item['seckill_goods_id'] = sekill_info.id
+					data_item['charge_type_id'] = sekill_info.charge_type_id
+
+					cur_charge_type = session.query(models.ChargeType).filter_by(id = sekill_info.charge_type_id).first()
+					if int(cur_charge_type.num) == cur_charge_type.num:
+						cur_charge_type_num = int(cur_charge_type.num)
+					else:
+						cur_charge_type_num = cur_charge_type.num
+					data_item['charge_type_text'] = str(cur_charge_type.price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+
+					data_item['price_dif'] = sekill_info.former_price - sekill_info.seckill_price
+					data_item['activity_piece'] = sekill_info.activity_piece
+
+					data_item['id'] = fruit.id
+					data_item['shop_id'] = fruit.shop_id
+					data_item['active'] = fruit.active
+					data_item['code'] = fruit.fruit_type.code
+
+					data_item['tag'] = fruit.tag
+					data_item['img_url'] = img_url
+					data_item['intro'] = fruit.intro
+					data_item['name'] = fruit.name
+					data_item['favour_today'] = str(favour_today)
+					data_item['group_id'] = fruit.group_id
+					data_item['detail_no'] = str(detail_no)
+
+				else:
+					data_item['is_seckill'] = 0
+
+					data_item['id'] = fruit.id
+					data_item['shop_id'] = fruit.shop_id
+					data_item['active'] = fruit.active
+					data_item['code'] = fruit.fruit_type.code
+					data_item['charge_types'] = charge_types
+					data_item['storage'] = fruit.storage
+					data_item['tag'] = fruit.tag
+					data_item['img_url'] = img_url
+					data_item['intro'] = fruit.intro
+					data_item['name'] = fruit.name
+					data_item['saled'] = saled
+					data_item['favour'] = fruit.favour
+					data_item['favour_today'] = str(favour_today)
+					data_item['group_id'] = fruit.group_id
+					data_item['limit_num'] = fruit.limit_num
+					data_item['detail_no'] = str(detail_no)
+			
+				##
+
+				data.append(data_item)
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")

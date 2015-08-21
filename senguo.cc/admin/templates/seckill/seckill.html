@@ -10,7 +10,7 @@
 <input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm40">
     <div class="wrap-time-top">
-        <ul class="seckill-time-list group {% if len(output_data)<=1 %}hide{% end %}">
+        <ul class="seckill-time-list group {% if activity_num <=1 %}hide{% end %}">
             {% for i in range(len(output_data))%}
             {% set sec = output_data[i]%}
             <li>
