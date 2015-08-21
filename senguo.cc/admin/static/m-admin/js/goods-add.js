@@ -15,7 +15,7 @@ $(document).ready(function(){
     }
 
 }).on("click",".gogoods",function(){
-    if(confirm("当前商品未完成，确定返回吗？")){
+    if(confirm("当前编辑未完成，确定返回吗？")){
         window.location.href="/madmin/goods";
     }
 }).on("click",".goods_status",function(){
