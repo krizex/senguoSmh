@@ -1,6 +1,6 @@
 var is_staff = false,staff_address = '';
 $(document).ready(function(){
-    if(navigator.userAgent.indexOf("iPhone")>-1){
+    if(navigator.userAgent.indexOf("iPhone")>-1 && navigator.userAgent.indexOf("MicroMessenger")>-1){
         $("#go-back").css("display","none");
     }
     $(".wrap-area-box").height($(window).height());
