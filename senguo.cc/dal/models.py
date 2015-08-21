@@ -1926,7 +1926,7 @@ class DiscountShopGroup(MapBase, _CommonApi):
 	discount_id=Column(Integer)
 	shop_id=Column(Integer)
 	discount_way=Column(Integer,default=0) # 0：表示单次折扣　１：表示周期折扣
-	weeks=Column(String(20)) # 周几生效　依次　１－－７
+	weeks=Column(String(40)) # 周几生效　依次　１－－７
 	start_date=Column(Integer)
 	end_date=Column(Integer)
 	f_time=Column(Integer)

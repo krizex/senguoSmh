@@ -101,6 +101,9 @@ $(document).ready(function () {
     $(".chinav li").removeClass("active").eq(index).addClass("active");
     $(".wrap-tb table").addClass("hidden").eq(index).removeClass("hidden");
 }).on('click','.open-week',function(){
+    if($(this).hasClass('forbidden-btn')){
+        return false;
+    }
     $('.open-single').removeClass("radio-active");
     $('.single-day').addClass("hidden");
     $(this).addClass("radio-active");
@@ -108,6 +111,9 @@ $(document).ready(function () {
     $('.week').removeClass('hidden');
     $('.discount-tip').removeClass('hidden');
 }).on('click','.open-single',function(){
+    if($(this).hasClass('forbidden-btn')){
+        return false;
+    }
     $(this).addClass("radio-active");
     $('.single-day').removeClass("hidden");
     $('.open-week').removeClass("radio-active");
@@ -214,17 +220,20 @@ $(document).ready(function () {
     if($(this).attr('data-flag')=='off'){
         return;
     }
-　　　adddiscount();
+    adddiscount();
 }).on('click','.cancel-new-discount',function(){
     if(confirm("你正在新建限时折扣，确定退出当前页面并放弃新建吗？")){
         window.location.href="/admin/discount?action=discount";
     }
 }).on('click','.change-week a',function(){
+    if($(this).hasClass("forbidden-btn")){
+        return false;
+    }
    if($(this).hasClass("back_green")){
     $(this).removeClass("back_green");
    }
    else{
-    $(this).addClass("back_green");
+    $(this).addClass("back_green").removeClass("back_gray1");
    }
 }).on('click','.f-discount-hour-items li .item',function(){
     $('.f-hour').text($(this).text()).attr("data-id",$(this).text());
@@ -249,21 +258,31 @@ $(document).ready(function () {
 }).on('click','.go-back',function(){
     window.history.back();
 }).on('click','.ok-edit',function(){
-    if(confirm("你已经修改了该批限时折扣，你确定保存修改吗？")){
-        //发送编辑情请求 
+    if($(this).attr('data-flag')=='off'){
+        return false;
     }
+    editdiscount(); 
 }).on('click','.cancel-edit',function(){
     if(confirm("你还没有保存所做修改，确定放弃修改并返回到限时折扣主页面吗？")){
         // 放弃修改
+        window.location.href="/admin/discount?action=discount";
     }
 }).on('click','.discount_close',function(){
+    if (parseInt($(this).attr("data-id"))==3){
+        return false;
+    }
     if(confirm("一旦停用将不能重新开启，你确定要停用该条限时折扣吗？")){
-        $(this).closest('tbody').remove();
+        // 停用该条记录
+        var $this=$(this).closest('tbody');
+        $this.find('.use_goods_group').closest("button").addClass("disabled");
+        $this.find('.use_goods').closest("button").addClass("disabled");
+        $this.find('.discount_rate').attr("disabled","disabled").addClass("disabled");
+        $this.find('.charge_list button').addClass("disabled");
+        $(this).attr("data-id",3).addClass("text_gray").text("已停用");
     }
 });
 
-
-function adddiscount(){
+function getinfo(){
     var currentdate=getNowFormatDate();
     var discount_way=parseInt($('.radio-active').attr('data-id'));
     var start_date='';
@@ -313,14 +332,17 @@ function adddiscount(){
             weeks[i]=parseInt($(selected[i]).attr("week-id"));
         }
         if(weeks.length==0){
-            return Tip("开始周期至少选择一种");
+            return Tip("开始周期至少选择一天");
         }
     }
     var discount_items=$('.discount_item .new_tbody');
     var discount_goods=[]
+    var discount_close=[]
     for (var i = 1; i <=goods_number ; i++) {
          var use_goods_group=parseInt($(discount_items[i-1]).find('.use_goods_group').attr("data-id"));
          var use_goods=parseInt($(discount_items[i-1]).find('.use_goods').attr("data-id"));
+        
+         discount_close[i-1]=parseInt($(discount_items[i-1]).find('.discount_close').attr('data-id'));
          var charges=[];
          if(use_goods!=-1){
             var selected=$(discount_items[i-1]).find('.charge_list button.back_green');
@@ -341,15 +363,26 @@ function adddiscount(){
         discount_good={"use_goods_group":use_goods_group,"use_goods":use_goods,"charges":charges,"discount_rate":discount_rate};
         discount_goods[i-1]=discount_good;
         }
-    var data={
+    discount_id=parseInt($("#goods").attr("discount_id"));
+    data={
         "discount_way":discount_way,
         "start_date":start_date,
         "end_date":end_date,
         "f_time":f_time,
         "t_time":t_time,
         "weeks":weeks,
-        "discount_goods":discount_goods
+        "discount_goods":discount_goods,
+        "discount_id":discount_id,
+        "discount_close":discount_close
     }
+    return data
+}
+function adddiscount(){
+    var data=getinfo();
+    if(data==undefined){
+        return false;
+    }
+   if(confirm("你确定添加该批限时折扣吗？")){
     var action="newdiscount";
     var args={action:action,data:data};
     var url='';
@@ -368,6 +401,34 @@ function adddiscount(){
         function(){
             Tip('网络好像不给力呢~ ( >O< ) ~');
         });
+    }
+}
+
+function editdiscount(){
+    var data=getinfo();
+    if(data==undefined){
+        return false;
+    }
+   if(confirm("你确定添加该批限时折扣吗？")){
+    var action="editdiscount";
+    var args={action:action,data:data};
+    var url='';
+    $(this).attr('data-flag',"off");//给点击时间上锁，防止多次点击
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                Tip('编辑限时折扣成功!');
+                setTimeout(function(){
+                    window.location.href="/admin/discount?action=discount";
+                },1500);
+            }else{
+                Tip(res.error_text);
+            }
+        },
+        function(){
+            Tip('网络好像不给力呢~ ( >O< ) ~');
+        });
+   }
 }
 
 function todate(str_time){

@@ -8,11 +8,11 @@
 {% set shop_code = current_shop.shop_code %}
 <div class="wrap-newcoupon">
     <p class="c333 mt10 choose-text">
-        <a href="/discount?action=discount" class="c999 cancel-add-goods go-back">限时折扣</a>
-        <span class="c333"> / 编辑折扣商品[{{common_info["id"]}}]</span>
+        <a href="/admin/discount?action=discount" class="c999 cancel-add-goods ">限时折扣</a>
+        <span class="c333" > / 编辑折扣商品[{{common_info["id"]}}]</span>
     </p>
 </div>
-<input type="hidden" id="goods" value="{{data1}}"/>
+<input type="hidden" id="goods" value="{{data1}}" discount_id={{common_info["id"]}}/>
 <input type="hidden" id="charge" value="{{chargetype}}"/>
 <div class="wrap-newcoupon mt20">
     <div class="newcoupon-box group">
@@ -27,7 +27,7 @@
                 <tr>
                     <td class="">折扣时间</td>
                     <td>
-                        <a href="javascript:;" class="radio {%if common_info["discount_way"]==0 %}radio-active{%end%} open-single" data-id="0"></a>
+                        <a href="javascript:;" class="radio {%if common_info["edit_status"]!=1%}forbidden-btn{%end%} {%if common_info["discount_way"]==0 %}radio-active{%end%} open-single" data-id="0"></a>
                     </td>
                     <td><span>单次</span></td>
                 </tr>
@@ -45,7 +45,7 @@
                     <td>开始时间</td>
                     <td>
                         <div class="">
-                             <input type="text" class="Wdate start_date" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'})">
+                             <input type="text" class="Wdate start_date {%if common_info["edit_status"]!=1%}disabled{%end%}" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'}) " value="{{common_info["start_date"]}}" {%if common_info["edit_status"]!=1%}disabled="disabled"{%end%}>
                         </div>
                     </td>
                 </tr>
@@ -53,7 +53,7 @@
                     <td></td>
                     <td>结束时间</td>
                     <td>
-                         <input type="text" class="Wdate end_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})">
+                         <input type="text" class="Wdate end_date {%if common_info["edit_status"]==3%}disabled{%end%} " id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})" value="{{common_info["end_date"]}}" old_end_date={{common_info["end_date"]}} {%if common_info["edit_status"]==3%}disabled="disabled"{%end%}>
                     </td>
                 </tr>
                 </tbody>
@@ -68,7 +68,7 @@
                 <tr>
                     <td class=""></td>
                     <td>
-                        <a href="javascript:;" class="radio open-week {%if common_info["discount_way"]==1 %}radio-active{%end%}" data-id="1"></a>
+                        <a href="javascript:;" class="radio open-week {%if common_info["edit_status"]!=1%}forbidden-btn{%end%} {%if common_info["discount_way"]==1 %}radio-active{%end%}" data-id="1"></a>
                     </td>
                     <td><span>开启周期（多选）</span></td>
                 </tr>
@@ -81,15 +81,15 @@
                 </colgroup>
                 <thead>
                     <td class=""></td>
-                    <td class="change-week">
+                    <td class="change-week ">
                     {%set weeks=["","周一","周二","周三","周四","周五","周六","周日"]%}
                     {%for x in range(1,8)%}
-                        <a href="javascript:;" class=" week-btn  mt6 mr10 {%if x in common_info["weeks"]%}back_green{%end%}" week-id={{x}}>{{weeks[x]}}</a>
+                        <a href="javascript:;" class=" week-btn  mt6 mr10 {%if common_info["edit_status"]!=1%}forbidden-btn{%end%} {%if x in common_info["weeks"]%}back_green{%else%}{%if common_info["edit_status"]!=1%}back_gray1{%end%}{%end%}" week-id={{x}}>{{weeks[x]}}</a>
                     {%end%}
                     </td>
                 </thead>
             </table>
-            <table class="coupon-tb week-time hidden">
+            <table class="coupon-tb week-time {%if common_info["discount_way"]==0 %}hidden{%end%}">
                 <colgroup>
                     <col width="16%"/>
                     <col width="9%"/>
@@ -102,21 +102,21 @@
                     <td>
                         <div class=""> 
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 f-hour" data-id={} >0</em>
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 f-hour" data-id={{common_info["f_hour"]}}>{{common_info["f_hour"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 f-discount-hour-items time-btn-width" role="menu" aria-labelledby="dropdownMenu18">
                                     {%for x in range(0,24)%}
                                     <li class="presentation" role="presentation">
-                                        <a class="item" href="javascript:;" data-id={{x}} >{{x}}</a>
+                                        <a class="item " href="javascript:;" data-id={{x}} >{{x}}</a>
                                     </li>
                                     {%end%}
                                 </ul>
                             </div><span class="text-below">时</span>
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 f-minute" data-id="0" >0</em>
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 f-minute" data-id={{common_info["f_minute"]}}>{{common_info["f_minute"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 f-discount-minute-items time-btn-width" role="menu" aria-labelledby="dropdownMenu18">
@@ -128,8 +128,8 @@
                                 </ul>
                             </div><span class="text-below">分</span>
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 f-second" data-id="0" >0</em>
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 f-second" data-id={{common_info["f_second"]}}>{{common_info["f_second"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 f-discount-second-items time-btn-width" role="menu" aria-labelledby="dropdownMenu18">
@@ -149,8 +149,8 @@
                     <td>
                         <div class="">
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 t-hour" data-id="23" >23</em>
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]==3%}disabled{%end%}" type="button" data-toggle="dropdown" data-id={{common_info["edit_status"]}}>
+                                    <em class="pull-left c333 t-hour" data-id={{common_info["t_hour"]}} old_t_hour={{common_info["t_hour"]}}>{{common_info["t_hour"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 t-discount-hour-items time-btn-width" role="menu" aria-labelledby="dropdownMenu18">
@@ -162,8 +162,8 @@
                                 </ul>
                             </div><span class="text-below">时</span>
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 t-minute" data-id="59" >59</em>
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]==3%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 t-minute" data-id={{common_info["t_minute"]}} old_t_minute={{common_info["t_minute"]}}>{{common_info["t_minute"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 t-discount-minute-items time-btn-width" role="menu" aria-labelledby="dropdownMenu18">
@@ -175,8 +175,8 @@
                                 </ul>
                             </div><span class="text-below">分</span>
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
-                                    <em class="pull-left c333 t-second" data-id="59" >59</em>
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]==3%}disabled{%end%}" type="button" data-toggle="dropdown" >
+                                    <em class="pull-left c333 t-second" data-id={{common_info["t_second"]}} old_t_second={{common_info["t_second"]}}>{{common_info["t_second"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w130 t-discount-second-items time-btn-width" role="menu" aria-labelledby="dropdownMenu18">
@@ -211,7 +211,7 @@
                                     <div class="iblock">
                                         <span class="mr10 ver7">商品名称</span>
                                         <div class="dropdown slide-down-select w130 mr10 use_group">
-                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
                                                 <em class="pull-left c333 use_goods_group" data-id={{data["use_goods_group"]}}>{{data["use_goods_group_text"]}}</em>
                                                 <span class="caret pull-right no-margin-left rotate0"></span>
                                             </button>
@@ -224,7 +224,7 @@
                                             </ul>
                                         </div>
                                         <div class="dropdown slide-down-select w130 ">
-                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn " type="button" data-toggle="dropdown">
+                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%} " type="button" data-toggle="dropdown">
                                                 <em class="pull-left c333 use_goods" data-id={{data["use_goods"]}}>{{data["use_goods_text"]}}</em>
                                                 <span class="caret pull-right no-margin-left rotate0"></span>
                                             </button>
@@ -236,23 +236,33 @@
                             </tr>
                             <tr class="charge-type no_border {%if data["use_goods"]==-1%}hidden{%end%}">
                                 <td>原价(多选)<span class='charge_list'>
+                                {%if data["use_goods_group"]==-2%}
+                                {%set charges=[]%}
+                                {%else%}
+                                {%if data["use_goods"]==-1%}
+                                 {%set charges=[]%}
+                                {%else%}
                                 {%set index1=output_data.index({"group_id":data["use_goods_group"],"group_name":data["use_goods_group_text"]})%}
                                 {%set index2=data1[index1].index({"goods_id":data["use_goods"],"goods_name":data["use_goods_text"]})%}
-                                {%for charge in chargetype[index1][index2]%}
+                                {%set charges=chargetype[index1][index2]%}
+                                {%end%}
+                                {%end%}
+                                {%for charge in charges%}
                                     <button class=" charge-btn mt6 mr10 {%if charge["charge_id"] in data["charges"]%}back_green{%end%}" charge_id={{charge["charge_id"]}}>{{charge["charge"]}}</button>
                                 {%end%}
                                 </span></td>
                             </tr>
                             <tr class="no_border">
                                 <td>
-                                   活动折扣<input type="text" class="discount_rate" value="{{data["discount_rate"]}}"><span>折</span>
+                                   活动折扣<input type="text" class="discount_rate {%if common_info["edit_status"]!=1%}disabled{%end%}" value="{{data["discount_rate"]}}" {%if common_info["edit_status"]!=1%}disabled="disabled"{%end%}><span>折</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                     <tr>
                         <td></td>
-                         <td><a href="javascript:;" class="  mt6 mr10 discount_close text_red " >停用</a></td>
+                         <td><a href="javascript:;" class="mt6 mr10 discount_close 
+                         {%if data["status"]==3%}back_gray1{%else%}text_red{%end%} " data-id={{data["status"]}} >{%if data["status"]==3%}已{%end%}停用</a></td>
                     </tr>
                 </tr>
                 </tbody>

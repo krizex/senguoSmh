@@ -4870,20 +4870,20 @@ class Discount(AdminBaseHandler):
 				f_minute=int(f_time%3600/60)
 				if f_minute<10:
 					f_minute='0'+str(f_minute)
-				f_secound=int(f_time%3600%60)
-				if f_secound<10:
-					f_secound='0'+str(f_secound)
+				f_second=int(f_time%3600%60)
+				if f_second<10:
+					f_second='0'+str(f_second)
 				t_hour=int(t_time/3600)
 				if t_hour<10:
 					t_hour='0'+str(t_hour)
 				t_minute=int(t_time%3600/60)
 				if t_minute<10:
 					t_minute='0'+str(t_minute)
-				t_secound=int(t_time%3600%60)
-				if t_secound<10:
-					t_secound='0'+str(t_secound)
-				start_date=str(f_hour)+':'+str(f_minute)+':'+str(f_secound)
-				end_date=str(t_hour)+':'+str(t_minute)+':'+str(t_secound)
+				t_second=int(t_time%3600%60)
+				if t_second<10:
+					t_secund='0'+str(t_second)
+				start_date=str(f_hour)+':'+str(f_minute)+':'+str(f_second)
+				end_date=str(t_hour)+':'+str(t_minute)+':'+str(t_second)
 				for y in eval(x.weeks):
 					weeks+=','+weekscontent[y]
 				weeks=weeks[1:]  #去掉最开始的那个‘,’
@@ -4959,15 +4959,39 @@ class Discount(AdminBaseHandler):
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=discount_id).first()
 			start_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.start_date))
 			end_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.end_date))
-			f_time=q.t_time
-			t_time=q.t_time
-			f_hour=f_time/3600
-			f_minute=f_time%3600/60
-			f_secound=f_time%3600
-			t_hour=t_time/3600
-			t_minute=t_time%3600/60
-			t_secound=t_time%3600
-			common_info={"id":q.discount_id,"discount_way":q.discount_way,"weeks":eval(q.weeks),"start_date":start_date,"end_date":end_date,"f_hour":f_hour,"f_minute":f_minute,"f_secound":f_secound,"t_hour":t_hour,"t_minute":t_minute,"t_secound":t_secound}
+			f_time=int(q.f_time)
+			t_time=int(q.t_time)
+			f_hour=int(f_time/3600)
+			f_minute=int(f_time%3600/60)
+			f_second=int(f_time%3600%60)
+			t_hour=int(t_time/3600)
+			t_minute=int(t_time%3600/60)
+			t_second=int(t_time%3600%60)
+			edit_status=0  #表示编辑状态 0：默认初始值 1：任何东西都可以编辑 2：可以编辑部分信息 3：完全不能够编辑
+			now_date=int(time.time())
+			if q.discount_way==0:
+				if now_date<q.start_date:
+					edit_status=1
+				elif now_date<q.end_date:
+					edit_status=2
+				else:
+					edit_status=3
+			else:
+				now_weekday=datetime.datetime.now().weekday()
+				if now_weekday==0:
+					now_weekday==7
+				if now_weekday in eval(q.weeks):
+					now_time=int(time.time()%(24*3600))+8*3600
+					print(now_time)
+					if now_time<f_time:
+						edit_status=1
+					elif now_time<t_time:
+						edit_status=2
+					else:
+						edit_status=3
+				else:
+					edit_status=1
+			common_info={"id":q.discount_id,"edit_status":edit_status,"discount_way":q.discount_way,"weeks":eval(q.weeks),"start_date":start_date,"end_date":end_date,"f_hour":f_hour,"f_minute":f_minute,"f_second":f_second,"t_hour":t_hour,"t_minute":t_minute,"t_second":t_second}
 			q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).all()
 			discount_items=[]
 			for x in q:
@@ -4985,9 +5009,8 @@ class Discount(AdminBaseHandler):
 				else:
 					q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
 					use_goods=q1.name
-				discount={"id":x.inner_id,"use_goods_group":x.use_goods_group,"use_goods":x.use_goods,"use_goods_group_text":use_goods_group,"use_goods_text":use_goods,"discount_rate":x.discount_rate,"charges":eval(x.charge_type)}
+				discount={"id":x.inner_id,"use_goods_group":x.use_goods_group,"use_goods":x.use_goods,"use_goods_group_text":use_goods_group,"use_goods_text":use_goods,"status":x.status,"discount_rate":x.discount_rate,"charges":eval(x.charge_type)}
 				discount_items.append(discount)
-			print(data1)
 			return self.render("admin/discount-edit.html",discount_items=discount_items,output_data=data,data1=data1,chargetype=chargetype,common_info=common_info,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="details":
 			discount_id=int(self.args["discount_id"])
@@ -5056,7 +5079,55 @@ class Discount(AdminBaseHandler):
 				discount_way=discount_way,f_time=f_time,t_time=t_time,status=status,create_date=create_date,incart_num=0,ordered_num=0)
 			self.session.add(new_discount)
 			for x in discount_goods:
-				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
+				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),\
+					status=status,discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
 				self.session.add(new_discount)
+			self.session.commit()
+			return self.send_success()
+		elif action=="editdiscount":
+			data=self.args["data"]
+			
+			discount_way=int(data["discount_way"])
+			start_date=data["start_date"]
+			end_date=data["end_date"]
+			discount_id=int(data["discount_id"])
+			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=discount_id).with_lockmode("update").first()
+			start_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.start_date))
+			end_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.end_date))
+			edit_status=0  #表示编辑状态 0：默认初始值 1：任何东西都可以编辑 2：可以编辑部分信息 3：完全不能够编辑
+			f_time=data["f_time"]
+			t_time=data["t_time"]
+			weeks=data["weeks"]
+			discount_goods=data["discount_goods"]
+			discount_close=data["discount_close"]
+			print(discount_goods)
+			if q.status==1:
+				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,discount_way=discount_way,weeks=str(weeks),f_time=f_time,t_time=t_time)
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
+				for x in qq:
+					_index=qq.index(x)
+					discount_good=discount_goods[_index]
+					if x.status==1:
+						if  discount_close[_index]==3:
+							status==3
+						else:
+							status=x.status
+						x.update(self.session,shop_id=current_shop_id,discount_id=discount_id,use_goods_group=discount_good["use_goods_group"],\
+							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)	
+			elif q.status==2:
+				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,end_date=end_date,t_time=t_time)
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
+				for x in qq:
+					_index=qq.index(x)
+					discount_good=discount_goods[x]
+					if x.status==1:
+						if  discount_close[_index]==3:
+							status==3
+						else:
+							status=x.status
+						x.update(self.session,shop_id=current_shop_id,discount_id=discount_id,use_goods_group=discount_good["use_goods_group"],\
+							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)
+			else:
+				self.send_error("限时折扣的状态已经发生变化，编辑失败")
 			self.session.commit()
 			return self.send_success()
