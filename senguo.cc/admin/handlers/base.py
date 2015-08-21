@@ -146,7 +146,7 @@ class GlobalBaseHandler(BaseHandler):
 	# 全局实时更新店铺秒杀活动基类方法：
 	def update_seckill_base(self,shop_id):
 		current_shop_id = shop_id
-		notstart_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = 1).all()
+		notstart_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = 1).with_lockmode('update').all()
 		for item in notstart_list:
 			now_time = int(time.time())
 			if item.start_time <= now_time and item.end_time > now_time:
@@ -162,6 +162,12 @@ class GlobalBaseHandler(BaseHandler):
 			now_time = int(time.time())
 			if item.end_time <= now_time:
 				item.activity_status = 0
+				activity_id = item.id
+				sec_fruit_list = self.session.query(models.Fruit).join(models.SeckillGoods,models.SeckillGoods.fruit_id == models.Fruit.id).\
+							          filter(models.SeckillGoods.activity_id == activity_id).with_lockmode('update').all()
+				for sec_fruit in sec_fruit_list:
+					sec_fruit.activity_status = 0
+					sec_fruit.seckill_charge_type = 0
 				self.session.flush()
 		self.session.commit()
 		return None

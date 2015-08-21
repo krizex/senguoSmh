@@ -1112,9 +1112,17 @@ class Market(CustomerBaseHandler):
 				coupon_active=0
 			else :
 				coupon_active=shop.marketing.coupon_active
+
+			# added by jyj 2015-8-21
+			seckill_active = shop.marketing.seckill_active
+			##
 		else:
 			shop_marketing = 0
 			coupon_active=1
+
+			# added by jyj 2015-8-21
+			seckill_active = 0
+			##
 
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -1123,6 +1131,9 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
 		self.set_cookie("coupon_active", str(coupon_active))
+		# added by jyj 2015-8-21
+		self.set_cookie("seckill_active", str(seckill_active))
+		##
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -1166,7 +1177,6 @@ class Market(CustomerBaseHandler):
 		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		self.set_cookie("cart_count", str(cart_count))
 		# print("[CustomerMarket]notices:",notices)
-
 		group_list=[]
 
 		# try:
@@ -1220,9 +1230,21 @@ class Market(CustomerBaseHandler):
 					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
+		has_seckill_activity = 0
+		seckill_img_url = ''
+		if seckill_active == 1:
+			shop_id = shop.id
+			self.update_seckill()			
+			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
+			if activity_query:
+				has_seckill_activity = 1
+				activity_query = activity_query[0]
+				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
+
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
-							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
+							has_seckill_activity=has_seckill_activity,seckill_img_url = seckill_img_url))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
