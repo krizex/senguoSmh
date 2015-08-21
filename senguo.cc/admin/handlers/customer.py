@@ -525,6 +525,7 @@ class Discover(CustomerBaseHandler):
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
 
 		# added by jyj 2015-8-18 for seckill
+		self.update_seckill()
 		shop_id = shop.id
 		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active
 		seckill_text = ''
@@ -535,7 +536,7 @@ class Discover(CustomerBaseHandler):
 			if query1:
 				activity_id = query1[0][0]
 				goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
-				seckill_text = str(goods_count) + '件商品正在火热秒杀中'
+				seckill_text = str(goods_count) + '种商品正在火热秒杀中'
 				seckill_display_flag = 1
 			else:
 				one_day_time = 24*60*60
@@ -554,7 +555,7 @@ class Discover(CustomerBaseHandler):
 						day = '今天'
 					else:
 						day = '明天'
-					seckill_text = str(goods_count) + '件商品' + day + seckill_time +'大开杀戒'
+					seckill_text = str(goods_count) + '种商品' + day + seckill_time +'大开杀戒'
 					seckill_display_flag = 1
 
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
@@ -1064,7 +1065,6 @@ class Market(CustomerBaseHandler):
 		# fruits=''
 		# page_size = 10
 		# return self.send_success()
-
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:

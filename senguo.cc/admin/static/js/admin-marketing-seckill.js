@@ -22,6 +22,9 @@ $(document).ready(function(){
 	cur_action = $('.action-div').attr('data-value');
 	if (cur_action == 'seckill'){
 		sec_global_status = $.getUrlParam('status');
+		if (!sec_global_status){
+			sec_global_status = '1';
+		}
 		seckill_active = $('.open-switch').attr('data-status');
 		if (seckill_active == 0){
 			$(".seckill-manage").hide();
@@ -327,12 +330,12 @@ $(document).ready(function(){
 }).on('click','.sec-pre-page',function(){
 	var $this = $(this);
 	if (cur_sec_page+1 == sec_page_sum){
-		$('.sec-next-page').show();
+		$('.sec-next-page').removeClass("hidden");
 	}
 	cur_sec_page--;
 	$('.sec-page-now').text(cur_sec_page+1);
 	if (cur_sec_page == 0){
-		$this.hide();
+		$this.addClass("hidden");
 	}
 	var status = sec_global_status;
 	getActivityItem('get_sec_item',status,cur_sec_page);
@@ -340,13 +343,13 @@ $(document).ready(function(){
 }).on('click','.sec-next-page',function(){
 	var $this = $(this);
 	if (cur_sec_page == 0){
-		$('.sec-pre-page').removeClass('hidden').show();
+		$('.sec-pre-page').removeClass('hidden');
 	}
 	cur_sec_page++;
 
 	$('.sec-page-now').text(cur_sec_page+1);
 	if (cur_sec_page+1 == sec_page_sum){
-		$this.hide();
+		$this.addClass("hidden");
 	}
 
 	var status = sec_global_status;
@@ -366,16 +369,16 @@ $(document).ready(function(){
 	cur_sec_page = page_jump-1;
 	$('.sec-page-now').text(page_jump);
 	if (page_jump == 1){
-		$('.sec-pre-page').hide();
-		$('.sec-next-page').show();
+		$('.sec-pre-page').addClass("hidden");
+		$('.sec-next-page').removeClass('hidden');
 	}
 	else if (page_jump == sec_page_sum){
-		$('.sec-pre-page').removeClass('hidden').show();
-		$('.sec-next-page').hide();
+		$('.sec-pre-page').removeClass('hidden');
+		$('.sec-next-page').addClass("hidden");
 	}
 	else{
 		$('.sec-pre-page').removeClass('hidden').show();
-		$('.sec-next-page').show();
+		$('.sec-next-page').removeClass('hidden');
 	}
 	var status = sec_global_status;
 	getActivityItem('get_sec_item',status,cur_sec_page);
@@ -672,14 +675,14 @@ function getActivityItem(action,status,page,cutover){
                                                           if(cutover == 'true'){
 		        			cur_sec_page = 0;
 					$('.sec-page-now').text(cur_sec_page+1);
-					$(".sec-pre-page").hide();
+					$(".sec-pre-page").addClass('hidden');
 					var page_sum = res.page_sum;
 					sec_page_sum = res.page_sum;
-					$(".sec-next-page").show();
+					$(".sec-next-page").removeClass('hidden');
 					$('.sec-page-total').text(sec_page_sum);
 					if (sec_page_sum == 0){
 						sec_page_sum = 1;
-						$(".sec-next-page").hide();
+						$(".sec-next-page").addClass('hidden');
 						$('.sec-page-total').text(1);
 					}
 		        		}
@@ -820,12 +823,12 @@ function getActivityItem(action,status,page,cutover){
 		        		if(cutover == 'true'){
 		        			cur_sec_page = 0;
 					$('.sec-page-now').text(cur_sec_page+1);
-					$(".sec-pre-page").hide();
+					$(".sec-pre-page").addClass('hidden');
 					var page_sum = res.page_sum;
 					sec_page_sum = res.page_sum;
-					$(".sec-next-page").removeClass('hidden').show();
+					$(".sec-next-page").removeClass('hidden');
 					if (sec_page_sum == 1){
-						$(".sec-next-page").hide();
+						$(".sec-next-page").addClass('hidden');
 					}
 					$('.sec-page-total').text(page_sum);
 		        		}

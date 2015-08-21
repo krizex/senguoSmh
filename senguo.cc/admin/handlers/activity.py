@@ -724,6 +724,7 @@ class Seckill(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
+		self.update_seckill()
 		activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id).filter(models.SeckillActivity.activity_status.in_([1,2])).order_by(models.SeckillActivity.start_time).all()
 
 		start_date_list = []
@@ -758,20 +759,22 @@ class Seckill(CustomerBaseHandler):
 
 		output_data = []
 		for key in daily_list:
-			data = ['',[]]
+			data = ['',[],0]
 			data[0] = daily_list[key][0]['date_text']
 			data[1] = daily_list[key]
+			data[2] = daily_list[key][0]['start_time'] #just for sorting
 			output_data.append(data)
-		output_data.sort(key = lambda item:item[0],reverse=False)
+		output_data.sort(key = lambda item:item[2],reverse=False)
 
 		for i in range(len(output_data)):
 			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
-			
-		print(output_data,"================")
+
+		# print(output_data)
 		return self.render("seckill/seckill.html",output_data=output_data,shop_code=shop_code)
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
 	def post(self,shop_code):
+		self.update_seckill()
 		action = self.args['action']
 		activity_id = self.args['activity_id']
 		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
@@ -785,8 +788,10 @@ class Seckill(CustomerBaseHandler):
 			goods_item['fruit_id'] = goods.fruit_id
 
 			cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
-			goods_item['img_url'] = cur_goods.img_url
-			goods_item['img_url'] = goods_item['img_url'].split(';')[0]
+			if cur_goods.img_url:
+				goods_item['img_url'] = cur_goods.img_url.split(';')[0]
+			else:
+				goods_item['img_url'] = ""
 			goods_item['goods_name'] = cur_goods.name
 			goods_item['charge_type_id'] = goods.charge_type_id
 
@@ -795,7 +800,7 @@ class Seckill(CustomerBaseHandler):
 			goods_item['price_dif'] = goods.former_price - goods.seckill_price
 			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)
-			
+
 		return self.send_success(output_data = output_data)
 
 #折扣

@@ -4885,6 +4885,7 @@ class MarketingSeckill(AdminBaseHandler):
 	def get(self):
 		self.if_current_shops()
 		action = self.args["action"]
+		self.update_seckill()
 		if 'page' in self.args:
 			page = self.args["page"]
 		else:
@@ -5180,7 +5181,7 @@ class MarketingSeckill(AdminBaseHandler):
 		current_shop_id = self.current_shop.id
 		current_shop=self.current_shop
 		current_customer_id=self.current_user.id
-
+		self.update_seckill()
 		if action == "seckill_new":
 			data_array = self.args["data"]
 			activity_data = data_array[0]
@@ -5312,6 +5313,7 @@ class MarketingSeckill(AdminBaseHandler):
 					activity_item['goods_list'] += split_list[len(split_list)-1]
 
 				output_data.append(activity_item)
+
 			return self.send_success(output_data = output_data,page_sum=page_sum)
 		elif action == 'get_detail_item':
 			activity_id = self.args['activity_id']

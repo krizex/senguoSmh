@@ -1,3 +1,4 @@
+var timer = null;
 $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height+"px");
@@ -6,8 +7,8 @@ $(document).ready(function(){
     });
     if($("#seckill").size()>0){//获取秒杀
         getList($(".cur-time").closest('li').attr("data-id"));
-        var start_time = parseInt($(".cur-time").attr("data-start"));
-        var continue_time = parseInt($(".cur-time").attr("data-continue"));
+        var start_time = parseInt($(".cur-time").closest('li').attr("data-start"));
+        var continue_time = parseInt($(".cur-time").closest('li').attr("data-continue"));
         countTime((continue_time+start_time)*1000,start_time);
     }
 }).on("click",".add-btn",function(){
@@ -38,7 +39,13 @@ $(document).ready(function(){
     var continue_time = parseInt($(this).attr("data-continue"));
     $(".stime-list li").removeClass("active");
     $(this).addClass("active");
+    clearTimeout(timer);
+    $(".day").html("");
+    $(".hour").html("");
+    $(".minute").html("");
+    $(".second").html("");
     countTime((continue_time+start_time)*1000,start_time);//倒计时
+    getList(id);
 }).on("click",".seckill-btn",function(){//抢
     var id = $(this).closest("li").attr("charge_type_id");
     window.dataObj.fruits[id]=1;
@@ -48,13 +55,14 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
+    addCart();
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
     window.location.href="/"+shop_code;
 });
 window.dataObj.fruits={};
 //加入购物车
-function addCart(link){
+function addCart(){
     var url='/'+$("#shop_code").val();
     var action = 4;
     fruits_num();
@@ -65,11 +73,9 @@ function addCart(link){
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
-            if(res.success)
-            {
-                window.location.href=link;
+            if(res.success){
             }
-            else return noticeBox(res.error_text);
+            else return Tip(res.error_text);
         }
     );
 }
@@ -78,6 +84,11 @@ function fruits_num(){
         if(window.dataObj.fruits[key]==0){delete window.dataObj.fruits[key];}
     }
 }
+function isEmptyObj(obj){
+    for(var n in obj){return false}
+    return true;
+}
+//获取数据
 function getList(activity_id){
     var args = {
         action:"seckill",
@@ -86,6 +97,7 @@ function getList(activity_id){
     var url = "";
     $.postJson(url,args,function(res){
         if(res.success){
+            $("#seckill_list").empty();
             var data = res.output_data;
             insertGoods(data);
         }
@@ -93,7 +105,7 @@ function getList(activity_id){
 }
 function insertGoods(data){
     if(data.length==0){
-        $(".no-result").removeClass("hide");
+        $(".no-result").html("该活动没有商品了~~").removeClass("hide");
         return false;
     }else{
         $(".no-result").addClass("hide");
@@ -101,13 +113,14 @@ function insertGoods(data){
             var data = data[i];
             var $item = $("#seckill-item").children("li").clone();
             $item.attr("seckill-id",data.goods_seckill_id).attr("fruit-id",data.fruit_id).attr("charge_type_id",data.charge_type_id);
-            $item.find(".image").attr("src",data.img_url);
+            $item.find(".image").attr("src",data.img_url || '/static/images/TDSG.png');
             $item.find(".store-num").html(data.activity_piece);
             $item.find(".nm-name").html(data.goods_name);
             $item.find(".price-bo").html(data.charge_type_text);
             $item.find(".price-dif").html(data.price_dif);
             if(data.activity_piece==0){
                 $item.find(".cover-img").removeClass("hide");
+                $item.find(".goods-price-row").addClass("no-goods");
             }
             $("#seckill_list").append($item);
         }
@@ -117,15 +130,16 @@ function insertGoods(data){
 function countTime(time,start_time){
     var time_end = time;
     var time_now = new Date().getTime();
-    var time_distance = time_end - time_now;  // 结束时间减去当前时间
-    var int_day, int_hour, int_minute, int_second;
-    if(start_time*1000<=time_now){
+    if(start_time*1000<=time_now){//未开始
         $(".seckill-ing").removeClass("hide");
         $(".no-seckill-time").addClass("hide");
+        time_end = start_time;
     }else{
         $(".seckill-ing").addClass("hide");
         $(".no-seckill-time").removeClass("hide");
     }
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
     if(time_distance >= 0){
         // 天时分秒换算
         int_day = Math.floor(time_distance/86400000);
@@ -149,13 +163,13 @@ function countTime(time,start_time){
         $(".hour").html(int_hour+"时");
         $(".minute").html(int_minute+"分");
         $(".second").html(int_second+"秒");
-        setTimeout(function(){
+        timer = setTimeout(function(){
             countTime(time,start_time);
         },1000);
     }else{
-        Tip("该场结束了");
-        /*setTimeout(function(){
+        Tip("这场秒杀结束啦~~");
+        setTimeout(function(){
             window.location.reload(true);
-        },1000);*/
+        },1000);
     }
 }

@@ -2,7 +2,7 @@
 {% block title %}秒杀活动{% end %}
 {% block head %}
 <div class="header">
-    <a href="javascript:;" class="back goback"></a>
+    <a href="/customer/discover/{{shop_code}}" class="back"></a>
     <span id="seckill">秒杀活动</span>
 </div>
 {% end %}
@@ -10,7 +10,7 @@
 <input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm40">
     <div class="wrap-time-top">
-        <ul class="seckill-time-list group">
+        <ul class="seckill-time-list group {% if len(output_data)==0 %}hide{% end %}">
             {% for i in range(len(output_data))%}
             {% set sec = output_data[i]%}
             <li>
@@ -39,7 +39,7 @@
     <ul class="nm-list" id="seckill_list">
 
     </ul>
-    <p class="no-result mt10 hide">该活动没有商品了~~</p>
+    <p class="no-result mt10">加载中...</p>
 </div>
 <a href="/customer/cart/zhoubing" class="go-cart">
     <span class="cart-num origin-cart hide">1</span>
@@ -54,7 +54,7 @@
             <dd>
                 <span class="tr-num">还剩<span class="store-num"></span>份</span>
                 <p class="c333 clip nm-name p0"></p>
-                <p class="no-goods mt20">
+                <p class="mt20 goods-price-row">
                     <span class="price-bo">1元/kg</span>
                     <span class="price-tip">省<span class="price-dif"></span>元</span>
                 </p>
