@@ -724,6 +724,7 @@ class Seckill(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
 		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
+		self.update_seckill()
 		activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id).filter(models.SeckillActivity.activity_status.in_([1,2])).order_by(models.SeckillActivity.start_time).all()
 
 		start_date_list = []
@@ -773,6 +774,7 @@ class Seckill(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
 	def post(self,shop_code):
+		self.update_seckill()
 		action = self.args['action']
 		activity_id = self.args['activity_id']
 		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id

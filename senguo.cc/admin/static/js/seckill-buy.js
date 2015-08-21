@@ -104,7 +104,7 @@ function countTime(time){
     }else{
         Tip("结束了");
         setTimeout(function(){
-            window.location.reload(true);
+            //window.location.reload(true);
         },1000);
     }
 }

@@ -143,6 +143,29 @@ class GlobalBaseHandler(BaseHandler):
 		self.session.commit()
 		return None
 
+	# 全局实时更新店铺秒杀活动基类方法：
+	def update_seckill_base(self,shop_id):
+		current_shop_id = shop_id
+		notstart_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = 1).all()
+		for item in notstart_list:
+			now_time = int(time.time())
+			if item.start_time <= now_time and item.end_time > now_time:
+				item.activity_status = 2
+				self.session.flush()
+			elif item.start_time <= now_time and item.end_time <= now_time:
+				item.activity_status = 0
+				self.session.flush()
+		self.session.commit()
+
+		killing_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = 2).all()
+		for item in killing_list:
+			now_time = int(time.time())
+			if item.end_time <= now_time:
+				item.activity_status = 0
+				self.session.flush()
+		self.session.commit()
+		return None
+
 	# 数字代号转换为文字描述
 	def code_to_text(self, column_name, code):
 		text = ""
@@ -1360,6 +1383,12 @@ class AdminBaseHandler(_AccountBaseHandler):
 		current_shop_id=self.get_secure_cookie("shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
+	# 刷新数据库店铺秒杀活动信息
+	def update_seckill(self):
+		current_shop_id = self.get_secure_cookie("shop_id")
+		current_shop_id = int(current_shop_id.decode())
+		self.update_seckill_base(current_shop_id)
+
 	# 获取订单
 	def getOrder(self,orders):
 		data = []
@@ -1675,6 +1704,10 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		current_shop_id= self.get_cookie("market_shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
+	# #刷新数据库店铺秒杀活动信息
+	def update_seckill(self):
+		current_shop_id = self.get_cookie("market_shop_id")
+		self.update_seckill_base(current_shop_id)
 
 
 import urllib.request
