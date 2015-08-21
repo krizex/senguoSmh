@@ -793,7 +793,10 @@ class Seckill(CustomerBaseHandler):
 			goods_item['fruit_id'] = goods.fruit_id
 
 			cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
-			goods_item['img_url'] = cur_goods.img_url
+			if cur_goods.img_url:
+				goods_item['img_url'] = cur_goods.img_url.split(';')[0]
+			else:
+				goods_item['img_url'] = ""
 			goods_item['goods_name'] = cur_goods.name
 			goods_item['charge_type_id'] = goods.charge_type_id
 
