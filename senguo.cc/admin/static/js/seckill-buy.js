@@ -5,7 +5,7 @@ $(document).ready(function(){
     $(document).on("click",".goback",function(){
         history.back();
     });
-    if($("#seckill").size()>0){//获取秒杀
+    if($("#seckill").size()>0){//秒杀
         if($(".seckill-time-list").children("li").size()==0){
             $(".no-result").html("该活动结束了~~").removeClass("hide");
             setTimeout(function(){
@@ -20,6 +20,9 @@ $(document).ready(function(){
         var start_time = parseInt($(".cur-time").closest('li').attr("data-start"));
         var continue_time = parseInt($(".cur-time").closest('li').attr("data-continue"));
         countTime((continue_time+start_time)*1000,start_time);
+    }
+    if($("#discount").size()>0){//折扣
+
     }
 }).on("click",".add-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
@@ -80,7 +83,8 @@ function addCart($obj){
     var args={
         action:action,
         fruits:fruits,
-        seckill_id:$obj.attr("seckill-id")
+        seckill_id:$obj.attr("seckill-id"),
+        price_dif:$obj.find(".price-dif").html()
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
