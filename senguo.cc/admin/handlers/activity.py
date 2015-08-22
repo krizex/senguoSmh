@@ -816,8 +816,9 @@ class Seckill(CustomerBaseHandler):
 # 限时折扣
 class Discount(CustomerBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
-		return self.render("seckill/discount.html")
+	def get(self,shop_code):
+
+		return self.render("seckill/discount.html",shop_code=shop_code)
 #团购
 class Gbuy(CustomerBaseHandler):
 	@tornado.web.authenticated

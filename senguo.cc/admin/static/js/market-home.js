@@ -242,9 +242,13 @@ $(document).ready(function(){
     else {return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
     parent.attr({'data-storage':storage-change_num});
 }).on("click",".seckill-goods",function(){//秒杀
+    var id = $(this).closest("li").attr("data-id");
+    window.dataObj.fruits[id]=1;
     $(this).addClass("hidden");
     $(this).next(".seckill-btn-yes").removeClass("hidden");
-    addCart(0);
+    wobble($('.cart_num'));
+    $(".cart_num").removeClass("hidden").html(++window.dataObj.cart_count);
+    addCart(0,$(this).closest("li"));
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -361,7 +365,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
                                 '<img src="/static/images/holder.png" class="img lazy_img" data-original="{{ori_img}}">'+
-                                '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
+                                '<span class="tag text-white text-center tagItem font8 {{if is_activity==0}}{{tag}}{{/if}}"></span>'+
                                 '<span class="status-goods {{if is_activity==1}}status-seckill{{else if is_activity==2}}status-discount{{else}}hidden{{/if}}"></span>'+
                             '</a>'+
                         '</div>'+
@@ -378,7 +382,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{if is_activity==1 }}'+
-                                '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}">'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}" activity-id="{{seckill_id}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                     '<span class="price-bo">{{charge_type_text}}</span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
                                     '</span>'+
@@ -388,8 +392,23 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                                     '</span>'+
                                 '</li>'+
                                 '{{/if}}'+
+                                '{{if is_activity==2 }}'+
+                                    '<li class="border-color set-w100-fle charge-item" data-id="555" data-relate="1" data-buy="1" data-allow="1">'+
+                                        '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
+                                        '<span class="price-bo">10元/kg</span><span class="price-tip"><span class="price-dif">9</span>折</span>'+
+                                        '</span>'+
+                                        '<span class="forbid_click pull-right num_box">'+
+                                            '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
+                                            '<span class="pull-right p0 number-change hidden forbid_click">'+
+                                            '<button class="minus-plus pull-right number-plus bg_change"></button>'+
+                                            '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
+                                            '<button class="minus-plus pull-right number-minus bg_change"></button>'+
+                                            '</span>'+
+                                        '</span>'+
+                                    '</li>'+
+                                '{{/if}}'+
                                 '{{each charge_types as key}}'+
-                                '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow={{key["allow_num"]}}>'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow="{{key["allow_num"]}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                         '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
                                     '</span>'+
@@ -431,6 +450,7 @@ var fruitItem=function(box,fruits,type){
     var activity_piece = fruits['activity_piece'];//库存
     var charge_type_text = fruits['charge_type_text'];
     var charge_type_id = fruits['charge_type_id'];
+    var seckill_id = fruits['seckill_goods_id'];
     var heart='';
     var sold_out='';
     var ori_img='';
@@ -476,7 +496,8 @@ var fruitItem=function(box,fruits,type){
         price_dif:price_dif,
         activity_piece:activity_piece,//库存
         charge_type_text:charge_type_text,
-        charge_type_id:charge_type_id
+        charge_type_id:charge_type_id,
+        seckill_id:seckill_id
     });
     var $obj = $(html);
     box.append($obj);
@@ -641,7 +662,7 @@ function stopDefault(e) {
     return false;
 }
 
-function addCart(link){
+function addCart(link,$obj){
     var url='';
     var action = 4;
     fruits_num();
@@ -650,6 +671,10 @@ function addCart(link){
         action:action,
         fruits:fruits
     };
+    if(link==0){
+        args.price_dif = $obj.find(".price-dif").html();
+        args.seckill_id=$obj.attr("activity-id");
+    }
     if(!isEmptyObj(fruits)){
         fruits={};
     }
