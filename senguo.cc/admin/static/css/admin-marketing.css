@@ -108,7 +108,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
 
-<<<<<<< HEAD
+
 /*限时折扣添加样式*/
 .week-btn{width: 50px;display:inline-block;margin-left:15px;font-size: 14px;background-color: #fff;color: #000;text-align: center;height: 28px;line-height: 28px;border-radius: 2px;}
 .back_green{background-color: #52b43f;}
@@ -134,7 +134,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .mode-cm{display:inline-block;border-radius:30px;width:100px;height:32px;position:relative;line-height:30px;font-size:14px;top:-45px;}
 .mode-cm .circle{display:inline-block;width:28px;height:28px;background:#fff;border-radius:50%;position:absolute;top:2px;}
 .discount_close{margin-left: 420px;}
-=======
+
 /*added by jyj for seckill*/
 .font14{font-size: 14px !important;}
 .mt20{margin-top: 20px !important;}
@@ -177,4 +177,4 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 
 .spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
 /**/
->>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
+
