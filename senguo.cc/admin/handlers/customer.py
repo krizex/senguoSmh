@@ -57,6 +57,10 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
+<<<<<<< HEAD
+=======
+
+>>>>>>> 3e2d42e6b4db600aa20f5b74a3ef6ac3f65149c0
 			try:
 				user_type=int(self.args["user_type"])
 				jpush_id=self.args["jpush_id"]
