@@ -1,7 +1,7 @@
 $(document).ready(function(){
     $('.nav_item').on('click',function(){
         var $this=$(this);
-        $this.addClass('active').siblings('.nav_item').removeClass('active');
+        // $this.addClass('active').siblings('.nav_item').removeClass('active');
     });
     $('.have-entity').each(function(){
         var entity=$(this).data('real');

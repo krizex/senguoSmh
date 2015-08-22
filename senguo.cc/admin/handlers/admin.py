@@ -24,12 +24,6 @@ codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else Non
 import tornado.websocket
 from dal.db_configs import DBSession
 
-
-import codecs 
-
-codecs.register(lambda name: codecs.lookup('utf8') if name == 'utf8mb4' else None)
-
-
 # 登录处理
 class Access(AdminBaseHandler):
 	def initialize(self, action):
@@ -1111,7 +1105,7 @@ class OrderStatic(AdminBaseHandler):
 		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
 		start_date = datetime.datetime(start_date.year,start_date.month,start_date.day,23,59,59)
 		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
-		print("[AdminOrderStatic]start_date:",start_date,", end_date:",end_date,end_date-start_date)
+		# print("[AdminOrderStatic]order_table: start_date:",start_date,", end_date:",end_date,end_date-start_date)
 
 		# 以15天为一次查询，查询:日期，日订单数，日总订单金额
 		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
@@ -1122,7 +1116,7 @@ class OrderStatic(AdminBaseHandler):
 					 func.month(models.Order.create_date),
 					 func.day(models.Order.create_date)).\
 			order_by(desc(models.Order.create_date)).all()
-		print(s)
+		# print("[AdminOrderStatic]start_date: s:",s)
 
 		# 总订单数
 		# 截止到end_date的:总订单总价,总订单数
@@ -1157,8 +1151,8 @@ class OrderStatic(AdminBaseHandler):
 			# print("[AdminOrderStatic]date:",date.strftime('%Y-%m-%d'))
 			# print(s[0])
 			# if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
-			if i < len(s):
-				print('haha',s[i][0].strftime('%Y-%m-%d'),date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d')==date.strftime('%Y-%m-%d'))
+			# if i < len(s):
+			#	print('haha',s[i][0].strftime('%Y-%m-%d'),date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d')==date.strftime('%Y-%m-%d'))
 			if i < len(s) and (s[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 				if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(float(s[i][2]),'.2f'), format(float(total[0]),'.2f'), s_old[j][1], old_total))
@@ -1257,7 +1251,7 @@ class FollowerStatic(AdminBaseHandler):
 			i = 0
 			for x in range(0, 15):
 				date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
-				print(date)
+				# print("[FollowerStatic]date:",date)
 				if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
 					data.append((date.strftime('%Y-%m-%d'), s[i][1], total))
 					total -= s[i][1]
@@ -1301,6 +1295,7 @@ class Comment(AdminBaseHandler):
 		page = self.args["page"]
 		page_size = 10
 		pages=0
+	
 		# print("[AdminComment]current_shop:",self.current_shop)
 		if action == "all":
 			comments = self.get_comments(self.current_shop.id, page, page_size, False)
@@ -1559,7 +1554,7 @@ class Order(AdminBaseHandler):
 		return count
 
 	@tornado.web.authenticated
-	@unblock
+	# @unblock
 	@AdminBaseHandler.check_arguments("action", "data")
 	def post(self):
 		action = self.args["action"]
@@ -1804,7 +1799,7 @@ class Order(AdminBaseHandler):
 					balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.totalPrice,balance_record = '余额退款：订单'+ order.num+'删除', name = self.current_user.accountinfo.nickname,\
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
-						shop_follow.shop_balance,shop_province = self.current_shop.shop_province)
+						shop_follow.shop_balance,shop_province = self.current_shop.shop_province,shop_name=self.current_shop.shop_name)
 					self.session.add(balance_history)
 				self.session.commit()
 
@@ -2167,26 +2162,73 @@ class Goods(AdminBaseHandler):
 					else:
 						goods = goods.filter_by(group_id = filter_status2)
 
-				if order_status1 =="group":
-					case_one = 'models.Fruit.group_id'
-				elif order_status1 =="classify":
-					case_one = 'models.Fruit.fruit_type_id'
+				# add by jyj 2015-8-8
+				if order_status1 == "all":
+					if order_status2 == "add_time":
+						goods = goods.order_by(models.Fruit.add_time.desc())
+					elif order_status2 == "name":
+						goods = goods.order_by(models.Fruit.name.desc())
+					elif order_status2 == "saled":
+						goods = goods.order_by(models.Fruit.saled.desc())
+					elif order_status2 == "storage":
+						goods = goods.order_by(models.Fruit.storage.desc())
+					elif order_status2 == "current_saled":
+						goods = goods.order_by(models.Fruit.current_saled.desc())
+				else:
+					if order_status1 =="group":
+						case_one = 'models.Fruit.group_id'
+					elif order_status1 =="classify":
+						case_one = 'models.Fruit.fruit_type_id'
 
-				if order_status2 == "add_time":
-					goods = goods.order_by(models.Fruit.add_time.desc(),eval(case_one))
-				elif order_status2 == "name":
-					goods = goods.order_by(models.Fruit.name.desc(),eval(case_one))
-				elif order_status2 == "saled":
-					goods = goods.order_by(models.Fruit.saled.desc(),eval(case_one))
-				elif order_status2 == "storage":
-					goods = goods.order_by(models.Fruit.storage.desc(),eval(case_one))
-				elif order_status2 == "current_saled":
-					goods = goods.order_by(models.Fruit.current_saled.desc(),eval(case_one))
+					# changed by jyj 2015-8-7
+					if order_status2 == "add_time":
+						goods = goods.order_by(eval(case_one),models.Fruit.add_time.desc())
+					elif order_status2 == "add_time_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.add_time)
+					elif order_status2 == "name":
+						goods = goods.order_by(eval(case_one),models.Fruit.name.desc())
+					elif order_status2 == "saled":
+						goods = goods.order_by(eval(case_one),models.Fruit.saled.desc())
+					elif order_status2 == "saled_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.saled)
+					elif order_status2 == "storage":
+						goods = goods.order_by(eval(case_one),models.Fruit.storage.desc())
+					elif order_status2 == "storage_desc":
+						goods = goods.order_by(eval(case_one),models.Fruit.storage)
+					elif order_status2 == "current_saled":
+						goods = goods.order_by(eval(case_one),models.Fruit.current_saled.desc())
+					##
 
 				count = goods.count()
 				count=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-				datalist = goods.offset(offset).limit(page_size).all()
-				data = self.getGoodsData(datalist,"all")
+
+				# added by jyj 2015-8-8 (for sorting by the data-item's name order by pinyin)
+				if order_status2 == "name":
+					from operator import itemgetter
+					data_all_list = goods.all()
+					data_all_tmp = self.getGoodsData(data_all_list,"all")
+					data_all = []
+
+					for i in range(len(data_all_tmp)):
+						name_code = data_all_tmp[i]["name"].encode('gbk')
+						data_all_tmp[i]["name_gbk"] = name_code
+
+					if order_status1 =="group":
+						data_all_tmp.sort(key = itemgetter('group_id','name_gbk'),reverse = False)
+					elif order_status1 == "classify":
+						data_all_tmp.sort(key = itemgetter('fruit_type_id','name_gbk'),reverse = False)
+					elif order_status1 == "all":
+						data_all_tmp.sort(key = itemgetter('name_gbk'),reverse = False)
+
+					for i in range(len(data_all_tmp)):
+						data_all_tmp[i]["name_gbk"] = str(data_all_tmp[i]["name_gbk"])
+
+					data = data_all_tmp[offset : offset+page_size]
+				else:
+					datalist = goods.offset(offset).limit(page_size).all()
+					data = self.getGoodsData(datalist,"all")
+				##
+
 				return self.send_success(data=data,count=count)
 
 			group_list = []
@@ -2319,7 +2361,7 @@ class Goods(AdminBaseHandler):
 				return self.send_success(data=datalist)
 			else:
 				return self.render("admin/goods-classify.html",context=dict(subpage="goods"))
-		# 商品分组
+		# # 商品分组
 		elif action == "group":
 			data = []
 			goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id)
@@ -2345,6 +2387,7 @@ class Goods(AdminBaseHandler):
 			else:
 				data.append({'id':0,'name':'','intro':'','num':default_count})
 			return self.render("admin/goods-group.html",context=dict(subpage="goods"),data=data,record_count=record_count)
+			
 		# 商品删除
 		elif action == "delete":
 			if "page" in self.args:
@@ -2917,8 +2960,8 @@ class GoodsImport(AdminBaseHandler):
 			if len(self.current_shop.fruits) + len(datalist) >200:
 				return self.send_fail("一家店铺最多可添加200种商品")
 			for data in datalist:
-				print(data["imgs"])
-				print(data.get("imgs",""))
+				# print("[GoodsImport]data["imgs"]:",data["imgs"])
+				# print("[GoodsImport]data.get("imgs",""):",data.get("imgs",""))
 				new_good = models.Fruit(shop_id = self.current_shop.id , fruit_type_id = 999,name = data.get("name",""),
 				storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
 				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 3,num = 1,market_price = None))
@@ -2959,84 +3002,125 @@ class editorFileManage(AdminBaseHandler):
 # 用户管理
 class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str", "order_by:str", "page:int", "wd?:str")
+	@AdminBaseHandler.check_arguments("action:str", "order_by:str","if_reverse?:int", "page?:int", "wd?:str")
 	def get(self):
 		self.if_current_shops()
 		# if self.is_pc_browser()==False:
 		# 	return self.redirect(self.reverse_url("MadminComment"))
 		action = self.args["action"]
 		order_by = self.args["order_by"]
-		page = self.args["page"]
-		page_size = 10
-		count = 0
-		page_sum = 0
-		shop_id = self.current_shop.id
-		if action in ("all","old","charge"):
-			if action == "all":  # 所有用户
-				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
-				if order_by == "time":
-					q = q.order_by(desc(models.CustomerShopFollow.create_time))
-			elif action == "old":  # 老用户
-				q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id,models.CustomerShopFollow.shop_new == 1)
-			elif action == "charge":
-				q = self.session.query(models.Customer).join(models.BalanceHistory,models.Customer.id == models.BalanceHistory.customer_id).\
-					filter(models.BalanceHistory.shop_id == self.current_shop.id,models.BalanceHistory.balance_type==1).distinct()
-			if order_by == "credits":
-				q = q.order_by(desc(models.Customer.credits))
-			elif order_by == "balance":
-				q = q.order_by(desc(models.Customer.balance))
-			count = q.count()
-			customers = q.offset(page*page_size).limit(page_size).all()
+		if "page" in self.args and self.args["page"] !=[]:
+			page = self.args["page"]
+			if "if_reverse" in self.args:
+				if_reverse = self.args["if_reverse"]
+			else:
+				if_reverse = None
+			page_size = 10
+			count = 0
+			page_sum = 0
+			shop_id = self.current_shop.id
+			nomore = False
+			if action in ("all","old","charge"):
+				if action == "all":  # 所有用户
+					q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+						filter(models.CustomerShopFollow.shop_id == self.current_shop.id)
+				elif action == "old":  # 老用户
+					q = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+						filter(models.CustomerShopFollow.shop_id == self.current_shop.id,models.CustomerShopFollow.shop_new == 1)
+				elif action == "charge":
+					query_list = self.session.query(models.BalanceHistory.customer_id).filter_by(shop_id = self.current_shop.id,balance_type = 0).all()
+					charge_list = []
+					for item in query_list:
+						charge_list.append(item[0])
+					charge_list = set(charge_list)
+					q = self.session.query(models.Customer).outerjoin(models.CustomerShopFollow).\
+						filter(models.Customer.id.in_(charge_list),models.CustomerShopFollow.shop_id == self.current_shop.id).distinct()
 
-		##################################################################
-		# Modify by Sky - 2015.6.1
-		# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
-		# TODO: 搜索性能需改进，应进行多表联合查询
-		##################################################################
-		elif action == "search":
-			wd = self.args["wd"]
+				if if_reverse == 1:
+					if order_by == "time":
+						q = q.order_by(desc(models.CustomerShopFollow.create_time))
+					elif order_by == "point":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_point))
+					elif order_by == "balance":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
+				elif if_reverse == 0:
+					if order_by == "time":
+						q = q.order_by(models.CustomerShopFollow.create_time)
+					elif order_by == "point":
+						q = q.order_by(models.CustomerShopFollow.shop_point)
+					elif order_by == "balance":
+						q = q.order_by(models.CustomerShopFollow.shop_balance)
+				else:
+					if order_by == "time":
+						q = q.order_by(desc(models.CustomerShopFollow.create_time))
+					elif order_by == "point":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_point))
+					elif order_by == "balance":
+						q = q.order_by(desc(models.CustomerShopFollow.shop_balance))
 
-			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-				join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
-													models.Accountinfo.id.like("%%%s%%" % wd),
-													models.Accountinfo.nickname.like("%%%s%%" % wd),
-													models.Accountinfo.realname.like("%%%s%%" % wd))).all()
-			customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
-				filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-				join(models.Address).filter(or_(models.Address.phone.like("%%%s%%" % wd),
-												models.Address.receiver.like("%%%s%%" % wd))).all()
+				count = q.count()
+				customers = q.offset(page*page_size).limit(page_size).all()
 
+			##################################################################
+			# Modify by Sky - 2015.6.1
+			# 用户搜索，支持根据手机号/真名/昵称搜索，支持关键字模糊搜索，支持收件人搜索
+			# TODO: 搜索性能需改进，应进行多表联合查询
+			##################################################################
+			elif action == "search":
+				wd = self.args["wd"]
+
+				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+					join(models.Accountinfo).filter(or_(models.Accountinfo.phone.like("%%%s%%" % wd),
+														models.Accountinfo.id.like("%%%s%%" % wd),
+														models.Accountinfo.nickname.like("%%%s%%" % wd),
+														models.Accountinfo.realname.like("%%%s%%" % wd))).all()
+				customers += self.session.query(models.Customer).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+					join(models.Address).filter(or_(models.Address.phone.like("%%%s%%" % wd),
+													models.Address.receiver.like("%%%s%%" % wd))).all()
+
+				customer_list=[]
+				count = len(customers)
+				for customer in customers:
+					if customer not in customer_list:
+						customer_list.append(customer)
+				customers = customer_list
+
+			elif action =="filter":
+				wd = self.args["wd"]
+				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
+						filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
+						join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
+			else:
+				return self.send_error(404)
+			for x in range(0, len(customers)):  #
+				shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
+					filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
+				shop_point = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customers[x].id,\
+					shop_id = shop_id).first()
+				customers[x].shop_point = int(shop_point.shop_point) if shop_point.shop_point else 0
+				customers[x].shop_names = [y[0] for y in shop_names]
+				customers[x].shop_balance = format(shop_point.shop_balance,".2f") if shop_point.shop_balance else 0
+				customers[x].remark = shop_point.remark
+
+			page_sum=count/page_size
+			if page == page_sum:
+				nomore = True
+			if page_sum == 0:
+				page_sum=1
 			customer_list=[]
 			for customer in customers:
-				if customer not in customer_list:
-					customer_list.append(customer)
-			customers = customer_list
-
-		elif action =="filter":
-			wd = self.args["wd"]
-			customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
-					filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
-					join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
-		else:
-			return self.send_error(404)
-		for x in range(0, len(customers)):  #
-			shop_names = self.session.query(models.Shop.shop_name).join(models.CustomerShopFollow).\
-				filter(models.CustomerShopFollow.customer_id == customers[x].id).all()
-			shop_point = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customers[x].id,\
-				shop_id = shop_id).first()
-			customers[x].shop_point = int(shop_point.shop_point)
-			customers[x].shop_names = [y[0] for y in shop_names]
-			customers[x].shop_balance = format(shop_point.shop_balance,".2f")
-			customers[x].remark = shop_point.remark
-
-		page_sum=count/page_size
-		if page_sum == 0:
-			page_sum=1
-		return self.render("admin/user-manage.html", customers=customers, count=count, page_sum=page_sum,
-						   context=dict(subpage='user'))
+				address=[]
+				birthday = datetime.datetime.fromtimestamp(customer.accountinfo.birthday).strftime('%Y-%m-%d') if customer.accountinfo.birthday else ""
+				for addr in customer.addresses:
+					address.append({"address":addr.address_text,"phone":addr.phone,"receiver":addr.receiver})
+				customer_list.append({"id":customer.accountinfo.id,"headimgurl_small":customer.accountinfo.headimgurl_small\
+					,"nickname":customer.accountinfo.nickname,"sex":customer.accountinfo.sex,"shop_balance":customer.shop_balance\
+					,"shop_point":customer.shop_point,"remark":customer.remark,"realname":customer.accountinfo.realname,\
+					"phone":customer.accountinfo.phone,"birthday":birthday,"shop_names":customer.shop_names,"address":address})
+			return self.send_success(customer_list=customer_list,page_sum=page_sum,count=count)
+		return self.render("admin/user-manage.html",context=dict(subpage='user'))
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "data")
 	def post(self):
@@ -3901,7 +3985,7 @@ class ShopConfig(AdminBaseHandler):
 				self_shop_address = self.session.query(models.SelfAddress).filter_by(config_id=shop.config.id,if_default=2).first()
 			except:
 				self_shop_address = None
-			print(shop_address_detail)
+			# print("[ShopConfig]shop_address_detail:",shop_address_detail)
 			if self_shop_address:
 				self_shop_address.address = shop_address_detail
 				self_shop_address.lat = lat
@@ -4065,6 +4149,7 @@ class Marketing(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int","page?")
 	def get(self):
 		self.if_current_shops()
+
 		action = self.args["action"]
 		current_shop_id=self.current_shop.id
 		current_shop=self.current_shop
@@ -5131,3 +5216,574 @@ class Discount(AdminBaseHandler):
 				x.update(self.session,status=3)
 			self.session.commit()
 			return self.send_success()
+
+# added by jyj 2015-8-12
+# seckill
+class MarketingSeckill(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","status?:int","activity_id?:int","page?:int")
+	def get(self):
+		self.if_current_shops()
+		action = self.args["action"]
+		self.update_seckill()
+		if 'page' in self.args:
+			page = self.args["page"]
+		else:
+			page = 0
+		if 'status' in self.args:
+			status = self.args["status"]
+		else:
+			status = 1
+		page_size = 2
+		current_shop_id=self.current_shop.id
+		current_shop=self.current_shop
+
+		if action == 'seckill':
+			seckill_active = self.session.query(models.Marketing.seckill_active).filter_by(id = current_shop_id).first()[0]
+			output_data = []
+			page_sum = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).count()
+			if page_sum % page_size == 0:
+				page_sum = page_sum//page_size
+			else:
+				page_sum = page_sum//page_size + 1
+			if status in [1,2]:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(models.SeckillActivity.start_time).offset(page*page_size).limit(page_size).all()
+			else:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(desc(models.SeckillActivity.start_time)).offset(page*page_size).limit(page_size).all()
+			for item in query_list:
+				activity_item = {}
+				activity_item['activity_id'] = item.id
+				activity_item['goods_list'] = ''
+				activity_item['start_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(item.start_time))
+				continue_time = item.continue_time
+				hour = continue_time//3600
+				minute = (continue_time % 3600)//60
+				second = (continue_time % 60)
+				if hour == 0:
+					hh = '00:'
+				elif hour < 10:
+					hh = '0' + str(hour) + ':'
+				else:
+					hh = str(hour) + ':'
+				if minute == 0:
+					mm = '00:'
+				elif minute < 10:
+					mm = '0' + str(minute) + ':'
+				else:
+					mm = str(minute) + ':'
+				if second == 0:
+					ss = '00'
+				elif second < 10:
+					ss = '0' + str(second)
+				else:
+					ss = str(second) 
+				activity_item['continue_time'] = hh+mm+ss
+				
+				picked_num = 0
+				ordered_num = 0
+				goods_query_list = self.session.query(models.SeckillGoods).filter_by(activity_id = item.id)
+				for item2 in goods_query_list:
+					fruit_id = item2.fruit_id
+					fruit_name = self.session.query(models.Fruit.name).filter_by(id=fruit_id).first()[0]
+					group_id = self.session.query(models.Fruit.group_id).filter_by(id=fruit_id).first()[0]
+					if group_id == -1:
+						group_name = '店铺推荐'
+					elif group_id == 0:
+						group_name = '默认分组'
+					else:
+						group_name = self.session.query(models.GoodsGroup.name).filter_by(id=group_id).first()[0]
+					activity_item['goods_list'] += group_name + ':' + fruit_name + ';'
+					picked_num += item2.picked
+					ordered_num += item2.ordered
+				activity_item['picked'] = picked_num
+				activity_item['ordered'] = ordered_num
+
+				split_list = activity_item['goods_list'].split(';')
+				goods_len =  len(split_list)
+				activity_item['goods_list'] = ''
+				if len(split_list)-1 > 5:
+					for i in range(0,4):
+						activity_item['goods_list'] += split_list[i] + ';'
+					activity_item['goods_list'] += split_list[4]
+					activity_item['goods_list'] += '等' + str(goods_len-1) + '种商品'
+				else:
+					for i in range(0,len(split_list)-1):
+						activity_item['goods_list'] += split_list[i] + ';'
+					activity_item['goods_list'] += split_list[len(split_list)-1]
+
+				output_data.append(activity_item)
+
+			return self.render("admin/seckill.html",action=action,seckill_active2 = seckill_active,page_sum=page_sum,output_data=output_data,status=status,context=dict(subpage='marketing',subpage2='seckill'))
+		elif action == 'seckill_new':
+			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
+								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
+			goods_group_id_name.append((-1,'店铺推荐'))
+			goods_group_id_name.append((0,'默认分组'))
+			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
+
+			for i in range(len(goods_group_id_name)):
+				goods_group_id_name[i] = list(goods_group_id_name[i])
+				goods_group_id_name[i][0] = str(goods_group_id_name[i][0])
+
+			goods_group_id_name=dict(goods_group_id_name)
+
+			
+			group_fruit_dict = {}
+			for group_id in list(goods_group_id_name.keys()):
+				group_id = int(group_id)
+				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1,models.Fruit.group_id == group_id).all()
+				group_fruit_dict[str(group_id)] = query_list
+
+			fruit_id_list = []
+			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
+			for item in query_list:
+				fruit_id_list.append(item[0])
+
+			fruit_id_storage = {}
+			for fruit_id in fruit_id_list:
+				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
+				storage = list(storage)
+				storage[1] = self.getUnit(storage[1])
+				if storage[0] == 0:
+					continue
+				fruit_id_storage[str(fruit_id)] = storage
+
+			fruit_id_usable_list = list(fruit_id_storage.keys())
+			group_usable_fruit_dict = {}
+			for key in group_fruit_dict:
+				group_usable_fruit_dict[key] = []
+				for item in group_fruit_dict[key]:
+					if str(item[0]) in fruit_id_usable_list:
+						group_usable_fruit_dict[key].append([item[0],item[1]])
+
+			fruit_id_charge_type = {}
+			for fruit_id in fruit_id_usable_list:
+				fruit_id = int(fruit_id)
+				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
+							            filter(models.ChargeType.fruit_id == fruit_id).all()
+				for i in range(len(query_list)):
+					query_list[i] = list(query_list[i])
+					query_list[i][2] = self.getUnit(query_list[i][2])
+					storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					query_list[i].append(storage_piece)
+				fruit_id_charge_type[str(fruit_id)] = query_list
+			
+			return self.render("admin/seckill-new.html",action=action,goods_group_id_name=goods_group_id_name,group_usable_fruit_dict=[group_usable_fruit_dict],\
+								fruit_id_storage=[fruit_id_storage],fruit_id_charge_type=[fruit_id_charge_type],context=dict(subpage='marketing'))
+		elif action == 'seckill_detail':
+			activity_id = self.args['activity_id']
+			page_size = 2
+
+			output_data = []
+			page_sum = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).count()
+			if page_sum % page_size == 0:
+				page_sum = page_sum//page_size
+			else:
+				page_sum = page_sum//page_size + 1
+
+			query_list = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).offset(page*page_size).limit(page_size).all()
+
+			for item in query_list:
+				goods_item = {}
+				fruit_id = item.fruit_id
+				goods_item['fruit_name'] = self.session.query(models.Fruit.name).filter_by(id = fruit_id).first()[0]
+				goods_item['seckill_price'] = round(item.seckill_price,2)
+				goods_item['former_price'] = round(item.former_price,2)
+				goods_item['discount'] = round(round(float(goods_item['seckill_price'])/float(goods_item['former_price']),2)*10,2)
+				goods_item['picked'] = item.picked
+				goods_item['ordered'] = item.ordered
+				goods_item['storage_piece'] = item.storage_piece
+
+				charge_type_query = self.session.query(models.ChargeType.num,models.ChargeType.unit).filter_by(id = item.charge_type_id).first()
+				charge_type_query = list(charge_type_query)
+				charge_type_query[1] = self.getUnit(charge_type_query[1])
+				charge_type = '（单位：元/' + str(charge_type_query[0]) + charge_type_query[1] + '）'
+				storage_type = '（单位：份，每份' + str(charge_type_query[0]) + charge_type_query[1] + '）'
+				goods_item['charge_type'] = charge_type
+				goods_item['storage_type'] =storage_type
+				output_data.append(goods_item)
+
+			return self.render("admin/seckill-detail.html",page_sum=page_sum,action=action,output_data=output_data,status=status,page=page,context=dict(subpage='marketing'))
+		elif action == 'seckill_edit':
+			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
+								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
+			goods_group_id_name.append((-1,'店铺推荐'))
+			goods_group_id_name.append((0,'默认分组'))
+			goods_group_id_name.sort(key = lambda item:item[0],reverse=False)
+
+			for i in range(len(goods_group_id_name)):
+				goods_group_id_name[i] = list(goods_group_id_name[i])
+				goods_group_id_name[i][0] = str(goods_group_id_name[i][0])
+
+			goods_group_id_name=dict(goods_group_id_name)
+
+			
+			group_fruit_dict = {}
+			for group_id in list(goods_group_id_name.keys()):
+				group_id = int(group_id)
+				query_list = self.session.query(models.Fruit.id,models.Fruit.name).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1,models.Fruit.group_id == group_id).all()
+				group_fruit_dict[str(group_id)] = query_list
+
+			fruit_id_list = []
+			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
+			for item in query_list:
+				fruit_id_list.append(item[0])
+
+			fruit_id_storage = {}
+			for fruit_id in fruit_id_list:
+				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
+				storage = list(storage)
+				storage[1] = self.getUnit(storage[1])
+				if storage[0] == 0:
+					continue
+				fruit_id_storage[str(fruit_id)] = storage
+
+			fruit_id_usable_list = list(fruit_id_storage.keys())
+			group_usable_fruit_dict = {}
+			for key in group_fruit_dict:
+				group_usable_fruit_dict[key] = []
+				for item in group_fruit_dict[key]:
+					if str(item[0]) in fruit_id_usable_list:
+						group_usable_fruit_dict[key].append([item[0],item[1]])
+
+			fruit_id_charge_type = {}
+			for fruit_id in fruit_id_usable_list:
+				fruit_id = int(fruit_id)
+				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
+							            filter(models.ChargeType.fruit_id == fruit_id).all()
+				for i in range(len(query_list)):
+					query_list[i] = list(query_list[i])
+					query_list[i][2] = self.getUnit(query_list[i][2])
+					storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					query_list[i].append(storage_piece)
+				fruit_id_charge_type[str(fruit_id)] = query_list
+
+
+			activity_id = self.args['activity_id']
+			status = self.args['status']
+
+			activity_data = {}
+			query_activity = self.session.query(models.SeckillActivity).filter_by(id = activity_id).first()
+			activity_data['activity_id'] = activity_id
+			activity_data['start_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(query_activity.start_time))
+			continue_time_stamp = query_activity.continue_time
+			activity_data['hour'] = continue_time_stamp//3600
+			activity_data['minute'] = (continue_time_stamp%3600)//60
+			activity_data['second'] = continue_time_stamp%60
+
+			goods_data_list = []
+			query_goods_list = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
+			for goods in query_goods_list:
+				goods_item = {}
+				goods_item['seckill_goods_id'] = goods.id
+				fruit_id = goods.fruit_id
+				goods_item['fruit_id'] = fruit_id
+				goods_item['fruit_name'] = self.session.query(models.Fruit.name).filter_by(id=fruit_id).first()[0]
+				group_id = self.session.query(models.Fruit.group_id).filter_by(id=fruit_id).first()[0]
+				if group_id == -1:
+					group_name = '店铺推荐'
+				elif group_id == 0:
+					group_name = '默认分组'
+				else:
+					group_name = self.session.query(models.GoodsGroup.name).filter_by(id=group_id).first()[0]
+				goods_item['group_id'] = group_id
+				goods_item['group_name'] = group_name
+
+				goods_item['charge_type_id'] = goods.charge_type_id
+				goods_item['charge_type_list'] = []
+				goods_item['former_price'] = goods.former_price
+				charge_type_list = fruit_id_charge_type[str(fruit_id)];
+				for charge_type_item in charge_type_list:
+					item = {}
+					charge_type_text = str(charge_type_item[0]) + '元/' +  str(charge_type_item[1]) + charge_type_item[2]
+					charge_type_id = charge_type_item[4]
+					if charge_type_id == goods.charge_type_id:
+						storage_piece = charge_type_item[5]
+						goods_item['storage_piece'] = storage_piece
+						goods_item['cur_charge_type_text'] = charge_type_text
+						i = 0
+						for i in range(len(charge_type_text)):
+							if charge_type_text[i] == '/':
+								break
+						goods_item['cur_seckill_text'] = '元/份 （每份含：' + charge_type_text[i+1:] + '）'
+						goods_item['cur_activity_piece_text'] = '份 （每份含：' + charge_type_text[i+1:] + '）'
+						goods_item['cur_remain_storage_piece_text'] = str(goods_item['storage_piece']) + '份 （每份含：' + charge_type_text[i+1:] + '）'
+						goods_item['cur_seckill_price'] = goods.seckill_price
+						goods_item['cur_activity_piece'] = goods.activity_piece
+					item['charge_type_id'] = charge_type_id
+					item['charge_type_text'] = charge_type_text
+					goods_item['charge_type_list'].append(item)
+				goods_data_list.append(goods_item)
+					
+			return self.render("admin/seckill-edit.html",action=action,goods_group_id_name=goods_group_id_name,group_usable_fruit_dict=[group_usable_fruit_dict],\
+								fruit_id_storage=[fruit_id_storage],fruit_id_charge_type=[fruit_id_charge_type],activity_data=activity_data,goods_data_list=goods_data_list,status=status,context=dict(subpage='marketing'))
+
+	@AdminBaseHandler.check_arguments("action:str","data?","page?:int","status?:int","activity_id?:int")
+	def post(self):
+		action = self.args["action"]
+		current_shop_id = self.current_shop.id
+		current_shop=self.current_shop
+		current_customer_id=self.current_user.id
+		self.update_seckill()
+		if action == "seckill_new":
+			data_array = self.args["data"]
+			activity_data = data_array[0]
+			shop_id = current_shop_id
+
+			start_time = str(activity_data["start_time"])
+			start_time = int(time.mktime(time.strptime(start_time,'%Y-%m-%d %H:%M:%S')))
+			continue_time_hour = int(activity_data["continue_time_hour"])
+			continue_time_minute = int(activity_data["continue_time_minute"])
+			continue_time_second = int(activity_data["continue_time_second"])
+			continue_time = continue_time_second + continue_time_minute*60 + continue_time_hour*60*60
+			end_time = start_time + continue_time
+			activity_status = 1
+
+			seckill_activity = models.SeckillActivity(shop_id=shop_id,start_time=start_time,end_time=end_time,continue_time=continue_time,activity_status=activity_status)
+			self.session.add(seckill_activity)
+			self.session.commit()
+
+			activity_id = self.session.query(models.SeckillActivity.id).order_by(desc(models.SeckillActivity.id)).with_lockmode("update").first()[0]
+
+			for i in range(1,len(data_array)):
+				data = data_array[i]
+
+				fruit_id = int(data["fruit_id"])
+				charge_type_id = int(data["charge_type_id"])
+				former_price = float(data["former_price"])
+				seckill_price = float(data["seckill_price"])
+				storage_piece = int(data["storage_piece"])
+				activity_piece = int(data["activity_piece"])
+				not_pick = activity_piece
+				picked = 0
+				ordered = 0
+				deleted = 0
+
+				seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,former_price=former_price,seckill_price=seckill_price,\
+									storage_piece=storage_piece,activity_piece=activity_piece,not_pick=not_pick,picked=picked,ordered=ordered,deleted=deleted)
+				self.session.add(seckill_goods)
+
+				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
+				sec_fruit.activity_status = 1
+				sec_fruit.seckill_charge_type = charge_type_id
+
+				self.session.commit()
+		elif action == 'seckill_on':
+			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
+			query.seckill_active = 1
+			notice_query = self.session.query(models.Notice).filter_by(config_id = current_shop_id).with_lockmode('update').first()
+			notice_query.seckill_img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp'
+			self.session.commit()
+		elif action == 'seckill_off':
+			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
+			query.seckill_active = 0
+
+			query_list = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status.in_([1,2])).with_lockmode("update").all()
+			for item in query_list:
+				item.activity_status = -1
+			self.session.commit()
+		elif action == 'get_sec_item':
+			page = self.args['page']
+			status = self.args['status']
+			page_size = 2
+
+			output_data = []
+
+			page_sum = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).count()
+			if page_sum % page_size == 0:
+				page_sum = page_sum//page_size
+			else:
+				page_sum = page_sum//page_size + 1
+			if status in [1,2]:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(models.SeckillActivity.start_time).offset(page*page_size).limit(page_size).all()
+			else:
+				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(desc(models.SeckillActivity.start_time)).offset(page*page_size).limit(page_size).all()
+			for item in query_list:
+				activity_item = {}
+				activity_item['activity_id'] = item.id
+				activity_item['goods_list'] = ''
+				activity_item['start_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(item.start_time))
+				continue_time = item.continue_time
+				hour = continue_time//3600
+				minute = (continue_time % 3600)//60
+				second = (continue_time % 60)
+				if hour == 0:
+					hh = '00:'
+				elif hour < 10:
+					hh = '0' + str(hour) + ':'
+				else:
+					hh = str(hour) + ':'
+				if minute == 0:
+					mm = '00:'
+				elif minute < 10:
+					mm = '0' + str(minute) + ':'
+				else:
+					mm = str(minute) + ':'
+				if second == 0:
+					ss = '00'
+				elif second < 10:
+					ss = '0' + str(second)
+				else:
+					ss = str(second) 
+				activity_item['continue_time'] = hh+mm+ss
+				
+				picked_num = 0
+				ordered_num = 0
+				goods_query_list = self.session.query(models.SeckillGoods).filter_by(activity_id = item.id)
+				for item2 in goods_query_list:
+					fruit_id = item2.fruit_id
+					fruit_name = self.session.query(models.Fruit.name).filter_by(id=fruit_id).first()[0]
+					group_id = self.session.query(models.Fruit.group_id).filter_by(id=fruit_id).first()[0]
+					if group_id == -1:
+						group_name = '店铺推荐'
+					elif group_id == 0:
+						group_name = '默认分组'
+					else:
+						group_name = self.session.query(models.GoodsGroup.name).filter_by(id=group_id).first()[0]
+					activity_item['goods_list'] += group_name + ':' + fruit_name + ';'
+					picked_num += item2.picked
+					ordered_num += item2.ordered
+				activity_item['picked'] = picked_num
+				activity_item['ordered'] = ordered_num
+
+				split_list = activity_item['goods_list'].split(';')
+				goods_len =  len(split_list)
+				activity_item['goods_list'] = ''
+				if len(split_list)-1 > 5:
+					for i in range(0,4):
+						activity_item['goods_list'] += split_list[i] + ';'
+					activity_item['goods_list'] += split_list[4]
+					activity_item['goods_list'] += '等' + str(goods_len-1) + '种商品'
+				else:
+					for i in range(0,len(split_list)-1):
+						activity_item['goods_list'] += split_list[i] + ';'
+					activity_item['goods_list'] += split_list[len(split_list)-1]
+
+				output_data.append(activity_item)
+
+			return self.send_success(output_data = output_data,page_sum=page_sum)
+		elif action == 'get_detail_item':
+			activity_id = self.args['activity_id']
+			page = self.args['page']
+
+			page_size = 2
+
+			output_data = []
+			query_list = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).offset(page*page_size).limit(page_size).all()
+			for item in query_list:
+				goods_item = {}
+				fruit_id = item.fruit_id
+				goods_item['fruit_name'] = self.session.query(models.Fruit.name).filter_by(id = fruit_id).first()[0]
+				goods_item['seckill_price'] = round(item.seckill_price,2)
+				goods_item['former_price'] = round(item.former_price,2)
+				goods_item['discount'] = round(round(float(goods_item['seckill_price'])/float(goods_item['former_price']),2)*10,2)
+				goods_item['picked'] = item.picked
+				goods_item['ordered'] = item.ordered
+				goods_item['storage_piece'] = item.storage_piece
+
+				charge_type_query = self.session.query(models.ChargeType.num,models.ChargeType.unit).filter_by(id = item.charge_type_id).first()
+				charge_type_query = list(charge_type_query)
+				charge_type_query[1] = self.getUnit(charge_type_query[1])
+				charge_type = '（单位：元/' + str(charge_type_query[0]) + charge_type_query[1] + '）'
+				storage_type = '（单位：份，每份' + str(charge_type_query[0]) + charge_type_query[1] + '）'
+				goods_item['charge_type'] = charge_type
+				goods_item['storage_type'] =storage_type
+				output_data.append(goods_item)
+
+			return self.send_success(output_data = output_data)
+		elif action == 'edit_delete':
+			seckill_goods_id = int(self.args['data'])
+			if seckill_goods_id != -1:
+				seckill_goods = self.session.query(models.SeckillGoods).filter_by(id=seckill_goods_id).with_lockmode("update").first()
+				seckill_goods.status = 0
+
+				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
+				sec_fruit.activity_status = 0
+				sec_fruit.seckill_charge_type = 0
+
+				self.session.commit()
+		elif action == 'seckill_edit':
+			data_array = self.args["data"]
+			activity_data = data_array[0]
+			activity_id = int(activity_data['activity_id'])
+			shop_id = current_shop_id
+
+			start_time = str(activity_data["start_time"])
+			start_time = int(time.mktime(time.strptime(start_time,'%Y-%m-%d %H:%M:%S')))
+			continue_time_hour = int(activity_data["continue_time_hour"])
+			continue_time_minute = int(activity_data["continue_time_minute"])
+			continue_time_second = int(activity_data["continue_time_second"])
+			continue_time = continue_time_second + continue_time_minute*60 + continue_time_hour*60*60
+			end_time = start_time + continue_time
+
+			activity_query = self.session.query(models.SeckillActivity).filter_by(id=activity_id).with_lockmode('update').first()
+			activity_query.start_time = start_time
+			activity_query.end_time = end_time
+			activity_query.continue_time = continue_time
+			self.session.commit()
+
+			for i in range(1,len(data_array)):
+				data = data_array[i]
+				seckill_goods_id = data['seckill_goods_id']
+
+				goods_query = self.session.query(models.SeckillGoods).filter_by(id=seckill_goods_id).with_lockmode('update').first()
+
+				fruit_id = int(data["fruit_id"])
+				charge_type_id = int(data["charge_type_id"])
+				former_price = float(data["former_price"])
+				seckill_price = float(data["seckill_price"])
+				storage_piece = int(data["storage_piece"])
+				activity_piece = int(data["activity_piece"])
+				not_pick = activity_piece
+				picked = 0
+				ordered = 0
+				deleted = 0
+
+				goods_query.fruit_id = fruit_id
+				goods_query.charge_type_id = charge_type_id
+				goods_query.former_price = former_price
+				goods_query.seckill_price = seckill_price
+				goods_query.storage_piece = storage_piece
+				goods_query.activity_piece = activity_piece
+				goods_query.not_pick = not_pick
+				goods_query.picked = picked
+				goods_query.ordered = ordered
+				goods_query.deleted = deleted
+
+				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
+				sec_fruit.activity_status = 1
+				sec_fruit.seckill_charge_type = charge_type_id
+
+				self.session.commit()
+		elif action == 'stop_activity':
+			activity_id = self.args['activity_id']
+			status = self.args['status']
+			seckill_activity = self.session.query(models.SeckillActivity).filter_by(id=activity_id).with_lockmode("update").first()
+			seckill_activity.activity_status = -1
+
+			fruit_stop_list = []
+			fruit_query = self.session.query(models.SeckillGoods.fruit_id).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
+			for item in fruit_query:
+				fruit_stop_list.append(item[0])
+
+			fruit_stop_query = self.session.query(models.Fruit).filter(models.Fruit.id.in_(fruit_stop_list)).with_lockmode("update").all()
+			for item in fruit_stop_query:
+				item.activity_status = 0
+				item.seckill_charge_type = 0
+
+			self.session.commit()
+
+			page_size = 2
+			page_sum = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).count()
+			if page_sum % page_size == 0:
+				page_sum = page_sum//page_size
+			else:
+				page_sum = page_sum//page_size + 1
+			if page_sum == 0:
+				page_sum = 1
+			return self.send_success(page_sum = page_sum)
+
+		else:
+			return self.send_fail('something must wrong')
+
+		return self.send_success()

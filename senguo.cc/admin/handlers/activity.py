@@ -556,7 +556,7 @@ class CouponList(CustomerBaseHandler):
 				if q1.use_goods==-1:
 					use_goods="所有商品"
 				else:
-					q2=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=q1.use_goods).first()
+					q2=self.session.query(models.Fruit).filter_by(id=q1.use_goods).first()
 					use_goods=q2.name
 				x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"effective_time":effective_time,"use_rule":q1.use_rule,"coupon_key":x.coupon_key,"coupon_money":q1.coupon_money,"get_date":get_date,"use_date":use_date,"uneffective_time":uneffective_time,"coupon_status":x.coupon_status}
 				data.append(x_coupon)
@@ -719,5 +719,181 @@ class CouponCustomer(CustomerBaseHandler):
 				return self.send_success(coupon_money=qq.coupon_money,coupon_key=q.coupon_key)
 			else:
 				return self.send_fail("对不起，这批优惠券已经被抢空了，下次再来哦！")
+#秒杀
+class Seckill(CustomerBaseHandler):
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("activity_id?:int")
+	def get(self,shop_code):
+		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
+		self.update_seckill()
+		if 'activity_id' in self.args:
+			activity_id = self.args['activity_id']
+			activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,id = activity_id).filter(models.SeckillActivity.activity_status.in_([1,2])).all()
+		else:
+			activity_list = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id).filter(models.SeckillActivity.activity_status.in_([1,2])).order_by(models.SeckillActivity.start_time).all()
 
+		activity_num = len(activity_list)
 
+		start_date_list = []
+		for activity in activity_list:
+			date_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[0:10]
+			start_date_list.append(date_text)
+		start_date_list = set(start_date_list)
+
+		daily_list = {}
+		for start_date in start_date_list:
+			daily_list[start_date] = []
+
+		for activity in activity_list:
+			data = {}
+			activity_id = activity.id
+			data['activity_id'] = activity_id
+			data['start_time'] = activity.start_time
+			data['start_time_text'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[11:16]
+			data['continue_time'] = activity.continue_time
+			date_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(activity.start_time))[0:10]
+
+			now_time_text = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(int(time.time())))[0:10]
+			if date_text == now_time_text:
+				data['date_text'] = '今天'
+			elif date_text[0:8] == now_time_text[0:8] and int(date_text[8:10]) == int(now_time_text[8:10])+1:
+				data['date_text'] = '明天'
+			else:
+				tmp = date_text
+				data['date_text'] = str(int(tmp[5:7])) + '月' + str(int(tmp[8:10]))  +'日'
+
+			daily_list[date_text].append(data)
+
+		output_data = []
+		for key in daily_list:
+			data = ['',[],0]
+			data[0] = daily_list[key][0]['date_text']
+			data[1] = daily_list[key]
+			data[2] = daily_list[key][0]['start_time'] #just for sorting
+			output_data.append(data)
+		output_data.sort(key = lambda item:item[2],reverse=False)
+
+		for i in range(len(output_data)):
+			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
+
+		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code)
+	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
+	def post(self,shop_code):
+		self.update_seckill()
+		action = self.args['action']
+		activity_id = self.args['activity_id']
+		shop_id = self.session.query(models.Shop).filter_by(shop_code = shop_code).first().id
+
+		output_data = []
+		goods_list = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).filter(models.SeckillGoods.status != 0).all()
+		for goods in goods_list:
+			goods_item = {}
+			goods_seckill_id = goods.id
+			goods_item['goods_seckill_id'] = goods_seckill_id
+			goods_item['fruit_id'] = goods.fruit_id
+
+			cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
+			if cur_goods.img_url:
+				goods_item['img_url'] = cur_goods.img_url.split(';')[0]
+			else:
+				goods_item['img_url'] = ""
+			goods_item['goods_name'] = cur_goods.name
+			goods_item['charge_type_id'] = goods.charge_type_id
+
+			cur_charge_type = self.session.query(models.ChargeType).filter_by(id = goods.charge_type_id).first()
+			if int(cur_charge_type.num) == cur_charge_type.num:
+				cur_charge_type_num = int(cur_charge_type.num)
+			else:
+				cur_charge_type_num = cur_charge_type.num
+			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+			goods_item['price_dif'] = goods.former_price - goods.seckill_price
+			goods_item['activity_piece'] = goods.activity_piece
+			output_data.append(goods_item)
+
+		return self.send_success(output_data = output_data)
+
+#折扣
+class Discount(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("seckill/discount.html")
+#团购
+class Gbuy(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("seckill/gbuy.html")
+#预售
+class Presell(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		return self.render("seckill/presell.html")
+#团购详情
+class GbuyDetail(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self,shop_code,goods_id):
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+		except:
+			return self.send_error(404)
+
+		if shop:
+			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
+			self._shop_code = shop.shop_code
+			self.set_cookie("market_shop_code",str(shop.shop_code))
+			shop_name = shop.shop_name
+			shop_code = shop.shop_code
+		else:
+			shop_name =''
+			return self.send_error(404)
+			
+		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
+		try:
+			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
+		except:
+			favour = None
+		if favour is None:
+			good.favour_today = False
+		else:
+			good.favour_today = favour.create_date == datetime.date.today()
+
+		if good:
+			if good.img_url:
+				img_url= good.img_url.split(";")
+			else:
+				img_url= ''
+		else:
+			good = []
+			img_url = ''
+
+		charge_types= []
+		for charge_type in good.charge_types:
+			if charge_type.active != 0:
+				unit  = charge_type.unit
+				unit =self.getUnit(unit)
+				limit_today = False
+				allow_num = ''
+				try:
+					limit_if = self.session.query(models.GoodsLimit).filter_by(charge_type_id = charge_type.id,customer_id = self.current_user.id)\
+					.order_by(models.GoodsLimit.create_time.desc()).first()
+				except:
+					limit_if = None
+				if limit_if and good.limit_num !=0:
+					time_now = datetime.datetime.now().strftime('%Y-%m-%d')
+					create_time = limit_if.create_time.strftime('%Y-%m-%d')
+					if time_now == create_time:
+						limit_today = True
+						if limit_if.limit_num == good.limit_num:
+							allow_num = limit_if.allow_num
+						else:
+							allow_num = good.limit_num - limit_if.buy_num
+				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
+			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
+			self.session.commit()
+		cart_f = self.read_cart(shop.id)
+		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		cart_count = len(cart_f)
+		self.set_cookie("cart_count", str(cart_count))
+		return self.render('seckill/gbuy-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)	

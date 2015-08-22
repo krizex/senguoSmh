@@ -29,6 +29,14 @@ handlers = [
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 
+	#秒杀折扣预售团购
+	(r"/seckill/(\w+)", handlers.activity.Seckill, {}, "ConfessionSeckill"),
+	(r"/discount", handlers.activity.Discount, {}, "ConfessionDiscount"),
+	(r"/gbuy", handlers.activity.Gbuy, {}, "ConfessionGbuy"),
+	(r"/presell", handlers.activity.Presell, {}, "ConfessionPresell"),
+	(r"/(\w+)/gbuy/(\w+)", handlers.activity.GbuyDetail, {}, "ConfessionGbuyDetail"),
+
+	#(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
@@ -250,6 +258,7 @@ handlers = [
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
+	(r"/admin/marketing/seckill",handlers.admin.MarketingSeckill,{},"adminMarketingSeckill"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
 	(r"/admin",handlers.admin.SwitchShop,{},"switchshop"),
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
@@ -286,9 +295,11 @@ handlers = [
 	(r"/madmin/goods", handlers.madmin.Goods, {}, "MadminGoods"),
 	(r"/madmin/gsearch", handlers.madmin.GoodsSearch, {}, "MadminGoodsSearch"),
 	(r"/madmin/goodsAdd", handlers.madmin.GoodsAdd, {}, "MadminGoodsAdd"),
-	(r"/madmin/goodsEdit", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
-
-
+	(r"/madmin/goodsEdit/(\w+)", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
+	(r"/madmin/goodsBatch", handlers.madmin.GoodsBatch, {}, "MadminGoodsBatch"),
+	(r"/madmin/user", handlers.madmin.User, {}, "MadminUser"),
+	(r"/madmin/userDetail/(\w+)", handlers.madmin.UserDetail, {}, "MadminUserDetail"),
+	(r"/madmin/usearch", handlers.madmin.UserSearch, {}, "MadminUserSearch"),
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
 	# (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次

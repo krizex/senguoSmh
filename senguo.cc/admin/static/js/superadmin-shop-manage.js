@@ -1,4 +1,4 @@
-page_shop=1,inputinfo=$("#inputinfo").val();
+var page_shop=1,inputinfo=$("#inputinfo").val();
 var apply_page = 1;
 var apply_status = "all_temp";
 $(document).ready(function(){
@@ -32,6 +32,22 @@ $(document).ready(function(){
             searchshop(page_shop);
         }
     });
+    // added by jyj 2015-8-11
+    var out_link = $.getUrlParam('out_link');
+    if (out_link == 'true'){
+          var data_id = $.getUrlParam('data_id');
+          var if_stop='true';
+          var url = '/super/shopauth?page=0&&out_link=true&&data_id=' + data_id + '&&if_stop=' + if_stop;
+          $("#authPrePage").hide();
+          $("#authNextPage").hide();
+
+          var stop_flag = $.getUrlParam('if_stop');
+          if (stop_flag != 'true'){
+                window.location.href = url;
+          }
+    }
+    // 
+
     /*if(localStorage.getItem("itemIndex")){
         $(".shop-manage-nav li").removeClass("active").eq(localStorage.getItem("itemIndex")).addClass("active");
     }else{
@@ -148,8 +164,15 @@ function insertShop(page){
                                     } 
                                     //delete by jyj 2015-6-22    
 
+                                    var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                                    if (shop.auth_type != '未认证'){
+                                         var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
+                                        $item.find(".auth-link").attr("href",auth_link_url);
+                                    }
+    
                                     $item.find(".uauth_type").html(shop.auth_type);
                                     $item.find(".uadmin_nickname").html(shop.admin_nickname);
+                                     $item.find(".uadmin_link").attr("href",admin_link_url);
                                     $item.find(".ushop_address_name").html(shop.shop_address_detail);
                                     $item.find(".ushop_code").html(shop.shop_code);
                                     $item.find(".ushop_status").html(shop.shop_shop_status);
@@ -277,7 +300,7 @@ function Reject(evt){
 
 function delComment(apply_id,target){
      var action="commit";
-    var url='/super/comment';
+    var url='/super/comment_apply';
     var args={
         action:action,
         apply_id:apply_id,
@@ -296,7 +319,7 @@ function delComment(apply_id,target){
 
 function rejectDel(){
      var action="decline";
-    var url='/super/comment';
+    var url='/super/comment_apply';
     var apply_id=$(".wrap-com-pop").attr('data-id');
     var index=$(".wrap-com-pop").attr('data-index');
     var decline_reason=$('#com-cont').val();
@@ -343,6 +366,13 @@ function searchshop(page){
                                         }else{
                                             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                         }     
+                                        var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                                        if (shop.auth_type != '未认证'){
+                                             var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
+                                            $item.find(".auth-link").attr("href",auth_link_url);
+                                        }
+
+                                        $item.find(".uadmin_link").attr("href",admin_link_url);
                                         $item.find(".uauth_type").html(shop.auth_type);
                                         $item.find(".uadmin_nickname").html(shop.admin_nickname);
                                         $item.find(".ushop_address_name").html(shop.shop_address_detail);

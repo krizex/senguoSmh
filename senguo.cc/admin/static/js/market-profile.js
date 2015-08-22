@@ -99,7 +99,7 @@ $(document).ready(function(){
         bind_wx();
     }
     else{
-        noticeBox('请在手机上绑定或更换绑定微信账号');
+        noticeBox('请在手机微信中绑定或更换绑定微信账号');
     }
 }).on('click','.confriming',function(){
     var $this=$(this);
@@ -269,7 +269,7 @@ function nicknameEdit(name){
             if (res.success) {
                 var name_box=new Modal('nicknameBox');
                 name_box.modal('hide');
-                $('#usernickName').text(name);
+                $('#usernickName1').text(name);
             }
             else noticeBox(res.error_txt);
         },

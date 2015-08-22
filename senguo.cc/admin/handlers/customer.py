@@ -57,8 +57,16 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
+<<<<<<< HEAD
 			user_type=int(self.args["user_type"])
 			jpush_id=self.args["jpush_id"]
+=======
+			try:
+				user_type=int(self.args["user_type"])
+				jpush_id=self.args["jpush_id"]
+			except:
+				jpush_id=None
+>>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 			if jpush_id:
 				q=self.session.query(models.Jpushinfo).filter_by(user_type=user_type,user_id=self.current_user.id).first()
 				if q:
@@ -84,15 +92,19 @@ class Access(CustomerBaseHandler):
 	def post(self):
 		phone = self.args['phone']
 		password = self.args['password']
-		next_url=self.args["next"]
+		try:
+			next_url=self.args["next"]
+		except:
+			next_url=None
 		user_type=-1
 		jpush_id=None
-		if next_url.find('madmin?jpush_id')!=-1:
-			user_type=0
-			jpush_id=next_url[next_url.find('=')+1:]
-		if next_url.find('customer/profile?jpush_id')!=-1:
-			user_type=1
-			jpush_id=next_url[next_url.find('=')+1:]
+		if next_url:
+			if next_url.find('madmin?jpush_id')!=-1:
+				user_type=0
+				jpush_id=next_url[next_url.find('=')+1:]
+			if next_url.find('customer/profile?jpush_id')!=-1:
+				user_type=1
+				jpush_id=next_url[next_url.find('=')+1:]
 		u = models.Customer.login_by_phone_password(self.session, self.args["phone"], self.args["password"])
 		# print("[PhoneLogin]Customer ID:",u.id)
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
@@ -133,9 +145,9 @@ class Access(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
 	def handle_oauth(self,next_url):
 		# todo: handle state
-		code =self.args["code"]
+		code = self.args["code"]
 		mode = self.args["mode"]
-		if mode not in ["mp", "kf"]:
+		if mode not in ["mp", "kf", "iOS"]:
 			return self.send_error(400)
 
 		userinfo = self.get_wx_userinfo(code, mode)
@@ -154,7 +166,6 @@ class Third(CustomerBaseHandler):
 		action =self._action
 		if self._action == "weixin":
 			return self.redirect(self.get_weixin_login_url())
-
 		
 		elif self._action=="weixinphone":
 			openid=str(self.args["openid"])
@@ -184,6 +195,7 @@ class Third(CustomerBaseHandler):
 			else:
 				self.set_current_user(q,domain = ROOT_HOST_NAME)
 			return self.redirect(self.reverse_url("customerProfile"))
+
 		elif self._action=="weixinphoneadmin":
 			openid=str(self.args["openid"])
 			unionid=str(self.args["unionid"])
@@ -230,6 +242,7 @@ class customerGoods(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
 		except:
 			return self.send_error(404)
+
 		if shop:
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self._shop_code = shop.shop_code
@@ -238,7 +251,11 @@ class customerGoods(CustomerBaseHandler):
 			shop_code = shop.shop_code
 		else:
 			shop_name =''
+			return self.send_error(404)
+			
 		good = self.session.query(models.Fruit).filter_by(id=goods_id).first()
+		if not good:
+			return self.send_error(404)
 		try:
 			favour = self.session.query(models.FruitFavour).filter_by(customer_id = self.current_user.id,f_m_id = goods_id,type = 0).first()
 		except:
@@ -287,7 +304,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render(self.tpl_path(shop.shop_tpl)+'/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
@@ -443,7 +460,7 @@ class Home(CustomerBaseHandler):
 		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			a=a,show_balance = show_balance,balance_on=balance_on,context=dict(subpage='center'))
+			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
@@ -482,16 +499,12 @@ class Discover(CustomerBaseHandler):
 			return self.send_fail('shop error')
 		if shop:
 			if shop.marketing:
-				shop_marketing = shop.marketing.confess_active
 				confess_active = shop.marketing.confess_active
 			else:
-				shop_marketing = 0
 				confess_active = 0
 			shop_auth = shop.shop_auth
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
-			self.set_cookie("shop_marketing", str(shop_marketing))
-			self.set_cookie("shop_auth", str(shop_auth))
 		else:
 			shop_auth = 0
 			confess_active = 0
@@ -501,9 +514,11 @@ class Discover(CustomerBaseHandler):
 			confess_count = 0
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=0).all()
 		a=0
+
 		now_date=int(time.time())
+
 		for x in q :
-			if now_date>=x.from_get_date:
+			if now_date>=x.from_get_date and now_date<=x.to_get_date:
 				a+=1
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=1).all()
 		b=0
@@ -514,7 +529,43 @@ class Discover(CustomerBaseHandler):
 				if qq!=None:
 					b+=1
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
-		return self.render(self.tpl_path(shop.shop_tpl)+'/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,shop_auth=shop_auth,confess_active=confess_active,confess_count=confess_count,a=a,b=b)
+
+		# added by jyj 2015-8-18 for seckill
+		self.update_seckill()
+		shop_id = shop.id
+		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active
+		seckill_text = ''
+		seckill_display_flag = 0
+		if seckill_active == 1:
+			now_time = int(time.time())
+			query1 = self.session.query(models.SeckillActivity.id).filter(models.SeckillActivity.activity_status == 2,models.SeckillActivity.shop_id == shop_id).all()
+			if query1:
+				activity_id = query1[0][0]
+				goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
+				seckill_text = str(goods_count) + '种商品正在火热秒杀中'
+				seckill_display_flag = 1
+			else:
+				one_day_time = 24*60*60
+				now_time = int(time.time())
+				continue_time = int(time.time()) + one_day_time
+				query2 = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status == 1,models.SeckillActivity.start_time > now_time,models.SeckillActivity.start_time < continue_time).\
+								order_by(models.SeckillActivity.start_time).all()
+				if query2:
+					activity_id = query2[0].id
+					goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
+					seckill_time = time.strftime('%H:%M:%S',time.localtime(query2[0].start_time))
+					hh = int(seckill_time[0:2])
+					hour = time.strftime('%H:%M:%S',time.localtime(now_time))
+					hour = int(hour[0:2])
+					if hour <= hh:
+						day = '今天'
+					else:
+						day = '明天'
+					seckill_text = str(goods_count) + '种商品' + day + seckill_time +'大开杀戒'
+					seckill_display_flag = 1
+
+		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
+			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,seckill_display_flag=seckill_display_flag)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -772,7 +823,7 @@ class ShopProfile(CustomerBaseHandler):
 		session = self.session
 		w_id = self.current_user.id
 		session.commit()
-		return self.render(self.tpl_path(shop.shop_tpl)+"/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
+		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
@@ -1020,7 +1071,6 @@ class Market(CustomerBaseHandler):
 		# fruits=''
 		# page_size = 10
 		# return self.send_success()
-
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
@@ -1068,9 +1118,17 @@ class Market(CustomerBaseHandler):
 				coupon_active=0
 			else :
 				coupon_active=shop.marketing.coupon_active
+
+			# added by jyj 2015-8-21
+			seckill_active = shop.marketing.seckill_active
+			##
 		else:
 			shop_marketing = 0
 			coupon_active=1
+
+			# added by jyj 2015-8-21
+			seckill_active = 0
+			##
 
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -1079,6 +1137,9 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
 		self.set_cookie("coupon_active", str(coupon_active))
+		# added by jyj 2015-8-21
+		self.set_cookie("seckill_active", str(seckill_active))
+		##
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -1119,10 +1180,9 @@ class Market(CustomerBaseHandler):
 
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
 		# print("[CustomerMarket]cart_fs:",cart_fs)
-		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+		
 		self.set_cookie("cart_count", str(cart_count))
 		# print("[CustomerMarket]notices:",notices)
-
 		group_list=[]
 
 		# try:
@@ -1176,9 +1236,31 @@ class Market(CustomerBaseHandler):
 					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
+		# added by jyj 2015-8-21
+		has_seckill_activity = 0
+		seckill_img_url = ''
+		notices = []
+		if seckill_active == 1:
+			shop_id = shop.id
+			self.update_seckill()			
+			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
+			if activity_query:
+				has_seckill_activity = 1
+				activity_query = activity_query[0]
+				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
+				notices.append(('','',seckill_img_url))
+				for x in shop.config.notices:
+					if x.active == 1:
+						notices.append((x.summary, x.detail,x.img_url))
+			else:
+				notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+		else:
+			notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
-							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
+							has_seckill_activity=has_seckill_activity))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1222,9 +1304,28 @@ class Market(CustomerBaseHandler):
 			return self.search_list()
 	# @classmethod
 	def w_getdata(self,session,m,customer_id):
+			self.update_seckill()
 			data = []
 			w_tag = ''
 			# print("[CustomerMarket]customer_id:",customer_id)
+
+			# added by jyj 2015-8-21
+			shop_id = m[0].shop_id
+			killing_activity_id = []
+			killing_fruit_id = []
+			fruit_seckill_list = {}
+			query_list = session.query(models.SeckillActivity.id).filter_by(shop_id = shop_id,activity_status = 2).all()
+			if query_list:
+				for item in query_list:
+					killing_activity_id.append(item[0])
+				
+				query_goods = session.query(models.SeckillGoods.fruit_id,models.SeckillGoods.id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
+				if query_goods:
+					for item in query_goods:
+						killing_fruit_id.append(item[0])
+						fruit_seckill_list[str(item[0])] = item[1]
+			
+			##
 			for fruit in m:
 				try:
 					# print('[CustomerMarket]fruit id:',fruit.id)
@@ -1273,9 +1374,60 @@ class Market(CustomerBaseHandler):
 				else:
 					detail_no = False
 
-				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
-					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no)})
+				# added by jyj 2015-8-21
+				data_item = {}
+
+				data_item['id'] = fruit.id
+				data_item['shop_id'] = fruit.shop_id
+				data_item['active'] = fruit.active
+				data_item['code'] = fruit.fruit_type.code
+
+				data_item['tag'] = fruit.tag
+				data_item['img_url'] = img_url
+				data_item['intro'] = fruit.intro
+				data_item['name'] = fruit.name
+				data_item['favour_today'] = str(favour_today)
+				data_item['group_id'] = fruit.group_id
+				data_item['detail_no'] = str(detail_no)
+
+				fruit_id = fruit.id
+				bought_customer_list = []
+				if fruit_id in killing_fruit_id:
+					seckill_goods_id = fruit_seckill_list[str(fruit.id)]
+					customer_query = session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.seckill_goods_id == seckill_goods_id,models.CustomerSeckillGoods.status != 0).all()
+					for item in customer_query:
+						bought_customer_list.append(item.customer_id)
+
+				if fruit_id in killing_fruit_id and customer_id not in bought_customer_list:
+					seckill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
+								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
+					data_item['is_activity'] = 1
+					data_item['activity_id'] = seckill_info.activity_id
+					data_item['seckill_goods_id'] = seckill_info.id
+					data_item['charge_type_id'] = seckill_info.charge_type_id
+
+					cur_charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.charge_type_id).first()
+					if int(cur_charge_type.num) == cur_charge_type.num:
+						cur_charge_type_num = int(cur_charge_type.num)
+					else:
+						cur_charge_type_num = cur_charge_type.num
+					data_item['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+
+					data_item['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
+					data_item['activity_piece'] = seckill_info.activity_piece
+				else:
+					data_item['is_activity'] = 0
+
+					data_item['charge_types'] = charge_types
+					data_item['storage'] = fruit.storage
+					data_item['saled'] = saled
+					data_item['favour'] = fruit.favour
+					data_item['limit_num'] = fruit.limit_num
+			
+				##
+
+				data.append(data_item)
+
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1528,7 +1680,7 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
-			return self.render(self.tpl_path(shop.shop_tpl)+"/cart-empty.html",context=dict(subpage='cart'))
+			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
 		for item in cart_f:
 			fruit = cart_f[item].get('charge_type').fruit
@@ -1587,10 +1739,11 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
-		return self.render(self.tpl_path(shop.shop_tpl)+"/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
+		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
-						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,context=dict(subpage='cart'))
+						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list\
+						   ,context=dict(subpage='cart'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
@@ -1999,7 +2152,7 @@ class Cart(CustomerBaseHandler):
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
-				customer_totalPrice = shop_follow.shop_balance)
+				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.flush()
 		self.session.commit()
@@ -2252,7 +2405,7 @@ class Order(CustomerBaseHandler):
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.new_totalprice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
-						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province)
+						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 				self.session.add(balance_history)
 			self.session.commit()
 			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
@@ -2816,7 +2969,7 @@ class payTest(CustomerBaseHandler):
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
-				shop_province=shop.shop_province)
+				shop_province=shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			# print("[WxCharge]balance_history:",balance_history)
 			self.session.commit()

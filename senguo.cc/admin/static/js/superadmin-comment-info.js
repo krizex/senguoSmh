@@ -78,7 +78,7 @@ function showList(page){
                                        			}else{
                                             			$item.find(".headimgurl").attr("src","/static/images/TDSG.png");
                                         			}   
-
+                                        			$item.find(".user-out-link").attr("href","/super/user?out_link=true&&data_id=" + data["user_id"]);
                                         			$item.find(".nickname").html(data["nickname"]);
                                         			$item.find(".comment-create-date").html(data["comment_create_date"]);
                                         			$item.find(".create-date").html(data["create_date"]);

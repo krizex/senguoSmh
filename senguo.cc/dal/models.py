@@ -536,7 +536,7 @@ class Shop(MapBase, _CommonApi):
 	area_type = Column(Integer,default=0) #区域类型
 	roundness = Column(String(50)) #圆心
 	area_radius = Column(Integer,default=0) #半径
-	area_list = Column(String(1000)) #区域数组
+	area_list = Column(String(2048)) #区域数组
 
 	# 是否做实体店
 	have_offline_entity = Column(Integer, default=False)
@@ -1413,6 +1413,11 @@ class Fruit(MapBase, _CommonApi):
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
 
+	# added by jyj 2015-8-19 for seckill
+	activity_status = Column(TINYINT,default=0)  #0(该商品未参与任何活动),1(参与秒杀活动),2(参与限时折扣),...(等待扩展中)
+	seckill_charge_type = Column(Integer,default=0) #秒杀活动中该商品所使用的计价方式id
+	##
+
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
@@ -1592,6 +1597,7 @@ class Marketing(MapBase, _CommonApi):
 	confess_notice = Column(String(500))
 	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
 	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
+	seckill_active=Column(TINYINT,default=0)  #控制店铺秒杀活动是否开启  0:关闭  1:开启
 
 # 商城首页的公告
 class Notice(MapBase):
@@ -1603,6 +1609,11 @@ class Notice(MapBase):
 	summary = Column(String(100)) #摘要
 	detail = Column(String(500)) #详情
 	img_url = Column(String(100)) #公告背景
+
+	seckill_img_url = Column(String(100)) #秒杀公告背景
+	# gbuy_img_url = Column(String(100)) #团购公告背景
+	# dscount_img_url = Column(String(100)) #折扣公告背景
+	# presell_img_url = Column(String(100)) #预售公告背景
 
 # 按时达时间段设置
 class Period(MapBase):
@@ -1918,6 +1929,7 @@ class Jpushinfo(MapBase, _CommonApi):
 	user_type=Column(Integer,nullable=False)  #0  admin 1 customer
 	jpush_id=Column(String(128),nullable=False)
 
+<<<<<<< HEAD
 
 # 折扣商品
 class DiscountShopGroup(MapBase, _CommonApi):
@@ -1950,3 +1962,45 @@ class DiscountShop(MapBase, _CommonApi):
 	incart_num=Column(Integer) 
 	ordered_num=Column(Integer)
 	status=Column(Integer) # ０：未开始　　１：进行中　２：衣结束　　３：已停用
+=======
+# 秒杀活动表
+class SeckillActivity(MapBase, _CommonApi):
+	__tablename__='seckill_activity'
+	id=Column(Integer,nullable=False,primary_key=True,autoincrement=True)    #秒杀活动id;
+	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+
+	start_time=Column(Integer,nullable=False)
+	end_time=Column(Integer)
+	continue_time=Column(Integer)  #秒杀持续的时间
+
+	activity_status = Column(TINYINT,default=1,nullable=False)	#当前秒杀活动的状态,取值：-1(已停用)，0(已结束),1(未开始)，2(进行中)
+
+# 秒杀商品表
+class SeckillGoods(MapBase, _CommonApi):
+	__tablename__='seckill_goods'
+	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	fruit_id = Column(Integer,ForeignKey(Fruit.id),nullable=False)
+	activity_id=Column(Integer,ForeignKey(SeckillActivity.id),nullable=False)   
+
+	charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的计价方式id
+	former_price=Column(Float) 	#原价
+	seckill_price=Column(Float,nullable=False)  	#秒杀价,计价方式与former_price相同
+	storage_piece=Column(Integer)    #当前商品剩余库存换算成当前计价方式的份数，取整
+	activity_piece=Column(Integer)		#活动库存的份数
+	
+	not_pick=Column(Integer)	#未领取的商品的份数，默认等于当前活动库存的份数
+	picked=Column(Integer,default=0)	#已经领取的商品的份数，默认为0
+	ordered=Column(Integer,default=0)	#已经下单的商品的份数，默认为0
+	deleted=Column(Integer,default=0)	#已经被从该秒杀活动中删除的商品的份数，默认为0
+
+	status = Column(TINYINT,default=1,nullable=False)  #该商品的状态值，0(已删除),1(正常)
+
+# 用户抢购的秒杀商品表
+class CustomerSeckillGoods(MapBase, _CommonApi):
+	__tablename__='customer_seckill_goods'
+	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False)
+	shop_id = Column(Integer,ForeignKey(Shop.id),nullable=False)
+	seckill_goods_id = Column(Integer,ForeignKey(SeckillGoods.id),nullable=False)
+	status = Column(TINYINT,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
+>>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff

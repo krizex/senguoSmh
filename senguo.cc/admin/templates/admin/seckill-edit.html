@@ -1,0 +1,264 @@
+{% extends 'base.html' %}
+{% block title%}编辑秒杀商品{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-reset.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
+{% set action = action%}
+
+
+{% block content %}
+<div class="action-div hidden" data-value="{{action}}"></div>
+<div class="font14">
+               <p class="c333 mt10 choose-text">
+                             <a href="javascript:;" class="c999 cancel-add-goods go-back-page" title="点击返回秒杀管理页面">商品秒杀</a>
+                             <span class="c333"> / 编辑秒杀商品</span>
+               </p>
+</div>
+
+<div class="font14 mt20">
+               <div class="group">
+                             <div class="wrap-coupontb fl  scroll-bar">
+                                            <table class="coupon-tb">
+                                                          <colgroup>
+                                                                        <col width="14%"/>
+                                                                        <col width="86%"/>
+                                                          </colgroup>
+                                                          <tbody class="new-seckill-list" activity-id="{{activity_data['activity_id']}}" activity-data="{{activity_data}}" activity-status="{{status}}">
+                                                                        <tr>
+                                                                                       <td class="ver-top"><span class="ver-5">开始时间</span></td>
+                                                                                       <td>
+                                                                                                     <div class="">
+                                                                                                                    
+                                                                                                                    <input type="text" class="Wdate start-time" id="" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d %H:#{\%m+5}:%s'})" value="{{activity_data['start_time']}}" {% if status == 2%}disabled="true" title="正在进行中的秒杀活动不能编辑开始时间"{% end %}/>
+                                                                                                     </div>
+                                                                                       </td>
+                                                                        </tr>
+
+                                                                        <tr>　　
+                                                                                       <td class="ver-top"><span class="ver-5">持续时间</span></td>
+                                                                                       <td>
+                                                                                                     <div class="dropdown slide-down-select w110">　　
+                                                                                                                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                                                                                                                  <em class="pull-left c333 choose-hour" data-id="{{activity_data['hour']}}">{{activity_data['hour']}}</em>
+                                                                                                                                  <span class="caret pull-right no-margin-left rotate0"></span>
+                                                                                                                    </button>
+                                                                                                                    <ul class="dropdown-menu dropdown-menu-right w110 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                                                                                                  <li class="presentation choose-continue-time" role="presentation">
+                                                                                                                                                {% for i in range(24)%}
+                                                                                                                                                 <a class="item" href="javascript:;">{{i}}</a>
+                                                                                                                                                {% end %}
+                                                                                                                                  </li>
+                                                                                                                    </ul>
+                                                                                                     </div>
+                                                                                                     <span  class="ver-8">：</span>
+                                                                                                     <div class="dropdown slide-down-select w110">　　　
+                                                                                                                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                                                                                                                  <em class="pull-left c333 choose-minute" data-id="{{activity_data['minute']}}">{{activity_data['minute']}}</em>
+                                                                                                                                  <span class="caret pull-right no-margin-left rotate0"></span>
+                                                                                                                    </button>
+                                                                                                                    <ul class="dropdown-menu dropdown-menu-right w110 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                                                                                                  <li class="presentation choose-continue-time" role="presentation">
+                                                                                                                                                {% for i in range(60)%}
+                                                                                                                                                 <a class="item" href="javascript:;">{{i}}</a>
+                                                                                                                                                {% end %}
+                                                                                                                                  </li>
+                                                                                                                    </ul>
+                                                                                                     </div>
+                                                                                                     <span class="ver-8">：</span>
+                                                                                                     <div class="dropdown slide-down-select w110">　　
+                                                                                                                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                                                                                                                  <em class="pull-left c333 choose-second" data-id="{{activity_data['second']}}">{{activity_data['second']}}</em>
+                                                                                                                                  <span class="caret pull-right no-margin-left rotate0"></span>
+                                                                                                                    </button>
+                                                                                                                    <ul class="dropdown-menu dropdown-menu-right w110 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                                                                                                  <li class="presentation choose-continue-time" role="presentation">
+                                                                                                                                                {% for i in range(60)%}
+                                                                                                                                                 <a class="item" href="javascript:;">{{i}}</a>
+                                                                                                                                                {% end %}
+                                                                                                                                  </li>
+                                                                                                                    </ul>
+                                                                                                     </div>
+                                                                                       </td>
+                                                                        </tr>
+
+                                                                        <tr>
+                                                                                       <td class="ver-top"><span class="ver-5">秒杀商品</span></td>
+                                                                                       <td class="ver-top">
+                                                                                                     <span class="ver-5 text-red">*领取限制：活动期间每种商品每个用户仅限秒杀一份。</span>
+                                                                                       </td>
+                                                                        </tr>
+
+                                                                        <tr class="new-seckill-item-clone hidden" >       
+                                                                                       <td colspan="1"></td>
+                                                                                       <td colspan="1">
+                                                                                                     <div class="seckill-new-div">
+                                                                                                                    <table class="">
+                                                                                                                                  <colgroup>
+                                                                                                                                                <col width="14%"/>
+                                                                                                                                                <col width="86%"/>
+                                                                                                                                  </colgroup>
+                                                                                                                                  <tbody class="">
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top c999"><span class="ver-10">商品<span class="goods-num">1</span></span></td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">商品名称</span></td>
+                                                                                                                                                               <td class="ver-top">
+                                                                                                                                                                             <div class="dropdown slide-down-select w130 mr10">　
+                                                                                                                                                                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                                                                                                                                                                                          <em class="pull-left c333 cur-goods-group" data-id="">选择商品分组</em>
+                                                                                                                                                                                                          <span class="caret pull-right no-margin-left rotate0"></span>
+                                                                                                                                                                                            </button>
+                                                                                                                                                                                            <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                                                                                                                                                                          <li class="presentation choose-goods-group" role="presentation">
+                                                                                                                                                                                                                        {% for key in goods_group_id_name %}
+                                                                                                                                                                                                                         <a class="item" href="javascript:;" data-id="{{key}}">{{goods_group_id_name[key]}}</a>
+                                                                                                                                                                                                                         {% end %}
+                                                                                                                                                                                                          </li>
+                                                                                                                                                                                            </ul>
+                                                                                                                                                                             </div>
+                                                                                                                                                                             <div class="dropdown slide-down-select w130 mr10">
+                                                                                                                                                                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn choose-goods-btn" type="button" data-toggle="dropdown" data-flag="">
+                                                                                                                                                                                                          <em class="pull-left c333 cur-goods" data-id="">选择商品</em>
+                                                                                                                                                                                                          <span class="caret pull-right no-margin-left rotate0"></span>
+                                                                                                                                                                                            </button>
+                                                                                                                                                                                            <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                                                                                                                                                                          <li class="presentation choose-goods hidden" role="presentation" data-value="{{group_usable_fruit_dict}}">
+
+                                                                                                                                                                                                          </li>
+                                                                                                                                                                                            </ul>
+                                                                                                                                                                             </div>
+                                                                                                                                                               </td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>　　
+                                                                                                                                                               <td class="ver-top"><span class="ver-5 former-price" data-id="">原价（单选）</span></td>
+                                                                                                                                                               <td class="ver-top">
+                                                                                                                                                                             <div class="choose-price send-day clearfix hidden choose-charge-type" data-value="{{fruit_id_charge_type}}" data-flag="">  
+
+                                                                                                                                                                             </div>
+                                                                                                                                                               </td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">秒杀价</span></td>
+                                                                                                                                                               <td class="ver-top hidden seckill-charge-price">
+                                                                                                                                                                             <input type="text" class="w130 seckill-price-input"/><span class="ml10 cur-charge-type"><span>
+                                                                                                                                                               </td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">剩余库存</span></td>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5 remain-store"></span></td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">活动库存</span></td>
+                                                                                                                                                               <td class="activity-store hidden"><input type="text" class="w130 activity-store-input"/><span class="ml10 activity-store-charge-type"></span></td>
+                                                                                                                                                </tr>
+                                                                                                                                  </tbody>
+                                                                                                                    </table>
+                                                                                                     </div>
+                                                                                                      <div>　
+                                                                                                                    <a href="javascript:;" class="add-link">+新建</a>
+                                                                                                                    <a href="javascript:;" class="delete-link hidden">删除</a>
+                                                                                                     </div> 
+                                                                                       </td>
+                                                                        </tr>
+
+                                                                        {% for i in range(len(goods_data_list))%}
+                                                                        {% set goods_item = goods_data_list[i] %}
+                                                                        <tr class="new-seckill-item" seckill-goods-id="{{goods_item['seckill_goods_id']}}">       
+                                                                                       <td colspan="1"></td>
+                                                                                       <td colspan="1">
+                                                                                                     <div class="seckill-new-div">
+                                                                                                                    <table class="">
+                                                                                                                                  <colgroup>
+                                                                                                                                                <col width="14%"/>
+                                                                                                                                                <col width="86%"/>
+                                                                                                                                  </colgroup>
+                                                                                                                                  <tbody class="">
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top c999"><span class="ver-10">商品<span class="goods-num">{{i+1}}</span></span></td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">商品名称</span></td>
+                                                                                                                                                               <td class="ver-top">
+                                                                                                                                                                             <div class="dropdown slide-down-select w130 mr10">　
+                                                                                                                                                                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown" {% if status == 2%}disabled="true"{% end %}>
+                                                                                                                                                                                                          <em class="pull-left c333 cur-goods-group" data-id="{{goods_item['group_id']}}">{{goods_item['group_name']}}</em>
+                                                                                                                                                                                                          <span class="caret pull-right no-margin-left rotate0"></span>
+                                                                                                                                                                                            </button>
+                                                                                                                                                                                            <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                                                                                                                                                                          <li class="presentation choose-goods-group" role="presentation">
+                                                                                                                                                                                                                        {% for key in goods_group_id_name %}
+                                                                                                                                                                                                                         <a class="item" href="javascript:;" data-id="{{key}}">{{goods_group_id_name[key]}}</a>
+                                                                                                                                                                                                                         {% end %}
+                                                                                                                                                                                                          </li>
+                                                                                                                                                                                            </ul>
+                                                                                                                                                                             </div>
+                                                                                                                                                                             <div class="dropdown slide-down-select w130 mr10">
+                                                                                                                                                                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn choose-goods-btn" type="button" data-toggle="dropdown" data-flag="1" {% if status == 2%}disabled="true"{% end %}>
+                                                                                                                                                                                                          <em class="pull-left c333 cur-goods" data-id="{{goods_item['fruit_id']}}">{{goods_item['fruit_name']}}</em>
+                                                                                                                                                                                                          <span class="caret pull-right no-margin-left rotate0"></span>
+                                                                                                                                                                                            </button>
+                                                                                                                                                                                            <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                                                                                                                                                                          <li class="presentation choose-goods" role="presentation" data-value="{{group_usable_fruit_dict}}">
+                                                                                                                                                                                                                   {% for j in range(len(group_usable_fruit_dict[0][str(goods_item['group_id'])])) %}
+                                                                                                                                                                                                                   {% set item_g = group_usable_fruit_dict[0][str(goods_item['group_id'])][j] %}
+                                                                                                                                                                                                                   <a class="item" href="javascript:;" data-id="{{item_g[0]}}">{{item_g[1]}}</a>
+                                                                                                                                                                                                                   {% end %}
+                                                                                                                                                                                                          </li>
+                                                                                                                                                                                            </ul>
+                                                                                                                                                                             </div>
+                                                                                                                                                               </td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>　　
+                                                                                                                                                               <td class="ver-top"><span class="ver-5 former-price" data-id="{{goods_item['former_price']}}">原价（单选）</span></td>
+                                                                                                                                                               <td class="ver-top">
+                                                                                                                                                                             <div class="choose-price send-day clearfix choose-charge-type" data-value="{{fruit_id_charge_type}}" data-flag="1">  
+                                                                                                                                                                             {% for j in range(len(goods_item['charge_type_list']))%}
+                                                                                                                                                                             {% set item_f = goods_item['charge_type_list'][j] %}
+                                                                                                                                                                             <button class="btn btn-default {% if item_f['charge_type_id'] == goods_item['charge_type_id'] %}active{%end%}" data-id="{{goods_item['storage_piece']}}"  charge_type_id="{{item_f['charge_type_id']}}" {% if item_f['charge_type_id'] != goods_item['charge_type_id'] and status == 2 %}disabled="true" {%end%}>{{item_f["charge_type_text"]}}</button>
+                                                                                                                                                                             {% end %}
+                                                                                                                                                                             </div>
+                                                                                                                                                               </td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">秒杀价</span></td>
+                                                                                                                                                               <td class="ver-top seckill-charge-price">
+                                                                                                                                                                             <input type="text" class="w130 seckill-price-input" {% if status == 2%}disabled="true" title="正在进行活动中的秒杀商品不能编辑秒杀价"{% end %} value="{{goods_item['cur_seckill_price']}}" /><span class="ml10 cur-charge-type">{{goods_item['cur_seckill_text']}}<span>
+                                                                                                                                                               </td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">剩余库存</span></td>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5 remain-store" data-id="{{goods_item['storage_piece']}}">{{goods_item['cur_remain_storage_piece_text']}}</span></td>
+                                                                                                                                                </tr>
+                                                                                                                                                <tr>
+                                                                                                                                                               <td class="ver-top"><span class="ver-5">活动库存</span></td>
+                                                                                                                                                               <td class="activity-store" activity-piece-value="{{goods_item['cur_activity_piece']}}"><input type="text" class="w130 activity-store-input" value="{{goods_item['cur_activity_piece']}}" data-id="{{goods_item['storage_piece']}}"/><span class="ml10 activity-store-charge-type" charge_type_id="{{goods_item['charge_type_id']}}">{{goods_item['cur_activity_piece_text']}}</span></td>
+                                                                                                                                                </tr>
+                                                                                                                                  </tbody>
+                                                                                                                    </table>
+                                                                                                     </div>
+                                                                                                      <div>　
+                                                                                                                    <a href="javascript:;" class="add-link {% if i < len(goods_data_list) - 1%} hidden {% end %} {% if status == 2%}hidden{% end %}" >+新建</a>
+                                                                                                                    <a href="javascript:;" class="delete-link {% if len(goods_data_list) == 1%}hidden{% end %} {% if status == 2%}hidden{% end %}">删除</a>
+                                                                                                     </div> 
+                                                                                       </td>
+                                                                        </tr>
+                                                                        {% end %}
+
+                                                          </tbody>    
+                                            </table>
+                            </div>
+               </div>
+
+               <div class="wrap-pop-btn wrap-edit-item">
+                             <a href="javascript:;" class="edit-ok-btn ok-btn ok-coupon" data-flag="on">确定</a>
+                             <a href="javascript:;" class="edit-cancel-btn cancel-btn cancel-edit-goods goback">取消</a>
+               </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="{{static_url('js/third/datepicker/WdatePicker.js')}}"></script>
+<script src="{{static_url('js/admin-marketing-seckill.js')}}"></script>
+{% end %}

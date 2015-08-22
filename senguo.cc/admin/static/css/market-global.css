@@ -31,7 +31,7 @@ div,p,span,ul,li{-webkit-user-select:none;}
 .center-block{display:block !important;margin:0 auto;}
 .clearfix{clear:both;}
 .btn{display:inline-block;padding:6px 12px;margin-bottom:0;font-size:14px;font-weight:400;line-height:1.42857143;text-align:center;white-space:nowrap;vertical-align:middle;cursor:pointer;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none;background-image:none;border:1px solid transparent;border-radius: 6px;}
-.hidden{display:none !important;visibility:hidden !important;}
+.hidden{display:none !important;}
 .show{display: block!important;}
 .clearfix:before{display: table;content: " ";}
 .clearfix:after{clear:both;}
@@ -232,6 +232,9 @@ button:focus{outline:0;}
 .rainshed{background:url('../svg/rainshed2@2x.png') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 43px;}
 .rainshed2{background:url('../svg/rainshed1@2x.png') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 43px;}
 .rainshed_green{background:url('../svg/rainshed_green@2x.png') repeat-x;height:45px;line-height:38px;width:100%;max-width:800px;background-size:20px 45px;overflow:hidden;z-index:100;}
+.rainshed_beauty{background:url('../svg/rainshed_beauty@2x.png') repeat-x;height:45px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 43px;}
+.rainshed_bingo{background:url('../svg/rainshed_bingo@2x.png') repeat-x;height:44px;line-height:42px;position:fixed;top:0;z-index:99;width:100%;max-width:800px;background-size:40px 44px;}
+
 
 .desaturate{filter:grayscale(100%);-webkit-filter:grayscale(100%);-moz-filter:grayscale(100%);-ms-filter:grayscale(100%);-o-filter:grayscale(100%);filter: url('../svg/saturate.svg#greyscale');filter: grayscale(100%);filter:gray;filter: grayscale(1)}
 

@@ -1,16 +1,23 @@
+var _search;
+var _action=6;
+var _finished=true;
+var _group_finished=true;
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();
     $(".wrap-notice-box").css("minHeight",height);
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
-    new Swiper('#swiper-container',{
+    var swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
         loop:true,
         grabCursor: true,
         pagination: '.pagination',
-        autoplay:"3000",
+        autoplay:"4000",
         autoplayDisableOnInteraction:false
     });
+    if($(".swiper-slide").size()==3){
+        swiper.stopAutoplay();
+    }
     var width = $("#swiper-container").width();
     var height = $(window).height();
     $(".groupt-list").height(height-86);
@@ -18,8 +25,14 @@ $(document).ready(function(){
     $('.groupt-list li').first().addClass('active');
 
     var link_search=$.getUrlParam("search");
+    var link_group=$.getUrlParam("group");
     var link_action=$.getUrlParam("action");
-    if(link_search != null){
+    if(link_group!= null){
+        window.dataObj.page=1;
+        _action=6;
+        var _group_id = Number(link_group);
+        goodsList(1,6,_group_id);
+    }else if(link_search != null){
         window.dataObj.page=1;
         window.dataObj.action=9;
         _search = link_search;
@@ -92,6 +105,7 @@ $(document).ready(function(){
     }
     
 }).on("click",".groupt-list li",function(){
+    _group_finished=false;
     var $this=$(this);
     $("#menu").removeClass("menu-active");
     var index =$this.index();
@@ -100,7 +114,11 @@ $(document).ready(function(){
     $('#classify').text(text);
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
-    $.scrollTo({endY:top,duration:500,callback:function(){}});
+    $.scrollTo({endY:top,duration:500,callback:function(){
+         setTimeout(function(){
+            _group_finished=true;
+        },500)
+    }});
     $('.list-box').animate({"left":"0"},100);
     $("#groupt-list").animate({"margin-left":"-75px","opacity":0},100);
 }).on('click','.to-add',function(){
@@ -151,9 +169,10 @@ $(document).ready(function(){
 }).on('click','.number-plus',function(){
     var $this=$(this);
     if($this.parents('.charge-item').find('.to-add').hasClass('hidden')){
-       var parent=$this.parents('.goods-list-item');
+        var parent=$this.parents('.goods-list-item');
         var num=Int($this.siblings('.number-input').val().trim());
         var storage=parseFloat(parent.attr('data-storage'));
+        var unit_num=parseFloat(parent.find('.num_box').siblings('.charge-type').find('.num').text());
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
         var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
@@ -164,7 +183,7 @@ $(document).ready(function(){
             $this.siblings('.number-input').val(1);
             return noticeBox('商品数量只能为整数！',$this);
         }
-        if(storage-num<0){
+        if(storage-unit_num<0){
             return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this);
         }else if(storage-num==0){
             $this.siblings('.number-change').find('.number-input').val(0);
@@ -188,10 +207,6 @@ $(document).ready(function(){
     var link=$(this).attr('href');
     addCart(link);
 });
-var _search;
-var _action=6;
-var _finished=true;
-var _search;
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(_group_id){
     $(window).scroll(function(){
@@ -202,7 +217,7 @@ var scrollLoading=function(_group_id){
         var nomore=$('.goods-list-'+_group_id).attr("data-nomore");
         var page=parseInt($('.goods-list-'+_group_id).attr("data-page"));
         totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
-        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false') {
+        if(_finished&&(main.height()-range) <= totalheight  && nomore=='false'&&_group_finished==true) {
             _finished=false;
             page = page+1;
             $('.goods-list-'+_group_id).attr("data-page",page);
@@ -272,7 +287,7 @@ var goodsList=function(page,action,_group_id,type){
 };
 var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}">'+
                     '<a href="{{link}}">'+
-                    '<img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
+                    '<img src="/static/images/holder_fruit.png" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
@@ -286,9 +301,9 @@ var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}">'+
                     '{{/if}}'+
                     '</a>'+
                 '</li>';
-var goods_item2='<li class="{{code}} goods-list-item {{if storage<=0 }}desaturate{{/if}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
-                '<a href="{{link}}" class="_add_cart"><img src="/static/images/holder_fruit.jpg" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
-                '<div class="fruit-right charge-item"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
+var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
+                '<a href="{{link}}" class="_add_cart {{if storage<=0 }}desaturate{{/if}}"><img src="/static/images/holder_fruit.png" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
+                '<div class="fruit-right charge-item {{if storage<=0 }}desaturate{{/if}}"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
                         '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
@@ -408,7 +423,7 @@ function goodsNum(target,action){
             }
             num++;
             item.val(num);
-            storage=storage-change_num;
+            storage=storage-change_num*num;
             parent.attr({'data-storage':storage});
         }
     }
@@ -420,7 +435,7 @@ function goodsNum(target,action){
             num--;
             item.val(num);
             //console.log(change_num);
-            if(num<=0){
+            if(num<0){
                 storage = change_num;
             }else{
                 storage=storage+change_num;  

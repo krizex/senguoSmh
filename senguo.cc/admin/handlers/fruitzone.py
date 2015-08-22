@@ -74,7 +74,7 @@ class ShopList(FruitzoneBaseHandler):
 	@unblock
 	@FruitzoneBaseHandler.check_arguments("action",'province?:int')
 	def post(self):
-		print(self.args)
+		# print("[ShopList]self.args:",self.args)
 		action = self.args["action"]
 		province = self.args.get('province',None)
 		province = int(province) if province else None
@@ -85,7 +85,7 @@ class ShopList(FruitzoneBaseHandler):
 			return self.handle_search(province)
 		elif action == "qsearch":
 			return self.handle_qsearch(province)
-		elif action =="shop":
+		elif action == "shop":
 			return self.handle_shop(province)
 		elif action == 'admin_shop':
 			return self.handle_admin_shop(province)
@@ -158,9 +158,9 @@ class ShopList(FruitzoneBaseHandler):
 		_page_count = 15
 		page = self.args["page"] - 1
 		# page = 1
-		print(self.args)
+		# print(self.args)
 		nomore = False
-		print(province)
+		# print(province)
 		if province:
 			q = self.session.query(models.Shop).filter_by(shop_province=province)
 		else:
@@ -168,17 +168,17 @@ class ShopList(FruitzoneBaseHandler):
 		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).filter(
 			models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,
 			models.Shop.shop_code !='not set',models.Shop.status !=0 )
-		print(q.count(),'店铺总数',page)
+		# print(q.count(),'店铺总数',page)
 		shops = []
 
 		if "service_area" in self.args:
-			print('service service_area')
+			# print('service service_area')
 			service_area = int(self.args['service_area'])
 			if service_area > 0:
 				q = q.filter(models.Shop.shop_service_area.op("&")(self.args["service_area"])>0)
 			# q = q.filter_by(shop_service_area = service_area)
 		if "city" in self.args:
-			print('city')
+			# print('city')
 			q = q.filter_by(shop_city=self.args["city"])
 			shop_count = q.count()
 			# print('shop_count',shop_count)
@@ -187,20 +187,19 @@ class ShopList(FruitzoneBaseHandler):
 			q = q.offset(page * _page_count).limit(_page_count).all()
 
 		elif "province" in self.args:
-			print('province')
 			# print('province')
-			print(q.count(),'before')
+			# print('province')
+			# print(q.count(),'before')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
-			print(shop_count,'after')
+			# print(shop_count,'after')
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
 
-
 		shops = self.get_data(q)
-		print(len(shops),'shoplist len')
+		# print(len(shops),'shoplist len')
 
-		#当限制为具体某省店铺列表时，默认按距离排序
+		# 当限制为具体某省店铺列表时，默认按距离排序
 		lat1 = None
 		lon1 = None
 		if self.args["lat"] != '[]':
@@ -219,17 +218,18 @@ class ShopList(FruitzoneBaseHandler):
 
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
-			print(len(shops),'key_word')
+			# print(len(shops),'key_word')
 			
 			for shop in shops:
 				lat2 = shop['lat']
 				lon2 = shop['lon']
 				if lat1 and lon1 and lat2 and lon2:
+
 					#当省份不在过滤条件中时，计算全国店铺的距离计算量巨大，且没有实际意义,故此时将店铺距离设为一个默认值
-					if 'province' in self.args:          
-						shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
-					else:
-						shop['distance'] = 100
+					#if 'province' in self.args:          
+					shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+					#else:
+					#	shop['distance'] = 100
 				else:
 					shop['distance'] = 9999999
 			if key_word == 1: #商品最多
@@ -249,7 +249,7 @@ class ShopList(FruitzoneBaseHandler):
 		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments('id:int')
-	def handle_admin_shop(self):
+	def handle_admin_shop(self,province):
 		admin_id = int(self.args['id'])
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
 		if not shop_admin:
@@ -1019,7 +1019,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 支付成功后  生成一条余额支付记录
 		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop.shop_name)
 		self.session.add(balance_history)
 		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()
@@ -1180,7 +1180,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		name = self.current_user.accountinfo.nickname
 		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
 			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province)
+			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province,shop_name=shop.shop_name)
 		self.session.add(balance_history)
 		# print("[AliCharge]balance_history:",balance_history)
 		self.session.commit()

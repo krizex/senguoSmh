@@ -132,7 +132,7 @@ class GlobalBaseHandler(BaseHandler):
 		now_date=int(time.time())
 		q=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop_id,customer_id=current_customer_id).with_lockmode('update').all()
 		for x in q:
-			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id,closed=0).with_lockmode('update').first()
+			qq=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_id=x.coupon_id).with_lockmode('update').first()
 			if  qq!=None:
 				if now_date>qq.to_get_date:
 					qq.closed=1
@@ -143,6 +143,7 @@ class GlobalBaseHandler(BaseHandler):
 		self.session.commit()
 		return None
 
+<<<<<<< HEAD
 	# 更新店铺用户的限时折扣信息
 	def updatediscountbase(self,shop_id,customer_id):
 		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
@@ -175,6 +176,34 @@ class GlobalBaseHandler(BaseHandler):
 			for y in qq:
 				if y.status!=3:
 					y.update(self.session,status=status)
+=======
+	# 全局实时更新店铺秒杀活动基类方法：
+	def update_seckill_base(self,shop_id):
+		current_shop_id = shop_id
+		notstart_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = 1).with_lockmode('update').all()
+		for item in notstart_list:
+			now_time = int(time.time())
+			if item.start_time <= now_time and item.end_time > now_time:
+				item.activity_status = 2
+				self.session.flush()
+			elif item.start_time <= now_time and item.end_time <= now_time:
+				item.activity_status = 0
+				self.session.flush()
+		self.session.commit()
+
+		killing_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = 2).all()
+		for item in killing_list:
+			now_time = int(time.time())
+			if item.end_time <= now_time:
+				item.activity_status = 0
+				activity_id = item.id
+				sec_fruit_list = self.session.query(models.Fruit).join(models.SeckillGoods,models.SeckillGoods.fruit_id == models.Fruit.id).\
+							          filter(models.SeckillGoods.activity_id == activity_id).with_lockmode('update').all()
+				for sec_fruit in sec_fruit_list:
+					sec_fruit.activity_status = 0
+					sec_fruit.seckill_charge_type = 0
+				self.session.flush()
+>>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 		self.session.commit()
 		return None
 
@@ -356,6 +385,10 @@ class GlobalBaseHandler(BaseHandler):
 			name ='筐'
 		elif unit == 11 :
 			name ='包'
+		elif unit == 12:
+			name ='今天价'
+		elif unit == 13:
+			name ='明天价'
 		else:
 			name =''
 		return name
@@ -397,8 +430,10 @@ class GlobalBaseHandler(BaseHandler):
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
+					unit_num = int(charge.unit_num) if charge.unit_num else 0
+					select_num = int(charge.select_num) if charge.select_num else 0
 					charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
-						'num':charge.num,'unit_num':charge.unit_num,'market_price':market_price,'select_num':charge.select_num})
+						'num':charge.num,'unit_num':unit_num,'market_price':market_price,'select_num':select_num})
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
@@ -536,7 +571,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			para_str = "?next="+tornado.escape.url_escape(next_url)
 		else:
 			para_str = ""
-		print('[WxAuth]login in get_weixin_oauth_link2, next_url:',self,next_url)
+		# print('[WxAuth]login in get_weixin_oauth_link2, next_url:',self,next_url)
 
 		if self.is_wexin_browser():
 			if para_str: para_str += "&"
@@ -843,18 +878,18 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			elif wireless_type == 1:
 				_action = "fyprint"
 			self.autoPrint(session,order.id,order.shop,_action)
-		
 
 		# 给管理员app端推送订单生成提示
-		_jpush = jpush.JPush(app_key, master_secret)
-		push = _jpush.create_push()
-		push = _jpush.create_push()
 		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
-		push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
-		push.message=jpush.message(msg_content="http://test123.senguo.cc/madmin/orderDetail/"+order.num)
-		push.notification = jpush.notification(alert="您收到了一条新订单，点击查看详情")
-		push.platform = jpush.platform("android")
-		push.send()
+		if devices:
+			_jpush = jpush.JPush(app_key, master_secret)
+			push = _jpush.create_push()
+			push = _jpush.create_push()
+			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
+			push.notification = jpush.notification(alert="您收到了一条新订单，点击查看详情")
+			push.platform = jpush.platform("android")
+			push.send()
 
 	# 发送订单完成模版消息给用户
 	@classmethod
@@ -884,7 +919,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 发送订单取消模版消息给管理员
 	@classmethod
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
-		print(order)
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
 		order_num = order.num
@@ -1137,14 +1171,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 6,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 6,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		if order.pay_type == 3:  #在线支付
 			order.shop.available_balance += totalprice
 			balance_history = models.BalanceHistory(customer_id = customer_id , shop_id = shop_id,balance_record = "可提现额度入账：订单"+order.num+"完成",
 				name = name,balance_value = totalprice,shop_totalPrice=order.shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,
-				available_balance=order.shop.available_balance,balance_type = 7,shop_province=shop.shop_province)
+				available_balance=order.shop.available_balance,balance_type = 7,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
 		#增 与订单总额相等的积分
@@ -1236,7 +1270,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 	def get_shop_count(self):
 		try:
 			shop_count = self.session.query(models.Shop).filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set',models.Shop.status !=0).count()
+				models.Shop.shop_code !='not set').count()
 		except:
 			return self.send_fail("[FruitzoneBaseHandler]get_shop_count: shop count error")
 		return shop_count
@@ -1259,7 +1293,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		from sqlalchemy import func
 		try:
 			shop_count = self.session.query(models.Shop.shop_province,func.count(models.Shop.shop_province)).\
-			filter(models.Shop.shop_code != 'not set',models.Shop.status!=0).group_by(models.Shop.shop_province).all()
+			filter(models.Shop.shop_code != 'not set').group_by(models.Shop.shop_province).all()
 		except:
 			return self.send_fail('[FruitzoneBaseHandler]get_shop_group: group error')
 		# print("[FruitzoneBaseHandler]get_shop_group: type(shop_count):",type(shop_count))
@@ -1390,10 +1424,19 @@ class AdminBaseHandler(_AccountBaseHandler):
 		current_shop_id=self.get_secure_cookie("shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
+<<<<<<< HEAD
 	# 刷新数据库的限时折扣信息
 	def updatediscount(self,customer_id):
 		current_shop_id=self.get_secure_cookie("shop_id")
 		self.updatediscountbase(current_shop_id,customer_id)
+=======
+	# 刷新数据库店铺秒杀活动信息
+	def update_seckill(self):
+		current_shop_id = self.get_secure_cookie("shop_id")
+		current_shop_id = int(current_shop_id.decode())
+		self.update_seckill_base(current_shop_id)
+
+>>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 	# 获取订单
 	def getOrder(self,orders):
 		data = []
@@ -1603,6 +1646,55 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
 		return self._shop_code
 
+	@property
+	def shop_marketing(self):
+		if hasattr(self, "_shop_marketing"):
+			return self._shop_marketing
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_marketing = shop.marketing.confess_active+shop.marketing.coupon_active
+		else:
+			self._shop_marketing = None
+
+		return self._shop_marketing
+
+	@property
+	def shop_auth(self):
+		if hasattr(self, "_shop_auth"):
+			return self._shop_auth
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_auth = shop.shop_auth
+		else:
+			self._shop_auth = None
+
+		return self._shop_auth
+
+	@property
+	def shop_tpl(self):
+		if hasattr(self, "_shop_tpl"):
+			return self._shop_tpl
+
+		#woody
+		#3.23
+		shop_id = self.get_cookie("market_shop_id")
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if shop:
+			self._shop_tpl = shop.shop_tpl
+		else:
+			self._shop_tpl = None
+
+		return self._shop_tpl
+
+
 	def get_phone(self,customer_id):
 		try:
 			account_info  = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -1650,6 +1742,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		tpl_path = ""
 		if tpl_id == 1:
 			tpl_path = "beauty"
+		elif tpl_id == 2:
+			tpl_path = "bingo"
 		else:
 			tpl_path = "customer"
 		return tpl_path
@@ -1658,10 +1752,17 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		current_shop_id= self.get_cookie("market_shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
+<<<<<<< HEAD
 	# 刷新数据库限时折扣信息
 	def updatediscount(self,customer_id):
 		current_shop_id= self.get_cookie("market_shop_id") 
 		self.updatediscountbase(current_shop_id,customer_id)
+=======
+	# #刷新数据库店铺秒杀活动信息
+	def update_seckill(self):
+		current_shop_id = self.get_cookie("market_shop_id")
+		self.update_seckill_base(current_shop_id)
+>>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 
 
 import urllib.request
@@ -1756,7 +1857,6 @@ class WxOauth2:
 			print("[WxOauth2]get_userinfo: Oauth2 Error, get userinfo failed")
 			# traceback.print_exc()
 			return None
-
 		return userinfo_data
 
 	# 获取用户微信 OpenID
@@ -1767,7 +1867,10 @@ class WxOauth2:
 		if mode == "kf": # 从PC来的登录请求
 			token_url = cls.token_url.format(
 				code=code, appid=KF_APPID, appsecret=KF_APPSECRET)
-		else :
+		elif mode == "iOS": # 从iOS来的登录请求
+			token_url = cls.token_url.format(
+				code=code, appid=iOS_APPID, appsecret=iOS_APPSECRET)
+		else:
 			token_url = cls.token_url.format(
 				code=code, appid=MP_APPID, appsecret=MP_APPSECRET)
 		# 获取access_token
@@ -2051,7 +2154,6 @@ class WxOauth2:
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
-		# print(touser,order_num,order_sendtime,shop_phone)
 		postdata = {
 			'touser':touser,
 			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
