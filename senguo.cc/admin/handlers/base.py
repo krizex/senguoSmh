@@ -143,6 +143,41 @@ class GlobalBaseHandler(BaseHandler):
 		self.session.commit()
 		return None
 
+	# 更新店铺用户的限时折扣信息
+	def updatediscountbase(self,shop_id,customer_id):
+		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
+		now_date=int(time.time())
+		status=0
+		for x in q:
+			if x.discount_way==0:
+				if now_date<x.start_date:
+					status=0
+				elif now_date<x.end_date:
+					status=1
+				else:
+					status=2
+			else:
+				now_weekday=datetime.datetime.now().weekday()
+				if now_weekday==0:
+					now_weekday==7
+				if now_weekday in eval(x.weeks):
+					now_time=int(time.time()%(24*3600))+8*3600
+					if now_time<x.f_time:
+						status=0
+					elif now_time<x.t_time:
+						status=1
+					else:
+						status=2
+				else:
+					status=0
+			x.update(self.session,status=status)
+			qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
+			for y in qq:
+				if y.status!=3:
+					y.update(self.session,status=status)
+		self.session.commit()
+		return None
+
 	# 数字代号转换为文字描述
 	def code_to_text(self, column_name, code):
 		text = ""
@@ -1355,6 +1390,10 @@ class AdminBaseHandler(_AccountBaseHandler):
 		current_shop_id=self.get_secure_cookie("shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
+	# 刷新数据库的限时折扣信息
+	def updatediscount(self,customer_id):
+		current_shop_id=self.get_secure_cookie("shop_id")
+		self.updatediscountbase(current_shop_id,customer_id)
 	# 获取订单
 	def getOrder(self,orders):
 		data = []
@@ -1619,6 +1658,10 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		current_shop_id= self.get_cookie("market_shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
+	# 刷新数据库限时折扣信息
+	def updatediscount(self,customer_id):
+		current_shop_id= self.get_cookie("market_shop_id") 
+		self.updatediscountbase(current_shop_id,customer_id)
 
 
 import urllib.request

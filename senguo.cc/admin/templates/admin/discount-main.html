@@ -211,7 +211,7 @@
             </tr>
             {%else%}
             {% for discount in output_data[3] %}
-                <tr class="detail-tr " data-id="{{discount['discount_id']}}">
+                <tr class="detail-tr dis-coupon" data-id="{{discount['discount_id']}}">
                     <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>

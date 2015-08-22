@@ -39,23 +39,24 @@ $(document).ready(function () {
         $.postJson(url, args,
             function (res) {
                 if (res.success) {
-                    if(res.discount_active_cm==1){
-                        $("#discount_hidden").removeClass("hidden");
-                    }
-                    else{
-                         $("#discount_hidden").addClass("hidden");
-                    }
-                    $this.attr("data-flag", "on");
-                    if (res.discount_active_cm==0) {
-                        $this.attr({'data-status': 0}).addClass('stop-mode').removeClass("work-mode");
-                        $('.tit').text('已停用')
-                        $(".discount-show-txt").children("span").html('停用');
-                    }
-                    else{
-                        $this.attr({'data-status': 1}).addClass('work-mode').removeClass("stop-mode");
-                        $(".discount-show-txt").children("span").html('启用');
-                        $('.tit').text('已启用')
-                    }
+                    window.location.href="/admin/discount?action=discount";
+                    // if(res.discount_active_cm==1){
+                    //     $("#discount_hidden").removeClass("hidden");
+                    // }
+                    // else{
+                    //      $("#discount_hidden").addClass("hidden");
+                    // }
+                    // $this.attr("data-flag", "on");
+                    // if (res.discount_active_cm==0) {
+                    //     $this.attr({'data-status': 0}).addClass('stop-mode').removeClass("work-mode");
+                    //     $('.tit').text('已停用')
+                    //     $(".discount-show-txt").children("span").html('停用');
+                    // }
+                    // else{
+                    //     $this.attr({'data-status': 1}).addClass('work-mode').removeClass("stop-mode");
+                    //     $(".discount-show-txt").children("span").html('启用');
+                    //     $('.tit').text('已启用')
+                    // }
                 }
                 else {
                     $this.attr("data-flag", "off");
@@ -70,21 +71,21 @@ $(document).ready(function () {
 
 
     }
-}).on('click', '.vv', function(e){
+}).on('click', '.close_one', function(e){
         e.stopPropagation();
-    if(confirm('你确定要关闭该优惠券吗？')){
+    if(confirm('你确定要关闭该批限时折扣吗？')){
     var $this = $(this);
-    var coupon_id = $(this).attr("data-id");
+    var discount_id = $(this).attr("data-id");
     var url = '';
     var action = "close_one";
     var args = {
-        action: action,coupon_id:coupon_id
+        action: action,discount_id:discount_id
     };
     $.postJson(url, args,
         function (res) {
             if (res.success) {
                 $this.closest('tr').addClass('dis-coupon');
-                Tip("成功关闭优惠券!");
+                Tip("成功关闭限时折扣!");
             }
             else {
                 Tip(res.error_text);
@@ -460,10 +461,15 @@ function getGoods(index,$obj){
     $obj.empty();
     var goods = goods_list[index];
     var lis = '';
+    // 默认的所有商品
+    // lis+='<li class="presentation" role="presentation"><a class="item" title="所有商品" href="javascript:;" data-id="-1">所有商品</a></li>';
     for(var i=0; i<goods.length; i++){
         lis+='<li class="presentation" role="presentation"><a class="item" title="'+goods[i].goods_name+'" href="javascript:;" data-id="'+goods[i].goods_id+'">'+goods[i].goods_name+'</a></li>';
     }
     $obj.append(lis);
+    $('.use_goods').attr("data-id",-1).text('所有商品');
+    $('.charge-type').addClass("hidden");
+    $('.charge-type button').remove();
 }
 function getCharge(index1,index2,$obj){
     $obj.empty();

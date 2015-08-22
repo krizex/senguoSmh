@@ -27,7 +27,7 @@
                 <tr>
                     <td class="">折扣时间</td>
                     <td>
-                        <a href="javascript:;" class="radio {%if common_info["edit_status"]!=1%}forbidden-btn{%end%} {%if common_info["discount_way"]==0 %}radio-active{%end%} open-single" data-id="0"></a>
+                        <a href="javascript:;" class="radio {%if common_info["edit_status"]!=0%}forbidden-btn{%end%} {%if common_info["discount_way"]==0 %}radio-active{%end%} open-single" data-id="0"></a>
                     </td>
                     <td><span>单次</span></td>
                 </tr>
@@ -45,7 +45,7 @@
                     <td>开始时间</td>
                     <td>
                         <div class="">
-                             <input type="text" class="Wdate start_date {%if common_info["edit_status"]!=1%}disabled{%end%}" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'}) " value="{{common_info["start_date"]}}" {%if common_info["edit_status"]!=1%}disabled="disabled"{%end%}>
+                             <input type="text" class="Wdate start_date {%if common_info["edit_status"]!=0%}disabled{%end%}" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'}) " value="{{common_info["start_date"]}}" {%if common_info["edit_status"]!=0%}disabled="disabled"{%end%}>
                         </div>
                     </td>
                 </tr>
@@ -68,7 +68,7 @@
                 <tr>
                     <td class=""></td>
                     <td>
-                        <a href="javascript:;" class="radio open-week {%if common_info["edit_status"]!=1%}forbidden-btn{%end%} {%if common_info["discount_way"]==1 %}radio-active{%end%}" data-id="1"></a>
+                        <a href="javascript:;" class="radio open-week {%if common_info["edit_status"]!=0%}forbidden-btn{%end%} {%if common_info["discount_way"]==1 %}radio-active{%end%}" data-id="1"></a>
                     </td>
                     <td><span>开启周期（多选）</span></td>
                 </tr>
@@ -84,7 +84,7 @@
                     <td class="change-week ">
                     {%set weeks=["","周一","周二","周三","周四","周五","周六","周日"]%}
                     {%for x in range(1,8)%}
-                        <a href="javascript:;" class=" week-btn  mt6 mr10 {%if common_info["edit_status"]!=1%}forbidden-btn{%end%} {%if x in common_info["weeks"]%}back_green{%else%}{%if common_info["edit_status"]!=1%}back_gray1{%end%}{%end%}" week-id={{x}}>{{weeks[x]}}</a>
+                        <a href="javascript:;" class=" week-btn  mt6 mr10 {%if common_info["edit_status"]!=0%}forbidden-btn{%end%} {%if x in common_info["weeks"]%}back_green{%else%}{%if common_info["edit_status"]!=0%}back_gray1{%end%}{%end%}" week-id={{x}}>{{weeks[x]}}</a>
                     {%end%}
                     </td>
                 </thead>
@@ -102,7 +102,7 @@
                     <td>
                         <div class=""> 
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=0%}disabled{%end%}" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 f-hour" data-id={{common_info["f_hour"]}}>{{common_info["f_hour"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
@@ -115,7 +115,7 @@
                                 </ul>
                             </div><span class="text-below">时</span>
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=0%}disabled{%end%}" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 f-minute" data-id={{common_info["f_minute"]}}>{{common_info["f_minute"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
@@ -128,7 +128,7 @@
                                 </ul>
                             </div><span class="text-below">分</span>
                              <div class="dropdown slide-down-select w130 mr10 time-btn-width">
-                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=0%}disabled{%end%}" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 f-second" data-id={{common_info["f_second"]}}>{{common_info["f_second"]}}</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
@@ -211,7 +211,7 @@
                                     <div class="iblock">
                                         <span class="mr10 ver7">商品名称</span>
                                         <div class="dropdown slide-down-select w130 mr10 use_group">
-                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%}" type="button" data-toggle="dropdown">
+                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=0%}disabled{%end%}" type="button" data-toggle="dropdown">
                                                 <em class="pull-left c333 use_goods_group" data-id={{data["use_goods_group"]}}>{{data["use_goods_group_text"]}}</em>
                                                 <span class="caret pull-right no-margin-left rotate0"></span>
                                             </button>
@@ -224,7 +224,7 @@
                                             </ul>
                                         </div>
                                         <div class="dropdown slide-down-select w130 ">
-                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=1%}disabled{%end%} " type="button" data-toggle="dropdown">
+                                            <button class="btn btn-default dropdown-toggle area height25 slide-btn {%if common_info["edit_status"]!=0%}disabled{%end%} " type="button" data-toggle="dropdown">
                                                 <em class="pull-left c333 use_goods" data-id={{data["use_goods"]}}>{{data["use_goods_text"]}}</em>
                                                 <span class="caret pull-right no-margin-left rotate0"></span>
                                             </button>
@@ -254,7 +254,7 @@
                             </tr>
                             <tr class="no_border">
                                 <td>
-                                   活动折扣<input type="text" class="discount_rate {%if common_info["edit_status"]!=1%}disabled{%end%}" value="{{data["discount_rate"]}}" {%if common_info["edit_status"]!=1%}disabled="disabled"{%end%}><span>折</span>
+                                   活动折扣<input type="text" class="discount_rate {%if common_info["edit_status"]!=0%}disabled{%end%}" value="{{data["discount_rate"]}}" {%if common_info["edit_status"]!=0%}disabled="disabled"{%end%}><span>折</span>
                                 </td>
                             </tr>
                         </table>

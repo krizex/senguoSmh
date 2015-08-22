@@ -116,7 +116,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .text_red{color: #ff6666;}
 .text_green{color: #52b43f;}
 .text_gray{color: #8d8d8d}
-.back_gray1{background: #ccc}
+.back_gray1{background: #ccc;color: #000}
 .discount_delete{margin-left: 420px;}
 .wrap-discounttb{background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;}
 .discount-detail{width: 700px;margin-left: 100px;}
