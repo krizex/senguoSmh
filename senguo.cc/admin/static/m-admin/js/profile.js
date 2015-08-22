@@ -15,8 +15,10 @@ $(document).ready(function(){
     }else if(status==3){
         $("#shop_status").addClass("resting");
     }
-}).on("click","#shop_info",function(){
-    window.location.href="/madmin/shopinfo";
+}).on("click","#shop_info",function(e){
+    if($(e.target).closest(".shop-link").size()==0){
+        window.location.href="/madmin/shopinfo";
+    }  
 }).on("click",".tab-bm-list li",function(){
     var index = $(this).index();
     $(".tab-bm-list li").removeClass("active").eq(index).addClass("active");
