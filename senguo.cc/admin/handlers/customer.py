@@ -57,16 +57,11 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
-<<<<<<< HEAD
-			user_type=int(self.args["user_type"])
-			jpush_id=self.args["jpush_id"]
-=======
 			try:
 				user_type=int(self.args["user_type"])
 				jpush_id=self.args["jpush_id"]
 			except:
 				jpush_id=None
->>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 			if jpush_id:
 				q=self.session.query(models.Jpushinfo).filter_by(user_type=user_type,user_id=self.current_user.id).first()
 				if q:

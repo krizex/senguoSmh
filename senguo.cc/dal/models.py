@@ -1929,7 +1929,6 @@ class Jpushinfo(MapBase, _CommonApi):
 	user_type=Column(Integer,nullable=False)  #0  admin 1 customer
 	jpush_id=Column(String(128),nullable=False)
 
-<<<<<<< HEAD
 
 # 折扣商品
 class DiscountShopGroup(MapBase, _CommonApi):
@@ -1962,7 +1961,7 @@ class DiscountShop(MapBase, _CommonApi):
 	incart_num=Column(Integer) 
 	ordered_num=Column(Integer)
 	status=Column(Integer) # ０：未开始　　１：进行中　２：衣结束　　３：已停用
-=======
+
 # 秒杀活动表
 class SeckillActivity(MapBase, _CommonApi):
 	__tablename__='seckill_activity'
@@ -2003,4 +2002,3 @@ class CustomerSeckillGoods(MapBase, _CommonApi):
 	shop_id = Column(Integer,ForeignKey(Shop.id),nullable=False)
 	seckill_goods_id = Column(Integer,ForeignKey(SeckillGoods.id),nullable=False)
 	status = Column(TINYINT,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
->>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
