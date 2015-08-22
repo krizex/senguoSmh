@@ -105,7 +105,7 @@ class Access(CustomerBaseHandler):
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
-			return self.send_fail(error_text = '用户不存在或密码不正确 ')
+			return self.send_fail(error_text = '用户不存在或密码不正确')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		if jpush_id:
 			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id,user_type=user_type).with_lockmode('update').first()
