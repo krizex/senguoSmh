@@ -195,7 +195,7 @@ $(document).ready(function(){
     var type=large_box.attr('data-type');
     var id=large_box.attr('data-id');
     great(type,id);
-}).on('click','.to-add,.seckill-goods',function(){
+}).on('click','.to-add',function(){
     //首次添加商品
     var $this=$(this);
     var parent=$this.parents('.goods-list-item');
@@ -238,14 +238,13 @@ $(document).ready(function(){
             SetCookie('cart_count',window.dataObj.cart_count);
             $this.removeClass('add_cart_num');
         }
-       
     }
     else {return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
     parent.attr({'data-storage':storage-change_num});
-    if($(this).hasClass("seckill-goods")){
-        $(this).addClass("hidden");
-        $(this).next(".seckill-btn-yes").removeClass("hidden");
-    }
+}).on("click",".seckill-goods",function(){//秒杀
+    $(this).addClass("hidden");
+    $(this).next(".seckill-btn-yes").removeClass("hidden");
+    addCart(0);
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -341,6 +340,7 @@ var goodsList=function(page,action,_group_id){
         });
         var initData=function(data){
             var data=data;
+            console.log(data);
             for(var key in data){
                 $('.classify-'+data[key]['group_id']).removeClass('hidden');
                 $('.goods-list-'+data[key]['group_id']).attr("data-nomore",nomore);
@@ -362,32 +362,37 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                             '<a href="javascript:;" class="check-lg-img">'+
                                 '<img src="/static/images/holder.png" class="img lazy_img" data-original="{{ori_img}}">'+
                                 '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
-                                '<span class="status-goods status-discount"></span>'+
+                                '<span class="status-goods {{if is_activity==1}}status-seckill{{else if is_activity==2}}status-discount{{else}}hidden{{/if}}"></span>'+
                             '</a>'+
                         '</div>'+
                         '<div class="goods-info pull-left">'+
                             '<p class="clearfix">'+
                                 '<span class="pull-left color fruit-name font14">{{name}}</span>'+
-                                '<span class="pull-right text-grey sale font12 hidden">销量: <span class="color number">{{saled}}</span></span>'+
-                                '<span class="pull-right text-grey sale font12">库存: <span class="color number">{{saled}}</span>份</span>'+
+                                '<span class="pull-right text-grey sale font12 {{if is_activity==1 }}hidden{{/if}}">销量: <span class="color number">{{saled}}</span></span>'+
+                                '<span class="pull-right text-grey sale font12 {{if is_activity!=1 }}hidden{{/if}}">库存: <span class="color number">{{activity_piece}}</span>份</span>'+
                             '</p>'+
                             '<p class="great-number font12">'+
-                                '<em class="bg_change heart {{heart}} hidden" data-id="{{favour}}"></em>'+
-                                '<span class="great hidden">{{favour}}</span>'+
-                                '<span class="">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
+                                '<em class="bg_change heart {{heart}} {{if is_activity==1 }}hidden{{/if}}" data-id="{{favour}}"></em>'+
+                                '<span class="great {{if is_activity==1 }}hidden{{/if}}">{{favour}}</span>'+
+                                '<span class="{{if is_activity!=1 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
+                                '{{if is_activity==1 }}'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}">'+
+                                    '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
+                                    '<span class="price-bo">{{charge_type_text}}</span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
+                                    '</span>'+
+                                    '<span class="forbid_click pull-right num_box wrap-seckill-price">'+
+                                        '<span class="seckill-btn seckill-goods add_cart_num">抢!</span>'+
+                                        '<span class="seckill-btn seckill-btn-yes hidden">已抢</span>'+
+                                    '</span>'+
+                                '</li>'+
+                                '{{/if}}'+
                                 '{{each charge_types as key}}'+
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow={{key["allow_num"]}}>'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                         '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
                                     '</span>'+
-                                    '{{if name=="腰果"}}'+
-                                    '<span class="forbid_click pull-right num_box">'+
-                                        '<span class="seckill-btn seckill-goods add_cart_num">抢!</span>'+
-                                        '<span class="seckill-btn seckill-btn-yes hidden">已抢</span>'+
-                                    '</span>'+
-                                    '{{else}}'+
                                     '<span class="forbid_click pull-right num_box">'+
                                         '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
                                         '<span class="pull-right p0 number-change hidden forbid_click">'+
@@ -396,7 +401,6 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                                         '<button class="minus-plus pull-right number-minus bg_change"></button>'+
                                         '</span>'+
                                     '</span>'+
-                                    '{{/if}}'+
                                 '</li>'+
                                 '{{/each}}'+
                             '</ul>'+
@@ -423,10 +427,10 @@ var fruitItem=function(box,fruits,type){
     var limit_num=fruits['limit_num'];
     var detail_no=fruits['detail_no'];
     var is_activity = fruits['is_activity'];
-    var charge_type_text = fruits['charge_type_text'];
     var price_dif = fruits['price_dif'];
     var activity_piece = fruits['activity_piece'];//库存
-    var charge_type_text = fruits['charge_type_text'];//库存
+    var charge_type_text = fruits['charge_type_text'];
+    var charge_type_id = fruits['charge_type_id'];
     var heart='';
     var sold_out='';
     var ori_img='';
@@ -440,7 +444,7 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-        ori_img=img_url+'?imageView2/1/w/170/h/170';
+        ori_img=img_url+'?imageView2/1/w/120/h/120';
     }
     if(tag==2){
         tag='limit_tag';
@@ -467,20 +471,22 @@ var fruitItem=function(box,fruits,type){
         tag:tag,
         charge_types:charge_types,
         sold_out:sold_out,
-        ori_img:ori_img
+        ori_img:ori_img,
+        is_activity:is_activity,
+        price_dif:price_dif,
+        activity_piece:activity_piece,//库存
+        charge_type_text:charge_type_text,
+        charge_type_id:charge_type_id
     });
     var $obj = $(html);
     box.append($obj);
-    if(name=="腰果"){
-        countTime($obj);
-    }
-    if(name=="好吃的荔枝"){
+    if(is_activity==1){
         countTime($obj);
     }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 function countTime($obj){
-    var time_end = new Date("2015-08-21 11:21:00").getTime();
+    var time_end = new Date("2015-08-25 11:21:00").getTime();
     var time_now = new Date().getTime();
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
@@ -511,7 +517,7 @@ function countTime($obj){
             countTime($obj);
         },1000);
     }else{
-        noticeBox("结束了");
+        //noticeBox("结束了");
 
     }
 }
@@ -650,7 +656,9 @@ function addCart(link){
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                window.location.href=link;
+                if(link!=0){
+                    window.location.href=link;
+                }
             }
             else return noticeBox(res.error_text);
         }

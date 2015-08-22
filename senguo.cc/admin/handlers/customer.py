@@ -1304,7 +1304,11 @@ class Market(CustomerBaseHandler):
 			# print("[CustomerMarket]customer_id:",customer_id)
 
 			# added by jyj 2015-8-21
+			if not m:
+				return []
+				
 			shop_id = m[0].shop_id
+
 			killing_activity_id = []
 			killing_fruit_id = []
 			query_list = session.query(models.SeckillActivity.id).filter_by(shop_id = shop_id,activity_status = 2).all()
@@ -1441,6 +1445,7 @@ class Market(CustomerBaseHandler):
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
 			nomore = True
+
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		# print("[CustomerMarket]fruit_list: total_page:",total_page)
