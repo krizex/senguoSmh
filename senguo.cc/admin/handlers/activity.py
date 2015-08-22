@@ -776,7 +776,6 @@ class Seckill(CustomerBaseHandler):
 		for i in range(len(output_data)):
 			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
 
-		print(output_data)
 		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code)
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
@@ -807,7 +806,7 @@ class Seckill(CustomerBaseHandler):
 				cur_charge_type_num = int(cur_charge_type.num)
 			else:
 				cur_charge_type_num = cur_charge_type.num
-			goods_item['charge_type_text'] = str(cur_charge_type.price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 			goods_item['price_dif'] = goods.former_price - goods.seckill_price
 			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)

@@ -213,6 +213,19 @@ $(document).ready(function(){
 	$this.closest('div').find('em').attr("data-id",$this.text());
 }).on('click','.choose-goods-group a',function(){
 	var $this = $(this);
+
+	$this.closest(".new-seckill-item").find('.choose-price').empty();
+	$this.closest(".new-seckill-item").find('.cur-charge-type').empty();
+	$this.closest(".new-seckill-item").find('.remain-store').empty();
+	$this.closest(".new-seckill-item").find('.remain-store').attr('data-id','');
+	$this.closest(".new-seckill-item").find('.activity-store-charge-type').empty();
+	$this.closest(".new-seckill-item").find('.activity-store-input').val('');
+	$this.closest(".new-seckill-item").find('.activity-store-input').attr('data-id','');
+	$this.closest(".new-seckill-item").find('.seckill-price-input').val('');
+	$this.closest(".new-seckill-item").find('.seckill-price-input').attr('data-id','');
+	$this.closest(".new-seckill-item").find('.seckill-charge-price').addClass('hidden');
+	$this.closest(".new-seckill-item").find('.activity-store').addClass('hidden');
+
 	var cur_goods_group = $this.text();
 	$this.closest(".new-seckill-item").find(".cur-goods-group").text(cur_goods_group);
 	$this.closest(".new-seckill-item").find(".cur-goods-group").attr("data-id",$this.attr('data-id'));
@@ -226,17 +239,6 @@ $(document).ready(function(){
 
 	if (choose_goods_list.length == 0){
 		alert('当前分组没有已上架的商品，请选择其他分组！或者到商品管理中上架一些该分组的商品');
-		$this.closest(".new-seckill-item").find('.choose-price').empty();
-		$this.closest(".new-seckill-item").find('.cur-charge-type').empty();
-		$this.closest(".new-seckill-item").find('.remain-store').empty();
-		$this.closest(".new-seckill-item").find('.remain-store').attr('data-id','');
-		$this.closest(".new-seckill-item").find('.activity-store-charge-type').empty();
-		$this.closest(".new-seckill-item").find('.activity-store-input').val('');
-		$this.closest(".new-seckill-item").find('.activity-store-input').attr('data-id','');
-		$this.closest(".new-seckill-item").find('.seckill-price-input').val('');
-		$this.closest(".new-seckill-item").find('.seckill-price-input').attr('data-id','');
-		$this.closest(".new-seckill-item").find('.seckill-charge-price').addClass('hidden');
-		$this.closest(".new-seckill-item").find('.activity-store').addClass('hidden');
 		return false;
 	}
 
@@ -329,21 +331,6 @@ $(document).ready(function(){
 		Tip('秒杀价必须是大于或等于0.01元的正数，请重新输入！');
 	}
 	
-}).on('blur','.activity-store-input',function(){
-	var $this = $(this);
-	var input_text = $this.val();
-	var reg = /^[1-9]\d*$/;
-	if (input_text.length != 0 && !reg.test(input_text)){
-		$this.val('');
-		Tip('活动库存必须是正整数，请重新输入！');
-	}
-
-	var storage = parseInt($this.attr("data-id"));
-	if (input_text.length != 0 && reg.test(input_text)  && parseInt(input_text) > storage){
-		$this.val('');
-		Tip('活动库存必须小于或等于剩余库存，请重新输入！');
-	}
-
 }).on('click','.sec-pre-page',function(){
 	var $this = $(this);
 	if (cur_sec_page+1 == sec_page_sum){
@@ -535,10 +522,31 @@ function createSeckill(action){
 			var now_activity_piece = parseInt($this.find('.activity-store-input').val());
 			if (now_activity_piece < former_activity_piece){
 				stop_flag = true;
-				Tip('修改后的活动库存必须不少于修改前的活动库存，请重新填写！');
+				Tip(goods_name + '修改后的活动库存必须不少于修改前的活动库存，请重新填写！');
 			}
 		}
 	});
+
+	$('.activity-store-input').each(function(){
+		var $this = $(this);
+		var goods_num = '商品' + $this.closest(".new-seckill-item").find('.goods-num').text();
+		var input_text = $this.val();
+		var reg = /^[1-9]\d*$/;
+		if (input_text.length != 0 && !reg.test(input_text)){
+			$this.val('');
+			stop_flag = true;
+			Tip( + '活动库存必须是正整数，请重新输入！');
+		}
+
+		var storage = parseInt($this.attr("data-id"));
+		if (input_text.length != 0 && reg.test(input_text)  && parseInt(input_text) > storage){
+			$this.val('');
+			stop_flag = true;
+			Tip(goods_num + '活动库存必须小于或等于剩余库存，请重新输入！');
+		}
+
+	});
+
 	if (stop_flag){
 		create_seckill_lock = "off";
 		return false;

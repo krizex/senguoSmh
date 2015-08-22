@@ -1307,16 +1307,18 @@ class Market(CustomerBaseHandler):
 			shop_id = m[0].shop_id
 			killing_activity_id = []
 			killing_fruit_id = []
+			fruit_seckill_list = {}
 			query_list = session.query(models.SeckillActivity.id).filter_by(shop_id = shop_id,activity_status = 2).all()
 			if query_list:
 				for item in query_list:
 					killing_activity_id.append(item[0])
 				
-				query_goods = session.query(models.SeckillGoods.fruit_id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
+				query_goods = session.query(models.SeckillGoods.fruit_id,models.SeckillGoods.id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
 				if query_goods:
 					for item in query_goods:
 						killing_fruit_id.append(item[0])
-			# print('*******',killing_fruit_id)
+						fruit_seckill_list[str(item[0])] = item[1]
+			
 			##
 			for fruit in m:
 				try:
@@ -1383,23 +1385,30 @@ class Market(CustomerBaseHandler):
 				data_item['detail_no'] = str(detail_no)
 
 				fruit_id = fruit.id
+				bought_customer_list = []
 				if fruit_id in killing_fruit_id:
-					sekill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
+					seckill_goods_id = fruit_seckill_list[str(fruit.id)]
+					customer_query = session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.seckill_goods_id == seckill_goods_id,models.CustomerSeckillGoods.status != 0).all()
+					for item in customer_query:
+						bought_customer_list.append(item.customer_id)
+
+				if fruit_id in killing_fruit_id and customer_id not in bought_customer_list:
+					seckill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
 								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
 					data_item['is_activity'] = 1
-					data_item['activity_id'] = sekill_info.activity_id
-					data_item['seckill_goods_id'] = sekill_info.id
-					data_item['charge_type_id'] = sekill_info.charge_type_id
+					data_item['activity_id'] = seckill_info.activity_id
+					data_item['seckill_goods_id'] = seckill_info.id
+					data_item['charge_type_id'] = seckill_info.charge_type_id
 
-					cur_charge_type = session.query(models.ChargeType).filter_by(id = sekill_info.charge_type_id).first()
+					cur_charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.charge_type_id).first()
 					if int(cur_charge_type.num) == cur_charge_type.num:
 						cur_charge_type_num = int(cur_charge_type.num)
 					else:
 						cur_charge_type_num = cur_charge_type.num
-					data_item['charge_type_text'] = str(cur_charge_type.price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+					data_item['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 
-					data_item['price_dif'] = sekill_info.former_price - sekill_info.seckill_price
-					data_item['activity_piece'] = sekill_info.activity_piece
+					data_item['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
+					data_item['activity_piece'] = seckill_info.activity_piece
 				else:
 					data_item['is_activity'] = 0
 

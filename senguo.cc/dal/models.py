@@ -1959,3 +1959,12 @@ class SeckillGoods(MapBase, _CommonApi):
 	deleted=Column(Integer,default=0)	#已经被从该秒杀活动中删除的商品的份数，默认为0
 
 	status = Column(TINYINT,default=1,nullable=False)  #该商品的状态值，0(已删除),1(正常)
+
+# 用户抢购的秒杀商品表
+class CustomerSeckillGoods(MapBase, _CommonApi):
+	__tablename__='customer_seckill_goods'
+	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False)
+	shop_id = Column(Integer,ForeignKey(Shop.id),nullable=False)
+	seckill_goods_id = Column(Integer,ForeignKey(SeckillGoods.id),nullable=False)
+	status = Column(TINYINT,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
