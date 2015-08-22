@@ -8,12 +8,16 @@
 {% set subpage2 = context.get("subpage2") %}
 {% set love_wall_active = '' %}
 {% set coupon_active = '' %}
+{% set discount_active='' %}
 {% set seckill_active='' %}
 
 {% if subpage2 == 'love_wall'%}
 	{% set love_wall_active = 'active' %}
-{% elif  subpage2 == 'coupon'%}
+{% elif subpage2=='coupon' %}
 	{% set coupon_active = 'active' %}
+{% elif subpage2=='discount_active'%}
+	{% set discount_active='active' %}
+
 {% elif subpage2=='seckill' %}
 	{% set seckill_active='active' %}
 {% end %}
@@ -22,8 +26,9 @@
 <div class="subnav-box">
 <ul class="subnav  group">
     <li class="{{love_wall_active}}" id="infoSet"><a href="{{reverse_url('adminMarketing')}}?action=lovewall">告白墙</a></li>
-    <li class="{{coupon_active}}" id="coupon"><a href="{{reverse_url('adminMarketing')}}?action=coupon&coupon_type=0"><b class="" id="is_balance"></b>优惠券</a></li>
-    <li class="{{seckill_active}}" id="seckill"><a href="{{reverse_url('adminMarketingSeckill')}}?action=seckill&page=0"><b id="is_active"></b>商品秒杀</a></li>
+    <li class="{{coupon_active}}" id="coupon"><a href="{{reverse_url('adminMarketing')}}?action=coupon&coupon_type=0">优惠券</a></li>
+     <li class="{{discount_active}}" id="discount"><a href="{{reverse_url('DiscountMain')}}?action=discount&status=0"><b class="red-toll1" id="is_balance"></b>限时折扣</a></li>
+    <li class="{{seckill_active}}" id="seckill"><a href="{{reverse_url('adminMarketingSeckill')}}?action=seckill&page=0"><b class="red-toll2" id="is_active"></b>商品秒杀</a></li>
     <!-- <li class="{{no_auth}}" id="noticeSet"><a href="#">商品预售</a></li> -->
 </ul>
 </div>

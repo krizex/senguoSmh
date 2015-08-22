@@ -1593,6 +1593,7 @@ class Marketing(MapBase, _CommonApi):
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	confess_active = Column(Integer,default = 1) #1:告白墙开启 0:告白墙关闭
 	coupon_active=Column(Integer,default=0)  #0:开启 1:关闭
+	discount_active=Column(Integer,default=1)  #0:开启 1:关闭
 	confess_notice = Column(String(500))
 	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
 	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
@@ -1928,6 +1929,39 @@ class Jpushinfo(MapBase, _CommonApi):
 	user_type=Column(Integer,nullable=False)  #0  admin 1 customer
 	jpush_id=Column(String(128),nullable=False)
 
+
+# 折扣商品
+class DiscountShopGroup(MapBase, _CommonApi):
+	__tablename__="discount_shopgroup"  #每一次新建的限时折扣对应一行
+	id=Column(Integer,primary_key=True,autoincrement=True)
+	discount_id=Column(Integer)
+	shop_id=Column(Integer)
+	discount_way=Column(Integer,default=0) # 0：表示单次折扣　１：表示周期折扣
+	weeks=Column(String(40)) # 周几生效　依次　１－－７
+	start_date=Column(Integer)
+	end_date=Column(Integer)
+	f_time=Column(Integer)
+	t_time=Column(Integer)
+	create_date=Column(Integer)
+	status=Column(Integer) # ０：未开始　　１：进行中　２：衣结束　　３：已停用
+	incart_num=Column(Integer) 
+	ordered_num=Column(Integer)
+ 
+# 折扣商品详情
+class DiscountShop(MapBase, _CommonApi):
+	__tablename__="discount_shop"
+	id=Column(Integer,primary_key=True,autoincrement=True)
+	discount_id=Column(Integer)
+	inner_id=Column(Integer) # 每一批限时折扣的商品id 用于使用在编辑界面的时候
+	shop_id=Column(Integer)
+	use_goods_group=Column(Integer,default=-2) #商品分组
+	use_goods=Column(Integer,default=-1) #商品名称
+	charge_type=Column(String(128)) #原价的价格类型
+	discount_rate=Column(Float) #折扣率
+	incart_num=Column(Integer) 
+	ordered_num=Column(Integer)
+	status=Column(Integer) # ０：未开始　　１：进行中　２：衣结束　　３：已停用
+
 # 秒杀活动表
 class SeckillActivity(MapBase, _CommonApi):
 	__tablename__='seckill_activity'
@@ -1960,3 +1994,11 @@ class SeckillGoods(MapBase, _CommonApi):
 
 	status = Column(TINYINT,default=1,nullable=False)  #该商品的状态值，0(已删除),1(正常)
 
+# 用户抢购的秒杀商品表
+class CustomerSeckillGoods(MapBase, _CommonApi):
+	__tablename__='customer_seckill_goods'
+	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False)
+	shop_id = Column(Integer,ForeignKey(Shop.id),nullable=False)
+	seckill_goods_id = Column(Integer,ForeignKey(SeckillGoods.id),nullable=False)
+	status = Column(TINYINT,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
