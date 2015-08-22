@@ -143,7 +143,6 @@ class GlobalBaseHandler(BaseHandler):
 		self.session.commit()
 		return None
 
-<<<<<<< HEAD
 	# 更新店铺用户的限时折扣信息
 	def updatediscountbase(self,shop_id,customer_id):
 		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
@@ -176,7 +175,6 @@ class GlobalBaseHandler(BaseHandler):
 			for y in qq:
 				if y.status!=3:
 					y.update(self.session,status=status)
-=======
 	# 全局实时更新店铺秒杀活动基类方法：
 	def update_seckill_base(self,shop_id):
 		current_shop_id = shop_id
@@ -203,7 +201,6 @@ class GlobalBaseHandler(BaseHandler):
 					sec_fruit.activity_status = 0
 					sec_fruit.seckill_charge_type = 0
 				self.session.flush()
->>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 		self.session.commit()
 		return None
 
@@ -1424,19 +1421,16 @@ class AdminBaseHandler(_AccountBaseHandler):
 		current_shop_id=self.get_secure_cookie("shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
-<<<<<<< HEAD
 	# 刷新数据库的限时折扣信息
 	def updatediscount(self,customer_id):
 		current_shop_id=self.get_secure_cookie("shop_id")
 		self.updatediscountbase(current_shop_id,customer_id)
-=======
 	# 刷新数据库店铺秒杀活动信息
 	def update_seckill(self):
 		current_shop_id = self.get_secure_cookie("shop_id")
 		current_shop_id = int(current_shop_id.decode())
 		self.update_seckill_base(current_shop_id)
 
->>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 	# 获取订单
 	def getOrder(self,orders):
 		data = []
@@ -1752,17 +1746,14 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		current_shop_id= self.get_cookie("market_shop_id") 
 		self.updatecouponbase(current_shop_id,customer_id)
 
-<<<<<<< HEAD
 	# 刷新数据库限时折扣信息
 	def updatediscount(self,customer_id):
 		current_shop_id= self.get_cookie("market_shop_id") 
 		self.updatediscountbase(current_shop_id,customer_id)
-=======
 	# #刷新数据库店铺秒杀活动信息
 	def update_seckill(self):
 		current_shop_id = self.get_cookie("market_shop_id")
 		self.update_seckill_base(current_shop_id)
->>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
 
 
 import urllib.request
