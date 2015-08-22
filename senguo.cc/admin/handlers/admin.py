@@ -5541,9 +5541,11 @@ class MarketingSeckill(AdminBaseHandler):
 
 			seckill_activity = models.SeckillActivity(shop_id=shop_id,start_time=start_time,end_time=end_time,continue_time=continue_time,activity_status=activity_status)
 			self.session.add(seckill_activity)
+			self.session.flush()
+			insert_activity_id = seckill_activity.id
 			self.session.commit()
 
-			activity_id = self.session.query(models.SeckillActivity.id).order_by(desc(models.SeckillActivity.id)).with_lockmode("update").first()[0]
+			activity_id = insert_activity_id
 
 			for i in range(1,len(data_array)):
 				data = data_array[i]
