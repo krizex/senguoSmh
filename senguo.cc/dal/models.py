@@ -1436,6 +1436,8 @@ class ChargeType(MapBase, _CommonApi):
 	select_num = Column(Integer, default=1) #6.4
 	relate = Column(Float, default=1) # 库存换算关系
 
+	# activity_type = Column(TINYINT,default=0)
+	
 	fruit = relationship("Fruit", uselist=False)
 
 # 商品评论

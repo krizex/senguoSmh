@@ -813,7 +813,7 @@ class Seckill(CustomerBaseHandler):
 
 		return self.send_success(output_data = output_data)
 
-#折扣
+# 限时折扣
 class Discount(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
