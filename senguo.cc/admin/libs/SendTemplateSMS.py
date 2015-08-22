@@ -34,7 +34,7 @@ softVersion='2013-12-26';
 
 def sendTemplateSMS(to,datas,tempId):
 
-		print ('login sendTemplateSMS')
+		# print ('login sendTemplateSMS')
 		flag = False
 		msg = ''
 		
@@ -42,24 +42,25 @@ def sendTemplateSMS(to,datas,tempId):
 		rest = REST(serverIP,serverPort,softVersion)
 		rest.setAccount(accountSid,accountToken)
 		rest.setAppId(appId)
-		print(rest)
+		# print(rest)
 		
 		result = rest.sendTemplateSMS(to,datas,tempId)
-		print(result)
+		# print(result)
 		for k in result: 
 				if k=='templateSMS' :
-								for k1 in result.get(k): 
-										print ('%s:%s' % (k1, result.get(k).get(k1)))
+								# for k1 in result.get(k): 
+								# 		print ('%s:%s' % (k1, result.get(k).get(k1)))
+								pass
 				elif k == 'statusCode':
 					if result.get(k) == '000000':
 						flag = True
-						print('send success')
+						# print('send success')
 					else:
 						flag = False
 				elif k == 'statusMsg':
 					msg = result.get(k)
-				else:
-						print ('%s:%s' % (k, result.get(k)))
+				# else:
+				#		print ('%s:%s' % (k, result.get(k)))
 		return flag,msg
 	 
 # flag = sendTemplateSMS('13163263783',{'1234','5678'},32417)

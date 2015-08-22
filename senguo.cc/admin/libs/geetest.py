@@ -30,12 +30,12 @@ class geetest(object):
 		apiserver = "http://api.geetest.com/validate.php"
 		if validate == self.md5value(self.PRIVATE_KEY + 'geetest' + challenge):
 			query = 'seccode=' + seccode + "&sdk=python_" + self.PY_VERSION
-			print (query,'query')
+			# print (query,'query')
 			backinfo = self.postvalues(apiserver, query)
 			if isinstance(backinfo,bytes):
 				backinfo = backinfo.decode('utf-8')
 
-			print(backinfo,'return backinfo')
+			# print(backinfo,'return backinfo')
 			md5value = self.md5value(seccode)
 			
 			if isinstance(md5value,bytes):
@@ -54,7 +54,7 @@ class geetest(object):
 	def postvalues(self, apiserver, data):
 		if isinstance(data,str):
 			data = data.encode('utf-8')
-		print('login postvalues')
+		# print('login postvalues')
 		req = urllib2.Request(apiserver)
 		opener = urllib2.build_opener(urllib2.HTTPCookieProcessor())
 		response = opener.open(req, data)

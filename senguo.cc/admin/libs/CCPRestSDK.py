@@ -33,7 +33,7 @@ class REST:
     ServerIP=''
     ServerPort=''
     SoftVersion=''
-    Iflog=True #是否打印日志
+    Iflog=False #是否打印日志
     Batch=''  #时间戳
     BodyType = 'json'#包体格式，可填值：json 、xml
     
@@ -115,7 +115,7 @@ class REST:
             #json格式
             body = '''{"friendlyName": "%s", "appId": "%s"}'''%(friendlyName,self.AppId)
         data=''
-        print(body,'bodybodybodybody')
+        # print(body,'bodybodybodybody')
         req.add_data(body)
         try:
             res = urllib2.urlopen(req);
@@ -168,7 +168,7 @@ class REST:
             #json格式 
             body = '''{"appId": "%s", "startNo": "%s", "offset": "%s"}'''%(self.AppId,startNo,offset)
         data=''
-        print(body)
+        # print(body)
         # req.add_data(body)
         try:
             # res = urllib2.urlopen(req);
@@ -176,7 +176,7 @@ class REST:
             # res.close()
             res = requests.post(url,data=body,headers=headers)
             s = res.text
-            print(s)
+            # print(s)
         
             if self.BodyType=='json':
                 #json格式
@@ -249,7 +249,7 @@ class REST:
     # @param datas 可选参数    内容数据
     # @param tempId 必选参数    模板Id
     def sendTemplateSMS(self, to,datas,tempId):
-        print ('login in sendTemplateSMS')
+        # print ('login in sendTemplateSMS')
 
         self.accAuth()
         nowdate = datetime.datetime.now()
@@ -257,13 +257,13 @@ class REST:
         #生成sig
         signature = self.AccountSid + self.AccountToken + self.Batch;
         signature = signature.encode('utf-8')
-        print(signature)
+        # print(signature)
         m = md5()
         m.update(signature)
         sig = m.hexdigest().upper()
         #拼接URL
         url = "https://"+self.ServerIP + ":" + self.ServerPort + "/" + self.SoftVersion + "/Accounts/" + self.AccountSid + "/SMS/TemplateSMS?sig=" + sig
-        print (url)
+        # print (url)
         #生成auth
         src = self.AccountSid + ":" + self.Batch;
         src = src.encode('utf-8')
@@ -288,20 +288,20 @@ class REST:
             b+=']'
             body ={"to": to, "datas": b, "templateId": tempId, "appId": self.AppId}
         req.data = body
-        print(type(body),'heeeeeeeeeeeee')
+        # print(type(body),'heeeeeeeeeeeee')
         data=''
         try:
-            print('login')
+            # print('login')
             # res = urllib2.urlopen(req);
             # print(res)
             # data = res.read()
             # print(data)
             # res.close()
-            print('url=',url,'\n',body,headers)
+            # print('url=',url,'\n',body,headers)
             res = requests.post(url,data =json.dumps(body),headers=headers)
             data = res.text
-            print(res.text)
-            print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',res.status_code)
+            # print(res.text)
+            # print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~',res.status_code)
         
             if self.BodyType=='json':
                 #json格式
