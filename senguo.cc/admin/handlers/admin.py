@@ -5574,7 +5574,11 @@ class MarketingSeckill(AdminBaseHandler):
 			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
 			query.seckill_active = 1
 			notice_query = self.session.query(models.Notice).filter_by(config_id = current_shop_id).with_lockmode('update').first()
-			notice_query.seckill_img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp'
+			if notice_query:
+				notice_query.seckill_img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp'
+			else:
+				notice_new = models.Notice(config_id=current_shop_id,active=1,summary='',detail='',img_url='',seckill_img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp')
+				self.session.add(notice_new)
 			self.session.commit()
 		elif action == 'seckill_off':
 			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()

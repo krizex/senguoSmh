@@ -508,11 +508,13 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0
+		current_customer_id=self.Current_user.id
+		shop_id = shop.id
+		# 优惠券发现
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=0).all()
 		a=0
-
 		now_date=int(time.time())
-
+		self.updatecoupon(current_customer_id)
 		for x in q :
 			if now_date>=x.from_get_date and now_date<=x.to_get_date:
 				a+=1
@@ -526,9 +528,15 @@ class Discover(CustomerBaseHandler):
 					b+=1
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
 
+		#限时折扣发现
+		self.updatediscount(current_customer_id)
+		discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
+		discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
+		discount_text=''
+		if discount_count:
+		discount_text=str(discount_count)+'种商品正在'
 		# added by jyj 2015-8-18 for seckill
 		self.update_seckill()
-		shop_id = shop.id
 		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active
 		seckill_text = ''
 		seckill_display_flag = 0
@@ -1306,7 +1314,11 @@ class Market(CustomerBaseHandler):
 			# print("[CustomerMarket]customer_id:",customer_id)
 
 			# added by jyj 2015-8-21
+			if not m:
+				return []
+				
 			shop_id = m[0].shop_id
+
 			killing_activity_id = []
 			killing_fruit_id = []
 			fruit_seckill_list = {}
@@ -1467,6 +1479,7 @@ class Market(CustomerBaseHandler):
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
 			nomore = True
+
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		# print("[CustomerMarket]fruit_list: total_page:",total_page)

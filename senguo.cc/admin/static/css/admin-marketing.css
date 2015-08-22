@@ -108,6 +108,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
 
+
 /*限时折扣添加样式*/
 .week-btn{width: 50px;display:inline-block;margin-left:15px;font-size: 14px;background-color: #fff;color: #000;text-align: center;height: 28px;line-height: 28px;border-radius: 2px;}
 .back_green{background-color: #52b43f;}
@@ -176,3 +177,4 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 
 .spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
 /**/
+

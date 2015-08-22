@@ -6,8 +6,12 @@ $(document).ready(function(){
         history.back();
     });
     if($("#seckill").size()>0){//获取秒杀
-        if($(".seckill-time-list").hasClass("hide")){
+        if($(".seckill-time-list").children("li").size()==0){
             $(".no-result").html("该活动结束了~~").removeClass("hide");
+            setTimeout(function(){
+                window.location.href="/"+$("#shop_code").val();
+            },1200);
+            return false;
         }
         $(".stime-list").each(function(){
             $(this).closest("li").width($(this).width()+60);
@@ -61,21 +65,22 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
-    addCart();
+    addCart($(this).closest("li"));
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
     window.location.href="/"+shop_code;
 });
 window.dataObj.fruits={};
 //加入购物车
-function addCart(){
+function addCart($obj){
     var url='/'+$("#shop_code").val();
     var action = 4;
     fruits_num();
     var fruits=window.dataObj.fruits;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_id:$obj.attr("seckill-id")
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){

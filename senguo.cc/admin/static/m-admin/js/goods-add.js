@@ -599,7 +599,7 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
         preloader.load( file.getSource() );
     }
 }
-<<<<<<< HEAD
+
 //android端上传图片
 function uploadImgForAndroid(url){
     alert(333);
@@ -611,7 +611,7 @@ function uploadImgForAndroid(url){
         $(".moxie-shim").addClass("hide");
     }
 }
-=======
+
 /*水果分类*/
 function getData(type,sub_type){
     $.ajax({
@@ -706,4 +706,4 @@ function getData2(con){
         });
     };
 })(jQuery);
->>>>>>> f77a43b4842fb03ded7e1469cd3a0c492e4798ff
+

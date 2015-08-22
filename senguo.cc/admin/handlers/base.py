@@ -142,7 +142,6 @@ class GlobalBaseHandler(BaseHandler):
 				self.session.flush()
 		self.session.commit()
 		return None
-
 	# 更新店铺用户的限时折扣信息
 	def updatediscountbase(self,shop_id,customer_id):
 		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
@@ -1425,11 +1424,13 @@ class AdminBaseHandler(_AccountBaseHandler):
 	def updatediscount(self,customer_id):
 		current_shop_id=self.get_secure_cookie("shop_id")
 		self.updatediscountbase(current_shop_id,customer_id)
+
 	# 刷新数据库店铺秒杀活动信息
 	def update_seckill(self):
 		current_shop_id = self.get_secure_cookie("shop_id")
 		current_shop_id = int(current_shop_id.decode())
 		self.update_seckill_base(current_shop_id)
+
 
 	# 获取订单
 	def getOrder(self,orders):
@@ -1750,6 +1751,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	def updatediscount(self,customer_id):
 		current_shop_id= self.get_cookie("market_shop_id") 
 		self.updatediscountbase(current_shop_id,customer_id)
+
 	# #刷新数据库店铺秒杀活动信息
 	def update_seckill(self):
 		current_shop_id = self.get_cookie("market_shop_id")
