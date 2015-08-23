@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+{% block title %}批量管理{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="/madmin/goods?type=2" class="back">返回</a>
+    <span>批量管理</span>
+    <a href="javascript:;" class="head-right select-all" data-status="0">全选</a>
+</div>
+{% end %}
+{% block setcontent %}
+<div class="container pb45">
+<div class="order-list-box">
+    <ul class="batch-lst mt10">
+        {% for good in goods_data %}
+        <li>
+            <dl class="batch-dl">
+                <dt>
+                    <img src="{{good['imgurl'] or '/static/images/TDSG.png' }}?imageView2/1/w/100/h/100" alt="商品图片"/>
+                </dt>
+                <dd>
+                    <p class="c333 clip">{{good['name']}}</p>
+                    <span data-id="{{good['id']}}" class="checkbox"></span>
+                </dd>
+            </dl>
+        </li>
+        {% end %}
+    </ul>
+</div>
+</div>
+{% end %}
+{% block fix %}
+<div class="wrap-bm-btns" id="batch_group">
+    <ul class="btns-list">
+        <li>
+            <a href="javascritp:;" class="bm-btn batch-goods">批量管理</a>
+        </li>
+    </ul>
+</div>
+<div class="wrap-bm-btns hide" id="choose_group">
+    <p class="c666 txt-center"><span>分组至</span><span class="f12"> (分组信息将展示在店铺中，便于用户购买商品)</span></p>
+    <ul class="batch-group-list mt10">
+        <li class="" data-id="-1">
+            <span class="c666 fr">共{{record_count}}件商品</span>
+            <span class="checkbox vm"></span>
+            <span class="gname clip vm">店铺推荐</span>
+        </li>
+        {% for d in group_data %}
+        <li class="" data-id="{{d['id']}}">
+            <span class="c666 fr">共{{d['num']}}件商品</span>
+            <span class="checkbox vm"></span>
+            <span class="gname clip vm">{% if d['id']==0 %}默认分组{% else%}{{d['name']}}{% end %}</span>
+        </li>
+        {% end %}
+    </ul>
+    <div class="new-group new_group">+新建分组</div>
+    <div class="btn-group">
+        <span class="cancel-sbtn" id="cancel_group">取消</span>
+        <span class="sure-sbtn" id="switch_group">确定</span>
+    </div>
+</div>
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 class="txt-center" id="g_title">添加分组</h3>
+        <div class="wp-ipt mt20">
+            <p class="c333 mt10">分组名称</p>
+            <input class="mt10 c666" id="group_name" type="text" placeholder="不得多于10个字"/>
+            <p class="c333 mt18">分组说明</p>
+            <input class="mt10 c666" id="group_info" type="text" placeholder="不得多于20个字"/>
+        </div>
+        <div class="wrap-bbtns txt-center">
+            <a href="javascript:;" class="ok-bbtn dgreen" id="add_group">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('m-admin/js/goods-batch.js')}}"></script>
+{% end %}

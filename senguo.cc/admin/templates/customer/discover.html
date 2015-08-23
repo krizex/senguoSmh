@@ -4,10 +4,9 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-<div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
 <div class="mt42"></div>
 <ul class="mt20 discover-list">
-{% if shop_auth != 0%}
+{% if handler.shop_auth != 0%}
 {% if confess_active == 1%}
     <li class="title clearfix bg-white font14 confess">
 	    <a href="{{reverse_url('ConfessionHome',handler.shop_code)}}" class="text-grey3 confess-wall">

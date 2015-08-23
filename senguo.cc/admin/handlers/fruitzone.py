@@ -74,7 +74,7 @@ class ShopList(FruitzoneBaseHandler):
 	@unblock
 	@FruitzoneBaseHandler.check_arguments("action",'province?:int')
 	def post(self):
-		print(self.args)
+		# print("[ShopList]self.args:",self.args)
 		action = self.args["action"]
 		province = self.args.get('province',None)
 		province = int(province) if province else None
@@ -85,7 +85,7 @@ class ShopList(FruitzoneBaseHandler):
 			return self.handle_search(province)
 		elif action == "qsearch":
 			return self.handle_qsearch(province)
-		elif action =="shop":
+		elif action == "shop":
 			return self.handle_shop(province)
 		elif action == 'admin_shop':
 			return self.handle_admin_shop(province)
@@ -218,17 +218,18 @@ class ShopList(FruitzoneBaseHandler):
 
 		if "key_word" in self.args:
 			key_word = int(self.args['key_word'])
-			print(len(shops),'key_word')
+			# print(len(shops),'key_word')
 			
 			for shop in shops:
 				lat2 = shop['lat']
 				lon2 = shop['lon']
 				if lat1 and lon1 and lat2 and lon2:
+
 					#当省份不在过滤条件中时，计算全国店铺的距离计算量巨大，且没有实际意义,故此时将店铺距离设为一个默认值
-					if 'province' in self.args:          
-						shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
-					else:
-						shop['distance'] = 100
+					#if 'province' in self.args:          
+					shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+					#else:
+					#	shop['distance'] = 100
 				else:
 					shop['distance'] = 9999999
 			if key_word == 1: #商品最多
@@ -248,7 +249,7 @@ class ShopList(FruitzoneBaseHandler):
 		return self.send_success(shops=shops,nomore = nomore)
 
 	@FruitzoneBaseHandler.check_arguments('id:int')
-	def handle_admin_shop(self):
+	def handle_admin_shop(self,province):
 		admin_id = int(self.args['id'])
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
 		if not shop_admin:
@@ -517,6 +518,11 @@ class ShopApply(FruitzoneBaseHandler):
 			return self.send_success()
 
 class ShopApplyImg(FruitzoneBaseHandler):
+	def get(self):
+		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)
+		token = q.upload_token(BUCKET_SHOP_IMG, expires=120)
+		return self.send_success(token=token, key=str(time.time()))
+
 	@tornado.web.authenticated
 	def post(self):
 		q = qiniu.Auth(ACCESS_KEY, SECRET_KEY)

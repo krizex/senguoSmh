@@ -347,6 +347,9 @@ function count(action,page,type){
         type:type
     };
     var url='';
+    setTimeout(function(){
+
+    }, 250);
     $.ajaxSetup({async:false});
     $.postJson(url,args,function(res){
             if(res.success){

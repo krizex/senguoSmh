@@ -17,10 +17,63 @@ from libs.utils import Logger
 import hashlib
 import chardet
 
+#from handlers.WXBizMsgCrypt import WXBizMsgCrypt
+
 try:
 	import xml.etree.cElementTree as ET
 except:
 	import xml.etree.ElementTree as ET
+
+
+
+import libs.geetest as geetest
+
+
+BASE_URL = "api.geetest.com/get.php?gt="
+
+# captcha_id = "a40fd3b0d712165c5d13e6f747e948d4"
+captcha_id = '552f9475a37933c10d31b3073123e36a'
+# private_key = "0f1a37e33c9ed10dd2e133fe2ae9c459"
+private_key = '6b75401374e76b11ff54d45a24896d33'
+product = "embed"
+
+# 弹出式
+# product = "popup&popupbtnid=submit-button"
+
+class GeeTest(CustomerBaseHandler):
+	def get(self):
+		gt = geetest.geetest(captcha_id, private_key)
+		url = ""
+		httpsurl = ""
+		try:
+			challenge = gt.geetest_register()
+		except:
+			challenge = ""
+		print(challenge,'challenge',len(challenge))
+		if isinstance(challenge,bytes):
+			challenge = challenge.decode('utf-8')
+		if len(challenge) == 32:
+			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			print(url)
+		self.render("apply/login.html", url=url)
+
+	def post(self):
+		username = self.get_argument("email")
+		password = self.get_argument("password")
+
+		challenge = self.get_argument("geetest_challenge")
+		validate = self.get_argument("geetest_validate")
+		seccode = self.get_argument("geetest_seccode")
+		print (challenge)
+		print (seccode)
+		print (validate,'validate')
+		gt = geetest.geetest(captcha_id, private_key)
+		result = gt.geetest_validate(challenge, validate, seccode)
+		if result:
+			self.write("success")
+		else:
+			self.write("fail")
 
 # woody
 # 扫码获取用户openid
@@ -31,6 +84,7 @@ class Login(CustomerBaseHandler):
 		if self.is_wexin_browser():
 			return self.redirect(self.get_weixin_login_url())
 		ticket_url , scene_id = self.get_ticket_url()
+		
 		return self.render("apply/wx-login.html",ticket_url=ticket_url,scene_id=scene_id)
 	@CustomerBaseHandler.check_arguments('scene_id')
 	def post(self):
@@ -52,6 +106,58 @@ class Login(CustomerBaseHandler):
 		else:
 			# print("[ApplyLogin]False")
 			return self.send_success(login=False)
+
+# class WxOpen(CustomerBaseHandler):
+# 	def get(self):
+# 		return self.send_success()
+# 	@CustomerBaseHandler.check_arguments('timestamp?:str','signature?:str','nonce?:str','encrypt_type?:str','msg_signature?:str','')
+# 	def post(self):
+# 		encodingAESKey = '1bvcmN6qGFEvM2zKfT7jDFy54rZt9senguo123WmmnJ'
+# 		token = 'senguotest'
+# 		appid = 'wxc30d9acccf942f82'
+# 		appsecret = '0c79e1fa963cd80cc0be99b20a18faeb'
+
+# 		timestamp = self.args.get('timestamp',None)
+# 		signature = self.args.get('signature',None)
+# 		nonce     = self.args.get('nonce',None)
+# 		encrypt_type = self.args.get('encrypt_type',None)
+# 		msg_signature= self.args.get('msg_signature',None)
+
+# 		print(timestamp,signature,nonce,encrypt_type,msg_signature)
+
+# 		decrypt_test = WXBizMsgCrypt(token,encodingAESKey,appid)
+
+# 		raw_data = self.request.body
+# 		print(raw_data)
+# 		data = self.xmlToDic(raw_data)
+# 		AppId = data.get('AppId',None)
+# 		Encrypt = data.get('Encrypt',None)
+# 		print(AppId,Encrypt)
+# 		ret,decryp_xml = decrypt_test.DecryptMsg(raw_data,msg_signature,timestamp,nonce)
+# 		print(ret,decryp_xml)
+# 		if isinstance(decryp_xml,bytes):
+# 			decryp_xml = decryp_xml.decode('utf-8')
+# 		index = decryp_xml.find('<ComponentVerifyTicket>')
+# 		end   = decryp_xml.find('</ComponentVerifyTicket>')
+# 		length = len('<ComponentVerifyTicket><![CDATA[')
+# 		if index != -1 and end != -1:
+# 			ComponentVerifyTicket = decryp_xml[index+length:end-3]
+# 			print('ComponentVerifyTicket correct:',ComponentVerifyTicket)
+# 		else:
+# 			print('get ComponentVerifyTicket error')
+# 		return self.write('success')
+
+# 	@classmethod
+# 	def xmlToDic(self,xmlstr):
+# 		if isinstance(xmlstr,bytes):
+# 			xmlstr = xmlstr.decode('utf-8')
+# 		else:
+# 			xmlstr = xmlstr
+# 		data = {}
+# 		tree = ET.fromstring(xmlstr)
+# 		for child in tree:
+# 			data[child.tag] = child.text
+# 		return data	
 
 # 微信服务器配置，启用开发开发者模式后，用户发给公众号的消息以及开发者所需要的事件推送，将被微信转发到该URL中
 class WxMessage(CustomerBaseHandler):
@@ -243,11 +349,41 @@ class Home(CustomerBaseHandler):
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
 		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname)
+		wx_username = self.current_user.accountinfo.wx_username if self.current_user.accountinfo.phone else ""
+		#添加极验验证码 woody 8.20
+		gt = geetest.geetest(captcha_id, private_key)
+		url = ""
+		httpsurl = ""
+		try:
+			challenge = gt.geetest_register()
+		except:
+			challenge = ""
+		print(challenge,'challenge',len(challenge))
+		if isinstance(challenge,bytes):
+			challenge = challenge.decode('utf-8')
+		if len(challenge) == 32:
+			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			print(url)
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username,url=url)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int")
+	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int","wx_username:str")
 	def post(self):
+		#极验验证
+		challenge = self.get_argument("geetest_challenge")
+		validate = self.get_argument("geetest_validate")
+		seccode = self.get_argument("geetest_seccode")
+		print (challenge,)
+		print (seccode)
+		print (validate,'validate')
+		if len(challenge) <2 or len(seccode) <2 or len(validate) <2:
+			return self.send_fail('请先完成图形验证')
+		gt = geetest.geetest(captcha_id, private_key)
+		result = gt.geetest_validate(challenge, validate, seccode)
+		if not result:
+			return self.send_fail('验证码错误')
+
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
 		except:
@@ -262,8 +398,16 @@ class Home(CustomerBaseHandler):
 		if not check_msg_token(phone=self.args['phone'], code=int(self.args["code"])):
 			return self.send_fail(error_text="验证码过期或者不正确")
 
+		if len(self.args["phone"])>11:
+			return self.send_fail("手机号格式错误")
+		if len(self.args["realname"])>20:
+			return self.send_fail("真实姓名请不要超过20个字")
+		if len(self.args["wx_username"])>20:
+			return self.send_fail("微信号请不要超过20个字")
+
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
+		self.current_user.accountinfo.wx_username=self.args["wx_username"]
 		self.session.add(models.ShopAdmin(id=self.current_user.id))
 		self.session.commit()
 		return self.send_success()

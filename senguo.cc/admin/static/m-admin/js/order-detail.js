@@ -3,6 +3,7 @@ $(document).ready(function(){
     width = $(window).width(); 
     //订单状态
     statusText(parseInt($('#status-txt').attr('data-id')));
+    cookie.setCookie("mdetail",1);
 }).on("click","#sure-staff",function(){
     var $this=$(this);
     orderEdit($this,'edit_SH2',$this.attr("data-id")); 
@@ -139,8 +140,8 @@ function orderEdit(target,action,content){
     $.postJson(url,args,function(res){
             if(res.success){
                 if(action=='edit_remark'){
-                   $('.remark').removeClass("hide").find(".con").text(content);
-                   $(".pop-del").addClass("hide");
+                    $('.remark').removeClass("hide").find(".con").text(content);
+                    $(".pop-del").addClass("hide");
                 }else if(action=='edit_SH2'){
                     var tel=target.attr("data-tel");
                     curStaff.find("img").attr("src",target.attr("data-src"));
@@ -149,7 +150,7 @@ function orderEdit(target,action,content){
                     curStaff.find(".order-wawa").children("a").removeClass("task-staff");
                     curStaff.find(".order-status-txt").css("left","50%");
                     curStaff.find(".order-status-txt").empty().append('<a class="task-staff" href="javascript:; id="status-txt">配送中</a><a class="" href="tel:'+tel+'">拨号</a>');
-                   $(".pop-staff").addClass("hide");
+                    $(".pop-staff").addClass("hide");
                 }else if(content==4) {
                     $("#status-txt").text('配送中');
                     $(".order-wawa").css("left","50%");
@@ -166,7 +167,7 @@ function orderEdit(target,action,content){
                     $(".tel-btn").show();
                     $(".wrap-bm-btn").hide();
                     $('.pop-confirm').addClass('hide');
-                    }
+                }
         }
         else {
             return Tip(res.error_text);}
@@ -185,7 +186,6 @@ function statusText(n){
             $(".fun-btn").text('开始配送');
             break;
         case 0:
-            
             $(".order-wawa").css("left","0");
             $(".order-line-grade").css("width","0");
             $(".order-status-txt").css("left","0");

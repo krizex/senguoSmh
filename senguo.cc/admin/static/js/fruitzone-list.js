@@ -1,8 +1,8 @@
 var ulat = 0,ulng =0,first=true;
+var link_action=$.getUrlParam('action');
+var link_province=$.getUrlParam('province');
 $(document).ready(function(){
     var area=window.dataObj.area;
-    var link_action=$.getUrlParam('action');
-    var link_province=$.getUrlParam('province');
     if(link_action){
         if(link_action=='shop'){
             $(".filter_search").addClass("hidden");
@@ -11,6 +11,8 @@ $(document).ready(function(){
             var id=$.getUrlParam('id');
             return shopsList(0,id,'admin_shop');
         }else if(link_action=="province"){
+            $('.city_name').text(province_name).attr("data-id",link_province);
+            $(".comm_name").attr("data-key",2).text("离我最近");
             window.dataObj.type='province';
             window.dataObj.action='filter';
             filter(link_province,'province');
@@ -18,7 +20,7 @@ $(document).ready(function(){
             if(area[link_province]){
                 var province_name=area[link_province]['name'];
             }
-            $('.city_name').text(province_name).attr("data-id",link_province);
+
         }
     }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
@@ -441,8 +443,6 @@ function filter(data){
    window.dataObj.action="filter";
    var action="filter";
    window.dataObj.page=1;
-   var link_action=$.getUrlParam('action');
-   var link_province=$.getUrlParam('province');
     var page = window.dataObj.page;
     var url="";
     var args={
@@ -472,15 +472,12 @@ function filter(data){
     $.postJson(url,args,
         function(res){
             if(res.success)
-            {   
-                
-                if(link_action!="province"){
-                   if(first){
-                        setTimeout(function(){
-                            initLocation();
-                        },10);
-                    } 
-                }
+            {    
+               if(first){
+                    setTimeout(function(){
+                        initLocation();
+                    },10);
+                } 
                 $(".wrap-loading-box").addClass("hidden");
                 remove_bg();
                 var shops=res.shops;

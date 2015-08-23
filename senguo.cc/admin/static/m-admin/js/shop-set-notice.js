@@ -4,6 +4,10 @@
 $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height-40+"px");
+}).on("click",".backset",function(){
+    if(confirm("当前公告未完成，确定返回吗？")){
+        window.location.href="/madmin/shopattr?action=notice";
+    }
 }).on("click",".del-img",function(){
     $("#notice-temp-img").addClass("hidden");
     $("#add-notice-img").removeClass("hidden");
@@ -182,4 +186,11 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
         };
         preloader.load( file.getSource() );
     }
+}
+//android端上传图片
+function uploadImgForAndroid(url){
+    $("#notice_img").attr("src",url+"?imageView2/1/w/100/h/100").attr("url",url);
+    $(".img-cover").addClass("hide");
+    $(".del-img").removeClass("hide");
+    $(".moxie-shim").addClass("hide");
 }
