@@ -31,7 +31,7 @@ handlers = [
 
 	#秒杀折扣预售团购
 	(r"/seckill/(\w+)", handlers.activity.Seckill, {}, "ConfessionSeckill"),
-	(r"/discount", handlers.activity.Discount, {}, "ConfessionDiscount"),
+	(r"/discount/(\w+)", handlers.activity.Discount, {}, "ConfessionDiscount"),
 	(r"/gbuy", handlers.activity.Gbuy, {}, "ConfessionGbuy"),
 	(r"/presell", handlers.activity.Presell, {}, "ConfessionPresell"),
 	(r"/(\w+)/gbuy/(\w+)", handlers.activity.GbuyDetail, {}, "ConfessionGbuyDetail"),

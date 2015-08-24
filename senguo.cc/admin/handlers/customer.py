@@ -1298,6 +1298,7 @@ class Market(CustomerBaseHandler):
 	#action(2: +1，1: -1, 0: delete, 3: 赞+1, 4:商城首页打包发送的购物车)；
 	def post(self, shop_code):
 		action = self.args["action"]
+		self.update_seckill()
 		if action == 3:
 			return self.favour()
 		elif action == 4:
@@ -1330,16 +1331,18 @@ class Market(CustomerBaseHandler):
 			killing_activity_id = []
 			killing_fruit_id = []
 			fruit_seckill_list = {}
+			fruit_charge_type = {}
 			query_list = session.query(models.SeckillActivity.id).filter_by(shop_id = shop_id,activity_status = 2).all()
 			if query_list:
 				for item in query_list:
 					killing_activity_id.append(item[0])
 				
-				query_goods = session.query(models.SeckillGoods.fruit_id,models.SeckillGoods.id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
+				query_goods = session.query(models.SeckillGoods.fruit_id,models.SeckillGoods.id,models.SeckillGoods.charge_type_id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
 				if query_goods:
 					for item in query_goods:
 						killing_fruit_id.append(item[0])
 						fruit_seckill_list[str(item[0])] = item[1]
+						fruit_charge_type[str(item[0])] = item[2]
 			
 			##
 			for fruit in m:
@@ -1359,7 +1362,7 @@ class Market(CustomerBaseHandler):
 
 				charge_types= []
 				for charge_type in fruit.charge_types:
-					if charge_type.active !=0:
+					if charge_type.active !=0 and charge_type.activity_type == 0:
 						unit  = charge_type.unit
 						unit =self.getUnit(unit)
 
@@ -1391,58 +1394,76 @@ class Market(CustomerBaseHandler):
 					detail_no = False
 
 				# added by jyj 2015-8-21
-				data_item = {}
+				data_item1 = {}
+				data_item2 = {}
 
-				data_item['id'] = fruit.id
-				data_item['shop_id'] = fruit.shop_id
-				data_item['active'] = fruit.active
-				data_item['code'] = fruit.fruit_type.code
+				data_item1['id'] = fruit.id
+				data_item1['shop_id'] = fruit.shop_id
+				data_item1['active'] = fruit.active
+				data_item1['code'] = fruit.fruit_type.code
+				data_item1['tag'] = fruit.tag
+				data_item1['img_url'] = img_url
+				data_item1['intro'] = fruit.intro
+				data_item1['name'] = fruit.name
+				data_item1['favour_today'] = str(favour_today)
+				data_item1['group_id'] = fruit.group_id
+				data_item1['detail_no'] = str(detail_no)
 
-				data_item['tag'] = fruit.tag
-				data_item['img_url'] = img_url
-				data_item['intro'] = fruit.intro
-				data_item['name'] = fruit.name
-				data_item['favour_today'] = str(favour_today)
-				data_item['group_id'] = fruit.group_id
-				data_item['detail_no'] = str(detail_no)
+				data_item2['id'] = fruit.id
+				data_item2['shop_id'] = fruit.shop_id
+				data_item2['active'] = fruit.active
+				data_item2['code'] = fruit.fruit_type.code
+				data_item2['tag'] = fruit.tag
+				data_item2['img_url'] = img_url
+				data_item2['intro'] = fruit.intro
+				data_item2['name'] = fruit.name
+				data_item2['favour_today'] = str(favour_today)
+				data_item2['group_id'] = fruit.group_id
+				data_item2['detail_no'] = str(detail_no)
 
 				fruit_id = fruit.id
 				bought_customer_list = []
 				if fruit_id in killing_fruit_id:
-					seckill_goods_id = fruit_seckill_list[str(fruit.id)]
+					seckill_goods_id = fruit_seckill_list[str(fruit_id)]
 					customer_query = session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.seckill_goods_id == seckill_goods_id,models.CustomerSeckillGoods.status != 0).all()
 					for item in customer_query:
 						bought_customer_list.append(item.customer_id)
 
-				if fruit_id in killing_fruit_id and customer_id not in bought_customer_list:
+				if fruit_id in killing_fruit_id:
+					if customer_id in bought_customer_list:
+						data_item1['is_bought'] = 1
+					else:
+						data_item1['is_bought'] = 0
+
+					seckill_charge_type_id = fruit_charge_type[str(fruit_id)]
+					charge_types = [e for e in charge_types if e['id'] != seckill_charge_type_id]
 					seckill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
 								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
-					data_item['is_activity'] = 1
-					data_item['activity_id'] = seckill_info.activity_id
-					data_item['seckill_goods_id'] = seckill_info.id
-					data_item['charge_type_id'] = seckill_info.charge_type_id
+					data_item1['is_activity'] = 1
+					data_item1['activity_id'] = seckill_info.activity_id
+					data_item1['seckill_goods_id'] = seckill_info.id
+					data_item1['charge_type_id'] = seckill_info.seckill_charge_type_id
 
 					cur_charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.charge_type_id).first()
 					if int(cur_charge_type.num) == cur_charge_type.num:
 						cur_charge_type_num = int(cur_charge_type.num)
 					else:
 						cur_charge_type_num = cur_charge_type.num
-					data_item['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+					data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 
-					data_item['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
-					data_item['activity_piece'] = seckill_info.activity_piece
-				else:
-					data_item['is_activity'] = 0
+					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
+					data_item1['activity_piece'] = seckill_info.not_pick
+					data.append(data_item1)
 
-					data_item['charge_types'] = charge_types
-					data_item['storage'] = fruit.storage
-					data_item['saled'] = saled
-					data_item['favour'] = fruit.favour
-					data_item['limit_num'] = fruit.limit_num
-			
+				data_item2['is_activity'] = 0
+
+				data_item2['charge_types'] = charge_types
+				data_item2['storage'] = fruit.storage
+				data_item2['saled'] = saled
+				data_item2['favour'] = fruit.favour
+				data_item2['limit_num'] = fruit.limit_num
+				data.append(data_item2)
 				##
-
-				data.append(data_item)
 
 			return data
 
@@ -1595,10 +1616,21 @@ class Market(CustomerBaseHandler):
 		self.session.commit()
 		return self.send_success(notice='点赞成功，积分+1')
 
-	@CustomerBaseHandler.check_arguments("fruits")
+	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_id?:int")
 	def cart_list(self):
-		fruits = self.args["fruits"]
 		shop_id = int(self.get_cookie('market_shop_id'))
+		fruits = self.args["fruits"]
+		if 'seckill_goods_id' in self.args:
+			seckill_goods_id = self.args['seckill_goods_id']
+			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
+			self.session.add(customer_seckill_goods)
+			self.session.flush()
+			seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+			seckill_goods.not_pick -= 1
+			seckill_goods.picked += 1
+			self.session.flush()
+			self.session.commit()
+
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		try:
@@ -1650,7 +1682,6 @@ class GoodsSearch(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 		self.updatecoupon(customer_id)

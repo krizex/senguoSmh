@@ -252,6 +252,27 @@ $(document).ready(function(){
 }).on('click','.choose-goods a',function(){
 	var $this = $(this);
 	var cur_goods = $this.text();
+	var choose_goods_id = $this.attr('data-id');
+	var $cur_goods = $this.closest(".new-seckill-item").find(".cur-goods");
+	var flag = 0;
+	var compare_goods = '';
+
+	$('.cur-goods').each(function(){
+
+		if($(this) != $cur_goods){
+			var compare_id = $(this).attr('data-id');
+
+			if (compare_id == choose_goods_id){
+				flag = 1;
+				compare_goods = '商品' + $(this).closest(".new-seckill-item").find(".goods-num").text();
+			}
+		}
+	});
+	if (flag == 1){
+		Tip(cur_goods + '已经在' + compare_goods + '中被选择了，请选择其他商品！');
+		return false;
+	}
+
 	$this.closest(".new-seckill-item").find(".cur-goods").text(cur_goods);
 	$this.closest(".new-seckill-item").find(".choose-charge-type").removeClass("hidden");
 	$this.closest(".new-seckill-item").find(".cur-goods").attr("data-id",$this.attr('data-id'));
@@ -516,6 +537,40 @@ function createSeckill(action){
 			stop_flag = true;
 			Tip(goods_name+'的秒杀信息填写不完整！');
 		}
+
+		var choose_start_time = $('.start-time').val();
+		var choose_continue_time = parseInt($('.choose-hour').text())*60*60 + parseInt($('.choose-minute').text())*60 + parseInt($('.choose-second').text());
+		var choose_fruit_id = $this.find('.cur-goods').attr('data-id');
+		var url = '';
+		var data = {
+			choose_start_time:choose_start_time,
+			choose_continue_time:choose_continue_time,
+			choose_fruit_id:choose_fruit_id
+		};
+		var args = {
+			data:data,
+			action:'check_fruit'
+		};
+
+		$.ajaxSetup({
+		  	async : false
+		});
+		$.postJson(url,args,function(res){
+			if(res.success){
+				var flag = res.flag;
+				console.log(flag,typeof flag);
+				if (flag == 0){
+					stop_flag = true;
+					Tip(goods_name + '已经参与所选时间段内的其他秒杀活动，请选择其他商品！');
+					
+				}
+			}
+			else{
+				Tip(res.error_text);
+				stop_flag = true;
+			}
+		},function(){Tip('网络好像不给力呢~ ( >O< ) ~');stop_flag = true;});
+
 		var activity_status = $.getUrlParam('status');
 		if (action == 'seckill_edit' && activity_status == '2'){
 			var former_activity_piece = parseInt($this.find('.activity-store').attr('activity-piece-value'));
@@ -527,6 +582,11 @@ function createSeckill(action){
 		}
 	});
 
+	if (stop_flag){
+		create_seckill_lock = "off";
+		return false;
+	}
+	
 	$('.activity-store-input').each(function(){
 		var $this = $(this);
 		var goods_num = '商品' + $this.closest(".new-seckill-item").find('.goods-num').text();
@@ -551,6 +611,7 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
+
 	if (action == 'seckill_edit'){
 		var activity_id = $(".new-seckill-list").attr("activity-id");
 	}
