@@ -293,6 +293,17 @@ class Home(CustomerBaseHandler):
 			if_admin = None
 		if if_admin:
 			return self.redirect(self.reverse_url("switchshop"))
+		try:
+			if_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
+		except:
+			if_admin = None
+		try:
+			if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
+		except:
+			if_shop = None
+		if if_admin:
+			return self.redirect(self.reverse_url("switchshop"))
 		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
@@ -309,6 +320,18 @@ class Home(CustomerBaseHandler):
 			if_admin = None
 		if if_admin:
 			return self.send_fail("您已是卖家")
+		#判断申请店铺的微信是否已是某店铺的管理员身份
+		try:
+			if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
+		except:
+			if_shopadmin = None
+		try:
+			if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
+		except:
+			if_shop = None
+		if if_shopadmin:
+			return self.send_fail('该账号已是'+if_shop.shop_name+'的管理员，不能使用该账号申请店铺，若要使用该账号，请退出'+if_shop.shop_name+'管理员身份更换或其它账号')
 
 		if not self.args['phone']:
 			return self.send_fail("please input your phone number")
@@ -351,7 +374,13 @@ class CreateShop(AdminBaseHandler):
 			super_admin = None
 		if not super_admin:
 			return self.send_fail("您不是卖家，无法创建新的店铺")
-
+		try:
+			if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
+		except:
+			if_shopadmin = None
+		if if_shopadmin:
+			return self.send_fail("您没有创建店铺的权限")
 		#检查申请店铺数量
 		try:
 			shops = self.session.query(models.Shop).filter_by(admin_id=self.current_user.id)
