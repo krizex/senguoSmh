@@ -857,9 +857,9 @@ class Discount(CustomerBaseHandler):
 							chargesingle=[]
 							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
 							data1.append(tmp)
-							data0={"end_time":end_time,"group_data":data1}
-							data1=[]
-							data.append(data0)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]
+						data.append(data0)
 						break
 					elif y.use_goods==-1:
 						if_all=2
@@ -870,10 +870,10 @@ class Discount(CustomerBaseHandler):
 								chargesingle.append(x_charge)
 							chargesingle=[]
 							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
-							data0.append(tmp)
-							data1={"end_time":end_time,"group_data":data0}
-							data1=[]
-							data.append(data1)
+							data1.append(tmp)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]
+						data.append(data0)
 						break
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
@@ -890,7 +890,6 @@ class Discount(CustomerBaseHandler):
 						data.append(data0)
 				if if_all==1:
 					break
-			print(data)
 			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data)
 		elif action=="add_in_cart":
 			pass

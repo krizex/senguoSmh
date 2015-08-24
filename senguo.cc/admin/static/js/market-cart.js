@@ -1,3 +1,4 @@
+var activity_type = 0;
 $(document).ready(function(){
     var shop_code=$('#shop_imgurl').attr('data-code');
     SetCookie('market_shop_code',shop_code);
@@ -35,6 +36,7 @@ $(document).ready(function(){
         var type;
         if(parent.hasClass('fruit_item')){type=0}
         else if(parent.hasClass('menu_item')){type=1}
+        activity_type = $(this).attr("activity_type");
         confirmBox('确认删除该商品吗？//(ㄒoㄒ)//',index,type);
     });
     $(document).on('click','.confriming',function(){
