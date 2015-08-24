@@ -61,9 +61,10 @@ hr{margin-top:0 !important;;margin-bottom:0 !important;margin-left:24px;}
 .coupon-icon{width:20px;height:20px;background:url('../images/circle_coupon.png') left center;margin-right:10px;background-size:20px;margin-top:13px;}
 .w33{width:33.33% !important;}
 .c333{color: #333 !important;}
+/*
 @media screen and (min-width: 801px) {
     .seckill i{background-position: 0 -52px;}
     .discount i{background-position: 0 -80px;}
     .gbuy i{background-position: 0 -108px;}
     .presell i{background-position: 0 -134px;}
-}
+}*/

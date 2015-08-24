@@ -360,7 +360,7 @@ var goodsList=function(page,action,_group_id){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}">'+
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
@@ -382,7 +382,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{if is_activity==1 }}'+
-                                '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}" activity-id="{{seckill_id}}">'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                     '<span class="price-bo">{{charge_type_text}}</span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
                                     '</span>'+
@@ -673,7 +673,7 @@ function addCart(link,$obj){
     };
     if(link==0){
         args.price_dif = $obj.find(".price-dif").html();
-        args.seckill_id=$obj.attr("activity-id");
+        args.seckill_goods_id=$obj.attr("seckill_goods_id");
     }
     if(!isEmptyObj(fruits)){
         fruits={};

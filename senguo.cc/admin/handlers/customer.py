@@ -508,7 +508,7 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0
-		current_customer_id=self.Current_user.id
+		current_customer_id=self.current_user.id
 		shop_id = shop.id
 		# 优惠券发现
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=0).all()
@@ -533,8 +533,8 @@ class Discover(CustomerBaseHandler):
 		discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
 		discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
 		discount_text=''
-		if discount_count:
-		discount_text=str(discount_count)+'种商品正在'
+		#if discount_count:
+			#discount_text=str(discount_count)+'种商品正在'
 		# added by jyj 2015-8-18 for seckill
 		self.update_seckill()
 		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active

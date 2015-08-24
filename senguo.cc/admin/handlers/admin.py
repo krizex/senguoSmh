@@ -4909,7 +4909,7 @@ class Discount(AdminBaseHandler):
 			data0.append(x_goodsgroup)
 			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id).all()
 			for x in Chargetype:
-				x_charge={"charge_id":x.id,"charge":x.price+'元/'+x.num+self.getUnit(x.unit)}
+				x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
 				chargesingle.append(x_charge)
 			chargegroup.append(chargesingle)
 			chargesingle=[]
@@ -4927,7 +4927,7 @@ class Discount(AdminBaseHandler):
 				data0.append(x_goodsgroup)
 				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id).all()
 				for z in Chargetype:
-					x_charge={"charge_id":z.id,"charge":z.price+'元/'+z.num+self.getUnit(z.unit)}
+					x_charge={"charge_id":z.id,"charge":str(z.price)+'元/'+str(z.num)+self.getUnit(z.unit)}
 					chargesingle.append(x_charge)
 				chargegroup.append(chargesingle)
 				chargesingle=[]
