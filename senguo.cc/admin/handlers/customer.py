@@ -1068,8 +1068,14 @@ class Market(CustomerBaseHandler):
 					wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
 					print(wx_openid,appid,appsecret)
 					if wx_openid:
-						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
-						self.session.add(admin_customer_openid)
+						#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
+						admin_customer_openid = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+						if admin_customer_openid:
+							print('update other wxopenid')
+							admin_customer_openid.wx_openid = wx_openid
+						else:
+							admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
+							self.session.add(admin_customer_openid)
 						self.session.commit()
 					# else:
 					#	print('[CustomerMarket]get openid failed')
