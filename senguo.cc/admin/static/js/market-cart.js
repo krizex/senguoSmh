@@ -695,7 +695,8 @@ function itemDelete(target,menu_type) {
     var args = {
         action: action,
         charge_type_id: charge_type_id,
-        menu_type: menu_type
+        menu_type: menu_type,
+        activity_type:activity_type
     };
     $.postJson(url, args, function (res) {
             if (res.success) {

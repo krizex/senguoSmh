@@ -855,7 +855,11 @@ class Discount(CustomerBaseHandler):
 								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
 								chargesingle.append(x_charge)
 							chargesingle=[]
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
+							if each_frut.img_url:
+								img_url = each_frut.img_url.split(';')[0]
+							else:
+								img_url= ""
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
 							data1.append(tmp)
 						data0={"end_time":end_time,"group_data":data1}
 						data1=[]
@@ -869,10 +873,14 @@ class Discount(CustomerBaseHandler):
 								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
 								chargesingle.append(x_charge)
 							chargesingle=[]
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
+							if each_frut.img_url:
+								img_url = each_frut.img_url.split(';')[0]
+							else:
+								img_url= ""
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
 							data1.append(tmp)
 						data0={"end_time":end_time,"group_data":data1}
-						data1=[]
+						data1=[]	
 						data.append(data0)
 						break
 					else:
@@ -883,7 +891,11 @@ class Discount(CustomerBaseHandler):
 							x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
 							chargesingle.append(x_charge)
 						chargesingle=[]
-						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage}
+						if fruit.img_url:
+							img_url = fruit.img_url.split(';')[0]
+						else:
+							img_url= ""
+						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage,"img_url":img_url,"count":0}
 						data1.append(tmp)
 						data0={"end_time":end_time,"group_data":data1}
 						data1=[]
