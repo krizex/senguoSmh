@@ -5014,17 +5014,18 @@ class Discount(AdminBaseHandler):
 			goods=goods[1:]
 			data_tmp={"discount_id":x.discount_id,"discount_way":x.discount_way,"start_date":start_date,"end_date":end_date,"incart_num":x.incart_num,"ordered_num":x.ordered_num,"weeks":weeks,"goods":goods}
 			data.append(data_tmp)
-	def judgetimeright(self,q,can_choose,start_date,end_date,f_time,t_time):
+	def judgetimeright(self,q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks):
 		current_shop_id=self.current_shop.id
+		now_date=int(time.time())
 		if q:
 			for y in q:
 				ygroup=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=y.discount_id).first()
-				if ygroup.discount_way==0:
+				if ygroup.discount_way==0 and discount_way==0:
 					if start_date<ygroup.start_date and end_date>=ygroup.start_date:
 						can_choose=1
 					elif start_date>=ygroup.start_date and start_date<=ygroup.end_date:
 						can_choose=1
-				else:
+				elif ygroup.discount_way==1 and discount_way==1:
 					for week in eval(weeks):
 						if week in eval(ygroup.weeks):
 							if f_time<ygroup.f_time and t_time>=ygroup.f_time:
@@ -5033,6 +5034,36 @@ class Discount(AdminBaseHandler):
 							elif f_time>=ygroup.f_time and f_time<=ygroup.t_time:
 								can_choose=1
 								break
+				elif ygroup.discount_way==0 and discount_way==1:
+					begin=time.strftime('%w',time.localtime(ygroup.start_date))
+					if begin==0:
+						begin=7
+					if now_date>=ygroup.start_date:
+						if ygroup.end_date-ygroup.now_date>=7*24*3600:
+							can_choose=1
+						else:
+							begin=time.strftime('%w',time.localtime(now_date))
+							if begin==0:
+								begin=7
+							for week in eval(weeks):
+								if week>=begin and week<=end:
+									can_choose=1
+									break		
+					else:
+						if ygroup.end_date-ygroup.start_date>=7*24*3600:
+							can_choose=1
+						else:
+							end=time.strftime('%w',time.localtime(y.end_date))
+							if end==0:
+								end=7
+							for week in eval(weeks):
+								if week>=begin and week<=end:
+									can_choose=1
+									break							
+				elif ygroup.discount_way==1 and discount_way==0:
+					begin=time.strftime('%w',time.localtime(start_date))
+					#
+
 				if can_choose==1:
 					break
 		return can_choose
@@ -5194,11 +5225,11 @@ class Discount(AdminBaseHandler):
 				#进行判断添加这个时刻有没有已经存在进行的活动
 				can_choose=0 # 0 表示可以选择 不冲突 ，1表示冲突 需重新选择
 				q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2).all()
-				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time)
+				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks)
 				if can_choose==1:
 					return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 				q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"]).filter(models.DiscountShop.status<2).all()
-				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time)
+				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks)
 				if can_choose==1:
 					return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
 				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),\

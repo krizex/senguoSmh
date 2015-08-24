@@ -855,11 +855,15 @@ class Discount(CustomerBaseHandler):
 								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
 								chargesingle.append(x_charge)
 							chargesingle=[]
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
+							if each_frut.img_url:
+								img_url = each_frut.img_url.split(';')[0]
+							else:
+								img_url= ""
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
 							data1.append(tmp)
-							data0={"end_time":end_time,"group_data":data1}
-							data1=[]
-							data.append(data0)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]
+						data.append(data0)
 						break
 					elif y.use_goods==-1:
 						if_all=2
@@ -869,11 +873,15 @@ class Discount(CustomerBaseHandler):
 								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
 								chargesingle.append(x_charge)
 							chargesingle=[]
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
-							data0.append(tmp)
-							data1={"end_time":end_time,"group_data":data0}
-							data1=[]
-							data.append(data1)
+							if each_frut.img_url:
+								img_url = each_frut.img_url.split(';')[0]
+							else:
+								img_url= ""
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
+							data1.append(tmp)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]	
+						data.append(data0)
 						break
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
@@ -883,14 +891,17 @@ class Discount(CustomerBaseHandler):
 							x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
 							chargesingle.append(x_charge)
 						chargesingle=[]
-						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage}
+						if fruit.img_url:
+							img_url = fruit.img_url.split(';')[0]
+						else:
+							img_url= ""
+						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage,"img_url":img_url,"count":0}
 						data1.append(tmp)
 						data0={"end_time":end_time,"group_data":data1}
 						data1=[]
 						data.append(data0)
 				if if_all==1:
 					break
-			print(data)
 			return self.render("seckill/discount.html",shop_code=shop.shop_code,output_data=data)
 		elif action=="add_in_cart":
 			pass
