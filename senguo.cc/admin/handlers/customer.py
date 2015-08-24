@@ -1445,7 +1445,7 @@ class Market(CustomerBaseHandler):
 					data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 
 					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
-					data_item1['activity_piece'] = seckill_info.activity_piece
+					data_item1['activity_piece'] = seckill_info.not_pick
 					data.append(data_item1)
 
 				data_item2['is_activity'] = 0
