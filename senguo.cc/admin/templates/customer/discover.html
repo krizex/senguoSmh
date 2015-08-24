@@ -41,7 +41,7 @@
     {% end %}
     {%if discount_active==0 and discount_display_flag==1%}
     <li class="title clearfix bg-white font14 discount">
-        <a href="{{reverse_url('ConfessionDiscount')}}?action=detail" class="text-grey3 confess-wall">
+        <a href="{{reverse_url('ConfessionDiscount',handler.shop_code)}}?action=detail" class="text-grey3 confess-wall">
             <span class="pull-right imore"></span>
             <i class="pull-left"></i>
             <span class="pull-left confess-text">限时折扣<span class="font12 text-grey ml6">{{discount_text}}</span></span>
