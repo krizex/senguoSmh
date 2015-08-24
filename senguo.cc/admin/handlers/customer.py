@@ -1639,10 +1639,14 @@ class Market(CustomerBaseHandler):
 		self.session.commit()
 		return self.send_success()
 
-	@CustomerBaseHandler.check_arguments("charge_type_id:int")
+	@CustomerBaseHandler.check_arguments("charge_type_id:int","activity_type?:int")
 	def cart(self, action):
 		charge_type_id = self.args["charge_type_id"]
-		self.save_cart(charge_type_id, self.shop_id, action)
+		if 'activity_type' in self.args:
+			activity_type = self.args['activity_type']
+		else:
+			activity_type = 0
+		self.save_cart(charge_type_id, self.shop_id, action,activity_type)
 		return self.send_success()
 
 # 商品 - 商品搜索
