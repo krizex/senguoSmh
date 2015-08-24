@@ -7,109 +7,46 @@
 </div>
 {% end %}
 {% block content %}
-<div class="wrap-seckill pm40">
+<div class="wrap-seckill pm80">
+    {% for item in output_data %}
     <div class="discount-item-box">
-        <div class="show-time-box no-seckill-time txt-al">
+        <div class="show-time-box no-seckill-time txt-al" data-time="{{item['end_time']}}">
             <span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>
         </div>
         <ul class="nm-list">
-            <li>
+            {% for goods in item['group_data']%}
+            <li data-id="{{goods['goods_id']}}">
                 <dl class="nm-dl">
                     <dt>
-                        <img src="/static/images/TDSG.png" alt="商品图片"/>
-                    <div class="cover-img"></div>
+                        <img src="{{goods['img_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{goods['goods_name']}}"/>
+                        <div class="cover-img {% if goods['storage']!=0%}hide{% end %}"></div>
                     </dt>
                     <dd>
-                        <p class="c333 clip nm-name pt0">水晶大葡萄，非常好吃哦</p>
-                        <div class="no-goods wrap-discount-item">
-                            <span class="price-bo">1元/kg</span>
-                            <span class="price-tip">8折</span>
-                            <div class="wrap-operate" data-num="5">
-                                <span class="roll-btn minus-btn">-</span>
-                                <span class="num-txt">5</span>
+                        <p class="c333 clip nm-name pt0">{{goods['goods_name']}}</p>
+                        {% for charge in goods['charge_types']%}
+                        <div class="wrap-discount-item {% if goods['storage']==0 %}no-goods{% end %}" data-id="{{charge['charge_id']}}">
+                            <span class="price-bo">{{charge['charge']}}</span>
+                            <span class="price-tip">{{goods['discount_rate']}}折</span>
+                            <div class="wrap-operate" data-num="{{goods['count']}}">
+                                <span class="roll-btn minus-btn {% if goods['count']==0 %}hide{% end %}">-</span>
+                                <span class="num-txt {% if goods['count']==0 %}hide{% end %}">{{goods['count']}}</span>
                                 <span class="roll-btn add-btn">+</span>
                             </div>
                         </div>
-                        <div class="no-goods wrap-discount-item">
-                            <span class="price-bo">1元/kg</span>
-                            <span class="price-tip">8折</span>
-                            <div class="wrap-operate" data-num="5">
-                                <span class="roll-btn minus-btn">-</span>
-                                <span class="num-txt">5</span>
-                                <span class="roll-btn add-btn">+</span>
-                            </div>
-                        </div>
+                        {% end %}
                     </dd>
                 </dl>
             </li>
-            <li>
-                <dl class="nm-dl">
-                    <dt>
-                        <img src="/static/images/TDSG.png" alt="商品图片"/>
-                    <div class="cover-img hide"></div>
-                    </dt>
-                    <dd>
-                        <p class="c333 clip nm-name pt0">水晶大葡萄，非常好吃哦</p>
-                        <div class="wrap-discount-item">
-                            <span class="price-bo">1元/kg</span>
-                            <span class="price-tip">9折</span>
-                            <div class="wrap-operate" data-num="5">
-                                <span class="roll-btn minus-btn">-</span>
-                                <span class="num-txt">1</span>
-                                <span class="roll-btn add-btn">+</span>
-                            </div>
-                        </div>
-                    </dd>
-                </dl>
-            </li>
-            <li>
-                <dl class="nm-dl">
-                    <dt>
-                        <img src="/static/images/TDSG.png" alt="商品图片"/>
-                    <div class="cover-img hide"></div>
-                    </dt>
-                    <dd>
-                        <p class="c333 clip nm-name pt0">水晶大葡萄，非常好吃哦</p>
-                        <div class="wrap-discount-item">
-                            <span class="price-bo">1元/kg</span>
-                            <span class="price-tip">8折</span>
-                            <div class="wrap-operate"  data-num="0">
-                                <span class="roll-btn minus-btn hide">-</span>
-                                <span class="num-txt hide">1</span>
-                                <span class="roll-btn add-btn">+</span>
-                            </div>
-                        </div>
-                    </dd>
-                </dl>
-            </li>
+            {% end %}
         </ul>
     </div>
+    {% end %}
+    <p class="no-result mt10 hide">加载中...</p>
 </div>
-<p class="no-result mt10">加载中...</p>
 <a href="javascript:;" class="go-cart">
     <span class="cart-num origin-cart hide">0</span>
 </a>
 <ul class="hide" id="discount-item">
-    <li>
-        <dl class="nm-dl">
-            <dt>
-                <img src="/static/images/TDSG.png" alt="商品图片"/>
-            <div class="cover-img"></div>
-            </dt>
-            <dd>
-                <p class="c333 clip nm-name pt0">水晶大葡萄，非常好吃哦</p>
-                <p class="no-goods mt20">
-                    <span class="price-bo">1元/kg</span>
-                    <span class="price-tip">8折</span>
-                </p>
-                <div class="wrap-operate" data-num="5">
-                    <span class="roll-btn minus-btn">-</span>
-                    <span class="num-txt">5</span>
-                    <span class="roll-btn add-btn">+</span>
-                </div>
-            </dd>
-        </dl>
-    </li>
 </ul>
 {% end %}
 {% block bottom %}

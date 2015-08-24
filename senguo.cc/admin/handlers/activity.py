@@ -902,7 +902,7 @@ class Discount(CustomerBaseHandler):
 						data.append(data0)
 				if if_all==1:
 					break
-			return self.render("seckill/discount.html",shop_code=shop.shop_code,output_data=data)
+			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data)
 		elif action=="add_in_cart":
 			pass
 		elif action=="add_in_order":

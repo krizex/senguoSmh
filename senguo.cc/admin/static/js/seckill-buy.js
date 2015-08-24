@@ -30,6 +30,8 @@ $(document).ready(function(){
     if(num==0){
         $parent.children(".num-txt").removeClass("hide").html(1);
         $parent.children(".minus-btn").removeClass("hide");
+        var num = parseInt($(".cart-num").html());
+        $(".cart-num").html(num+1).removeClass("hide");
     }
     num++;
     $parent.children(".num-txt").html(num);
@@ -41,6 +43,8 @@ $(document).ready(function(){
         num=0;
         $parent.children(".num-txt").addClass("hide");
         $(this).addClass("hide");
+        var num = parseInt($(".cart-num").html());
+        $(".cart-num").html(num-1).removeClass("hide");
     }else{
         num--;
         $parent.children(".num-txt").html(num);
@@ -61,15 +65,24 @@ $(document).ready(function(){
     getList(id);
 }).on("click",".seckill-btn",function(){//抢
     var id = $(this).closest("li").attr("charge_type_id");
+    var storage = parseInt($(this).closest("li").find(".store-num").html());
+    if(storage==0){
+        $(this).closest("li").find(".cover-img").removeClass("hide");
+        $(this).closest("li").find(".goods-price-row").addClass("no-goods");
+        $(this).closest("li").find(".seckill-btns").addClass("hide");
+        $(this).closest("li").find(".seckill-btn-more").removeClass("hide");
+        return Tip("当前商品已经秒杀完了，下次记得早点哦~~");
+    }
     window.dataObj.fruits[id]=1;
     $(this).addClass("hide");
     $(this).next(".seckill-btn-more").removeClass("hide");
     var num = parseInt($(".cart-num").html());
     $(".cart-num").html(num+1).removeClass("hide");
+    Tip("请在秒杀结束前支付,否则将按原价付款哦!");
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
-    addCart($(this).closest("li"));
+    //addCart($(this).closest("li"));
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
     window.location.href="/"+shop_code;
@@ -126,19 +139,25 @@ function insertGoods(data){
         $(".no-result").addClass("hide");
         for(var key in data){
             var $item = $("#seckill-item").children("li").clone();
-            $item.attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id);
+            $item.attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id).attr("is_bought",data[key].is_bought);
             $item.find(".image").attr("src",data[key].img_url || '/static/images/TDSG.png');
             $item.find(".store-num").html(data[key].activity_piece);
             $item.find(".nm-name").html(data[key].goods_name);
             $item.find(".price-bo").html(data[key].charge_type_text);
             $item.find(".price-dif").html(data[key].price_dif);
-            if(data.activity_piece==0){
+            if(data[key].activity_piece==0){
                 $item.find(".cover-img").removeClass("hide");
                 $item.find(".goods-price-row").addClass("no-goods");
+                $item.find(".seckill-btns").addClass("hide");
+                $item.find(".seckill-btn-more").removeClass("hide");
             }
             if($(".seckill-ing").hasClass("hide")){//未开始
                 $item.find(".seckill-btns").addClass("hide");
                 $item.find(".seckill-btn-first").removeClass("hide");
+            }
+            if(data[key].is_bought==1){
+                $item.find(".seckill-btns").addClass("hide");
+                $item.find(".seckill-btn-more").removeClass("hide");
             }
             $("#seckill_list").append($item);
         }
@@ -151,8 +170,10 @@ function countTime(time,start_time){
     if(start_time*1000<=time_now){//正在进行
         $(".no-seckill-time").addClass("hide");
         $(".seckill-ing").removeClass("hide");
-        $(".seckill-btns").addClass("hide");
-        $(".seckill-btn").removeClass("hide");
+        if($(".seckill-ing").hasClass("hide")){
+            $(".seckill-btns").addClass("hide");
+            $(".seckill-btn").removeClass("hide");
+        }
     }else{
         $(".seckill-ing").addClass("hide");
         $(".no-seckill-time").removeClass("hide");

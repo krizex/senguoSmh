@@ -5,8 +5,6 @@ var _group_finished=true;
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();
-    //$(".container").height(height).css("overflow","hidden").css("paddingBottom","0");
-    //$("#wrap-home-box").height(height-50);
     $(".notice-item").width("100%");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
     var swiper = new Swiper('#swiper-container',{
@@ -248,7 +246,8 @@ $(document).ready(function(){
     $(this).next(".seckill-btn-yes").removeClass("hidden");
     wobble($('.cart_num'));
     $(".cart_num").removeClass("hidden").html(++window.dataObj.cart_count);
-    addCart(0,$(this).closest("li"));
+    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
+    //addCart(0,$(this).closest("li"));
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -344,7 +343,6 @@ var goodsList=function(page,action,_group_id){
         });
         var initData=function(data){
             var data=data;
-            console.log(data);
             for(var key in data){
                 $('.classify-'+data[key]['group_id']).removeClass('hidden');
                 $('.goods-list-'+data[key]['group_id']).attr("data-nomore",nomore);
@@ -387,8 +385,8 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                                     '<span class="price-bo">{{charge_type_text}}</span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box wrap-seckill-price">'+
-                                        '<span class="seckill-btn seckill-goods add_cart_num">抢!</span>'+
-                                        '<span class="seckill-btn seckill-btn-yes hidden">已抢</span>'+
+                                        '<span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}">抢!</span>'+
+                                        '<span class="seckill-btn seckill-btn-yes {{if is_bought==0}}hidden{{/if}}">已抢</span>'+
                                     '</span>'+
                                 '</li>'+
                                 '{{/if}}'+
@@ -451,6 +449,7 @@ var fruitItem=function(box,fruits,type){
     var charge_type_text = fruits['charge_type_text'];
     var charge_type_id = fruits['charge_type_id'];
     var seckill_id = fruits['seckill_goods_id'];
+    var is_bought = fruits['is_bought'];
     var heart='';
     var sold_out='';
     var ori_img='';
@@ -497,7 +496,8 @@ var fruitItem=function(box,fruits,type){
         activity_piece:activity_piece,//库存
         charge_type_text:charge_type_text,
         charge_type_id:charge_type_id,
-        seckill_id:seckill_id
+        seckill_id:seckill_id,
+        is_bought:is_bought
     });
     var $obj = $(html);
     box.append($obj);
