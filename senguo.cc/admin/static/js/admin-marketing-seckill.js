@@ -252,6 +252,27 @@ $(document).ready(function(){
 }).on('click','.choose-goods a',function(){
 	var $this = $(this);
 	var cur_goods = $this.text();
+	var choose_goods_id = $this.attr('data-id');
+	var $cur_goods = $this.closest(".new-seckill-item").find(".cur-goods");
+	var flag = 0;
+	var compare_goods = '';
+
+	$('.cur-goods').each(function(){
+
+		if($(this) != $cur_goods){
+			var compare_id = $(this).attr('data-id');
+
+			if (compare_id == choose_goods_id){
+				flag = 1;
+				compare_goods = '商品' + $(this).closest(".new-seckill-item").find(".goods-num").text();
+			}
+		}
+	});
+	if (flag == 1){
+		Tip(cur_goods + '已经在' + compare_goods + '中被选择了，请选择其他商品！');
+		return false;
+	}
+
 	$this.closest(".new-seckill-item").find(".cur-goods").text(cur_goods);
 	$this.closest(".new-seckill-item").find(".choose-charge-type").removeClass("hidden");
 	$this.closest(".new-seckill-item").find(".cur-goods").attr("data-id",$this.attr('data-id'));
@@ -565,9 +586,7 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
-	// for(var i=0; i<){
-	// $('.activity-store-input').eq(i)
-	// }
+	
 	$('.activity-store-input').each(function(){
 		var $this = $(this);
 		var goods_num = '商品' + $this.closest(".new-seckill-item").find('.goods-num').text();

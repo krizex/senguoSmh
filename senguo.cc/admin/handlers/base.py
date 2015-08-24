@@ -1609,7 +1609,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				else:
 					img_url= None
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
-										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num}
+										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
+										  "activity_type":charge_type.activity_type}
 		return fruits
 
 	@property
