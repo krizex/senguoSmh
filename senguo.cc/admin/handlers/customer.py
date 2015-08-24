@@ -1429,7 +1429,7 @@ class Market(CustomerBaseHandler):
 					data_item1['is_activity'] = 1
 					data_item1['activity_id'] = seckill_info.activity_id
 					data_item1['seckill_goods_id'] = seckill_info.id
-					data_item1['charge_type_id'] = seckill_info.charge_type_id
+					data_item1['charge_type_id'] = seckill_info.seckill_charge_type_id
 
 					cur_charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.charge_type_id).first()
 					if int(cur_charge_type.num) == cur_charge_type.num:
@@ -1606,7 +1606,7 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits")
 	def cart_list(self):
 		fruits = self.args["fruits"]
-		print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@",type(fruits))
+		print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@",fruits)
 		shop_id = int(self.get_cookie('market_shop_id'))
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")

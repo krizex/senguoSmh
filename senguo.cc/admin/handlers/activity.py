@@ -799,7 +799,7 @@ class Seckill(CustomerBaseHandler):
 			else:
 				goods_item['img_url'] = ""
 			goods_item['goods_name'] = cur_goods.name
-			goods_item['charge_type_id'] = goods.charge_type_id
+			goods_item['charge_type_id'] = goods.seckill_charge_type_id
 
 			cur_charge_type = self.session.query(models.ChargeType).filter_by(id = goods.charge_type_id).first()
 			if int(cur_charge_type.num) == cur_charge_type.num:

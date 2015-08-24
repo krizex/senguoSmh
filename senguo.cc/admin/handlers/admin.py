@@ -5564,7 +5564,30 @@ class MarketingSeckill(AdminBaseHandler):
 				ordered = 0
 				deleted = 0
 
-				seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,former_price=former_price,seckill_price=seckill_price,\
+				pre_charge_type = self.session.query(models.ChargeType).filter_by(id = charge_type_id).first()
+				cur_fruit_id = fruit_id
+				cur_price = seckill_price
+				cur_unit = 3
+				cur_num = 1
+				cur_unit_num = pre_charge_type.unit_num/pre_charge_type.num
+				cur_unit_num = round(cur_unit_num,6)
+				cur_active = pre_charge_type.active
+				cur_market_price = pre_charge_type.market_price
+				cur_select_num = pre_charge_type.select_num
+				cur_relate = pre_charge_type.relate * pre_charge_type.num
+				cur_relate = round(cur_relate,6)
+				cur_activity_type = 1
+
+				insert_charge_type = models.ChargeType(fruit_id=cur_fruit_id,price=cur_price,unit=cur_unit,num=cur_num,unit_num=cur_unit_num,\
+									active=cur_active,market_price=cur_market_price,select_num=cur_select_num,relate=cur_relate,activity_type=cur_activity_type)
+				self.session.add(insert_charge_type)
+				self.session.flush()
+				insert_charge_type_id = insert_charge_type.id
+				self.session.commit()
+
+				seckill_charge_type_id = insert_charge_type_id
+
+				seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,seckill_charge_type_id=seckill_charge_type_id,former_price=former_price,seckill_price=seckill_price,\
 									storage_piece=storage_piece,activity_piece=activity_piece,not_pick=not_pick,picked=picked,ordered=ordered,deleted=deleted)
 				self.session.add(seckill_goods)
 
@@ -5748,8 +5771,31 @@ class MarketingSeckill(AdminBaseHandler):
 				ordered = 0
 				deleted = 0
 
+				pre_charge_type = self.session.query(models.ChargeType).filter_by(id = charge_type_id).first()
+				cur_fruit_id = fruit_id
+				cur_price = seckill_price
+				cur_unit = 3
+				cur_num = 1
+				cur_unit_num = pre_charge_type.unit_num/pre_charge_type.num
+				cur_unit_num = round(cur_unit_num,6)
+				cur_active = pre_charge_type.active
+				cur_market_price = pre_charge_type.market_price
+				cur_select_num = pre_charge_type.select_num
+				cur_relate = pre_charge_type.relate * pre_charge_type.num
+				cur_relate = round(cur_relate,6)
+				cur_activity_type = 1
+
+				insert_charge_type = models.ChargeType(fruit_id=cur_fruit_id,price=cur_price,unit=cur_unit,num=cur_num,unit_num=cur_unit_num,\
+									active=cur_active,market_price=cur_market_price,select_num=cur_select_num,relate=cur_relate,activity_type=cur_activity_type)
+				self.session.add(insert_charge_type)
+				self.session.flush()
+				insert_charge_type_id = insert_charge_type.id
+				self.session.commit()
+				seckill_charge_type_id = insert_charge_type_id
+
 				goods_query.fruit_id = fruit_id
 				goods_query.charge_type_id = charge_type_id
+				goods_query.seckill_charge_type_id = seckill_charge_type_id
 				goods_query.former_price = former_price
 				goods_query.seckill_price = seckill_price
 				goods_query.storage_piece = storage_piece
@@ -5805,17 +5851,14 @@ class MarketingSeckill(AdminBaseHandler):
 			for item in activity_query:
 				if (item[0] > choose_start_time and item[0] < choose_end_time) or (item[1] > choose_start_time and item[1] < choose_end_time) or (item[0] < choose_start_time and item[1] > choose_end_time):
 					cur_activity_list.append(item[2])
-			print("&&&&&cur_activity_list",cur_activity_list)
 			if not cur_activity_list:
 				flag = 1
 			else:
 				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list)).all()
 				for item in fruit_query:
-					print("@@@item.fruit_id,choose_fruit_id",item.fruit_id,choose_fruit_id)
 					if item.fruit_id == choose_fruit_id:
 						flag = 0
 						break
-			print("###flag",flag)
 			return self.send_success(flag = flag)
 
 		else:

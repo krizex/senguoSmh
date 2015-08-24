@@ -1436,7 +1436,7 @@ class ChargeType(MapBase, _CommonApi):
 	select_num = Column(Integer, default=1) #6.4
 	relate = Column(Float, default=1) # 库存换算关系
 
-	# activity_type = Column(TINYINT,default=0)
+	activity_type = activity_type = Column(TINYINT,default=0) #0:正常计价方式，未参与任何活动;1:秒杀活动计价方式;2:限时折扣活动计价方式
 	
 	fruit = relationship("Fruit", uselist=False)
 
@@ -1983,7 +1983,8 @@ class SeckillGoods(MapBase, _CommonApi):
 	fruit_id = Column(Integer,ForeignKey(Fruit.id),nullable=False)
 	activity_id=Column(Integer,ForeignKey(SeckillActivity.id),nullable=False)   
 
-	charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的计价方式id
+	charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的原来计价方式id
+	seckill_charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的计价方式id
 	former_price=Column(Float) 	#原价
 	seckill_price=Column(Float,nullable=False)  	#秒杀价,计价方式与former_price相同
 	storage_piece=Column(Integer)    #当前商品剩余库存换算成当前计价方式的份数，取整
