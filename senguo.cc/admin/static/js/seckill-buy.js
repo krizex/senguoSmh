@@ -78,6 +78,7 @@ $(document).ready(function(){
     $(this).next(".seckill-btn-more").removeClass("hide");
     var num = parseInt($(".cart-num").html());
     $(".cart-num").html(num+1).removeClass("hide");
+    Tip("请在秒杀结束前支付,否则将按原价付款哦!");
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
