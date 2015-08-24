@@ -26,11 +26,13 @@
                     </span>
                     </div>
                     <div class="action-box font14">
+                        {% if cart_f[key]['activity_type']!=1 %}
                         <span class="pull-left number-change set-inl-blo">
                             <button class="minus-plus text-green  number-plus text-center font18 bg_change"></button>
                             <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
                             <button class="minus-plus text-green  number-minus text-center font18 bg_change"></button>
                         </span>
+                        {% end %}
                         <div class="pull-right delete-btn">
                             <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
                         </div>
