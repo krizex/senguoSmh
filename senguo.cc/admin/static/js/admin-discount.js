@@ -123,20 +123,24 @@ $(document).ready(function () {
     $('.discount-tip').addClass("hidden");
 }).on("click",".use_goods_group_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
+    var data={use_goods_group:id}
+    var args={action:"check_group",data:data}
     var index = $(this).closest("li").index();
     index1=index;
-    getGoods(index,$(this).closest('td').find(".use_goods_lst"));
-    $(this).closest('div').find(".use_goods_group").html($(this).html()).attr("data-id",id);
-    $(this).closest('div').find(".use_goods").html("所有商品").attr("data-id","-1");
+    $this=$(this);
+    getGoods(index,$this.closest('td').find(".use_goods_lst"));
+    $this.closest('div').find(".use_goods_group").html($this.html()).attr("data-id",id);
+    $this.closest('div').find(".use_goods").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
-    $(this).closest('div').find(".use_goods").html($(this).html()).attr("data-id",id);
-     if (id!=-1){
-        $(this).closest('table').find(".charge-type").removeClass("hidden");
-    }
-    else $(this).closest('table').find(".charge-type").addClass("hidden");
     var index2 = $(this).closest("li").index();
-    getCharge(index1,index2,$(this).closest('table').find(".charge_list"));
+    $this=$(this);
+    $this.closest('div').find(".use_goods").html($this.html()).attr("data-id",id);
+    if (id!=-1){
+        $this.closest('table').find(".charge-type").removeClass("hidden");
+    }
+    else $this.closest('table').find(".charge-type").addClass("hidden");
+    getCharge(index1,index2,$this.closest('table').find(".charge_list"));
 }).on('click','.charge_list button',function(){
     if($(this).hasClass("back_green")){
         $(this).removeClass("back_green");
@@ -281,6 +285,11 @@ $(document).ready(function () {
         $this.find('.charge_list button').addClass("disabled");
         $(this).attr("data-id",3).addClass("text_gray").text("已停用");
     }
+}).on('click','.cm_new_discout',function(){
+    if(parseInt($('.can_new_discount').val())==1){
+        return Tip("当前时间正在进行全场商品折扣，你可以选择停用原限时折扣或者等待活动结束");
+    }
+    else window.location.href="/admin/discount?action=newdiscountpage";
 });
 
 function getinfo(){
