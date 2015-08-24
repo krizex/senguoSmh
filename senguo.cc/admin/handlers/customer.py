@@ -2277,18 +2277,13 @@ class Order(CustomerBaseHandler):
 					print('[CustomerOrder]Order Cancel: old history not found')
 				else:
 					old_balance_history.is_cancel = 1
-					self.session.commit()
+					self.session.flush()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.new_totalprice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 				self.session.add(balance_history)
 			self.session.commit()
-			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-			if order.shop.admin.has_mp:
-				self.order_cancel_msg(self.session,order,cancel_time)
-			else:
-				self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			# 订单删除，恢复优惠券
 			coupon_key=order.coupon_key
@@ -2300,7 +2295,12 @@ class Order(CustomerBaseHandler):
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
 
-			self.order_cancel_msg(self.session,order,cancel_time,None)
+			# 发送订单取消模版消息
+			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+			if order.shop.admin.has_mp:
+				self.order_cancel_msg(self.session,order,cancel_time)
+			else:
+				self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			return self.send_success()
 
