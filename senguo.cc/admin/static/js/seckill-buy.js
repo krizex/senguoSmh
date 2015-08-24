@@ -63,8 +63,9 @@ $(document).ready(function(){
     var id = $(this).closest("li").attr("charge_type_id");
     window.dataObj.fruits[id]=1;
     $(this).addClass("hide");
-    $(".seckill-btn-more").removeClass("hide");
-    $(".cart-num").removeClass("hide");
+    $(this).next(".seckill-btn-more").removeClass("hide");
+    var num = parseInt($(".cart-num").html());
+    $(".cart-num").html(num+1).removeClass("hide");
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
@@ -83,8 +84,7 @@ function addCart($obj){
     var args={
         action:action,
         fruits:fruits,
-        seckill_id:$obj.attr("seckill-id"),
-        price_dif:$obj.find(".price-dif").html()
+        seckill_goods_id:$obj.attr("seckill-id")
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
@@ -114,7 +114,6 @@ function getList(activity_id){
         if(res.success){
             $("#seckill_list").empty();
             var data = res.output_data;
-            console.log(data);
             insertGoods(data);
         }
     });
@@ -137,6 +136,10 @@ function insertGoods(data){
                 $item.find(".cover-img").removeClass("hide");
                 $item.find(".goods-price-row").addClass("no-goods");
             }
+            if($(".seckill-ing").hasClass("hide")){//未开始
+                $item.find(".seckill-btns").addClass("hide");
+                $item.find(".seckill-btn-first").removeClass("hide");
+            }
             $("#seckill_list").append($item);
         }
     }
@@ -146,8 +149,10 @@ function countTime(time,start_time){
     var time_end = time;
     var time_now = new Date().getTime();
     if(start_time*1000<=time_now){//正在进行
-        $(".seckill-ing").removeClass("hide");
         $(".no-seckill-time").addClass("hide");
+        $(".seckill-ing").removeClass("hide");
+        $(".seckill-btns").addClass("hide");
+        $(".seckill-btn").removeClass("hide");
     }else{
         $(".seckill-ing").addClass("hide");
         $(".no-seckill-time").removeClass("hide");
