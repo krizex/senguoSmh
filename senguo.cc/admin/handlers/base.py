@@ -1611,7 +1611,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					seckill_goods_id = seckill_goods.id
 					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
 					customer_seckill_goods.status = 0
-					self.session.commit()
+					self.session.flush()
 
 			else:return
 			setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）
