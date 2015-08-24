@@ -835,6 +835,7 @@ class Discount(CustomerBaseHandler):
 		if action=="detail":
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=1).all()
 			data=[]
+			data1=[]
 			if_all=0 #判断是否有针对所有商品或者某个分组的所有商品 0 ：没有 1：表示所有商品 2：表示某一分组的所有商品
 			for x in q:
 				end_time=0
@@ -855,7 +856,9 @@ class Discount(CustomerBaseHandler):
 								chargesingle.append(x_charge)
 							chargesingle=[]
 							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
-							data0={"end_time":end_time,"group_data":tmp}
+							data1.append(tmp)
+							data0={"end_time":end_time,"group_data":data1}
+							data1=[]
 							data.append(data0)
 						break
 					elif y.use_goods==-1:
@@ -867,8 +870,10 @@ class Discount(CustomerBaseHandler):
 								chargesingle.append(x_charge)
 							chargesingle=[]
 							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage}
-							data0={"end_time":end_time,"group_data":tmp}
-							data.append(data0)
+							data0.append(tmp)
+							data1={"end_time":end_time,"group_data":data0}
+							data1=[]
+							data.append(data1)
 						break
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
@@ -879,7 +884,9 @@ class Discount(CustomerBaseHandler):
 							chargesingle.append(x_charge)
 						chargesingle=[]
 						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage}
-						data0={"end_time":end_time,"group_data":tmp}
+						data1.append(tmp)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]
 						data.append(data0)
 				if if_all==1:
 					break
