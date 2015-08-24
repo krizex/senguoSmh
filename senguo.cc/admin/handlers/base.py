@@ -823,11 +823,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			push = _jpush.create_push()
 			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
 
-			ios_msg = jpush.ios(alert="您收到了新的森果订单，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order.num})
-			android_msg = jpush.android(alert="您收到了新的森果订单，点击查看详情")
+			ios_msg = jpush.ios(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order_id})
+			android_msg = jpush.android(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情")
 			
-			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
-			push.notification = jpush.notification(alert="您收到了新的森果订单，点击查看详情", android=android_msg, ios=ios_msg)
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order_id)
+			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
 			push.send()
@@ -884,11 +884,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			push = _jpush.create_push()
 			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
 
-			ios_msg = jpush.ios(alert="您的森果订单（订单编号："+order.num+"）已被用户取消，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order.num})
-			android_msg = jpush.android(alert="您有一个森果订单被用户取消，点击查看详情")
+			ios_msg = jpush.ios(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order_num})
+			android_msg = jpush.android(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情")
 			
-			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
-			push.notification = jpush.notification(alert="您有一个森果订单被用户取消，点击查看详情", android=android_msg, ios=ios_msg)
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order_num)
+			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
 			push.send()

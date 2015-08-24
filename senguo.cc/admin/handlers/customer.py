@@ -2404,7 +2404,6 @@ class Order(CustomerBaseHandler):
 							self.session.flush()
 
 			self.session.commit()
-			return self.send_success(notice=notice)
 			#need to record this point history?
 
 			# 卖家版app推送订单评价提醒 —— 将来需要封装 - by Sky 2015.8.24
@@ -2414,16 +2413,18 @@ class Order(CustomerBaseHandler):
 				push = _jpush.create_push()
 				push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
 
-				ios_msg = jpush.ios(alert="您收到了新的订单评价，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/comment'})
-				android_msg = jpush.android(alert="您收到了新的订单评价，点击查看详情")
+				ios_msg = jpush.ios(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/comment'})
+				android_msg = jpush.android(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情")
 				
 				push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/comment")
-				push.notification = jpush.notification(alert="您收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
+				push.notification = jpush.notification(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
 				push.platform = jpush.all_
 				push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
 				push.send()
 			###
-			
+
+			return self.send_success(notice=notice)
+
 		else:
 			return self.send_error(404)
 
