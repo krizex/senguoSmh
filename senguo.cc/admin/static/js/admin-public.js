@@ -8,7 +8,7 @@ $(document).ready(function(){
                         '<p style="padding:0;margin:5px">推荐使用谷歌浏览器访问本网站，</p>'+
                         '<p style="padding:0;margin:5px">使用国产浏览器的请使用高速模式。</p>'+
                         '<a href="http://rj.baidu.com/soft/detail/14744.html?ald" target="_blank" style="display:inline-block;border:none;background:#44b549;color:#fff;padding:5px 10px;margin-top:10px;font-size:12px;width:100px;text-align:center;text-decoration:none;">谷歌浏览器下载</a>'+
-                        '<a href="http://senguo.cc" target="_blank" style="display:inline-block;border:none;background:#44b549;color:#fff;padding:5px 10px;margin-top:10px;font-size:12px;margin-left:10px;width:100px;text-align:center;text-decoration:none;">森国官网</a>'+
+                        '<a href="http://senguo.cc" target="_blank" style="display:inline-block;border:none;background:#44b549;color:#fff;padding:5px 10px;margin-top:10px;font-size:12px;margin-left:10px;width:100px;text-align:center;text-decoration:none;">森果官网</a>'+
                     '</div>'+
             '</div>');
    }
