@@ -24,6 +24,57 @@ try:
 except:
 	import xml.etree.ElementTree as ET
 
+
+
+import libs.geetest as geetest
+
+
+BASE_URL = "api.geetest.com/get.php?gt="
+
+# captcha_id = "a40fd3b0d712165c5d13e6f747e948d4"
+captcha_id = '552f9475a37933c10d31b3073123e36a'
+# private_key = "0f1a37e33c9ed10dd2e133fe2ae9c459"
+private_key = '6b75401374e76b11ff54d45a24896d33'
+product = "embed"
+
+# 弹出式
+# product = "popup&popupbtnid=submit-button"
+
+class GeeTest(CustomerBaseHandler):
+	def get(self):
+		gt = geetest.geetest(captcha_id, private_key)
+		url = ""
+		httpsurl = ""
+		try:
+			challenge = gt.geetest_register()
+		except:
+			challenge = ""
+		print(challenge,'challenge',len(challenge))
+		if isinstance(challenge,bytes):
+			challenge = challenge.decode('utf-8')
+		if len(challenge) == 32:
+			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			print(url)
+		self.render("apply/login.html", url=url)
+
+	def post(self):
+		username = self.get_argument("email")
+		password = self.get_argument("password")
+
+		challenge = self.get_argument("geetest_challenge")
+		validate = self.get_argument("geetest_validate")
+		seccode = self.get_argument("geetest_seccode")
+		print (challenge)
+		print (seccode)
+		print (validate,'validate')
+		gt = geetest.geetest(captcha_id, private_key)
+		result = gt.geetest_validate(challenge, validate, seccode)
+		if result:
+			self.write("success")
+		else:
+			self.write("fail")
+
 # woody
 # 扫码获取用户openid
 class Login(CustomerBaseHandler):
@@ -33,6 +84,7 @@ class Login(CustomerBaseHandler):
 		if self.is_wexin_browser():
 			return self.redirect(self.get_weixin_login_url())
 		ticket_url , scene_id = self.get_ticket_url()
+		
 		return self.render("apply/wx-login.html",ticket_url=ticket_url,scene_id=scene_id)
 	@CustomerBaseHandler.check_arguments('scene_id')
 	def post(self):
@@ -309,11 +361,40 @@ class Home(CustomerBaseHandler):
 		nickname = self.current_user.accountinfo.nickname
 		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
 		wx_username = self.current_user.accountinfo.wx_username if self.current_user.accountinfo.phone else ""
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username)
+		#添加极验验证码 woody 8.20
+		gt = geetest.geetest(captcha_id, private_key)
+		url = ""
+		httpsurl = ""
+		try:
+			challenge = gt.geetest_register()
+		except:
+			challenge = ""
+		print(challenge,'challenge',len(challenge))
+		if isinstance(challenge,bytes):
+			challenge = challenge.decode('utf-8')
+		if len(challenge) == 32:
+			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			print(url)
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username,url=url)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int","wx_username:str")
 	def post(self):
+		#极验验证
+		challenge = self.get_argument("geetest_challenge")
+		validate = self.get_argument("geetest_validate")
+		seccode = self.get_argument("geetest_seccode")
+		print (challenge,)
+		print (seccode)
+		print (validate,'validate')
+		if len(challenge) <2 or len(seccode) <2 or len(validate) <2:
+			return self.send_fail('请先完成图形验证')
+		gt = geetest.geetest(captcha_id, private_key)
+		result = gt.geetest_validate(challenge, validate, seccode)
+		if not result:
+			return self.send_fail('验证码错误')
+
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
 		except:

@@ -298,3 +298,8 @@ function infoEdit(action_name){
         }
     });
 }
+//android端上传图片
+function uploadImgForAndroid(url){
+    $("#shop_logo").attr("src",url+"?imageView2/1/w/100/h/100").attr("url",url);
+    infoEdit("edit_shop_logo");
+}

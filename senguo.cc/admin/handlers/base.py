@@ -815,16 +815,20 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				_action = "fyprint"
 			self.autoPrint(session,order.id,order.shop,_action)
 
-		# 给管理员app端推送订单生成提示
+		# 给管理员app端推送订单生成提示 —— 将来需要封装
 		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
 		if devices:
 			_jpush = jpush.JPush(app_key, master_secret)
 			push = _jpush.create_push()
-			push = _jpush.create_push()
 			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+
+			ios_msg = jpush.ios(alert="您收到了新的森果订单，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'order_num':order.num})
+			android_msg = jpush.android(alert="您收到了新的森果订单，点击查看详情")
+			
 			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
-			push.notification = jpush.notification(alert="您收到了一条新订单，点击查看详情")
-			push.platform = jpush.platform("android")
+			push.notification = jpush.notification(alert="您收到了新的森果订单，点击查看详情", android=android_msg, ios=ios_msg)
+			push.platform = jpush.all_
+			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
 			push.send()
 
 	# 发送订单完成模版消息给用户
@@ -832,7 +836,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def order_done_msg(self,session,order):
 		# print('[TempMsg]login order_done_msg')
 		order_num = order.num
-		order_sendtime = order.arrival_day  + " " + order.arrival_time
+		order_sendtime = order.arrival_day + " " + order.arrival_time
 		shop_phone = order.shop.shop_phone
 		customer_id= order.customer_id
 		shop_name = order.shop.shop_name
@@ -870,6 +874,23 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			elif wireless_type == 1:
 				_action = "fyprint_concel"
 			self.autoPrint(session,order.id,order.shop,_action)
+
+		# 订单取消推送消息将加在这里 —— 将来需要封装
+		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
+		if devices:
+			_jpush = jpush.JPush(app_key, master_secret)
+			push = _jpush.create_push()
+			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+
+			ios_msg = jpush.ios(alert="您的森果订单（订单编号："+order.num+"）已被用户取消，查看详情>>", badge="+1", extras={'order_num':order.num})
+			android_msg = jpush.android(alert="您有一个森果订单被用户取消，点击查看详情")
+			
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
+			push.notification = jpush.notification(alert="您有一个森果订单被用户取消，点击查看详情", android=android_msg, ios=ios_msg)
+			push.platform = jpush.all_
+			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
+			push.send()
+		####
 
 	# 无线打印订单
 	@classmethod
