@@ -246,7 +246,7 @@ $(document).ready(function(){
     $(this).next(".seckill-btn-yes").removeClass("hidden");
     wobble($('.cart_num'));
     $(".cart_num").removeClass("hidden").html(++window.dataObj.cart_count);
-    Tip("请在秒杀结束前支付,否则将按原价付款哦!");
+    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
     //addCart(0,$(this).closest("li"));
 }).on('click','.number-minus',function(){
     //商品数量操作

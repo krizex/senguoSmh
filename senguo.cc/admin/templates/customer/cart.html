@@ -16,6 +16,7 @@
                     {% else %}
                     <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png"/>
                     {% end %}
+                    <span class="status-goods {% if cart_f[key]['activity_type']==0 %}status-seckill{% elif cart_f[key]['activity_type']==2 %}status-discount{% else %}hidden{% end %}"></span>
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
                             <span class="name pull-left color">{{cart_f[key]['charge_type'].fruit.name}}</span>
