@@ -825,9 +825,90 @@ class Seckill(CustomerBaseHandler):
 # 限时折扣
 class Discount(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments("action:str")
 	def get(self,shop_code):
-
-		return self.render("seckill/discount.html",shop_code=shop_code)
+		current_shop_id=self.get_cookie("market_shop_id")
+		shop=self.session.query(models.Shop).filter_by(id=current_shop_id).first()
+		current_customer_id=self.current_user.id
+		self.updatediscount(current_customer_id)
+		action=self.args["action"]
+		if action=="detail":
+			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=1).all()
+			data=[]
+			data1=[]
+			if_all=0 #判断是否有针对所有商品或者某个分组的所有商品 0 ：没有 1：表示所有商品 2：表示某一分组的所有商品
+			for x in q:
+				end_time=0
+				if x.discount_way==0:
+					end_time=x.end_date
+				else:
+					end_time=int(time.time())-8*3600+x.t_time
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id).all()
+				for y in qq:
+					chargesingle=[]
+					if y.use_goods_group==-2:
+						if_all=1
+						data=[]
+						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1).all()
+						for each_frut in fruit:
+							for charge in each_frut.charge_types:
+								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
+								chargesingle.append(x_charge)
+							chargesingle=[]
+							if each_frut.img_url:
+								img_url = each_frut.img_url.split(';')[0]
+							else:
+								img_url= ""
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
+							data1.append(tmp)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]
+						data.append(data0)
+						break
+					elif y.use_goods==-1:
+						if_all=2
+						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=y.use_goods_group).all()
+						for each_frut in fruit:
+							for charge in each_frut.charge_types:
+								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
+								chargesingle.append(x_charge)
+							chargesingle=[]
+							if each_frut.img_url:
+								img_url = each_frut.img_url.split(';')[0]
+							else:
+								img_url= ""
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
+							data1.append(tmp)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]	
+						data.append(data0)
+						break
+					else:
+						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
+						charge_type=eval(y.charge_type)
+						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id in charge_type).all()
+						for charge in ChargeType:
+							x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
+							chargesingle.append(x_charge)
+						chargesingle=[]
+						if fruit.img_url:
+							img_url = fruit.img_url.split(';')[0]
+						else:
+							img_url= ""
+						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage,"img_url":img_url,"count":0}
+						data1.append(tmp)
+						data0={"end_time":end_time,"group_data":data1}
+						data1=[]
+						data.append(data0)
+				if if_all==1:
+					break
+			return self.render("seckill/discount.html",shop_code=shop.shop_code,output_data=data)
+		elif action=="add_in_cart":
+			pass
+		elif action=="add_in_order":
+			pass
+		elif action=="pay_order":
+			pass
 #团购
 class Gbuy(CustomerBaseHandler):
 	@tornado.web.authenticated
