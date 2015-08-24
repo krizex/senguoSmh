@@ -793,6 +793,15 @@ class Seckill(CustomerBaseHandler):
 			goods_item['goods_seckill_id'] = goods_seckill_id
 			goods_item['fruit_id'] = goods.fruit_id
 
+			customer_id = self.current_user.id
+			is_bought = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=goods_seckill_id).first()
+			if is_bought:
+				is_bought = is_bought.status
+			if is_bought == 0 or (not is_bought):
+				goods_item['is_bought'] = 0
+			else:
+				goods_item['is_bought'] = 1
+
 			cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
 			if cur_goods.img_url:
 				goods_item['img_url'] = cur_goods.img_url.split(';')[0]
@@ -808,7 +817,7 @@ class Seckill(CustomerBaseHandler):
 				cur_charge_type_num = cur_charge_type.num
 			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 			goods_item['price_dif'] = goods.former_price - goods.seckill_price
-			goods_item['activity_piece'] = goods.activity_piece
+			goods_item['activity_piece'] = goods.not_pick
 			output_data.append(goods_item)
 
 		return self.send_success(output_data = output_data)

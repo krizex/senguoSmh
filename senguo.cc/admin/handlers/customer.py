@@ -1291,6 +1291,7 @@ class Market(CustomerBaseHandler):
 	#action(2: +1，1: -1, 0: delete, 3: 赞+1, 4:商城首页打包发送的购物车)；
 	def post(self, shop_code):
 		action = self.args["action"]
+		self.update_seckill()
 		if action == 3:
 			return self.favour()
 		elif action == 4:
@@ -1354,7 +1355,7 @@ class Market(CustomerBaseHandler):
 
 				charge_types= []
 				for charge_type in fruit.charge_types:
-					if charge_type.active !=0:
+					if charge_type.active !=0 and charge_type.activity_type == 0:
 						unit  = charge_type.unit
 						unit =self.getUnit(unit)
 
@@ -1603,11 +1604,21 @@ class Market(CustomerBaseHandler):
 		self.session.commit()
 		return self.send_success(notice='点赞成功，积分+1')
 
-	@CustomerBaseHandler.check_arguments("fruits")
+	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_id?:int")
 	def cart_list(self):
-		fruits = self.args["fruits"]
-		print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@",fruits)
 		shop_id = int(self.get_cookie('market_shop_id'))
+		fruits = self.args["fruits"]
+		if 'seckill_goods_id' in self.args:
+			seckill_goods_id = self.args['seckill_goods_id']
+			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
+			self.session.add(customer_seckill_goods)
+			self.session.flush()
+			seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+			seckill_goods.not_pick -= 1
+			seckill_goods.picked += 1
+			self.session.flush()
+			self.session.commit()
+
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		try:
@@ -1764,6 +1775,7 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
+		print("$####",cart_f)
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
