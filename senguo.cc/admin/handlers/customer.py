@@ -28,6 +28,11 @@ import datetime
 import requests
 # from wxpay import QRWXpay
 
+# 导入推送关的类
+import jpush as jpush
+from libs.phonepush.jpush.push import core,payload,audience
+from libs.phonepush.conf import app_key, master_secret
+
 # 登录处理
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -2298,6 +2303,8 @@ class Order(CustomerBaseHandler):
 			self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			return self.send_success()
+
+		# 店铺评分
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
@@ -2347,6 +2354,7 @@ class Order(CustomerBaseHandler):
 			# self.session.commit()
 			# return self.send_success()
 
+		# 订单评价
 		elif action == "comment":
 			data = self.args["data"]
 			imgUrl = data["imgUrl"]
@@ -2363,8 +2371,9 @@ class Order(CustomerBaseHandler):
 			order.comment_imgUrl = imgUrl
 			shop_follow = ''
 			notice = ''
-			# shop_point add by 5
+			
 			# woody
+			# 订单评价后增加相应的积分
 			if comment == None:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -2372,7 +2381,6 @@ class Order(CustomerBaseHandler):
 				except :
 					shop_follow = None
 					self.send_fail("[Order]Order Comment: shop_point error")
-
 				if shop_follow:
 					if shop_follow.shop_point:
 						shop_follow.shop_point += 2
@@ -2391,14 +2399,32 @@ class Order(CustomerBaseHandler):
 						if imgUrl:
 							point_history.point_type = models.POINT_TYPE.COMMENTIMG
 							point_history.each_point = 2
-							notice = '评论成功，积分+2,评论晒图，积分+2'
+							notice = '评论成功，积分+2；评论晒图，积分+2'
 							self.session.add(point_history)
 							self.session.flush()
 
 			self.session.commit()
+			#need to record this point history?
+
+			# 卖家版app推送订单评价提醒 —— 将来需要封装 - by Sky 2015.8.24
+			devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
+			if devices:
+				_jpush = jpush.JPush(app_key, master_secret)
+				push = _jpush.create_push()
+				push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+
+				ios_msg = jpush.ios(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/comment'})
+				android_msg = jpush.android(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情")
+				
+				push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/comment")
+				push.notification = jpush.notification(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
+				push.platform = jpush.all_
+				push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
+				push.send()
+			###
+
 			return self.send_success(notice=notice)
 
-			#need to rocord this point history?
 		else:
 			return self.send_error(404)
 
