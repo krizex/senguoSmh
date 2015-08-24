@@ -148,32 +148,41 @@ class GlobalBaseHandler(BaseHandler):
 		now_date=int(time.time())
 		status=0
 		for x in q:
-			if x.discount_way==0:
-				if now_date<x.start_date:
-					status=0
-				elif now_date<x.end_date:
-					status=1
-				else:
-					status=2
-			else:
-				now_weekday=datetime.datetime.now().weekday()
-				if now_weekday==0:
-					now_weekday==7
-				if now_weekday in eval(x.weeks):
-					now_time=int(time.time()%(24*3600))+8*3600
-					if now_time<x.f_time:
+			if x.status!=3:
+				if x.discount_way==0:
+					if now_date<x.start_date:
 						status=0
-					elif now_time<x.t_time:
+					elif now_date<x.end_date:
 						status=1
 					else:
 						status=2
 				else:
-					status=0
-			x.update(self.session,status=status)
+					now_weekday=datetime.datetime.now().weekday()
+					if now_weekday==0:
+						now_weekday==7
+					if now_weekday in eval(x.weeks):
+						now_time=int(time.time()%(24*3600))+8*3600
+						if now_time<x.f_time:
+							status=0
+						elif now_time<x.t_time:
+							status=1
+						else:
+							status=2
+					else:
+						status=0
+				x.update(self.session,status=status)
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
 			for y in qq:
 				if y.status!=3:
 					y.update(self.session,status=status)
+			#如果当每一批的所有分组都被停用了，那么该分组也将默认被停用了	
+			close_all=0	
+			for y in qq:
+				if y.status!=3:
+					close_all=1
+			if close_all==0:
+				x.update(self.session,status=3)
+		self.session.commit()
 	# 全局实时更新店铺秒杀活动基类方法：
 	def update_seckill_base(self,shop_id):
 		current_shop_id = shop_id

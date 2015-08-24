@@ -5014,6 +5014,29 @@ class Discount(AdminBaseHandler):
 			goods=goods[1:]
 			data_tmp={"discount_id":x.discount_id,"discount_way":x.discount_way,"start_date":start_date,"end_date":end_date,"incart_num":x.incart_num,"ordered_num":x.ordered_num,"weeks":weeks,"goods":goods}
 			data.append(data_tmp)
+	def judgetimeright(self,q,can_choose,start_date,end_date,f_time,t_time):
+		current_shop_id=self.current_shop.id
+		if q:
+			for y in q:
+				ygroup=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=y.discount_id).first()
+				if ygroup.discount_way==0:
+					if start_date<ygroup.start_date and end_date>=ygroup.start_date:
+						can_choose=1
+					elif start_date>=ygroup.start_date and start_date<=ygroup.end_date:
+						can_choose=1
+				else:
+					for week in eval(weeks):
+						if week in eval(ygroup.weeks):
+							if f_time<ygroup.f_time and t_time>=ygroup.f_time:
+								can_choose=1
+								break
+							elif f_time>=ygroup.f_time and f_time<=ygroup.t_time:
+								can_choose=1
+								break
+				if can_choose==1:
+					break
+		return can_choose
+
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str","discount_id?","page?","status?")
 	def get(self):
@@ -5024,6 +5047,20 @@ class Discount(AdminBaseHandler):
 		current_customer_id=self.current_user.id
 		self.updatediscount(current_customer_id)
 		if action=="discount":
+			# 对当前的限时折扣进行遍历 判断是否能进行限时折扣添加，因为如果当前如果有正在进行的全场限时折扣，则不能继续进行添加，必须停用原来的或者等待时间结束
+			# 目的是为了防止在同一个时刻同一商品有不同限时折扣
+			now_date=int(time.time())
+			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).all()
+			can_new_discount=0
+			for x in q:
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id).all()
+				for y in qq:
+					if y.use_goods_group==-2 and y.status==1:
+						can_new_discount=1
+						break
+				#跳出双层循环
+				if can_new_discount==1:
+					break
 			# 下面四个data对应于４种状态的限时折扣
 			data=[]
 			for x in range(0,4):
@@ -5031,7 +5068,7 @@ class Discount(AdminBaseHandler):
 				self.getdiscount(data_tmp,x)
 				data.append(data_tmp)
 			discount_active_cm=self.session.query(models.Marketing).filter_by(id=current_shop_id).first().discount_active
-			return self.render("admin/discount-main.html",discount_active_cm=discount_active_cm,output_data=data,context=dict(subpage='marketing',subpage2='discount_active'))
+			return self.render("admin/discount-main.html",discount_active_cm=discount_active_cm,output_data=data,can_new_discount=can_new_discount,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="newdiscountpage":
 			data=[]
 			data1=[]
@@ -5055,8 +5092,7 @@ class Discount(AdminBaseHandler):
 			t_hour=int(t_time/3600)
 			t_minute=int(t_time%3600/60)
 			t_second=int(t_time%3600%60)
-			edit_status=0  #表示编辑状态 0：默认初始值 1：任何东西都可以编辑 2：可以编辑部分信息 3：完全不能够编辑
-			common_info={"id":q.discount_id,"edit_status":edit_status,"discount_way":q.discount_way,"weeks":eval(q.weeks),"start_date":start_date,"end_date":end_date,"f_hour":f_hour,"f_minute":f_minute,"f_second":f_second,"t_hour":t_hour,"t_minute":t_minute,"t_second":t_second}
+			common_info={"id":q.discount_id,"edit_status":q.status,"discount_way":q.discount_way,"weeks":eval(q.weeks),"start_date":start_date,"end_date":end_date,"f_hour":f_hour,"f_minute":f_minute,"f_second":f_second,"t_hour":t_hour,"t_minute":t_minute,"t_second":t_second}
 			q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).all()
 			discount_items=[]
 			for x in q:
@@ -5130,7 +5166,7 @@ class Discount(AdminBaseHandler):
 			return self.send_success(discount_active_cm=discount_active_cm)
 		elif action=='newdiscount':
 			data=self.args["data"]
-			create_date=time.time()
+			create_date=int(time.time())
 			discount_way=int(data["discount_way"])
 			start_date=data["start_date"]
 			end_date=data["end_date"]
@@ -5155,6 +5191,16 @@ class Discount(AdminBaseHandler):
 				discount_way=discount_way,f_time=f_time,t_time=t_time,status=status,create_date=create_date,incart_num=0,ordered_num=0)
 			self.session.add(new_discount)
 			for x in discount_goods:
+				#进行判断添加这个时刻有没有已经存在进行的活动
+				can_choose=0 # 0 表示可以选择 不冲突 ，1表示冲突 需重新选择
+				q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2).all()
+				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time)
+				if can_choose==1:
+					return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
+				q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"]).filter(models.DiscountShop.status<2).all()
+				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time)
+				if can_choose==1:
+					return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
 				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),\
 					status=status,discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
 				self.session.add(new_discount)
@@ -5167,6 +5213,7 @@ class Discount(AdminBaseHandler):
 			end_date=data["end_date"]
 			discount_id=int(data["discount_id"])
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=discount_id).with_lockmode("update").first()
+			now_date=int(time.time())
 			start_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.start_date))
 			end_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(q.end_date))
 			edit_status=0  #表示编辑状态 0：默认初始值 1：任何东西都可以编辑 2：可以编辑部分信息 3：完全不能够编辑
@@ -5175,11 +5222,11 @@ class Discount(AdminBaseHandler):
 			weeks=data["weeks"]
 			discount_goods=data["discount_goods"]
 			discount_close=data["discount_close"]
-			print(discount_goods)
-			if q.status==1:
+			if q.status==0:
 				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,discount_way=discount_way,weeks=str(weeks),f_time=f_time,t_time=t_time)
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
 				for x in qq:
+					# qhave=self.session.query(models.Disc)
 					_index=qq.index(x)
 					discount_good=discount_goods[_index]
 					if x.status==1:
@@ -5189,7 +5236,7 @@ class Discount(AdminBaseHandler):
 							status=x.status
 						x.update(self.session,shop_id=current_shop_id,discount_id=discount_id,use_goods_group=discount_good["use_goods_group"],\
 							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)	
-			elif q.status==2:
+			elif q.status==1:
 				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,end_date=end_date,t_time=t_time)
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
 				for x in qq:
@@ -5210,12 +5257,33 @@ class Discount(AdminBaseHandler):
 			data=self.args["data"]
 			discount_id=self.args["discount_id"]
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=discount_id).with_lockmode("update").first()
-			q.update(self.session,status=3)
+			q.update(session=self.session,status=3)
+			self.session.flush()
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).with_lockmode("update").all()
 			for x in qq:
-				x.update(self.session,status=3)
+				x.update(session=self.session,status=3)
+				self.session.flush()
 			self.session.commit()
 			return self.send_success()
+		# elif action=="check_group":
+		# 	#判断该分组是否含有折扣 防止重复添加活动
+		# 	data=self.args["data"]
+		# 	use_goods_group=data["use_goods_group"]
+		# 	# 排除对某一分组的所有商品进行重复添加，相当于进行过滤操作，这样就可以防止对统一商品进行重复添加
+		# 	can_choose=0
+		# 	q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=use_goods_group,status=1,use_goods=-1).all()
+		# 	can_choose=self.judgetimeright(q,can_choose)
+		# 	return self.send_success(can_choose=can_choose)
+		# elif action=="check_goods":
+		# 	#判断该商品是否含有折扣 防止重复添加活动
+		# 	data=self.args["data"]
+		# 	use_goods=data["use_goods"]
+		# 	can_choose=0
+		# 	q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods=use_goods,status=1).all()
+		# 	can_choose=self.judgetimeright(q,can_choose)
+		# 	return self.send_success(can_choose=can_choose)
+
+
 
 # added by jyj 2015-8-12
 # seckill

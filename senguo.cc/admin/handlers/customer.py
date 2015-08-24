@@ -508,7 +508,7 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0
-		current_customer_id=self.Current_user.id
+		current_customer_id=self.current_user.id
 		shop_id = shop.id
 		# 优惠券发现
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=0).all()
@@ -533,8 +533,15 @@ class Discover(CustomerBaseHandler):
 		discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
 		discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
 		discount_text=''
+		discount_display_flag = 0
 		if discount_count:
-		discount_text=str(discount_count)+'种商品正在'
+			discount_text=str(discount_count)+'种商品惊喜价大放送'
+			discount_display_flag=1
+		else:
+			discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=0).count()
+			if discount_count:
+				discount_text=str(discount_count)+'种商品惊即将闪亮登场'
+				discount_display_flag=1
 		# added by jyj 2015-8-18 for seckill
 		self.update_seckill()
 		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active
@@ -569,7 +576,8 @@ class Discover(CustomerBaseHandler):
 					seckill_display_flag = 1
 
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
-			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,seckill_display_flag=seckill_display_flag)
+			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
+			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
