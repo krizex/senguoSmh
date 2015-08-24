@@ -1422,7 +1422,12 @@ class Market(CustomerBaseHandler):
 					for item in customer_query:
 						bought_customer_list.append(item.customer_id)
 
-				if fruit_id in killing_fruit_id and customer_id not in bought_customer_list:
+				if fruit_id in killing_fruit_id:
+					if customer_id in bought_customer_list:
+						data_item1['is_bought'] = 1
+					else:
+						data_item1['is_bought'] = 0
+
 					seckill_charge_type_id = fruit_charge_type[str(fruit_id)]
 					charge_types = [e for e in charge_types if e['id'] != seckill_charge_type_id]
 					seckill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
@@ -1440,7 +1445,7 @@ class Market(CustomerBaseHandler):
 					data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 
 					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
-					data_item1['activity_piece'] = seckill_info.activity_piece
+					data_item1['activity_piece'] = seckill_info.not_pick
 					data.append(data_item1)
 
 				data_item2['is_activity'] = 0
@@ -1775,7 +1780,6 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
-		print("$####",cart_f)
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
