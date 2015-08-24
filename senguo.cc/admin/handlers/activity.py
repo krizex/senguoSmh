@@ -826,7 +826,7 @@ class Seckill(CustomerBaseHandler):
 class Discount(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
-	def get(self):
+	def get(self,shop_code):
 		current_shop_id=self.get_cookie("market_shop_id")
 		shop=self.session.query(models.Shop).filter_by(id=current_shop_id).first()
 		current_customer_id=self.current_user.id
@@ -884,7 +884,7 @@ class Discount(CustomerBaseHandler):
 				if if_all==1:
 					break
 			print(data)
-			return self.render("seckill/discount.html",shop_code=shop.shop_code,output_data=data)
+			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data)
 		elif action=="add_in_cart":
 			pass
 		elif action=="add_in_order":
