@@ -1856,10 +1856,12 @@ class WxOauth2:
 			return data['openid']
 	@classmethod
 	def get_template_id(cls,template_id_short,access_token):
+		print('login in get_template_id')
 		url = 'https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token={0}'.format(access_token)
 		data = json.dumps({"template_id_short":template_id_short})
 		r = requests.post(url,data=data)
 		s = r.text
+		print(s)
 		if isinstance(s,bytes):
 			s = s.decode('utf-8')
 		s = json.loads(s)
@@ -2125,6 +2127,7 @@ class WxOauth2:
 		template_id_short = 'OPENTM200746866'
 		template_id = cls.get_template_id(template_id_short,access_token)
 		if not template_id:
+			print('get template_id error')
 			return False
 		else:
 			print('template_id get success',template_id)

@@ -1212,18 +1212,18 @@ class Market(CustomerBaseHandler):
 	def get_customer_openid(self,appid,appsecret,shop_code):
 		# print('[CustomerMarket]login in get_customer_openid')
 		code = self.args.get('code',None)
-		# print('[CustomerMarket]code:',code)
+		print('[CustomerMarket]code:',code)
 		if len(code) == 0:
-			# print('[CustomerMarket]get code')
-			appid = 'wx0ed17cdc9020a96e'
+			print('[CustomerMarket]get code')
+			#appid = 'wx0ed17cdc9020a96e'
 			redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
 			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
-			# print("[CustomerMarket]url:",url)
+			print("[CustomerMarket]url:",url)
 			return self.redirect(url)
 		else:
-			# print('[CustomerMarket]has code')
+			print('[CustomerMarket]has code')
 			wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
-			# print("[CustomerMarket]wx_openid:",wx_openid)
+			print("[CustomerMarket]wx_openid:",wx_openid)
 			return wx_openid
 
 	@tornado.web.authenticated
