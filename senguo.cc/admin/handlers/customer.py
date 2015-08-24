@@ -529,12 +529,13 @@ class Discover(CustomerBaseHandler):
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
 
 		#限时折扣发现
-		self.updatediscount(current_customer_id)
-		discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
-		discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
-		discount_text=''
-		#if discount_count:
-			#discount_text=str(discount_count)+'种商品正在'
+		# self.updatediscount(current_customer_id)
+		# discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
+		# discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
+		# discount_text=''
+		# if discount_count:
+		# discount_text=str(discount_count)+'种商品正在'
+
 		# added by jyj 2015-8-18 for seckill
 		self.update_seckill()
 		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active

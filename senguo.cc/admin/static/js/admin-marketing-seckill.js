@@ -516,6 +516,40 @@ function createSeckill(action){
 			stop_flag = true;
 			Tip(goods_name+'的秒杀信息填写不完整！');
 		}
+
+		var choose_start_time = $('.start-time').val();
+		var choose_continue_time = parseInt($('.choose-hour').text())*60*60 + parseInt($('.choose-minute').text())*60 + parseInt($('.choose-second').text());
+		var choose_fruit_id = $this.find('.cur-goods').attr('data-id');
+		var url = '';
+		var data = {
+			choose_start_time:choose_start_time,
+			choose_continue_time:choose_continue_time,
+			choose_fruit_id:choose_fruit_id
+		};
+		var args = {
+			data:data,
+			action:'check_fruit'
+		};
+
+		$.ajaxSetup({
+		  	async : false
+		});
+		$.postJson(url,args,function(res){
+			if(res.success){
+				var flag = res.flag;
+				console.log(flag,typeof flag);
+				if (flag == 0){
+					stop_flag = true;
+					Tip(goods_name + '已经参与所选时间段内的其他秒杀活动，请选择其他商品！');
+					
+				}
+			}
+			else{
+				Tip(res.error_text);
+				stop_flag = true;
+			}
+		},function(){Tip('网络好像不给力呢~ ( >O< ) ~');stop_flag = true;});
+
 		var activity_status = $.getUrlParam('status');
 		if (action == 'seckill_edit' && activity_status == '2'){
 			var former_activity_piece = parseInt($this.find('.activity-store').attr('activity-piece-value'));
@@ -527,6 +561,13 @@ function createSeckill(action){
 		}
 	});
 
+	if (stop_flag){
+		create_seckill_lock = "off";
+		return false;
+	}
+	// for(var i=0; i<){
+	// $('.activity-store-input').eq(i)
+	// }
 	$('.activity-store-input').each(function(){
 		var $this = $(this);
 		var goods_num = '商品' + $this.closest(".new-seckill-item").find('.goods-num').text();
@@ -551,6 +592,7 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
+
 	if (action == 'seckill_edit'){
 		var activity_id = $(".new-seckill-list").attr("activity-id");
 	}
