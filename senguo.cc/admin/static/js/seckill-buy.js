@@ -30,6 +30,8 @@ $(document).ready(function(){
     if(num==0){
         $parent.children(".num-txt").removeClass("hide").html(1);
         $parent.children(".minus-btn").removeClass("hide");
+        var num = parseInt($(".cart-num").html());
+        $(".cart-num").html(num+1).removeClass("hide");
     }
     num++;
     $parent.children(".num-txt").html(num);
@@ -41,6 +43,8 @@ $(document).ready(function(){
         num=0;
         $parent.children(".num-txt").addClass("hide");
         $(this).addClass("hide");
+        var num = parseInt($(".cart-num").html());
+        $(".cart-num").html(num-1).removeClass("hide");
     }else{
         num--;
         $parent.children(".num-txt").html(num);
@@ -151,8 +155,10 @@ function countTime(time,start_time){
     if(start_time*1000<=time_now){//正在进行
         $(".no-seckill-time").addClass("hide");
         $(".seckill-ing").removeClass("hide");
-        $(".seckill-btns").addClass("hide");
-        $(".seckill-btn").removeClass("hide");
+        if($(".seckill-ing").hasClass("hide")){
+            $(".seckill-btns").addClass("hide");
+            $(".seckill-btn").removeClass("hide");
+        }
     }else{
         $(".seckill-ing").addClass("hide");
         $(".no-seckill-time").removeClass("hide");

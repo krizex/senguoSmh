@@ -5,8 +5,6 @@ var _group_finished=true;
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();
-    //$(".container").height(height).css("overflow","hidden").css("paddingBottom","0");
-    //$("#wrap-home-box").height(height-50);
     $(".notice-item").width("100%");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
     var swiper = new Swiper('#swiper-container',{
