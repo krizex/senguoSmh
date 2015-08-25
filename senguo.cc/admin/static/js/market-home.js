@@ -686,7 +686,7 @@ function addCart(link,$obj){
             if(res.success)
             {
                 if(link!=0){
-                    window.location.href=link;
+                   window.location.href=link;
                 }
             }
             else return noticeBox(res.error_text);

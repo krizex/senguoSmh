@@ -194,6 +194,23 @@ class GlobalBaseHandler(BaseHandler):
 				self.session.flush()
 			elif item.start_time <= now_time and item.end_time <= now_time:
 				item.activity_status = 0
+
+				seckill_goods_list = []
+				seckill_fruit_list = []
+				query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id,models.SeckillGoods.fruit_id).filter_by(activity_id=item.id).all();
+				for e in query_list:
+					seckill_goods_list.append(e[0])
+					seckill_fruit_list.append(e[1])
+
+				for cur_fruit_id in seckill_fruit_list:
+					cur_fruit = self.session.query(models.Fruit).filter_by(id = cur_fruit_id).with_lockmode('update').first()
+					cur_fruit.activity_status = 0
+				self.session.flush()
+
+				charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
+				for e in charge_type_query:
+					e.activity_type = -1
+
 				self.session.flush()
 		self.session.commit()
 
@@ -202,6 +219,24 @@ class GlobalBaseHandler(BaseHandler):
 			now_time = int(time.time())
 			if item.end_time <= now_time:
 				item.activity_status = 0
+
+				seckill_goods_list = []
+				seckill_fruit_list = []
+				query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id,models.SeckillGoods.fruit_id).filter_by(activity_id=item.id).all();
+				for e in query_list:
+					seckill_goods_list.append(e[0])
+					seckill_fruit_list.append(e[1])
+
+				for cur_fruit_id in seckill_fruit_list:
+					cur_fruit = self.session.query(models.Fruit).filter_by(id = cur_fruit_id).with_lockmode('update').first()
+					cur_fruit.activity_status = 0
+				self.session.flush()
+
+				charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
+				for e in charge_type_query:
+					e.activity_type = -1
+				self.session.flush()
+
 				activity_id = item.id
 				sec_fruit_list = self.session.query(models.Fruit).join(models.SeckillGoods,models.SeckillGoods.fruit_id == models.Fruit.id).\
 							          filter(models.SeckillGoods.activity_id == activity_id).with_lockmode('update').all()
@@ -431,7 +466,7 @@ class GlobalBaseHandler(BaseHandler):
 
 			charge_types = []
 			for charge in d.charge_types:
-				if charge.active !=0 :
+				if charge.active !=0 and charge.activity_type == 0:
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
@@ -1545,7 +1580,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	@tornado.web.authenticated
 
 	# 存储购物车数据
-	def save_cart(self, charge_type_id, shop_id, inc):
+	def save_cart(self, charge_type_id, shop_id, inc,activity_type):
 		"""
 		用户购物车操作函数，对购物车进行修改或者删除商品：
 		charge_type_id：要删除的商品的计价类型
@@ -1556,7 +1591,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		"""
 		cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
 
-		self._f(cart, "fruits", charge_type_id, inc)
+		self._f(cart, "fruits", charge_type_id, inc,activity_type)
 
 		if not eval(cart.fruits):#购物车空了
 			return True
@@ -1567,7 +1602,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		else:
 			return self.reverse_url('customerLogin')
 
-	def _f(self, cart, menu, charge_type_id, inc):
+	def _f(self, cart, menu, charge_type_id, inc,activity_type):
 		d = eval(getattr(cart, menu))
 		# print("[CustomerBaseHandler]type(d[charge_type_id]):",type(d[charge_type_id]))
 		if d:
@@ -1583,6 +1618,17 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				else:return
 			elif inc == 0:#删除
 				if charge_type_id in d.keys(): del d[charge_type_id]
+				if activity_type == 1:
+					seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type_id).with_lockmode('update').first()
+					seckill_goods.picked -= 1
+					seckill_goods.not_pick += 1
+
+					customer_id = self.current_user.id
+					seckill_goods_id = seckill_goods.id
+					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
+					customer_seckill_goods.status = 0
+					self.session.flush()
+
 			else:return
 			setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）
 		else:
@@ -1606,6 +1652,28 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			charge_types=self.session.query(models.ChargeType).\
 				filter(models.ChargeType.id.in_(d.keys())).all()
 			charge_types = [x for x in charge_types if x.fruit.active == 1]#过滤掉下架商品
+
+			end_charge_type = [x for x in charge_types if x.activity_type == -1]
+			end_charge_type_id = []
+			for item in end_charge_type:
+				end_charge_type_id.append(item.id)
+			seckill_goods_list = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(end_charge_type_id)).with_lockmode('update').all()
+			recovery_charge_type_id = []
+			for item in seckill_goods_list:
+				recovery_charge_type_id.append(item.charge_type_id)
+				item.picked -= 1
+				item.not_pick += 1
+			self.session.commit()
+
+			recovery_charge_type = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(recovery_charge_type_id)).all()
+			charge_types = [x for x in charge_types if x not in end_charge_type]
+			for item in recovery_charge_type:
+				charge_types.append(item)
+
+				end_charge_type_id = self.session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
+							filter(models.SeckillGoods.charge_type_id == item.id,models.SeckillActivity.activity_status.in_([-1,0])).order_by(desc(models.SeckillGoods.seckill_charge_type_id)).first().seckill_charge_type_id
+				d[item.id] = d[end_charge_type_id]
+
 			l = [x.id for x in charge_types]
 			keys = list(d.keys())
 			for key in keys:#有些计价方式可能已经被删除，so购物车也要相应删除

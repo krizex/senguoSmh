@@ -569,9 +569,15 @@ var getPrice=function(){
     $('.item_total_price').each(function(){
         var $this=$(this);
         var parent=$this.parents('.cart-list-item');
-        var num=parent.find('.item_number').val();
+        if (parent.find('.status-seckill').size() != 0){
+            var num = 1;
+        }
+        else{
+            var num=parent.find('.item_number').val();
+        }
         var price=parent.find('.item_price').text();
         var total=mathFloat(num*price);
+        console.log('@###',num,price,total);
         $this.text(total);
         _price_list.push(total);
     });
