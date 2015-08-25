@@ -1303,11 +1303,10 @@ class Market(CustomerBaseHandler):
 		else:
 			notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 
-		print("##@@@",seckill_goods_ids)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
-							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity))
+							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity,seckill_goods_ids=seckill_goods_ids))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1692,10 +1691,41 @@ class Market(CustomerBaseHandler):
 					seckill_goods.not_pick -= 1
 					seckill_goods.picked += 1
 					self.session.flush()
-
+		
+		#筛选初当前进行的限时折扣
+		m_fruits=eval(cart.fruits)
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
+			if key in m_fruits:
+				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
+				if qq:
+					if key in eval(qq.charge_type):
+						qq.incart_num+=fruits[key]-m_fruits[key]
+						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+						qqq.incart_num+=fruits[key]-m_fruits[key]
+				self.session.flush()					
+			else:
+				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
+				if qq:
+					if key in eval(qq.charge_type):
+						qq.incart_num+=fruits[key]
+						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+						qqq.incart_num+=fruits[key]
+				self.session.flush()
+
+		for key in m_fruits:
+			if key not in fruits:
+				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
+				if qq:
+					if key in eval(qq.charge_type):
+						qq.incart_num-=m_fruits[key]
+						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+						qqq.incart_num-=m_fruits[key]
+		
 		cart.fruits = str(fruits2)
 		if 'seckill_goods_id' in self.args:
 			seckill_goods_id = self.args['seckill_goods_id']
