@@ -291,8 +291,16 @@ class customerGoods(CustomerBaseHandler):
 							allow_num = limit_if.allow_num
 						else:
 							allow_num = good.limit_num - limit_if.buy_num
+				#判断商品是否参加了限时折扣活动 还不知道需不需要加上
+				q_discount=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1).all()
+				has_discount_activity=0
+				discount_rate=None
+				if charge_type in q_discount:
+					has_discount_activity=1
+					discount_rate=q_discount.discount_rate
 				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
+					"has_discount_activity":has_discount_activity,"discount_rate":discount_rate})
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -529,7 +537,7 @@ class Discover(CustomerBaseHandler):
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
 
 		#限时折扣发现
-		self.updatediscount(current_customer_id)
+		self.updatediscount()
 		discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
 		discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
 		discount_text=''
@@ -1134,6 +1142,7 @@ class Market(CustomerBaseHandler):
 
 			# added by jyj 2015-8-21
 			seckill_active = shop.marketing.seckill_active
+			discount_active=shop.marketing.discount_active
 			##
 		else:
 			shop_marketing = 0
@@ -1141,6 +1150,7 @@ class Market(CustomerBaseHandler):
 
 			# added by jyj 2015-8-21
 			seckill_active = 0
+			discount_active=1
 			##
 
 
@@ -1152,6 +1162,7 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("coupon_active", str(coupon_active))
 		# added by jyj 2015-8-21
 		self.set_cookie("seckill_active", str(seckill_active))
+		self.set_cookie("discount_active",str(discount_active))
 		##
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
@@ -1251,11 +1262,20 @@ class Market(CustomerBaseHandler):
 						group_list.append({'id':_group.id,'name':_group.name})
 		# added by jyj 2015-8-21
 		has_seckill_activity = 0
+		has_discount_activity=0
 		seckill_img_url = ''
+		discount_img_url=''
 		notices = []
+		shop_id = shop.id
+		if discount_active==0:
+			self.updatediscount()
+			activity_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).all()
+			if activity_query:
+				has_discount_activity=1
+				discount_img_url=self.session.query(models.Notice).filter_by(config_id=shop_id).first().discount_img_url
+				notices.append(('','',discount_img_url))
 		seckill_goods_ids = []
 		if seckill_active == 1:
-			shop_id = shop.id
 			self.update_seckill()			
 			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
 			if activity_query:
@@ -1286,7 +1306,7 @@ class Market(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
-							has_seckill_activity=has_seckill_activity,seckill_goods_ids=seckill_goods_ids))
+							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1313,6 +1333,7 @@ class Market(CustomerBaseHandler):
 	def post(self, shop_code):
 		action = self.args["action"]
 		self.update_seckill()
+		self.updatediscount()
 		if action == 3:
 			return self.favour()
 		elif action == 4:
@@ -1332,6 +1353,7 @@ class Market(CustomerBaseHandler):
 	# @classmethod
 	def w_getdata(self,session,m,customer_id):
 			self.update_seckill()
+			self.updatediscount()
 			data = []
 			w_tag = ''
 			# print("[CustomerMarket]customer_id:",customer_id)
@@ -1396,8 +1418,19 @@ class Market(CustomerBaseHandler):
 									allow_num = limit_if.allow_num
 								else:
 									allow_num = fruit.limit_num - limit_if.buy_num
+						#判断商品是否参加了限时折扣活动 还不知道需不需要加上
+						q_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods=fruit.id).first()
+						q_discount=[]
+						if q_query:
+							q_discount=eval(q_query.charge_type)
+						has_discount_activity=0
+						discount_rate=None
+						if charge_type in q_discount:
+							has_discount_activity=1
+							discount_rate=q_discount.discount_rate
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
+							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
+							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
@@ -1410,6 +1443,7 @@ class Market(CustomerBaseHandler):
 				# added by jyj 2015-8-21
 				data_item1 = {}
 				data_item2 = {}
+				data_item3 = {}
 
 				data_item1['id'] = fruit.id
 				data_item1['shop_id'] = fruit.shop_id
@@ -1663,6 +1697,15 @@ class Market(CustomerBaseHandler):
 			fruits2[int(key)] = fruits[key]
 
 		cart.fruits = str(fruits2)
+		if 'seckill_goods_id' in self.args:
+			seckill_goods_id = self.args['seckill_goods_id']
+			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
+			self.session.add(customer_seckill_goods)
+			self.session.flush()
+			seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+			seckill_goods.not_pick -= 1
+			seckill_goods.picked += 1
+			self.session.flush()
 		self.session.commit()
 
 		return self.send_success()
@@ -1891,8 +1934,6 @@ class Cart(CustomerBaseHandler):
 
 
 				###使用优惠券
-
-
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
 
 				limit_num = charge_type.fruit.limit_num

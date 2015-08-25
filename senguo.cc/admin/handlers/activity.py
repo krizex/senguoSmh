@@ -867,8 +867,9 @@ class Discount(CustomerBaseHandler):
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1).all()
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
-								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
-								chargesingle.append(x_charge)
+								if charge.active==1:
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
 							else:
@@ -885,8 +886,9 @@ class Discount(CustomerBaseHandler):
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=y.use_goods_group).all()
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
-								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
-								chargesingle.append(x_charge)
+								if charge.active==1:
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
 							else:
@@ -903,8 +905,9 @@ class Discount(CustomerBaseHandler):
 						charge_type=eval(y.charge_type)
 						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id in charge_type).all()
 						for charge in ChargeType:
-							x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
-							chargesingle.append(x_charge)
+							if charge.active==1:
+								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+								chargesingle.append(x_charge)
 						if fruit.img_url:
 							img_url = fruit.img_url.split(';')[0]
 						else:
