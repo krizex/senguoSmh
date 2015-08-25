@@ -54,6 +54,7 @@ $(document).ready(function(){
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
     $("html,body").removeClass("flow-hidden");
+    document.body.scrollTop = 0;
 }).on("click",".current-unit",function(){//库存单位
     if(confirm("修改库存单位后现有的售价方式会被修改成库存单位，确认修改？")){
         price_type = 0;

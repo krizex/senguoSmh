@@ -5099,7 +5099,7 @@ class Discount(AdminBaseHandler):
 		current_shop=self.current_shop
 		# 更新数据库限时折扣信息
 		current_customer_id=self.current_user.id
-		self.updatediscount(current_customer_id)
+		self.updatediscount()
 		if action=="discount":
 			# 对当前的限时折扣进行遍历 判断是否能进行限时折扣添加，因为如果当前如果有正在进行的全场限时折扣，则不能继续进行添加，必须停用原来的或者等待时间结束
 			# 目的是为了防止在同一个时刻同一商品有不同限时折扣
@@ -5200,7 +5200,7 @@ class Discount(AdminBaseHandler):
 		current_shop_id=self.current_shop.id
 		# 更新数据库限时折扣信息
 		current_customer_id=self.current_user.id
-		self.updatediscount(current_customer_id)
+		self.updatediscount()
 		if action=="close_all":
 			q=self.session.query(models.Marketing).filter_by(id=current_shop_id).with_lockmode('update').first()
 			discount_active_cm=q.discount_active
@@ -5254,20 +5254,32 @@ class Discount(AdminBaseHandler):
 				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks)
 				if can_choose==1:
 					return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
+
+				#进行该种商品的活动不能于其它的同种商品活动冲突
 				if x["use_goods_group"]==-2:
 					q_charge=self.session.query(models.ChargeType).filter_by(shop_id=current_shop_id,active=1).with_lockmode('update').all()
 					for m_charge in q_charge:
 						m_charge.update(self.session,activity_type=2)
+						fruit_activity=self.session.query(models.Fruit).filter_by(id=m_charge.fruit_id).with_lockmode('update').first()
+						fruit_activity.activity_status=2
+						self.session.flush()
 				elif x["use_goods"]==-1:
 					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x["use_goods_group"]).all()
 					for m_fruit in q_fruit:
 						q_charge=self.session.query(models.ChargeType).filter_by(active=1,fruit_id=m_fruit.id).with_lockmode('update').all()
 						for m_charge in q_charge:
 							m_charge.update(self.session,activity_type=2)
+							fruit_activity=self.session.query(models.Fruit).filter_by(id=m_charge.fruit_id).with_lockmode('update').first()
+							fruit_activity.activity_status=2
+							self.session.flush()
 				else:
 					for m_charge in x["charges"]:
 						q_charge=self.session.query(models,ChargeType).filter_by(id=m_charge).with_lockmode('update').first()
 						q_charge.update(self.session,activity_type=2)
+						fruit_activity=self.session.query(models.Fruit).filter_by(id=m_charge.fruit_id).with_lockmode('update').first()
+						fruit_activity.activity_status=2
+						self.session.flush()
+
 				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),\
 					status=status,discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
 				self.session.add(new_discount)

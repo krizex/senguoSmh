@@ -853,7 +853,7 @@ class Discount(CustomerBaseHandler):
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
 								if charge.active==1:
-									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
@@ -872,7 +872,7 @@ class Discount(CustomerBaseHandler):
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
 								if charge.active==1:
-									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
@@ -891,7 +891,7 @@ class Discount(CustomerBaseHandler):
 						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id in charge_type).all()
 						for charge in ChargeType:
 							if charge.active==1:
-								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
+								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
 								chargesingle.append(x_charge)
 						if fruit.img_url:
 							img_url = fruit.img_url.split(';')[0]
@@ -905,8 +905,7 @@ class Discount(CustomerBaseHandler):
 						data.append(data0)
 				if if_all==1:
 					break
-			print(data)
-			return self.render("seckill/discount.html",shop_code=shop.shop_code,output_data=data)
+			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data)
 		elif action=="add_in_cart":
 			pass
 		elif action=="add_in_order":
