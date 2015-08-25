@@ -241,13 +241,14 @@ $(document).ready(function(){
     parent.attr({'data-storage':storage-change_num});
 }).on("click",".seckill-goods",function(){//秒杀
     var id = $(this).closest("li").attr("data-id");
+    var s_goods_id =  $(this).closest("li").attr("seckill_goods_id");
     window.dataObj.fruits[id]=1;
     $(this).addClass("hidden");
     $(this).next(".seckill-btn-yes").removeClass("hidden");
     wobble($('.cart_num'));
     $(".cart_num").removeClass("hidden").html(++window.dataObj.cart_count);
+    seckill_goods_ids.push(s_goods_id);
     noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
-    //addCart(0,$(this).closest("li"));
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -358,7 +359,7 @@ var goodsList=function(page,action,_group_id){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}">'+
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}">'+
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
@@ -544,6 +545,7 @@ function countTime($obj){
 }
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
+var seckill_goods_ids=[];
 function cartNum(cart_ms,list){
     var item_list=$(list);
     for(var key in cart_ms) {
@@ -564,7 +566,9 @@ function cartNum(cart_ms,list){
                     var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
                     var unit_num=parseFloat(charge.find('.num').text());
                     var change_num=relate*unit_num*cart_ms[key][1];
-                    $parent.attr({'data-storage':storage-change_num});
+                    if($parent.attr("is_activity")!="1"){
+                        $parent.attr({'data-storage':storage-change_num});
+                    }
                     //if(charge.hasClass('more_charge')) {
                     //    $parent.find('.charge-list').show();
                     //    $parent.find('.back-shape').toggleClass('hidden');
@@ -669,12 +673,13 @@ function addCart(link,$obj){
     var fruits=window.dataObj.fruits;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_goods_ids:seckill_goods_ids
     };
-    if(link==0){
+    /*if(link==0){
         args.price_dif = $obj.find(".price-dif").html();
         args.seckill_goods_id=$obj.attr("seckill_goods_id");
-    }
+    }*/
     if(!isEmptyObj(fruits)){
         fruits={};
     }
@@ -682,7 +687,7 @@ function addCart(link,$obj){
             if(res.success)
             {
                 if(link!=0){
-                    window.location.href=link;
+                   window.location.href=link;
                 }
             }
             else return noticeBox(res.error_text);

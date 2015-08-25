@@ -388,7 +388,7 @@ $(document).ready(function(){
 	var page_jump = parseInt($('.sec-input-page').val());
 	if (page_jump < 1 || page_jump > sec_page_sum || isNaN(page_jump)){
 		$('.sec-input-page').val('');
-		Tip('输入的页码不正确，请重写输入');
+		Tip('输入的页码不正确，请重新输入');
 		return false;
 	}
 	cur_sec_page = page_jump-1;
@@ -443,7 +443,7 @@ $(document).ready(function(){
 	var page_jump = parseInt($('.detail-input-page').val());
 	if (page_jump < 1 || page_jump > detail_page_sum || isNaN(page_jump)){
 		$('.detail-input-page').val('');
-		Tip('输入的页码不正确，请重写输入');
+		Tip('输入的页码不正确，请重新输入');
 		return false;
 	}
 	cur_detail_page = page_jump-1;
