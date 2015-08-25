@@ -258,15 +258,18 @@ class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
-		if self.current_shop.orders:
-			order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
-				not_(models.Order.status.in_([-1,0]))).count()
-			new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
-			follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
-			new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
-			on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
-			if new_order_sum < 0:
-				new_order_sum = 0
+		try:
+			if self.current_shop.orders:
+				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+					not_(models.Order.status.in_([-1,0]))).count()
+				new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+				follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+				new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+				on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+				if new_order_sum < 0:
+					new_order_sum = 0
+		except:
+			order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
 		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum,
 			follower_sum=follower_sum,on_num=on_num)
 
@@ -1393,8 +1396,11 @@ class Order(AdminBaseHandler):
 			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
 			count = self._count()
 			atonce = count[11]
-			msg_num = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
-				models.Order.status == 6).count() - self.current_shop.old_msg
+			try:
+				msg_num = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
+					models.Order.status == 6).count() - self.current_shop.old_msg
+			except:
+				msg_num = 0
 			is_balance = self.current_shop.is_balance
 			staff_sum = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id).count()
 			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
