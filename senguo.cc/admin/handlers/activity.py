@@ -844,7 +844,7 @@ class Discount(CustomerBaseHandler):
 		current_shop_id=self.get_cookie("market_shop_id")
 		shop=self.session.query(models.Shop).filter_by(id=current_shop_id).first()
 		current_customer_id=self.current_user.id
-		self.updatediscount(current_customer_id)
+		self.updatediscount()
 		action=self.args["action"]
 		if action=="detail":
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=1).all()
@@ -919,7 +919,7 @@ class Discount(CustomerBaseHandler):
 						data.append(data0)
 				if if_all==1:
 					break
-			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data)
+			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data,context=dict(fruits={}))
 		elif action=="add_in_cart":
 			pass
 		elif action=="add_in_order":

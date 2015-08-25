@@ -2,11 +2,15 @@
 {% block title %}限时折扣{% end %}
 {% block head %}
 <div class="header">
-    <a href="/customer/discover/{{shop_code}}" class="back"></a>
+    <a href="/customer/discover/{{shop_code}}" class="back back-prev"></a>
     <span id="discount">限时折扣</span>
 </div>
 {% end %}
 {% block content %}
+{% import json%}
+<script>
+    window.dataObj.fruits={% raw json.dumps(context["fruits"]) %};
+</script>
 <div class="wrap-seckill pm80">
     {% for item in output_data %}
     <div class="discount-item-box">
@@ -23,8 +27,9 @@
                     </dt>
                     <dd>
                         <p class="c333 clip nm-name pt0">{{goods['goods_name']}}</p>
+                        {{goods['charge_types'] }}
                         {% for charge in goods['charge_types']%}
-                        <div class="wrap-discount-item {% if goods['storage']==0 %}no-goods{% end %}" data-id="{{charge['charge_id']}}">
+                        <div class="wrap-discount-item {% if goods['storage']==0 %}no-goods{% end %}" data-id="{{charge['charge_id']}}" charge-storage="10">
                             <span class="price-bo">{{charge['charge']}}</span>
                             <span class="price-tip">{{goods['discount_rate']}}折</span>
                             <div class="wrap-operate" data-num="{{goods['count']}}" data-storage="{{goods['storage']}}">

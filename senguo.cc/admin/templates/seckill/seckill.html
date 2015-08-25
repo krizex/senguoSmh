@@ -2,7 +2,7 @@
 {% block title %}秒杀活动{% end %}
 {% block head %}
 <div class="header">
-    <a href="javascript:;" url="/customer/discover/{{shop_code}}" class="back"></a>
+    <a href="javascript:;" url="/customer/discover/{{shop_code}}" class="back back-prev"></a>
     <span id="seckill">秒杀活动</span>
 </div>
 {% end %}
@@ -10,6 +10,7 @@
 {% import json%}
 <script>
     var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
+    window.dataObj.fruits={% raw json.dumps(context["fruits"]) %};
 </script>
 <input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm40">

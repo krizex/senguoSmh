@@ -557,6 +557,7 @@ class Discover(CustomerBaseHandler):
 		seckill_display_flag = 0
 		if seckill_active == 1:
 			now_time = int(time.time())
+			seckill_count = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status.in_([1,2]),models.SeckillActivity.shop_id == shop_id).order_by(models.SeckillActivity.start_time).count()
 			query1 = self.session.query(models.SeckillActivity.id).filter(models.SeckillActivity.activity_status == 2,models.SeckillActivity.shop_id == shop_id).order_by(models.SeckillActivity.start_time).all()
 			if query1:
 				activity_id = query1[0][0]
@@ -586,7 +587,8 @@ class Discover(CustomerBaseHandler):
 		print(discount_text)
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
-			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag)
+			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
+			seckill_count=seckill_count)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -1268,13 +1270,14 @@ class Market(CustomerBaseHandler):
 		discount_img_url=''
 		notices = []
 		shop_id = shop.id
+
 		if discount_active==0:
 			self.updatediscount()
 			activity_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).all()
 			if activity_query:
 				has_discount_activity=1
 				discount_img_url=self.session.query(models.Notice).filter_by(config_id=shop_id).first().discount_img_url
-				notices.append(('','',discount_img_url))
+				notices.append(('','',discount_img_url,2))
 
 		# added by jyj 2015-8-21
 		seckill_goods_ids = []
@@ -1296,15 +1299,15 @@ class Market(CustomerBaseHandler):
 
 				activity_query = activity_query[0]
 				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
-				notices.append(('','',seckill_img_url))
+				notices.append(('','',seckill_img_url,1))
 				for x in shop.config.notices:
 					if x.active == 1:
-						notices.append((x.summary, x.detail,x.img_url))
+						notices.append((x.summary, x.detail,x.img_url,0))
 
 			else:
-				notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+				notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
 		else:
-			notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+			notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
 
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
@@ -1687,9 +1690,15 @@ class Market(CustomerBaseHandler):
 			seckill_goods_ids = self.args['seckill_goods_ids']
 			if seckill_goods_ids:
 				for seckill_goods_id in seckill_goods_ids:
-					customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
-					self.session.add(customer_seckill_goods)
-					self.session.flush()
+					query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
+					if query:
+						query.status = 1
+						self.session.flush()
+					else:
+						customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
+						self.session.add(customer_seckill_goods)
+						self.session.flush()
+
 					seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
 					seckill_goods.not_pick -= 1
 					seckill_goods.picked += 1
