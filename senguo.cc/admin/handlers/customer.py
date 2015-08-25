@@ -1283,7 +1283,6 @@ class Market(CustomerBaseHandler):
 		else:
 			notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 
-		print("##@@@",seckill_goods_ids)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
@@ -1638,7 +1637,6 @@ class Market(CustomerBaseHandler):
 	def cart_list(self):
 		shop_id = int(self.get_cookie('market_shop_id'))
 		fruits = self.args["fruits"]
-		
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		try:
@@ -1663,8 +1661,10 @@ class Market(CustomerBaseHandler):
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
+
 		cart.fruits = str(fruits2)
 		self.session.commit()
+
 		return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int","activity_type?:int")
