@@ -143,7 +143,7 @@ class GlobalBaseHandler(BaseHandler):
 		self.session.commit()
 		return None
 	# 更新店铺用户的限时折扣信息
-	def updatediscountbase(self,shop_id,customer_id):
+	def updatediscountbase(self,shop_id):
 		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
 		now_date=int(time.time())
 		status=0
@@ -171,10 +171,12 @@ class GlobalBaseHandler(BaseHandler):
 					else:
 						status=0
 				x.update(self.session,status=status)
+				self.session.flush()
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
 			for y in qq:
 				if y.status!=3:
 					y.update(self.session,status=status)
+					self.session.flush()
 			#如果当每一批的所有分组都被停用了，那么该分组也将默认被停用了	
 			close_all=0	
 			for y in qq:
@@ -182,7 +184,65 @@ class GlobalBaseHandler(BaseHandler):
 					close_all=1
 			if close_all==0:
 				x.update(self.session,status=3)
+				self.session.flush()
+		self.updatediscoutnum(shop_id)
 		self.session.commit()
+
+	def updatediscoutnum(self,shop_id):
+		#首先清零统计数据，因为是数据是动态的，故必须时刻统计
+		q_cleargroup=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,status=1).with_lockmode('update').all()
+		for x in q_cleargroup:
+			x.incart_num=0
+			x.inorder_num=0
+			q_clear=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
+			for y in q_clear:
+				y.incart_num=0
+				y.ordered_num=0
+		self.session.flush()
+
+		#根据购物车的相关信息刷新统计数库
+		q_cart=self.session.query(models.Cart).filter_by(shop_id=shop_id).all()
+		q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=-2).with_lockmode('update').first()
+		for m_cart in q_cart:
+			fruits=eval(m_cart.fruits)
+			for key in fruits:
+				x_charge=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+				if q_all:
+					q_all.incart_num+=fruits[int(key)]
+				else:
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods=-1,use_goods_group=x_charge.fruit.group_id).with_lockmode('update').first()
+					if q_part:
+						q_discount=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=-1,status=1).with_lockmode('update').first()
+						q_discount.incart_num+=fruits[int(key)]
+					else:
+						q_discount=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=x_charge.fruit_id,status=1).with_lockmode('update').first()
+						if q_discount:
+							if key in eval(q_discount):
+								q_discount.incart_num+=fruits[int(key)]
+				self.session.flush()
+		q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
+		for x in q_group:
+			q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id,status=1).all()
+			for y in q_goods:
+				x.incart_num+=y.incart_num
+		self.session.flush()
+		#根据订单的相关信心刷新统计数据库
+		q_order=self.session.query(models.Order).filter_by(shop_id=shop_id).filter(models.Order.status!=0).all()
+		for m_cart in q_order:
+			fruits=eval(m_cart.fruits)
+			for key in fruits:
+				q_discount=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=int(key),status=1).with_lockmode('update').first()
+				if q_discount:
+					q_discount.inorder_num+=fruits[int(key)]
+				self.session.flush()
+		q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,status=1).with_lockmode('update').all()
+		for x in q_group:
+			q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).all()
+			for y in q_goods:
+				x.ordered_num+=y.ordered_num
+		self.session.flush()
+		self.session.commit()
+
 	# 全局实时更新店铺秒杀活动基类方法：
 	def update_seckill_base(self,shop_id):
 		current_shop_id = shop_id
@@ -1465,9 +1525,9 @@ class AdminBaseHandler(_AccountBaseHandler):
 		self.updatecouponbase(current_shop_id,customer_id)
 
 	# 刷新数据库的限时折扣信息
-	def updatediscount(self,customer_id):
+	def updatediscount(self):
 		current_shop_id=self.get_secure_cookie("shop_id")
-		self.updatediscountbase(current_shop_id,customer_id)
+		self.updatediscountbase(current_shop_id)
 
 	# 刷新数据库店铺秒杀活动信息
 	def update_seckill(self):
@@ -1685,9 +1745,15 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					img_url=charge_type.fruit.img_url.split(";")[0]
 				else:
 					img_url= None
+				#查询是否有限时折扣活动
+				self.updatediscount()
+				discount_rate=None
+				q=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).first()
+				if q:
+					discount_rate=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q.discount_id).first().discount_rate
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
-										  "activity_type":charge_type.activity_type}
+										  "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
 		return fruits
 
 	@property
@@ -1826,9 +1892,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		self.updatecouponbase(current_shop_id,customer_id)
 
 	# 刷新数据库限时折扣信息
-	def updatediscount(self,customer_id):
+	def updatediscount(self):
 		current_shop_id= self.get_cookie("market_shop_id") 
-		self.updatediscountbase(current_shop_id,customer_id)
+		self.updatediscountbase(current_shop_id)
 
 	# #刷新数据库店铺秒杀活动信息
 	def update_seckill(self):

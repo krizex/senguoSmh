@@ -4926,7 +4926,7 @@ class Discount(AdminBaseHandler):
 			for y in q1:
 				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 				data0.append(x_goodsgroup)
-				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id).all()
+				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
 				for z in Chargetype:
 					x_charge={"charge_id":z.id,"charge":str(z.price)+'元/'+str(z.num)+self.getUnit(z.unit)}
 					chargesingle.append(x_charge)
@@ -5027,7 +5027,7 @@ class Discount(AdminBaseHandler):
 					elif start_date>=ygroup.start_date and start_date<=ygroup.end_date:
 						can_choose=1
 				elif ygroup.discount_way==1 and discount_way==1:
-					for week in eval(weeks):
+					for week in weeks:
 						if week in eval(ygroup.weeks):
 							if f_time<ygroup.f_time and t_time>=ygroup.f_time:
 								can_choose=1
@@ -5036,17 +5036,18 @@ class Discount(AdminBaseHandler):
 								can_choose=1
 								break
 				elif ygroup.discount_way==0 and discount_way==1:
-					begin=time.strftime('%w',time.localtime(ygroup.start_date))
+					begin=int(time.strftime('%w',time.localtime(ygroup.start_date)))
+					end=int(time.strftime('%w',time.localtime(ygroup.end_date)))
 					if begin==0:
 						begin=7
 					if now_date>=ygroup.start_date:
-						if ygroup.end_date-ygroup.now_date>=7*24*3600:
+						if ygroup.end_date-now_date>=7*24*3600:
 							can_choose=1
 						else:
-							begin=time.strftime('%w',time.localtime(now_date))
+							begin=int(time.strftime('%w',time.localtime(now_date)))
 							if begin==0:
 								begin=7
-							for week in eval(weeks):
+							for week in weeks:
 								if week>=begin and week<=end:
 									can_choose=1
 									break		
@@ -5054,17 +5055,39 @@ class Discount(AdminBaseHandler):
 						if ygroup.end_date-ygroup.start_date>=7*24*3600:
 							can_choose=1
 						else:
-							end=time.strftime('%w',time.localtime(y.end_date))
+							end=int(time.strftime('%w',time.localtime(ygroup.end_date)))
 							if end==0:
 								end=7
-							for week in eval(weeks):
+							for week in weeks:
 								if week>=begin and week<=end:
 									can_choose=1
 									break							
 				elif ygroup.discount_way==1 and discount_way==0:
-					begin=time.strftime('%w',time.localtime(start_date))
-					#
-
+					begin=int(time.strftime('%w',time.localtime(start_date)))
+					end=int(time.strftime('%w',time.localtime(end_date)))
+					if begin==0:
+						begin=7
+					if now_date>=start_date:
+						if end_date-now_date>=7*24*3600:
+							can_choose=1
+						else:
+							begin=int(time.strftime('%w',time.localtime(now_date)))
+							if begin==0:
+								begin=7
+							for week in eval(ygroup.weeks):
+								if week>=begin and week<=end:
+									can_choose=1
+									break		
+					else:
+						if end_date-start_date>=7*24*3600:
+							can_choose=1
+						else:
+							if end==0:
+								end=7
+							for week in weeks:
+								if week>=begin and week<=end:
+									can_choose=1
+									break				
 				if can_choose==1:
 					break
 		return can_choose
@@ -5077,7 +5100,7 @@ class Discount(AdminBaseHandler):
 		current_shop=self.current_shop
 		# 更新数据库限时折扣信息
 		current_customer_id=self.current_user.id
-		self.updatediscount(current_customer_id)
+		self.updatediscount()
 		if action=="discount":
 			# 对当前的限时折扣进行遍历 判断是否能进行限时折扣添加，因为如果当前如果有正在进行的全场限时折扣，则不能继续进行添加，必须停用原来的或者等待时间结束
 			# 目的是为了防止在同一个时刻同一商品有不同限时折扣
@@ -5178,7 +5201,7 @@ class Discount(AdminBaseHandler):
 		current_shop_id=self.current_shop.id
 		# 更新数据库限时折扣信息
 		current_customer_id=self.current_user.id
-		self.updatediscount(current_customer_id)
+		self.updatediscount()
 		if action=="close_all":
 			q=self.session.query(models.Marketing).filter_by(id=current_shop_id).with_lockmode('update').first()
 			discount_active_cm=q.discount_active
@@ -5221,7 +5244,6 @@ class Discount(AdminBaseHandler):
 			discount_id=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).count()+1
 			new_discount=models.DiscountShopGroup(shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,weeks=str(weeks),\
 				discount_way=discount_way,f_time=f_time,t_time=t_time,status=status,create_date=create_date,incart_num=0,ordered_num=0)
-			self.session.add(new_discount)
 			for x in discount_goods:
 				#进行判断添加这个时刻有没有已经存在进行的活动
 				can_choose=0 # 0 表示可以选择 不冲突 ，1表示冲突 需重新选择
@@ -5233,6 +5255,32 @@ class Discount(AdminBaseHandler):
 				can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks)
 				if can_choose==1:
 					return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
+
+				#进行该种商品的活动不能于其它的同种商品活动冲突
+				if x["use_goods_group"]==-2:
+					q_charge=self.session.query(models.ChargeType).filter_by(shop_id=current_shop_id,active=1).with_lockmode('update').all()
+					for m_charge in q_charge:
+						m_charge.update(self.session,activity_type=2)
+						fruit_activity=self.session.query(models.Fruit).filter_by(id=m_charge.fruit_id).with_lockmode('update').first()
+						fruit_activity.activity_status=2
+						self.session.flush()
+				elif x["use_goods"]==-1:
+					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x["use_goods_group"]).all()
+					for m_fruit in q_fruit:
+						q_charge=self.session.query(models.ChargeType).filter_by(active=1,fruit_id=m_fruit.id).with_lockmode('update').all()
+						for m_charge in q_charge:
+							m_charge.update(self.session,activity_type=2)
+							fruit_activity=self.session.query(models.Fruit).filter_by(id=m_charge.fruit_id).with_lockmode('update').first()
+							fruit_activity.activity_status=2
+							self.session.flush()
+				else:
+					for m_charge in x["charges"]:
+						q_charge=self.session.query(models,ChargeType).filter_by(id=m_charge).with_lockmode('update').first()
+						q_charge.update(self.session,activity_type=2)
+						fruit_activity=self.session.query(models.Fruit).filter_by(id=m_charge.fruit_id).with_lockmode('update').first()
+						fruit_activity.activity_status=2
+						self.session.flush()
+
 				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),\
 					status=status,discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
 				self.session.add(new_discount)
@@ -5531,6 +5579,7 @@ class MarketingSeckill(AdminBaseHandler):
 			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
 			for item in query_list:
 				fruit_id_list.append(item[0])
+			
 
 			fruit_id_storage = {}
 			for fruit_id in fruit_id_list:

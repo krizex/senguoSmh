@@ -786,8 +786,13 @@ class Seckill(CustomerBaseHandler):
 							filter(models.SeckillGoods.activity_id.in_(seckill_activity),models.SeckillGoods.status != 0,models.CustomerSeckillGoods.status == 1).all()
 		for item in seckill_goods_query:
 			seckill_goods_ids.append(item.id)
-		print("##@@@",seckill_goods_ids)
-		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,seckill_goods_ids=seckill_goods_ids)
+
+		query = self.session.query(models.Cart).filter_by(id = customer_id,shop_id = shop_id).first()
+		if query:
+			fruits = eval(query.fruits)
+		else:
+			fruits = {}
+		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,context=dict(seckill_goods_ids=seckill_goods_ids,fruits=fruits))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
 	def post(self,shop_code):
@@ -805,10 +810,8 @@ class Seckill(CustomerBaseHandler):
 			goods_item['fruit_id'] = goods.fruit_id
 
 			customer_id = self.current_user.id
-			is_bought = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=goods_seckill_id).first()
-			if is_bought:
-				is_bought = is_bought.status
-			if is_bought == 0 or (not is_bought):
+			is_bought = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=goods_seckill_id).filter(models.CustomerSeckillGoods.status != 0).first()
+			if not is_bought:
 				goods_item['is_bought'] = 0
 			else:
 				goods_item['is_bought'] = 1
@@ -828,7 +831,7 @@ class Seckill(CustomerBaseHandler):
 				cur_charge_type_num = cur_charge_type.num
 			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 			goods_item['price_dif'] = goods.former_price - goods.seckill_price
-			goods_item['activity_piece'] = goods.not_pick
+			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)
 
 		return self.send_success(output_data = output_data)
@@ -863,8 +866,9 @@ class Discount(CustomerBaseHandler):
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1).all()
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
-								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
-								chargesingle.append(x_charge)
+								if charge.active==1:
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
 							else:
@@ -881,8 +885,9 @@ class Discount(CustomerBaseHandler):
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=y.use_goods_group).all()
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
-								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
-								chargesingle.append(x_charge)
+								if charge.active==1:
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
 							else:
@@ -899,8 +904,9 @@ class Discount(CustomerBaseHandler):
 						charge_type=eval(y.charge_type)
 						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id in charge_type).all()
 						for charge in ChargeType:
-							x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit)}
-							chargesingle.append(x_charge)
+							if charge.active==1:
+								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+								chargesingle.append(x_charge)
 						if fruit.img_url:
 							img_url = fruit.img_url.split(';')[0]
 						else:
