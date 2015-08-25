@@ -270,9 +270,9 @@ class WxMessage(CustomerBaseHandler):
 					u = models.Customer()
 					u.accountinfo = account_info
 					self.session.add(u)
-					admin = models.ShopAdmin()
-					admin.accountinfo = account_info
-					self.session.add(admin)
+					# admin = models.ShopAdmin()
+					# admin.accountinfo = account_info
+					# self.session.add(admin)
 					self.session.commit()
 			if event == 'subscribe':
 				ToUserName = data.get('ToUserName',None) #开发者微信号
@@ -400,7 +400,7 @@ class Home(CustomerBaseHandler):
 		except:
 			if_shopadmin = None
 		try:
-			if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
+			if_shop = self.session.query(models.Shop).filter_by(id = if_shopadmin.shop_id).first()
 		except:
 			if_shop = None
 		if if_shopadmin:
