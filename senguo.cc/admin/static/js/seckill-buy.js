@@ -20,18 +20,18 @@ $(document).ready(function(){
         var start_time = parseInt($(".cur-time").closest('li').attr("data-start"));
         var continue_time = parseInt($(".cur-time").closest('li').attr("data-continue"));
         countTime((continue_time+start_time)*1000,start_time,1,$(".show-time-box"));
-        if(seckill_goods_ids.length>0){
-            $(".cart-num").html(seckill_goods_ids.length).removeClass("hide");
-            setTimeout(function(){
-                $(".cart-num").removeClass("origin-cart");
-            },20);
-        }
     }
     if($("#discount").size()>0){//折扣
         $(".no-seckill-time").each(function(){
             var time = parseInt($(this).attr("data-time"));
             countTime(time*1000,0,2,$(this));
         });
+    }
+    if(parseInt(cookie.getCookie("cart_count"))>0){
+        $(".cart-num").html(cookie.getCookie("cart_count")).removeClass("hide");
+        setTimeout(function(){
+            $(".cart-num").removeClass("origin-cart");
+        },20);
     }
 }).on("click",".add-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
