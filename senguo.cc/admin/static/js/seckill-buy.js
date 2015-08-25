@@ -37,8 +37,12 @@ $(document).ready(function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
     var storage = parseInt($parent.attr("data-storage"));
-    if(){
-        
+    //判断库存
+    if(storage==0){
+        $(this).closest("li").find(".cover-img").removeClass("hide");
+        $(this).closest("li").find(".wrap-discount-item").addClass("no-goods");
+        $parent.addClass("");
+        return Tip("当前商品已经售罄，下次记得早点哦~~");
     }
     if(num==0){
         $parent.children(".num-txt").removeClass("hide").html(1);
