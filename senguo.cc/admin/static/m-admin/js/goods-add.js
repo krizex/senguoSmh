@@ -40,6 +40,7 @@ $(document).ready(function(){
     $(".moxie-shim").removeClass("hide");
 }).on("click","#add_price",function(){//添加售价方式
     var $item = $(".price-list").children(".price-item").first().clone();
+    $item.attr("data-id","");
     $item.find(".first-num").html("1");
     $item.find(".now-unit").html("kg");
     $item.find(".second-num").html("1");
@@ -338,7 +339,9 @@ function finishGoods(){
                 market_price:market_price,//市场价
                 unit_name:unit_name
             }
-            if(type=="edit"){item.id=id;}
+            if(type=="edit" && id){
+                item.id=id;
+            }
             price_list.push(item);
         });
     }

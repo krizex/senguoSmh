@@ -1347,7 +1347,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
 				# print("[Order]Order Canceled, restore storage:",num)
-		session.commit()
+		session.flush()
 		return True
 
 	def get_sendtime(self,session,order_id):

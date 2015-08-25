@@ -1,5 +1,17 @@
 var notify = null,notice = false;
 $(document).ready(function(){
+   if(!isWebkit()){
+        document.write ('<div class="no-webkit-notice" style="width:350;height:150px;margin:0 auto;font-size:14px;border:1px solid #ddd;background:#f7f7f7;padding:30px;line-height:20px;">'+
+                '<img src="/static/images/apply_pear3.png" style="width:80px;float:left"/>'+
+                    '<div style="float:right">'+
+                        '<p style="padding:0;margin:5px">矮油，您的浏览器与森果后台不兼容，</p>'+
+                        '<p style="padding:0;margin:5px">推荐使用谷歌浏览器访问本网站，</p>'+
+                        '<p style="padding:0;margin:5px">使用国产浏览器的请使用高速模式。</p>'+
+                        '<a href="http://rj.baidu.com/soft/detail/14744.html?ald" target="_blank" style="display:inline-block;border:none;background:#44b549;color:#fff;padding:5px 10px;margin-top:10px;font-size:12px;width:100px;text-align:center;text-decoration:none;">谷歌浏览器下载</a>'+
+                        '<a href="http://senguo.cc" target="_blank" style="display:inline-block;border:none;background:#44b549;color:#fff;padding:5px 10px;margin-top:10px;font-size:12px;margin-left:10px;width:100px;text-align:center;text-decoration:none;">森果官网</a>'+
+                    '</div>'+
+            '</div>');
+   }
     if (window.screen.width=='600')
         document.write ('<body style="zoom: 55%">');
     else if (window.screen.width=='800')
@@ -160,6 +172,15 @@ function isWeiXin(){
         else{
             return false;
         }
+}
+function isWebkit(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/webkit/i) == 'webkit'){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 function worMode(target){
