@@ -7,6 +7,10 @@
 </div>
 {% end %}
 {% block content %}
+{% import json%}
+<script>
+    window.dataObj.fruits={% raw json.dumps(context["fruits"]) %};
+</script>
 <div class="wrap-seckill pm80">
     {% for item in output_data %}
     <div class="discount-item-box">

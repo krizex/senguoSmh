@@ -10,6 +10,7 @@
 {% import json%}
 <script>
     var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
+    window.dataObj.fruits={% raw json.dumps(context["fruits"]) %};
 </script>
 <input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm40">
