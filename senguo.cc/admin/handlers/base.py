@@ -171,10 +171,12 @@ class GlobalBaseHandler(BaseHandler):
 					else:
 						status=0
 				x.update(self.session,status=status)
+				self.session.flush()
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
 			for y in qq:
 				if y.status!=3:
 					y.update(self.session,status=status)
+					self.session.flush()
 			#如果当每一批的所有分组都被停用了，那么该分组也将默认被停用了	
 			close_all=0	
 			for y in qq:
@@ -182,6 +184,8 @@ class GlobalBaseHandler(BaseHandler):
 					close_all=1
 			if close_all==0:
 				x.update(self.session,status=3)
+				self.session.flush()
+		#根据购物车的相关信息
 		self.session.commit()
 	# 全局实时更新店铺秒杀活动基类方法：
 	def update_seckill_base(self,shop_id):

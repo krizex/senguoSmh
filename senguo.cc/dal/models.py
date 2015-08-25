@@ -1946,8 +1946,8 @@ class DiscountShopGroup(MapBase, _CommonApi):
 	t_time=Column(Integer)
 	create_date=Column(Integer)
 	status=Column(Integer) # ０：未开始　　１：进行中　２：衣结束　　３：已停用
-	incart_num=Column(Integer) 
-	ordered_num=Column(Integer)
+	incart_num=Column(Integer,default=0) 
+	ordered_num=Column(Integer,default=0)
  
 # 折扣商品详情
 class DiscountShop(MapBase, _CommonApi):
@@ -1960,8 +1960,8 @@ class DiscountShop(MapBase, _CommonApi):
 	use_goods=Column(Integer,default=-1) #商品名称
 	charge_type=Column(String(128)) #原价的价格类型
 	discount_rate=Column(Float) #折扣率
-	incart_num=Column(Integer) 
-	ordered_num=Column(Integer)
+	incart_num=Column(Integer,default=0) 
+	ordered_num=Column(Integer,default=0)
 	status=Column(Integer) # ０：未开始　　１：进行中　２：衣结束　　３：已停用
 
 # 秒杀活动表

@@ -1619,18 +1619,6 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_id?:int")
 	def cart_list(self):
 		shop_id = int(self.get_cookie('market_shop_id'))
-		fruits = self.args["fruits"]
-		if 'seckill_goods_id' in self.args:
-			seckill_goods_id = self.args['seckill_goods_id']
-			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
-			self.session.add(customer_seckill_goods)
-			self.session.flush()
-			seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
-			seckill_goods.not_pick -= 1
-			seckill_goods.picked += 1
-			self.session.flush()
-			self.session.commit()
-
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		try:
@@ -1643,6 +1631,16 @@ class Market(CustomerBaseHandler):
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
 		cart.fruits = str(fruits2)
+		fruits = self.args["fruits"]
+		if 'seckill_goods_id' in self.args:
+			seckill_goods_id = self.args['seckill_goods_id']
+			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
+			self.session.add(customer_seckill_goods)
+			self.session.flush()
+			seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+			seckill_goods.not_pick -= 1
+			seckill_goods.picked += 1
+			self.session.flush()
 		self.session.commit()
 		return self.send_success()
 
