@@ -196,9 +196,17 @@ class GlobalBaseHandler(BaseHandler):
 				item.activity_status = 0
 
 				seckill_goods_list = []
-				query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id).filter_by(activity_id=item.id).all();
+				seckill_fruit_list = []
+				query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id,models.SeckillGoods.fruit_id).filter_by(activity_id=item.id).all();
 				for e in query_list:
 					seckill_goods_list.append(e[0])
+					seckill_fruit_list.append(e[1])
+
+				for cur_fruit_id in seckill_fruit_list:
+					cur_fruit = self.session.query(models.Fruit).filter_by(id = cur_fruit_id).with_lockmode('update').first()
+					cur_fruit.activity_status = 0
+				self.session.flush()
+
 				charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
 				for e in charge_type_query:
 					e.activity_type = -1
@@ -213,9 +221,17 @@ class GlobalBaseHandler(BaseHandler):
 				item.activity_status = 0
 
 				seckill_goods_list = []
-				query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id).filter_by(activity_id=item.id).all();
+				seckill_fruit_list = []
+				query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id,models.SeckillGoods.fruit_id).filter_by(activity_id=item.id).all();
 				for e in query_list:
 					seckill_goods_list.append(e[0])
+					seckill_fruit_list.append(e[1])
+
+				for cur_fruit_id in seckill_fruit_list:
+					cur_fruit = self.session.query(models.Fruit).filter_by(id = cur_fruit_id).with_lockmode('update').first()
+					cur_fruit.activity_status = 0
+				self.session.flush()
+
 				charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
 				for e in charge_type_query:
 					e.activity_type = -1

@@ -5334,7 +5334,7 @@ class MarketingSeckill(AdminBaseHandler):
 			status = self.args["status"]
 		else:
 			status = 1
-		page_size = 2
+		page_size = 15
 		current_shop_id=self.current_shop.id
 		current_shop=self.current_shop
 
@@ -5475,7 +5475,7 @@ class MarketingSeckill(AdminBaseHandler):
 								fruit_id_storage=[fruit_id_storage],fruit_id_charge_type=[fruit_id_charge_type],context=dict(subpage='marketing'))
 		elif action == 'seckill_detail':
 			activity_id = self.args['activity_id']
-			page_size = 2
+			page_size = 20
 
 			output_data = []
 			page_sum = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).count()
@@ -5500,8 +5500,8 @@ class MarketingSeckill(AdminBaseHandler):
 				charge_type_query = self.session.query(models.ChargeType.num,models.ChargeType.unit).filter_by(id = item.charge_type_id).first()
 				charge_type_query = list(charge_type_query)
 				charge_type_query[1] = self.getUnit(charge_type_query[1])
-				charge_type = '（单位：元/' + str(charge_type_query[0]) + charge_type_query[1] + '）'
-				storage_type = '（单位：份，每份' + str(charge_type_query[0]) + charge_type_query[1] + '）'
+				charge_type = '（单位：元/' + (str(int(charge_type_query[0])) if int(charge_type_query[0]) == charge_type_query[0] else str(charge_type_query[0])) + charge_type_query[1] + '）'
+				storage_type = '（单位：份，每份' + (str(int(charge_type_query[0])) if int(charge_type_query[0]) == charge_type_query[0] else str(charge_type_query[0])) + charge_type_query[1] + '）'
 				goods_item['charge_type'] = charge_type
 				goods_item['storage_type'] =storage_type
 				output_data.append(goods_item)
@@ -5683,17 +5683,22 @@ class MarketingSeckill(AdminBaseHandler):
 				self.session.add(insert_charge_type)
 				self.session.flush()
 				insert_charge_type_id = insert_charge_type.id
-				self.session.commit()
 
 				seckill_charge_type_id = insert_charge_type_id
 
 				seckill_goods = models.SeckillGoods(fruit_id=fruit_id,activity_id=activity_id,charge_type_id=charge_type_id,seckill_charge_type_id=seckill_charge_type_id,former_price=former_price,seckill_price=seckill_price,\
 									storage_piece=storage_piece,activity_piece=activity_piece,not_pick=not_pick,picked=picked,ordered=ordered,deleted=deleted)
 				self.session.add(seckill_goods)
+				self.session.flush()
 
 				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
 				sec_fruit.activity_status = 1
 				sec_fruit.seckill_charge_type = charge_type_id
+				self.session.flush()
+
+				cur_fruit = self.session.query(models.Fruit).filter_by(id = cur_fruit_id).with_lockmode('update').first()
+				cur_fruit.activity_status = 1
+				self.session.flush()
 
 				self.session.commit()
 		elif action == 'seckill_on':
@@ -5714,6 +5719,12 @@ class MarketingSeckill(AdminBaseHandler):
 			activity_query = self.session.query(models.SeckillActivity.id).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()
 			for item in activity_query:
 				activity_list.append(item[0])
+
+			fruit_list = self.session.query(models.Fruit).join(models.SeckillGoods,models.SeckillGoods.fruit_id == models.Fruit.id).filter(models.SeckillGoods.activity_id.in_(activity_list)).with_lockmode('update').all()
+			for item in fruit_list:
+				item.activity_status = 0
+			self.session.flush()
+
 			seckill_goods_list = []
 			query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id).filter(models.SeckillGoods.activity_id.in_(activity_list)).all();
 			for e in query_list:
@@ -5722,14 +5733,14 @@ class MarketingSeckill(AdminBaseHandler):
 			for e in charge_type_query:
 				e.activity_type = -1
 
-			query_list = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status.in_([1,2])).with_lockmode("update").all()
+			query_list = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).with_lockmode("update").all()
 			for item in query_list:
 				item.activity_status = -1
 			self.session.commit()
 		elif action == 'get_sec_item':
 			page = self.args['page']
 			status = self.args['status']
-			page_size = 2
+			page_size = 15
 
 			output_data = []
 
@@ -5810,7 +5821,7 @@ class MarketingSeckill(AdminBaseHandler):
 			activity_id = self.args['activity_id']
 			page = self.args['page']
 
-			page_size = 2
+			page_size = 20
 
 			output_data = []
 			query_list = self.session.query(models.SeckillGoods).filter_by(activity_id = activity_id).offset(page*page_size).limit(page_size).all()
@@ -5828,8 +5839,8 @@ class MarketingSeckill(AdminBaseHandler):
 				charge_type_query = self.session.query(models.ChargeType.num,models.ChargeType.unit).filter_by(id = item.charge_type_id).first()
 				charge_type_query = list(charge_type_query)
 				charge_type_query[1] = self.getUnit(charge_type_query[1])
-				charge_type = '（单位：元/' + str(charge_type_query[0]) + charge_type_query[1] + '）'
-				storage_type = '（单位：份，每份' + str(charge_type_query[0]) + charge_type_query[1] + '）'
+				charge_type = '（单位：元/' + (str(int(charge_type_query[0])) if int(charge_type_query[0]) == charge_type_query[0] else str(charge_type_query[0])) + charge_type_query[1] + '）'
+				storage_type = '（单位：份，每份' + (str(int(charge_type_query[0])) if int(charge_type_query[0]) == charge_type_query[0] else str(charge_type_query[0])) + charge_type_query[1] + '）'
 				goods_item['charge_type'] = charge_type
 				goods_item['storage_type'] =storage_type
 				output_data.append(goods_item)
@@ -5948,7 +5959,7 @@ class MarketingSeckill(AdminBaseHandler):
 
 			self.session.commit()
 
-			page_size = 2
+			page_size = 15
 			page_sum = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).count()
 			if page_sum % page_size == 0:
 				page_sum = page_sum//page_size

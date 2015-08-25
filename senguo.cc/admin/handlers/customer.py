@@ -1455,15 +1455,14 @@ class Market(CustomerBaseHandler):
 					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
 					data_item1['activity_piece'] = seckill_info.not_pick
 					data.append(data_item1)
-
-				data_item2['is_activity'] = 0
-
-				data_item2['charge_types'] = charge_types
-				data_item2['storage'] = fruit.storage
-				data_item2['saled'] = saled
-				data_item2['favour'] = fruit.favour
-				data_item2['limit_num'] = fruit.limit_num
-				data.append(data_item2)
+				if charge_types:
+					data_item2['is_activity'] = 0
+					data_item2['charge_types'] = charge_types
+					data_item2['storage'] = fruit.storage
+					data_item2['saled'] = saled
+					data_item2['favour'] = fruit.favour
+					data_item2['limit_num'] = fruit.limit_num
+					data.append(data_item2)
 				##
 
 			return data
@@ -1621,6 +1620,16 @@ class Market(CustomerBaseHandler):
 	def cart_list(self):
 		shop_id = int(self.get_cookie('market_shop_id'))
 		fruits = self.args["fruits"]
+		
+		if len(fruits) > 20:
+			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
+		try:
+			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+		except:
+			self.session.add(models.Cart(id=self.current_user.id,shop_id=shop_id))  # 如果没有购物车，就增加一个
+			self.session.commit()
+			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+
 		if 'seckill_goods_id' in self.args:
 			seckill_goods_id = self.args['seckill_goods_id']
 			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
@@ -1630,16 +1639,10 @@ class Market(CustomerBaseHandler):
 			seckill_goods.not_pick -= 1
 			seckill_goods.picked += 1
 			self.session.flush()
-			self.session.commit()
 
-		if len(fruits) > 20:
-			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
-		try:
-			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
-		except:
-			self.session.add(models.Cart(id=self.current_user.id,shop_id=shop_id))  # 如果没有购物车，就增加一个
-			self.session.commit()
-			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+			print("###",fruits,seckill_goods_id)
+		print("@@@@",fruits)
+
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
