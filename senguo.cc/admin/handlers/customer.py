@@ -1454,16 +1454,16 @@ class Market(CustomerBaseHandler):
 
 					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
 					data_item1['activity_piece'] = seckill_info.not_pick
+					data_item1['storage'] = seckill_info.storage_piece
 					data.append(data_item1)
-
-				data_item2['is_activity'] = 0
-
-				data_item2['charge_types'] = charge_types
-				data_item2['storage'] = fruit.storage
-				data_item2['saled'] = saled
-				data_item2['favour'] = fruit.favour
-				data_item2['limit_num'] = fruit.limit_num
-				data.append(data_item2)
+				if charge_types:
+					data_item2['is_activity'] = 0
+					data_item2['charge_types'] = charge_types
+					data_item2['storage'] = fruit.storage
+					data_item2['saled'] = saled
+					data_item2['favour'] = fruit.favour
+					data_item2['limit_num'] = fruit.limit_num
+					data.append(data_item2)
 				##
 
 			return data
