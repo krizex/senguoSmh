@@ -21,7 +21,7 @@ $(document).ready(function(){
         var continue_time = parseInt($(".cur-time").closest('li').attr("data-continue"));
         countTime((continue_time+start_time)*1000,start_time,1,$(".show-time-box"));
         if(seckill_goods_ids.length>0){
-            $(".cart-num").html(num+1).removeClass("hide");
+            $(".cart-num").html(seckill_goods_ids.length).removeClass("hide");
             setTimeout(function(){
                 $(".cart-num").removeClass("origin-cart");
             },20);

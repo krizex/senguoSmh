@@ -786,7 +786,7 @@ class Seckill(CustomerBaseHandler):
 							filter(models.SeckillGoods.activity_id.in_(seckill_activity),models.SeckillGoods.status != 0,models.CustomerSeckillGoods.status == 1).all()
 		for item in seckill_goods_query:
 			seckill_goods_ids.append(item.id)
-		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,seckill_goods_ids=seckill_goods_ids)
+		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,context=dict(seckill_goods_ids=seckill_goods_ids))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
 	def post(self,shop_code):
