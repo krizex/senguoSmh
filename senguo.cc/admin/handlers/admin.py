@@ -5531,6 +5531,7 @@ class MarketingSeckill(AdminBaseHandler):
 			query_list  = self.session.query(models.Fruit.id).filter(models.Fruit.shop_id == current_shop_id,models.Fruit.active == 1).all()
 			for item in query_list:
 				fruit_id_list.append(item[0])
+			
 
 			fruit_id_storage = {}
 			for fruit_id in fruit_id_list:
