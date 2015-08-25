@@ -1396,11 +1396,12 @@ class Order(AdminBaseHandler):
 			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
 			count = self._count()
 			atonce = count[11]
-			try:
-				msg_num = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
+			if not self.current_shop:
+				atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
+				return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
+			
+			msg_num = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
 					models.Order.status == 6).count() - self.current_shop.old_msg
-			except:
-				msg_num = 0
 			is_balance = self.current_shop.is_balance
 			staff_sum = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id).count()
 			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
