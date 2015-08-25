@@ -549,7 +549,7 @@ class Discover(CustomerBaseHandler):
 		seckill_display_flag = 0
 		if seckill_active == 1:
 			now_time = int(time.time())
-			query1 = self.session.query(models.SeckillActivity.id).filter(models.SeckillActivity.activity_status == 2,models.SeckillActivity.shop_id == shop_id).all()
+			query1 = self.session.query(models.SeckillActivity.id).filter(models.SeckillActivity.activity_status == 2,models.SeckillActivity.shop_id == shop_id).order_by(models.SeckillActivity.start_time).all()
 			if query1:
 				activity_id = query1[0][0]
 				goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
@@ -1253,27 +1253,41 @@ class Market(CustomerBaseHandler):
 		has_seckill_activity = 0
 		seckill_img_url = ''
 		notices = []
+		seckill_goods_ids = []
 		if seckill_active == 1:
 			shop_id = shop.id
 			self.update_seckill()			
 			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
 			if activity_query:
 				has_seckill_activity = 1
+
+				seckill_activity = []
+				for item in activity_query:
+					seckill_activity.append(item.id)
+
+				customer_id=self.current_user.id
+				seckill_goods_query = self.session.query(models.SeckillGoods).join(models.CustomerSeckillGoods,models.CustomerSeckillGoods.seckill_goods_id == models.SeckillGoods.id).\
+									filter(models.SeckillGoods.activity_id.in_(seckill_activity),models.SeckillGoods.status != 0,models.CustomerSeckillGoods.status == 1).all()
+				for item in seckill_goods_query:
+					seckill_goods_ids.append(item.id)
+
 				activity_query = activity_query[0]
 				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
 				notices.append(('','',seckill_img_url))
 				for x in shop.config.notices:
 					if x.active == 1:
 						notices.append((x.summary, x.detail,x.img_url))
+
 			else:
 				notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 		else:
 			notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
 
+		print("##@@@",seckill_goods_ids)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
-							has_seckill_activity=has_seckill_activity))
+							has_seckill_activity=has_seckill_activity,seckill_goods_ids=seckill_goods_ids))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1454,7 +1468,7 @@ class Market(CustomerBaseHandler):
 
 					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
 					data_item1['activity_piece'] = seckill_info.not_pick
-					data_item1['storage'] = seckill_info.storage_piece
+					data_item1['storage'] = seckill_info.not_pick
 					data.append(data_item1)
 				if charge_types:
 					data_item2['is_activity'] = 0
@@ -1617,7 +1631,7 @@ class Market(CustomerBaseHandler):
 		self.session.commit()
 		return self.send_success(notice='点赞成功，积分+1')
 
-	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_id?:int")
+	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_ids")
 	def cart_list(self):
 		shop_id = int(self.get_cookie('market_shop_id'))
 		fruits = self.args["fruits"]
@@ -1631,18 +1645,17 @@ class Market(CustomerBaseHandler):
 			self.session.commit()
 			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
 
-		if 'seckill_goods_id' in self.args:
-			seckill_goods_id = self.args['seckill_goods_id']
-			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
-			self.session.add(customer_seckill_goods)
-			self.session.flush()
-			seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
-			seckill_goods.not_pick -= 1
-			seckill_goods.picked += 1
-			self.session.flush()
-
-			print("###",fruits,seckill_goods_id)
-		print("@@@@",fruits)
+		if 'seckill_goods_ids' in self.args:
+			seckill_goods_ids = self.args['seckill_goods_ids']
+			if seckill_goods_ids:
+				for seckill_goods_id in seckill_goods_ids:
+					customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
+					self.session.add(customer_seckill_goods)
+					self.session.flush()
+					seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+					seckill_goods.not_pick -= 1
+					seckill_goods.picked += 1
+					self.session.flush()
 
 		fruits2 = {}
 		for key in fruits:

@@ -776,7 +776,18 @@ class Seckill(CustomerBaseHandler):
 		for i in range(len(output_data)):
 			output_data[i][1].sort(key = lambda item:item['start_time'],reverse=False)
 
-		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code)
+		seckill_goods_ids = []
+		killing_activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
+		seckill_activity = []
+		for item in killing_activity_query:
+			seckill_activity.append(item.id)
+		customer_id=self.current_user.id
+		seckill_goods_query = self.session.query(models.SeckillGoods).join(models.CustomerSeckillGoods,models.CustomerSeckillGoods.seckill_goods_id == models.SeckillGoods.id).\
+							filter(models.SeckillGoods.activity_id.in_(seckill_activity),models.SeckillGoods.status != 0,models.CustomerSeckillGoods.status == 1).all()
+		for item in seckill_goods_query:
+			seckill_goods_ids.append(item.id)
+		print("##@@@",seckill_goods_ids)
+		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,seckill_goods_ids=seckill_goods_ids)
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
 	def post(self,shop_code):
