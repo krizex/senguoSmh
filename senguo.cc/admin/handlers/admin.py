@@ -3091,6 +3091,10 @@ class Follower(AdminBaseHandler):
 				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 						filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 						join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
+				count = 1
+
+			elif action == "orderuser":
+				return self.render("admin/user-manage.html",context=dict(subpage='user'))
 			else:
 				return self.send_error(404)
 			for x in range(0, len(customers)):  #
