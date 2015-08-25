@@ -5275,9 +5275,9 @@ class Discount(AdminBaseHandler):
 							self.session.flush()
 				else:
 					for m_charge in x["charges"]:
-						q_charge=self.session.query(models,ChargeType).filter_by(id=m_charge).with_lockmode('update').first()
+						q_charge=self.session.query(models.ChargeType).filter_by(id=m_charge).with_lockmode('update').first()
 						q_charge.update(self.session,activity_type=2)
-						fruit_activity=self.session.query(models.Fruit).filter_by(id=m_charge.fruit_id).with_lockmode('update').first()
+						fruit_activity=self.session.query(models.Fruit).filter_by(id=q_charge.fruit_id).with_lockmode('update').first()
 						fruit_activity.activity_status=2
 						self.session.flush()
 

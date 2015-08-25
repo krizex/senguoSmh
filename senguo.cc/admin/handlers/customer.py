@@ -1261,7 +1261,7 @@ class Market(CustomerBaseHandler):
 					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
-		# added by cm 2015-8-21
+		# added by cm 2015-8-24
 		has_seckill_activity = 0
 		has_discount_activity=0
 		seckill_img_url = ''
@@ -1275,6 +1275,8 @@ class Market(CustomerBaseHandler):
 				has_discount_activity=1
 				discount_img_url=self.session.query(models.Notice).filter_by(config_id=shop_id).first().discount_img_url
 				notices.append(('','',discount_img_url))
+
+		# added by jyj 2015-8-21
 		seckill_goods_ids = []
 		if seckill_active == 1:
 			self.update_seckill()			
@@ -1696,19 +1698,8 @@ class Market(CustomerBaseHandler):
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
-
 		cart.fruits = str(fruits2)
-		if 'seckill_goods_id' in self.args:
-			seckill_goods_id = self.args['seckill_goods_id']
-			customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
-			self.session.add(customer_seckill_goods)
-			self.session.flush()
-			seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
-			seckill_goods.not_pick -= 1
-			seckill_goods.picked += 1
-			self.session.flush()
 		self.session.commit()
-
 		return self.send_success()
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int","activity_type?:int")

@@ -185,7 +185,7 @@ class GlobalBaseHandler(BaseHandler):
 			if close_all==0:
 				x.update(self.session,status=3)
 				self.session.flush()
-		self.updatediscoutnum(shop_id)
+		# self.updatediscoutnum(shop_id)
 		self.session.commit()
 
 	def updatediscoutnum(self,shop_id):
@@ -1682,6 +1682,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type_id).with_lockmode('update').first()
 					seckill_goods.picked -= 1
 					seckill_goods.not_pick += 1
+					self.session.flush()
 
 					customer_id = self.current_user.id
 					seckill_goods_id = seckill_goods.id
@@ -1750,7 +1751,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				discount_rate=None
 				q=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).first()
 				if q:
-					discount_rate=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q.discount_id).first().discount_rate
+					discount_rate=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q.discount_id).first()
+					if discount_rate:
+						discount_rate = discount_rate.discount_rate
+					else:
+						discount_rate = 10
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
 										  "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
