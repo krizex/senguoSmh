@@ -387,7 +387,10 @@ class SellStatic(AdminBaseHandler):
 		shop_charge_type_fruit_dict = {}
 		shop_charge_type_list = []
 		for item in shop_fruit_id_name_list:
-			charge_type_id = self.session.query(models.ChargeType.id).filter(models.ChargeType.fruit_id == item[0]).all()[0][0]
+			try:
+				charge_type_id = self.session.query(models.ChargeType.id).filter(models.ChargeType.fruit_id == item[0]).all()[0][0]
+			except:
+				charge_type_id = None
 			shop_charge_type_fruit_dict[str(charge_type_id)] = [item[0],item[1]]
 			shop_charge_type_list.append(charge_type_id)
 			shop_all_fruit[str(item[0])] = item[1]
@@ -1264,7 +1267,10 @@ class FollowerStatic(AdminBaseHandler):
 				filter_by(shop_id=self.current_shop.id).\
 				order_by(models.CustomerShopFollow.create_time).first()
 			if first_follower:
-				page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+				try:
+					page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+				except:
+					page_sum = 0
 			else:
 				page_sum = 0
 			return self.send_success(page_sum=page_sum, data=data)
