@@ -359,7 +359,7 @@ var goodsList=function(page,action,_group_id){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}">'+
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" end-time="{{end_time}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}">'+
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
@@ -451,6 +451,7 @@ var fruitItem=function(box,fruits,type){
     var charge_type_id = fruits['charge_type_id'];
     var seckill_id = fruits['seckill_goods_id'];
     var is_bought = fruits['is_bought'];
+    var end_time = fruits['end_time'];
     var heart='';
     var sold_out='';
     var ori_img='';
@@ -498,7 +499,8 @@ var fruitItem=function(box,fruits,type){
         charge_type_text:charge_type_text,
         charge_type_id:charge_type_id,
         seckill_id:seckill_id,
-        is_bought:is_bought
+        is_bought:is_bought,
+        end_time:end_time
     });
     var $obj = $(html);
     box.append($obj);
@@ -508,7 +510,7 @@ var fruitItem=function(box,fruits,type){
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 function countTime($obj){
-    var time_end = new Date("2015-08-25 11:21:00").getTime();
+    var time_end = parseInt($obj.attr("end_time"))*1000;
     var time_now = new Date().getTime();
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
@@ -529,9 +531,8 @@ function countTime($obj){
             int_second = "0" + int_second;
         // 显示时间
         if(int_day>0){
-            $("#day").html(int_day+"天");
+            $obj.find(".day").html(int_day+"天");
         }
-        $obj.find(".day").html(int_day+"天");
         $obj.find(".hour").html(int_hour+"时");
         $obj.find(".minute").html(int_minute+"分");
         $obj.find(".second").html(int_second+"秒");
@@ -545,7 +546,6 @@ function countTime($obj){
 }
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
-var seckill_goods_ids=[];
 function cartNum(cart_ms,list){
     var item_list=$(list);
     for(var key in cart_ms) {

@@ -27,7 +27,7 @@
                         <div class="wrap-discount-item {% if goods['storage']==0 %}no-goods{% end %}" data-id="{{charge['charge_id']}}">
                             <span class="price-bo">{{charge['charge']}}</span>
                             <span class="price-tip">{{goods['discount_rate']}}折</span>
-                            <div class="wrap-operate" data-num="{{goods['count']}}">
+                            <div class="wrap-operate" data-num="{{goods['count']}}" data-storage="{{goods['storage']}}">
                                 <span class="roll-btn minus-btn {% if goods['count']==0 %}hide{% end %}">-</span>
                                 <span class="num-txt {% if goods['count']==0 %}hide{% end %}">{{goods['count']}}</span>
                                 <span class="roll-btn add-btn">+</span>

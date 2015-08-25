@@ -1374,12 +1374,12 @@ class Market(CustomerBaseHandler):
 				for item in query_list:
 					killing_activity_id.append(item[0])
 				
-				query_goods = session.query(models.SeckillGoods.fruit_id,models.SeckillGoods.id,models.SeckillGoods.charge_type_id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
-				if query_goods:
-					for item in query_goods:
-						killing_fruit_id.append(item[0])
-						fruit_seckill_list[str(item[0])] = item[1]
-						fruit_charge_type[str(item[0])] = item[2]
+			query_goods = session.query(models.SeckillGoods.fruit_id,models.SeckillGoods.id,models.SeckillGoods.charge_type_id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
+			if query_goods:
+				for item in query_goods:
+					killing_fruit_id.append(item[0])
+					fruit_seckill_list[str(item[0])] = item[1]
+					fruit_charge_type[str(item[0])] = item[2]
 			
 			##
 			for fruit in m:
@@ -1493,6 +1493,9 @@ class Market(CustomerBaseHandler):
 					data_item1['seckill_goods_id'] = seckill_info.id
 					data_item1['charge_type_id'] = seckill_info.seckill_charge_type_id
 
+					end_time = session.query(models.SeckillActivity).join(models.SeckillGoods,models.SeckillGoods.activity_id == models.SeckillActivity.id).filter(models.SeckillGoods.id == seckill_info.id).first().end_time
+					data_item1['end_time'] = end_time
+
 					cur_charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.charge_type_id).first()
 					if int(cur_charge_type.num) == cur_charge_type.num:
 						cur_charge_type_num = int(cur_charge_type.num)
@@ -1501,8 +1504,8 @@ class Market(CustomerBaseHandler):
 					data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 
 					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
-					data_item1['activity_piece'] = seckill_info.not_pick
-					data_item1['storage'] = seckill_info.not_pick
+					data_item1['activity_piece'] = seckill_info.activity_piece
+					data_item1['storage'] = seckill_info.activity_piece
 					data.append(data_item1)
 				if charge_types:
 					data_item2['is_activity'] = 0
