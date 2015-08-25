@@ -270,9 +270,9 @@ class WxMessage(CustomerBaseHandler):
 					u = models.Customer()
 					u.accountinfo = account_info
 					self.session.add(u)
-					# admin = models.ShopAdmin()
-					# admin.accountinfo = account_info
-					# self.session.add(admin)
+					admin = models.ShopAdmin()
+					admin.accountinfo = account_info
+					self.session.add(admin)
 					self.session.commit()
 			if event == 'subscribe':
 				ToUserName = data.get('ToUserName',None) #开发者微信号
