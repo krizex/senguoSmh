@@ -201,7 +201,7 @@
 .pop-qa{background-color: rgba(0,0,0,.7);}
 .pop-spread .code2-logo{margin-top: 54px;}
 .shop-item-name{display: inline-block;max-width: 100px;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;vertical-align: middle;}
-.notice{text-align: center;font-size: 12px;color: #ccc;padding-top: 15px;text-shadow: 1px 1px 1px #fff;}
+.notice{text-align: center;font-size: 12px;color: #bbb;padding-top: 15px;text-shadow: 1px 1px 0 #fdfdfd;}
 /*店铺设置*/
 .list-title{padding-left: 10px;color: #666;font-size: 14px;line-height: 28px;}
 .data-list{background-color: #fff;padding-left: 10px;}
