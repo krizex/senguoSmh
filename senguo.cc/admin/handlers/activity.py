@@ -830,7 +830,7 @@ class Seckill(CustomerBaseHandler):
 			else:
 				cur_charge_type_num = cur_charge_type.num
 			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
-			goods_item['price_dif'] = goods.former_price - goods.seckill_price
+			goods_item['price_dif'] = round(float(goods.former_price - goods.seckill_price),2)
 			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)
 

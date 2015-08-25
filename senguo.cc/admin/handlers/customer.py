@@ -1092,12 +1092,14 @@ class Market(CustomerBaseHandler):
 		# fruits=''
 		# page_size = 10
 		# return self.send_success()
+
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
+
 		if shop.admin.has_mp:
 			# print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
@@ -1164,6 +1166,7 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("seckill_active", str(seckill_active))
 		self.set_cookie("discount_active",str(discount_active))
 		##
+
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -1201,7 +1204,6 @@ class Market(CustomerBaseHandler):
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
 		cart_count = len(cart_f)
-
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
 		# print("[CustomerMarket]cart_fs:",cart_fs)
 		
@@ -1242,7 +1244,6 @@ class Market(CustomerBaseHandler):
 			models.Fruit.shop_id == shop.id,models.Fruit.active == 1).order_by(models.GroupPriority.priority).distinct(models.Fruit.id)
 		except:
 			goods = None
-
 		if goods:
 			for temp in goods:
 				# print("[CustomerMarket]temp:",temp)
@@ -1260,7 +1261,7 @@ class Market(CustomerBaseHandler):
 					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
-		# added by jyj 2015-8-21
+		# added by cm 2015-8-21
 		has_seckill_activity = 0
 		has_discount_activity=0
 		seckill_img_url = ''
@@ -1502,7 +1503,7 @@ class Market(CustomerBaseHandler):
 						cur_charge_type_num = cur_charge_type.num
 					data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 
-					data_item1['price_dif'] = seckill_info.former_price - seckill_info.seckill_price
+					data_item1['price_dif'] = round(float(seckill_info.former_price - seckill_info.seckill_price),2)
 					data_item1['activity_piece'] = seckill_info.activity_piece
 					data_item1['storage'] = seckill_info.activity_piece
 					data.append(data_item1)
