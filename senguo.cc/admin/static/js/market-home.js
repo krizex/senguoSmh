@@ -545,7 +545,6 @@ function countTime($obj){
 }
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
-var seckill_goods_ids=[];
 function cartNum(cart_ms,list){
     var item_list=$(list);
     for(var key in cart_ms) {

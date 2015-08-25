@@ -12,6 +12,7 @@
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
     window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+    var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
 </script>
 <input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>

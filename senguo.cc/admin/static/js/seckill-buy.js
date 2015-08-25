@@ -1,4 +1,4 @@
-var timer = null;
+var timer = null,seckill_goods_ids=[];
 $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height+"px");
@@ -68,6 +68,7 @@ $(document).ready(function(){
     getList(id);
 }).on("click",".seckill-btn",function(){//抢
     var id = $(this).closest("li").attr("charge_type_id");
+    var s_goods_id = $(this).closest("li").attr("seckill-id");
     var storage = parseInt($(this).closest("li").find(".store-num").html());
     if(storage==0){
         $(this).closest("li").find(".cover-img").removeClass("hide");
@@ -85,6 +86,7 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
+    seckill_goods_ids.push(s_goods_id);
     //addCart($(this).closest("li"));
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
