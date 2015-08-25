@@ -1,4 +1,4 @@
-var timer = null,seckill_goods_ids=[];
+var timer = null;
 $(document).ready(function(){
     var height = $(window).height();
     $(".container").css("minHeight",height+"px");
@@ -20,6 +20,12 @@ $(document).ready(function(){
         var start_time = parseInt($(".cur-time").closest('li').attr("data-start"));
         var continue_time = parseInt($(".cur-time").closest('li').attr("data-continue"));
         countTime((continue_time+start_time)*1000,start_time,1,$(".show-time-box"));
+        if(seckill_goods_ids.length>0){
+            $(".cart-num").html(num+1).removeClass("hide");
+            setTimeout(function(){
+                $(".cart-num").removeClass("origin-cart");
+            },20);
+        }
     }
     if($("#discount").size()>0){//折扣
         $(".no-seckill-time").each(function(){
@@ -30,6 +36,10 @@ $(document).ready(function(){
 }).on("click",".add-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
+    var storage = parseInt($parent.attr("data-storage"));
+    if(){
+        
+    }
     if(num==0){
         $parent.children(".num-txt").removeClass("hide").html(1);
         $parent.children(".minus-btn").removeClass("hide");
@@ -90,11 +100,18 @@ $(document).ready(function(){
     //addCart($(this).closest("li"));
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
-    window.location.href="/"+shop_code;
+    addCart("/"+shop_code);
+}).on("click",".go-cart",function(){
+    var url = $(this).attr("url");
+    addCart(url);
+}).on("click",".back-prev",function(){
+    var url = $(this).attr("url");
+    addCart(url);
 });
+
 window.dataObj.fruits={};
 //加入购物车
-function addCart($obj){
+function addCart(link){
     var url='/'+$("#shop_code").val();
     var action = 4;
     fruits_num();
@@ -102,11 +119,12 @@ function addCart($obj){
     var args={
         action:action,
         fruits:fruits,
-        seckill_goods_id:$obj.attr("seckill-id")
+        seckill_goods_id:seckill_goods_ids
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success){
+                window.location.href=link;
             }
             else return Tip(res.error_text);
         }

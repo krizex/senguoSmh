@@ -39,6 +39,7 @@ body{background-color: #f5f5f5;}
 .cart-num{display: inline-block;position: absolute;width: 16px;height: 16px;line-height:16px;text-align:center;font-size:12px;background-color: #FF9800;color: #fff;border-radius: 50%;right: -5px;top: 6px;-webkit-transition:all .2s ease-in-out;}
 .origin-cart{right: 80px;top: -80px;width: 0;height: 0;}
 /*折扣*/
+.no-goods .wrap-operate{display: none;}
 .wrap-operate{position: absolute;right:14px;bottom:0;width: 60px;height: 28px;}
 .num-txt{display: block;width: 60px;height: 28px;font-weight:bold;line-height: 28px;text-align: center;color: #59D5AA;background-color: #e7e7e7;}
 .wrap-operate .roll-btn{width: 27px;height: 27px;line-height:26px;cursor:pointer;border-radius: 50%;border:1px solid #666;font-size: 24px;color: #59D5AA;text-align: center;font-weight: bold;position: absolute;top: 0;background-color: #fff;}
