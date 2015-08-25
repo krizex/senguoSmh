@@ -1306,7 +1306,7 @@ class Market(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
-							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity))
+							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity,seckill_goods_ids=seckill_goods_ids))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")

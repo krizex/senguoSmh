@@ -792,7 +792,6 @@ class Seckill(CustomerBaseHandler):
 			fruits = eval(query.fruits)
 		else:
 			fruits = {}
-		print("@@@fruits",fruits)
 		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,context=dict(seckill_goods_ids=seckill_goods_ids,fruits=fruits))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
