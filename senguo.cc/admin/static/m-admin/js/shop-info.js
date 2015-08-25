@@ -9,7 +9,8 @@ $(document).ready(function(){
     chooseAuth();
     new QRCode($("#big-code2")[0],{
         width : 300,
-        height : 300
+        height : 300,
+        colorDark : "#433943"
     }).makeCode($("#shop_link").html());
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
@@ -264,7 +265,8 @@ function infoEdit(action_name){
                 $("#big-code2").empty();
                 new QRCode($("#big-code2")[0],{
                     width : 300,
-                    height : 300
+                    height : 300,
+                    colorDark : "#433943"
                 }).makeCode($("#shop_link").html());
             }
             else if(action_name=='intro')
