@@ -3487,6 +3487,12 @@ class Config(AdminBaseHandler):
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
+			try:
+				if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+			except:
+				if_admin = None
+			if if_admin:
+				return self.send_fail('该用户已森果的卖家，不能添加其为管理员')
 			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
 			if if_shop:
 				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')

@@ -345,17 +345,9 @@ class Home(CustomerBaseHandler):
 			if_admin = None
 		if if_admin:
 			return self.redirect(self.reverse_url("switchshop"))
-		try:
-			if_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
-			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
-		except:
-			if_admin = None
-		try:
-			if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
-		except:
-			if_shop = None
-		if if_admin:
-			return self.redirect(self.reverse_url("switchshop"))
+		else:
+			pass
+
 		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
