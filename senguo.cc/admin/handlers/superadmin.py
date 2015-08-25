@@ -613,10 +613,11 @@ class ShopManage(SuperBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',connection="close")
 			r = requests.post(url,data = postdata , headers = headers)
+			
+			# 发送微信模板消息通知用户
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
-
 			WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
-									   account_info.realname, account_info.phone)  # 发送微信模板消息通知用户
+									   account_info.realname, account_info.phone)
 		return self.send_success()
 
 class Feedback(SuperBaseHandler):
