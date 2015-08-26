@@ -1706,37 +1706,42 @@ class Market(CustomerBaseHandler):
 		
 		#筛选初当前进行的限时折扣
 		m_fruits=eval(cart.fruits)
+		print(m_fruits)
+		print(fruits)
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
-			if key in m_fruits:
+			if int(key) in m_fruits:
 				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
 					if key in eval(qq.charge_type):
-						qq.incart_num+=fruits[key]-m_fruits[key]
+						print('@@@@@@@@@@@@@1')
+						qq.incart_num+=fruits[key]-m_fruits[int(key)]
 						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
-						qqq.incart_num+=fruits[key]-m_fruits[key]
+						qqq.incart_num+=fruits[key]-m_fruits[int(key)]
 				self.session.flush()					
 			else:
+				print('@@@@@@@@@@@@@2')
 				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
-					if key in eval(qq.charge_type):
+					if int(key) in eval(qq.charge_type):
+						print(eval(qq.charge_type),'@@@@@@@@@@@@@3')
 						qq.incart_num+=fruits[key]
-						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
 						qqq.incart_num+=fruits[key]
 				self.session.flush()
 
 		for key in m_fruits:
-			if key not in fruits:
+			if str(key) not in fruits:
 				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
-					if key in eval(qq.charge_type):
-						qq.incart_num-=m_fruits[key]
-						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
-						qqq.incart_num-=m_fruits[key]
+					if int(key) in eval(qq.charge_type):
+						qq.incart_num-=m_fruits[int(key)]
+						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+						qqq.incart_num-=m_fruits[int(key)]
 		
 		cart.fruits = str(fruits2)
 		self.session.commit()
