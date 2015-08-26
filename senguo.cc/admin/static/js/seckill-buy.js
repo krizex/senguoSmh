@@ -133,7 +133,7 @@ function addCart(link){
     var args={
         action:action,
         fruits:fruits,
-        seckill_goods_id:seckill_goods_ids
+        seckill_goods_ids:seckill_goods_ids
     };
     $.postJson(url,args,function(res){
             if(res.success){
