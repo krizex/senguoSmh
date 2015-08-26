@@ -142,8 +142,6 @@ session = models.DBSession()
 	# 	session.add(new_good2)
 	# session.commit()
 	# return self.send_success()
-	
-
 
 g = multiprocessing.Process(name='getsomeshop',target=getsomeshop)
 g.start()
