@@ -1514,8 +1514,8 @@ class Market(CustomerBaseHandler):
 					data_item1['storage'] = seckill_info.activity_piece
 					data.append(data_item1)
 				if charge_types:
-					if has_discount_activity1==1：
-						data_item2['is_activity'] = 1
+					if has_discount_activity1==1:
+						data_item2['is_activity'] = 2
 					else:
 						data_item2['is_activity'] = 0
 					data_item2['charge_types'] = charge_types
