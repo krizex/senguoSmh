@@ -170,7 +170,11 @@ function insertGoods(data){
         for(var key in data){
             var $item = $("#seckill-item").children("li").clone();
             $item.attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id).attr("is_bought",data[key].is_bought);
-            $item.find(".image").attr("src",data[key].img_url || '/static/images/TDSG.png');
+            if(data[key].img_url){
+                $item.find(".image").attr("src",data[key].img_url+"?imageView2/1/w/100/h/100");
+            }else{
+                $item.find(".image").attr("src",'/static/images/TDSG.png');
+            }
             $item.find(".store-num").html(data[key].activity_piece);
             $item.find(".nm-name").html(data[key].goods_name);
             $item.find(".price-bo").html(data[key].charge_type_text);

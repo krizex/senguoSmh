@@ -73,6 +73,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .ft .links_item a {color: #f1f1f1;}
 
 .anchorBL{display: none !important;}
+.BMap_Marker>div{width: 38px !important;}
 /*media query*/
 /*当屏幕尺寸小于800px时*/
 @media screen and (max-width: 800px) {
