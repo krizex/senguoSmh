@@ -105,8 +105,8 @@ $(document).ready(function(){
         return Tip("当前商品已经秒杀完了，下次记得早点哦~~");
     }
     window.dataObj.fruits[id]=1;
-    $(this).addClass("hide");
-    $(this).next(".seckill-btn-more").removeClass("hide");
+    $(this).closest("li").find(".seckill-btns").addClass("hide");
+    $(this).closest("li").find(".seckill-btn-more").removeClass("hide");
     var num = parseInt($(".cart-num").html());
     $(".cart-num").html(num+1).removeClass("hide");
     Tip("请在秒杀结束前支付,否则将按原价付款哦!");
