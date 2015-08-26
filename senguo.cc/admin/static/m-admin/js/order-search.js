@@ -19,7 +19,7 @@ $(document).ready(function(){
     $("#search-order").on("click",function(){  //订单搜索
         var id = $("#search-ipt").val();
         if($.trim(id)==""){
-            return Tip("请输入订单编号,收货人姓名或收货人电话");
+            return Tip("请输入订单编号，收货人姓名或收货人电话");
         }else{
             searchOrder(id);
         }
@@ -28,7 +28,7 @@ $(document).ready(function(){
         if(window.event.keyCode == 13){
             var id = $("#search-ipt").val();
             if($.trim(id)==""){
-                return Tip("请输入订单编号,收货人姓名或收货人电话");
+                return Tip("请输入订单编号，收货人姓名或收货人电话");
             }else{
                 searchOrder(id);
             }
