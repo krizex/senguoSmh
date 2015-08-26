@@ -1,6 +1,5 @@
 {% extends 'base.html'%}
 {% block head-css%}
-<link rel="stylesheet" href="{{static_url('m-admin/css/idangerous.swiper.css')}}"/>
 <link href="{{static_url('css/official_home.css')}}" rel="stylesheet">
 {% end %}
 {% block content%}
@@ -8,35 +7,19 @@
     <div class="swiper-container" id="swiper-container">
         <div class="swiper-wrapper">
             <div class="swiper-slide item">
-                <img src="{{static_url('official_img/bg.jpg')}}" class="bg"/>
-                <div class="bg-bg"></div>
-                <div class="bg-text">
-                    <h1>再小的水果店，也要有自己的O2O平台</h1>
-                    <p>水果零售新模式，再不加入就晚了。</p>
-                    <a href="{{reverse_url('ApplyHome')}}">申请接入</a>
-                </div>
+                <img src="{{static_url('official_img/bg1.jpg')}}" class="bg"/>
             </div>
             <div class="swiper-slide item">
-                <img src="{{static_url('official_img/bg.jpg')}}" class="bg"/>
-                <div class="bg-bg"></div>
-                <div class="bg-text">
-                    <h1>全平台的水果商城</h1>
-                    <p>微信、客户端、PC网站，全方位覆盖</p>
-                    <a href="{{reverse_url('ApplyHome')}}">申请接入</a>
-                </div>
+                <img src="{{static_url('official_img/bg2.jpg')}}" class="bg"/>
             </div>
             <div class="swiper-slide item">
-                <img src="{{static_url('official_img/bg.jpg')}}" class="bg"/>
-                <div class="bg-bg"></div>
-                <div class="bg-text">
-                    <h1>最好用的后台管理系统</h1>
-                    <p>全方位数据统计、免注册微信登录、卡片式订单管理、最简易商品管理、自助式员工招募、</br>方便的工资结算，想要的功能应有尽有。</p>
-                    <a href="{{reverse_url('ApplyHome')}}">申请接入</a>
-                </div>
+                <img src="{{static_url('official_img/bg3.jpg')}}" class="bg"/>
             </div>
         </div>
     </div>
-    <div class="pagination"></div>
+    <div class="bg-text">
+        <a href="{{reverse_url('ApplyHome')}}">申请接入</a>
+    </div>
 </div>
 <div class="w1000 center-block">
 	<!--<div class="announcement text-center">
@@ -207,6 +190,5 @@
 </div>
 {% end %}
 {% block bottom-js%}
-<script src="{{static_url('m-admin/js/idangerous.swiper.min.js')}}"></script>
 <script src="{{static_url('js/official_home.js')}}"></script>
 {% end %}

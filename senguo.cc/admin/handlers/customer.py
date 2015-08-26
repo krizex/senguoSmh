@@ -1540,7 +1540,7 @@ class Market(CustomerBaseHandler):
 						data_item1['storage'] = 0
 					data.append(data_item1)
 				if charge_types:
-					if has_discount_activity1==1:
+					if has_discount_activity==1:
 						data_item2['is_activity'] = 2
 					else:
 						data_item2['is_activity'] = 0
@@ -1549,6 +1549,8 @@ class Market(CustomerBaseHandler):
 					data_item2['saled'] = saled
 					data_item2['favour'] = fruit.favour
 					data_item2['limit_num'] = fruit.limit_num
+					if has_discount_activity==1:
+						print(data_item2)
 					data.append(data_item2)
 				##
 			return data
