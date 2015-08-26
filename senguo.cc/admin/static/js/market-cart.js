@@ -872,7 +872,6 @@ function orderSubmit(target){
         if (res.success) {
             var overdue = res.overdue;
             console.log("@@@",overdue);
-            debugger;
             if (overdue == 1){
                 //重定向刷新购物车页面,并给出'当前购物车有参加活动的商品已经过期！'的提示
             }
