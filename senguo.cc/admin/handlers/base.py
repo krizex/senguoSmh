@@ -733,9 +733,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		phone = order.phone
 		address = order.address_text
 		shop_name = order.shop.shop_name
-
-		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-			order_totalPrice,send_time,phone,address,)
+		# 非自提订单发送配送员模版消息
+		if order_type != 3:
+			WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+				order_totalPrice,send_time,phone,address,)
 		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
