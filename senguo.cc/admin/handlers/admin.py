@@ -3315,7 +3315,7 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 				orders = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id)\
 				.filter(or_(models.Order.num.like("%%%s%%" % wd),
 					models.Order.receiver.like("%%%s%%" % wd),
-					models.Order.phone.like("%%%s%%" % wd))).all()
+					models.Order.phone.like("%%%s%%" % wd))).order_by(models.Order.send_time.desc()).all()
 			else:
 				return self.send_error(404)
 			delta = datetime.timedelta(1)
