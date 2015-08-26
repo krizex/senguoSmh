@@ -37,12 +37,15 @@ $(document).ready(function(){
 }).on("click",".add-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
-    var storage = parseInt($parent.attr("data-storage"));
+    var storage = parseInt($parent.attr("charge-storage"));
     //判断库存
     if(storage==0){
         $(this).closest("li").find(".cover-img").removeClass("hide");
         $(this).closest("li").find(".wrap-discount-item").addClass("no-goods");
         return Tip("当前商品已经售罄，下次记得早点哦~~");
+    }
+    if(num==storage){
+        return Tip("库存只有这么多了~~");
     }
     var charge_id = $parent.attr("data_id");
     if(num==0){
@@ -132,7 +135,7 @@ function addCart(link){
     var args={
         action:action,
         fruits:fruits,
-        seckill_goods_id:seckill_goods_ids || []
+        seckill_goods_id:seckill_goods_ids
     };
     $.postJson(url,args,function(res){
             if(res.success){
@@ -171,7 +174,11 @@ function insertGoods(data){
         for(var key in data){
             var $item = $("#seckill-item").children("li").clone();
             $item.attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id).attr("is_bought",data[key].is_bought);
-            $item.find(".image").attr("src",data[key].img_url || '/static/images/TDSG.png');
+            if(data[key].img_url){
+                $item.find(".image").attr("src",data[key].img_url+"?imageView2/1/w/100/h/100");
+            }else{
+                $item.find(".image").attr("src",'/static/images/TDSG.png');
+            }
             $item.find(".store-num").html(data[key].activity_piece);
             $item.find(".nm-name").html(data[key].goods_name);
             $item.find(".price-bo").html(data[key].charge_type_text);

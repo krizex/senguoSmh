@@ -606,7 +606,6 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
 
 //android端上传图片
 function uploadImgForAndroid(url){
-    alert(333);
     var w = width+10;
     var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img src="'+url+'?imageView2/1/w/100/h/100" url="'+url+'" alt="商品图片" class="image"/><a href="javascript:;" class="icon-del"></a></li>');
     $("#add-img").closest("li").before($item);
