@@ -790,6 +790,7 @@ function orderSubmit(target){
     var url='';
     var fruits={};
     var mgoods={};
+    var discount_ids=[];
     var online_type = "";
     var period_id = "";
     var self_address_id = "";
@@ -826,6 +827,7 @@ function orderSubmit(target){
     if(!today){today=1;}
     if(!address_id){return noticeBox('请填写您的收货地址！',target);}
     if(!tip) tip=0;
+    discount_ids=[];
     for(var i=0;i<fruit_item.length;i++)
     {
         var id=fruit_item.eq(i).find('.charge-type').data('id');
@@ -837,6 +839,9 @@ function orderSubmit(target){
             var num=fruit_item.eq(i).find('.number-input').val();
         }
         fruits[id]=parseInt(num);
+        if(fruit_item.eq(i).find(".status-discount").size()>0){//有折扣
+            discount_ids.push(id);
+        }
     }
     var menu_item=$('.menu_item');
     for(var i=0;i<menu_item.length;i++)
@@ -872,14 +877,18 @@ function orderSubmit(target){
         pay_type:pay_type,
         message:message,
         tip:tip,
-        online_type:online_type
+        online_type:online_type,
+        discount_ids:discount_ids
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
             var overdue = res.overdue;
-            console.log("@@@",overdue);
             if (overdue == 1){
                 //重定向刷新购物车页面,并给出'当前购物车有参加活动的商品已经过期！'的提示
+                noticeBox("您的购物车有商品已过期~~");
+                setTimeout(function(){
+                    window.location.reload(true);
+                },1200);
             }
             if(res.notice){
                 noticeBox(res.notice);
