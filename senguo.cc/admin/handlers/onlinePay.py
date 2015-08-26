@@ -1,6 +1,6 @@
 #coding:utf-8
 from handlers.base import CustomerBaseHandler,WxOauth2
-from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub,Refund_pub
 import dal.models as models
 import tornado.web
 from settings import *
@@ -23,6 +23,14 @@ class QrWxpay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
+
+# class RefundWxpay(CustomerBaseHandler):
+# 	@tornado.web.authenticated
+# 	def get(self):
+# 		refund_pub = Refund_pub()
+# 		refund_pub.setParameter('')
+
+
 
 class OnlineWxPay(CustomerBaseHandler):
 	@tornado.web.authenticated
@@ -162,6 +170,9 @@ class OnlineWxPay(CustomerBaseHandler):
 		else:
 			qr_url = ""
 		return qr_url
+
+	def refund_pub(self,order_id):
+		pass
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):

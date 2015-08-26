@@ -784,7 +784,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		pay_type   = order.pay_type
 		phone      = order.phone
 		totalPrice = order.totalPrice
-		order_type = '立即送' if order_type == 1 else '按时达'
+		order_type = '立即送' if order_type == 1 else ('按时达' if order_type == 2 else '自提')
 		create_date= order.create_date
 		customer_name=order.receiver
 		# c_tourse   =customer.accountinfo.wx_openid
