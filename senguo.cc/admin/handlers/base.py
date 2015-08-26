@@ -340,6 +340,7 @@ class GlobalBaseHandler(BaseHandler):
 		self.session.commit()
 		return None
 
+
 	# 数字代号转换为文字描述
 	def code_to_text(self, column_name, code):
 		text = ""
@@ -1633,6 +1634,63 @@ class AdminBaseHandler(_AccountBaseHandler):
 		if "response" not in result:
 			return None
 		return result["response"]
+
+	# 秒杀商品和限时折扣商品的去重问题：同一时间段内同一商品不能参加不同的活动，也不能参加同一种活动在同一时间段内的不同场次。
+	# 因为限时折扣涉及到周期性活动的问题，所以去重比较复杂。
+	# 在全局基类中为秒杀活动和限时折扣活动分别写judge_seckill和judge_discount方法，其他活动可以调用这两个方法判断其他活动将要新建的商品是否在这两个活动里面
+	# 参数分析：其中time_way表示参数时间的形式，time_way=0表示参数时间为start_time和end_time，是非周期时间，此时忽略f_time,t_time,weeks三个参数；
+	# 若time_way=1则表示参数时间为f_time和t_time以及weeks,这为周期时间，此时忽略start_time和end_time两个参数。其中weeks为一个整型列表，元素为代表周几的整数(取值1-7),
+	# f_time表示每天的开始时间（是一个整型的秒数，介于0到24小时之间）,t_time表示每天的结束时间（是一个整型的秒数，介于0到24小时之间）
+	# 返回值：True(传入参数fruit_id对应的商品和当前已经建立的秒杀活动时间上无冲突);False(传入参数fruit_id对应的商品和当前已经建立的秒杀活动时间上有冲突)
+	# 参数基本形式如下：
+	def judge_seckill(self,shop_id,fruit_id,time_way,start_time,end_time,f_time,t_time,weeks):
+		activity_query = self.session.query(models.SeckillActivity.start_time,models.SeckillActivity.end_time,models.SeckillActivity.id).\
+						filter(models.SeckillActivity.shop_id == shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()
+		flag = True
+		if time_way == 0:
+			cur_activity_list = []
+			for item in activity_query:
+				if (item[0] > start_time and item[0] < end_time) or (item[1] > start_time and item[1] < end_time) or (item[0] < start_time and item[1] > end_time):
+					cur_activity_list.append(item[2])
+			if not cur_activity_list:
+				flag = True
+			else:
+				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list,models.SeckillGoods.status != 0)).all()
+				for item in fruit_query:
+					if item.fruit_id == fruit_id:
+						flag = False
+						break
+		elif time_way == 1:
+			cur_activity_list = []
+			for item in activity_query:
+				s_time = item[0]
+				e_time = item[1]
+				start_week_num = self.get_week_num(s_time)
+				end_week_num = self.get_week_num(e_time)
+				if start_week_num in weeks or end_week_num in weeks:
+					if (s_time > f_time and s_time < t_time) or (e_time > f_time and e_time < t_time) or (s_time < f_time and e_time > t_time):
+						fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item[2],models.SeckillGoods.status != 0).all()
+						for fruit in fruit_query:
+							if fruit.fruit_id == fruit_id:
+								flag = False
+								break
+						if not flag:
+							break
+				else:
+					continue
+		else:
+			error_text = 'Parameters Error!'
+			return error_text
+		return flag
+
+	# 输入：一个整型时间戳
+	# 输出：1-7(表示周一到周期)
+	def get_week_num(timestamp):
+		x = time.localtime(timestamp);
+		week_num = int(time.strftime('%w',x))
+		if week_num == 0:
+			week_num = 7
+		return week_num
 
 # 配送员端基类方法
 class StaffBaseHandler(_AccountBaseHandler):

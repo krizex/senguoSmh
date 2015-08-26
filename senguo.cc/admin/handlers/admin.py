@@ -6089,7 +6089,10 @@ class MarketingSeckill(AdminBaseHandler):
 			if cur_fruit_activity_status:
 				cur_fruit_activity_status = cur_fruit_activity_status.activity_status
 				if cur_fruit_activity_status != 0:
-					return send_fail(goods_name + '已经参与其他活动，请选择其他商品！')
+					return send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
+
+			if not self.judge_discount(choose_fruit_id,choose_start_time,choose_end_time):
+				return send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			activity_query = self.session.query(models.SeckillActivity.start_time,models.SeckillActivity.end_time,models.SeckillActivity.id).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()
 			cur_activity_list = []
