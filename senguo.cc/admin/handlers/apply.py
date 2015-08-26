@@ -97,7 +97,7 @@ class Login(CustomerBaseHandler):
 			accountinfo = self.session.query(models.Accountinfo).filter_by(wx_openid = openid).first()
 			if accountinfo:
 				# print("[ApplyLogin]accountinfo:",accountinfo)
-				customer = self.session.query(models.ShopAdmin).filter_by(id = accountinfo.id).first()
+				customer = self.session.query(models.Customer).filter_by(id = accountinfo.id).first()
 				if customer:
 					# print("[ApplyLogin]customer:",customer)
 					self.set_current_user(customer,domain=ROOT_HOST_NAME)
@@ -270,9 +270,9 @@ class WxMessage(CustomerBaseHandler):
 					u = models.Customer()
 					u.accountinfo = account_info
 					self.session.add(u)
-					admin = models.ShopAdmin()
-					admin.accountinfo = account_info
-					self.session.add(admin)
+					#admin = models.ShopAdmin()
+					#admin.accountinfo = account_info
+					#self.session.add(admin)
 					self.session.commit()
 			if event == 'subscribe':
 				ToUserName = data.get('ToUserName',None) #开发者微信号
@@ -335,7 +335,7 @@ class WxMessage(CustomerBaseHandler):
 
 # 店铺申请 - 首页 成为卖家
 class Home(CustomerBaseHandler):
-	@tornado.web.authenticated
+	#@tornado.web.authenticated
 	def get(self):
 		if not self.current_user:
 			return self.redirect(self.reverse_url("ApplyLogin"))
