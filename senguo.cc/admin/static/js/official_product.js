@@ -7,7 +7,7 @@ function initSlide(){
     timer = setInterval(function(){
         index++;
         $("#slide-list").children("li").addClass("anima");
-        $("#slide-list").children("li").css("left",-192*index);
+        $("#slide-list").children("li").css("left",-202*index);
         if(index%4==0){
             index = 0;
             $("#slide-list").children("li").removeClass("anima");
