@@ -3495,7 +3495,7 @@ class Config(AdminBaseHandler):
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
 			try:
-				if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+				if_admin = self.session.query(models.ShopAdmin).filter_by(id=_id).first()
 			except:
 				if_admin = None
 			if if_admin:
