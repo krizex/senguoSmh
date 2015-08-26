@@ -142,6 +142,9 @@ $(document).ready(function () {
     else $this.closest('table').find(".charge-type").addClass("hidden");
     getCharge(index1,index2,$this.closest('table').find(".charge_list"));
 }).on('click','.charge_list button',function(){
+    if($(this).hasClass('disabled')){
+        return false;
+    }
     if($(this).hasClass("back_green")){
         $(this).removeClass("back_green");
     }

@@ -4888,11 +4888,11 @@ class Discount(AdminBaseHandler):
 		chargegroup=[]
 		x_goodsgroup={"group_id":0,"group_name":"默认分组"}
 		data.append(x_goodsgroup)
-		q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=0,active=1)
+		q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=0,active=1).filter(models.Fruit.activity_status.in_([0,2])).all()
 		for y in q1:
 			x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 			data0.append(x_goodsgroup)
-			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2,-2])).all()
 			for x in Chargetype:
 				x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
 				chargesingle.append(x_charge)
@@ -4904,11 +4904,11 @@ class Discount(AdminBaseHandler):
 		data0=[]
 		x_goodsgroup={"group_id":-1,"group_name":"店铺推荐"}
 		data.append(x_goodsgroup)
-		q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=-1,active=1)
+		q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=-1,active=1).filter(models.Fruit.activity_status.in_([0,2])).all()
 		for y in q1:
 			x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 			data0.append(x_goodsgroup)
-			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2,-2])).all()
 			for x in Chargetype:
 				x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
 				chargesingle.append(x_charge)
@@ -4922,11 +4922,11 @@ class Discount(AdminBaseHandler):
 		for x in q:
 			x_goodsgroup={"group_id":x.id,"group_name":x.name}
 			data.append(x_goodsgroup)
-			q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=x.id,active=1)
+			q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=x.id,active=1).filter(models.Fruit.activity_status.in_([0,2])).all()
 			for y in q1:
 				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 				data0.append(x_goodsgroup)
-				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2,-2])).all()
 				for z in Chargetype:
 					x_charge={"charge_id":z.id,"charge":str(z.price)+'元/'+str(z.num)+self.getUnit(z.unit)}
 					chargesingle.append(x_charge)
