@@ -397,21 +397,6 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                     '</span>'+
                                 '</li>'+
                                 '{{/if}}'+
-                                '{{if is_activity==2 }}'+
-                                    '<li class="border-color set-w100-fle charge-item" data-id="555" data-relate="1" data-buy="1" data-allow="1">'+
-                                        '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
-                                        '<span class="price-bo">10元/kg</span><span class="price-tip"><span class="price-dif">9</span>折</span>'+
-                                        '</span>'+
-                                        '<span class="forbid_click pull-right num_box">'+
-                                            '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
-                                            '<span class="pull-right p0 number-change hidden forbid_click">'+
-                                            '<button class="minus-plus pull-right number-plus bg_change"></button>'+
-                                            '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
-                                            '<button class="minus-plus pull-right number-minus bg_change"></button>'+
-                                            '</span>'+
-                                        '</span>'+
-                                    '</li>'+
-                                '{{/if}}'+
                                 '{{each charge_types as key}}'+
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow="{{key["allow_num"]}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
