@@ -1308,7 +1308,7 @@ class Market(CustomerBaseHandler):
 				notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
 		else:
 			notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
-
+		print(notices)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
@@ -1515,7 +1515,7 @@ class Market(CustomerBaseHandler):
 					data.append(data_item1)
 				if charge_types:
 					if has_discount_activity1==1:
-						data_item2['is_activity'] = 1
+						data_item2['is_activity'] = 2
 					else:
 						data_item2['is_activity'] = 0
 					data_item2['charge_types'] = charge_types
@@ -1719,18 +1719,15 @@ class Market(CustomerBaseHandler):
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
 					if key in eval(qq.charge_type):
-						print('@@@@@@@@@@@@@1')
 						qq.incart_num+=fruits[key]-m_fruits[int(key)]
 						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
 						qqq.incart_num+=fruits[key]-m_fruits[int(key)]
 				self.session.flush()					
 			else:
-				print('@@@@@@@@@@@@@2')
 				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
 					if int(key) in eval(qq.charge_type):
-						print(eval(qq.charge_type),'@@@@@@@@@@@@@3')
 						qq.incart_num+=fruits[key]
 						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
 						qqq.incart_num+=fruits[key]
@@ -1977,14 +1974,17 @@ class Cart(CustomerBaseHandler):
 					continue
 				singlemoney=charge_type.price*fruits[str(charge_type.id)] 
 				#进行折扣优惠处理
-				if charge_type.item==2 and charge_type.item in discount_ids:
+				if charge_type.activity_type==2 and charge_type.id in discount_ids:
 					q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id).with_lockmode('update').first()
 					if q_discount_goods:
-						if charge_type.id in eval(q_discount_goods.charge_type):
+						print('@@@@1')
+						if charge_type.activity_type in eval(q_discount_goods.charge_type):
+							print('@@@@2')
 							totalPrice+=singlemoney*(q_discount_goods.discount_rate/10)
 							q_discount_goods.order_num+=int(fruits[str(charge_type.id)])
 							q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_discount_goods.discount_id).with_lockmode('update').first()
 							if q_discount_group:
+								print('@@@@3')
 								q_discount_group.order_num+=int(fruits[str(charge_type.id)])
 							self.session.flush()
 						else:
