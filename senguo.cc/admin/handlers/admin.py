@@ -1801,6 +1801,27 @@ class Order(AdminBaseHandler):
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance,shop_province = self.current_shop.shop_province,shop_name=self.current_shop.shop_name)
 					self.session.add(balance_history)
+				self.session.flush()
+
+				#订单删除，CustomerSeckillGoods表对应的状态恢复为0,SeckillGoods表也做相应变化
+				fruits = order.fruits
+				charge_type_list = list(fruits.keys())
+				seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+				if seckill_goods:
+					seckill_goods_id = []
+					for item in seckill_goods:
+						seckill_goods_id.append(item.id)
+					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+										models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+					if customer_seckill_goods:
+						for item in customer_seckill_goods:
+							item.status = 0
+						self.session.flush()
+					if order.pay_type in [1,2]:
+						for item in seckill_goods:
+							item.storage_piece += 1
+							item.ordered -= 1
+						self.session.flush()
 				self.session.commit()
 
 			elif action == "print":
@@ -1975,7 +1996,10 @@ class Shelf(AdminBaseHandler):
 				self.session.commit()
 				return self.send_success()
 			elif action == "edit_active":
-				if fruit.active == 1:
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if fruit.active == 1 and fruit.activity_status not in [-2,0]:
+					return self.send_fail("当前商品正在参加"+activity_name[fruit.activity_status]+"活动，不能下架哦！")
+				elif fruit.active == 1:
 					fruit.update(session=self.session, active = 2)
 				elif fruit.active == 2:
 					fruit.update(session=self.session, active = 1)
@@ -2542,7 +2566,11 @@ class Goods(AdminBaseHandler):
 				return self.send_success()
 			# 编辑商品上/下架
 			elif action == "edit_active":
-				if goods.active == 1:
+				print("$$$$$$$$$$$$$$$$$$$$$$")
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if goods.active == 1 and goods.activity_status not in [-2,0]:
+					return self.send_fail("当前商品正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
+				elif goods.active == 1:
 					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
 					goods.update(session=self.session, active = 1)
@@ -2679,6 +2707,9 @@ class Goods(AdminBaseHandler):
 				goods.img_url = ''
 				self.session.commit()
 			elif action == "delete_goods":
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if goods.activity_status not in [-2,0]:
+					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能删除哦！")
 				time_now = datetime.datetime.now()
 				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
@@ -2708,6 +2739,9 @@ class Goods(AdminBaseHandler):
 				if action == 'batch_on':
 					goods.active = 1
 				elif action == 'batch_off':
+					activity_name = {1:'秒杀',2:'限时折扣'}
+					if goods.activity_status not in [-2,0]:
+						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
 					goods.active = 2
 				elif action == 'batch_group':
 					group_id = int(data["group_id"])

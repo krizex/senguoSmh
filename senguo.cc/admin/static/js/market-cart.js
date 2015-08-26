@@ -829,7 +829,13 @@ function orderSubmit(target){
     for(var i=0;i<fruit_item.length;i++)
     {
         var id=fruit_item.eq(i).find('.charge-type').data('id');
-        var num=fruit_item.eq(i).find('.number-input').val();
+
+        if (fruit_item.eq(i).find('.status-seckill').size() != 0){
+            var num = 1;
+        }
+        else{
+            var num=fruit_item.eq(i).find('.number-input').val();
+        }
         fruits[id]=parseInt(num);
     }
     var menu_item=$('.menu_item');
