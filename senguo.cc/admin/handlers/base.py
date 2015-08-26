@@ -534,7 +534,7 @@ class GlobalBaseHandler(BaseHandler):
 
 			charge_types = []
 			for charge in d.charge_types:
-				if charge.active !=0 and charge.activity_type == 0:
+				if charge.active !=0 and charge.activity_type in [-2,0,2]:
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)

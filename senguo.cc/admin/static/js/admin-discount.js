@@ -370,6 +370,22 @@ function getinfo(){
         if(parseInt(discount_rate)<=0||parseInt(discount_rate)>=10){
             return Tip("商品"+i+"的折扣应该介于０－１０之间");
             }
+        if(i!=1&&use_goods_group==-2){
+                return Tip("商品"+i+"不能面向所有分组所有商品，和前面的商品活动冲突");
+            }
+        for (var k=0;k<discount_goods.length;k++){
+            tmp_goods=discount_goods[k];
+            if (tmp_goods["use_goods_group"]==-2 &&i>1 &&k==0){
+                return Tip("商品1已经面向所有商品，其后面的商品活动均无效");
+            }
+            if(tmp_goods["use_goods"]==-1&&tmp_goods["use_goods_group"]==use_goods_group){
+                kk=k+1;
+                return Tip("商品"+i+"的分组和商品"+kk+"的分组有冲突");
+            }
+            if(tmp_goods["use_goods"]==use_goods&&tmp_goods["use_goods_group"]==use_goods_group){
+                return Tip("商品"+i+"的商品"+k+1+"的商品有冲突");
+            }
+        }
         discount_good={"use_goods_group":use_goods_group,"use_goods":use_goods,"charges":charges,"discount_rate":discount_rate};
         discount_goods[i-1]=discount_good;
         }

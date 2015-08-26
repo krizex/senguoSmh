@@ -26,6 +26,7 @@ $(document).ready(function(){
             var time = parseInt($(this).attr("data-time"));
             countTime(time*1000,0,2,$(this));
         });
+        seckill_goods_ids=[];
     }
     if(parseInt(cookie.getCookie("cart_count"))>0){
         $(".cart-num").html(cookie.getCookie("cart_count")).removeClass("hide");

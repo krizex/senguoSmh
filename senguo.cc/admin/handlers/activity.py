@@ -909,7 +909,8 @@ class Discount(CustomerBaseHandler):
 						print(ChargeType)
 						for charge in ChargeType:
 							if charge.active==1:
-								charge_storage=int(fruit.storage/charge.relate)
+								print(charge.relate)
+								charge_storage=int(fruit.storage/charge.relate/charge.num)
 								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 								chargesingle.append(x_charge)
 						if fruit.img_url:
