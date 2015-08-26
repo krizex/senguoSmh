@@ -5245,6 +5245,7 @@ class Discount(AdminBaseHandler):
 			new_discount=models.DiscountShopGroup(shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,weeks=str(weeks),\
 				discount_way=discount_way,f_time=f_time,t_time=t_time,status=status,create_date=create_date,incart_num=0,ordered_num=0)
 			self.session.add(new_discount)
+			self.session.flush()
 			for x in discount_goods:
 				#进行判断添加这个时刻有没有已经存在进行的活动
 				can_choose=0 # 0 表示可以选择 不冲突 ，1表示冲突 需重新选择

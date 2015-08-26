@@ -786,7 +786,13 @@ class Seckill(CustomerBaseHandler):
 							filter(models.SeckillGoods.activity_id.in_(seckill_activity),models.SeckillGoods.status != 0,models.CustomerSeckillGoods.status == 1).all()
 		for item in seckill_goods_query:
 			seckill_goods_ids.append(item.id)
-		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,context=dict(seckill_goods_ids=seckill_goods_ids))
+
+		query = self.session.query(models.Cart).filter_by(id = customer_id,shop_id = shop_id).first()
+		if query:
+			fruits = eval(query.fruits)
+		else:
+			fruits = {}
+		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,context=dict(seckill_goods_ids=seckill_goods_ids,fruits=fruits))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
 	def post(self,shop_code):
@@ -824,7 +830,7 @@ class Seckill(CustomerBaseHandler):
 			else:
 				cur_charge_type_num = cur_charge_type.num
 			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
-			goods_item['price_dif'] = goods.former_price - goods.seckill_price
+			goods_item['price_dif'] = round(float(goods.former_price - goods.seckill_price),2)
 			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)
 
@@ -923,7 +929,8 @@ class Discount(CustomerBaseHandler):
 			fruits={}
 			if q:
 				fruits=eval(q.fruits)
-			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data,fruits=fruits)
+			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data,context=dict(fruits=fruits))
+
 		elif action=="add_in_cart":
 			pass
 		elif action=="add_in_order":

@@ -246,8 +246,10 @@ $(document).ready(function(){
     $(this).addClass("hidden");
     $(this).next(".seckill-btn-yes").removeClass("hidden");
     wobble($('.cart_num'));
-    $(".cart_num").removeClass("hidden").html(++window.dataObj.cart_count);
+    window.dataObj.cart_count++;
+    $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
     seckill_goods_ids.push(s_goods_id);
+    SetCookie('cart_count',window.dataObj.cart_count);
     noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 }).on('click','.number-minus',function(){
     //商品数量操作
@@ -510,7 +512,7 @@ var fruitItem=function(box,fruits,type){
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
 function countTime($obj){
-    var time_end = parseInt($obj.attr("end_time"))*1000;
+    var time_end = parseInt($obj.attr("end-time"))*1000;
     var time_now = new Date().getTime();
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
