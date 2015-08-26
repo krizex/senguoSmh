@@ -1403,6 +1403,7 @@ class Market(CustomerBaseHandler):
 				# print('[CustomerMarket]favour_today:',favour_today)
 
 				charge_types= []
+				has_discount_activity=0  #标记该商品是否参与限时折扣
 				for charge_type in fruit.charge_types:
 					if charge_type.active !=0 and charge_type.activity_type == 0:
 						unit  = charge_type.unit
@@ -1429,14 +1430,15 @@ class Market(CustomerBaseHandler):
 						q_discount=[]
 						if q_query:
 							q_discount=eval(q_query.charge_type)
-						has_discount_activity=0
+						has_discount_activity1=0
 						discount_rate=None
 						if charge_type in q_discount:
+							has_discount_activity1=1
 							has_discount_activity=1
 							discount_rate=q_discount.discount_rate
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
-							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity})
+							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
@@ -1513,7 +1515,10 @@ class Market(CustomerBaseHandler):
 					data_item1['storage'] = seckill_info.activity_piece
 					data.append(data_item1)
 				if charge_types:
-					data_item2['is_activity'] = 0
+					if has_discount_activity1==1：
+						data_item2['is_activity'] = 1
+					else:
+						data_item2['is_activity'] = 0
 					data_item2['charge_types'] = charge_types
 					data_item2['storage'] = fruit.storage
 					data_item2['saled'] = saled
@@ -1790,6 +1795,7 @@ class Cart(CustomerBaseHandler):
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 		self.updatecoupon(customer_id)
+		self.updatediscount()
 		show_balance = False
 		balance_value = 0
 		storages = {}
@@ -1909,6 +1915,8 @@ class Cart(CustomerBaseHandler):
 		fruits = self.args["fruits"]
 		# print("[CustomerCart]json.dumps(self.args):",json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
+		self.updatecoupon(customer_id)
+		self.updatediscount()
 		online_type = ''
 		shop_status = current_shop.status
 		can_use_coupon=0  #标记能否使用优惠券
