@@ -135,11 +135,11 @@ def getsomeshop():
 		new_good = models.Fruit(shop_id = 1872 , fruit_type_id = 999,name = name,
 		storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("detail",""),intro=data.get("name",""))
 		new_good.charge_types.append(models.ChargeType(price = 0,unit = 3,num = 1,market_price = None))
-		new_good2 = models.Fruit(shop_id = 1874 , fruit_type_id = 999,name = name,
-		storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("detail",""),intro=data.get("name",""))
-		new_good2.charge_types.append(models.ChargeType(price = 0,unit = 3,num = 1,market_price = None))
+		#new_good2 = models.Fruit(shop_id = 1874 , fruit_type_id = 999,name = name,
+		#storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("detail",""),intro=data.get("name",""))
+		#new_good2.charge_types.append(models.ChargeType(price = 0,unit = 3,num = 1,market_price = None))
 		session.add(new_good)
-		session.add(new_good2)
+		#session.add(new_good2)
 	session.commit()
 	# return self.send_success()
 	
