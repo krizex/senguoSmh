@@ -416,6 +416,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow="{{key["allow_num"]}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                         '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
+                                        '<span class="price-tip"><span class="price-dif">{{key["discount_rate"]}}</span>折</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box">'+
                                         '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+

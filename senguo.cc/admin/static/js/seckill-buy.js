@@ -208,7 +208,7 @@ function countTime(time,start_time,type,$obj){
         if(start_time*1000<=time_now){//正在进行
             $(".no-seckill-time").addClass("hide");
             $(".seckill-ing").removeClass("hide");
-            if($(".seckill-ing").hasClass("hide")){
+            if($(".no-seckill-time").hasClass("hide")){
                 $(".seckill-btns").addClass("hide");
                 $(".seckill-btn").removeClass("hide");
             }
