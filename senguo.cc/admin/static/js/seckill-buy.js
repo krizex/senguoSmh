@@ -26,6 +26,7 @@ $(document).ready(function(){
             var time = parseInt($(this).attr("data-time"));
             countTime(time*1000,0,2,$(this));
         });
+        seckill_goods_ids=[];
     }
     if(parseInt(cookie.getCookie("cart_count"))>0){
         $(".cart-num").html(cookie.getCookie("cart_count")).removeClass("hide");
@@ -36,20 +37,22 @@ $(document).ready(function(){
 }).on("click",".add-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
-    var storage = parseInt($parent.attr("data-storage"));
+    var storage = parseInt($parent.attr("charge-storage"));
     //判断库存
     if(storage==0){
         $(this).closest("li").find(".cover-img").removeClass("hide");
         $(this).closest("li").find(".wrap-discount-item").addClass("no-goods");
         return Tip("当前商品已经售罄，下次记得早点哦~~");
     }
-    var charge_id = $parent.attr("data_id");
+    if(num==storage){
+        return Tip("库存只有这么多了~~");
+    }
+    var charge_id = $parent.attr("data-id");
     if(num==0){
         $parent.children(".num-txt").removeClass("hide").html(1);
         $parent.children(".minus-btn").removeClass("hide");
         var cart_num = parseInt($(".cart-num").html());
         $(".cart-num").html(cart_num+1).removeClass("hide");
-        cookie.setCookie("cart_count",cart_num+1);
         setTimeout(function(){
             $(".cart-num").removeClass("origin-cart");
         },20);
@@ -57,7 +60,7 @@ $(document).ready(function(){
     num++;
     $parent.children(".num-txt").html(num);
     $parent.attr("data-num",num);
-    window.dataObj.fruits['charge_id']=num;
+    window.dataObj.fruits[charge_id]=num;
 }).on("click",".minus-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
@@ -67,7 +70,6 @@ $(document).ready(function(){
         $(this).addClass("hide");
         var cart_num = parseInt($(".cart-num").html());
         $(".cart-num").html(cart_num-1).removeClass("hide");
-        cookie.setCookie("cart_count",cart_num-1);
         if((cart_num-1)==0){
             $(".cart-num").addClass("hide").addClass("origin-cart");
         }
@@ -75,9 +77,9 @@ $(document).ready(function(){
         num--;
         $parent.children(".num-txt").html(num);
     }
-    var charge_id = $parent.attr("data_id");
+    var charge_id = $parent.attr("data-id");
     $parent.attr("data-num",num);
-    window.dataObj.fruits['charge_id']=num;
+    window.dataObj.fruits[charge_id]=num;
 }).on("click",".stime-list li",function(){//选择时间段
     var id = $(this).attr("data-id");
     var start_time = parseInt($(this).attr("data-start"));
@@ -131,10 +133,11 @@ function addCart(link){
     var args={
         action:action,
         fruits:fruits,
-        seckill_goods_id:seckill_goods_ids || []
+        seckill_goods_id:seckill_goods_ids
     };
     $.postJson(url,args,function(res){
             if(res.success){
+                cookie.setCookie("cart_count",$(".cart-num").html());
                 window.location.href=link;
             }
             else return Tip(res.error_text);
@@ -170,7 +173,11 @@ function insertGoods(data){
         for(var key in data){
             var $item = $("#seckill-item").children("li").clone();
             $item.attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id).attr("is_bought",data[key].is_bought);
-            $item.find(".image").attr("src",data[key].img_url || '/static/images/TDSG.png');
+            if(data[key].img_url){
+                $item.find(".image").attr("src",data[key].img_url+"?imageView2/1/w/100/h/100");
+            }else{
+                $item.find(".image").attr("src",'/static/images/TDSG.png');
+            }
             $item.find(".store-num").html(data[key].activity_piece);
             $item.find(".nm-name").html(data[key].goods_name);
             $item.find(".price-bo").html(data[key].charge_type_text);

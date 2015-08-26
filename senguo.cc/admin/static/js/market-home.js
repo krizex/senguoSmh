@@ -249,7 +249,6 @@ $(document).ready(function(){
     window.dataObj.cart_count++;
     $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
     seckill_goods_ids.push(s_goods_id);
-    SetCookie('cart_count',window.dataObj.cart_count);
     noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 }).on('click','.number-minus',function(){
     //商品数量操作

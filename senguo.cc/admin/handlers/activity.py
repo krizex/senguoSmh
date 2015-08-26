@@ -847,6 +847,11 @@ class Discount(CustomerBaseHandler):
 		self.updatediscount()
 		action=self.args["action"]
 		if action=="detail":
+			q_cart=self.session.query(models.Cart).filter_by(id=current_customer_id,shop_id=current_shop_id).first()
+			fruits={}
+			if q_cart:
+				fruits=eval(q_cart.fruits)
+			print(fruits)
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=1).all()
 			data=[]
 			data1=[]
@@ -867,13 +872,18 @@ class Discount(CustomerBaseHandler):
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
 								if charge.active==1:
-									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									charge_storage=int(each_frut.storage/charge.relate/charge.num)
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
 							else:
 								img_url= ""
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
+							if fruits:
+								count=fruits[charge.id]
+							else:
+								count=0
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":count}
 							data1.append(tmp)
 							chargesingle=[]
 						data0={"end_time":end_time,"group_data":data1}
@@ -886,13 +896,18 @@ class Discount(CustomerBaseHandler):
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
 								if charge.active==1:
-									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									charge_storage=int(each_frut.storage/charge.relate/charge.num)
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
 							else:
 								img_url= ""
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":0}
+							if fruits:
+								count=fruits[charge.id]
+							else:
+								count=0
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"count":count}
 							data1.append(tmp)
 							chargesingle=[]
 						data0={"end_time":end_time,"group_data":data1}
@@ -902,16 +917,23 @@ class Discount(CustomerBaseHandler):
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
 						charge_type=eval(y.charge_type)
-						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id in charge_type).all()
+						print(charge_type)
+						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type)).all()
+						print(ChargeType)
 						for charge in ChargeType:
 							if charge.active==1:
-								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+								charge_storage=int(fruit.storage/charge.relate/charge.num)
+								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 								chargesingle.append(x_charge)
 						if fruit.img_url:
 							img_url = fruit.img_url.split(';')[0]
 						else:
 							img_url= ""
-						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage,"img_url":img_url,"count":0}
+						if fruits:
+							count=fruits[charge.id]
+						else:
+							count=0
+						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage,"img_url":img_url,"count":count}
 						data1.append(tmp)
 						chargesingle=[]
 						data0={"end_time":end_time,"group_data":data1}
@@ -919,7 +941,8 @@ class Discount(CustomerBaseHandler):
 						data.append(data0)
 				if if_all==1:
 					break
-			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data,context=dict(fruits={}))
+			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data,context=dict(fruits=fruits))
+
 		elif action=="add_in_cart":
 			pass
 		elif action=="add_in_order":

@@ -248,7 +248,7 @@
                                 {%end%}
                                 {%end%}
                                 {%for charge in charges%}
-                                    <button class=" charge-btn mt6 mr10 {%if charge["charge_id"] in data["charges"]%}back_green{%end%}" charge_id={{charge["charge_id"]}}>{{charge["charge"]}}</button>
+                                    <button class=" charge-btn mt6 mr10 {%if charge["charge_id"] in data["charges"]%}back_green{%end%} {%if common_info["edit_status"]!=0%}disabled{%end%}" charge_id={{charge["charge_id"]}}>{{charge["charge"]}}</button>
                                 {%end%}
                                 </span></td>
                             </tr>
