@@ -871,9 +871,9 @@ class Discount(CustomerBaseHandler):
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1).all()
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
-								if charge.active==1:
+								if charge.active==1 and charge.activity_type==2:
 									charge_storage=int(each_frut.storage/charge.relate/charge.num)
-									if fruits:
+									if fruits and charge.id in fruits:
 										count=fruits[charge.id]
 									else:
 										count=0
@@ -895,9 +895,9 @@ class Discount(CustomerBaseHandler):
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=y.use_goods_group).all()
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
-								if charge.active==1:
+								if charge.active==1 and charge.activity_type==2:
 									charge_storage=int(each_frut.storage/charge.relate/charge.num)
-									if fruits:
+									if fruits and charge.id in fruits:
 										count=fruits[charge.id]
 									else:
 										count=0
@@ -917,13 +917,11 @@ class Discount(CustomerBaseHandler):
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
 						charge_type=eval(y.charge_type)
-						print(charge_type)
 						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type)).all()
-						print(ChargeType)
 						for charge in ChargeType:
-							if charge.active==1:
+							if charge.active==1 and charge.activity_type==2:
 								charge_storage=int(fruit.storage/charge.relate/charge.num)
-								if fruits:
+								if fruits and charge.id in fruits:
 									count=fruits[charge.id]
 								else:
 									count=0
