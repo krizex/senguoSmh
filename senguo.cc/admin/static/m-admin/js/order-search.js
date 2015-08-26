@@ -18,8 +18,8 @@ $(document).ready(function(){
     });
     $("#search-order").on("click",function(){  //订单搜索
         var id = $("#search-ipt").val();
-        if($.trim(id)=="" || isNaN($.trim(id))){
-            return Tip("请输入只含数字的订单编号");
+        if($.trim(id)==""){
+            return Tip("请输入订单编号，收货人姓名或收货人电话");
         }else{
             searchOrder(id);
         }
@@ -27,8 +27,8 @@ $(document).ready(function(){
     $("#search-ipt").on("keydown",function(){  //订单搜索
         if(window.event.keyCode == 13){
             var id = $("#search-ipt").val();
-            if($.trim(id)=="" || isNaN($.trim(id))){
-                return Tip("请输入只含数字的订单编号");
+            if($.trim(id)==""){
+                return Tip("请输入订单编号，收货人姓名或收货人电话");
             }else{
                 searchOrder(id);
             }
@@ -103,126 +103,130 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
 
 function searchOrder(id){
     $('#order-item').empty();
-    var url = '/admin/searchorder?action=order&id='+id+"&page=0";
+    var url = '/admin/searchorder?action=order&wd='+id+"&page=0";
     $.ajax({
         url:url,
         type:"get",
         success:function(res){
             if(res.success){
-                var data = res.data[0];
-                if(!data){
+                var datalist = res.data;
+                if(!datalist){
                     $(".no-result").html("没有查到任何订单").removeClass("hide");
                 }else{
                     $(".no-result").addClass("hide");
-                    var id=data['id'];
-                    var order_status=parseInt(data['status']);
-                    var order_num=data['num'];
-                    var create_date=data['create_date'];
-                    var totalPrice=data['totalPrice'];
-                    var pay_type=data['pay_type'];
-                    var send_time=data['send_time'];
-                    var send_address=data['address_text'];
-                    var message=data['message'];
-                    var del_reason=data['del_reason'];
-                    var SH2s=data['SH2s'];
-                    var width;
-                    var left;
-                    var sender_name;
-                    var del_status;
-                    var show='hide';
-                    var hide='show';
-                    var tel_show='hide';
+                    for(var key in datalist){
+                        var data=datalist[key];
+                        var id=data['id'];
+                        var order_status=parseInt(data['status']);
+                        var order_num=data['num'];
+                        var create_date=data['create_date'];
+                        var totalPrice=data['totalPrice'];
+                        var pay_type=data['pay_type'];
+                        var send_time=data['send_time'];
+                        var send_address=data['address_text'];
+                        var message=data['message'];
+                        var del_reason=data['del_reason'];
+                        var SH2s=data['SH2s'];
+                        var width;
+                        var left;
+                        var sender_name;
+                        var del_status;
+                        var show='hide';
+                        var hide='show';
+                        var tel_show='hide';
 
-                    if(data['SH2']){
-                        var staff_img=data['SH2']['headimgurl'];
-                        var staff_phone=data['SH2']['phone'];
-                        var sender=data['SH2']['nickname'];
-                    }else{
-                        var staff_img='/static/m-admin/img/sender_holder.png';
-                        var staff_phone='';
-                        var sender='';
-                    }
-                    if(pay_type==1){
-                        pay_type = "货到付款";
-                    }else if(pay_type==2){
-                        pay_type = "余额支付";
-                    }else{
-                        pay_type = "在线支付";
-                    }
-                     switch (order_status){
-                        case -1:
-                            $("#status-txt").text('未支付');
-                            width='order-w0';
-                            left='order-l0';
-                            show='hide';
-                            hide='show';
-                            break;
-                        case 0:
-                            width='order-w0';
-                            left='order-l0';
-                            hide='hide';
-                            show='';
-                            if(del_reason){
-                                if(del_reason=='timeout'){
-                                    del_status='该订单15分钟未支付，已自动取消';
-                                }else{
-                                    del_status='该订单已删除（原因：'+del_reason+')';
+                        if(data['SH2']){
+                            var staff_img=data['SH2']['headimgurl'];
+                            var staff_phone=data['SH2']['phone'];
+                            var sender=data['SH2']['nickname'];
+                        }else{
+                            var staff_img='/static/m-admin/img/sender_holder.png';
+                            var staff_phone='';
+                            var sender='';
+                        }
+                        if(pay_type==1){
+                            pay_type = "货到付款";
+                        }else if(pay_type==2){
+                            pay_type = "余额支付";
+                        }else{
+                            pay_type = "在线支付";
+                        }
+                         switch (order_status){
+                            case -1:
+                                $("#status-txt").text('未支付');
+                                width='order-w0';
+                                left='order-l0';
+                                show='hide';
+                                hide='show';
+                                break;
+                            case 0:
+                                width='order-w0';
+                                left='order-l0';
+                                hide='hide';
+                                show='';
+                                if(del_reason){
+                                    if(del_reason=='timeout'){
+                                        del_status='该订单15分钟未支付，已自动取消';
+                                    }else{
+                                        del_status='该订单已删除（原因：'+del_reason+')';
+                                    }
                                 }
-                            }
-                            else{
-                                del_status='该订单已被用户取消';
-                            }
+                                else{
+                                    del_status='该订单已被用户取消';
+                                }
 
-                            break;
-                        case 1:
-                            width='order-w0';
-                            left='order-l0';
-                            sender_name='分配员工';
-                            break;
-                        case 2:
-                        case 3:
-                        case 4:
-                            width='order-w50';
-                            left='order-l50';
-                            sender_name=sender+'配送中';
-                            tel_show='';
-                            break;
-                        case 5:
-                            width='order-w100';
-                            left='order-l100';
-                            sender_name=sender+'已送达';
-                            tel_show='';
-                            break;
-                        case 6:
-                        case 7:
-                            width='order-w100';
-                            left='order-l100';
-                            sender_name='已评价';
-                            break;
+                                break;
+                            case 1:
+                                width='order-w0';
+                                left='order-l0';
+                                sender_name='分配员工';
+                                break;
+                            case 2:
+                            case 3:
+                            case 4:
+                                width='order-w50';
+                                left='order-l50';
+                                sender_name=sender+'配送中';
+                                tel_show='';
+                                break;
+                            case 5:
+                                width='order-w100';
+                                left='order-l100';
+                                sender_name=sender+'已送达';
+                                tel_show='';
+                                break;
+                            case 6:
+                            case 7:
+                                width='order-w100';
+                                left='order-l100';
+                                sender_name='已评价';
+                                break;
+                        }
+                        var render=template.compile(order_item);
+                        var html=render({
+                           id:id,
+                           order_status:order_status,
+                           order_num:order_num,
+                           create_date:create_date,
+                           totalPrice:totalPrice,
+                           pay_type:pay_type,
+                           send_time:send_time,
+                           send_address:send_address,
+                           message:message,
+                           staff_img:staff_img,
+                           staff_phone:staff_phone,
+                           SH2s:SH2s,
+                           left:left,
+                           width:width,
+                           sender_name:sender_name,
+                           hide:hide,
+                           del_status:del_status,
+                           show:show,
+                           tel_show:tel_show
+                        });
+                        $('#order-item').append(html);
                     }
-                    var render=template.compile(order_item);
-                    var html=render({
-                       id:id,
-                       order_status:order_status,
-                       order_num:order_num,
-                       create_date:create_date,
-                       totalPrice:totalPrice,
-                       pay_type:pay_type,
-                       send_time:send_time,
-                       send_address:send_address,
-                       message:message,
-                       staff_img:staff_img,
-                       staff_phone:staff_phone,
-                       SH2s:SH2s,
-                       left:left,
-                       width:width,
-                       sender_name:sender_name,
-                       hide:hide,
-                       del_status:del_status,
-                       show:show,
-                       tel_show:tel_show
-                    });
-                    $('#order-item').append(html);
+                   
                 }
             }else{
                 Tip(res.error_text);

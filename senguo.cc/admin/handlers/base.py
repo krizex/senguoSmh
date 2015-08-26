@@ -734,9 +734,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		address = order.address_text
 		shop_name = order.shop.shop_name
 		admin_id = order.shop.admin.id
+		# 非自提订单发送配送员模版消息
+		if order_type != 3:
+			WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+				order_totalPrice,send_time,phone,address,admin_id)
 
-		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-			order_totalPrice,send_time,phone,address,admin_id)
 		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
@@ -764,7 +766,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				c_touser = customer.accountinfo.wx_openid
 
 			#获取卖家对应自己平台的openid
-			mp_admin = session.query(Mobile.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(admin_id)).first()
+			mp_admin = session.query(models.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(admin_id)).first()
 			if mp_admin:
 				touser = mp_admin.wx_openid
 				print(touser,'admin self openid')
@@ -853,7 +855,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	# 发送订单完成模版消息给用户
 	@classmethod
-	def order_done_msg(self,session,order):
+	def order_done_msg(self,session,order,other_access_token = None):
 		# print('[TempMsg]login order_done_msg')
 		order_num = order.num
 		order_sendtime = order.arrival_day + " " + order.arrival_time
@@ -864,6 +866,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		admin_id = order.shop.admin.id
 		# print('[TempMsg]order_num:',order_num,', order_sendtime:',order_sendtime,', shop_phone:',shop_phone)
 		if order.shop.admin.has_mp:
+
 			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
 			if mp_customer:
 				touser = mp_customer.wx_openid
@@ -879,7 +882,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# except NoResultFound:
 		# 	return self.send_fail('[TempMsg]order_done_msg: customer not found')
 		# touser = customer_info.wx_openid
-		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id)
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id,other_access_token)
 
 	# 发送店铺认证状态更新模版消息给管理员
 	@classmethod
@@ -1086,7 +1089,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 客户 对 平台 和 该店铺来说都变成 老客户
 	##############################################################################################
 	@classmethod
-	def order_done(self,session,order):
+	def order_done(self,session,order,other_access_token = None):
 		# print('[_AccountBaseHandler]login order_done')
 		now = datetime.datetime.now()
 		order.arrival_day = now.strftime("%Y-%m-%d")
@@ -1095,7 +1098,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_id           = order.shop_id
 		totalprice        = order.totalPrice
 
-		self.order_done_msg(session,order)
+		self.order_done_msg(session,order,other_access_token)
 
 		order.shop.is_balance = 1
 		order.shop.order_count += 1  #店铺订单数加1

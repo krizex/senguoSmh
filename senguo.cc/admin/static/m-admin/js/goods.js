@@ -134,7 +134,8 @@ $(document).ready(function(){
     $("#big-code2").empty();
     new QRCode($("#big-code2")[0],{
         width : 300,
-        height : 300
+        height : 300,
+        colorDark : "#433943"
     }).makeCode(url);
     $(".pop-code2").removeClass("hide");
 }).on("click",".b-close",function(){
