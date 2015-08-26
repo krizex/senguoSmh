@@ -343,6 +343,7 @@ class Home(CustomerBaseHandler):
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
 		except:
 			if_admin = None
+			
 		if if_admin:
 			return self.redirect(self.reverse_url("switchshop"))
 		try:
