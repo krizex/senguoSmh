@@ -536,10 +536,19 @@ class Discover(CustomerBaseHandler):
 					b+=1
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
 
-		#限时折扣发现
+		#限时折扣发现 显示提示和数量
 		self.updatediscount()
 		discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
-		discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
+		q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).all()
+		discount_count=0
+		for x in q_discount_goods:
+			if x.use_goods_group==-2:
+				discount_count=self.session.query(models.Fruit).filter_by(shop_id=shop_id,active=1,activity_status=2).count()
+				break
+			elif x.use_goods==-1:
+				discount_count+=self.session.query(models.Fruit).filter_by(shop_id=shop_id,active=1,activity_status=2,group_id=x.use_goods_group).count()
+			else:
+				discount_count+=1
 		discount_text=''
 		discount_display_flag = 0
 		if discount_count:
@@ -1404,8 +1413,9 @@ class Market(CustomerBaseHandler):
 
 				charge_types= []
 				has_discount_activity=0  #标记该商品是否参与限时折扣
+				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=-2).first() # 查询是否有所有商品都打折的情况
 				for charge_type in fruit.charge_types:
-					if charge_type.active !=0 and charge_type.activity_type == 0:
+					if charge_type.active !=0 and charge_type.activity_type in [0,-2,2]:
 						unit  = charge_type.unit
 						unit =self.getUnit(unit)
 
@@ -1426,16 +1436,27 @@ class Market(CustomerBaseHandler):
 								else:
 									allow_num = fruit.limit_num - limit_if.buy_num
 						#判断商品是否参加了限时折扣活动 还不知道需不需要加上
-						q_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods=fruit.id).first()
-						q_discount=[]
-						if q_query:
-							q_discount=eval(q_query.charge_type)
-						has_discount_activity1=0
-						discount_rate=None
-						if charge_type in q_discount:
+						has_discount_activity1=0 # 标记是否有活动
+						discount_rate=None  #标记折扣
+						if q_all:
 							has_discount_activity1=1
 							has_discount_activity=1
-							discount_rate=q_discount.discount_rate
+							discount_rate=q_all.discount_rate
+						else:
+							q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=fruit.group_id,use_goods=-1).first() # 查询是否有所有商品都打折的情况
+							if q_part:
+								has_discount_activity1=1
+								has_discount_activity=1
+								discount_rate=q_part.discount_rate
+							else:
+								q_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=fruit.group_id,use_goods=fruit.id).first()
+								q_discount=[]
+								if q_query:
+									q_discount=eval(q_query.charge_type)
+								if charge_type.id in q_discount:
+									has_discount_activity1=1
+									has_discount_activity=1
+									discount_rate=q_query.discount_rate
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
@@ -1525,7 +1546,6 @@ class Market(CustomerBaseHandler):
 					data_item2['limit_num'] = fruit.limit_num
 					data.append(data_item2)
 				##
-
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1554,7 +1574,6 @@ class Market(CustomerBaseHandler):
 		total_page = int(count_fruit/page_size) if count_fruit % page_size == 0 else int(count_fruit/page_size)+1
 		if total_page <= page:
 			nomore = True
-
 		fruits = fruits.offset(offset).limit(page_size).all()
 		fruit_list = self.w_getdata(self.session,fruits,customer_id)
 		# print("[CustomerMarket]fruit_list: total_page:",total_page)
@@ -1911,7 +1930,7 @@ class Cart(CustomerBaseHandler):
 		fruits = self.args["fruits"]
 		#标记商品是否为限时折扣的
 		try:
-			discount_ids=eval(self.args["discount_ids"])
+			discount_ids=self.args["discount_ids"]
 		except:
 			discount_ids=[]
 		# print("[CustomerCart]json.dumps(self.args):",json.dumps(self.args))
@@ -1978,14 +1997,14 @@ class Cart(CustomerBaseHandler):
 					q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id).with_lockmode('update').first()
 					if q_discount_goods:
 						print('@@@@1')
-						if charge_type.activity_type in eval(q_discount_goods.charge_type):
+						if charge_type.id in eval(q_discount_goods.charge_type):
 							print('@@@@2')
 							totalPrice+=singlemoney*(q_discount_goods.discount_rate/10)
-							q_discount_goods.order_num+=int(fruits[str(charge_type.id)])
+							q_discount_goods.ordered_num+=int(fruits[str(charge_type.id)])
 							q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_discount_goods.discount_id).with_lockmode('update').first()
 							if q_discount_group:
 								print('@@@@3')
-								q_discount_group.order_num+=int(fruits[str(charge_type.id)])
+								q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
 							self.session.flush()
 						else:
 							totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
