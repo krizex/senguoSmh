@@ -1514,7 +1514,7 @@ class Market(CustomerBaseHandler):
 					data_item1['storage'] = seckill_info.activity_piece
 					data.append(data_item1)
 				if charge_types:
-					if has_discount_activity1==1：
+					if has_discount_activity1==1:
 						data_item2['is_activity'] = 1
 					else:
 						data_item2['is_activity'] = 0
@@ -1906,13 +1906,17 @@ class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
-										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int")
+										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int","discount_ids?")
 	def post(self,shop_code):#提交订单
 		# print("[CustomerCart]pay_type:",self.args['pay_type'])
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
-
+		#标记商品是否为限时折扣的
+		try:
+			discount_ids=eval(self.args["discount_ids"])
+		except:
+			discount_ids=[]
 		# print("[CustomerCart]json.dumps(self.args):",json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 		self.updatecoupon(customer_id)
@@ -1953,8 +1957,10 @@ class Cart(CustomerBaseHandler):
 			if item.activity_type == -1:
 				overdue = 1
 				return self.send_success(overdue=overdue)
-		##		
-		
+		##添加判断是否期间有商品过期
+			elif item.activity_type==-2 and item.id in discount_ids:
+				overdue==1
+				return self.send_success(overdue=overdue)
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
@@ -1969,8 +1975,22 @@ class Cart(CustomerBaseHandler):
 			for charge_type in charge_types:
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
-				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				singlemoney=charge_type.price*fruits[str(charge_type.id)] 
+				#进行折扣优惠处理
+				if charge_type.item==2 and charge_type.item in discount_ids:
+					q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id).with_lockmode('update').first()
+					if q_discount_goods:
+						if charge_type.id in eval(q_discount_goods.charge_type):
+							totalPrice+=singlemoney*(q_discount_goods.discount_rate/10)
+							q_discount_goods.order_num+=int(fruits[str(charge_type.id)])
+							q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_discount_goods.discount_id).with_lockmode('update').first()
+							if q_discount_group:
+								q_discount_group.order_num+=int(fruits[str(charge_type.id)])
+							self.session.flush()
+						else:
+							totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
+				else:
+					totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				fruit=charge_type.fruit
 
 				# totalPrice
@@ -2271,6 +2291,7 @@ class Cart(CustomerBaseHandler):
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
 		self.cart_callback(order.id)
+		self.session.commit()
 		return self.send_success(order_id = order.id)
 
 	def cart_callback(self,order_id):
