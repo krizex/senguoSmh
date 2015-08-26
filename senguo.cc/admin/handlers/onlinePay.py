@@ -232,7 +232,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			# print("[WeixinPay]balance_history:",balance_history)
 
 			#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
-			fruits = order.fruits
+			fruits = eval(order.fruits)
 			charge_type_list = list(fruits.keys())
 			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
 			if seckill_goods:
@@ -547,7 +547,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# print("[AliPay]balance_history:",balance_history)
 
 		#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
-		fruits = order.fruits
+		fruits = eval(order.fruits)
 		charge_type_list = list(fruits.keys())
 		seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
 		if seckill_goods:

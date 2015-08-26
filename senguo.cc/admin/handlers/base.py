@@ -260,8 +260,17 @@ class GlobalBaseHandler(BaseHandler):
 			if item.start_time <= now_time and item.end_time > now_time:
 				item.activity_status = 2
 				self.session.flush()
+
+				seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item.id,models.SeckillGoods.status != 0).all()
+				if seckill_goods_query:
+					seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
+					killing_fruit_list = self.session.query(models.Fruit).filter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+					for e in killing_fruit_list:
+						e.activity_status = 1
+					self.session.flush()
 			elif item.start_time <= now_time and item.end_time <= now_time:
 				item.activity_status = 0
+				self.session.flush()
 
 				seckill_goods_list = []
 				seckill_fruit_list = []
@@ -275,10 +284,17 @@ class GlobalBaseHandler(BaseHandler):
 					cur_fruit.activity_status = 0
 				self.session.flush()
 
+				seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item.id,models.SeckillGoods.status != 0).all()
+				if seckill_goods_query:
+					seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
+					killing_fruit_list = self.session.query(models.Fruit).filter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+					for e in killing_fruit_list:
+						e.activity_status = 0
+					self.session.flush()
+
 				charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
 				for e in charge_type_query:
 					e.activity_type = -1
-
 				self.session.flush()
 		self.session.commit()
 
@@ -287,6 +303,7 @@ class GlobalBaseHandler(BaseHandler):
 			now_time = int(time.time())
 			if item.end_time <= now_time:
 				item.activity_status = 0
+				self.session.flush()
 
 				seckill_goods_list = []
 				seckill_fruit_list = []
@@ -299,6 +316,14 @@ class GlobalBaseHandler(BaseHandler):
 					cur_fruit = self.session.query(models.Fruit).filter_by(id = cur_fruit_id).with_lockmode('update').first()
 					cur_fruit.activity_status = 0
 				self.session.flush()
+
+				seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item.id,models.SeckillGoods.status != 0).all()
+				if seckill_goods_query:
+					seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
+					killing_fruit_list = self.session.query(models.Fruit).filter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+					for e in killing_fruit_list:
+						e.activity_status = 0
+					self.session.flush()
 
 				charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
 				for e in charge_type_query:

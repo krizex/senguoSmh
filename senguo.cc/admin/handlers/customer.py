@@ -1711,13 +1711,12 @@ class Market(CustomerBaseHandler):
 		
 		#筛选初当前进行的限时折扣
 		m_fruits=eval(cart.fruits)
-		print(m_fruits)
-		print(fruits)
 		fruits2 = {}
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
 			if int(key) in m_fruits:
 				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
 					if key in eval(qq.charge_type):
