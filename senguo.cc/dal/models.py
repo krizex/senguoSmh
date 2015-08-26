@@ -695,6 +695,9 @@ class ShopAdmin(MapBase, _AccountApi):
 	mp_appid= Column(String(64))
 	mp_appsecret = Column(String(64))
 
+	# woody 8.25
+	template_id = Column(String(300),default="{}")
+
 	access_token = Column(String(64))
 	token_creatime = Column(Integer)
 
@@ -1347,7 +1350,7 @@ class Order(MapBase, _CommonApi):
 				charge_type.fruit.current_saled -=num
 				charge_type.fruit.saled -= num
 				# print("[Order]Order Canceled, restore storage:",num)
-		session.commit()
+		session.flush()
 		return True
 
 	def get_sendtime(self,session,order_id):

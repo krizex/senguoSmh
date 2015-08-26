@@ -733,20 +733,26 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		phone = order.phone
 		address = order.address_text
 		shop_name = order.shop.shop_name
+		admin_id = order.shop.admin.id
 
 		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-			order_totalPrice,send_time,phone,address,)
+			order_totalPrice,send_time,phone,address,admin_id)
 		# print('[TempMsg]Send staff message SUCCESS')
 
-	# 发送新订单模版消息给管理员 & 自动打印订单
+	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
 	@classmethod
 	def send_admin_message(self,session,order,other_access_token = None):
 		# session = models.DBSession()
 		access_token = other_access_token if other_access_token else None
 		admin_name = order.shop.admin.accountinfo.nickname
-		touser     = order.shop.admin.accountinfo.wx_openid
+		# touser     = order.shop.admin.accountinfo.wx_openid
 		customer_id = order.customer_id
 		admin_id    = order.shop.admin.id
+		try:
+			customer = session.query(models.Customer).filter_by(id = customer_id).first()
+		except NoResultFound:
+			return self.send_fail('customer not found')
+
 		print(admin_id,customer_id)
 		if order.shop.admin.has_mp:
 			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
@@ -755,10 +761,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				print(c_touser,'other openid')
 			else:
 				print('get mp_customer error')
-				c_touser = order.shop.admin.accountinfo.wx_openid
+				c_touser = customer.accountinfo.wx_openid
 
+			#获取卖家对应自己平台的openid
+			mp_admin = session.query(Mobile.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(admin_id)).first()
+			if mp_admin:
+				touser = mp_admin.wx_openid
+				print(touser,'admin self openid')
+			else:
+				print('get mp_admin error')
+				touser = order.shop.admin.accountinfo.wx_openid
 		else:
-			c_touser = order.shop.admin.accountinfo.wx_openid
+			c_touser = customer.accountinfo.wx_openid
+			touser   = order.shop.admin.accountinfo.wx_openid
 			print(c_touser,'openid')
 		print(c_touser,'which openid')
 		shop_id    = order.shop.id
@@ -769,14 +784,9 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		pay_type   = order.pay_type
 		phone      = order.phone
 		totalPrice = order.totalPrice
-		order_type = '立即送' if order_type == 1 else '按时达'
+		order_type = '立即送' if order_type == 1 else ('按时达' if order_type == 2 else '自提')
 		create_date= order.create_date
 		customer_name=order.receiver
-
-		try:
-			customer = session.query(models.Customer).filter_by(id = customer_id).first()
-		except NoResultFound:
-			return self.send_fail('customer not found')
 		# c_tourse   =customer.accountinfo.wx_openid
 
 		goods = []
@@ -790,7 +800,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_realid = order.id
 		if order.shop.super_temp_active != 0:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
-				phone,address,access_token)
+				phone,address,admin_id,access_token)
 		try:
 			other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
 		except NoResultFound:
@@ -810,9 +820,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			else:
 				other_touser = info.wx_openid
 			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
-				send_time,goods,phone,address,access_token)
-		WxOauth2.order_success_msg(c_touser,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
+				send_time,goods,phone,address,admin_id,access_token)
+		WxOauth2.order_success_msg(c_touser,shop_name,create_date,goods,order_totalPrice,order_realid,admin_id,access_token)
 
+		# 订单自动打印
 		auto_print = order.shop.config.auto_print
 		print_type = order.shop.config.receipt_type
 		wireless_type = order.shop.config.wireless_type
@@ -823,21 +834,22 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				_action = "fyprint"
 			self.autoPrint(session,order.id,order.shop,_action)
 
-		# 给管理员app端推送订单生成提示 —— 将来需要封装
+		# 卖家版app推送订单提醒 —— 将来需要封装 - by cm 2015.8.15
 		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
 		if devices:
 			_jpush = jpush.JPush(app_key, master_secret)
 			push = _jpush.create_push()
 			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
 
-			ios_msg = jpush.ios(alert="您收到了新的森果订单，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'order_num':order.num})
-			android_msg = jpush.android(alert="您收到了新的森果订单，点击查看详情")
+			ios_msg = jpush.ios(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order_id})
+			android_msg = jpush.android(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情")
 			
-			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
-			push.notification = jpush.notification(alert="您收到了新的森果订单，点击查看详情", android=android_msg, ios=ios_msg)
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order_id)
+			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
 			push.send()
+		###
 
 	# 发送订单完成模版消息给用户
 	@classmethod
@@ -849,6 +861,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		customer_id= order.customer_id
 		shop_name = order.shop.shop_name
 		order_id = order.id
+		admin_id = order.shop.admin.id
 		# print('[TempMsg]order_num:',order_num,', order_sendtime:',order_sendtime,', shop_phone:',shop_phone)
 		if order.shop.admin.has_mp:
 			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
@@ -866,7 +879,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# except NoResultFound:
 		# 	return self.send_fail('[TempMsg]order_done_msg: customer not found')
 		# touser = customer_info.wx_openid
-		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id)
 
 	# 发送店铺认证状态更新模版消息给管理员
 	@classmethod
@@ -880,10 +893,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
+		admin_id = order.shop.admin.id
 		order_num = order.num
 		shop_name = order.shop.shop_name
 		cancel_time = cancel_time
-		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,access_token)
+		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,admin_id,access_token)
 		concel_auto_print = order.shop.config.concel_auto_print
 		print_type = order.shop.config.receipt_type
 		wireless_type = order.shop.config.wireless_type
@@ -894,22 +908,22 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				_action = "fyprint_concel"
 			self.autoPrint(session,order.id,order.shop,_action)
 
-		# 订单取消推送消息将加在这里 —— 将来需要封装
+		# 卖家版app推送订单取消提醒 —— 将来需要封装 - by Sky 2015.8.22
 		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
 		if devices:
 			_jpush = jpush.JPush(app_key, master_secret)
 			push = _jpush.create_push()
 			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
 
-			ios_msg = jpush.ios(alert="您的森果订单（订单编号："+order.num+"）已被用户取消，查看详情>>", badge="+1", extras={'order_num':order.num})
-			android_msg = jpush.android(alert="您有一个森果订单被用户取消，点击查看详情")
+			ios_msg = jpush.ios(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order_num})
+			android_msg = jpush.android(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情")
 			
-			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
-			push.notification = jpush.notification(alert="您有一个森果订单被用户取消，点击查看详情", android=android_msg, ios=ios_msg)
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order_num)
+			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
 			push.send()
-		####
+		###
 
 	# 无线打印订单
 	@classmethod
@@ -1855,23 +1869,32 @@ class WxOauth2:
 		else:
 			return data['openid']
 	@classmethod
-	def get_template_id(cls,template_id_short,access_token):
-		print('login in get_template_id')
-		url = 'https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token={0}'.format(access_token)
-		data = json.dumps({"template_id_short":template_id_short})
-		r = requests.post(url,data=data)
-		s = r.text
-		print(s)
-		if isinstance(s,bytes):
-			s = s.decode('utf-8')
-		s = json.loads(s)
-		template_id = s.get('template_id',None)
-		return template_id
+	def get_template_id(cls,admin_id,template_id_short,access_token):
+		session = models.DBSession()
+		admin = session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+		if not admin:
+			return False
+		template_id_zip = eval(admin.template_id)
+		template_id = template_id_zip.get(template_id_short,None)
+		if not template_id:
+			url = 'https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token={0}'.format(access_token)
+			data = json.dumps({"template_id_short":template_id_short})
+			r = requests.post(url,data=data)
+			s = r.text
+			if isinstance(s,bytes):
+				s = s.decode('utf-8')
+			s = json.loads(s)
+			template_id = s.get('template_id',None)
+			template_id_zip[template_id_short] = template_id
+			admin.template_id = str(template_id_zip)
+			session.commit()
+			return template_id
+		else:
+			return template_id
 
 	# 获取微信 jsapi
 	@classmethod
 	def get_jsapi_ticket(cls):
-		global jsapi_ticket
 		if datetime.datetime.now().timestamp() - jsapi_ticket["create_timestamp"]\
 				< 7100 and jsapi_ticket["jsapi_ticket"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
 			return jsapi_ticket["jsapi_ticket"]
@@ -2005,11 +2028,11 @@ class WxOauth2:
 	# 新订单模版消息（发送给管理员）
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
+		order_totalPrice,send_time,goods,phone,address,admin_id,other_access_token = None):
 
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		template_id_short = 'TM00351'
-		template_id = cls.get_template_id(template_id_short,access_token)
+		template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 		if not template_id:
 			return False
 		else:
@@ -2046,14 +2069,15 @@ class WxOauth2:
 	# 新订单模版消息（发送给配送员）
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,phone,address,other_access_token = None):
-		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-		template_id_short = 'TM00351'
-		template_id = cls.get_template_id(template_id_short,access_token)
-		if not template_id:
-			return False
-		else:
-			print('template_id get success',template_id)
+		order_totalPrice,send_time,phone,address,admin_id,other_access_token = None):
+		access_token = cls.get_client_access_token()
+		# access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		# template_id_short = 'TM00351'
+		# template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+		# if not template_id:
+		# 	return False
+		# else:
+		# 	print('template_id get success',template_id)
 
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
@@ -2064,8 +2088,8 @@ class WxOauth2:
 		order_type = "立即送" if order_type_temp == 1 else "按时达"
 		postdata = {
 			'touser':touser,
-			# 'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-			'template_id':'template_id',
+			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			# 'template_id':'template_id',
 			'url':staff_order_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
@@ -2086,20 +2110,19 @@ class WxOauth2:
 
 	# 批量新订单模版消息（发送给配送员）
 	@classmethod
-	def post_batch_msg(cls,touser,staff_name,shop_name,count,other_access_token = None):
-		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-		template_id_short = 'TM00351'
-		template_id = cls.get_template_id(template_id_short,access_token)
-		if not template_id:
-			return False
-		else:
-			print('template_id get success',template_id)
-
-
+	def post_batch_msg(cls,touser,staff_name,shop_name,count,admin_id,other_access_token = None):
+		access_token = cls.get_client_access_token()
+		# access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		# template_id_short = 'TM00351'
+		# template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+		# if not template_id:
+		# 	return False
+		# else:
+		# 	print('template_id get success',template_id)
 		postdata = {
 			'touser':touser,
-			# 'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-			'template_id':template_id,
+			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			# 'template_id':template_id,
 			'url':staff_order_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#44b549"},
@@ -2121,11 +2144,11 @@ class WxOauth2:
 
 	# 订单提交成功模版消息（发送给用户）
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,other_access_token = None):
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,admin_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		print(touser,access_token,'wx_openid and access_token')
 		template_id_short = 'OPENTM200746866'
-		template_id = cls.get_template_id(template_id_short,access_token)
+		template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 		if not template_id:
 			print('get template_id error')
 			return False
@@ -2156,10 +2179,10 @@ class WxOauth2:
 
 	# 订单完成模版消息（发送给用户）
 	@classmethod
-	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		template_id_short = 'OPENTM202521011'
-		template_id = cls.get_template_id(template_id_short,access_token)
+		template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 		if not template_id:
 			return False
 		else:
@@ -2187,19 +2210,20 @@ class WxOauth2:
 
 	# 订单取消模版消息（发送给管理员）
 	@classmethod
-	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,other_access_token = None):
-		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-		template_id_short = 'OPENTM201449108'
-		template_id = cls.get_template_id(template_id_short,access_token)
-		if not template_id:
-			return False
-		else:
-			print('template_id get success',template_id)
+	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,admin_id,other_access_token = None):
+		access_token = cls.get_client_access_token()
+		# access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		# template_id_short = 'OPENTM201449108'
+		# template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+		# if not template_id:
+		# 	return False
+		# else:
+		# 	print('template_id get success',template_id)
 
 		postdata = {
 			'touser':touser,
-			# 'template_id':'EcqyvbnALGmeG8O-SJw_XCIlMvBOH5mB8YM_qCsgSwE',
-			'template_id':template_id,
+			'template_id':'EcqyvbnALGmeG8O-SJw_XCIlMvBOH5mB8YM_qCsgSwE',
+			# 'template_id':template_id,
 			'url':'i.senguo.cc/admin',
 			'topcolor':'#FF0000',
 			'data':{
