@@ -898,10 +898,12 @@ class Discount(CustomerBaseHandler):
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
 						charge_type=eval(y.charge_type)
-						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id in charge_type).all()
+						print(charge_type)
+						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type)).all()
+						print(ChargeType)
 						for charge in ChargeType:
 							if charge.active==1:
-								charge_storage=int(each_frut.storage/charge.relate)
+								charge_storage=int(fruit.storage/charge.relate)
 								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 								chargesingle.append(x_charge)
 						if fruit.img_url:
