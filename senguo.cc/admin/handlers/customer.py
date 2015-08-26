@@ -1974,7 +1974,7 @@ class Cart(CustomerBaseHandler):
 				overdue = 1
 				return self.send_success(overdue=overdue)
 		##添加判断是否期间有商品过期
-			elif item.activity_type==-2 and item.id in discount_ids:
+			elif item.activity_type!=2 and item.id in discount_ids:
 				overdue==1
 				return self.send_success(overdue=overdue)
 		f_d={}
