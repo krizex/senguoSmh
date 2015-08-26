@@ -132,10 +132,10 @@ def getsomeshop():
 		data=datalist[key]
 		name =data.get("name","").split(" ")[0][:10]
 		#1872 1874
-		new_good = models.Fruit(shop_id = 1 , fruit_type_id = 999,name = name,
+		new_good = models.Fruit(shop_id = 1872 , fruit_type_id = 999,name = name,
 		storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("detail",""),intro=data.get("name",""))
 		new_good.charge_types.append(models.ChargeType(price = 0,unit = 3,num = 1,market_price = None))
-		new_good2 = models.Fruit(shop_id = 2 , fruit_type_id = 999,name = name,
+		new_good2 = models.Fruit(shop_id = 1874 , fruit_type_id = 999,name = name,
 		storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("detail",""),intro=data.get("name",""))
 		new_good2.charge_types.append(models.ChargeType(price = 0,unit = 3,num = 1,market_price = None))
 		session.add(new_good)
