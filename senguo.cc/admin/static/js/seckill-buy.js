@@ -47,13 +47,12 @@ $(document).ready(function(){
     if(num==storage){
         return Tip("库存只有这么多了~~");
     }
-    var charge_id = $parent.attr("data_id");
+    var charge_id = $parent.attr("data-id");
     if(num==0){
         $parent.children(".num-txt").removeClass("hide").html(1);
         $parent.children(".minus-btn").removeClass("hide");
         var cart_num = parseInt($(".cart-num").html());
         $(".cart-num").html(cart_num+1).removeClass("hide");
-        cookie.setCookie("cart_count",cart_num+1);
         setTimeout(function(){
             $(".cart-num").removeClass("origin-cart");
         },20);
@@ -61,7 +60,7 @@ $(document).ready(function(){
     num++;
     $parent.children(".num-txt").html(num);
     $parent.attr("data-num",num);
-    window.dataObj.fruits['charge_id']=num;
+    window.dataObj.fruits[charge_id]=num;
 }).on("click",".minus-btn",function(){
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
@@ -71,7 +70,6 @@ $(document).ready(function(){
         $(this).addClass("hide");
         var cart_num = parseInt($(".cart-num").html());
         $(".cart-num").html(cart_num-1).removeClass("hide");
-        cookie.setCookie("cart_count",cart_num-1);
         if((cart_num-1)==0){
             $(".cart-num").addClass("hide").addClass("origin-cart");
         }
@@ -79,9 +77,9 @@ $(document).ready(function(){
         num--;
         $parent.children(".num-txt").html(num);
     }
-    var charge_id = $parent.attr("data_id");
+    var charge_id = $parent.attr("data-id");
     $parent.attr("data-num",num);
-    window.dataObj.fruits['charge_id']=num;
+    window.dataObj.fruits[charge_id]=num;
 }).on("click",".stime-list li",function(){//选择时间段
     var id = $(this).attr("data-id");
     var start_time = parseInt($(this).attr("data-start"));
@@ -139,6 +137,7 @@ function addCart(link){
     };
     $.postJson(url,args,function(res){
             if(res.success){
+                cookie.setCookie("cart_count",$(".cart-num").html());
                 window.location.href=link;
             }
             else return Tip(res.error_text);

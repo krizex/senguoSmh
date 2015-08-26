@@ -11,6 +11,7 @@
 <script>
     window.dataObj.fruits={% raw json.dumps(context["fruits"]) %};
 </script>
+<input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm80">
     {% for item in output_data %}
     <div class="discount-item-box">
@@ -31,7 +32,7 @@
                         <div class="wrap-discount-item {% if goods['storage']==0 %}no-goods{% end %}" data-id="{{charge['charge_id']}}">
                             <span class="price-bo">{{charge['charge']}}</span>
                             <span class="price-tip">{{goods['discount_rate']}}折</span>
-                            <div class="wrap-operate" data-num="{{goods['count']}}" data-storage="{{goods['storage']}}" charge-storage="{{charge['charge_storage']}}">
+                            <div class="wrap-operate" data-num="{{goods['count']}}" data-id="{{charge['charge_id']}}" data-storage="{{goods['storage']}}" charge-storage="{{charge['charge_storage']}}">
                                 <span class="roll-btn minus-btn {% if goods['count']==0 %}hide{% end %}">-</span>
                                 <span class="num-txt {% if goods['count']==0 %}hide{% end %}">{{goods['count']}}</span>
                                 <span class="roll-btn add-btn">+</span>
@@ -47,7 +48,7 @@
     {% end %}
     <p class="no-result mt10 hide">加载中...</p>
 </div>
-<a href="javascript:;" class="go-cart">
+<a href="javascript:;" class="go-cart" url="/customer/cart/{{shop_code}}">
     <span class="cart-num origin-cart hide">0</span>
 </a>
 <ul class="hide" id="discount-item">
