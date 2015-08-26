@@ -3287,7 +3287,7 @@ class Staff(AdminBaseHandler):
 # 订单搜索
 class SearchOrder(AdminBaseHandler):  # 用户历史订单
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action", "id:int","page?:int")
+	@AdminBaseHandler.check_arguments("action", "id?:int","page?:int","wd?:str")
 	def get(self):
 		self.if_current_shops()
 		action = self.args["action"]
@@ -3311,8 +3311,11 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 					models.Order.SH2_id==self.args['id'], models.Order.shop_id==self.current_shop.id,\
 					not_(models.Order.status.in_([-1,0]))).all()
 			elif action == 'order':
-				orders = self.session.query(models.Order).filter(
-					models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id).all()
+				wd=self.args['wd']
+				orders = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id)\
+				.filter(or_(models.Order.num.like("%%%s%%" % wd),
+					models.Order.receiver.like("%%%s%%" % wd),
+					models.Order.phone.like("%%%s%%" % wd))).all()
 			else:
 				return self.send_error(404)
 			delta = datetime.timedelta(1)

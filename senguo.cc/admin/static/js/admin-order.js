@@ -247,8 +247,8 @@ function addActive(target,id){
     }
 }
 function orderSearch(){
-    var order_num=Int($('.search-con').val());
-    var url='/admin/searchorder?action=order&&id='+order_num;
+    var order_num=$('.search-con').val();
+    var url='/admin/searchorder?action=order&&wd='+order_num;
     window.open(url);
 }
 
