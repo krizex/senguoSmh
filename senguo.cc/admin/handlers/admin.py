@@ -1801,6 +1801,27 @@ class Order(AdminBaseHandler):
 						balance_type = 4,shop_totalPrice = self.current_shop.shop_balance,customer_totalPrice = \
 						shop_follow.shop_balance,shop_province = self.current_shop.shop_province,shop_name=self.current_shop.shop_name)
 					self.session.add(balance_history)
+				self.session.flush()
+
+				#订单删除，CustomerSeckillGoods表对应的状态恢复为0,SeckillGoods表也做相应变化
+				fruits = eval(order.fruits)
+				charge_type_list = list(fruits.keys())
+				seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+				if seckill_goods:
+					seckill_goods_id = []
+					for item in seckill_goods:
+						seckill_goods_id.append(item.id)
+					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+										models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+					if customer_seckill_goods:
+						for item in customer_seckill_goods:
+							item.status = 0
+						self.session.flush()
+					if order.pay_type in [1,2]:
+						for item in seckill_goods:
+							item.storage_piece += 1
+							item.ordered -= 1
+						self.session.flush()
 				self.session.commit()
 
 			elif action == "print":
@@ -1975,7 +1996,10 @@ class Shelf(AdminBaseHandler):
 				self.session.commit()
 				return self.send_success()
 			elif action == "edit_active":
-				if fruit.active == 1:
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if fruit.active == 1 and fruit.activity_status not in [-2,0]:
+					return self.send_fail("当前商品正在参加"+activity_name[fruit.activity_status]+"活动，不能下架哦！")
+				elif fruit.active == 1:
 					fruit.update(session=self.session, active = 2)
 				elif fruit.active == 2:
 					fruit.update(session=self.session, active = 1)
@@ -2542,7 +2566,10 @@ class Goods(AdminBaseHandler):
 				return self.send_success()
 			# 编辑商品上/下架
 			elif action == "edit_active":
-				if goods.active == 1:
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if goods.active == 1 and goods.activity_status not in [-2,0]:
+					return self.send_fail("当前商品正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
+				elif goods.active == 1:
 					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
 					goods.update(session=self.session, active = 1)
@@ -2679,6 +2706,9 @@ class Goods(AdminBaseHandler):
 				goods.img_url = ''
 				self.session.commit()
 			elif action == "delete_goods":
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if goods.activity_status not in [-2,0]:
+					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能删除哦！")
 				time_now = datetime.datetime.now()
 				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
@@ -2708,6 +2738,9 @@ class Goods(AdminBaseHandler):
 				if action == 'batch_on':
 					goods.active = 1
 				elif action == 'batch_off':
+					activity_name = {1:'秒杀',2:'限时折扣'}
+					if goods.activity_status not in [-2,0]:
+						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
 					goods.active = 2
 				elif action == 'batch_group':
 					group_id = int(data["group_id"])
@@ -5681,6 +5714,7 @@ class MarketingSeckill(AdminBaseHandler):
 		current_shop=self.current_shop
 		current_customer_id=self.current_user.id
 		self.update_seckill()
+		self.updatediscount()
 		if action == "seckill_new":
 			data_array = self.args["data"]
 			activity_data = data_array[0]
@@ -5699,7 +5733,6 @@ class MarketingSeckill(AdminBaseHandler):
 			self.session.add(seckill_activity)
 			self.session.flush()
 			insert_activity_id = seckill_activity.id
-			self.session.commit()
 
 			activity_id = insert_activity_id
 
@@ -5753,7 +5786,8 @@ class MarketingSeckill(AdminBaseHandler):
 				cur_fruit.activity_status = 1
 				self.session.flush()
 
-				self.session.commit()
+			self.session.commit()
+
 		elif action == 'seckill_on':
 			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
 			query.seckill_active = 1
@@ -5773,6 +5807,15 @@ class MarketingSeckill(AdminBaseHandler):
 			for item in activity_query:
 				activity_list.append(item[0])
 
+			for item in activity_list:
+				seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item,models.SeckillGoods.status != 0).all()
+				if seckill_goods_query:
+					seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
+					killing_fruit_list = self.session.query(models.Fruit).fliter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+					for e in killing_fruit_list:
+						e.activity_status = 0
+			self.session.flush()
+
 			fruit_list = self.session.query(models.Fruit).join(models.SeckillGoods,models.SeckillGoods.fruit_id == models.Fruit.id).filter(models.SeckillGoods.activity_id.in_(activity_list)).with_lockmode('update').all()
 			for item in fruit_list:
 				item.activity_status = 0
@@ -5785,6 +5828,7 @@ class MarketingSeckill(AdminBaseHandler):
 			charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
 			for e in charge_type_query:
 				e.activity_type = -1
+			self.session.flush()
 
 			query_list = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).with_lockmode("update").all()
 			for item in query_list:
@@ -5991,6 +6035,7 @@ class MarketingSeckill(AdminBaseHandler):
 			status = self.args['status']
 			seckill_activity = self.session.query(models.SeckillActivity).filter_by(id=activity_id).with_lockmode("update").first()
 			seckill_activity.activity_status = -1
+			self.session.flush()
 
 			fruit_stop_list = []
 			fruit_query = self.session.query(models.SeckillGoods.fruit_id).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
@@ -6001,6 +6046,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for item in fruit_stop_query:
 				item.activity_status = 0
 				item.seckill_charge_type = 0
+			self.session.flush()
 
 			seckill_goods_list = []
 			query_list = self.session.query(models.SeckillGoods.seckill_charge_type_id).filter_by(activity_id=activity_id).all();
@@ -6009,6 +6055,15 @@ class MarketingSeckill(AdminBaseHandler):
 			charge_type_query = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(seckill_goods_list)).with_lockmode('update').all()
 			for e in charge_type_query:
 				e.activity_type = -1
+			self.session.flush()
+
+			seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
+			if seckill_goods_query:
+				seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
+				killing_fruit_list = self.session.query(models.Fruit).fliter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+				for e in killing_fruit_list:
+					e.activity_status = 0
+				self.session.flush()
 
 			self.session.commit()
 
@@ -6028,6 +6083,13 @@ class MarketingSeckill(AdminBaseHandler):
 			choose_continue_time = int(data['choose_continue_time'])
 			choose_end_time = choose_start_time + choose_continue_time
 			choose_fruit_id = int(data['choose_fruit_id'])
+			goods_name = data['goods_name']
+
+			cur_fruit_activity_status = self.session.query(models.Fruit).filter_by(id = choose_fruit_id).first()
+			if cur_fruit_activity_status:
+				cur_fruit_activity_status = cur_fruit_activity_status.activity_status
+				if cur_fruit_activity_status != 0:
+					return send_fail(goods_name + '已经参与其他活动，请选择其他商品！')
 
 			activity_query = self.session.query(models.SeckillActivity.start_time,models.SeckillActivity.end_time,models.SeckillActivity.id).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()
 			cur_activity_list = []
