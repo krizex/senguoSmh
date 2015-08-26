@@ -35,7 +35,7 @@
             <span class="pull-right imore"></span>
             <i class="pull-left"></i>
             <span class="pull-left confess-text">秒杀活动<span class="font12 text-grey ml6">{{seckill_text}}</span></span>
-            <span class="confess-circle circle bg-pink text-white hidden">10</span>
+            <span class="confess-circle circle bg-pink text-white {% if seckill_count == 0 %}hidden{% end %}">{{seckill_count}}</span>
         </a>
     </li>
     {% end %}
@@ -70,9 +70,9 @@
 {% end %}
 {% block bottom %}
 <script type="text/javascript">
-var confess = parseInt($('.confess-circle').text());
-if(confess != 0){
-	$('.confess-circle').removeClass('hidden');
-}
+    var confess = parseInt($('.confess-circle').text());
+    if(confess != 0){
+    	$('.confess-circle').removeClass('hidden');
+    }
 </script>
 {% end %}

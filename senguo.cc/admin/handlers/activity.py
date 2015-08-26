@@ -830,7 +830,7 @@ class Seckill(CustomerBaseHandler):
 			else:
 				cur_charge_type_num = cur_charge_type.num
 			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
-			goods_item['price_dif'] = goods.former_price - goods.seckill_price
+			goods_item['price_dif'] = round(float(goods.former_price - goods.seckill_price),2)
 			goods_item['activity_piece'] = goods.activity_piece
 			output_data.append(goods_item)
 
@@ -844,7 +844,7 @@ class Discount(CustomerBaseHandler):
 		current_shop_id=self.get_cookie("market_shop_id")
 		shop=self.session.query(models.Shop).filter_by(id=current_shop_id).first()
 		current_customer_id=self.current_user.id
-		self.updatediscount(current_customer_id)
+		self.updatediscount()
 		action=self.args["action"]
 		if action=="detail":
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=1).all()
@@ -867,7 +867,8 @@ class Discount(CustomerBaseHandler):
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
 								if charge.active==1:
-									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									charge_storage=int(each_frut.storage/charge.relate)
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
@@ -886,7 +887,8 @@ class Discount(CustomerBaseHandler):
 						for each_frut in fruit:
 							for charge in each_frut.charge_types:
 								if charge.active==1:
-									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+									charge_storage=int(each_frut.storage/charge.relate)
+									x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
@@ -902,10 +904,13 @@ class Discount(CustomerBaseHandler):
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
 						charge_type=eval(y.charge_type)
-						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id in charge_type).all()
+						print(charge_type)
+						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type)).all()
+						print(ChargeType)
 						for charge in ChargeType:
 							if charge.active==1:
-								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"num":charge.num,"unit_num":charge.unit_num}
+								charge_storage=int(fruit.storage/charge.relate)
+								x_charge={"charge_id":charge.id,"charge":str(charge.price)+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage}
 								chargesingle.append(x_charge)
 						if fruit.img_url:
 							img_url = fruit.img_url.split(';')[0]
@@ -919,7 +924,13 @@ class Discount(CustomerBaseHandler):
 						data.append(data0)
 				if if_all==1:
 					break
-			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data)
+			print(data)
+			q=self.session.query(models.Cart).filter_by(shop_id=current_shop_id).first()
+			fruits={}
+			if q:
+				fruits=eval(q.fruits)
+			return self.render("seckill/discount.html",shop_code=shop_code,output_data=data,context=dict(fruits=fruits))
+
 		elif action=="add_in_cart":
 			pass
 		elif action=="add_in_order":
