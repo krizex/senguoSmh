@@ -1405,7 +1405,7 @@ class Market(CustomerBaseHandler):
 				charge_types= []
 				has_discount_activity=0  #标记该商品是否参与限时折扣
 				for charge_type in fruit.charge_types:
-					if charge_type.active !=0 and charge_type.activity_type == 0:
+					if charge_type.active !=0 and charge_type.activity_type in [0,-2,2]:
 						unit  = charge_type.unit
 						unit =self.getUnit(unit)
 
@@ -1429,7 +1429,7 @@ class Market(CustomerBaseHandler):
 						q_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods=fruit.id).first()
 						q_discount=[]
 						if q_query:
-							q_discount=eval(q_query.charge_type)
+							q_discount=q_query.charge_type
 						has_discount_activity1=0
 						discount_rate=None
 						if charge_type in q_discount:
@@ -1514,7 +1514,7 @@ class Market(CustomerBaseHandler):
 					data_item1['storage'] = seckill_info.activity_piece
 					data.append(data_item1)
 				if charge_types:
-					if has_discount_activity1==1:
+					if has_discount_activity==1:
 						data_item2['is_activity'] = 2
 					else:
 						data_item2['is_activity'] = 0
@@ -1523,9 +1523,10 @@ class Market(CustomerBaseHandler):
 					data_item2['saled'] = saled
 					data_item2['favour'] = fruit.favour
 					data_item2['limit_num'] = fruit.limit_num
+					if has_discount_activity==1:
+						print(data_item2)
 					data.append(data_item2)
 				##
-
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
