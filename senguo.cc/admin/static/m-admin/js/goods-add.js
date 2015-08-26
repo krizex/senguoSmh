@@ -10,7 +10,8 @@ $(document).ready(function(){
         $(".wrap-mark-set").children(".mark-choose").eq(tag_index-1).addClass("active");
         new QRCode($("#big-code2")[0],{
             width : 300,
-            height : 300
+            height : 300,
+            colorDark : "#433943"
         }).makeCode( $("#shop_url").html());
     }
 

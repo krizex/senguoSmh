@@ -258,15 +258,18 @@ class Realtime(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
-		if self.current_shop.orders:
-			order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
-				not_(models.Order.status.in_([-1,0]))).count()
-			new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
-			follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
-			new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
-			on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
-			if new_order_sum < 0:
-				new_order_sum = 0
+		try:
+			if self.current_shop.orders:
+				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
+					not_(models.Order.status.in_([-1,0]))).count()
+				new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+				follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
+				new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
+				on_num = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).filter_by(type=1,status=1).count()
+				if new_order_sum < 0:
+					new_order_sum = 0
+		except:
+			order_sum,new_order_sum,follower_sum,new_follower_sum,on_num = 0,0,0,0,0
 		return self.send_success(new_order_sum=new_order_sum, order_sum=order_sum,new_follower_sum=new_follower_sum,
 			follower_sum=follower_sum,on_num=on_num)
 
@@ -387,7 +390,10 @@ class SellStatic(AdminBaseHandler):
 		shop_charge_type_fruit_dict = {}
 		shop_charge_type_list = []
 		for item in shop_fruit_id_name_list:
-			charge_type_id = self.session.query(models.ChargeType.id).filter(models.ChargeType.fruit_id == item[0]).all()[0][0]
+			try:
+				charge_type_id = self.session.query(models.ChargeType.id).filter(models.ChargeType.fruit_id == item[0]).all()[0][0]
+			except:
+				charge_type_id = None
 			shop_charge_type_fruit_dict[str(charge_type_id)] = [item[0],item[1]]
 			shop_charge_type_list.append(charge_type_id)
 			shop_all_fruit[str(item[0])] = item[1]
@@ -1264,7 +1270,10 @@ class FollowerStatic(AdminBaseHandler):
 				filter_by(shop_id=self.current_shop.id).\
 				order_by(models.CustomerShopFollow.create_time).first()
 			if first_follower:
-				page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+				try:
+					page_sum = (datetime.datetime.now() - first_follower.create_time).days//15 + 1
+				except:
+					page_sum = 0
 			else:
 				page_sum = 0
 			return self.send_success(page_sum=page_sum, data=data)
@@ -1387,8 +1396,12 @@ class Order(AdminBaseHandler):
 			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
 			count = self._count()
 			atonce = count[11]
+			if not self.current_shop:
+				atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
+				return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
+			
 			msg_num = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
-				models.Order.status == 6).count() - self.current_shop.old_msg
+					models.Order.status == 6).count() - self.current_shop.old_msg
 			is_balance = self.current_shop.is_balance
 			staff_sum = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id).count()
 			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -3098,6 +3111,10 @@ class Follower(AdminBaseHandler):
 				customers = self.session.query(models.Customer).join(models.CustomerShopFollow).\
 						filter(models.CustomerShopFollow.shop_id == self.current_shop.id).\
 						join(models.Accountinfo).filter(models.Accountinfo.id == int(wd)).all()
+				count = 1
+
+			elif action == "orderuser":
+				return self.render("admin/user-manage.html",context=dict(subpage='user'))
 			else:
 				return self.send_error(404)
 			for x in range(0, len(customers)):  #
@@ -3277,7 +3294,7 @@ class Staff(AdminBaseHandler):
 # 订单搜索
 class SearchOrder(AdminBaseHandler):  # 用户历史订单
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action", "id:int","page?:int")
+	@AdminBaseHandler.check_arguments("action", "id?:int","page?:int","wd?:str")
 	def get(self):
 		self.if_current_shops()
 		action = self.args["action"]
@@ -3301,8 +3318,11 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 					models.Order.SH2_id==self.args['id'], models.Order.shop_id==self.current_shop.id,\
 					not_(models.Order.status.in_([-1,0]))).all()
 			elif action == 'order':
-				orders = self.session.query(models.Order).filter(
-					models.Order.num==self.args['id'], models.Order.shop_id==self.current_shop.id).all()
+				wd=self.args['wd']
+				orders = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id)\
+				.filter(or_(models.Order.num.like("%%%s%%" % wd),
+					models.Order.receiver.like("%%%s%%" % wd),
+					models.Order.phone.like("%%%s%%" % wd))).order_by(models.Order.send_time.desc()).all()
 			else:
 				return self.send_error(404)
 			delta = datetime.timedelta(1)
@@ -3484,6 +3504,12 @@ class Config(AdminBaseHandler):
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
+			try:
+				if_admin = self.session.query(models.ShopAdmin).filter_by(id=_id).first()
+			except:
+				if_admin = None
+			if if_admin:
+				return self.send_fail('该用户已是森果的卖家，不能添加其为管理员')
 			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
 			if if_shop:
 				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')

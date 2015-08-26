@@ -247,8 +247,11 @@ function addActive(target,id){
     }
 }
 function orderSearch(){
-    var order_num=Int($('.search-con').val());
-    var url='/admin/searchorder?action=order&&id='+order_num;
+    var order_num=$('.search-con').val();
+    if($.trim(order_num)==""){
+        return Tip("请输入订单编号，收货人姓名或收货人电话");
+    }
+    var url='/admin/searchorder?action=order&&wd='+order_num;
     window.open(url);
 }
 

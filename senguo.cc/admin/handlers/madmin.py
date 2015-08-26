@@ -80,8 +80,8 @@ class Home(AdminBaseHandler):
 class Shop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		if self.is_pc_browser()==True:
-			return self.redirect(self.reverse_url("adminHome"))
+		# if self.is_pc_browser()==True:
+		#	return self.redirect(self.reverse_url("adminHome"))
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()

@@ -72,59 +72,77 @@ session = models.DBSession()
 #         i = i+1
 #         print("Processing [",i,"/",total,"] => Insert Self Period Success, shop_id:",shop.id)
 
-# 插入余额记录店铺省份
-def balancehistory_province():
-	print("Start Inserting Province into Database balancehistory...")
-	balance_history = session.query(models.BalanceHistory).filter(models.BalanceHistory != None).all()
-	total = len(balance_history)
-	i = 0
-	for item in balance_history:
-		if not item.shop_name:
-			shop_id = item.shop_id
-			shop = session.query(models.Shop).filter_by(id=shop_id).first()
-			if shop:
-#				item.shop_province = shop.shop_province
-				item.shop_name     = shop.shop_name
-			i = i+1
-			print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
-	session.commit()
+# # 插入余额记录店铺省份
+# def balancehistory_province():
+# 	print("Start Inserting Province into Database balancehistory...")
+# 	balance_history = session.query(models.BalanceHistory).filter(models.BalanceHistory != None).all()
+# 	total = len(balance_history)
+# 	i = 0
+# 	for item in balance_history:
+# 		if not item.shop_name:
+# 			shop_id = item.shop_id
+# 			shop = session.query(models.Shop).filter_by(id=shop_id).first()
+# 			if shop:
+# #				item.shop_province = shop.shop_province
+# 				item.shop_name     = shop.shop_name
+# 			i = i+1
+# 			print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
+# 	session.commit()
 
-# 插入提现申请店铺省份
-def applycash_province():
-	print("Start Inserting Province into Database applycash...")
-	apply_history = session.query(models.ApplyCashHistory).all()
-	total = len(apply_history)
-	i = 0
-	for item in apply_history:
-		shop_id = item.shop_id
-		shop = session.query(models.Shop).filter_by(id=shop_id).first()
-		if shop:
-			item.shop_province = shop.shop_province
-		i = i+1
-		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
-	session.commit()
+# # 插入提现申请店铺省份
+# def applycash_province():
+# 	print("Start Inserting Province into Database applycash...")
+# 	apply_history = session.query(models.ApplyCashHistory).all()
+# 	total = len(apply_history)
+# 	i = 0
+# 	for item in apply_history:
+# 		shop_id = item.shop_id
+# 		shop = session.query(models.Shop).filter_by(id=shop_id).first()
+# 		if shop:
+# 			item.shop_province = shop.shop_province
+# 		i = i+1
+# 		print("Processing [",i,"/",total,"] => Insert Province Success, shop_province:",item.shop_province)
+# 	session.commit()
 
-# 添加店铺默认自提地址
-def setShopSelfAddress():
-	print("Start Inserting Self Address to Database...")
-	shops = session.query(models.Shop).all()
-	total = len(shops)
-	i = 0
-	for shop in shops:
-		try:
-			self_shop_address = session.query(models.SelfAddress).filter_by(config_id=shop.config.id,lat=shop.lat,lon=shop.lon).first()
-		except:
-			self_shop_address = None
-		if self_shop_address:
-			if self_shop_address.active == 0:
-				self_shop_address.active = 1
-			self_shop_address.if_default=2
-		else:
-			session.add(models.SelfAddress(config_id=shop.config.id, if_default=2,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
-		session.commit()
-		i = i+1
-		print("Processing [",i,"/",total,"] => Insert Self Address Success, shop_id:",shop.id)
+# # 添加店铺默认自提地址
+# def setShopSelfAddress():
+# 	print("Start Inserting Self Address to Database...")
+# 	shops = session.query(models.Shop).all()
+# 	total = len(shops)
+# 	i = 0
+# 	for shop in shops:
+# 		try:
+# 			self_shop_address = session.query(models.SelfAddress).filter_by(config_id=shop.config.id,lat=shop.lat,lon=shop.lon).first()
+# 		except:
+# 			self_shop_address = None
+# 		if self_shop_address:
+# 			if self_shop_address.active == 0:
+# 				self_shop_address.active = 1
+# 			self_shop_address.if_default=2
+# 		else:
+# 			session.add(models.SelfAddress(config_id=shop.config.id, if_default=2,address=shop.shop_address_detail,lat=shop.lat,lon=shop.lon))
+# 		session.commit()
+# 		i = i+1
+# 		print("Processing [",i,"/",total,"] => Insert Self Address Success, shop_id:",shop.id)
 
-g = multiprocessing.Process(name='setShopSelfAddress',target=balancehistory_province)
+# def getsomeshop():
+	# f=open("goods_info_yy.txt","r")
+	# datalist = json.loads(f.read())
+	# for key in datalist:
+	# 	data=datalist[key]
+	# 	name =data.get("name","").split(" ")[0][:10]
+	# 	#1872 1874
+	# 	new_good = models.Fruit(shop_id = 1872 , fruit_type_id = 999,name = name,
+	# 	storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("detail",""),intro=data.get("name",""))
+	# 	new_good.charge_types.append(models.ChargeType(price = 0,unit = 3,num = 1,market_price = None))
+	# 	new_good2 = models.Fruit(shop_id = 1874 , fruit_type_id = 999,name = name,
+	# 	storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("detail",""),intro=data.get("name",""))
+	# 	new_good2.charge_types.append(models.ChargeType(price = 0,unit = 3,num = 1,market_price = None))
+	# 	session.add(new_good)
+	# 	session.add(new_good2)
+	# session.commit()
+	# return self.send_success()
+
+g = multiprocessing.Process(name='getsomeshop',target=getsomeshop)
 g.start()
 g.join()

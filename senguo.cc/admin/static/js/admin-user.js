@@ -21,7 +21,12 @@ $(document).ready(function(){
         }
     });
     //导航active样式
-    getItem("all","time",1,0);
+    if($.getUrlParam("action")=="orderuser"){
+        getItem("filter","time",1,0,$.getUrlParam("wd"));
+    }else{
+        getItem("all","time",1,0);
+    }
+    
 }).on('click','.history-order',function(){
     // var $this=$(this);
     // window.open($this.attr('href'));

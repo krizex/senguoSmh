@@ -42,7 +42,7 @@ $(document).ready(function(){
     var geetest_challenge = $('.geetest_challenge').val();
     var geetest_validate = $('.geetest_validate').val();
     var geetest_seccode = $('.geetest_seccode').val();
-    alert(geetest_challenge,geetest_validate,geetest_seccode);
+    // alert(geetest_challenge,geetest_validate,geetest_seccode);
     if(tel == "" || name == "" || code == ""){
         return Tip("姓名、手机号及验证码都不能为空");
     }
