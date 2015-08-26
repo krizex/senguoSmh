@@ -526,7 +526,7 @@ class GlobalBaseHandler(BaseHandler):
 
 			charge_types = []
 			for charge in d.charge_types:
-				if charge.active !=0 and charge.activity_type == 0:
+				if charge.active !=0 and charge.activity_type in [-2,0]:
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
@@ -1677,6 +1677,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 						d[charge_type_id] =  int(d[charge_type_id])  -1
 				else:return
 			elif inc == 0:#删除
+				print("$$$$$",activity_type)
 				if charge_type_id in d.keys(): del d[charge_type_id]
 				if activity_type == 1:
 					seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type_id).with_lockmode('update').first()
@@ -1688,6 +1689,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					seckill_goods_id = seckill_goods.id
 					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
 					customer_seckill_goods.status = 0
+					print("@@@@@@@@@",customer_seckill_goods.status)
 					self.session.flush()
 
 			else:return

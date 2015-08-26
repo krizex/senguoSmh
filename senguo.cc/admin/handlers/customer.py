@@ -1436,7 +1436,8 @@ class Market(CustomerBaseHandler):
 							discount_rate=q_discount.discount_rate
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
-							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity})
+							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity,\
+							'activity_type':charge_type.activity_type})
 
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
@@ -1490,7 +1491,7 @@ class Market(CustomerBaseHandler):
 						data_item1['is_bought'] = 0
 
 					seckill_charge_type_id = fruit_charge_type[str(fruit_id)]
-					charge_types = [e for e in charge_types if e['id'] != seckill_charge_type_id]
+					charge_types = [e for e in charge_types if e['id'] != seckill_charge_type_id and e['activity_type'] == 0]
 					seckill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
 								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
 					data_item1['is_activity'] = 1
@@ -1685,7 +1686,6 @@ class Market(CustomerBaseHandler):
 			self.session.add(models.Cart(id=self.current_user.id,shop_id=shop_id))  # 如果没有购物车，就增加一个
 			self.session.commit()
 			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
-
 		if 'seckill_goods_ids' in self.args:
 			seckill_goods_ids = self.args['seckill_goods_ids']
 			if seckill_goods_ids:
@@ -1718,6 +1718,7 @@ class Market(CustomerBaseHandler):
 			activity_type = self.args['activity_type']
 		else:
 			activity_type = 0
+
 		self.save_cart(charge_type_id, self.shop_id, action,activity_type)
 		return self.send_success()
 
@@ -1871,6 +1872,7 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
+
 		# print("[CustomerCart]json.dumps(self.args):",json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
 		online_type = ''
@@ -1896,6 +1898,21 @@ class Cart(CustomerBaseHandler):
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
 		if len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
+
+		# added by jyj 2015-8-26
+		#fruits 为一个字典，形式：{'12647': 2, '12667': 6},表示计价方式和数量的键值对字典；
+		#设置一个overdue变量，初始化为0，然后遍历fruits列表的计价方式判断有没有商品的活动过期，如果有商品的活动过则置overdue为1,直接self.send_success(overdue=overdue)
+		# 前台根据overdue的值重定向到当前购物车页面，并给用户发出提示，刷新购物车页面，重新进行处理。
+		overdue = 0
+		charge_type_id_list = list(fruits.keys())
+		self.update_seckill()
+		charge_type_list = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type_id_list)).all()
+		for item in charge_type_list:
+			if item.activity_type == -1:
+				overdue = 1
+				return self.send_success(overdue=overdue)
+		##		
+
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
@@ -2207,7 +2224,7 @@ class Cart(CustomerBaseHandler):
 			else:
 				print("[CustomerCart]online_type error")
 			# print("[CustomerCart]online_type:",online_type,', success_url:',success_url)
-			return self.send_success(success_url=success_url,order_id = order.id)
+			return self.send_success(success_url=success_url,order_id = order.id,overdue=overdue)
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')

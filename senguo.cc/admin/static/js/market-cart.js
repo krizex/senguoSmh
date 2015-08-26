@@ -577,7 +577,6 @@ var getPrice=function(){
         }
         var price=parent.find('.item_price').text();
         var total=mathFloat(num*price);
-        console.log('@###',num,price,total);
         $this.text(total);
         _price_list.push(total);
     });
@@ -871,6 +870,9 @@ function orderSubmit(target){
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
+            var overdue = res.overdue;
+            console.log("@@@",overdue);
+            debugger;
             if(res.notice){
                 noticeBox(res.notice);
             }
