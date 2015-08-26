@@ -386,37 +386,22 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                 '<span class="{{if is_activity!=1 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
-                                '{{if is_activity==1 }}'+
+                                '{{if is_activity==1 && activity_piece>0 }}'+
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                     '<span class="price-bo">{{charge_type_text}}</span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box wrap-seckill-price">'+
-                                        '<span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}">抢!</span>'+
+                                        '<span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}">抢!</span>'+
                                         '<span class="seckill-btn seckill-btn-yes {{if is_bought==0}}hidden{{/if}}">已抢</span>'+
                                     '</span>'+
                                 '</li>'+
-                                '{{/if}}'+
-                                '{{if is_activity==2 }}'+
-                                    '<li class="border-color set-w100-fle charge-item" data-id="555" data-relate="1" data-buy="1" data-allow="1">'+
-                                        '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
-                                        '<span class="price-bo">10元/kg</span><span class="price-tip"><span class="price-dif">9</span>折</span>'+
-                                        '</span>'+
-                                        '<span class="forbid_click pull-right num_box">'+
-                                            '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
-                                            '<span class="pull-right p0 number-change hidden forbid_click">'+
-                                            '<button class="minus-plus pull-right number-plus bg_change"></button>'+
-                                            '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
-                                            '<button class="minus-plus pull-right number-minus bg_change"></button>'+
-                                            '</span>'+
-                                        '</span>'+
-                                    '</li>'+
                                 '{{/if}}'+
                                 '{{each charge_types as key}}'+
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow="{{key["allow_num"]}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                         '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
-                                        '<span class="price-tip"><span class="price-dif">{{key["discount_rate"]}}</span>折</span>'+
+                                        '<span class="price-tip {{if key["has_discount_activity"]==0 }}hidden{{/if}}"><span class="price-dif">{{key["discount_rate"]}}</span>折</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box">'+
                                         '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
@@ -464,6 +449,9 @@ var fruitItem=function(box,fruits,type){
     var ori_img='';
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
+    if(is_activity==1 && activity_piece==0 && charge_types==0){
+        storage=0;
+    }
     if(favour_today=='true'){
         heart='red-heart';
     }else{

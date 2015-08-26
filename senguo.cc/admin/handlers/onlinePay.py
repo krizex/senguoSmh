@@ -228,8 +228,29 @@ class OnlineWxPay(CustomerBaseHandler):
 				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
 				shop_province=shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
+			self.session.flush()
 			# print("[WeixinPay]balance_history:",balance_history)
+
+			#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
+			fruits = eval(order.fruits)
+			charge_type_list = list(fruits.keys())
+			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+			if seckill_goods:
+				seckill_goods_id = []
+				for item in seckill_goods:
+					seckill_goods_id.append(item.id)
+				customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+				if customer_seckill_goods:
+					for item in customer_seckill_goods:
+						item.status = 2
+					self.session.flush()
+				for item in seckill_goods:
+					item.storage_piece -= 1
+					item.ordered += 1
+				self.session.flush()
 			self.session.commit()
+
 
 			# 发送订单模版消息给管理员/自动打印订单
 			self.send_admin_message(self.session,order)
@@ -522,7 +543,28 @@ class OnlineAliPay(CustomerBaseHandler):
 			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no,
 			shop_province = shop.shop_province,shop_name=shop.shop_name)
 		self.session.add(balance_history)
+		self.session.flush()
 		# print("[AliPay]balance_history:",balance_history)
+
+		#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
+		fruits = eval(order.fruits)
+		charge_type_list = list(fruits.keys())
+		seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+		if seckill_goods:
+			seckill_goods_id = []
+			for item in seckill_goods:
+				seckill_goods_id.append(item.id)
+			customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+								models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+			if customer_seckill_goods:
+				for item in customer_seckill_goods:
+					item.status = 2
+				self.session.flush()
+			for item in seckill_goods:
+				item.storage_piece -= 1
+				item.ordered += 1
+			self.session.flush()
+			
 		self.session.commit()
 
 		# 发送订单模版消息给管理员/自动打印订单

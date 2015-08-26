@@ -545,7 +545,8 @@ function createSeckill(action){
 		var data = {
 			choose_start_time:choose_start_time,
 			choose_continue_time:choose_continue_time,
-			choose_fruit_id:choose_fruit_id
+			choose_fruit_id:choose_fruit_id,
+			goods_name:goods_name
 		};
 		var args = {
 			data:data,
@@ -558,7 +559,6 @@ function createSeckill(action){
 		$.postJson(url,args,function(res){
 			if(res.success){
 				var flag = res.flag;
-				console.log(flag,typeof flag);
 				if (flag == 0){
 					stop_flag = true;
 					Tip(goods_name + '已经参与所选时间段内的其他秒杀活动，请选择其他商品！');

@@ -1436,7 +1436,7 @@ class ChargeType(MapBase, _CommonApi):
 	select_num = Column(Integer, default=1) #6.4
 	relate = Column(Float, default=1) # 库存换算关系
 
-	activity_type = activity_type = Column(TINYINT,default=0) # -2 限时折扣活动结束 -1:某种活动结束或停用后，其中商品的计价方式;0:正常计价方式，未参与任何活动;1:秒杀活动商品计价方式;2:限时折扣活动商品计价方式
+	activity_type = activity_type = Column(TINYINT,default=0) # -2 限时折扣活动结束; -1:秒杀活动结束或停用后，其中商品的计价方式;0:正常计价方式，未参与任何活动;1:秒杀活动商品计价方式;2:限时折扣活动商品计价方式
 	
 	fruit = relationship("Fruit", uselist=False)
 
@@ -1957,7 +1957,7 @@ class DiscountShop(MapBase, _CommonApi):
 	inner_id=Column(Integer) # 每一批限时折扣的商品id 用于使用在编辑界面的时候
 	shop_id=Column(Integer)
 	use_goods_group=Column(Integer,default=-2) #商品分组
-	use_goods=Column(Integer,default=-1) #商品名称
+	use_goods=Column(Integer,default=-1) #商品id
 	charge_type=Column(String(128)) #原价的价格类型
 	discount_rate=Column(Float) #折扣率
 	incart_num=Column(Integer,default=0) 
