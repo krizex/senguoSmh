@@ -3499,7 +3499,7 @@ class Config(AdminBaseHandler):
 			except:
 				if_admin = None
 			if if_admin:
-				return self.send_fail('该用户已森果的卖家，不能添加其为管理员')
+				return self.send_fail('该用户已是森果的卖家，不能添加其为管理员')
 			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
 			if if_shop:
 				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
