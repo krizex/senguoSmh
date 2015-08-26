@@ -91,11 +91,16 @@ $(document).ready(function(){
     }
 }).on('click','.notice-item',function(){
         //公告详情
-        var $this=$(this);
+    var $this=$(this);
+    if($this.attr("data-url")){
+        var url = $this.attr("data-url");
+        window.location.href=url;
+    }else{
         var detail=$this.find('.notice-detail').val();
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
+    }
 }).on('click','.goods-list-item',function(e){
     var $this=$(this);
     var storage=Number($this.attr('data-num'));
