@@ -56,8 +56,8 @@
                 </div>
             </div>
             <div class="content text-grey">
-                <p data-id="deliveryTime">配送时间：<span class="send_date"></span><span class="send_time">{{order.send_time}}</span></p>
-                <p class="delivery-address"><em class="area-icon set-inl-blo pull-right"></em>配送地址：<span>{{order.address_text}}</span></p>
+                <p data-id="deliveryTime">{% if order.type ==3 %}自提{% else %}配送{% end %}时间：<span class="send_date"></span><span class="send_time">{{order.send_time}}</span></p>
+                <p class="delivery-address"><em class="area-icon set-inl-blo pull-right"></em>{% if order.type ==3 %}自提{% else %}配送{% end %}地址：<span>{{order.address_text}}</span></p>
                 <p>
                     收货人：
                     <span>{{order.receiver}}</span>
