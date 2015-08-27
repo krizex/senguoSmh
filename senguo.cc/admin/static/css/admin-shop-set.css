@@ -107,7 +107,7 @@
 .bind-btn{color: #0081c2;font-size: 14px;}
 .wrap-img{position: relative;}
 /*支付方式*/
-.edit-box{background-color: #f4f5f9;padding: 15px 20px;margin-top: 30px;}
+.edit-box{background-color: #f4f5f9;padding: 15px 20px;margin-top:20px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
 .edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
 .edit-box .work-mode{text-indent:28px;}

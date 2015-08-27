@@ -1372,6 +1372,13 @@ class Comment(AdminBaseHandler):
 
 		return self.send_success()
 
+# 消息与评价
+class CommentSet(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		self.if_current_shops()
+		return self.render("admin/comment-set.html",context=dict(subpage='comment'))
+
 # 订单管理
 class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
@@ -3607,6 +3614,9 @@ class Config(AdminBaseHandler):
 			self.current_shop.config.wireless_print_key = key
 			self.current_shop.config.wireless_type = _type
 			self.session.commit()
+		elif action == "comment_active":
+			self.current_shop.config.comment_active = 0 if self.current_shop.config.comment_active == 1 else 1
+			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -4811,6 +4821,8 @@ class WirelessPrint(AdminBaseHandler):
 			totalPrice = str(order.totalPrice)
 			pay_type = order.pay_type
 			receipt_msg = self.current_shop.config.receipt_msg
+			_ordertype = order.type
+			_order_type = ""
 			if not receipt_msg:
 				receipt_msg = ""
 			if not message:
@@ -4821,6 +4833,10 @@ class WirelessPrint(AdminBaseHandler):
 				_type = "余额支付"
 			elif pay_type == 3:
 				_type = "在线支付"
+			if _ordertype == 3:
+				_order_type = "自提"
+			else:
+				_order_type = "配送"
 			i=1
 			fruit_list = []
 			fruits = sorted(fruits.items(), key=lambda d:d[0])
@@ -4835,8 +4851,8 @@ class WirelessPrint(AdminBaseHandler):
 						"下单时间："+order_time+"\r\n"+\
 						"顾客姓名："+receiver+"\r\n"+\
 						"顾客电话："+phone+"\r\n"+\
-						"配送时间："+send_time+"\r\n"+\
-						"配送地址："+address+"\r\n"+\
+						""+_order_type+"时间："+send_time+"\r\n"+\
+						""+_order_type+"地址："+address+"\r\n"+\
 						"买家留言："+message+"\r\n"+\
 						"------------------------------------------------\r\n"+\
 						"@@2             商品清单\r\n"+\
@@ -4880,8 +4896,8 @@ class WirelessPrint(AdminBaseHandler):
 							"下单时间："+order_time+"\n"+\
 							"顾客姓名："+receiver+"\n"+\
 							"顾客电话："+phone+"\n"+\
-							"配送时间："+send_time+"\n"+\
-							"配送地址："+address+"\n"+\
+							""+_order_type+"时间："+send_time+"\n"+\
+							""+_order_type+"地址："+address+"\n"+\
 							"买家留言："+message+"\n"+\
 							"-------------------------\n"+\
 							"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\

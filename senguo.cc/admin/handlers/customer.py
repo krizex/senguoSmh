@@ -967,6 +967,10 @@ class Comment(CustomerBaseHandler):
 		send_speed = 0
 		shop_service = 0
 		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		try:
+			comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop_id).first()[0]
+		except:
+			comment_active = 0
 		if orders:
 			q = self.session.query(func.avg(models.Order.commodity_quality),\
 				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
@@ -992,7 +996,7 @@ class Comment(CustomerBaseHandler):
 			if len(date_list)<page_size:
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
-				shop_service = shop_service,commodity_quality=commodity_quality)
+				shop_service = shop_service,commodity_quality=commodity_quality,comment_active=comment_active)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 # 店铺 - 评价详情

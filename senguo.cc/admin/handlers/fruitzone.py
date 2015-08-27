@@ -126,6 +126,10 @@ class ShopList(FruitzoneBaseHandler):
 					shop.comment_count = comment_count
 					shop.goods_count = fruit_count
 					shop.address = self.code_to_text("city",shop.shop_city)+shop.shop_address_detail
+					try:
+						shop.comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop.id).first()[0]
+					except:
+						shop.comment_active = 0
 					shops.append(shop.safe_props())
 		# print("[ShopList]len(shops):",len(shops))
 		return shops

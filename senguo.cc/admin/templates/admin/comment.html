@@ -10,6 +10,9 @@
             <li class="active">
                 <a href="{{reverse_url('adminComment')}}?action=all&&page=0">所有评价</a>
             </li>
+            <li>
+                <a href="{{reverse_url('adminCommentSet')}}">订单评价</a>
+            </li>
         </ul>
     </div>
     {% if len(comments) != 0 %}

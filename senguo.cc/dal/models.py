@@ -1569,6 +1569,7 @@ class Config(MapBase, _CommonApi):
 	self_end_time = Column(Integer,default = 0) #自提下单截止时间 7.30
 	self_addresses = relationship("SelfAddress")
 
+	comment_active = Column(Integer,default = 1) #0:comment off 1:comment on
 
 #自提地址 7.30 max10
 class SelfAddress(MapBase,_CommonApi):
