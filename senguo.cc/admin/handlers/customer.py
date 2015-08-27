@@ -2703,6 +2703,10 @@ class OrderComment(CustomerBaseHandler):
 		token = self.get_qiniu_token("order",self.current_user.id)
 		orderid=self.args["orderid"]
 		order = next((x for x in self.current_user.orders if x.id == int(orderid)), None)
+		try:
+			comment_active = self.session.query(models.Config.comment_active).filter_by(id=order.shop_id).first()[0]
+		except:
+			comment_active = 0
 		shop_id = order.shop_id
 		if order is None:
 			return self.send_fail("订单为空")
@@ -2713,7 +2717,8 @@ class OrderComment(CustomerBaseHandler):
 		else:
 			imgurls = None
 			length = 0
-		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length)
+		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length,\
+			comment_active=comment_active)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated

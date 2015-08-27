@@ -2,18 +2,27 @@
 {% block title %}消息与评价{% end %}
 {% block head %}
 <link rel="stylesheet" href="/static/css/baguetteBox.css"/>
-<link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>{% end %}
+<link rel="stylesheet" href="{{static_url('css/admin-comment.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-shop-set.css')}}"/>
+{% end %}
 {% block content %}
     <span class="right-title">消息与评价</span>
     <div class="subnav-box">
         <ul class="subnav pull-left">
             <li class="active">
-                <a href="{{reverse_url('adminComment')}}?action=all&&page=0">所有评价</a>
-            </li>
-            <li>
-                <a href="{{reverse_url('adminCommentSet')}}">订单评价</a>
+                <a href="{{reverse_url('adminComment')}}?action=all&&page=0">订单评价</a>
             </li>
         </ul>
+    </div>
+     <div class="edit-box bg-greyf9 group">
+        <div class="mode action-mode comment_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.config.comment_active}}">
+            <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+            <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+        </div>
+        <div class="wrap-pay-txt">
+            <p class="grey-txt3 mt10 f12">已开启订单评价，商城店铺页面会显示店铺满意度、评价数，并展示用户对于订单的评价以及店家的回复。</p>
+            <p class="grey-txt3 mt10 f12">若关闭此功能，商城将不能显示用户的评论情况以及店铺满意度与订单评价相关的数据。</p>
+        </div>
     </div>
     {% if len(comments) != 0 %}
         <ul class="mt10 clearfix">
@@ -145,4 +154,5 @@
 {% block bottom %}
 <script src="/static/js/third/baguetteBox.min.js"></script>
 <script src="{{static_url('js/admin-comment.js')}}"></script>
+<script src="{{static_url('js/admin-set.js')}}"></script>
 {% end %}
