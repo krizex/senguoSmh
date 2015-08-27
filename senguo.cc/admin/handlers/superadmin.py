@@ -156,7 +156,7 @@ class ShopManage(SuperBaseHandler):
 			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2).count()
 			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1).count()
 			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3).count()
-			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count() - output_data_count["status_4_count"]
 
 			output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
 			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
@@ -175,7 +175,7 @@ class ShopManage(SuperBaseHandler):
 			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2,models.Shop.shop_province==shop_province).count()
 			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1,models.Shop.shop_province==shop_province).count()
 			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3,models.Shop.shop_province==shop_province).count()
-			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0,models.Shop.shop_province==shop_province).count() - output_data_count["status_4_count"]
 
 			output_data_count["auth_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
 			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4]),models.Shop.shop_province==shop_province).count()
