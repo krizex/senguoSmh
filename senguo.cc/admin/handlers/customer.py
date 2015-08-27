@@ -1042,8 +1042,10 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @get_unblock
+	@CustomerBaseHandler.check_arguments("code?")
 	def get(self, shop_code):
 		# print('[CustomerMarket]login in')
+		code = self.args.get('code',None)
 		w_follow = True
 		# fruits=''
 		# page_size = 10
@@ -1067,7 +1069,13 @@ class Market(CustomerBaseHandler):
 			#生成wx_openid
 			if self.is_wexin_browser():
 				print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
-				wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
+				if len(code) == 0:
+					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
+					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
+					return self.redirect(url)
+				else:
+					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
+				# wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
 				print(wx_openid,appid,appsecret)
 				if wx_openid:
 					#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
@@ -1089,10 +1097,10 @@ class Market(CustomerBaseHandler):
 
 		# self.current_shop = shop
 		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
-		try:
-			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
-		except NoResultFound:
-			return self.write('您访问的店铺不存在')
+		# try:
+		# 	shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		# except NoResultFound:
+		# 	return self.write('您访问的店铺不存在')
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
