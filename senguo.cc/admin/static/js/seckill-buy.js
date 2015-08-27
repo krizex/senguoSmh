@@ -113,6 +113,7 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
+    $(this).closest("li").attr("is_bought","1");
     seckill_goods_ids.push(s_goods_id);
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
