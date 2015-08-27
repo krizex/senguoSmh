@@ -1758,7 +1758,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 			if not cur_activity_list:
 				flag = True
 			else:
-				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list,models.SeckillGoods.status != 0)).all()
+				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list),models.SeckillGoods.status != 0).all()
 				for item in fruit_query:
 					if item.fruit_id == fruit_id:
 						flag = False

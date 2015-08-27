@@ -1977,22 +1977,22 @@ class Cart(CustomerBaseHandler):
 		self.update_seckill()
 
 		charge_type_list = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type_id_list)).all()
+		
 		for item in charge_type_list:
+			##添加判断是否期间有商品过期
 			if item.activity_type == -1:
+				overdue = 1
+				return self.send_success(overdue=overdue)
+			elif item.id in discount_ids:
 				overdue = 1
 				return self.send_success(overdue=overdue)
 
 		seckill_charge_type_list = []
-		killing_goods_list = []
-		for item in charge_type_list:
-			##添加判断是否期间有商品过期
+		for item in charge_type_list:	
 			if item.activity_type == 1:
 				seckill_charge_type_list.append(item.id)
-				return self.send_success(overdue=overdue)
-			elif item.activity_type==-2 and item.id in discount_ids:
-				overdue==1
-				return self.send_success(overdue=overdue)
 
+		killing_goods_list = []
 		if seckill_charge_type_list:
 			killing_goods_list = self.session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
 									filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.status != 0,models.SeckillGoods.seckill_charge_type_id.in_(seckill_charge_type_list)).\
@@ -2284,6 +2284,7 @@ class Cart(CustomerBaseHandler):
 							 )
 
 		if killing_goods_list and self.args['pay_type'] != 3:
+			print("#$$$$$$$$$$$$$$$$$$$$$$$$")
 			killing_goods_id_list = [x.id for x in killing_goods_list]
 
 			customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == shop_id,models.CustomerSeckillGoods.customer_id == self.current_user.id,\
@@ -2296,6 +2297,7 @@ class Cart(CustomerBaseHandler):
 				item.ordered += 1
 				item.storage_piece -= 1
 			self.session.flush()
+			print("#$$$$$$$$$$$$$$$$$$$$$$$$")
 		try:
 			self.session.add(order)
 			self.session.flush()

@@ -5302,7 +5302,7 @@ class Discount(AdminBaseHandler):
 					q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1).all()
 					for m in q_all:
 						if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
-							return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
+							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 				elif x["use_goods"]==-1:
 					q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2).all()
@@ -5312,7 +5312,7 @@ class Discount(AdminBaseHandler):
 					q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x["use_goods_group"]).all()
 					for m in q_all:
 						if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
-							return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
+							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 				else:
 					q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"]).filter(models.DiscountShop.status<2).all()
@@ -5320,7 +5320,7 @@ class Discount(AdminBaseHandler):
 					if can_choose==1:
 						return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
 					if not self.judge_seckill(current_shop_id,x["use_goods"],discount_way,start_date,end_date,f_time,t_time,weeks):
-						return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
+						return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 
 			# 向数据库中插入数据
@@ -5993,6 +5993,8 @@ class MarketingSeckill(AdminBaseHandler):
 						activity_item['goods_list'] += split_list[i] + ';'
 					activity_item['goods_list'] += split_list[len(split_list)-1]
 
+				activity_item['shop_code'] = current_shop.shop_code
+
 				output_data.append(activity_item)
 
 			return self.send_success(output_data = output_data,page_sum=page_sum)
@@ -6171,10 +6173,10 @@ class MarketingSeckill(AdminBaseHandler):
 			if cur_fruit_activity_status:
 				cur_fruit_activity_status = cur_fruit_activity_status.activity_status
 				if cur_fruit_activity_status != 0:
-					return send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
+					return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			if not self.judge_discount(choose_fruit_id,choose_start_time,choose_end_time):
-				return send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
+				return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			activity_query = self.session.query(models.SeckillActivity.start_time,models.SeckillActivity.end_time,models.SeckillActivity.id).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()
 			cur_activity_list = []

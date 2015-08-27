@@ -796,13 +796,13 @@ function getActivityItem(action,status,page,cutover){
                                                                                               		'</div>'+
                                                                                               		'<p class="er-text">活动链接</p>'+
                                                                                               		'<div class="wrap-ipt">'+
-		                                                                                                     '<input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/seckill/czneau?activity_id={{activity_id}}" disabled="">'+
+		                                                                                                     '<input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}" disabled="">'+
 		                                                                                                     '<input type="button" class="sw-link-copy" value="复制链接">'+
                                                                                               		'</div>'+
                                                                                               		'<div class="wrap-er group">'+
 		                                                                                                     '<img class="er-logo" src="/static/images/favicon.ico" alt="">'+
 		                                                                                                     '<div class="er-text lh80 fl">链接二维码</div>'+
-		                                                                                                     '<div class="er-img fl er-code-img" title="http://zone.senguo.cc:8887/seckill/czneau?activity_id={{activity_id}}"></div>'+
+		                                                                                                     '<div class="er-img fl er-code-img" title="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}"></div>'+
                                                                                               		'</div>'+
                                                                                        	'</div>'
 	                                                                        +'</td>'
@@ -825,13 +825,13 @@ function getActivityItem(action,status,page,cutover){
                                                                                               		'</div>'+
                                                                                               		'<p class="er-text">活动链接</p>'+
                                                                                               		'<div class="wrap-ipt">'+
-		                                                                                                     '<input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/seckill/czneau?activity_id={{activity_id}}" disabled="">'+
+		                                                                                                     '<input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}" disabled="">'+
 		                                                                                                     '<input type="button" class="sw-link-copy" value="复制链接">'+
                                                                                               		'</div>'+
                                                                                               		'<div class="wrap-er group">'+
 		                                                                                                     '<img class="er-logo" src="/static/images/favicon.ico" alt="">'+
 		                                                                                                     '<div class="er-text lh80 fl">链接二维码</div>'+
-		                                                                                                     '<div class="er-img fl er-code-img" title="http://zone.senguo.cc:8887/seckill/czneau?activity_id={{activity_id}}"></div>'+
+		                                                                                                     '<div class="er-img fl er-code-img" title="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}"></div>'+
                                                                                               		'</div>'+
                                                                                        	'</div>'
 	                                                                        +'</td>'
@@ -869,6 +869,7 @@ function getActivityItem(action,status,page,cutover){
                                                           var goods_list = data['goods_list'];
                                                           var picked = data['picked'];
                                                           var ordered = data['ordered'];
+                                                          var shop_code = data['shop_code'];
 
                                                           var list_item =render({
 		           	 		activity_id:activity_id,
@@ -876,7 +877,8 @@ function getActivityItem(action,status,page,cutover){
 		           	 		continue_time:continue_time,
 		           	 		goods_list:goods_list,
 		           	 		picked:picked,
-		           	 		ordered:ordered
+		           	 		ordered:ordered,
+		           	 		shop_code:shop_code
 		        		});
 
 		        		$('.seckill-list').append(list_item);
