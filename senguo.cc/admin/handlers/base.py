@@ -175,12 +175,24 @@ class GlobalBaseHandler(BaseHandler):
 				self.session.flush()
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
 			for y in qq:
-				# 更新chargetype 的状态值
+				# 更新chargetype 的状态值 和fruit的值
 				charge_types=eval(y.charge_type)
 				for charge in charge_types:
 					q_charge=self.session.query(models.ChargeType).filter_by(id=charge).with_lockmode('update').first()
 					if status==2:
-						q_charge.activity_type=-2
+						q_charge.activity_type=0
+					elif status==1:
+						q_charge.activity_type=2
+					q_fruit=self.session.query(models.Fruit).filter_by(id=q_charge.fruit_id).with_lockmode('update').first()
+					if q_fruit.activity_status==2:
+						q_all_charge=self.session.query(models.ChargeType).filter_by(fruit_id=q_fruit.id).all()
+						no_discount=0
+						for m in q_all_charge:
+							if m.activity_type==2:
+								no_discount=1
+								break
+						if no_discount==0:
+							q_fruit.activity_status=0
 				self.session.flush()
 				if y.status!=3:
 					y.update(self.session,status=status)
@@ -339,6 +351,98 @@ class GlobalBaseHandler(BaseHandler):
 				self.session.flush()
 		self.session.commit()
 		return None
+
+
+	#判断限时折扣和秒杀是否重复的的函数
+	def judge_discount(self,fruit_id,start_date,end_date):
+		current_shop_id=self.current_shop.id
+		now_date=int(time.time())
+		tmp_fruit=self.session.query(models.Fruit).filter_by(id=fruit_id).first()
+		begin=int(time.strftime('%w',time.localtime(start_date)))
+		end=int(time.strftime('%w',time.localtime(end_date)))
+		if begin==0:
+			begin=7
+		can_choose=True
+		ygroup=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).filter(models.DiscountShop.status<2).all()
+		for x in ygroup:
+			ygoods=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id).filter(models.DiscountShop.status<2).all()
+			for y in ygoods:
+				if y.use_goods_group==-2:
+					if x.discount_way==0:
+						if start_date<x.start_date and end_date>=x.start_date:
+							can_choose=False
+							break
+						elif start_date>=x.start_date and start_date<=x.end_date:
+							can_choose=False
+							break
+					else:
+						begin=int(time.strftime('%w',time.localtime(start_date)))
+						end=int(time.strftime('%w',time.localtime(end_date)))
+						if begin==0:
+							begin=7
+						if now_date>=start_date:
+							if end_date-now_date>=7*24*3600:
+								can_choose=False
+								break
+							else:
+								begin=int(time.strftime('%w',time.localtime(now_date)))
+								if begin==0:
+									begin=7
+								for week in eval(x.weeks):
+									if week>=begin and week<=end:
+										#在具体周几的时候时间也要进行判断
+										begin_time=int(start_date%(24*3600))+8*3600
+										end_time=int(end_date%(24*3600))+8*3600
+										if end==begin:	
+											if begin_time<x.f_time and end_time>=x.t_time:
+												can_choose=False
+												break
+											elif begin_time>=x.f_time and begin_time<=x.t_time:
+												can_choose=False
+												break
+										else:
+											if week==begin:
+												if begin_time<=f_time:
+													can_choose=False
+													break
+											elif week==end:
+												if end_time>=t_time:
+													can_choose=False
+													break
+											else:
+												can_choose=False
+												break
+						else:
+							if end_date-start_date>=7*24*3600:
+								can_choose=False
+							else:
+								if end==0:
+									end=7
+								for week in weeks:
+									if week>=begin and week<=end:
+										#在具体的周几的时间也要进行判断
+										begin_time=int(start_date%(24*3600))+8*3600
+										end_time=int(end_date%(24*3600))+8*3600
+										if end==begin:	
+											if begin_time<x.f_time and end_time>=x.t_time:
+												can_choose=False
+												break
+											elif begin_time>=x.f_time and begin_time<=x.t_time:
+												can_choose=False
+												break
+										else:
+											if week==begin:
+												if begin_time<=f_time:
+													can_choose=False
+													break
+											elif week==end:
+												if end_time>=t_time:
+													can_choose=False
+													break
+											else:
+												can_choose=False
+												break
+		return can_choose
 
 	# 数字代号转换为文字描述
 	def code_to_text(self, column_name, code):
@@ -1634,6 +1738,63 @@ class AdminBaseHandler(_AccountBaseHandler):
 			return None
 		return result["response"]
 
+	# 秒杀商品和限时折扣商品的去重问题：同一时间段内同一商品不能参加不同的活动，也不能参加同一种活动在同一时间段内的不同场次。
+	# 因为限时折扣涉及到周期性活动的问题，所以去重比较复杂。
+	# 在全局基类中为秒杀活动和限时折扣活动分别写judge_seckill和judge_discount方法，其他活动可以调用这两个方法判断其他活动将要新建的商品是否在这两个活动里面
+	# 参数分析：其中time_way表示参数时间的形式，time_way=0表示参数时间为start_time和end_time，是非周期时间，此时忽略f_time,t_time,weeks三个参数；
+	# 若time_way=1则表示参数时间为f_time和t_time以及weeks,这为周期时间，此时忽略start_time和end_time两个参数。其中weeks为一个整型列表，元素为代表周几的整数(取值1-7),
+	# f_time表示每天的开始时间（是一个整型的秒数，介于0到24小时之间）,t_time表示每天的结束时间（是一个整型的秒数，介于0到24小时之间）
+	# 返回值：True(传入参数fruit_id对应的商品和当前已经建立的秒杀活动时间上无冲突);False(传入参数fruit_id对应的商品和当前已经建立的秒杀活动时间上有冲突)
+	# 参数基本形式如下：
+	def judge_seckill(self,shop_id,fruit_id,time_way,start_time,end_time,f_time,t_time,weeks):
+		activity_query = self.session.query(models.SeckillActivity.start_time,models.SeckillActivity.end_time,models.SeckillActivity.id).\
+						filter(models.SeckillActivity.shop_id == shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()
+		flag = True
+		if time_way == 0:
+			cur_activity_list = []
+			for item in activity_query:
+				if (item[0] > start_time and item[0] < end_time) or (item[1] > start_time and item[1] < end_time) or (item[0] < start_time and item[1] > end_time):
+					cur_activity_list.append(item[2])
+			if not cur_activity_list:
+				flag = True
+			else:
+				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list,models.SeckillGoods.status != 0)).all()
+				for item in fruit_query:
+					if item.fruit_id == fruit_id:
+						flag = False
+						break
+		elif time_way == 1:
+			cur_activity_list = []
+			for item in activity_query:
+				s_time = item[0]
+				e_time = item[1]
+				start_week_num = self.get_week_num(s_time)
+				end_week_num = self.get_week_num(e_time)
+				if start_week_num in weeks or end_week_num in weeks:
+					if (s_time > f_time and s_time < t_time) or (e_time > f_time and e_time < t_time) or (s_time < f_time and e_time > t_time):
+						fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item[2],models.SeckillGoods.status != 0).all()
+						for fruit in fruit_query:
+							if fruit.fruit_id == fruit_id:
+								flag = False
+								break
+						if not flag:
+							break
+				else:
+					continue
+		else:
+			error_text = 'Parameters Error!'
+			return error_text
+		return flag
+
+	# 输入：一个整型时间戳
+	# 输出：1-7(表示周一到周期)
+	def get_week_num(timestamp):
+		x = time.localtime(timestamp);
+		week_num = int(time.strftime('%w',x))
+		if week_num == 0:
+			week_num = 7
+		return week_num
+
 # 配送员端基类方法
 class StaffBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopStaff
@@ -1706,10 +1867,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				tmp_charge=self.session.query(models.ChargeType).filter_by(id=charge_type_id).first()
 				q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
 				if q_goods:
-					q_goods.incart_num+=1
-					q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
-					q_group.incart_num+=1
-					self.session.flush()
+					if charge_type_id in eval(q_goods.charge_type):
+						q_goods.incart_num+=1
+						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
+						q_group.incart_num+=1
+						self.session.flush()
 			elif inc == 1:#减1
 				if charge_type_id in d.keys():
 					if int(d[charge_type_id]) == 1:
@@ -1720,10 +1882,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					tmp_charge=self.session.query(models.ChargeType).filter_by(id=charge_type_id).first()
 					q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
 					if q_goods:
-						q_goods.incart_num-=1
-						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
-						q_group.incart_num-=1
-						self.session.flush()
+						if charge_type_id in eval(q_goods.charge_type):
+							q_goods.incart_num-=1
+							q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
+							q_group.incart_num-=1
+							self.session.flush()
 				else:return
 			elif inc == 0:#删除
 				to_delete_num=d[charge_type_id]  # 限时折扣需要删除的数量
@@ -1745,11 +1908,11 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					tmp_charge=self.session.query(models.ChargeType).filter_by(id=charge_type_id).first()
 					q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
 					if q_goods:
-
-						q_goods.incart_num-=to_delete_num
-						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
-						q_group.incart_num-=to_delete_num
-						self.session.flush()
+						if charge_type_id in eval(q_goods.charge_type):
+							q_goods.incart_num-=to_delete_num
+							q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
+							q_group.incart_num-=to_delete_num
+							self.session.flush()
 
 			else:return
 			setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）

@@ -1957,7 +1957,7 @@ class DiscountShop(MapBase, _CommonApi):
 	inner_id=Column(Integer) # 每一批限时折扣的商品id 用于使用在编辑界面的时候
 	shop_id=Column(Integer)
 	use_goods_group=Column(Integer,default=-2) #商品分组
-	use_goods=Column(Integer,default=-1) #商品名称
+	use_goods=Column(Integer,default=-1) #商品id
 	charge_type=Column(String(128)) #原价的价格类型
 	discount_rate=Column(Float) #折扣率
 	incart_num=Column(Integer,default=0) 
