@@ -134,6 +134,7 @@ function searchOrder(id){
                         var show='hide';
                         var hide='show';
                         var tel_show='hide';
+                        var online_type=data['online_type'];
 
                         if(data['SH2']){
                             var staff_img=data['SH2']['headimgurl'];
@@ -150,6 +151,11 @@ function searchOrder(id){
                             pay_type = "余额支付";
                         }else{
                             pay_type = "在线支付";
+                            if(online_type=="wx"){
+                                pay_type = "在线支付-微信";
+                            }else if(online_type=="alipay"){
+                                pay_type = "在线支付-支付宝";
+                            }
                         }
                          switch (order_status){
                             case -1:

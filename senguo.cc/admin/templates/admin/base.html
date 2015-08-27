@@ -18,10 +18,18 @@
 <body>
 {% set current_shop = handler.current_shop %}
 {% set _shop_auth = current_shop.shop_auth %}
-{% set num=0 %}
+{% set num1=0 %}
+{% set num2=0 %}
+{% set num3=0 %}
 {% for order in current_shop.orders %}
     {% if order.type==1 and order.status==1 %}
-    {% set num=num+1%}
+    {% set num1=num1+1%}
+    {% end %}
+    {% if order.type==2 and order.status==1 %}
+    {% set num2=num2+1%}
+    {% end %}
+    {% if order.type==3 and order.status==1 %}
+    {% set num3=num3+1%}
     {% end %}
 {% end %}
 <header class="backstage-header header-fix">
@@ -42,13 +50,33 @@
                         <span>0</span>
                     </a>
                 </li>-->
+                {% if current_shop.config.now_on == True %}
                 <li class="active send-now line50">
                     <a href="{{reverse_url('adminOrder')}}?order_type=1">
                         <i class="send-img height50 pull-left"></i>
                         立即送
-                        <span class="on_sum" id="on_sum">{{num}}</span>
+                        <span class="on_sum" id="on_sum">{{num1}}</span>
                     </a>
                 </li>
+                {% end %}
+                {% if current_shop.config.ontime_on == True %}
+                <li class="active send-now line50">
+                    <a href="{{reverse_url('adminOrder')}}?order_type=2">
+                        <!-- <i class="send-img height50 pull-left"></i> -->
+                        按时达
+                        <span class="on_sum">{{num2}}</span>
+                    </a>
+                </li>
+                {% end %}
+                {% if current_shop.config.self_on == 1 %}
+                <li class="active send-now line50">
+                    <a href="{{reverse_url('adminOrder')}}?order_type=3">
+                       <!--  <i class="send-img height50 pull-left"></i> -->
+                        自提
+                        <span class="on_sum">{{num3}}</span>
+                    </a>
+                </li>
+                {% end %}
                 <!--<li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="message-img height50 pull-left"></i>

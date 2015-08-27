@@ -1,14 +1,12 @@
 var type = 0,goods_list = null;
 $(document).ready(function () {
-    $('.action-btn').each(function () {
-        var $this = $(this);
-        var status = $this.data('status');
-        if (status == 1) {
-            $this.addClass('bg-pink').text('停用');
-        }
-        else {
-            $this.addClass('bg-green').text('启用');
-        }
+   $('.action-mode').each(function(){
+        var $this=$(this);
+        var status=$this.data('status');
+        if(status==1)
+            $this.find('.work-mode').show();
+        else $this.find('.stop-mode').show();
+
     });
     goods_list=eval($("#goods").val());
     if($("#coupon_detail").size()>0){//详情
@@ -108,14 +106,14 @@ $(document).ready(function () {
                     else{
                          $("#coupon_hidden").addClass("hidden");
                     }
-                    $this.attr("data-flag", "off");
-                    if (status == 1) {
-                        $this.attr({'data-status': 0}).addClass('bg-green').removeClass('bg-pink').text('启用');
-                        $(".coupon-show-txt").children("span").html('停用');
+                    $this.attr("data-flag","on");
+                    if(status==1){
+                        $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                        $(".coupon-status").text("停用");
                     }
-                    else if (status == 0) {
-                        $this.attr({'data-status': 1}).removeClass('bg-green').addClass('bg-pink').text('停用');
-                        $(".coupon-show-txt").children("span").html('启用');
+                    else if(status == 0){
+                        $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                        $(".coupon-status").text("启用");
                     }
                 }
                 else {

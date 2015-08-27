@@ -57,9 +57,19 @@ class Home(StaffBaseHandler):
 	#    pass
 
 	@tornado.web.authenticated
+	@StaffBaseHandler.check_arguments("action?:str","shop?:int")
 	def get(self):
 		# print("[StaffHome]Shop ID:",self.shop_id)
-
+		if "action" in self.args and self.args["action"] =="home" and "shop" in self.args:
+			_shop_id=int(self.args["shop"])
+			self.shop_id = _shop_id
+			self.set_secure_cookie("staff_shop_id", str(_shop_id), domain=ROOT_HOST_NAME)
+			_shop = self.session.query(models.Shop.shop_code,models.Shop.shop_name).filter_by(id=_shop_id).first()
+			try:
+				self.shop_code = _shop[0]
+				self.shop_name = _shop[1]
+			except:
+				pass
 		try:
 			hirelink = self.session.query(models.HireLink).\
 				filter_by(staff_id=self.current_user.id, shop_id=self.shop_id).one()
@@ -112,14 +122,26 @@ class Home(StaffBaseHandler):
 
 class Order(StaffBaseHandler):
 	@tornado.web.authenticated
-	@StaffBaseHandler.check_arguments("order_type","day_type?")
+	@StaffBaseHandler.check_arguments("order_type","day_type?","shop?:int")
 	def get(self):
+		if "shop" in self.args:
+			_shop_id=int(self.args["shop"])
+			self.shop_id = _shop_id
+			self.set_secure_cookie("staff_shop_id", str(_shop_id), domain=ROOT_HOST_NAME)
+			_shop = self.session.query(models.Shop.shop_code,models.Shop.shop_name).filter_by(id=_shop_id).first()
+			try:
+				self.shop_code = _shop[0]
+				self.shop_name = _shop[1]
+			except:
+				pass
+
 		order_type = self.args["order_type"]
 		try:
 			hirelink = self.session.query(models.HireLink).\
 				filter_by(staff_id=self.current_user.id, shop_id=self.shop_id).one()
 		except:
 			return self.send_error(404)
+
 		work = hirelink.work
 		self.current_user.work = work #增加work属性
 		orders = []
@@ -171,6 +193,9 @@ class Order(StaffBaseHandler):
 		elif order_type == "history":
 			orders = history_orders
 			page = 'history'
+		elif order_type == "self":
+			orders = orders.filter_by(type=3).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.send_time).all()
+			page = 'self'
 		else:
 			return self.send_error(404)
 		if "day_type" in self.args:

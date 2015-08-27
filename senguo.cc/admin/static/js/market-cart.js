@@ -355,7 +355,7 @@ $(document).ready(function(){
         $(this).children("a").removeClass("checkboxed");
         $("#coupon-money").closest('.coupon-text').addClass("hidden");
         $(".coupon_cmoney").addClass("hidden");
-        $("#total_price").html($("#final_price").html());
+        $("#total_price").html(mathFloat($("#final_price").html()));
     }else{
         $(".coupon_type").find(".checkbox-btn").removeClass("checkboxed");
         $(".coupon_type li").removeClass("active").eq(index).addClass("active");
@@ -372,7 +372,7 @@ $(document).ready(function(){
         }else{
             smoney = parseFloat(last_money - money).toFixed(2);
         }
-        $("#total_price").html(smoney);
+        $("#total_price").html(mathFloat(smoney));
     }   
 });
 
@@ -574,9 +574,9 @@ var getPrice=function(){
         _price_list.push(total);
     });
     //商品价格总计
-    _total_price=totalPrice(_price_list);
-    $list_total_price.text(mathFloat(_total_price));
-    $final_price.text(mathFloat(_total_price)+mathFloat(freight));
+    _total_price=mathFloat(totalPrice(_price_list));
+    $list_total_price.text(_total_price);
+    $final_price.text(mathFloat(_total_price+freight));
 }
 
 function totalPrice(target){
