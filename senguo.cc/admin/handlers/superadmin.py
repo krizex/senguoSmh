@@ -374,7 +374,7 @@ class ShopManage(SuperBaseHandler):
 				data["order_count"] = shop.order_count
 				data["price_sum"] = shop.shop_property
 
-				#add 6.8am by jyj]
+				#add 6.8am by jyj
 				if shop.order_count == 0:
 					single_price = 0
 				else:
