@@ -1318,7 +1318,6 @@ class Market(CustomerBaseHandler):
 				notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
 		else:
 			notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
-		print(notices)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
@@ -1549,8 +1548,6 @@ class Market(CustomerBaseHandler):
 					data_item2['saled'] = saled
 					data_item2['favour'] = fruit.favour
 					data_item2['limit_num'] = fruit.limit_num
-					if has_discount_activity==1:
-						print(data_item2)
 					data.append(data_item2)
 				##
 			return data
@@ -2432,7 +2429,23 @@ class Cart(CustomerBaseHandler):
 				qq=session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
 				use_number=qq.use_number-1
 				qq.update(session,use_number=use_number)
-			session.commit()
+			session.flush()
+
+			#订单删除，CustomerSeckillGoods表对应的状态恢复为0
+			fruits = eval(order.fruits)
+			charge_type_list = list(fruits.keys())
+			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+			if seckill_goods:
+				seckill_goods_id = []
+				for item in seckill_goods:
+					seckill_goods_id.append(item.id)
+				customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+				if customer_seckill_goods:
+					for item in customer_seckill_goods:
+						item.status = 0
+					self.session.flush()
+			self.session.commit()
 			
 			print("[CustomerCart]Order auto cancel: order.num:",order.num)
 		#else:
