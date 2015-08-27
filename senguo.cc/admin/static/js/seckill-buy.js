@@ -210,7 +210,14 @@ function countTime(time,start_time,type,$obj){
             $(".seckill-ing").removeClass("hide");
             if($(".no-seckill-time").hasClass("hide")){
                 $(".seckill-btns").addClass("hide");
-                $(".seckill-btn").removeClass("hide");
+                $("#seckill_list").children("li").each(function(){
+                    var $this = $(this);
+                    if($(this).attr("is_bought")=="0"){
+                        $this.find(".seckill-btn").removeClass("hide");
+                    }else{
+                        $this.find(".seckill-btn-more").removeClass("hide");
+                    }
+                });
             }
         }else{
             $(".seckill-ing").addClass("hide");
