@@ -2,13 +2,18 @@
 {% block title%}优惠券{% end %}
 {% block setcontent %}
 {% if shop_code and shop_code!='not set' %}
-<div class="clearfix top-box">
-    <p class="c333 f14 coupon-show-txt">已<span>{%if coupon_active_cm==0 %}停用{% else %}启用{%end%}</span>优惠券<a href="javascript:;" class="ml10 f14 show-detail">查看详情</a></p>
-    <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
-    <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
-    <button class="btn text-white  action-btn coupon-active" data-status="{{coupon_active_cm}}" data-flag="on">{%if coupon_active_cm==0%}启用{%else%}停用{%end%}</button>
+<div class="edit-box bg-greyf9 group">
+    <div class="mode action-mode coupon-active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{coupon_active_cm}}">
+        <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+        <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+    </div>
+     <div class="wrap-pay-txt">
+        <p class="c333 f14 coupon-show-txt">已<span>{%if coupon_active_cm==0 %}停用{% else %}启用{%end%}</span>优惠券<a href="javascript:;" class="ml10 f14 show-detail">查看详情</a></p>
+        <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
+        <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
+    </div>
 </div>
-<div class="{%if coupon_active_cm==0%}hidden{%end%}" id="coupon_hidden">
+<div class="{%if coupon_active_cm==0%}hidden{%end%} mt10" id="coupon_hidden">
     {%if output_data==[] and data1==[] %}
     <div class="wrap-coupon-img txt-center">
         <img src="/static/images/coupon.jpg" alt="" width="238">
@@ -19,7 +24,7 @@
 {% else %}
 <div class="category-list">
     <div class="c999">优惠券<span class="c333"> / 优惠券管理</span></div>
-    <div class="subnav-box group mt20">
+    <div class="subnav-box group mt10">
         <ul class="subnav chinav pull-left furit-type">
             <li class="txt-center active" data-type="active"><a href="javascript:;">活动优惠券</a></li>
             <li class="txt-center" data-type="charge"><a href="javascript:;">充值优惠券</a></li>

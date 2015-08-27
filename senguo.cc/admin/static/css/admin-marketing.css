@@ -106,3 +106,11 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-newcoupon{font-size: 14px;}
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
+
+.edit-box{background-color: #f4f5f9;padding: 15px 20px;margin-top:20px;}
+.edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
+.edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
+.edit-box .work-mode{text-indent:28px;}
+.edit-box .work-mode .circle{right:2px;}
+.edit-box .stop-mode{text-indent:44px;}
+.edit-box .stop-mode .circle{left:2px;}
