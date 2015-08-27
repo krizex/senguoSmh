@@ -1647,7 +1647,7 @@ class Cart(CustomerBaseHandler):
 			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
 			now_date=int(time.time())
 			if now_date>q.uneffective_time:
-				return self.send_fail("下单失败，该优惠券已经过期！")
+				return self.send_fail("下单失败，您选择的优惠券已经过期")
 		if shop_status == 0:
 			return self.send_fail('该店铺已关闭，暂不能下单(っ´▽`)っ')
 		elif shop_status == 2:
@@ -1656,9 +1656,11 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
 		if not fruits:
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
-		if len(fruits) > 20:
+		elif len(fruits) < 1:
+			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
+		elif len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
@@ -1678,7 +1680,6 @@ class Cart(CustomerBaseHandler):
 				fruit=charge_type.fruit
 
 				# totalPrice
-				
 				if m_fruit_goods==[]:
 					m_fruit_group.append(fruit.group_id)
 					m_fruit_goods.append(fruit.id)
@@ -1696,10 +1697,7 @@ class Cart(CustomerBaseHandler):
 							m_price.append(singlemoney)
 							break
 
-
 				###使用优惠券
-
-
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
 
 				limit_num = charge_type.fruit.limit_num
@@ -2703,6 +2701,10 @@ class OrderComment(CustomerBaseHandler):
 		token = self.get_qiniu_token("order",self.current_user.id)
 		orderid=self.args["orderid"]
 		order = next((x for x in self.current_user.orders if x.id == int(orderid)), None)
+		try:
+			comment_active = self.session.query(models.Config.comment_active).filter_by(id=order.shop_id).first()[0]
+		except:
+			comment_active = 0
 		shop_id = order.shop_id
 		if order is None:
 			return self.send_fail("订单为空")
@@ -2713,7 +2715,8 @@ class OrderComment(CustomerBaseHandler):
 		else:
 			imgurls = None
 			length = 0
-		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length)
+		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length,\
+			comment_active=comment_active)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated

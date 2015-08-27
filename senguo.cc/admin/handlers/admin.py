@@ -1372,12 +1372,6 @@ class Comment(AdminBaseHandler):
 
 		return self.send_success()
 
-# 消息与评价
-class CommentSet(AdminBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		self.if_current_shops()
-		return self.render("admin/comment-set.html",context=dict(subpage='comment'))
 
 # 订单管理
 class Order(AdminBaseHandler):

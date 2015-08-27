@@ -733,10 +733,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		phone = order.phone
 		address = order.address_text
 		shop_name = order.shop.shop_name
+		order_shopid = order.shop_id
 		# 非自提订单发送配送员模版消息
-		if order_type != 3:
-			WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-				order_totalPrice,send_time,phone,address,)
+		# if order_type != 3:
+		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+			order_totalPrice,send_time,phone,address,order_shopid)
 		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
@@ -2010,7 +2011,7 @@ class WxOauth2:
 	# 新订单模版消息（发送给配送员）
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,phone,address,other_access_token = None):
+		order_totalPrice,send_time,phone,address,order_shopid,other_access_token = None):
 
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
@@ -2019,11 +2020,21 @@ class WxOauth2:
 			   + "送货地址：" + address  +'\n\n'\
 			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
-		order_type = "立即送" if order_type_temp == 1 else "按时达"
+		if order_type_temp == 1:
+			order_type = "立即送"
+			link_type = "now"
+		elif order_type_temp == 2:
+			order_type = "按时达"
+			link_type = "on_time"
+		else:
+			order_type = "自提"
+			link_type = "self"
+		link_url = staff_order_url +"/order?order_type="+link_type+"&shop="+str(order_shopid)
+		# print(link_url)
 		postdata = {
 			'touser':touser,
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-			'url':staff_order_url,
+			'url':link_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
