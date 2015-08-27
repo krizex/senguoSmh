@@ -1313,7 +1313,7 @@ class Order(MapBase, _CommonApi):
 	send_speed        = Column(Integer)
 	shop_service      = Column(Integer)
 
-	online_type       = Column(String(8))
+	online_type       = Column(String(8)) #wx alipay
 	send_admin_id =Column(Integer,default=0) #记录处理订单配送的管理员id #5.25
 	finish_admin_id =Column(Integer,default=0) #记录处理订单完成的管理员id #5.25
 

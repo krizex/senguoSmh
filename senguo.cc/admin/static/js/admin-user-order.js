@@ -316,6 +316,7 @@ function orderItem(page){
                     var nickname=data[i]['nickname'];
                     var customer_id=data[i]['customer_id'];
                     var _type=data[i]['type'];
+                    var online_type=data[i]['online_type'];
                     if(_type==3){
                         $item.find(".if_self").text("自提");
                     }
@@ -363,7 +364,12 @@ function orderItem(page){
                         $item.find('.price_edit').hide();
                     } 
                     else if(pay_type == 3){
-                        $item.find('.pay-status').text('在线支付'); 
+                        if(online_type=="wx"){
+                           $item.find('.pay-status').text('在线支付-微信');  
+                       }else if(online_type=="alipay"){
+                            $item.find('.pay-status').text('在线支付-支付宝');
+                       }
+                        
                         $item.find('.price_edit').hide();
                         if(status!=-1){$item.find('.delete-order').hide();}
                     }

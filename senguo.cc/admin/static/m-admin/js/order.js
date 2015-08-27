@@ -232,6 +232,7 @@ var getOrder=function(page,flag){
                     var hide='show';
                     var tel_show='hide';
                     var color="c999";
+                    var online_type=data[i]['online_type'];
 
                     if(data[i]['SH2']){
                         var staff_img=data[i]['SH2']['headimgurl'] || '/static/images/TDSG.png';
@@ -248,6 +249,11 @@ var getOrder=function(page,flag){
                         pay_type = "余额支付";
                     }else{
                         pay_type = "在线支付";
+                        if(online_type=="wx"){
+                            pay_type = "在线支付-微信";
+                        }else if(online_type=="alipay"){
+                            pay_type = "在线支付-支付宝";
+                        }
                     }
                     switch (order_status){
                         case -1:
