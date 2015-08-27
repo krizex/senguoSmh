@@ -2100,6 +2100,7 @@ class Goods(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
 	def get(self):
 		self.if_current_shops()
+		self.update_seckill()
 		action = self._action
 		_id = str(time.time())
 		current_shop = self.current_shop
@@ -2452,6 +2453,7 @@ class Goods(AdminBaseHandler):
 		current_shop = self.current_shop
 		shop_id = current_shop.id
 		self.updatediscount() # 刷新限时折扣数据库信息
+		self.update_seckill()
 		# 添加商品
 		if action == "add_goods":
 			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
@@ -5398,7 +5400,7 @@ class Discount(AdminBaseHandler):
 					q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1).all()
 					for m in q_all:
 						if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
-							return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
+							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 				elif x["use_goods"]==-1:
 					q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2).all()
@@ -5412,7 +5414,7 @@ class Discount(AdminBaseHandler):
 					q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x["use_goods_group"]).all()
 					for m in q_all:
 						if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
-							return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
+							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 				else:
 					q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2).all()
@@ -5433,7 +5435,9 @@ class Discount(AdminBaseHandler):
 								return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
 					
 					if not self.judge_seckill(current_shop_id,x["use_goods"],discount_way,start_date,end_date,f_time,t_time,weeks):
-						return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
+						return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
+
+
 			# 向数据库中插入数据
 			discount_id=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).count()+1
 			new_discount=models.DiscountShopGroup(shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,weeks=str(weeks),\
@@ -5776,7 +5780,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type == 0).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
@@ -5867,7 +5871,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type == 0).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
@@ -6138,6 +6142,8 @@ class MarketingSeckill(AdminBaseHandler):
 					for i in range(0,len(split_list)-1):
 						activity_item['goods_list'] += split_list[i] + ';'
 					activity_item['goods_list'] += split_list[len(split_list)-1]
+
+				activity_item['shop_code'] = current_shop.shop_code
 
 				output_data.append(activity_item)
 

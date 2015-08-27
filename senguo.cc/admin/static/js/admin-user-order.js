@@ -441,7 +441,13 @@ function orderItem(page){
                         g_num++;
                         var $goods=$($goods_item);
                         $goods.find('.code').text(g_num);
-                        $goods.find('.goods-name').text(fruits[key]['fruit_name']);
+
+                        var activity_name = "";
+                        if (fruits[key]['activity_name']){
+                                activity_name = '（' +  fruits[key]['activity_name'] + '）';
+                        }
+
+                        $goods.find('.goods-name').text(activity_name + fruits[key]['fruit_name']);
                         $goods.find('.goods-price').text(fruits[key]['charge']);
                         $goods.find('.goods-number').text(fruits[key]['num']);
                         $item.find('.goods-list').append($goods);

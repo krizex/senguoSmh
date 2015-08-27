@@ -412,7 +412,7 @@ function getinfo(){
             }
             if(tmp_goods["use_goods"]==use_goods&&tmp_goods["use_goods_group"]==use_goods_group){
                 var kk=k+1;
-                return Tip("商品"+i+"的商品"+kk+"的商品有冲突");
+                return Tip("商品"+i+"和商品"+kk+"的商品有冲突");
             }
         }
         discount_good={"use_goods_group":use_goods_group,"use_goods":use_goods,"charges":charges,"discount_rate":discount_rate};
@@ -446,9 +446,9 @@ function adddiscount(){
         function(res){
             if(res.success){
                 Tip('新建限时折扣成功!');
-                // setTimeout(function(){
-                //     window.location.href="/admin/discount?action=discount";
-                // },1500);
+                setTimeout(function(){
+                    window.location.href="/admin/discount?action=discount";
+                },1500);
             }else{
                 Tip(res.error_text);
             }

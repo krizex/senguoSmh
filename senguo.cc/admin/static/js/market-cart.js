@@ -889,6 +889,7 @@ function orderSubmit(target){
                 setTimeout(function(){
                     window.location.reload(true);
                 },1200);
+                return false;
             }
             if(res.notice){
                 noticeBox(res.notice);

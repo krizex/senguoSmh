@@ -1318,7 +1318,6 @@ class Market(CustomerBaseHandler):
 				notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
 		else:
 			notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
-		print(notices)
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
@@ -1549,8 +1548,6 @@ class Market(CustomerBaseHandler):
 					data_item2['saled'] = saled
 					data_item2['favour'] = fruit.favour
 					data_item2['limit_num'] = fruit.limit_num
-					if has_discount_activity==1:
-						print(data_item2)
 					data.append(data_item2)
 				##
 			return data
@@ -1721,18 +1718,21 @@ class Market(CustomerBaseHandler):
 				for seckill_goods_id in seckill_goods_ids:
 					query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
 					if query:
-						query.status = 1
-						self.session.flush()
+						if query.status == 0:
+							seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+							seckill_goods.not_pick -= 1
+							seckill_goods.picked += 1
+							self.session.flush()
+							query.status = 1
+							self.session.flush()
 					else:
 						customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
 						self.session.add(customer_seckill_goods)
+						seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+						seckill_goods.not_pick -= 1
+						seckill_goods.picked += 1
 						self.session.flush()
 
-					seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
-					seckill_goods.not_pick -= 1
-					seckill_goods.picked += 1
-					self.session.flush()
-		
 		#筛选初当前进行的限时折扣
 		m_fruits=eval(cart.fruits)
 		fruits2 = {}
@@ -2007,26 +2007,31 @@ class Cart(CustomerBaseHandler):
 		self.update_seckill()
 
 		charge_type_list = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type_id_list)).all()
+		
 		for item in charge_type_list:
+			##添加判断是否期间有商品过期
 			if item.activity_type == -1:
 				overdue = 1
 				return self.send_success(overdue=overdue)
-
+			elif item.activity_type != 2 and item.id in discount_ids:
+				overdue = 1
+				return self.send_success(overdue=overdue)
+		
 		seckill_charge_type_list = []
-		killing_goods_list = []
-		for item in charge_type_list:
-			##添加判断是否期间有商品过期
+		for item in charge_type_list:	
 			if item.activity_type == 1:
 				seckill_charge_type_list.append(item.id)
-				return self.send_success(overdue=overdue)
-			elif item.activity_type!=2 and item.id in discount_ids:
-				overdue==1
-				return self.send_success(overdue=overdue)
 
+		killing_goods_list = []
 		if seckill_charge_type_list:
 			killing_goods_list = self.session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
 									filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.status != 0,models.SeckillGoods.seckill_charge_type_id.in_(seckill_charge_type_list)).\
 									with_lockmode('update').all()
+
+		#为order表新增字段activity_type，类型为键值对字符串，键是计价方式，值是计价方式对应的活动名称，用于存储该订单中每种计价方式id对应的水果参与的活动名称
+		# 如果值为空字符串，则表示未参与任何活动；如果值为非空，则表示参与了值字符串所表示的活动。
+		activity_name = {0:'',1:'秒杀',2:'折扣'}
+
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
@@ -2074,7 +2079,6 @@ class Cart(CustomerBaseHandler):
 		
 					if discount_flag==1:
 						totalPrice+=singlemoney*(q_price.discount_rate/10)
-						print(totalPrice,'@@@@totalPrice')
 					else:
 						totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				else:
@@ -2151,7 +2155,7 @@ class Cart(CustomerBaseHandler):
 				# print("[CustomerCart]charge_type.price:",charge_type.price)
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
+									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit]),"activity_name":activity_name[charge_type.activity_type]}
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -2482,6 +2486,22 @@ class Cart(CustomerBaseHandler):
 				qq=session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
 				use_number=qq.use_number-1
 				qq.update(session,use_number=use_number)
+			session.flush()
+
+			#订单删除，CustomerSeckillGoods表对应的状态恢复为0
+			fruits = eval(order.fruits)
+			charge_type_list = list(fruits.keys())
+			seckill_goods = session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+			if seckill_goods:
+				seckill_goods_id = []
+				for item in seckill_goods:
+					seckill_goods_id.append(item.id)
+				customer_seckill_goods = session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+				if customer_seckill_goods:
+					for item in customer_seckill_goods:
+						item.status = 0
+					session.flush()
 			session.commit()
 			
 			print("[CustomerCart]Order auto cancel: order.num:",order.num)

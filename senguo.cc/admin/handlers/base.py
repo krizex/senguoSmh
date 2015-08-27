@@ -153,7 +153,7 @@ class GlobalBaseHandler(BaseHandler):
 					if now_date<x.start_date:
 						status=0
 					elif now_date<x.end_date:
-						status=1
+						status=1 
 					else:
 						status=2
 				else:
@@ -1106,8 +1106,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		c_tourse   =customer.accountinfo.wx_openid
 		goods = []
 		f_d = eval(order.fruits)
+		print("@@@@@@@aaaaa")
 		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			if 'activity_name' in list(f_d[f].keys()) and f_d[f].get('activity_name'):
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num'),f_d[f].get('activity_name')])
+			else:
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		print("##############goods",goods)
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.2f' % totalPrice)
 		send_time = order.send_time
@@ -1798,11 +1803,18 @@ class AdminBaseHandler(_AccountBaseHandler):
 		elif time_way == 1:
 			cur_activity_list = []
 			for item in activity_query:
-				s_time = item[0]
-				e_time = item[1]
-				start_week_num = self.get_week_num(s_time)
-				end_week_num = self.get_week_num(e_time)
-				if start_week_num in weeks or end_week_num in weeks:
+				s_time0 = item[0]
+				e_time0 = item[1]
+				start_week_num = self.get_week_num(s_time0)
+				end_week_num = self.get_week_num(e_time0)
+				s_time = item[0] + 8 * 3600
+				e_time = item[1] + 8 * 3600
+				whole_day_time = 24*3600
+				s_time = s_time % whole_day_time
+				e_time = e_time % whole_day_time
+				now_date=int(time.time())
+				
+				if (start_week_num in weeks and s_time0 >= now_date) or end_week_num in weeks:
 					if (s_time > f_time and s_time < t_time) or (e_time > f_time and e_time < t_time) or (s_time < f_time and e_time > t_time):
 						fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item[2],models.SeckillGoods.status != 0).all()
 						for fruit in fruit_query:
@@ -1819,7 +1831,9 @@ class AdminBaseHandler(_AccountBaseHandler):
 		return flag
 
 	# 输入：一个整型时间戳
+
 	# 输出：1-7(表示周一到周期)
+
 	def get_week_num(self,timestamp):
 		x = time.localtime(timestamp);
 		week_num = int(time.strftime('%w',x))
@@ -1963,7 +1977,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					seckill_goods_id = seckill_goods.id
 					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
 					customer_seckill_goods.status = 0
-					print("@@@@@@@@@",customer_seckill_goods.status)
+					# print("@@@@@@@@@",customer_seckill_goods.status)
 					self.session.flush()
 				#减少限时折扣统计数据
 				elif activity_type==2:
