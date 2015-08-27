@@ -127,14 +127,14 @@ $(document).ready(function () {
     var args={action:"check_group",data:data}
     var index = $(this).closest("li").index();
     index1=index;
-    $this=$(this);
+    var $this=$(this);
     getGoods(index,$this.closest('td').find(".use_goods_lst"));
     $this.closest('div').find(".use_goods_group").html($this.html()).attr("data-id",id);
-    $this.closest('div').find(".use_goods").html("所有商品").attr("data-id","-1");
+    $this.closest('tr').find(".use_goods").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lst .item",function(){
     var id = parseInt($(this).attr("data-id"));
     var index2 = $(this).closest("li").index();
-    $this=$(this);
+    var $this=$(this);
     $this.closest('div').find(".use_goods").html($this.html()).attr("data-id",id);
     if (id!=-1){
         $this.closest('table').find(".charge-type").removeClass("hidden");
@@ -382,11 +382,12 @@ function getinfo(){
                 return Tip("商品1已经面向所有商品，其后面的商品活动均无效");
             }
             if(tmp_goods["use_goods"]==-1&&tmp_goods["use_goods_group"]==use_goods_group){
-                kk=k+1;
+                var kk=k+1;
                 return Tip("商品"+i+"的分组和商品"+kk+"的分组有冲突");
             }
             if(tmp_goods["use_goods"]==use_goods&&tmp_goods["use_goods_group"]==use_goods_group){
-                return Tip("商品"+i+"的商品"+k+1+"的商品有冲突");
+                var kk=k+1;
+                return Tip("商品"+i+"的商品"+kk+"的商品有冲突");
             }
         }
         discount_good={"use_goods_group":use_goods_group,"use_goods":use_goods,"charges":charges,"discount_rate":discount_rate};
@@ -420,9 +421,9 @@ function adddiscount(){
         function(res){
             if(res.success){
                 Tip('新建限时折扣成功!');
-                setTimeout(function(){
-                    window.location.href="/admin/discount?action=discount";
-                },1500);
+                // setTimeout(function(){
+                //     window.location.href="/admin/discount?action=discount";
+                // },1500);
             }else{
                 Tip(res.error_text);
             }
@@ -495,7 +496,6 @@ function getGoods(index,$obj){
         lis+='<li class="presentation" role="presentation"><a class="item" title="'+goods[i].goods_name+'" href="javascript:;" data-id="'+goods[i].goods_id+'">'+goods[i].goods_name+'</a></li>';
     }
     $obj.append(lis);
-    $('.use_goods').attr("data-id",-1).text('所有商品');
     $('.charge-type').addClass("hidden");
     $('.charge-type button').remove();
 }

@@ -1736,37 +1736,67 @@ class Market(CustomerBaseHandler):
 		#筛选初当前进行的限时折扣
 		m_fruits=eval(cart.fruits)
 		fruits2 = {}
+		print(m_fruits,'@@@@@@@@@1')
+		print(fruits,'@@@@@@@@@2')
+		q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
-			if int(key) in m_fruits:
-				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
-
+			q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+			print(q.id,'@@@@@@@@@3')
+			q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=q.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()	
+			if q_all:
+				if int(key) in m_fruits:
+					q_all.incart_num+=fruits[key]-m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]-m_fruits[int(key)]
+				else:
+					q_all.incart_num+=fruits[key]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]
+			elif q_part:
+				if int(key) in m_fruits:
+					q_part.incart_num+=fruits[key]-m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]-m_fruits[int(key)]
+				else:
+					q_part.incart_num+=fruits[key]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]
+			else:
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
 					if key in eval(qq.charge_type):
-						qq.incart_num+=fruits[key]-m_fruits[int(key)]
-						qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
-						qqq.incart_num+=fruits[key]-m_fruits[int(key)]
-				self.session.flush()					
-			else:
-				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
-				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
-				if qq:
-					if int(key) in eval(qq.charge_type):
-						qq.incart_num+=fruits[key]
-						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
-						qqq.incart_num+=fruits[key]
-				self.session.flush()
+						if int(key) in m_fruits:
+							qq.incart_num+=fruits[key]-m_fruits[int(key)]
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq.incart_num+=fruits[key]-m_fruits[int(key)]
+						else:
+							qq.incart_num+=fruits[key]
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq.incart_num+=fruits[key]
+			self.session.flush()					
 
 		for key in m_fruits:
 			if str(key) not in fruits:
 				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
-				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
-				if qq:
-					if int(key) in eval(qq.charge_type):
-						qq.incart_num-=m_fruits[int(key)]
-						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
-						qqq.incart_num-=m_fruits[int(key)]
+				print(q.id,'@@@@@@@@@4')
+				q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=q.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()
+				
+				if q_all:
+					q_all.incart_num-=m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+					qqq.incart_num-=m_fruits[int(key)]
+				elif q_part:
+					q_part.incart_num-=m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+					qqq.incart_num-=m_fruits[int(key)]
+				else:
+					qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
+					if qq:
+						if int(key) in eval(qq.charge_type):
+							qq.incart_num-=m_fruits[int(key)]
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq.incart_num-=m_fruits[int(key)]
 		
 		cart.fruits = str(fruits2)
 		self.session.commit()
@@ -1989,7 +2019,7 @@ class Cart(CustomerBaseHandler):
 			if item.activity_type == 1:
 				seckill_charge_type_list.append(item.id)
 				return self.send_success(overdue=overdue)
-			elif item.activity_type==-2 and item.id in discount_ids:
+			elif item.activity_type!=2 and item.id in discount_ids:
 				overdue==1
 				return self.send_success(overdue=overdue)
 
@@ -2011,19 +2041,42 @@ class Cart(CustomerBaseHandler):
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
 				singlemoney=charge_type.price*fruits[str(charge_type.id)] 
+				
 				#进行折扣优惠处理
 				if charge_type.activity_type==2 and charge_type.id in discount_ids:
-					q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id).with_lockmode('update').first()
-					if q_discount_goods:
-						if charge_type.id in eval(q_discount_goods.charge_type):
-							totalPrice+=singlemoney*(q_discount_goods.discount_rate/10)
-							q_discount_goods.ordered_num+=int(fruits[str(charge_type.id)])
-							q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_discount_goods.discount_id).with_lockmode('update').first()
-							if q_discount_group:
-								q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
-							self.session.flush()
-						else:
-							totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
+					q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=charge_type.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()	
+					discount_flag=0
+					q_price=None
+					if q_all:
+						discount_flag=1
+						q_price=q_all
+						q_all.ordered_num+=int(fruits[str(charge_type.id)])
+						q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+						q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
+					elif q_part:
+						discount_flag=1
+						q_price=q_part
+						q_part.ordered_num+=int(fruits[str(charge_type.id)])
+						q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+						q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
+					else:	
+						q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).with_lockmode('update').first()
+						if q_discount_goods:
+							if charge_type.id in eval(q_discount_goods.charge_type):
+								discount_flag=1
+								q_price=q_discount_goods
+								q_discount_goods.ordered_num+=int(fruits[str(charge_type.id)])
+								q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_discount_goods.discount_id).with_lockmode('update').first()
+								if q_discount_group:
+									q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
+					self.session.flush()
+		
+					if discount_flag==1:
+						totalPrice+=singlemoney*(q_price.discount_rate/10)
+						print(totalPrice,'@@@@totalPrice')
+					else:
+						totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				else:
 					totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				fruit=charge_type.fruit
