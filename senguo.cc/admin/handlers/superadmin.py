@@ -367,6 +367,7 @@ class ShopManage(SuperBaseHandler):
 				data["staff_count"] = len(shop.staffs)
 				data["follower_count"] = shop.fans_count
 				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
+				data["shop_tpl"] = shop.shop_tpl+1
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
 										fromtimestamp(shop.create_date_timestamp)).days
