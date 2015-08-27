@@ -562,8 +562,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
 			# print("[_AccountBaseHandler]get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
-			if not self._user:
-				print("[_AccountBaseHandler]get_current_user: self._user not found")
+			# if not self._user:
+			# 	print("[_AccountBaseHandler]get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -2087,7 +2087,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[TempMsg]Order commit message send failed:",data)
+			# print("[TempMsg]Order commit message send failed:",data)
 			return False
 		return True
 
@@ -2111,7 +2111,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[TempMsg]Order done message send failed:",data)
+			# print("[TempMsg]Order done message send failed:",data)
 			return False
 		return True
 
