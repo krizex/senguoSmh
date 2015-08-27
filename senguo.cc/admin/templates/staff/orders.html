@@ -17,6 +17,8 @@
         {% set type='on_time'%}  
     {% elif page == 'history' %}
         {% set type='history'%}
+    {% elif page == 'self' %}
+        {% set type='self'%}
     {% end %}
     <!-- <span class="title mr10 font16">订单筛选:</span> -->
     <a class="btn all" href="{{reverse_url('staffOrder')}}?order_type={{type}}">全部</a>
