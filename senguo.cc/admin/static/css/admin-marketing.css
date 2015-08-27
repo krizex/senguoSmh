@@ -90,7 +90,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .coupon-prview{width: 20%;border: 1px solid #e7e7eb;border-left:none;height: 610px;}
 .coupon-tb input{width: 170px;border:1px solid #e7e7eb;height: 28px;background-color: #fff;}
 .coupon-tb td{padding: 10px 0;border:none;vertical-align: middle;}
-.cancel-add-goods{display: inline-block;background-size: 18px;background-image: url('/static/images/admin_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
+.cancel-add-goods{display: inline-block;background-size: 18px;background-image: url('/static/images/admin_back.png') !important;background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
 .wrap-pop-btn{background-color: #fbfbfb;border:1px solid #eee;border-top:none;padding: 10px 0;text-align: center;}
 .wrap-pop-btn>a{display: inline-block;width: 90px;text-align: center;font-size: 14px;height: 28px;line-height: 28px;border-radius: 2px;border: 1px solid #e7e7eb;}
 .ok-btn{background-color: #52b43f;color: #fff;margin-right: 20px;}
@@ -176,5 +176,6 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .dis-seckill>td{color: #999;}
 
 .spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
+.invisiable{visibility: hidden;}
 /**/
 

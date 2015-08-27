@@ -144,7 +144,7 @@ class GlobalBaseHandler(BaseHandler):
 		return None
 	# 更新店铺用户的限时折扣信息
 	def updatediscountbase(self,shop_id):
-		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
+		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).filter(models.DiscountShopGroup.status<2).with_lockmode('update').all()
 		now_date=int(time.time())
 		status=0
 		for x in q:
@@ -153,15 +153,15 @@ class GlobalBaseHandler(BaseHandler):
 					if now_date<x.start_date:
 						status=0
 					elif now_date<x.end_date:
-						status=1
+						status=1 
 					else:
 						status=2
 				else:
-					now_weekday=datetime.datetime.now().weekday()
+					now_weekday=int(time.strftime('%w',time.localtime(int(time.time()))))
 					if now_weekday==0:
 						now_weekday==7
 					if now_weekday in eval(x.weeks):
-						now_time=int(time.time()%(24*3600))+8*3600
+						now_time=int((time.time()+8*3600)%(24*3600))
 						if now_time<x.f_time:
 							status=0
 						elif now_time<x.t_time:
@@ -170,21 +170,51 @@ class GlobalBaseHandler(BaseHandler):
 							status=2
 					else:
 						status=0
-
+				if x.id==75:
+					print(x.weeks)
 				x.update(self.session,status=status)
 				self.session.flush()
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
 			for y in qq:
 				# 更新chargetype 的状态值 和fruit的值
-				charge_types=eval(y.charge_type)
-				for charge in charge_types:
-					q_charge=self.session.query(models.ChargeType).filter_by(id=charge).with_lockmode('update').first()
-					if status==2:
-						q_charge.activity_type=0
-					elif status==1:
-						q_charge.activity_type=2
-					q_fruit=self.session.query(models.Fruit).filter_by(id=q_charge.fruit_id).with_lockmode('update').first()
-					if q_fruit.activity_status==2:
+				#必须判断如果是所有分组 或者所有某一分组的所有商品
+				if y.use_goods_group==-2:
+					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=shop_id,active=1).with_lockmode('update').all()
+					for m in q_fruit:
+						q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id).all()
+						for n in q_charge:
+							if status==1:
+								n.activity_type=2
+							elif status==2:
+								if n.activity_type==2:
+									n.activity_type=0
+						if status==1:
+							m.activity_status=2
+						elif status==2:
+							m.activity_status=0
+				elif y.use_goods==-1:
+					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=shop_id,active=1,group_id=y.use_goods_group).with_lockmode('update').all()
+					for m in q_fruit:
+						q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id).all()
+						for n in q_charge:
+							if status==1:
+								n.activity_type=2
+							elif status==2:
+								if n.activity_type==2:
+									n.activity_type=0
+						if status==1:
+							m.activity_status=2
+						elif status==2:
+							m.activity_status=0
+				else:
+					charge_types=eval(y.charge_type)
+					for charge in charge_types:
+						q_charge=self.session.query(models.ChargeType).filter_by(id=charge).with_lockmode('update').first()
+						if status==2:
+							q_charge.activity_type=0
+						elif status==1:
+							q_charge.activity_type=2
+						q_fruit=self.session.query(models.Fruit).filter_by(id=q_charge.fruit_id).with_lockmode('update').first()
 						q_all_charge=self.session.query(models.ChargeType).filter_by(fruit_id=q_fruit.id).all()
 						no_discount=0
 						for m in q_all_charge:
@@ -193,6 +223,8 @@ class GlobalBaseHandler(BaseHandler):
 								break
 						if no_discount==0:
 							q_fruit.activity_status=0
+						else:
+							q_fruit.activity_status=2
 				self.session.flush()
 				if y.status!=3:
 					y.update(self.session,status=status)
@@ -391,8 +423,8 @@ class GlobalBaseHandler(BaseHandler):
 								for week in eval(x.weeks):
 									if week>=begin and week<=end:
 										#在具体周几的时候时间也要进行判断
-										begin_time=int(start_date%(24*3600))+8*3600
-										end_time=int(end_date%(24*3600))+8*3600
+										begin_time=int((start_date+8*3600)%(24*3600))
+										end_time=int((end_date+8*3600)%(24*3600))
 										if end==begin:	
 											if begin_time<x.f_time and end_time>=x.t_time:
 												can_choose=False
@@ -421,8 +453,8 @@ class GlobalBaseHandler(BaseHandler):
 								for week in weeks:
 									if week>=begin and week<=end:
 										#在具体的周几的时间也要进行判断
-										begin_time=int(start_date%(24*3600))+8*3600
-										end_time=int(end_date%(24*3600))+8*3600
+										begin_time=int((start_date+8*3600)%(24*3600))
+										end_time=int((end_date+8*3600)%(24*3600))
 										if end==begin:	
 											if begin_time<x.f_time and end_time>=x.t_time:
 												can_choose=False
@@ -1074,8 +1106,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		c_tourse   =customer.accountinfo.wx_openid
 		goods = []
 		f_d = eval(order.fruits)
+		print("@@@@@@@aaaaa")
 		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			if 'activity_name' in list(f_d[f].keys()) and f_d[f].get('activity_name'):
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num'),f_d[f].get('activity_name')])
+			else:
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		print("##############goods",goods)
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.2f' % totalPrice)
 		send_time = order.send_time
@@ -1758,7 +1795,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 			if not cur_activity_list:
 				flag = True
 			else:
-				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list,models.SeckillGoods.status != 0)).all()
+				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list),models.SeckillGoods.status != 0).all()
 				for item in fruit_query:
 					if item.fruit_id == fruit_id:
 						flag = False
@@ -1766,11 +1803,18 @@ class AdminBaseHandler(_AccountBaseHandler):
 		elif time_way == 1:
 			cur_activity_list = []
 			for item in activity_query:
-				s_time = item[0]
-				e_time = item[1]
-				start_week_num = self.get_week_num(s_time)
-				end_week_num = self.get_week_num(e_time)
-				if start_week_num in weeks or end_week_num in weeks:
+				s_time0 = item[0]
+				e_time0 = item[1]
+				start_week_num = self.get_week_num(s_time0)
+				end_week_num = self.get_week_num(e_time0)
+				s_time = item[0] + 8 * 3600
+				e_time = item[1] + 8 * 3600
+				whole_day_time = 24*3600
+				s_time = s_time % whole_day_time
+				e_time = e_time % whole_day_time
+				now_date=int(time.time())
+				
+				if (start_week_num in weeks and s_time0 >= now_date) or end_week_num in weeks:
 					if (s_time > f_time and s_time < t_time) or (e_time > f_time and e_time < t_time) or (s_time < f_time and e_time > t_time):
 						fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item[2],models.SeckillGoods.status != 0).all()
 						for fruit in fruit_query:
@@ -1787,8 +1831,10 @@ class AdminBaseHandler(_AccountBaseHandler):
 		return flag
 
 	# 输入：一个整型时间戳
+
 	# 输出：1-7(表示周一到周期)
-	def get_week_num(timestamp):
+
+	def get_week_num(self,timestamp):
 		x = time.localtime(timestamp);
 		week_num = int(time.strftime('%w',x))
 		if week_num == 0:
@@ -1859,19 +1905,40 @@ class CustomerBaseHandler(_AccountBaseHandler):
 	def _f(self, cart, menu, charge_type_id, inc,activity_type):
 		d = eval(getattr(cart, menu))
 		# print("[CustomerBaseHandler]type(d[charge_type_id]):",type(d[charge_type_id]))
+
+		# 限时折扣统计信息使用
+		shop_id=cart.shop_id
+		tmp_charge=self.session.query(models.ChargeType).filter_by(id=charge_type_id).first()
+		q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
+		q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=tmp_charge.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()	
+		q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id,status=1).with_lockmode('update').first()
+		print(q_all,"@@@@@1")
+		print(q_goods,"@@@@@2")
+		key=charge_type_id
 		if d:
 			if inc == 2:#加1
 				if charge_type_id in d.keys(): d[charge_type_id] =   int(d[charge_type_id]) + 1
 				else: d[charge_type_id] = 1
 				#加1限时折扣
-				tmp_charge=self.session.query(models.ChargeType).filter_by(id=charge_type_id).first()
-				q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
-				if q_goods:
-					if charge_type_id in eval(q_goods.charge_type):
-						q_goods.incart_num+=1
-						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
-						q_group.incart_num+=1
-						self.session.flush()
+				if q_all:
+					q_all.incart_num+=1
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=1
+				elif q_part:
+					print(q_part.incart_num,"@@@@@3")	
+					q_part.incart_num+=1
+					print(q_part.incart_num,"@@@@@4")
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=1
+					
+				else:
+					qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
+					if qq:
+						if key in eval(qq.charge_type):
+							qq.incart_num+=1
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq.incart_num+=1
+				self.session.flush()
 			elif inc == 1:#减1
 				if charge_type_id in d.keys():
 					if int(d[charge_type_id]) == 1:
@@ -1879,14 +1946,23 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					else:
 						d[charge_type_id] =  int(d[charge_type_id])  -1
 					#减一限时折扣的统计数据
-					tmp_charge=self.session.query(models.ChargeType).filter_by(id=charge_type_id).first()
-					q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
-					if q_goods:
-						if charge_type_id in eval(q_goods.charge_type):
-							q_goods.incart_num-=1
-							q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
-							q_group.incart_num-=1
-							self.session.flush()
+					if q_all:
+						q_all.incart_num-=1
+						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+						qqq.incart_num-=1
+					elif q_part:	
+						q_part.incart_num-=1
+						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+						qqq.incart_num-=1
+						
+					else:
+						qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
+						if qq:
+							if key in eval(qq.charge_type):
+								qq.incart_num-=1
+								qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+								qqq.incart_num-=1
+					self.session.flush()				
 				else:return
 			elif inc == 0:#删除
 				to_delete_num=d[charge_type_id]  # 限时折扣需要删除的数量
@@ -1901,18 +1977,27 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					seckill_goods_id = seckill_goods.id
 					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
 					customer_seckill_goods.status = 0
-					print("@@@@@@@@@",customer_seckill_goods.status)
+					# print("@@@@@@@@@",customer_seckill_goods.status)
 					self.session.flush()
 				#减少限时折扣统计数据
 				elif activity_type==2:
-					tmp_charge=self.session.query(models.ChargeType).filter_by(id=charge_type_id).first()
-					q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
-					if q_goods:
-						if charge_type_id in eval(q_goods.charge_type):
-							q_goods.incart_num-=to_delete_num
-							q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=cart.shop_id,discount_id=q_goods.discount_id).with_lockmode('update').first()
-							q_group.incart_num-=to_delete_num
-							self.session.flush()
+					if q_all:
+						q_all.incart_num-=to_delete_num
+						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+						qqq.incart_num-=to_delete_num
+					elif q_part:	
+						q_part.incart_num+=to_delete_num
+						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+						qqq.incart_num-=to_delete_num
+						
+					else:
+						qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
+						if qq:
+							if key in eval(qq.charge_type):
+								qq.incart_num-=to_delete_num
+								qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+								qqq.incart_num-=to_delete_num
+					self.session.flush()				
 
 			else:return
 			setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）
@@ -1942,9 +2027,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				if q.activity_type==-2 or q.fruit.active!=1 or q.active!=1:
 					qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id).with_lockmode('update').first()
 					if qq:
-						if key in eval(qq.charge_type):
+						if q.id in eval(qq.charge_type):
 							qq.incart_num-=eval(cart.fruits)[q.id]
-							qqq=self.session.query(models.DiscountshopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
 							qqq.incart_num-=eval(cart.fruits)[q.id]
 					self.session.flush()
 										
@@ -1985,6 +2070,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				#查询是否有限时折扣活动
 				self.updatediscount()
 				discount_rate=None
+				num=None
 				q=self.session.query(models.ChargeType).filter_by(id=charge_type.id,activity_type=2).first()
 				if q:
 					qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).first()
