@@ -1721,18 +1721,21 @@ class Market(CustomerBaseHandler):
 				for seckill_goods_id in seckill_goods_ids:
 					query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
 					if query:
-						query.status = 1
-						self.session.flush()
+						if query.status == 0:
+							seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+							seckill_goods.not_pick -= 1
+							seckill_goods.picked += 1
+							self.session.flush()
+							query.status = 1
+							self.session.flush()
 					else:
 						customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
 						self.session.add(customer_seckill_goods)
+						seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+						seckill_goods.not_pick -= 1
+						seckill_goods.picked += 1
 						self.session.flush()
 
-					seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
-					seckill_goods.not_pick -= 1
-					seckill_goods.picked += 1
-					self.session.flush()
-		
 		#筛选初当前进行的限时折扣
 		m_fruits=eval(cart.fruits)
 		fruits2 = {}
@@ -2284,7 +2287,6 @@ class Cart(CustomerBaseHandler):
 							 )
 
 		if killing_goods_list and self.args['pay_type'] != 3:
-			print("#$$$$$$$$$$$$$$$$$$$$$$$$")
 			killing_goods_id_list = [x.id for x in killing_goods_list]
 
 			customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == shop_id,models.CustomerSeckillGoods.customer_id == self.current_user.id,\
@@ -2297,7 +2299,6 @@ class Cart(CustomerBaseHandler):
 				item.ordered += 1
 				item.storage_piece -= 1
 			self.session.flush()
-			print("#$$$$$$$$$$$$$$$$$$$$$$$$")
 		try:
 			self.session.add(order)
 			self.session.flush()
