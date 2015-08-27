@@ -13,7 +13,7 @@
 .intro_list li  .intro p{margin-bottom:10px;}
 .mt-3{margin-top: -3px!important;}
 .intro-top{margin-bottom: 30px;text-align: center;font-size: 22px;}
-.bg-text{width: 100%;position: absolute;bottom:80px;left: 50%;-webkit-transform:translate(-50%,0);transform:translate(-50%,0);-ms-transform:translate(-50%,0);z-index:200;}
+.bg-text{width: 1000px;position: absolute;bottom:80px;left: 50%;z-index:200;margin-left: -500px;}
 .bg-text>a{color: #fff;display: block;width: 140px;font-size: 16px;text-align: center;height: 40px;line-height: 40px;border: 1px solid #fff;border-radius: 2px;margin: 0 auto;-webkit-transition:all .2s ease-in-out;transition:all .2s ease-in-out;-ms-transition:all .2s ease-in-out;}
 .bg-text>a:hover{text-decoration: none;background-color: #fff;color: #333;}
 .swiper-container{width: 1000px;height: 470px;margin: 0 auto;position: relative;}

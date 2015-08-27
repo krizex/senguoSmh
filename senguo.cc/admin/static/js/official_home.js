@@ -1,4 +1,4 @@
-var cur_index = 1,length = 3,timer=null;
+var length = 3,timer=null;
 $(document).ready(function(){
     $(".swiper-wrapper li").each(function(i){
         var $this = $(this);
@@ -11,9 +11,9 @@ $(document).ready(function(){
     slide_images("prev");
 }).on("click","#next",function(){
     slide_images("next");
-}).on("mouseover",".slide-btn,.swiper-slide",function(){
+}).on("mouseover",".swiper-wrapper",function(){
     clearInterval(timer);
-}).on("mouseout",".slide-btn,.swiper-slide",function(){
+}).on("mouseout",".swiper-wrapper",function(){
     timer=setInterval(function(){
         slide_images("next");
     },4000);

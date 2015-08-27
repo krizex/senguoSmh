@@ -1,26 +1,22 @@
-var timer = null,index =0;
+var length = 3,timer=null;
 $(document).ready(function(){
-    initSlide();
+    $(".slide-list li").each(function(i){
+        var $this = $(this);
+        $this.css({position:"absolute",top:"0",left:i*200+"px"});
+    });
+    timer=setInterval(function(){
+        slide_images();
+    },4000);
 });
-
-function initSlide(){
-    timer = setInterval(function(){
-        index++;
-        $("#slide-list").children("li").addClass("anima");
-        $("#slide-list").children("li").css("left",-192*index);
-        if(index%4==0){
-            index = 0;
-            $("#slide-list").children("li").removeClass("anima");
-            if($("#slide-list").children("li").first().hasClass("s1")){
-                var s1s = $("#slide-list").children(".s1").clone();
-                $("#slide-list").children(".s1").remove();
-                $("#slide-list").append(s1s);
-            }else{
-                var s2s = $("#slide-list").children(".s2").clone();
-                $("#slide-list").children(".s2").remove();
-                $("#slide-list").append(s2s);
-            }
-            $("#slide-list").children("li").css("left",0+"px");
+function slide_images(){
+    $(".slide-list li").each(function(){
+        var $this = $(this);
+        var index = parseInt($this.attr("data-index"));
+        if(index==0){
+            $this.css("left",600+"px").attr("data-index",length-1);
+            $this.animate({left:"400px"},"slow");
+        }else{
+            $this.attr("data-index",index-1).animate({left:(index-1)*200+"px"},"slow");
         }
-    },2500);
+    });
 }
