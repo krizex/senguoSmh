@@ -55,7 +55,7 @@
             {%else%}
             {% for discount in output_data[0] %}
                 <tr class="detail-tr " data-id="{{discount['discount_id']}}">
-                    <td>{%if discount["discount_way"]==1 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
+                    <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
                     <td class="operate">

@@ -2100,6 +2100,7 @@ class Goods(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
 	def get(self):
 		self.if_current_shops()
+		self.update_seckill()
 		action = self._action
 		_id = str(time.time())
 		current_shop = self.current_shop
@@ -2450,6 +2451,8 @@ class Goods(AdminBaseHandler):
 		data = self.args["data"]
 		current_shop = self.current_shop
 		shop_id = current_shop.id
+
+		self.update_seckill()
 		# 添加商品
 		if action == "add_goods":
 			if not (data["charge_types"] and data["charge_types"]):  # 如果没有计价方式、打开market时会有异常
@@ -5399,7 +5402,7 @@ class Discount(AdminBaseHandler):
 							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 				elif x["use_goods"]==-1:
-					q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"]).filter(models.DiscountShop.status<2).all()
+					q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2).all()
 					for m in q_goods_part:
 						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
 						if q_group_all:
@@ -5412,7 +5415,7 @@ class Discount(AdminBaseHandler):
 							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 				else:
-					q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"]).filter(models.DiscountShop.status<2).all()
+					q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2).all()
 					for m in q_goods_part:
 						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
 						if q_group_all:
@@ -5494,7 +5497,7 @@ class Discount(AdminBaseHandler):
 				for x in qq:
 					#进行判断添加这个时刻有没有已经存在进行的活动
 					can_choose=0 # 0 表示可以选择 不冲突 ，1表示冲突 需重新选择
-					if x["use_goods_group"]==-2:
+					if x.use_goods_group==-2:
 						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).all()
 						for x in q_group:
 							q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id).filter(models.DiscountShop.status<2).all()
@@ -5507,17 +5510,17 @@ class Discount(AdminBaseHandler):
 							if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
 								return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
-					elif x["use_goods"]==-1:
-						q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
+					elif x.use_goods==-1:
+						q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks)
 						if can_choose==1:
 							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
-						q_part=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=x["use_goods_group"],active=1).all()
+						q_part=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,group_id=x.use_goods_group,active=1).all()
 						for m in q_part:
 							if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
 								return("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 					else:
-						q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"]).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
+						q=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=x.use_goods).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						can_choose=self.judgetimeright(q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks)
 						if can_choose==1:
 							return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
@@ -5737,7 +5740,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type == 0).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
@@ -5828,7 +5831,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type == 0).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])

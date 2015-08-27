@@ -144,7 +144,7 @@ class GlobalBaseHandler(BaseHandler):
 		return None
 	# 更新店铺用户的限时折扣信息
 	def updatediscountbase(self,shop_id):
-		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).with_lockmode('update').all()
+		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id).filter(models.DiscountShopGroup.status<2).with_lockmode('update').all()
 		now_date=int(time.time())
 		status=0
 		for x in q:
@@ -153,7 +153,7 @@ class GlobalBaseHandler(BaseHandler):
 					if now_date<x.start_date:
 						status=0
 					elif now_date<x.end_date:
-						status=1
+						status=1 
 					else:
 						status=2
 				else:
@@ -1105,8 +1105,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		c_tourse   =customer.accountinfo.wx_openid
 		goods = []
 		f_d = eval(order.fruits)
+		print("@@@@@@@aaaaa")
 		for f in f_d:
-			goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+			if 'activity_name' in list(f_d[f].keys()) and f_d[f].get('activity_name'):
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num'),f_d[f].get('activity_name')])
+			else:
+				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
+		print("##############goods",goods)
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.2f' % totalPrice)
 		send_time = order.send_time
@@ -1797,11 +1802,18 @@ class AdminBaseHandler(_AccountBaseHandler):
 		elif time_way == 1:
 			cur_activity_list = []
 			for item in activity_query:
-				s_time = item[0]
-				e_time = item[1]
-				start_week_num = self.get_week_num(s_time)
-				end_week_num = self.get_week_num(e_time)
-				if start_week_num in weeks or end_week_num in weeks:
+				s_time0 = item[0]
+				e_time0 = item[1]
+				start_week_num = self.get_week_num(s_time0)
+				end_week_num = self.get_week_num(e_time0)
+				s_time = item[0] + 8 * 3600
+				e_time = item[1] + 8 * 3600
+				whole_day_time = 24*3600
+				s_time = s_time % whole_day_time
+				e_time = e_time % whole_day_time
+				now_date=int(time.time())
+				
+				if (start_week_num in weeks and s_time0 >= now_date) or end_week_num in weeks:
 					if (s_time > f_time and s_time < t_time) or (e_time > f_time and e_time < t_time) or (s_time < f_time and e_time > t_time):
 						fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item[2],models.SeckillGoods.status != 0).all()
 						for fruit in fruit_query:
@@ -1818,8 +1830,8 @@ class AdminBaseHandler(_AccountBaseHandler):
 		return flag
 
 	# 输入：一个整型时间戳
-	# 输出：1-7(表示周一到周期)
-	def get_week_num(timestamp):
+	# 输出：1-7(表示周一到周日)
+	def get_week_num(self,timestamp):
 		x = time.localtime(timestamp);
 		week_num = int(time.strftime('%w',x))
 		if week_num == 0:
@@ -1899,6 +1911,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id,status=1).with_lockmode('update').first()
 		print(q_all,"@@@@@1")
 		print(q_goods,"@@@@@2")
+		key=charge_type_id
 		if d:
 			if inc == 2:#加1
 				if charge_type_id in d.keys(): d[charge_type_id] =   int(d[charge_type_id]) + 1
@@ -1922,8 +1935,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 							qq.incart_num+=1
 							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
 							qqq.incart_num+=1
-				self.session.flush()
-				print(q_part.incart_num,"@@@@@5")			
+				self.session.flush()	
 			elif inc == 1:#减1
 				if charge_type_id in d.keys():
 					if int(d[charge_type_id]) == 1:

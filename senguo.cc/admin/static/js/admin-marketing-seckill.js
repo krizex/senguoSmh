@@ -253,13 +253,13 @@ $(document).ready(function(){
 	var $this = $(this);
 	var cur_goods = $this.text();
 	var choose_goods_id = $this.attr('data-id');
-	var $cur_goods = $this.closest(".new-seckill-item").find(".cur-goods");
+	var cur_goods_id = $this.closest(".new-seckill-item").find(".cur-goods").attr("data-id");
 	var flag = 0;
 	var compare_goods = '';
 
 	$('.cur-goods').each(function(){
 
-		if($(this) != $cur_goods){
+		if($(this).attr('data-id') != cur_goods_id){
 			var compare_id = $(this).attr('data-id');
 
 			if (compare_id == choose_goods_id){
