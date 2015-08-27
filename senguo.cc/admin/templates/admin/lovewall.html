@@ -4,11 +4,17 @@
     {% if _shop_auth ==0 %}
      <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
     {% else %}
-    <div class="clearfix top-box">
-        <p>任意用户都能在您的告白墙留言，用户之间也能参与互动。能有效增加商城用户粘度。 </p>
-        <p>开启后，在商城-发现-告白墙界面可以看到。</p>
-        <button class="btn text-white  action-btn confess-active" data-status="{{current_shop.marketing.confess_active}}" data-flag="on">停用</button>
+    <div class="edit-box bg-greyf9 group">
+        <div class="mode action-mode confess-active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.marketing.confess_active}}">
+            <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+            <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+        </div>
+         <div class="wrap-pay-txt">
+            <p>任意用户都能在您的告白墙留言，用户之间也能参与互动。能有效增加商城用户粘度。 </p>
+            <p>开启后，在商城-发现-告白墙界面可以看到。</p>
+        </div>
     </div>
+
     <table class="clearfix set-box font14">
         <colgroup width="15%"></colgroup>
         <colgroup width="75%"></colgroup>

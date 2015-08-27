@@ -1,13 +1,10 @@
 $(document).ready(function () {
-    $('.mode').each(function () {
-        var $this = $(this);
-        var status = $this.data('status');
-        if (status == 1) {
-            $this.addClass('work-mode').find('.tit').text('已启用');
-        }
-        else {
-            $this.addClass('stop-mode').find('.tit').text('未启用');
-        }
+     $('.action-mode').each(function(){
+        var $this=$(this);
+        var status=$this.data('status');
+        if(status==1)
+            $this.find('.work-mode').show();
+        else $this.find('.stop-mode').show();
 
     });
     $('.action-btn').each(function () {
@@ -34,11 +31,11 @@ $(document).ready(function () {
         function (res) {
             if (res.success) {
                 $this.attr("data-flag", "on");
-                if (status == 1) {
-                    $this.attr({'data-status': 0}).addClass('bg-green').removeClass('bg-pink').text('启用');
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
                 }
-                else if (status == 0) {
-                    $this.attr({'data-status': 1}).removeClass('bg-green').addClass('bg-pink').text('停用');
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
                 }
             }
             else {

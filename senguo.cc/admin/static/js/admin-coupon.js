@@ -109,9 +109,11 @@ $(document).ready(function () {
                     $this.attr("data-flag","on");
                     if(status==1){
                         $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                        $(".coupon-status").text("停用");
                     }
                     else if(status == 0){
                         $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                        $(".coupon-status").text("启用");
                     }
                 }
                 else {
