@@ -32,7 +32,7 @@
         </div>
     </div>
     <div class="wrap-tb mt30">
-        <table class="tb-enty tb-active">
+        <table class="tb-enty tb-active tab1">
             <colgroup>
                 <col width="40%"/>
                 <col width="20%"/>
@@ -54,8 +54,8 @@
             </tr>
             {%else%}
             {% for discount in output_data[0] %}
-                <tr class="detail-tr " data-id="{{discount['discount_id']}}">
-                    <td>{%if discount["discount_way"]==1 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
+                <tr class="detail-tr " data-id="{{discount['discount_id']}}" id="discount_detail">
+                    <td>{%if discount["discount_way"]==0%}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
                     <td class="operate">
@@ -68,9 +68,9 @@
                                 <span class="line1"></span>
                                 <span class="line2"></span>
                             </div>
-                            <p class="er-text">优惠券链接</p>
+                            <p class="er-text">限时折扣活动链接</p>
                             <div class="wrap-ipt">
-                                <input type="text" class="sw-link-txt" value="" disabled="">
+                                <input type="text" class="sw-link-txt" value="http://senguo.cc/zhoubing/goods/22" disabled="">
                                 <input type="button" class="sw-link-copy" value="复制链接">
                             </div>
                             <div class="wrap-er group">
@@ -85,7 +85,7 @@
             {%end%}
             </tbody>
         </table>
-        <table class="tb-enty hidden">
+        <table class="tb-enty tab2 invisiable">
             <colgroup>
                 <col width="40%"/>
                 <col width="20%"/>
@@ -106,7 +106,7 @@
             </tr>
             {%else%}
             {% for discount in output_data[1] %}
-                <tr class="detail-tr " data-id="{{discount['discount_id']}}">
+                <tr class="detail-tr " data-id="{{discount['discount_id']}}" id="discount_detail">
                     <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
@@ -120,9 +120,9 @@
                                 <span class="line1"></span>
                                 <span class="line2"></span>
                             </div>
-                            <p class="er-text">优惠券链接</p>
+                            <p class="er-text">限时折扣活动链接</p>
                             <div class="wrap-ipt">
-                                <input type="text" class="sw-link-txt" value="" disabled="">
+                                <input type="text" class="sw-link-txt" value="http://senguo.cc/zhoubing/goods/22" disabled="">
                                 <input type="button" class="sw-link-copy" value="复制链接">
                             </div>
                             <div class="wrap-er group">
@@ -137,7 +137,7 @@
             {%end%}
             </tbody>
         </table>
-        <table class="tb-enty hidden">
+        <table class="tb-enty hidden tab3">
             <colgroup>
                 <col width="40%"/>
                 <col width="20%"/>
@@ -159,7 +159,7 @@
             </tr>
             {%else%}
             {% for discount in output_data[2] %}
-                <tr class="detail-tr " data-id="{{discount['discount_id']}}">
+                <tr class="detail-tr dis-coupon" data-id="{{discount['discount_id']}}">
                     <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
@@ -167,7 +167,7 @@
                         <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
                         <a href="javascript:;" class="mr10 spread-btn">推广</a>
                         <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
-                        <span class="stop">已停用</span>
+                        <span class="stop">已过期</span>
                         <div class="sw-er-tip all-position invisible">
                             <div class="top-arr">
                                 <span class="line1"></span>
@@ -190,7 +190,7 @@
             {%end%}
             </tbody>
         </table>
-        <table class="tb-enty hidden">
+        <table class="tb-enty hidden tab4">
             <colgroup>
                 <col width="40%"/>
                 <col width="20%"/>
@@ -212,13 +212,13 @@
             </tr>
             {%else%}
             {% for discount in output_data[3] %}
-                <tr class="detail-tr dis-coupon" data-id="{{discount['discount_id']}}">
+                <tr class="detail-tr dis-coupon" data-id="{{discount['discount_id']}}" >
                     <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
                     <td>{{discount["goods"]}}</td>
                     <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
                     <td class="operate">
-                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
-                        <a href="javascript:;" class="mr10 spread-btn">推广</a>
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}" >编辑</a>
+                        <a href="javascript:;" class="mr10 spread-btn ">推广</a>
                         <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
                         <span class="stop">已停用</span>
                         <div class="sw-er-tip all-position invisible">

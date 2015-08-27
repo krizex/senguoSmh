@@ -1765,7 +1765,7 @@ class Market(CustomerBaseHandler):
 			else:
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
 				if qq:
-					if key in eval(qq.charge_type):
+					if int(key) in eval(qq.charge_type):
 						if int(key) in m_fruits:
 							qq.incart_num+=fruits[key]-m_fruits[int(key)]
 							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()

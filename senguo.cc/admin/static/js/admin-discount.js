@@ -17,6 +17,39 @@ $(document).ready(function () {
     goods_list=eval($("#goods").val());
     charge_list=eval($("#charge").val());
     new_discount_item=$('.to_clone').clone().removeClass("to_clone");
+    if($("#discount_detail").size()>0){//详情
+        $(".copy-coupon-code").zclip({
+                path: "/static/js/third/ZeroClipboard.swf",
+                copy: function(){
+                    return $(this).prev('span').html();
+                },
+                afterCopy:function(){
+                    Tip("优惠券码已经复制到剪切板");
+                }
+            });
+        }
+        $(".sw-link-copy").zclip({
+            path: "/static/js/third/ZeroClipboard.swf",
+            copy: function(){
+                return $(this).prev('input').val();
+            },
+            afterCopy:function(){
+                Tip("优惠券链接已经复制到剪切板");
+            }
+        });
+        $(".er-code-img").each(function(){
+        var _this = $(this);
+        $(this).empty();
+        new QRCode(this, {
+            width : 80,//设置宽高
+            height : 80
+        }).makeCode(_this.closest(".sw-er-tip").find(".sw-link-txt").val());
+    });
+    $(document).on("click",function(e){
+        if($(e.target).closest(".sw-er-tip").size()==0){
+            $(".sw-er-tip").addClass("invisible");
+        }
+    });
 }).on('click', '.close_all', function(){
     var status = parseInt($(this).attr('data-status'));
     var tip_info='';
@@ -40,23 +73,6 @@ $(document).ready(function () {
             function (res) {
                 if (res.success) {
                     window.location.href="/admin/discount?action=discount";
-                    // if(res.discount_active_cm==1){
-                    //     $("#discount_hidden").removeClass("hidden");
-                    // }
-                    // else{
-                    //      $("#discount_hidden").addClass("hidden");
-                    // }
-                    // $this.attr("data-flag", "on");
-                    // if (res.discount_active_cm==0) {
-                    //     $this.attr({'data-status': 0}).addClass('stop-mode').removeClass("work-mode");
-                    //     $('.tit').text('已停用')
-                    //     $(".discount-show-txt").children("span").html('停用');
-                    // }
-                    // else{
-                    //     $this.attr({'data-status': 1}).addClass('work-mode').removeClass("stop-mode");
-                    //     $(".discount-show-txt").children("span").html('启用');
-                    //     $('.tit').text('已启用')
-                    // }
                 }
                 else {
                     $this.attr("data-flag", "off");
@@ -84,7 +100,9 @@ $(document).ready(function () {
     $.postJson(url, args,
         function (res) {
             if (res.success) {
-                $this.closest('tr').addClass('dis-coupon');
+                var tmp_this=$this.closest('tr').addClass('dis-coupon').clone();
+                $('.tab4').find('tbody').append(tmp_this);
+                $this.closest('tr').remove();
                 Tip("成功关闭限时折扣!");
             }
             else {
@@ -96,9 +114,16 @@ $(document).ready(function () {
         }
     );
     }
+}).on("click",".spread-btn",function(e){
+    e.stopPropagation();
+    $(".sw-er-tip").addClass("invisible");
+    $(this).closest(".operate").children(".sw-er-tip").removeClass("invisible");
 }).on('click','.chinav li',function(){
     var index = $(this).index();
     type = index;
+    if(index==1){
+        $(".wrap-tb table").eq(1).removeClass("invisiable").addClass("hidden");
+    }
     $(".chinav li").removeClass("active").eq(index).addClass("active");
     $(".wrap-tb table").addClass("hidden").eq(index).removeClass("hidden");
 }).on('click','.open-week',function(){
@@ -448,9 +473,9 @@ function editdiscount(){
         function(res){
             if(res.success){
                 Tip('编辑限时折扣成功!');
-                setTimeout(function(){
-                    window.location.href="/admin/discount?action=discount";
-                },1500);
+                // setTimeout(function(){
+                //     window.location.href="/admin/discount?action=discount";
+                // },1500);
             }else{
                 Tip(res.error_text);
             }
