@@ -5,17 +5,25 @@
 {% block content%}
 <div class="slide_box" id="slideBox">
     <div class="swiper-container" id="swiper-container">
-        <div class="swiper-wrapper">
-            <div class="swiper-slide item">
-                <img src="{{static_url('official_img/bg1.jpg')}}" class="bg"/>
-            </div>
-            <div class="swiper-slide item">
-                <img src="{{static_url('official_img/bg2.jpg')}}" class="bg"/>
-            </div>
-            <div class="swiper-slide item">
-                <img src="{{static_url('official_img/bg3.jpg')}}" class="bg"/>
-            </div>
+        <div class="wrap-arrows">
+            <a href="javascript:;" class="prev slide-btn" title="上一页" id="prev">
+                <i class="icon-arrows arrows-left"></i>
+            </a>
+            <a href="javascript:;" class="next slide-btn" title="下一页" id="next">
+                <i class="icon-arrows arrows-right"></i>
+            </a>
         </div>
+        <ul class="swiper-wrapper" id="swiper-wrapper">
+            <li class="swiper-slide item" data-index="0">
+                <img src="{{static_url('official_img/bg1.jpg')}}" class="bg" title="再小的水果店，也要有自己的O2O平台"/>
+            </li>
+            <li class="swiper-slide item" data-index="1">
+                <img src="{{static_url('official_img/bg2.jpg')}}" class="bg" title="全平台水果商城"/>
+            </li>
+            <li class="swiper-slide item" data-index="2">
+                <img src="{{static_url('official_img/bg3.jpg')}}" class="bg" title="最好用的后台管理系统"/>
+            </li>
+        </ul>
     </div>
     <div class="bg-text">
         <a href="{{reverse_url('ApplyHome')}}">申请接入</a>

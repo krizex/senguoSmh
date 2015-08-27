@@ -113,6 +113,7 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);
+    $(this).closest("li").attr("is_bought","1");
     seckill_goods_ids.push(s_goods_id);
 }).on("click",".seckill-btn-more,.seckill-btn-first",function(){//抢先看&更多惊喜
     var shop_code = $("#shop_code").val();
@@ -210,7 +211,14 @@ function countTime(time,start_time,type,$obj){
             $(".seckill-ing").removeClass("hide");
             if($(".no-seckill-time").hasClass("hide")){
                 $(".seckill-btns").addClass("hide");
-                $(".seckill-btn").removeClass("hide");
+                $("#seckill_list").children("li").each(function(){
+                    var $this = $(this);
+                    if($(this).attr("is_bought")=="0"){
+                        $this.find(".seckill-btn").removeClass("hide");
+                    }else{
+                        $this.find(".seckill-btn-more").removeClass("hide");
+                    }
+                });
             }
         }else{
             $(".seckill-ing").addClass("hide");
