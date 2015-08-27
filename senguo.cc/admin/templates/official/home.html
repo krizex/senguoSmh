@@ -38,7 +38,7 @@
     <ul class="bar-list group">
         <li>
             <ul class="text-list">
-                <div class="title">官方公告<a class="pull-right font12 text-grey" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official"  target="_blank">更多>></a></div>
+                <div class="title"><a class="pull-right font12 text-grey" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official"  target="_blank">更多>></a>官方公告</div>
                 {% for a in article_list["notice"]%}
                 <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}" target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
                 {% end %}
@@ -46,15 +46,15 @@
         </li>
         <li>
             <ul class="text-list">
-                <div class="title">产品更新<a class="pull-right font12 text-grey" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update"  target="_blank">更多>></a></div>
+                <div class="title"><a class="pull-right font12 text-grey" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update"  target="_blank">更多>></a>产品更新</div>
                 {% for a in article_list["update"]%}
                 <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
                 {% end %}
             </ul>
         </li>
-        <li>
+        <li class="border-rn">
             <ul class="text-list">
-                <div class="title">运营干货<a class="pull-right font12 text-grey" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry"  target="_blank">更多>></a></div>
+                <div class="title"><a class="pull-right font12 text-grey" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry"  target="_blank">更多>></a>运营干货</div>
                {% for a in article_list["dry"]%}
                 <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
                 {% end %}
@@ -66,28 +66,28 @@
         <p class="box-title">森果适用的水果经营模式</p>
         <ul class="type-list group">
             <li>
-                <div class="type-img"><img src="/static/official_img/icon9.png" alt="水果O2O"/></div>
-                <p class="mt20 first-title">水果O2O</p>
-                <p class="second-title">森果有多种风格的商城模板，完善便捷的店铺管理功能，方便您进行水果O2O的一切探索。
+                <div class="type-img fix-ml10"><img src="/static/official_img/icon9.png" alt="水果O2O"/></div>
+                <p class="mt20 first-title fix-ml10">水果O2O</p>
+                <p class="second-title fix-ml10">森果有多种风格的商城模板，完善便捷的店铺管理功能，方便您进行水果O2O的一切探索。
                     无论是线上下单线下自提或配送的基础模式，还是预售、团购、秒杀、周期购等创新形式，森果满足您对于技术上的一切需求。
                 </p>
             </li>
             <li>
-                <div class="type-img"><img src="/static/official_img/icon10.png" alt="水果连锁经营"/></div>
-                <p class="mt20 first-title">水果单店铺经营</p>
-                <p class="second-title">省去店铺收银系统、CRM系统、商超系统等昂贵的成本，手机+电子秤+扫描枪，轻松开店。
+                <div class="type-img fix-ml10"><img src="/static/official_img/icon10.png" alt="水果连锁经营"/></div>
+                <p class="mt20 first-title fix-ml10">水果单店铺经营</p>
+                <p class="second-title fix-ml10">省去店铺收银系统、CRM系统、商超系统等昂贵的成本，手机+电子秤+扫描枪，轻松开店。
                 </p>
             </li>
             <li>
-                <div class="type-img"><img src="/static/official_img/icon11.png" alt="水果单店铺经营"/></div>
-                <p class="mt20 first-title">水果连锁经营</p>
-                <p class="second-title">使用森果对您连锁经营的多个店铺进行管理，对每个店铺的采购和销售情况、员工和工资记录等，了如指掌。
+                <div class="type-img fix-ml10"><img src="/static/official_img/icon11.png" alt="水果单店铺经营"/></div>
+                <p class="mt20 first-title fix-ml10">水果连锁经营</p>
+                <p class="second-title fix-ml10">使用森果对您连锁经营的多个店铺进行管理，对每个店铺的采购和销售情况、员工和工资记录等，了如指掌。
                 </p>
             </li>
             <li>
-                <div class="type-img"><img src="/static/official_img/icon12.png" alt="水果商家聚合"/></div>
-                <p class="mt20 first-title">水果商家聚合</p>
-                <p class="second-title">您可以将附近的水果店整合起来，打造水果商家聚合平台。
+                <div class="type-img fix-ml10"><img src="/static/official_img/icon12.png" alt="水果商家聚合"/></div>
+                <p class="mt20 first-title fix-ml10">水果商家聚合</p>
+                <p class="second-title fix-ml10">您可以将附近的水果店整合起来，打造水果商家聚合平台。
                 </p>
             </li>
         </ul>
