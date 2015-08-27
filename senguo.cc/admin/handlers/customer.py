@@ -1066,7 +1066,7 @@ class Market(CustomerBaseHandler):
 		
 			#生成wx_openid
 			if self.is_wexin_browser():
-				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+				print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 				wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
 				print(wx_openid,appid,appsecret)
 				if wx_openid:
@@ -1089,22 +1089,25 @@ class Market(CustomerBaseHandler):
 
 		# self.current_shop = shop
 		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
+		try:
+			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		except NoResultFound:
+			return self.write('您访问的店铺不存在')
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
 		shop_auth = shop.shop_auth
-		if shop.marketing:
-			shop_marketing = shop.marketing.confess_active
+		marketing = self.session.query(models.Marketing).filter_by(id = shop.id).first()
+		if marketing:
+			shop_marketing = marketing.confess_active
 			coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
 			if coupon_have==0:
 				coupon_active=0
 			else :
-				coupon_active=shop.marketing.coupon_active
+				coupon_active=marketing.coupon_active
 		else:
 			shop_marketing = 0
 			coupon_active=1
-
-
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
