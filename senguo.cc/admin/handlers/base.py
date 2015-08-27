@@ -1901,7 +1901,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					seckill_goods_id = seckill_goods.id
 					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
 					customer_seckill_goods.status = 0
-					print("@@@@@@@@@",customer_seckill_goods.status)
+					# print("@@@@@@@@@",customer_seckill_goods.status)
 					self.session.flush()
 				#减少限时折扣统计数据
 				elif activity_type==2:
