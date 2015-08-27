@@ -1952,10 +1952,10 @@ class Cart(CustomerBaseHandler):
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-		# print('[CustomerCart]Order commit success, order ID:',order.id)
+		print('[CustomerCart]Order commit success, order ID:',order.id)
 		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
+			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
@@ -2042,6 +2042,7 @@ class Cart(CustomerBaseHandler):
 	def order_cancel_auto(self,session,order_id):
 		print("[CustomerCart]Order auto cancel: order ID:",order_id)
 		order = session.query(models.Order).filter_by(id = order_id).first()
+		print("[CustomerCart]Order auto cancel: order.status:",order.num,order.status)
 		if not order:
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
@@ -2068,7 +2069,7 @@ class Cart(CustomerBaseHandler):
 				qq.update(session,use_number=use_number)
 			session.commit()
 			
-			print("[CustomerCart]Order auto cancel: order.num:",order.num)
+			print("[CustomerCart]Order auto cancel success: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 

@@ -30,6 +30,7 @@ class OnlineWxPay(CustomerBaseHandler):
 	def get(self):
 		order_id = self.get_cookie("order_id")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
+		print("[WeixinPay]Start Pay order.num:",order.num)
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
@@ -172,7 +173,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			# 生成一条余额记录
 			# 给店铺管理员 和 顾客 发送微信消息
 			##############################################################
-			# print("[WeixinPay]Callback success")
+			print("[WeixinPay]handle WeixinPay Callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			data = self.request.body
 			# print("[WeixinPay]request.body:",self.request.body)
 			xml = data.decode('utf-8')
@@ -181,6 +182,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			status       = xmlArray['result_code']
 			order_num    = str(xmlArray['out_trade_no'])
 			order_num    = order_num.split('a')[0]
+			print("[WeixinPay]Callback order_num:",order_num)
 
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
@@ -199,6 +201,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			totalPrice  = order.new_totalprice
 
 			order.status = 1  #修改订单状态
+			print("[WeixinPay]Callback order_num:",order_num,"change order.status to:",order.status)
 
 			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
@@ -230,7 +233,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			self.session.add(balance_history)
 			# print("[WeixinPay]balance_history:",balance_history)
 			self.session.commit()
-
+			print("[WeixinPay]handle WeixinPay Callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			# 发送订单模版消息给管理员/自动打印订单
 			self.send_admin_message(self.session,order)
 
@@ -238,6 +241,7 @@ class OnlineWxPay(CustomerBaseHandler):
 
 class wxpayCallBack(CustomerBaseHandler):
 	def get(self):
+		print("Shoudn't get into this!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		order_id = self.get_cookie("order_id")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
@@ -304,6 +308,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			#self.order_num = order_num
 			#order_id = int(self.args['order_id'])
 			order = self.session.query(models.Order).filter_by(id = order_id).first()
+			print("[AliPay]Start Pay order.num:",order.num)
 			if not order:
 				return self.send_fail('order not found')
 			totalPrice = order.new_totalprice
@@ -411,6 +416,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("service","v","sec_id","sign","notify_data")
 	def handle_onAlipay_notify(self):
+		print("handle_onAlipay_notify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		sign = self.args.pop('sign')
 		signmethod = self._alipay.getSignMethod(**self.args)
 		# print("[AliPay]Callback success")
@@ -439,6 +445,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		totalPrice  = order.new_totalprice
 
 		order.status = 1  #修改订单状态
+		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		if not shop_follow:
@@ -466,6 +473,8 @@ class OnlineAliPay(CustomerBaseHandler):
 		# print("[AliPay]balance_history:",balance_history)
 		self.session.commit()
 
+		print("handle_onAlipay_notify SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
 		# 发送订单模版消息给管理员/自动打印订单
 		self.send_admin_message(self.session,order)
 		
@@ -473,6 +482,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("sign","result","out_trade_no","trade_no","request_token")
 	def handle_onAlipay_callback(self):
+		print("handle_onAlipay_callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		sign = self.args.pop("sign")
 		signmethod = self._alipay.getSignMethod()
 		if signmethod(self.args) != sign:
@@ -498,6 +508,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		totalPrice  = order.new_totalprice
 
 		order.status = 1  #修改订单状态
+		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		if not shop_follow:
@@ -524,6 +535,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		self.session.add(balance_history)
 		# print("[AliPay]balance_history:",balance_history)
 		self.session.commit()
+		print("handle_onAlipay_callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 		# 发送订单模版消息给管理员/自动打印订单
 		self.send_admin_message(self.session,order)
