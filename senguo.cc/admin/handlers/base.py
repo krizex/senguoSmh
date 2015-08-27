@@ -562,8 +562,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
 			# print("[_AccountBaseHandler]get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
-			if not self._user:
-				print("[_AccountBaseHandler]get_current_user: self._user not found")
+			# if not self._user:
+			# 	print("[_AccountBaseHandler]get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -733,11 +733,15 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		phone = order.phone
 		address = order.address_text
 		shop_name = order.shop.shop_name
+
 		admin_id = order.shop.admin.id
+		
+		
+		order_shopid = order.shop_id
 		# 非自提订单发送配送员模版消息
-		if order_type != 3:
-			WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-				order_totalPrice,send_time,phone,address,admin_id)
+		# if order_type != 3:
+		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+			order_totalPrice,send_time,phone,address,order_shopid,admin_id)
 
 		# print('[TempMsg]Send staff message SUCCESS')
 
@@ -950,6 +954,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		totalPrice = str(order.totalPrice)
 		pay_type = order.pay_type
 		receipt_msg = current_shop.config.receipt_msg
+		_ordertype = order.type
+		_order_type = ""
 		if not receipt_msg:
 			receipt_msg = ""
 		if not message:
@@ -960,6 +966,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			_type = "余额支付"
 		elif pay_type == 3:
 			_type = "在线支付"
+		if _ordertype == 3:
+			_order_type = "自提"
+		else:
+			_order_type = "配送"
 		i=1
 		fruit_list = []
 		fruits = sorted(fruits.items(), key=lambda d:d[0])
@@ -975,8 +985,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 						"下单时间："+order_time+"\r\n"+\
 						"顾客姓名："+receiver+"\r\n"+\
 						"顾客电话："+phone+"\r\n"+\
-						"配送时间："+send_time+"\r\n"+\
-						"配送地址："+address+"\r\n"+\
+						""+_order_type+"时间："+send_time+"\r\n"+\
+						""+_order_type+"地址："+address+"\r\n"+\
 						"买家留言："+message+"\r\n"+\
 						"------------------------------------------------\r\n"+\
 						"@@2             商品清单\r\n"+\
@@ -1022,8 +1032,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							"下单时间："+order_time+"\n"+\
 							"顾客姓名："+receiver+"\n"+\
 							"顾客电话："+phone+"\n"+\
-							"配送时间："+send_time+"\n"+\
-							"配送地址："+address+"\n"+\
+							""+_order_type+"时间："+send_time+"\n"+\
+							""+_order_type+"地址："+address+"\n"+\
 							"买家留言："+message+"\n"+\
 							"-------------------------\n"+\
 							"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
@@ -2073,7 +2083,8 @@ class WxOauth2:
 	# 新订单模版消息（发送给配送员）
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,phone,address,admin_id,other_access_token = None):
+
+		order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token = None):
 		access_token = cls.get_client_access_token()
 		# access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		# template_id_short = 'TM00351'
@@ -2082,19 +2093,28 @@ class WxOauth2:
 		# 	return False
 		# else:
 		# 	print('template_id get success',template_id)
-
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
 			   + "送货地址：" + address  +'\n\n'\
 			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
-		order_type = "立即送" if order_type_temp == 1 else "按时达"
+		if order_type_temp == 1:
+			order_type = "立即送"
+			link_type = "now"
+		elif order_type_temp == 2:
+			order_type = "按时达"
+			link_type = "on_time"
+		else:
+			order_type = "自提"
+			link_type = "self"
+		link_url = staff_order_url +"/order?order_type="+link_type+"&shop="+str(order_shopid)
+		# print(link_url)
 		postdata = {
 			'touser':touser,
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
 			# 'template_id':'template_id',
-			'url':staff_order_url,
+			'url':link_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
@@ -2176,7 +2196,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[TempMsg]Order commit message send failed:",data)
+			# print("[TempMsg]Order commit message send failed:",data)
 			return False
 		return True
 
@@ -2207,7 +2227,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[TempMsg]Order done message send failed:",data)
+			# print("[TempMsg]Order done message send failed:",data)
 			return False
 		return True
 

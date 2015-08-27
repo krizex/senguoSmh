@@ -30,26 +30,32 @@
         {% set now_active='' %}
         {% set time_active='' %}
         {% set history_active='' %}
+        {% set self_active='' %}
         {% if page and page== 'home' %}
-        {% set home_active='active' %}
+            {% set home_active='active' %}
         {% elif page == 'now' %}
-        {% set now_active='active' %}
+            {% set now_active='active' %}
         {% elif page == 'on_time' %}
-        {% set time_active='active' %}
+            {% set time_active='active' %}
         {% elif page == 'history' %}
-        {% set history_active='active' %}
+            {% set history_active='active' %}
+        {% elif page == 'self' %}
+            {% set self_active='active' %}   
         {% end %}
         <ul class="bottom-nav row font14 bg-white navbar-fixed-bottom">
-            <li id="header-home-btn" class="col-xs-3 col-sm-3 {{home_active}}">
+            <li id="header-home-btn" class="col-xs-2 col-sm-2 {{home_active}}">
                 <a href="{{reverse_url('staffHome')}}" class="text-grey3">首页</a>
             </li>
-            <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{now_active}}">
+            <li id="header-orders-btn" class="col-xs-2 col-sm-2 {{now_active}}">
                 <a href="{{reverse_url('staffOrder')}}?order_type=now" class="text-grey3">立即送<span class="now_num num_box bg-pink text-white text-center hidden"></span></a>
             </li>
-            <li id="header-orders-btn" class="col-xs-3 col-sm-3 {{time_active}}">
+            <li id="header-orders-btn" class="col-xs-2 col-sm-2 {{time_active}}">
                 <a href="{{reverse_url('staffOrder')}}?order_type=on_time" class="text-grey3">按时达<span class="on_num num_box bg-pink text-white text-center hidden"></span></a>
             </li>
-            <li id="header-history-btn" class="col-xs-3 col-sm-3 {{history_active}}">
+            <li id="header-orders-btn" class="col-xs-2 col-sm-2 {{self_active}}">
+                <a href="{{reverse_url('staffOrder')}}?order_type=self" class="text-grey3">自提<span class="on_num num_box bg-pink text-white text-center hidden"></span></a>
+            </li>
+            <li id="header-history-btn" class="col-xs-2 col-sm-2 {{history_active}}">
                 <a href="{{reverse_url('staffOrder')}}?order_type=history" class="text-grey3">记录</a>
             </li>
         </ul>

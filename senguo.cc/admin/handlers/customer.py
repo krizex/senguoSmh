@@ -967,6 +967,10 @@ class Comment(CustomerBaseHandler):
 		send_speed = 0
 		shop_service = 0
 		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		try:
+			comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop_id).first()[0]
+		except:
+			comment_active = 0
 		if orders:
 			q = self.session.query(func.avg(models.Order.commodity_quality),\
 				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
@@ -992,7 +996,7 @@ class Comment(CustomerBaseHandler):
 			if len(date_list)<page_size:
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
-				shop_service = shop_service,commodity_quality=commodity_quality)
+				shop_service = shop_service,commodity_quality=commodity_quality,comment_active=comment_active)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 # 店铺 - 评价详情
@@ -1658,7 +1662,7 @@ class Cart(CustomerBaseHandler):
 			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
 			now_date=int(time.time())
 			if now_date>q.uneffective_time:
-				return self.send_fail("下单失败，该优惠券已经过期！")
+				return self.send_fail("下单失败，您选择的优惠券已经过期")
 		if shop_status == 0:
 			return self.send_fail('该店铺已关闭，暂不能下单(っ´▽`)っ')
 		elif shop_status == 2:
@@ -1667,9 +1671,11 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
 		if not fruits:
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
-		if len(fruits) > 20:
+		elif len(fruits) < 1:
+			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
+		elif len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
@@ -1689,7 +1695,6 @@ class Cart(CustomerBaseHandler):
 				fruit=charge_type.fruit
 
 				# totalPrice
-				
 				if m_fruit_goods==[]:
 					m_fruit_group.append(fruit.group_id)
 					m_fruit_goods.append(fruit.id)
@@ -1707,10 +1712,7 @@ class Cart(CustomerBaseHandler):
 							m_price.append(singlemoney)
 							break
 
-
 				###使用优惠券
-
-
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
 
 				limit_num = charge_type.fruit.limit_num
@@ -1963,10 +1965,10 @@ class Cart(CustomerBaseHandler):
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-		# print('[CustomerCart]Order commit success, order ID:',order.id)
+		print('[CustomerCart]Order commit success, order ID:',order.id)
 		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
+			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
@@ -2056,6 +2058,7 @@ class Cart(CustomerBaseHandler):
 	def order_cancel_auto(self,session,order_id):
 		print("[CustomerCart]Order auto cancel: order ID:",order_id)
 		order = session.query(models.Order).filter_by(id = order_id).first()
+		print("[CustomerCart]Order auto cancel: order.status:",order.num,order.status)
 		if not order:
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
@@ -2082,7 +2085,7 @@ class Cart(CustomerBaseHandler):
 				qq.update(session,use_number=use_number)
 			session.commit()
 			
-			print("[CustomerCart]Order auto cancel: order.num:",order.num)
+			print("[CustomerCart]Order auto cancel success: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 
@@ -2716,6 +2719,10 @@ class OrderComment(CustomerBaseHandler):
 		token = self.get_qiniu_token("order",self.current_user.id)
 		orderid=self.args["orderid"]
 		order = next((x for x in self.current_user.orders if x.id == int(orderid)), None)
+		try:
+			comment_active = self.session.query(models.Config.comment_active).filter_by(id=order.shop_id).first()[0]
+		except:
+			comment_active = 0
 		shop_id = order.shop_id
 		if order is None:
 			return self.send_fail("订单为空")
@@ -2726,7 +2733,8 @@ class OrderComment(CustomerBaseHandler):
 		else:
 			imgurls = None
 			length = 0
-		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length)
+		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length,\
+			comment_active=comment_active)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated

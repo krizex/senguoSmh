@@ -1316,7 +1316,7 @@ class Order(MapBase, _CommonApi):
 	send_speed        = Column(Integer)
 	shop_service      = Column(Integer)
 
-	online_type       = Column(String(8))
+	online_type       = Column(String(8)) #wx alipay
 	send_admin_id =Column(Integer,default=0) #记录处理订单配送的管理员id #5.25
 	finish_admin_id =Column(Integer,default=0) #记录处理订单完成的管理员id #5.25
 
@@ -1572,6 +1572,7 @@ class Config(MapBase, _CommonApi):
 	self_end_time = Column(Integer,default = 0) #自提下单截止时间 7.30
 	self_addresses = relationship("SelfAddress")
 
+	comment_active = Column(Integer,default = 1) #0:comment off 1:comment on
 
 #自提地址 7.30 max10
 class SelfAddress(MapBase,_CommonApi):

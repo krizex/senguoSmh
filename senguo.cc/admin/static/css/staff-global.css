@@ -43,7 +43,7 @@ div,p,ul,li,span{-webkit-user-select:none;}
 
 .bottom-nav{border-top:1px solid #ccc;max-width:800px;margin:0 auto;height:40px;line-height:40px;overflow:hidden;}
 .bottom-nav ul{margin-bottom:0;}
-.bottom-nav li{text-align:center;padding:0 5px;position:relative;}
+.bottom-nav li{text-align:center;padding:0 5px;position:relative;width:20%;}
 .bottom-nav li a{display:block;padding:0 !important;}
 .bottom-nav li:hover{color:#33CC66;}
 .bottom-nav li:hover a{color:#33CC66;}
