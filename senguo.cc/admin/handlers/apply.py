@@ -218,9 +218,9 @@ class WxMessage(CustomerBaseHandler):
 			elif Content == '打印机':
 				reply_message = 'senguo.cc/bbs/detail/8'
 			else:
-				MsgType = 'transfer_customer_service'
-				reply_message = None
-				# reply_message = '您的消息我们已经收到，请耐心等待回复哦～'
+				#MsgType = 'transfer_customer_service'
+				#reply_message = None
+				reply_message = '您好，相关问题可以添加森果客服微信（senguocc100）进行咨询哦'
 			reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 			reply = ET.tostring(reply,encoding='utf8',method='xml')
 			# print("[ApplyWxMessage]reply:",reply)
@@ -343,6 +343,7 @@ class Home(CustomerBaseHandler):
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
 		except:
 			if_admin = None
+			
 		if if_admin:
 			return self.redirect(self.reverse_url("switchshop"))
 

@@ -72,8 +72,8 @@ class WxPayConf_pub(object):
 
     #=======【证书路径设置】=====================================
     #证书路径,注意应该填写绝对路径
-    SSLCERT_PATH = "/******/cacert/apiclient_cert.pem"
-    SSLKEY_PATH = "/******/cacert/apiclient_key.pem"
+    SSLCERT_PATH = "/home/woody/senguocc/senguo.cc/admin/libs/cacert/apiclient_cert.pem"
+    SSLKEY_PATH = "/home/woody/senguocc/senguo.cc/admin/libs/cacert/apiclient_key.pem"
 
     #=======【curl超时设置】===================================
     CURL_TIMEOUT = 30

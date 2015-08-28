@@ -234,7 +234,13 @@ class Order(StaffBaseHandler):
 				if order.status not in [1,2,3,4]:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 5
-				self.order_done(self.session,order)
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+					# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					print(order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				else:
+					access_token = None
+				self.order_done(self.session,order,access_token)
 				if order.pay_type == 1:  # 货到付款订单，员工需收款
 					self.hirelink.money += order.totalPrice
 

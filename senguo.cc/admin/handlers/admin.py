@@ -1539,7 +1539,13 @@ class Order(AdminBaseHandler):
 			# print('[AdminOrder]edit_status: login in order_status 5')
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
-			self.order_done(self.session,order)
+			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+				# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+				access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+				print(order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+			else:
+				access_token = None
+			self.order_done(self.session,order,access_token)
 
 	# 订单计数
 	def _count(self):
@@ -1840,6 +1846,7 @@ class Order(AdminBaseHandler):
 				count += 1
 			if count > 0:
 				shop_id = self.current_shop.id
+				admin_id = self.current_shop.admin.id
 				staff_info = []
 				try:
 					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
@@ -1853,7 +1860,7 @@ class Order(AdminBaseHandler):
 					openid = self.current_shop.admin.accountinfo.wx_openid
 					staff_name = self.current_shop.admin.accountinfo.nickname
 				shop_name = self.current_shop.shop_name
-				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count)
+				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count,admin_id)
 		# 批量打印订单
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]

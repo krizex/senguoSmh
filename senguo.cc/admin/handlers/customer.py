@@ -1046,65 +1046,80 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @get_unblock
+	@CustomerBaseHandler.check_arguments("code?")
 	def get(self, shop_code):
 		# print('[CustomerMarket]login in')
+		code = self.args.get('code',None)
 		w_follow = True
 		# fruits=''
 		# page_size = 10
 		# return self.send_success()
+		print(self.current_user.id)
 
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
-		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
+		print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 		if shop.admin.has_mp:
-			# print('[CustomerMarket]login shop.admin.has_mp')
+			print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
 			admin_id    = shop.admin.id
-			wx_openid   = self.session.query(models.Mp_customer_link).first()
-			if wx_openid:
-				# print('[CustomerMarket]whatttttttttttttttt')
-				pass
-			else:
-				#生成wx_openid
-				if self.is_wexin_browser():
-					# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
-					wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
-					# print(wx_openid,appid,appsecret)
-					if wx_openid:
+			# admin_customer_openid  = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+		
+			#生成wx_openid
+			if self.is_wexin_browser():
+				print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+				if len(code) == 0:
+					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
+					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
+					return self.redirect(url)
+				else:
+					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
+				# wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
+				print(wx_openid,appid,appsecret)
+				if wx_openid:
+					#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
+					admin_customer_openid = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+					if admin_customer_openid:
+						print('update other wxopenid')
+						admin_customer_openid.wx_openid = wx_openid
+					else:
 						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
 						self.session.add(admin_customer_openid)
-						self.session.commit()
-					# else:
-					#	print('[CustomerMarket]get openid failed')
-				# else:
-				#	print('[CustomerMarket]haahahahah')
+					self.session.commit()
+				else:
+					print('[CustomerMarket]get openid failed')
+			# else:
+			#	print('[CustomerMarket]haahahahah')
 		else:
 			pass
 		# print('[CustomerMarket]success??????????????????????????????????')
 
 		# self.current_shop = shop
 		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
+		# try:
+		# 	shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		# except NoResultFound:
+		# 	return self.write('您访问的店铺不存在')
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
 		shop_auth = shop.shop_auth
-		if shop.marketing:
-			shop_marketing = shop.marketing.confess_active
+		marketing = self.session.query(models.Marketing).filter_by(id = shop.id).first()
+		if marketing:
+			shop_marketing = marketing.confess_active
 			coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
 			if coupon_have==0:
 				coupon_active=0
 			else :
-				coupon_active=shop.marketing.coupon_active
+				coupon_active=marketing.coupon_active
 		else:
 			shop_marketing = 0
 			coupon_active=1
-
-
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
@@ -1217,18 +1232,18 @@ class Market(CustomerBaseHandler):
 	def get_customer_openid(self,appid,appsecret,shop_code):
 		# print('[CustomerMarket]login in get_customer_openid')
 		code = self.args.get('code',None)
-		# print('[CustomerMarket]code:',code)
+		print('[CustomerMarket]code:',code)
 		if len(code) == 0:
-			# print('[CustomerMarket]get code')
-			appid = 'wx0ed17cdc9020a96e'
+			print('[CustomerMarket]get code')
+			#appid = 'wx0ed17cdc9020a96e'
 			redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
 			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
-			# print("[CustomerMarket]url:",url)
+			print("[CustomerMarket]url:",url)
 			return self.redirect(url)
 		else:
-			# print('[CustomerMarket]has code')
+			print('[CustomerMarket]has code')
 			wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
-			# print("[CustomerMarket]wx_openid:",wx_openid)
+			print("[CustomerMarket]wx_openid:",wx_openid)
 			return wx_openid
 
 	@tornado.web.authenticated
@@ -1974,25 +1989,26 @@ class Cart(CustomerBaseHandler):
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
-		self.cart_callback(order.id)
+		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
-	def cart_callback(self,order_id):
+	@classmethod
+	def cart_callback(self,session,order_id):
 		# print("[CustomerCart]cart_callback: order_id:",order_id)
 		# try:
 		# 	order_id = int(self.args['order_id'])
 		# except:
 		# 	Logger.error("CartCallback: get order_id error")
 		# 	return self.send_fail("CartCallback: get order_id error")
-		order = self.session.query(models.Order).filter_by(id = int(order_id)).first()
+		order = session.query(models.Order).filter_by(id = int(order_id)).first()
 		if not order:
 			# print("[CustomerCart]cart_callback: order not found")
 			return self.send_fail("[CustomerCart]cart_callback: order not found")
 		totalPrice = order.new_totalprice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
-		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-		shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		customer = session.query(models.Customer).filter_by(id = customer_id).first()
+		shop     = session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
 			# print("[CustomerCart]cart_callback: shop/customer not found")
 			return self.send_fail('[CustomerCart]cart_callback: shop/customer not found')
@@ -2003,13 +2019,15 @@ class Cart(CustomerBaseHandler):
 		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
 			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
 		else:
 			access_token = None
+
 
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(self.session,order,access_token)
+			self.send_admin_message(session,order,access_token)
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -2019,21 +2037,21 @@ class Cart(CustomerBaseHandler):
 		####################################################
 		# print("[CustomerCart]cart_callback: pay_type:",self.args['pay_type'])
 		if order.pay_type == 2:
-			shop_follow = self.session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
+			shop_follow = session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
 				return self.send_fail('[CustomerCart]cart_callback: shop_follow not found')
 			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-			self.session.flush()
+			session.flush()
 			#生成一条余额交易记录
 			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
 				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
-			self.session.add(balance_history)
-			self.session.flush()
-		self.session.commit()
+			session.add(balance_history)
+			session.flush()
+		session.commit()
 		return True
 
 	@classmethod
