@@ -45,11 +45,21 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
     });
     req.always(alwaysCall);
 };
-
 $.getItem=function(url,success){
     $.get(url,success);
+    $.ajax({
+        url:url,
+        type:"get",
+        dataType:"html",
+        success:success,
+        error:function(){
+            Tip("服务器发生错误,请联系管理员~~");
+        },
+        fail:function(){
+            Tip("服务器发生错误,请联系管理员~~");
+        }
+    });
 };
-
 (function ($) {
     $.getNum=function(text) {
         var value = text.replace(/[^0-9]/ig, "");

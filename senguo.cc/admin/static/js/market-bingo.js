@@ -329,7 +329,9 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" is_activity="
                 '<div class="wrap-src-price">'+
                     '<p class="src-price {{if is_activity>0 }}hidden{{/if}}"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
                     '<p class="text-grey9 f12 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
-                    '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span><span class="price-dif price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{discount_rate}}折</span></span></p>'+
+                    '<p class="cur-price color"><span class="f12 rmb">￥</span>' +
+                    '<span class="cur-price-num">{{cur_price}}</span>{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{discount_rate}}折</span>' +
+                    '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span></p>'+
                 '</div>'+
                 '<div class="wrap-bug-text hidden">'+
                     '<span class="bug-num"><span class="font16">x </span><span class="buy-num number-input">1</span></span>'+

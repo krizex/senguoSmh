@@ -319,7 +319,9 @@ var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}" end-ti
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
-                            '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span>'+
+                            '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span><span class=""></span>'+
+                            '{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
+                            '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span>'+
                             '{{if charge_types["market_price"]>0 }}' +
                             '<p class="market {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
                             '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
@@ -338,6 +340,8 @@ var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}"  end
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
                         '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
+                        '{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
+                        '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span>'+
                         '{{if charge_types["market_price"]>0 }}<p class="market text-grey9 {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
                         '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
                     '</div>'+
