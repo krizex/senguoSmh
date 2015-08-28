@@ -1466,7 +1466,7 @@ class Market(CustomerBaseHandler):
 									allow_num = fruit.limit_num - limit_if.buy_num
 						#判断商品是否参加了限时折扣活动 还不知道需不需要加上
 						has_discount_activity1=0 # 标记是否有活动
-						discount_rate=None  #标记折扣
+						discount_rate=10  #标记折扣
 						if q_all:
 							has_discount_activity1=1
 							has_discount_activity=1
@@ -1489,6 +1489,8 @@ class Market(CustomerBaseHandler):
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
+
+				charge_types.sort(key=lambda item:item['discount_rate'],reverse=False)
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
 				# print("[CustomerMarket]w_getdata:",fruit.name,fruit.len(fruit.img_url.split(";")),fruit.detail_describe)
