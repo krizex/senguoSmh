@@ -376,7 +376,8 @@ class GlobalBaseHandler(BaseHandler):
 			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
 				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
-				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code})
+				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,\
+				'code':d.fruit_type.code,'buylimit':d.buy_limit})
 		if _type and _type=="one":
 			data = data[0]
 		# print([GlobalBaseHandler]getGoodsData, data:",data)
@@ -1337,7 +1338,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 			self.current_shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 
 		if_current_shops = self.if_current_shops()
-		print(if_current_shops)
+		# print(if_current_shops)
 		if not if_current_shops:
 			return self.redirect(self.reverse_url("switchshop"))
 

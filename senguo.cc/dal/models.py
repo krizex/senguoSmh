@@ -1413,6 +1413,8 @@ class Fruit(MapBase, _CommonApi):
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
 
+	buy_limit = Column(Integer, default=0) #0:all 1:only new user 2:only old user 3:only charge user
+
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
