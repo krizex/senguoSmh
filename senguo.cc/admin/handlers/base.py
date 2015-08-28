@@ -1108,13 +1108,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		c_tourse   =customer.accountinfo.wx_openid
 		goods = []
 		f_d = eval(order.fruits)
-		print("@@@@@@@aaaaa")
 		for f in f_d:
 			if 'activity_name' in list(f_d[f].keys()) and f_d[f].get('activity_name'):
 				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num'),f_d[f].get('activity_name')])
 			else:
 				goods.append([f_d[f].get('fruit_name'),f_d[f].get('charge'),f_d[f].get('num')])
-		print("##############goods",goods)
 		goods = str(goods)[1:-1]
 		order_totalPrice = float('%.2f' % totalPrice)
 		send_time = order.send_time
@@ -2100,16 +2098,14 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					img_url= None
 				#查询是否有限时折扣活动
 				self.updatediscount()
-				discount_rate=None
+				discount_rate=1
 				num=None
 				q=self.session.query(models.ChargeType).filter_by(id=charge_type.id,activity_type=2).first()
 				if q:
 					qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).first()
 					if qq:
 						if charge_type.id in eval(qq.charge_type):
-							discount_rate = qq.discount_rate
-						else:
-							discount_rate = 10
+							discount_rate = qq.discount_rate/10
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
 										  "activity_type":charge_type.activity_type,"discount_rate":discount_rate}

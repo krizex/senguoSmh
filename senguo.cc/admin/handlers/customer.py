@@ -1402,6 +1402,11 @@ class Market(CustomerBaseHandler):
 				return []
 				
 			shop_id = m[0].shop_id
+			shop = session.query(models.Shop).filter_by(id = shop_id).first()
+			if shop:
+				shop_tpl = shop.shop_tpl
+			else:
+				shop_tpl = 0
 
 			killing_activity_id = []
 			killing_fruit_id = []
@@ -1495,7 +1500,6 @@ class Market(CustomerBaseHandler):
 				# added by jyj 2015-8-21
 				data_item1 = {}
 				data_item2 = {}
-				data_item3 = {}
 
 				data_item1['id'] = fruit.id
 				data_item1['shop_id'] = fruit.shop_id
@@ -1508,6 +1512,7 @@ class Market(CustomerBaseHandler):
 				data_item1['favour_today'] = str(favour_today)
 				data_item1['group_id'] = fruit.group_id
 				data_item1['detail_no'] = str(detail_no)
+				data_item1['is_activity'] = 0
 
 				data_item2['id'] = fruit.id
 				data_item2['shop_id'] = fruit.shop_id
@@ -1552,7 +1557,13 @@ class Market(CustomerBaseHandler):
 						cur_charge_type_num = int(cur_charge_type.num)
 					else:
 						cur_charge_type_num = cur_charge_type.num
-					data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+					if shop_tpl == 0:
+						data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+					else:
+						charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.seckill_charge_type_id).first()
+						data_item1['charge_types'] = {'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit,\
+							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(False),\
+							'allow_num':1,"discount_rate":None,"has_discount_activity":0,'activity_type':charge_type.activity_type}
 
 					data_item1['price_dif'] = round(float(seckill_info.former_price - seckill_info.seckill_price),2)
 					if seckill_info.activity_piece - seckill_info.ordered > 0:
@@ -1567,12 +1578,15 @@ class Market(CustomerBaseHandler):
 						data_item2['is_activity'] = 2
 					else:
 						data_item2['is_activity'] = 0
-					data_item2['charge_types'] = charge_types
-					data_item2['storage'] = fruit.storage
-					data_item2['saled'] = saled
-					data_item2['favour'] = fruit.favour
-					data_item2['limit_num'] = fruit.limit_num
-					data.append(data_item2)
+					if data_item1['is_activity'] == 1 and shop_tpl != 0:
+						pass
+					else:
+						data_item2['charge_types'] = charge_types
+						data_item2['storage'] = fruit.storage
+						data_item2['saled'] = saled
+						data_item2['favour'] = fruit.favour
+						data_item2['limit_num'] = fruit.limit_num
+						data.append(data_item2)
 				##
 			return data
 
@@ -2073,6 +2087,7 @@ class Cart(CustomerBaseHandler):
 					continue
 				singlemoney=charge_type.price*fruits[str(charge_type.id)] 
 				
+				discount_rate=1
 				#进行折扣优惠处理
 				if charge_type.activity_type==2 and charge_type.id in discount_ids:
 					q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
@@ -2105,8 +2120,10 @@ class Cart(CustomerBaseHandler):
 		
 					if discount_flag==1:
 						totalPrice+=singlemoney*(q_price.discount_rate/10)
+						discount_rate=q_price.discount_rate/10
 					else:
 						totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
+						discount_rate=1
 				else:
 					totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				fruit=charge_type.fruit
@@ -2179,7 +2196,8 @@ class Cart(CustomerBaseHandler):
 				# print("[CustomerCart]charge_type.price:",charge_type.price)
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit]),"activity_name":activity_name[charge_type.activity_type]}
+									 "charge":"%.2f元/%.2f%s" % (charge_type.price*discount_rate, charge_type.num, unit[charge_type.unit]),"activity_name":activity_name[charge_type.activity_type],\
+									 "discount_rate":discount_rate}
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -2336,7 +2354,6 @@ class Cart(CustomerBaseHandler):
 		else:
 			order_status = 1
 
-
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -2452,10 +2469,6 @@ class Cart(CustomerBaseHandler):
 		else:
 			access_token = None
 
-		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
-		if order.pay_type != 3:
-			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(self.session,order,access_token)
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -2480,6 +2493,12 @@ class Cart(CustomerBaseHandler):
 			self.session.add(balance_history)
 			self.session.flush()
 		self.session.commit()
+
+		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
+		if order.pay_type != 3:
+			# print("[CustomerCart]cart_callback: access_token:",access_token)
+			self.send_admin_message(self.session,order,access_token)
+			
 		return True
 
 	@classmethod
