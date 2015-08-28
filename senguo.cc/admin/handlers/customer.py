@@ -254,11 +254,42 @@ class Third(CustomerBaseHandler):
 class customerGoods(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code,goods_id):
-		try:
-			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
-		except:
-			return self.send_error(404)
+		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		if not self.session.query(models.CustomerShopFollow).filter_by(
+				customer_id=self.current_user.id, shop_id=shop.id).first():
+			# w_follow = False
+			shop.fans_count = shop.fans_count + 1
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+			if shop_follow:
+				if shop_follow.shop_point is not None:
+					shop_follow.shop_point += 10
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add follow point:",now,shop_follow.shop_point)
+				else:
+					shop_follow.shop_point = 10
+			if shop_follow.bing_add_point == 0:
+				if self.current_user.accountinfo.phone != None:
+					shop_follow.shop_point += 10
+					shop_follow.bing_add_point = 1
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add phone point:",now,shop_follow.shop_point,'phone')
 
+			self.session.add(shop_follow)
+			self.session.flush()
+
+			point_history = models.PointHistory(customer_id = self.current_user.id,shop_id = shop.id)
+			if point_history:
+				point_history.each_point = 10
+				point_history.point_type = models.POINT_TYPE.FOLLOW
+				# print("[CustomerMarket]point_history:",point_history,point_history.each_point)
+			self.session.add(point_history)
+			self.session.commit()
+		# try:
+		# 	shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+		# except:
+		# 	return self.send_error(404)
 		if shop:
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self._shop_code = shop.shop_code
@@ -2471,7 +2502,6 @@ class Cart(CustomerBaseHandler):
 		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
-	@classmethod
 	def cart_callback(self,session,order_id):
 		# print("[CustomerCart]cart_callback: order_id:",order_id)
 		# try:
