@@ -46,8 +46,20 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
     req.always(alwaysCall);
 };
 
-$.getItem=function(url,success){
-    $.get(url,success);
+$.getItem = function(url, success) {
+    $.get(url, success);
+    $.ajax({
+        url: url,
+        type: "get",
+        dataType: "html",
+        success: success,
+        error: function() {
+            Tip("您的网络暂时不通畅，请稍候再试");
+        },
+        fail: function() {
+            Tip("您的网络暂时不通畅，请稍候再试");
+        }
+    });
 };
 
 (function ($) {

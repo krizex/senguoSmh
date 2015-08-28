@@ -242,7 +242,7 @@ function count(action,page){
             else return alert(res.error_text);
         },
         function(){
-            return alert('网络错误！');
+            return alert('您的网络暂时不通畅，请稍候再试');
         });
 }
 

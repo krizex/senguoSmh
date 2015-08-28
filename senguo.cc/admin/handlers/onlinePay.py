@@ -88,7 +88,7 @@ class OnlineWxPay(CustomerBaseHandler):
 
 		qr_url=""
 		if not self.is_wexin_browser():
-			qr_url = self._qrwxpay()
+			qr_url = self._qrwxpay(shop_name)
 			# print("[WeixinPay]qr_url:",qr_url)
 			return self.render('customer/online-qrwxpay.html',qr_url = qr_url,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
@@ -112,8 +112,8 @@ class OnlineWxPay(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[WeixinPay]totalPrice:",totalPrice)
-			unifiedOrder.setParameter("body",'订单号：'+ str(order_num))
-			unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+			unifiedOrder.setParameter("body",str(order_num))
+			unifiedOrder.setParameter("notify_url",'http://auth.senguo.cc/customer/onlinewxpay')
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
 			# orderPriceSplite = (order.price) * 100
@@ -133,7 +133,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			wxappid = 'wx0ed17cdc9020a96e'
 			signature = self.signature(noncestr,timestamp,path_url)
 
-			qr_url = self._qrwxpay()
+			qr_url = self._qrwxpay(shop_name)
 		return self.render("fruitzone/paywx.html",qr_url = qr_url ,renderPayParams = renderPayParams,wxappid = wxappid,\
 			noncestr = noncestr ,timestamp = timestamp,signature = signature,totalPrice = totalPrice,\
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
@@ -146,7 +146,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		pass
 		return
 
-	def _qrwxpay(self):
+	def _qrwxpay(self,shop_name):
 		import chardet
 		order_id = self.get_cookie("order_id")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
@@ -157,8 +157,8 @@ class OnlineWxPay(CustomerBaseHandler):
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
 		wxPrice =int(totalPrice * 100)
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",'订单号：'+ str(order_num))
-		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("body",str(order_num))
+		unifiedOrder.setParameter("notify_url",'http://auth.senguo.cc/customer/onlinewxpay')
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
@@ -263,7 +263,7 @@ class wxpayCallBack(CustomerBaseHandler):
 		totalPrice = order.new_totalprice
 		wxPrice =int(totalPrice * 100)
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",'订单号：'+ str(order_num))
+		unifiedOrder.setParameter("body",str(order_num))
 		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
@@ -326,7 +326,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			if not order:
 				return self.send_fail('order not found')
 			totalPrice = order.new_totalprice
-			alipayUrl =  self.handle_onAlipay(order.num)
+			alipayUrl =  self.handle_onAlipay(order.num,order.shop.shop_name)
 			self.order_num = order.num
 			# print("[AliPay]alipayUrl:",alipayUrl)
 			# print("[AliPay]order_num:",self.order_num)
@@ -379,12 +379,12 @@ class OnlineAliPay(CustomerBaseHandler):
 		#if not self.current_user:
 		#	return self.send_error(403)
 		if self._action == "AliPay":
-			return self.handle_onAlipay(order_num)
+			return self.handle_onAlipay(order_num,shop_name)
 		else:
 			return self.send_error(404)
 
 	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
-	def handle_onAlipay(self,order_num):
+	def handle_onAlipay(self,order_num,shop_name):
 		# print("[AliPay]login handle_onAlipay")
 		# order_num = self.order_num if self.order_num else 'NULL'
 		# print("[AliPay]order_num:",order_num)
@@ -400,7 +400,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		price    = order.new_totalprice
 
 		try:
-			url = self.create_alipay_url(price,order_num)
+			url = self.create_alipay_url(price,order_num,shop_name)
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙，请稍后再试')
 		# return self.redirect(url)
@@ -409,11 +409,11 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
-	def create_alipay_url(self,price,order_num):
+	def create_alipay_url(self,price,order_num,shop_name):
 		# print("[AliPay]login create_alipay_url:",price,order_id)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_num),
-			subject      = '订单号：' + str(order_num),
+			subject      = shop_name + '订单号：' + str(order_num),
 			total_fee    = float(price),
 			#defaultbank  = CMB,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,

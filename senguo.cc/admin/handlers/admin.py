@@ -1533,16 +1533,22 @@ class Order(AdminBaseHandler):
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			# 发送订单模版消息给送货员
 			if send_message:
-				self.send_staff_message(self.session,order)
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				else:
+					access_token = None
+				self.send_staff_message(self.session,order,access_token)
 
 		if order_status == 5:
 			# print('[AdminOrder]edit_status: login in order_status 5')
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
 			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
-				# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+				# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 				access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
-				print(order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
 			else:
 				access_token = None
 			self.order_done(self.session,order,access_token)
