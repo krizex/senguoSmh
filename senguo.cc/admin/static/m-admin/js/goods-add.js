@@ -278,8 +278,8 @@ function finishGoods(){
     var storage = $.trim($(".stock-num").val());
     var unit = $(".current-unit").attr("data-id");
     var tag =$(".wrap-mark-set").find(".active").attr("data-id");
-    if(name.length>12 || name==""){
-        return Tip("商品名称不能为空且不能超过12个字");
+    if(name.length>25 || name==""){
+        return Tip("商品名称不能为空且不能超过25个字");
     }
     if(!testNum.test(storage)){
         return Tip("请填写正确的库存，只能为数字")

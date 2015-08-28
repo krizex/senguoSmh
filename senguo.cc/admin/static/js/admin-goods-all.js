@@ -533,9 +533,9 @@ function dealGoods($item,type){
     var storage = $item.find(".stock-num").val().trim();
     var unit = $item.find(".current-unit").attr("data-id");
     var tag =$item.find(".tag-item.active").attr("data-id");
-    if(name.length>12 || name==""){
+    if(name.length>25 || name==""){
         $('.ok-edit-goods').attr("data-flag","on");
-        return Tip("商品名称不能为空且不能超过12个字");
+        return Tip("商品名称不能为空且不能超过25个字");
     }
     if(!testNum.test(storage)){
         $('.ok-edit-goods').attr("data-flag","on");
