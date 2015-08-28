@@ -47,7 +47,7 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
 };
 
 $.getItem = function(url, success) {
-    $.get(url, success);
+    // $.get(url, success);
     $.ajax({
         url: url,
         type: "get",
