@@ -340,24 +340,24 @@ class Home(CustomerBaseHandler):
 		if not self.current_user:
 			return self.redirect(self.reverse_url("ApplyLogin"))
 		try:
-			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
 		except:
 			if_admin = None
 			
 		if if_admin:
 			return self.redirect(self.reverse_url("switchshop"))
 
-		try:
-			if_shop_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
-			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
-		except:
-			if_shop_admin = None
-		try:
-			if_shop = self.session.query(models.Shop).filter_by(id = if_shop_admin.shop_id).first()
-		except:
-			if_shop = None
-		if if_shop_admin:
-			return self.redirect(self.reverse_url("switchshop"))
+		# try:
+		# 	if_shop_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+		# 	.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
+		# except:
+		# 	if_shop_admin = None
+		# try:
+		# 	if_shop = self.session.query(models.Shop).filter_by(id = if_shop_admin.shop_id).first()
+		# except:
+		# 	if_shop = None
+		# if if_shop_admin:
+		# 	return self.redirect(self.reverse_url("switchshop"))
 		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
@@ -398,23 +398,23 @@ class Home(CustomerBaseHandler):
 			return self.send_fail('验证码错误')
 
 		try:
-			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
 		except:
 			if_admin = None
 		if if_admin:
 			return self.send_fail("您已是卖家")
 		#判断申请店铺的微信是否已是某店铺的管理员身份
-		try:
-			if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
-			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
-		except:
-			if_shopadmin = None
-		try:
-			if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
-		except:
-			if_shop = None
-		if if_shopadmin:
-			return self.send_fail('该账号已是'+if_shop.shop_name+'的管理员，不能使用该账号申请店铺，若要使用该账号，请退出'+if_shop.shop_name+'管理员身份更换或其它账号')
+		# try:
+		# 	if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+		# 	.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
+		# except:
+		# 	if_shopadmin = None
+		# try:
+		# 	if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
+		# except:
+		# 	if_shop = None
+		# if if_shopadmin:
+		# 	return self.send_fail('该账号已是'+if_shop.shop_name+'的管理员，不能使用该账号申请店铺，若要使用该账号，请退出'+if_shop.shop_name+'管理员身份更换或其它账号')
 
 		if not self.args['phone']:
 			return self.send_fail("please input your phone number")
@@ -430,15 +430,24 @@ class Home(CustomerBaseHandler):
 		if len(self.args["wx_username"])>20:
 			return self.send_fail("微信号请不要超过20个字")
 
+		if_normal_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+		print(if_normal_admin)
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
 		self.current_user.accountinfo.wx_username=self.args["wx_username"]
-		self.session.add(models.ShopAdmin(id=self.current_user.id))
+		if if_normal_admin:
+			if_normal_admin.role=1
+			if_normal_admin.privileges = -1
+		else:
+			self.session.add(models.ShopAdmin(id=self.current_user.id))
 		self.session.commit()
 		return self.send_success()
 
 # 创建店铺
 class CreateShop(AdminBaseHandler):
+	def if_current_shops(self):
+		return True
+		
 	@tornado.web.authenticated
 	def get(self):
 		token = self.get_qiniu_token("Market_cookie","apply")
@@ -452,18 +461,18 @@ class CreateShop(AdminBaseHandler):
 		if not action or not data:
 			return self.send_error(403)
 		try:
-			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
+			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).one()
 		except:
 			super_admin = None
 		if not super_admin:
 			return self.send_fail("您不是卖家，无法创建新的店铺")
-		try:
-			if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
-			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
-		except:
-			if_shopadmin = None
-		if if_shopadmin:
-			return self.send_fail("您没有创建店铺的权限")
+		# try:
+		# 	if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+		# 	.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
+		# except:
+		# 	if_shopadmin = None
+		# if if_shopadmin:
+		# 	return self.send_fail("您没有创建店铺的权限")
 		#检查申请店铺数量
 		try:
 			shops = self.session.query(models.Shop).filter_by(admin_id=self.current_user.id)
@@ -477,10 +486,11 @@ class CreateShop(AdminBaseHandler):
 				elif shop_frist.shop_auth !=0 and shops.count() >= 30:
 					return self.send_fail("最多可创建30个店铺")
 
-		if self.current_shop:
-			_admin_id = self.current_shop.admin_id
-		else:
-			_admin_id = self.current_user.id
+		_admin_id = self.current_user.id
+		# if self.current_shop:
+		# 	_admin_id = self.current_shop.admin_id
+		# else:
+		# 	_admin_id = self.current_user.id
 
 		if action == "diy":
 			args={}
