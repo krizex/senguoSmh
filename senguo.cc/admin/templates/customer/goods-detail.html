@@ -81,6 +81,8 @@
             </ul>
         </li>
     </ul>
+    {% else %}
+    <ul class="goods-info-lst"></ul>
     {% end %}
     <a href="javascript:;" class="shop-area add-cart" id="shop-area" data-href="{{reverse_url('customerShopProfile',handler.shop_code)}}">
         <span class="roll-bg shop-in">
