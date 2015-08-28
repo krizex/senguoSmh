@@ -2081,11 +2081,10 @@ class Cart(CustomerBaseHandler):
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
 		print(order.id)
-		self.cart_callback(self.session,order.id,self.current_user)
+		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
-	@classmethod
-	def cart_callback(self,session,order_id,current_user):
+	def cart_callback(self,session,order_id):
 		# print("[CustomerCart]cart_callback: order_id:",order_id)
 		# try:
 		# 	order_id = int(self.args['order_id'])
@@ -2129,7 +2128,7 @@ class Cart(CustomerBaseHandler):
 		####################################################
 		# print("[CustomerCart]cart_callback: pay_type:",self.args['pay_type'])
 		if order.pay_type == 2:
-			shop_follow = session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = current_user.id,\
+			shop_follow = session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
 				return self.send_fail('[CustomerCart]cart_callback: shop_follow not found')
@@ -2137,8 +2136,8 @@ class Cart(CustomerBaseHandler):
 			session.flush()
 			#生成一条余额交易记录
 			balance_record = '余额支付：订单' + order.num
-			balance_history = models.BalanceHistory(customer_id = current_user.id,\
-				shop_id = shop_id ,name = current_user.accountinfo.nickname,balance_value = totalPrice ,\
+			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
+				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
 				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
 			session.add(balance_history)
