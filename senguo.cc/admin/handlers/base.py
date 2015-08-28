@@ -1617,8 +1617,24 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					img_url=charge_type.fruit.img_url.split(";")[0]
 				else:
 					img_url= None
-				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
-										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num}
+				fruit = charge_type.fruit
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit == 1 or 2:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buylimit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop_id,balance_type=0).first()
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
+				if buy_limit == userlimit or buy_limit ==0 :
+					fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
+											  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num}
 		return fruits
 
 	@property

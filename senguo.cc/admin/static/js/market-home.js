@@ -212,6 +212,17 @@ $(document).ready(function(){
     var change_num=relate*unit_num*1;
     var buy_today=$this.parents('.charge-item').attr('data-buy');
     var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    var buy_limit=parseInt(parent.attr("data-buylimit"));
+    var user_limit=parseInt(parent.attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
     if(change_num==NaN){
         change_num=0;
     }
@@ -256,6 +267,17 @@ $(document).ready(function(){
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
         var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+        var buy_limit=parseInt(parent.attr("data-buylimit"));
+        var user_limit=parseInt(parent.attr("data-userlimit"));
+        if(buy_limit!=user_limit&&buy_limit!=0){
+            if(buy_limit==1){
+                return noticeBox("该商品仅限新用户购买");
+            }else if(buy_limit==2){
+                return noticeBox("该商品仅限老用户购买");
+            }else if(buy_limit==3){
+                return noticeBox("该商品仅限充值用户购买");
+            }
+        }
         if(buy_today=='True'&&num>=allow_num){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
@@ -353,7 +375,7 @@ var goodsList=function(page,action,_group_id){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
@@ -362,13 +384,16 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                             '</a>'+
                         '</div>'+
                         '<div class="goods-info pull-left">'+
-                            '<p class="clearfix">'+
+                            '<span class="clearfix">'+
                                 '<span class="pull-left color fruit-name font14">{{name}}</span>'+
+                                '<span class="great-number font12 pull-right">'+
+                                    '<em class="bg_change heart {{heart}}" data-id="{{favour}}"></em>'+
+                                    '<span class="great">{{favour}}</span>'+
+                                '</span>'+
                                 '<span class="pull-right text-grey sale font12">销量: <span class="color number">{{saled}}</span></span>'+
-                            '</p>'+
-                            '<p class="great-number font12">'+
-                                '<em class="bg_change heart {{heart}}" data-id="{{favour}}"></em>'+
-                                '<span class="great">{{favour}}</span>'+
+                            '</span>'+
+                            '<p>'+
+                                '{{if buylimit >0 }}<span class="buylimit">{{buylimit_txt}}</span>{{/if}}'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{each charge_types as key}}'+
@@ -409,9 +434,12 @@ var fruitItem=function(box,fruits,type){
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
     var detail_no=fruits['detail_no'];
+    var buylimit=fruits['buylimit'];
+    var userlimit=fruits['userlimit'];
     var heart='';
     var sold_out='';
     var ori_img='';
+    var buylimit_txt="";
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
     if(favour_today=='true'){
@@ -433,6 +461,13 @@ var fruitItem=function(box,fruits,type){
     }else if(tag==5){
         tag='new_tag';
     }
+    if(buylimit==1){
+        buylimit_txt="仅限新用户";
+    }else if(buylimit==2){
+        buylimit_txt="仅限老用户";
+    }else if(buylimit==3){
+        buylimit_txt="仅限充值用户";
+    }
     var render=template.compile(goods_item);
     var html=render({
         code:code,
@@ -449,7 +484,10 @@ var fruitItem=function(box,fruits,type){
         tag:tag,
         charge_types:charge_types,
         sold_out:sold_out,
-        ori_img:ori_img
+        ori_img:ori_img,
+        buylimit:buylimit,
+        buylimit_txt:buylimit_txt,
+        userlimit:userlimit
     });
     box.append(html);
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
@@ -467,22 +505,26 @@ function cartNum(cart_ms,list){
                 var add = charge.siblings('.num_box').find('.to-add');
                 var change = charge.siblings('.num_box').find('.number-change');
                 var input = change.find('.number-input');
-                if (id == cart_ms[key][0]) {
-                    var $parent=charge.parents('.goods-list-item');
-                    var storage=$parent.attr('data-num');
-                    add.addClass('hidden');
-                    change.removeClass('hidden');
-                    input.text(cart_ms[key][1]);
-                    var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
-                    var unit_num=parseFloat(charge.find('.num').text());
-                    var change_num=relate*unit_num*cart_ms[key][1];
-                    $parent.attr({'data-storage':storage-change_num});
-                    //if(charge.hasClass('more_charge')) {
-                    //    $parent.find('.charge-list').show();
-                    //    $parent.find('.back-shape').toggleClass('hidden');
-                    //    $parent.find('.toggle_icon').removeClass('arrow');
-                    //    $parent.removeClass('pr35');
-                    //}
+                var buy_limit=parseInt(charge.parents('.goods-list-item').attr("data-buylimit"));
+                var user_limit=parseInt(charge.parents('.goods-list-item').attr("data-userlimit"));
+                if(buy_limit == user_limit||buy_limit==0){
+                    if (id == cart_ms[key][0]) {
+                        var $parent=charge.parents('.goods-list-item');
+                        var storage=$parent.attr('data-num');
+                        add.addClass('hidden');
+                        change.removeClass('hidden');
+                        input.text(cart_ms[key][1]);
+                        var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
+                        var unit_num=parseFloat(charge.find('.num').text());
+                        var change_num=relate*unit_num*cart_ms[key][1];
+                        $parent.attr({'data-storage':storage-change_num});
+                        //if(charge.hasClass('more_charge')) {
+                        //    $parent.find('.charge-list').show();
+                        //    $parent.find('.back-shape').toggleClass('hidden');
+                        //    $parent.find('.toggle_icon').removeClass('arrow');
+                        //    $parent.removeClass('pr35');
+                        //}
+                    }
                 }
             }
         }

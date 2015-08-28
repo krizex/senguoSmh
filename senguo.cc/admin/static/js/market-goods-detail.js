@@ -40,6 +40,7 @@ $(document).ready(function(){
         $(".goods-choose-lst li").removeClass("active").eq(index).addClass("active");
         $(".goods-info-lst li").removeClass("active").eq(index).addClass("active");
     });
+
     $(".now-buy").on("click",function(){
         var $this=$(this);
         var id=parseInt($this.siblings(".want-num").attr('data-id'));
@@ -49,6 +50,17 @@ $(document).ready(function(){
         var change_num=relate*unit_num;
         var buy_today=$this.parents('li').attr('data-buy');
         var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        var buy_limit=parseInt($(".wrap-goods-detail").attr("data-buylimit"));
+        var user_limit=parseInt($(".wrap-goods-detail").attr("data-userlimit"));
+        if(buy_limit!=user_limit&&buy_limit!=0){
+            if(buy_limit==1){
+                return noticeBox("该商品仅限新用户购买");
+            }else if(buy_limit==2){
+                return noticeBox("该商品仅限老用户购买");
+            }else if(buy_limit==3){
+                return noticeBox("该商品仅限充值用户购买");
+            }
+        }
         if(buy_today=='True'&&allow_num<=0){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
@@ -84,6 +96,18 @@ $(document).ready(function(){
         var change_num=relate*unit_num*1;
         var buy_today=$this.parents('li').attr('data-buy');
         var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        var buy_limit=parseInt($(".wrap-goods-detail").attr("data-buylimit"));
+        var user_limit=parseInt($(".wrap-goods-detail").attr("data-userlimit"));
+        if(buy_limit!=user_limit&&buy_limit!=0){
+            if(buy_limit==1){
+                return noticeBox("该商品仅限新用户购买");
+            }else if(buy_limit==2){
+                return noticeBox("该商品仅限老用户购买");
+            }else if(buy_limit==3){
+                return noticeBox("该商品仅限充值用户购买");
+            }
+            
+        }
         if(buy_today=='True'&&num>=allow_num){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
