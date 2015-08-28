@@ -1491,11 +1491,13 @@ class Market(CustomerBaseHandler):
 									has_discount_activity=1
 									q_price=q_query
 						if has_discount_activity:
-							q_pricr_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_price.discount_id).first()
-							if q_pricr_group.discount_way==0:
-								end_time1=q_pricr_group.end_date
-							else:
-								end_time1=int(time.time())-8*3600+q_pricr_group.t_time
+							if q_price:
+								q_price_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_price.discount_id).first()
+								discount_rate=q_price.discount_rate
+								if q_price_group.discount_way==0:
+									end_time1=q_price_group.end_date
+								else:
+									end_time1=int(time.time())-8*3600+q_pricr_group.t_time
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})

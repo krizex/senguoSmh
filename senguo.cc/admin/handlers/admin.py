@@ -2662,7 +2662,7 @@ class Goods(AdminBaseHandler):
 							num = 0
 						relate = select_num/unit_num
 						try:
-							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_[0,-2])
+							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_([0,-2]))
 						except:
 							q_charge = None
 						if q_charge:
