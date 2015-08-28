@@ -399,7 +399,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		price    = order.new_totalprice
 
 		try:
-			url = self.create_alipay_url(price,order_id)
+			url = self.create_alipay_url(price,order_num)
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙，请稍后再试')
 		# return self.redirect(url)
@@ -408,10 +408,10 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
-	def create_alipay_url(self,price,order_id):
+	def create_alipay_url(self,price,order_num):
 		# print("[AliPay]login create_alipay_url:",price,order_id)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
-			out_trade_no = str(order_id),
+			out_trade_no = str(order_num),
 			subject      = 'alipay',
 			total_fee    = float(price),
 			#defaultbank  = CMB,
@@ -437,13 +437,14 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.send_error(403)
 		# print("[AliPay]Callback data:",self.args['notify_data'])
 		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
-		orderId = notify_data["out_trade_no"]
+		order_num = notify_data["out_trade_no"]
 		ali_trade_no=notify_data["trade_no"]
 		# print("[AliPay]ali_trade_no:",ali_trade_no)
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
 			return self.send_success()
-		order = models.Order.get_by_id(self.session,orderId)
+		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
+		# order = models.Order.get_by_id(self.session,orderId)
 		if not order:
 			return self.send_fail(error_text = '抱歉，此订单不存在！')
 		##############################################################
@@ -501,12 +502,13 @@ class OnlineAliPay(CustomerBaseHandler):
 		if signmethod(self.args) != sign:
 			print("[AliPay]sign from onlineAlipay error")
 			return self.send_error(403)
-		orderId=str(self.args["out_trade_no"])
+		order_num=str(self.args["out_trade_no"])
 		ali_trade_no=self.args["trade_no"]
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
 			return self.redirect(self.reverse_url("customerRecharge"))
-		order = models.Order.get_by_id(self.session,orderId)
+		# order = models.Order.get_by_id(self.session,orderId)
+		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
 			return self.send_fail(error_text = '抱歉，此订单不存在！')
 		##############################################################
