@@ -796,13 +796,13 @@ function getActivityItem(action,status,page,cutover){
                                                                                               		'</div>'+
                                                                                               		'<p class="er-text">活动链接</p>'+
                                                                                               		'<div class="wrap-ipt">'+
-		                                                                                                     '<input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}" disabled="">'+
+		                                                                                                     '<input type="text" class="sw-link-txt" value="http://i.senguo.cc/seckill/{{shop_code}}?activity_id={{activity_id}}" disabled="">'+
 		                                                                                                     '<input type="button" class="sw-link-copy" value="复制链接">'+
                                                                                               		'</div>'+
                                                                                               		'<div class="wrap-er group">'+
 		                                                                                                     '<img class="er-logo" src="/static/images/favicon.ico" alt="">'+
 		                                                                                                     '<div class="er-text lh80 fl">链接二维码</div>'+
-		                                                                                                     '<div class="er-img fl er-code-img" title="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}"></div>'+
+		                                                                                                     '<div class="er-img fl er-code-img" title="http://i.senguo.cc/seckill/{{shop_code}}?activity_id={{activity_id}}"></div>'+
                                                                                               		'</div>'+
                                                                                        	'</div>'
 	                                                                        +'</td>'
@@ -825,13 +825,13 @@ function getActivityItem(action,status,page,cutover){
                                                                                               		'</div>'+
                                                                                               		'<p class="er-text">活动链接</p>'+
                                                                                               		'<div class="wrap-ipt">'+
-		                                                                                                     '<input type="text" class="sw-link-txt" value="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}" disabled="">'+
+		                                                                                                     '<input type="text" class="sw-link-txt" value="http://i.senguo.cc/seckill/{{shop_code}}?activity_id={{activity_id}}" disabled="">'+
 		                                                                                                     '<input type="button" class="sw-link-copy" value="复制链接">'+
                                                                                               		'</div>'+
                                                                                               		'<div class="wrap-er group">'+
 		                                                                                                     '<img class="er-logo" src="/static/images/favicon.ico" alt="">'+
 		                                                                                                     '<div class="er-text lh80 fl">链接二维码</div>'+
-		                                                                                                     '<div class="er-img fl er-code-img" title="http://zone.senguo.cc:8887/seckill/{{shop_code}}?activity_id={{activity_id}}"></div>'+
+		                                                                                                     '<div class="er-img fl er-code-img" title="http://i.senguo.cc/seckill/{{shop_code}}?activity_id={{activity_id}}"></div>'+
                                                                                               		'</div>'+
                                                                                        	'</div>'
 	                                                                        +'</td>'
