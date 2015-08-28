@@ -1743,7 +1743,7 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:"今天价",13:"明天价"}
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
