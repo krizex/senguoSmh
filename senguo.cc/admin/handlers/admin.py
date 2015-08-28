@@ -5646,6 +5646,7 @@ class MarketingSeckill(AdminBaseHandler):
 				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(desc(models.SeckillActivity.start_time)).offset(page*page_size).limit(page_size).all()
 			for item in query_list:
 				activity_item = {}
+				activity_item['shop_code'] = current_shop.shop_code
 				activity_item['activity_id'] = item.id
 				activity_item['goods_list'] = ''
 				activity_item['start_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(item.start_time))
@@ -5754,7 +5755,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.active != 0,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
@@ -5845,7 +5846,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.active != 0,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
@@ -6017,7 +6018,7 @@ class MarketingSeckill(AdminBaseHandler):
 				seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item,models.SeckillGoods.status != 0).all()
 				if seckill_goods_query:
 					seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
-					killing_fruit_list = self.session.query(models.Fruit).fliter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+					killing_fruit_list = self.session.query(models.Fruit).filter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
 					for e in killing_fruit_list:
 						e.activity_status = 0
 			self.session.flush()
@@ -6268,7 +6269,7 @@ class MarketingSeckill(AdminBaseHandler):
 			seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
 			if seckill_goods_query:
 				seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
-				killing_fruit_list = self.session.query(models.Fruit).fliter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+				killing_fruit_list = self.session.query(models.Fruit).filter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
 				for e in killing_fruit_list:
 					e.activity_status = 0
 				self.session.flush()
