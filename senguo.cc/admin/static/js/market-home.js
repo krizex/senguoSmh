@@ -106,10 +106,15 @@ $(document).ready(function(){
     var storage=Number($this.attr('data-num'));
     var detail_no=$this.attr('data-detail');
     var id=$this.attr('data-id');
+    var is_activity = parseInt($this.attr("is_activity"));
     var shop_code=$('#shop_code').val();
     if($(e.target).closest(".forbid_click").size()==0){
         if (storage > 0 && detail_no=='False') {
-            addCart("/"+shop_code+"/goods/"+id);
+            if(is_activity==0){
+                addCart("/"+shop_code+"/goods/"+id);
+            }else{
+                return noticeBox("活动商品无法查看商品详情哦~~");
+            }
         }else if(storage<=0){
             return noticeBox("当前商品已经卖完啦");
         }
@@ -676,6 +681,7 @@ function addCart(link){
     $.postJson(url,args,function(res){
             if(res.success)
             {
+                SetCookie('cart_count',$(".cart_num").html());
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);

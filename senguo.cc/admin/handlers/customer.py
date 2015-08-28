@@ -1490,10 +1490,11 @@ class Market(CustomerBaseHandler):
 									has_discount_activity=1
 									q_price=q_query
 						if has_discount_activity:
-							if q_price.discount_way==0:
-								end_time1=q_price.end_date
+							q_pricr_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_price.discount_id).first()
+							if q_pricr_group.discount_way==0:
+								end_time1=q_pricr_group.end_date
 							else:
-								end_time1=int(time.time())-8*3600+q_price.t_time
+								end_time1=int(time.time())-8*3600+q_pricr_group.t_time
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
@@ -1569,9 +1570,9 @@ class Market(CustomerBaseHandler):
 						data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 					else:
 						charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.seckill_charge_type_id).first()
-						data_item1['charge_types'] = {'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':charge_type.unit,\
+						data_item1['charge_types'] = [{'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':self.getUnit(charge_type.unit),\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(False),\
-							'allow_num':1,"discount_rate":None,"has_discount_activity":0,'activity_type':charge_type.activity_type}
+							'allow_num':1,"discount_rate":None,"has_discount_activity":0,'activity_type':charge_type.activity_type}]
 
 					data_item1['price_dif'] = round(float(seckill_info.former_price - seckill_info.seckill_price),2)
 					if seckill_info.activity_piece - seckill_info.ordered > 0:

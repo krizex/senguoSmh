@@ -236,13 +236,15 @@ $(document).ready(function(){
     if (storage > 0) {
         if(is_activity==0){
             addCart("/"+shop_code+"/goods/"+id);
+        }else{
+            return noticeBox("活动商品无法查看商品详情哦~~");
         }
     }else if(storage<=0){
         return noticeBox("当前商品已经卖完啦");
     }
 }).on("click",".seckill-goods",function(){//秒杀
-    var id = $(this).closest("li").attr("data-id");
-    var s_goods_id =  $(this).closest("li").attr("seckill_goods_id");
+    var id = $(this).attr("data-id");
+    var s_goods_id =  $(this).attr("seckill_goods_id");
     window.dataObj.fruits[id]=1;
     $(this).addClass("hidden");
     $(this).next(".seckill-btn-yes").removeClass("hidden");
@@ -318,15 +320,16 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" is_activity="
                 '<span href="javascript:;" class="roll-btn buy-gds to-add add_cart_num">买</span>'+
             '</div>'+
             '{{else}}'+
-            '<div class="wrap-operate">'+
-            '<span href="javascript:;" class="roll-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}">抢</span>'+
+            '<div class="wrap-operate" is_bought="{{is_bought}}">'+
+            '<span href="javascript:;" class="roll-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">抢</span>'+
             '<span href="javascript:;" class="roll-btn seckill-btn-yes add_cart_num {{if is_bought==0}}hidden{{/if}}">抢</span>'+
             '</div>'+
             '{{/if}}'+
             '<div class="attr-right">'+
                 '<div class="wrap-src-price">'+
-                    '<p class="src-price"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
-                    '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span></p>'+
+                    '<p class="src-price {{if is_activity>0 }}hidden{{/if}}"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
+                    '<p class="text-grey9 f12 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
+                    '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span><span class="price-dif price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{discount_rate}}折</span></span></p>'+
                 '</div>'+
                 '<div class="wrap-bug-text hidden">'+
                     '<span class="bug-num"><span class="font16">x </span><span class="buy-num number-input">1</span></span>'+
@@ -507,6 +510,8 @@ var fruitItem=function(box,fruits,type){
     var src_price=0;
     var cur_price=0;
     var price_all=0;
+    var discount_rate = 0;
+    var has_discount_activity = 0;
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
     if(favour_today=='true'){
@@ -561,7 +566,9 @@ var fruitItem=function(box,fruits,type){
             src_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
         }
         cur_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
-        price_all=charge_type.price
+        price_all=charge_type.price;
+        discount_rate = charge_type.discount_rate;
+        has_discount_activity = charge_type.has_discount_activity;
     }
     if(storage<=0){
         sold_out="";
@@ -599,11 +606,13 @@ var fruitItem=function(box,fruits,type){
         charge_type_id:charge_type_id,
         seckill_id:seckill_id,
         is_bought:is_bought,
-        end_time:end_time
+        end_time:end_time,
+        discount_rate:discount_rate,
+        has_discount_activity:has_discount_activity
     });
     var $obj = $(html);
     box.append($obj);
-    if(is_activity==1){
+    if(is_activity>0){
         countTime($obj);
     }
     //$('.lazy_img').lazyload({threshold:200,effect:"fadeIn"});
@@ -762,12 +771,14 @@ function addCart(link){
     var fruits=window.dataObj.fruits;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_goods_ids:seckill_goods_ids
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success)
             {
+                SetCookie('cart_count',$(".cart_num").html());
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);

@@ -218,10 +218,12 @@ $(document).ready(function(){
     var url = $(this).attr("url");
     if(is_activity==0){
         window.location.href=url;
+    }else{
+        return noticeBox("活动商品无法查看商品详情哦~~");
     }
 }).on("click",".seckill-goods",function(){//秒杀
-    var id = $(this).closest("li").attr("data-id");
-    var s_goods_id =  $(this).closest("li").attr("seckill_goods_id");
+    var id = $(this).attr("data-id");
+    var s_goods_id =  $(this).attr("seckill_goods_id");
     window.dataObj.fruits[id]=1;
     $(this).addClass("hidden");
     $(this).next(".seckill-btn-yes").removeClass("hidden");
@@ -348,7 +350,7 @@ var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}"  end
                             '<span class="add number-plus wspan">+</span>'+
                         '</p>'+
                         '{{else if is_activity==1}}'+
-                        '<div class="wrap-seckill-btns"><span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}">抢!</span>'+
+                        '<div class="wrap-seckill-btns"><span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">抢!</span>'+
                         '<span class="seckill-btn seckill-btn-yes {{if is_bought==0}}hidden{{/if}}">已抢</span></div>'+
                         '{{/if}}'+
                     '</div>'+
@@ -454,7 +456,7 @@ var fruitItem=function(box,fruits,type){
     });
     var $obj = $(html);
     box.append($obj);
-    if(is_activity==1){
+    if(is_activity>0){
         countTime($obj);
     }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
@@ -605,6 +607,7 @@ function addCart(link){
     $.postJson(url,args,function(res){
             if(res.success)
             {
+                SetCookie('cart_count',$(".cart_num").html());
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);

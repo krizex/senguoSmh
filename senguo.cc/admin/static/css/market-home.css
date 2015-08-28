@@ -129,6 +129,7 @@
 .seckill-btn-yes{background-color: #ddd !important;}
 .price-bo{color: #59D5AA;margin-right: 4px;cursor: pointer;}
 .price-tip{display: inline-block;color: #FF9800;cursor: pointer;padding: 0 4px;border-radius: 12px;border: 1px solid #ff9800;font-size: 12px;height: 18px;line-height: 16px;}
+.price-dif{-webkit-transform:scale(0.9);}
 .wrap-seckill-price{position: absolute;top: 4px;right: -20px;}
 /*swiper*/
 .img-list{width: 100%;height: 0;padding-bottom: 40%;position: relative;background-color: #fff;}
@@ -176,7 +177,7 @@
 .wrap-operate .minus-gds{background-color:#F13C62;font-size: 40px;background-image: url("/static/images/minus.png");background-size: 60px;background-repeat: no-repeat;}
 .wrap-operate .add-gds{font-size: 40px;background-image: url("/static/images/add.png");background-size: 60px;background-repeat: no-repeat;}
 .wrap-bug-text{position: absolute;bottom:-12px;right: 6px;padding-right: 6px;white-space:nowrap;}
-.wrap-src-price{position: absolute;bottom:-12px;right: 0;padding-right: 40px;white-space:nowrap;}
+.wrap-src-price{position: absolute;bottom:-12px;right: 0;padding-right: 10px;white-space:nowrap;}
 .bug-num{color: #44C798;font-size: 30px;margin-right: 5px;}
 .price-all{color: #333;font-size: 14px;}
 .wrap-tab-group{padding: 10px 10px 20px 10px;background-color: #81E2C0;}
