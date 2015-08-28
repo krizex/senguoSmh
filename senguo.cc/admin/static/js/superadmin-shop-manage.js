@@ -186,6 +186,7 @@ function insertShop(page){
                                     $item.find(".uavailable_balance").html(shop.available_balance);
                                     $item.find(".ufans_count").html(shop.fans_count);
                                     $item.find(".uold_user").html(shop.old_user);
+                                    $item.find(".ushop_tpl").html(shop.shop_tpl);
 
                                     // change by jyj 2015-6-22:
                                     $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
@@ -388,6 +389,7 @@ function searchshop(page){
                                         $item.find(".uavailable_balance").html(shop.available_balance);
                                         $item.find(".ufans_count").html(shop.fans_count);
                                         $item.find(".uold_user").html(shop.old_user);
+                                        $item.find(".ushop_tpl").html(shop.shop_tpl);
 
                                         // add by jyj 2015-6-23:
                                         $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);

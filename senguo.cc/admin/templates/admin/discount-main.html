@@ -3,6 +3,7 @@
 {% block setcontent %}
 {% if shop_code and shop_code!='not set' %}
 <input class="hidden can_new_discount" value={{can_new_discount}}>
+<input id="page_end" class="hidden" value="{{page_end}}">
 <div class="clearfix top-box">
     <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="javascript:;" class="ml10 f14 show-detail">查看详情</a></p>
     <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
@@ -32,7 +33,7 @@
         </div>
     </div>
     <div class="wrap-tb mt30">
-        <table class="tb-enty tb-active tab1">
+        <table class="tb-enty tb-active ">
             <colgroup>
                 <col width="40%"/>
                 <col width="20%"/>
@@ -47,7 +48,7 @@
                     <td>操作</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="tab1">
             {%if output_data[0]==[]%}
             <tr>
                 <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
@@ -100,6 +101,7 @@
                     <td>操作</td>
                 </tr>
             </thead>
+            <tbody class="tab2">
             {%if output_data[1]==[]%}
             <tr>
                 <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
@@ -137,7 +139,7 @@
             {%end%}
             </tbody>
         </table>
-        <table class="tb-enty hidden tab3">
+        <table class="tb-enty hidden ">
             <colgroup>
                 <col width="40%"/>
                 <col width="20%"/>
@@ -152,7 +154,7 @@
                     <td>操作</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="tab3">
             {%if output_data[2]==[]%}
             <tr>
                 <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
@@ -190,7 +192,7 @@
             {%end%}
             </tbody>
         </table>
-        <table class="tb-enty hidden tab4">
+        <table class="tb-enty hidden">
             <colgroup>
                 <col width="40%"/>
                 <col width="20%"/>
@@ -205,7 +207,7 @@
                     <td>操作</td>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="tab4">
             {%if output_data[3]==[]%}
             <tr>
                 <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
@@ -243,6 +245,17 @@
             {%end%}
             </tbody>
         </table>
+        <div class="users-pagination list-pagination group pull-right mt0 cm_jump">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page pre-page-main">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">{{page_end[0]}}</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page next-page-main">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
+                <li><a href="javascript:;" class="jump-to jmp-main">跳转</a></li>
+            </ul>
+        </div>
     </div>
 </div>
 </div>

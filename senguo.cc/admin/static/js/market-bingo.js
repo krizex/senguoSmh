@@ -576,7 +576,7 @@ function cartNum(cart_ms,list){
                 $item.find('.number-input').text(cart_ms[key][1]);
                 $item.find(".wrap-src-price").addClass("hidden");
                 $item.find(".wrap-bug-text").removeClass("hidden");
-                $item.find(".price-all-num").text(cart_ms[key][1]*price);
+                $item.find(".price-all-num").text(mathFloat(cart_ms[key][1]*price));
                 var relate=parseFloat($item.attr('data-relate'));
                 var unit_num=parseFloat($item.attr('data-unitnum'));
                 var change_num=relate*unit_num*cart_ms[key][1];
@@ -615,7 +615,7 @@ function goodsNum(target,action){
             item.text(num);
             storage=storage-change_num;
             parent.attr({'data-storage':storage});
-            parent.find(".price-all-num").text(num*price);
+            parent.find(".price-all-num").text(mathFloat(num*price));
         }
     }
     else if(action==1)
@@ -648,7 +648,7 @@ function goodsNum(target,action){
                     SetCookie('cart_count',window.dataObj.cart_count);
                 }
             }
-            parent.find(".price-all-num").text(num*price);
+            parent.find(".price-all-num").text(mathFloat(num*price));
         }
     }
     if(type_list.hasClass('fruit-list')) {window.dataObj.fruits[id]=num; fruits_num();}
