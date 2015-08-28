@@ -729,13 +729,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			mp_staff = session.query(models.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(staff_info.id)).first()
 			if mp_admin:
 				touser = mp_staff.wx_openid
-				print(touser,'staff self openid')
+				# print(touser,'staff self openid')
 			else:
-				print('get staff_admin error')
+				# print('get staff_admin error')
 				touser = staff_info.wx_openid
 		else:
 			touser   = staff_info.wx_openid
-			print(touser,'openid')
+			# print(touser,'openid')
 		# openid = staff_info.wx_openid
 		staff_name = staff_info.nickname
 		order_id = order.num
@@ -771,29 +771,29 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		except NoResultFound:
 			return self.send_fail('customer not found')
 
-		print(admin_id,customer_id)
+		# print(admin_id,customer_id)
 		if order.shop.admin.has_mp:
 			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
 			if mp_customer:
 				c_touser = mp_customer.wx_openid
-				print(c_touser,'other openid')
+				# print(c_touser,'other openid')
 			else:
-				print('get mp_customer error')
+				# print('get mp_customer error')
 				c_touser = customer.accountinfo.wx_openid
 
 			#获取卖家对应自己平台的openid
 			mp_admin = session.query(models.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(admin_id)).first()
 			if mp_admin:
 				touser = mp_admin.wx_openid
-				print(touser,'admin self openid')
+				# print(touser,'admin self openid')
 			else:
-				print('get mp_admin error')
+				# print('get mp_admin error')
 				touser = order.shop.admin.accountinfo.wx_openid
 		else:
 			c_touser = customer.accountinfo.wx_openid
 			touser   = order.shop.admin.accountinfo.wx_openid
-			print(c_touser,'openid')
-		print(c_touser,'which openid')
+			# print(c_touser,'openid')
+		# print(c_touser,'which openid')
 		shop_id    = order.shop.id
 		shop_name  = order.shop.shop_name
 		order_id   = order.num
@@ -886,9 +886,9 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
 			if mp_customer:
 				touser = mp_customer.wx_openid
-				print(touser,'other openid')
+				# print(touser,'other openid')
 			else:
-				print('get mp_customer error')
+				# print('get mp_customer error')
 				touser = order.shop.admin.accountinfo.wx_openid
 
 		else:
@@ -1073,17 +1073,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	@classmethod
 	def get_other_accessToken(self,session,admin_id):
 		now = datetime.datetime.now().timestamp()
-		print(now,'now',admin_id)
+		# print(now,'now',admin_id)
 		session = models.DBSession()
 		try:
 			admin_info = session.query(models.ShopAdmin).filter_by(id = int(admin_id)).first()
 		except:
-			print('get admin_info error')
+			# print('get admin_info error')
 			return None
 		if admin_info.mp_name and admin_info.mp_appid and admin_info.mp_appsecret:
 			if admin_info.access_token and now - admin_info.token_creatime < 3600:
-				print(admin_info.token_creatime,'token_creatime')
-				print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token,", token_creatime:",admin_info.token_creatime)
+				# print(admin_info.token_creatime,'token_creatime')
+				# print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token,", token_creatime:",admin_info.token_creatime)
 				return admin_info.access_token
 			else:
 				appid = admin_info.mp_appid
@@ -1095,13 +1095,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					admin_info.access_token = data['access_token']
 					admin_info.token_creatime = now
 					session.commit()
-					print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token)
+					# print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token)
 					return data['access_token']
 				else:
-					print("[WxAuth]Token error")
+					# print("[WxAuth]Token error")
 					return None
 		else:
-			print('has no mp!~~~~~~~~~~~~~~~~~~~~~~~~~`')
+			# print('has no mp!~~~~~~~~~~~~~~~~~~~~~~~~~`')
 			return None
 
 	##############################################################################################
@@ -2069,8 +2069,8 @@ class WxOauth2:
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 			if not template_id:
 				return False
-			else:
-				print('template_id get success',template_id)
+			# else:
+			#	print('template_id get success',template_id)
 		else:
 			template_id = '5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg'
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
@@ -2194,15 +2194,15 @@ class WxOauth2:
 	@classmethod
 	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,admin_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-		print(touser,access_token,'wx_openid and access_token')
+		# print(touser,access_token,'wx_openid and access_token')
 		template_id_short = 'OPENTM200746866'
 		if other_access_token:
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 			if not template_id:
-				print('get template_id error')
+				# print('get template_id error')
 				return False
-			else:
-				print('template_id get success',template_id)
+			# else:
+			#	print('template_id get success',template_id)
 		else:
 			template_id = 'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0'
 		postdata = {
@@ -2236,8 +2236,8 @@ class WxOauth2:
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 			if not template_id:
 				return False
-			else:
-				print('template_id get success',template_id)
+			# else:
+			#	print('template_id get success',template_id)
 		else:
 			template_id = '5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0'
 		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
