@@ -51,7 +51,7 @@ $(document).ready(function(){
                         token=res.token;
                     },
                     function(){
-                        alert('网络错误！');}
+                        alert('您的网络暂时不通畅，请稍候再试');}
                 );
                 $('#file_upload').data('uploadifive').settings.formData = {
                     'key':key,
@@ -99,7 +99,7 @@ function Collect(){
             }
         },
         function(){
-            alert('网络错误！');}
+            alert('您的网络暂时不通畅，请稍候再试');}
     );
 }
 
@@ -131,7 +131,7 @@ function TimeEdit(evt){
                 else alert('您填写的信息格式不正确！');
             },
             function(){
-                alert('网络错误！');}
+                alert('您的网络暂时不通畅，请稍候再试');}
         );
 }
 
@@ -197,7 +197,7 @@ function shopEdit(evt){
                 else alert('您填写的信息格式不正确！');
             },
             function(){
-                alert('网络错误！');}
+                alert('您的网络暂时不通畅，请稍候再试');}
         );
     });
 }

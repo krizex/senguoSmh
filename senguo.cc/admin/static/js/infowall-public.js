@@ -22,7 +22,7 @@ function collection(id,target){
                if(number=='') number=0;
                target.find('.number').text(parseInt(number)+1);
            }
-            else alert('网络错误');
-        },function(){ return alert('网络错误！');}
+            else alert('您的网络暂时不通畅，请稍候再试');
+        },function(){ return alert('您的网络暂时不通畅，请稍候再试');}
 );
 }

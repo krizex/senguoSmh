@@ -37,7 +37,7 @@ function demo(target){
 
             }
             else return alert(res.error_text)
-        },function(){return alert('网络错误！')}
+        },function(){return alert('您的网络暂时不通畅，请稍候再试')}
     );
 
 }

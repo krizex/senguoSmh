@@ -524,6 +524,6 @@ function getData2(con){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误');}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试');}
     );
 }

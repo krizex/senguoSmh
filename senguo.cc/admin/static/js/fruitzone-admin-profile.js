@@ -85,7 +85,7 @@ function infoEdit(evt){
                 else alert(res.error_text);
             },
             function(){
-                alert('网络错误！');}
+                alert('您的网络暂时不通畅，请稍候再试');}
         );
     });
 }
@@ -110,7 +110,7 @@ function Vrify(){
             else alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('您的网络暂时不通畅，请稍候再试');}
     );
 }
 
@@ -142,6 +142,6 @@ function TiePhone(){
             else alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('您的网络暂时不通畅，请稍候再试');}
     );
 }
