@@ -41,6 +41,7 @@
         {% end %}
     </ul>
     <a href="{{reverse_url('CreateShop')}}" class="create-btn create-shop">+创建店铺</a>
+    <p class="notice">创建新的店铺后请先在电脑上登录管理后台：<br>senguo.cc/admin 进行店铺认证</p>
 </div>
 {% end %}
 {% block fix %}
@@ -60,10 +61,13 @@
     <ul class="shop-qalist">
         <li class="title">说明</li>
         <li>
+            <span class="roll-left"></span>如果您首次创建店铺，请在电脑浏览器上登录：senguo.cc/admin 进行店铺设置与认证。请详细阅读 <a href="http://i.senguo.cc/bbs/detail/30">《森果系统接入教程》</a> ，并添加森果客服微信号 senguocc100 为好友，您在使用森果系统的过程中遇到任何问题，都可以向森果客服咨询。
+        </li>
+        <li>
             <span class="roll-left"></span>每个管理员拥有一个唯一的属于自己的店铺列表和店铺列表链接
         </li>
         <li>
-            <span class="roll-left"></span>不论是您创建的店铺还是受其他店铺创建者邀请加入成 为管理员的店铺都会显示在这个列表中
+            <span class="roll-left"></span>不论是您创建的店铺还是受其他店铺创建者邀请加入成为管理员的店铺都会显示在这个列表中
         </li>
     </ul>
     <a href="javascript:;" class="close-pop" id="close-pop"></a>

@@ -28,6 +28,11 @@ import datetime
 import requests
 # from wxpay import QRWXpay
 
+# 导入推送关的类
+import jpush as jpush
+from libs.phonepush.jpush.push import core,payload,audience
+from libs.phonepush.conf import app_key, master_secret
+
 # 登录处理
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -106,7 +111,7 @@ class Access(CustomerBaseHandler):
 		# print("[PhoneLogin]Phone number:",phone,", Password:",password)
 		# u = self.session.query(models.Accountinfo).filter_by(phone = phone ,password = password).first()
 		if not u:
-			return self.send_fail(error_text = '用户不存在或密码不正确 ')
+			return self.send_fail(error_text = '用户不存在或密码不正确')
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		if jpush_id:
 			qq=self.session.query(models.Jpushinfo).filter_by(user_id=u.accountinfo.id,user_type=user_type).with_lockmode('update').first()
@@ -138,7 +143,7 @@ class Access(CustomerBaseHandler):
 		self.set_current_user(u,domain = ROOT_HOST_NAME)
 		return self.redirect(next_url)
 
-	@CustomerBaseHandler.check_arguments("code", "state?", "mode")
+	@CustomerBaseHandler.check_arguments("code", "state?", "mode", "user_type?", "jpush_id?")
 	def handle_oauth(self,next_url):
 		# todo: handle state
 		code = self.args["code"]
@@ -150,6 +155,21 @@ class Access(CustomerBaseHandler):
 		if not userinfo:
 			return self.redirect(self.reverse_url("customerLogin"))
 		u = models.Customer.register_with_wx(self.session, userinfo)
+
+		# 如果通过iOS微信登录，则注册推送设备信息
+		if mode == "iOS":
+			user_id = u.id
+			user_type = int(self.args["user_type"])
+			jpush_id = self.args["jpush_id"]
+			q = self.session.query(models.Jpushinfo).filter_by(user_id=user_id,user_type=user_type).first()
+			if q:
+				q.update(self.session,jpush_id=jpush_id)
+				self.session.commit()
+			else:
+				new_jpushinfo = models.Jpushinfo(user_id=user_id,user_type=user_type,jpush_id=jpush_id)
+				self.session.add(new_jpushinfo)
+				self.session.commit()
+
 		self.set_current_user(u, domain=ROOT_HOST_NAME)
 		return self.redirect(next_url)
 
@@ -1023,6 +1043,10 @@ class Comment(CustomerBaseHandler):
 		send_speed = 0
 		shop_service = 0
 		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		try:
+			comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop_id).first()[0]
+		except:
+			comment_active = 0
 		if orders:
 			q = self.session.query(func.avg(models.Order.commodity_quality),\
 				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
@@ -1048,7 +1072,7 @@ class Comment(CustomerBaseHandler):
 			if len(date_list)<page_size:
 				nomore = True
 			return self.render("customer/comment.html", date_list=date_list,nomore=nomore,satisfy = satisfy,send_speed=send_speed,\
-				shop_service = shop_service,commodity_quality=commodity_quality)
+				shop_service = shop_service,commodity_quality=commodity_quality,comment_active=comment_active)
 		return self.send_success(date_list=date_list,nomore=nomore)
 
 # 店铺 - 评价详情
@@ -1985,7 +2009,7 @@ class Cart(CustomerBaseHandler):
 			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
 			now_date=int(time.time())
 			if now_date>q.uneffective_time:
-				return self.send_fail("下单失败，该优惠券已经过期！")
+				return self.send_fail("下单失败，您选择的优惠券已经过期")
 		if shop_status == 0:
 			return self.send_fail('该店铺已关闭，暂不能下单(っ´▽`)っ')
 		elif shop_status == 2:
@@ -1994,9 +2018,11 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('该店铺正在休息中，暂不能下单(っ´▽`)っ')
 		if not fruits:
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
-		if len(fruits) > 20:
+		elif len(fruits) < 1:
+			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
+		elif len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
+<<<<<<< HEAD
 
 		# added by jyj 2015-8-26
 		#fruits 为一个字典，形式：{'12647': 2, '12667': 6},表示计价方式和数量的键值对字典；
@@ -2032,6 +2058,9 @@ class Cart(CustomerBaseHandler):
 		# 如果值为空字符串，则表示未参与任何活动；如果值为非空，则表示参与了值字符串所表示的活动。
 		activity_name = {0:'',1:'秒杀',2:'折扣'}
 
+=======
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
+>>>>>>> tmp
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
@@ -2086,7 +2115,6 @@ class Cart(CustomerBaseHandler):
 				fruit=charge_type.fruit
 
 				# totalPrice
-				
 				if m_fruit_goods==[]:
 					m_fruit_group.append(fruit.group_id)
 					m_fruit_goods.append(fruit.id)
@@ -2103,7 +2131,6 @@ class Cart(CustomerBaseHandler):
 							m_fruit_group.append(fruit.group_id)
 							m_price.append(singlemoney)
 							break
-
 
 				###使用优惠券
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
@@ -2371,10 +2398,10 @@ class Cart(CustomerBaseHandler):
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-		# print('[CustomerCart]Order commit success, order ID:',order.id)
+		print('[CustomerCart]Order commit success, order ID:',order.id)
 		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
-			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
+			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
@@ -2462,6 +2489,7 @@ class Cart(CustomerBaseHandler):
 	def order_cancel_auto(self,session,order_id):
 		print("[CustomerCart]Order auto cancel: order ID:",order_id)
 		order = session.query(models.Order).filter_by(id = order_id).first()
+		print("[CustomerCart]Order auto cancel: order.status:",order.num,order.status)
 		if not order:
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
@@ -2504,7 +2532,7 @@ class Cart(CustomerBaseHandler):
 					session.flush()
 			session.commit()
 			
-			print("[CustomerCart]Order auto cancel: order.num:",order.num)
+			print("[CustomerCart]Order auto cancel success: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 
@@ -2717,18 +2745,13 @@ class Order(CustomerBaseHandler):
 					print('[CustomerOrder]Order Cancel: old history not found')
 				else:
 					old_balance_history.is_cancel = 1
-					self.session.commit()
+					self.session.flush()
 				#同时生成一条新的记录
 				balance_history = models.BalanceHistory(customer_id = order.customer_id , shop_id = order.shop_id ,\
 						balance_value = order.new_totalprice,balance_record = '余额退款：订单'+ order.num + '取消', name = self.current_user.accountinfo.nickname,\
 						balance_type = 5,shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 				self.session.add(balance_history)
 			self.session.commit()
-			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-			if order.shop.admin.has_mp:
-				self.order_cancel_msg(self.session,order,cancel_time)
-			else:
-				self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			# 订单删除，恢复优惠券
 			coupon_key=order.coupon_key
@@ -2760,9 +2783,16 @@ class Order(CustomerBaseHandler):
 					self.session.flush()
 			self.session.commit()
 
-			self.order_cancel_msg(self.session,order,cancel_time,None)
+			# 发送订单取消模版消息
+			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+			if order.shop.admin.has_mp:
+				self.order_cancel_msg(self.session,order,cancel_time)
+			else:
+				self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			return self.send_success()
+
+		# 店铺评分
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
@@ -2812,6 +2842,7 @@ class Order(CustomerBaseHandler):
 			# self.session.commit()
 			# return self.send_success()
 
+		# 订单评价
 		elif action == "comment":
 			data = self.args["data"]
 			imgUrl = data["imgUrl"]
@@ -2828,8 +2859,9 @@ class Order(CustomerBaseHandler):
 			order.comment_imgUrl = imgUrl
 			shop_follow = ''
 			notice = ''
-			# shop_point add by 5
+			
 			# woody
+			# 订单评价后增加相应的积分
 			if comment == None:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -2837,7 +2869,6 @@ class Order(CustomerBaseHandler):
 				except :
 					shop_follow = None
 					self.send_fail("[Order]Order Comment: shop_point error")
-
 				if shop_follow:
 					if shop_follow.shop_point:
 						shop_follow.shop_point += 2
@@ -2856,14 +2887,32 @@ class Order(CustomerBaseHandler):
 						if imgUrl:
 							point_history.point_type = models.POINT_TYPE.COMMENTIMG
 							point_history.each_point = 2
-							notice = '评论成功，积分+2,评论晒图，积分+2'
+							notice = '评论成功，积分+2；评论晒图，积分+2'
 							self.session.add(point_history)
 							self.session.flush()
 
 			self.session.commit()
+			#need to record this point history?
+
+			# 卖家版app推送订单评价提醒 —— 将来需要封装 - by Sky 2015.8.24
+			devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
+			if devices:
+				_jpush = jpush.JPush(app_key, master_secret)
+				push = _jpush.create_push()
+				push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+
+				ios_msg = jpush.ios(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，订单编号："+order.num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/comment'})
+				android_msg = jpush.android(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情")
+				
+				push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/comment")
+				push.notification = jpush.notification(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
+				push.platform = jpush.all_
+				push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
+				push.send()
+			###
+
 			return self.send_success(notice=notice)
 
-			#need to rocord this point history?
 		else:
 			return self.send_error(404)
 
@@ -3137,6 +3186,10 @@ class OrderComment(CustomerBaseHandler):
 		token = self.get_qiniu_token("order",self.current_user.id)
 		orderid=self.args["orderid"]
 		order = next((x for x in self.current_user.orders if x.id == int(orderid)), None)
+		try:
+			comment_active = self.session.query(models.Config.comment_active).filter_by(id=order.shop_id).first()[0]
+		except:
+			comment_active = 0
 		shop_id = order.shop_id
 		if order is None:
 			return self.send_fail("订单为空")
@@ -3147,7 +3200,8 @@ class OrderComment(CustomerBaseHandler):
 		else:
 			imgurls = None
 			length = 0
-		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length)
+		return self.render("customer/comment-order.html",token=token,order_id=orderid,imgurls = imgurls,length = length,\
+			comment_active=comment_active)
 
 class ShopComment(CustomerBaseHandler):
 	@tornado.web.authenticated

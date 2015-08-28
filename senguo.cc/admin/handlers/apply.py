@@ -24,6 +24,57 @@ try:
 except:
 	import xml.etree.ElementTree as ET
 
+
+
+import libs.geetest as geetest
+
+
+BASE_URL = "api.geetest.com/get.php?gt="
+
+# captcha_id = "a40fd3b0d712165c5d13e6f747e948d4"
+captcha_id = '552f9475a37933c10d31b3073123e36a'
+# private_key = "0f1a37e33c9ed10dd2e133fe2ae9c459"
+private_key = '6b75401374e76b11ff54d45a24896d33'
+product = "embed"
+
+# 弹出式
+# product = "popup&popupbtnid=submit-button"
+
+class GeeTest(CustomerBaseHandler):
+	def get(self):
+		gt = geetest.geetest(captcha_id, private_key)
+		url = ""
+		httpsurl = ""
+		try:
+			challenge = gt.geetest_register()
+		except:
+			challenge = ""
+		print(challenge,'challenge',len(challenge))
+		if isinstance(challenge,bytes):
+			challenge = challenge.decode('utf-8')
+		if len(challenge) == 32:
+			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			print(url)
+		self.render("apply/login.html", url=url)
+
+	def post(self):
+		username = self.get_argument("email")
+		password = self.get_argument("password")
+
+		challenge = self.get_argument("geetest_challenge")
+		validate = self.get_argument("geetest_validate")
+		seccode = self.get_argument("geetest_seccode")
+		print (challenge)
+		print (seccode)
+		print (validate,'validate')
+		gt = geetest.geetest(captcha_id, private_key)
+		result = gt.geetest_validate(challenge, validate, seccode)
+		if result:
+			self.write("success")
+		else:
+			self.write("fail")
+
 # woody
 # 扫码获取用户openid
 class Login(CustomerBaseHandler):
@@ -33,6 +84,7 @@ class Login(CustomerBaseHandler):
 		if self.is_wexin_browser():
 			return self.redirect(self.get_weixin_login_url())
 		ticket_url , scene_id = self.get_ticket_url()
+		
 		return self.render("apply/wx-login.html",ticket_url=ticket_url,scene_id=scene_id)
 	@CustomerBaseHandler.check_arguments('scene_id')
 	def post(self):
@@ -45,7 +97,7 @@ class Login(CustomerBaseHandler):
 			accountinfo = self.session.query(models.Accountinfo).filter_by(wx_openid = openid).first()
 			if accountinfo:
 				# print("[ApplyLogin]accountinfo:",accountinfo)
-				customer = self.session.query(models.ShopAdmin).filter_by(id = accountinfo.id).first()
+				customer = self.session.query(models.Customer).filter_by(id = accountinfo.id).first()
 				if customer:
 					# print("[ApplyLogin]customer:",customer)
 					self.set_current_user(customer,domain=ROOT_HOST_NAME)
@@ -218,16 +270,16 @@ class WxMessage(CustomerBaseHandler):
 					u = models.Customer()
 					u.accountinfo = account_info
 					self.session.add(u)
-					admin = models.ShopAdmin()
-					admin.accountinfo = account_info
-					self.session.add(admin)
+					#admin = models.ShopAdmin()
+					#admin.accountinfo = account_info
+					#self.session.add(admin)
 					self.session.commit()
 			if event == 'subscribe':
 				ToUserName = data.get('ToUserName',None) #开发者微信号
 				FromUserName = data.get('FromUserName',None) # 发送方openid
 				CreateTime  = data.get('CreateTime',None) #接受消息时间
 				MsgType = 'text'
-				reply_message = '再小的水果店，也要有自己的O2O平台！\n互联网时代，水果零售一站式解决方案！\n---------\n赶紧点击http://senguo.cc/apply申请接入,拥有属于你的水果O2O店铺吧\n你也可以点击http://senguo.cc/list进入水果商城 开始选购水果'
+				reply_message = '再小的水果店，也要有自己的O2O平台！\n互联网时代，水果零售一站式解决方案！\n---------\n赶紧点击http://senguo.cc/apply申请接入，拥有属于你的水果O2O店铺吧\n你也可以点击http://senguo.cc/list进入水果商城开始选购水果'
 				reply = self.make_xml(FromUserName,ToUserName, CreateTime,MsgType,reply_message)
 				reply = ET.tostring(reply,encoding='utf8',method='xml')
 				# print("[ApplyWxMessage]reply:",reply)
@@ -283,7 +335,7 @@ class WxMessage(CustomerBaseHandler):
 
 # 店铺申请 - 首页 成为卖家
 class Home(CustomerBaseHandler):
-	# @tornado.web.authenticated
+	#@tornado.web.authenticated
 	def get(self):
 		if not self.current_user:
 			return self.redirect(self.reverse_url("ApplyLogin"))
@@ -293,22 +345,75 @@ class Home(CustomerBaseHandler):
 			if_admin = None
 		if if_admin:
 			return self.redirect(self.reverse_url("switchshop"))
+
+		try:
+			if_shop_admin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == account_id).first()
+		except:
+			if_shop_admin = None
+		try:
+			if_shop = self.session.query(models.Shop).filter_by(id = if_shop_admin.shop_id).first()
+		except:
+			if_shop = None
+		if if_shop_admin:
+			return self.redirect(self.reverse_url("switchshop"))
 		phone = self.current_user.accountinfo.phone if self.current_user.accountinfo.phone else ""
 		logo_img = self.current_user.accountinfo.headimgurl_small
 		nickname = self.current_user.accountinfo.nickname
 		realname = self.current_user.accountinfo.realname if self.current_user.accountinfo.phone else ""
 		wx_username = self.current_user.accountinfo.wx_username if self.current_user.accountinfo.phone else ""
-		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username)
+		#添加极验验证码 woody 8.20
+		gt = geetest.geetest(captcha_id, private_key)
+		url = ""
+		httpsurl = ""
+		try:
+			challenge = gt.geetest_register()
+		except:
+			challenge = ""
+		print(challenge,'challenge',len(challenge))
+		if isinstance(challenge,bytes):
+			challenge = challenge.decode('utf-8')
+		if len(challenge) == 32:
+			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
+			print(url)
+		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username,url=url)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("phone:str","realname:str","code:int","wx_username:str")
 	def post(self):
+		#极验验证
+		challenge = self.get_argument("geetest_challenge")
+		validate = self.get_argument("geetest_validate")
+		seccode = self.get_argument("geetest_seccode")
+		print (challenge,)
+		print (seccode)
+		print (validate,'validate')
+		if len(challenge) <2 or len(seccode) <2 or len(validate) <2:
+			return self.send_fail('请先完成图形验证')
+		gt = geetest.geetest(captcha_id, private_key)
+		result = gt.geetest_validate(challenge, validate, seccode)
+		if not result:
+			return self.send_fail('验证码错误')
+
 		try:
 			if_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
 		except:
 			if_admin = None
 		if if_admin:
 			return self.send_fail("您已是卖家")
+		#判断申请店铺的微信是否已是某店铺的管理员身份
+		try:
+			if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
+		except:
+			if_shopadmin = None
+		try:
+			if_shop = self.session.query(models.Shop).filter_by(id = if_admin.shop_id).first()
+		except:
+			if_shop = None
+		if if_shopadmin:
+			return self.send_fail('该账号已是'+if_shop.shop_name+'的管理员，不能使用该账号申请店铺，若要使用该账号，请退出'+if_shop.shop_name+'管理员身份更换或其它账号')
 
 		if not self.args['phone']:
 			return self.send_fail("please input your phone number")
@@ -351,7 +456,13 @@ class CreateShop(AdminBaseHandler):
 			super_admin = None
 		if not super_admin:
 			return self.send_fail("您不是卖家，无法创建新的店铺")
-
+		try:
+			if_shopadmin = self.session.query(models.HireLink).join(models.ShopStaff,models.HireLink.staff_id == models.ShopStaff.id)\
+			.filter(models.HireLink.active==1,models.HireLink.work ==9 ,models.ShopStaff.id == self.current_user.id).first()
+		except:
+			if_shopadmin = None
+		if if_shopadmin:
+			return self.send_fail("您没有创建店铺的权限")
 		#检查申请店铺数量
 		try:
 			shops = self.session.query(models.Shop).filter_by(admin_id=self.current_user.id)

@@ -156,7 +156,7 @@ class ShopManage(SuperBaseHandler):
 			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2).count()
 			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1).count()
 			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3).count()
-			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count() - output_data_count["status_4_count"]
 
 			output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
 			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
@@ -175,7 +175,7 @@ class ShopManage(SuperBaseHandler):
 			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2,models.Shop.shop_province==shop_province).count()
 			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1,models.Shop.shop_province==shop_province).count()
 			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3,models.Shop.shop_province==shop_province).count()
-			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0,models.Shop.shop_province==shop_province).count() - output_data_count["status_4_count"]
 
 			output_data_count["auth_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
 			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4]),models.Shop.shop_province==shop_province).count()
@@ -367,13 +367,14 @@ class ShopManage(SuperBaseHandler):
 				data["staff_count"] = len(shop.staffs)
 				data["follower_count"] = shop.fans_count
 				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
+				data["shop_tpl"] = shop.shop_tpl+1
 				data["admin_name"] = shop.admin.accountinfo.realname
 				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
 										fromtimestamp(shop.create_date_timestamp)).days
 				data["order_count"] = shop.order_count
 				data["price_sum"] = shop.shop_property
 
-				#add 6.8am by jyj]
+				#add 6.8am by jyj
 				if shop.order_count == 0:
 					single_price = 0
 				else:
@@ -502,11 +503,11 @@ class ShopManage(SuperBaseHandler):
 			shop_frist = shops.first()
 			if shop_frist:
 				if shop_frist.shop_auth==0:
-					return self.send_fail("该商家第一个店铺还未进行认证")
+					return self.send_fail("该商家首个店铺还未进行认证")
 				elif shop_frist.shop_auth in [1,4] and shops.count() >= 5:
-					return self.send_fail("该商家第首个店铺为个人认证，最多只可申请5个店铺")
+					return self.send_fail("该商家首个店铺为个人认证，最多只可申请5个店铺")
 				elif shop_frist.shop_auth in [2,3] and shops.count() >= 15:
-					return self.send_fail("该商家第首个店铺为企业认证，最多只可申请15个店铺")
+					return self.send_fail("该商家首个店铺为企业认证，最多只可申请15个店铺")
 
 		if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
 			shop_temp.update(self.session, shop_status=3,
@@ -613,10 +614,11 @@ class ShopManage(SuperBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',connection="close")
 			r = requests.post(url,data = postdata , headers = headers)
+			
+			# 发送微信模板消息通知用户
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
-
 			WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
-									   account_info.realname, account_info.phone)  # 发送微信模板消息通知用户
+									   account_info.realname, account_info.phone)
 		return self.send_success()
 
 class Feedback(SuperBaseHandler):

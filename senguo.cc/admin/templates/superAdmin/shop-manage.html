@@ -2,7 +2,7 @@
 {% block shop %}
 <div class="search-input input-group pull-right" >
     <input type="text" id="inputinfo" placeholder="输入店铺名或者店铺号进行搜索" class="search-con form-control"/>
-    <input type="submit"  id="search" value="店铺搜索" class="search-btn form-control order-search"/>
+    <input type="submit" id="search" value="店铺搜索" class="search-btn form-control order-search"/>
 </div>
 <div class="admin-right top-margin1 pull-right "  >
     <form action="#" method="get" >
@@ -15,7 +15,7 @@
                     <option value="2">筹备中 (<span>{{output_data_count["status_2_count"]}}</span>)</option>
                     <option value="1">营业中 (<span>{{output_data_count["status_1_count"]}}</span>)</option>
                     <option value="3">休息中 (<span>{{output_data_count["status_3_count"]}}</span>)</option>
-                    <option value="0">已停业 (<span>{{output_data_count["status_0_count"]}}</span>)</option>>
+                    <option value="0">已关闭 (<span>{{output_data_count["status_0_count"]}}</span>)</option>>
                 </select>
                 <span id="dropDownList2" class="dropdown">
                     <span style="margin-left:60px;margin-bottom:50px">排序规则：</span>
@@ -24,13 +24,13 @@
                         <option value="1">按评价数</option>
                         <option value="2">按账户余额</option>
                         <option value="3">按粉丝数</option>
-                        <option value="4"  selected="selected">按订单数</option>
+                        <option value="4" selected="selected">按订单数</option>
                         <option value="5">按营业额数</option>
                         <option value="6">按客单价</option>
                     </select>
                 </span>
                 <span style="margin-left:60px;">是否降序：</span>
-                <select id="ifreverse"  style="width:100px">
+                <select id="ifreverse" style="width:100px">
                     <option value="1">是</option>
                     <option value="0">否</option>
                 </select>
@@ -61,7 +61,7 @@
                     <a href="{{reverse_url('superShopAuth')}}?page=0&&out_link=true&&data_id={{data['shop_id']}}" target="_blank" title="点击查看店铺详细认证信息"> <span class="text-blue">认证信息</span></a>
                 </p>
                 <p>
-                    <span class="tit2">店铺管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data['admin_id']}}" target="_blank" class="admin-link"  title="点击查看用户详细信息"><span class="text-blue admin_nickname">{{data["admin_nickname"]}}</span></a></span>
+                    <span class="tit2">店铺管理员：<a href="{{reverse_url('superUser')}}?out_link=true&&data_id={{data['admin_id']}}" target="_blank" class="admin-link" title="点击查看用户详细信息"><span class="text-blue admin_nickname">{{data["admin_nickname"]}}</span></a></span>
                 </p>
                 <p>
                     <span  class="shop_address">店铺地址：{{data["shop_address_detail"]}}</span></span>
@@ -90,6 +90,7 @@
                     </p>
                     <p>
                         <span class="tit2 old_user">老用户：{{data["old_user"]}}</span>
+                        <span class="shop_tpl">店铺模版：{{data["shop_tpl"]}}</span>
                     </p>
                 </div>
                 <div class="col-lg-5 col-md-5 ml13">
@@ -153,6 +154,7 @@
                 </p>
                 <p>
                     <span class="tit2 ">老用户：<span class="uold_user"></span></span>
+                    <span class="">店铺模版：<span class="ushop_tpl"></span></span>
                 </p>
             </div>
             <div class="col-lg-5 col-md-5 ml13">

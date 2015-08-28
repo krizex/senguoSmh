@@ -1,4 +1,4 @@
-.edui-container{position:relative;border:1px solid #d4d4d4;background-color:#fff}
+.edui-container{position:relative;border:1px solid #d4d4d4;background-color:#fff;width:100% !important;}
 .edui-container .edui-toolbar{position:relative;width:auto;border-bottom:1px solid #e1e1e1;background-color:#fafafa;z-index:99999}
 .edui-toolbar .edui-btn-toolbar{position:relative;padding:6px}
 .edui-container .edui-editor-body{background-color:#fff}

@@ -108,6 +108,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
 
+<<<<<<< HEAD
 
 /*限时折扣添加样式*/
 .week-btn{width: 50px;display:inline-block;margin-left:15px;font-size: 14px;background-color: #fff;color: #000;text-align: center;height: 28px;line-height: 28px;border-radius: 2px;}
@@ -179,3 +180,12 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .invisiable{visibility: hidden;}
 /**/
 
+=======
+.edit-box{background-color: #f4f5f9;padding: 15px 20px;margin:0 0 20px;}
+.edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
+.edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
+.edit-box .work-mode{text-indent:28px;}
+.edit-box .work-mode .circle{right:2px;}
+.edit-box .stop-mode{text-indent:44px;}
+.edit-box .stop-mode .circle{left:2px;}
+>>>>>>> tmp

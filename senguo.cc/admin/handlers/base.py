@@ -895,8 +895,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			self._user = self.__account_model__.get_by_id(self.session, user_id)
 			# print("[_AccountBaseHandler]get_current_user: self._user: ",self._user)
 			# self._user   = self.session.query(models.Accountinfo).filter_by(id = user_id).first()
-			if not self._user:
-				print("[_AccountBaseHandler]get_current_user: self._user not found")
+			# if not self._user:
+			# 	print("[_AccountBaseHandler]get_current_user: self._user not found")
 		return self._user
 
 	_ARG_DEFAULT = []
@@ -1066,12 +1066,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		phone = order.phone
 		address = order.address_text
 		shop_name = order.shop.shop_name
-
+		order_shopid = order.shop_id
+		# 非自提订单发送配送员模版消息
+		# if order_type != 3:
 		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-			order_totalPrice,send_time,phone,address,)
+			order_totalPrice,send_time,phone,address,order_shopid)
 		# print('[TempMsg]Send staff message SUCCESS')
 
-	# 发送新订单模版消息给管理员 & 自动打印订单
+	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
 	@classmethod
 	def send_admin_message(self,session,order,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
@@ -1095,7 +1097,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		pay_type   = order.pay_type
 		phone      = order.phone
 		totalPrice = order.totalPrice
-		order_type = '立即送' if order_type == 1 else '按时达'
+		order_type = '立即送' if order_type == 1 else ('按时达' if order_type == 2 else '自提')
 		create_date= order.create_date
 		customer_name=order.receiver
 
@@ -1143,6 +1145,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				send_time,goods,phone,address,access_token)
 		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
 
+		# 订单自动打印
 		auto_print = order.shop.config.auto_print
 		print_type = order.shop.config.receipt_type
 		wireless_type = order.shop.config.wireless_type
@@ -1153,24 +1156,29 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				_action = "fyprint"
 			self.autoPrint(session,order.id,order.shop,_action)
 
-		# 给管理员app端推送订单生成提示
+		# 卖家版app推送订单提醒 —— 将来需要封装 - by cm 2015.8.15
 		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
 		if devices:
 			_jpush = jpush.JPush(app_key, master_secret)
 			push = _jpush.create_push()
-			push = _jpush.create_push()
 			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
-			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order.num)
-			push.notification = jpush.notification(alert="您收到了一条新订单，点击查看详情")
-			push.platform = jpush.platform("android")
+
+			ios_msg = jpush.ios(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order_id})
+			android_msg = jpush.android(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情")
+			
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order_id)
+			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情", android=android_msg, ios=ios_msg)
+			push.platform = jpush.all_
+			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
 			push.send()
+		###
 
 	# 发送订单完成模版消息给用户
 	@classmethod
 	def order_done_msg(self,session,order):
 		# print('[TempMsg]login order_done_msg')
 		order_num = order.num
-		order_sendtime = order.arrival_day  + " " + order.arrival_time
+		order_sendtime = order.arrival_day + " " + order.arrival_time
 		shop_phone = order.shop.shop_phone
 		customer_id= order.customer_id
 		shop_name = order.shop.shop_name
@@ -1209,6 +1217,23 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				_action = "fyprint_concel"
 			self.autoPrint(session,order.id,order.shop,_action)
 
+		# 卖家版app推送订单取消提醒 —— 将来需要封装 - by Sky 2015.8.22
+		devices=session.query(models.Jpushinfo).filter_by(user_id=order.shop.admin_id,user_type=0).first()
+		if devices:
+			_jpush = jpush.JPush(app_key, master_secret)
+			push = _jpush.create_push()
+			push.audience = jpush.audience(jpush.registration_id(devices.jpush_id))
+
+			ios_msg = jpush.ios(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，查看详情>>", badge="+1", extras={'link':'http://i.senguo.cc/madmin/orderDetail/'+order_num})
+			android_msg = jpush.android(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情")
+			
+			push.message=jpush.message(msg_content="http://i.senguo.cc/madmin/orderDetail/"+order_num)
+			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情", android=android_msg, ios=ios_msg)
+			push.platform = jpush.all_
+			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
+			push.send()
+		###
+
 	# 无线打印订单
 	@classmethod
 	def autoPrint(self,session,order_id,current_shop,action):
@@ -1231,6 +1256,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		totalPrice = str(order.totalPrice)
 		pay_type = order.pay_type
 		receipt_msg = current_shop.config.receipt_msg
+		_ordertype = order.type
+		_order_type = ""
 		if not receipt_msg:
 			receipt_msg = ""
 		if not message:
@@ -1241,6 +1268,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			_type = "余额支付"
 		elif pay_type == 3:
 			_type = "在线支付"
+		if _ordertype == 3:
+			_order_type = "自提"
+		else:
+			_order_type = "配送"
 		i=1
 		fruit_list = []
 		fruits = sorted(fruits.items(), key=lambda d:d[0])
@@ -1256,8 +1287,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 						"下单时间："+order_time+"\r\n"+\
 						"顾客姓名："+receiver+"\r\n"+\
 						"顾客电话："+phone+"\r\n"+\
-						"配送时间："+send_time+"\r\n"+\
-						"配送地址："+address+"\r\n"+\
+						""+_order_type+"时间："+send_time+"\r\n"+\
+						""+_order_type+"地址："+address+"\r\n"+\
 						"买家留言："+message+"\r\n"+\
 						"------------------------------------------------\r\n"+\
 						"@@2             商品清单\r\n"+\
@@ -1303,8 +1334,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 							"下单时间："+order_time+"\n"+\
 							"顾客姓名："+receiver+"\n"+\
 							"顾客电话："+phone+"\n"+\
-							"配送时间："+send_time+"\n"+\
-							"配送地址："+address+"\n"+\
+							""+_order_type+"时间："+send_time+"\n"+\
+							""+_order_type+"地址："+address+"\n"+\
 							"买家留言："+message+"\n"+\
 							"-------------------------\n"+\
 							"        <Font# Bold=1 Width=2 Height=2>商品清单</Font#>\n"+\
@@ -2533,7 +2564,7 @@ class WxOauth2:
 	# 新订单模版消息（发送给配送员）
 	@classmethod
 	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,phone,address,other_access_token = None):
+		order_totalPrice,send_time,phone,address,order_shopid,other_access_token = None):
 
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
@@ -2542,11 +2573,21 @@ class WxOauth2:
 			   + "送货地址：" + address  +'\n\n'\
 			   + "请及时配送订单。"
 		order_type_temp = int(order_type)
-		order_type = "立即送" if order_type_temp == 1 else "按时达"
+		if order_type_temp == 1:
+			order_type = "立即送"
+			link_type = "now"
+		elif order_type_temp == 2:
+			order_type = "按时达"
+			link_type = "on_time"
+		else:
+			order_type = "自提"
+			link_type = "self"
+		link_url = staff_order_url +"/order?order_type="+link_type+"&shop="+str(order_shopid)
+		# print(link_url)
 		postdata = {
 			'touser':touser,
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-			'url':staff_order_url,
+			'url':link_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
 				"tradeDateTime":{"value":str(create_date),"color":"#173177"},
@@ -2610,7 +2651,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[TempMsg]Order commit message send failed:",data)
+			# print("[TempMsg]Order commit message send failed:",data)
 			return False
 		return True
 
@@ -2634,7 +2675,7 @@ class WxOauth2:
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			print("[TempMsg]Order done message send failed:",data)
+			# print("[TempMsg]Order done message send failed:",data)
 			return False
 		return True
 

@@ -316,6 +316,7 @@ function orderItem(page){
                     var nickname=data[i]['nickname'];
                     var customer_id=data[i]['customer_id'];
                     var _type=data[i]['type'];
+                    var online_type=data[i]['online_type'];
                     if(_type==3){
                         $item.find(".if_self").text("自提");
                     }
@@ -334,7 +335,7 @@ function orderItem(page){
                     if(shop_new!=1) {
                         $item.find('.new').show();
                     }
-                    $item.find('.name').text(nickname).attr('href','/admin/follower?action=filter&&order_by=time&&if_reverse=1&&page=0&&wd='+customer_id);
+                    $item.find('.name').text(nickname).attr('href','/admin/follower?action=orderuser&&wd='+customer_id);
                     $item.find('.receiver').text(receiver);
                     $item.attr({'data-id':id,'data-type':type});
                     $item.find('.send-time').text(send_time);
@@ -363,7 +364,12 @@ function orderItem(page){
                         $item.find('.price_edit').hide();
                     } 
                     else if(pay_type == 3){
-                        $item.find('.pay-status').text('在线支付'); 
+                        if(online_type=="wx"){
+                           $item.find('.pay-status').text('在线支付-微信');  
+                       }else if(online_type=="alipay"){
+                            $item.find('.pay-status').text('在线支付-支付宝');
+                       }
+                        
                         $item.find('.price_edit').hide();
                         if(status!=-1){$item.find('.delete-order').hide();}
                     }
@@ -603,7 +609,7 @@ function orderPrint(target,action){
         );
         function getData(target){
             var parent=target.parents('.order-list-item');
-            var order_id=parent.data('id');
+            var order_id=parent.attr('data-id');
             var order_num=parent.find('.order-code').text();
             var shop_name=$('#shop_name').text();
             var order_time=parent.find('.order-time').text();
@@ -620,8 +626,9 @@ function orderPrint(target,action){
             var print_img_active=$('.shop-receipt-info').attr('data-active');
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
+            var _type=parent.attr('data-type');
 
-            $.getItem('/static/items/admin/order-print-page.html?v=20150706',function(data){
+            $.getItem('/static/items/admin/order-print-page.html?v=20150806',function(data){
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);
@@ -647,6 +654,9 @@ function orderPrint(target,action){
                 }
                 else{
                     $item.find('.shop-img').remove(); 
+                }
+                if(_type==3||_type=="3"){
+                    $item.find(".self").text("自提");
                 }
                $item.find('.moneyPaid').text(paid);
                html.innerHTML+=$item[0].innerHTML;
