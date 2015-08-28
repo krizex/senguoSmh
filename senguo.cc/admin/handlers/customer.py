@@ -3004,131 +3004,131 @@ class wxChargeCallBack(CustomerBaseHandler):
 		return self.send_success(qr_url=qr_url)
 
 # 插入爬取店铺数据（访问路由：/customer/test）
-# class InsertData(CustomerBaseHandler):
-# 	# @tornado.web.authenticated
-# 	# @CustomerBaseHandler.check_arguments("code?:str")
-# 	# @tornado.web.asynchronous
-# 	def get(self):
-# 		import requests
-# 		import json
-# 		shop_list , good_list = self.get_data()
-# 		# print(shop_list)
-# 		# for shop in shop_list:
-# 		# 	try:
-# 		# 		link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
-# 		# 	except:
-# 		# 		link_exist = None
-# 		# 	if not link_exist:
-# 		# 		temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
-# 		# 			shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
-# 		# 			delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-# 		# 			delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
-# 		# 			lon = shop['lon'],shop_province = 420000,shop_city = 420100)
-# 		# 		self.session.add(temp_shop)
-# 		# self.session.flush()
+class InsertData(CustomerBaseHandler):
+	# @tornado.web.authenticated
+	# @CustomerBaseHandler.check_arguments("code?:str")
+	# @tornado.web.asynchronous
+	def get(self):
+		import requests
+		import json
+		shop_list , good_list = self.get_data()
+		# print(shop_list)
+		# for shop in shop_list:
+		# 	try:
+		# 		link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
+		# 	except:
+		# 		link_exist = None
+		# 	if not link_exist:
+		# 		temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
+		# 			shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
+		# 			delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
+		# 			delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
+		# 			lon = shop['lon'],shop_province = 420000,shop_city = 420100)
+		# 		self.session.add(temp_shop)
+		# self.session.flush()
 
-# 		# for good in good_list:
-# 		# 	temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
-# 		# 		sales = good['sales'],goods_name = good['goods_name'])
-# 		# 	self.session.add(temp_good)
-# 		# self.session.commit()
-# 		shop = self.session.query(models.Shop).filter(models.Shop.shop_name.like('%%%s%%' % '')).count()
-# 		print(shop)
-# 		shop_all = self.session.query(models.Shop).count()
-# 		print(shop_all)
+		# for good in good_list:
+		# 	temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
+		# 		sales = good['sales'],goods_name = good['goods_name'])
+		# 	self.session.add(temp_good)
+		# self.session.commit()
+		shop = self.session.query(models.Shop).filter(models.Shop.shop_name.like('%%%s%%' % '')).count()
+		print(shop)
+		shop_all = self.session.query(models.Shop).count()
+		print(shop_all)
 
-# 		# session = DBSession()
+		# session = DBSession()
 
-# 		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-# 		# print(shop.shop_balance)
-# 		# shop.shop_balance += 100
-# 		# session.commit()
+		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+		# print(shop.shop_balance)
+		# shop.shop_balance += 100
+		# session.commit()
 
-# 		# session2 = DBSession()
-# 		# shop2 = session2.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-# 		# print(shop2.shop_balance)
-# 		# shop2.shop_balance += 100
-# 		# session2.commit()
+		# session2 = DBSession()
+		# shop2 = session2.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+		# print(shop2.shop_balance)
+		# shop2.shop_balance += 100
+		# session2.commit()
 
-# 		# shop3 = self.session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-# 		# print(shop3.shop_balance)
+		# shop3 = self.session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+		# print(shop3.shop_balance)
 
 
-# 		return self.send_success(shop=shop,shop_all=shop_all)
-# 		# import multiprocessing
-# 		# from multiprocessing import Process
-# 		# import datetime
-# 		# from sqlalchemy import create_engine, func, ForeignKey, Column
-# 		# session = self.session
-# 		# from handlers.base import UrlShorten
-# 		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
-# 		# print(short,type(short))
-# 		# print(UrlShorten.get_long_url(short))
-# 		# try:
-# 		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-# 		# except:
-# 		# 	return self.send_fail('shop not found')
-# 		# # self.shop_auth_msg(shop,False)
-# 		# # shop_auth_fail_msg('13163263783','woody','woody')
-# 		# self.render('customer/storage-change.html')
-# 		# def async_task():
-# 		#   try:
-# 		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-# 		# 	except:
-# 		# 		return self.send_fail('shop not found')
-# 		# 	# self.shop_auth_msg(shop,False)
-# 		# 	# shop_auth_fail_msg('13163263783','woody','woody')
-# 		# 	self.render('customer/storage-change.html')
-# 		# gevent.spawn(async_task)
+		return self.send_success(shop=shop,shop_all=shop_all)
+		# import multiprocessing
+		# from multiprocessing import Process
+		# import datetime
+		# from sqlalchemy import create_engine, func, ForeignKey, Column
+		# session = self.session
+		# from handlers.base import UrlShorten
+		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
+		# print(short,type(short))
+		# print(UrlShorten.get_long_url(short))
+		# try:
+		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+		# except:
+		# 	return self.send_fail('shop not found')
+		# # self.shop_auth_msg(shop,False)
+		# # shop_auth_fail_msg('13163263783','woody','woody')
+		# self.render('customer/storage-change.html')
+		# def async_task():
+		#   try:
+		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+		# 	except:
+		# 		return self.send_fail('shop not found')
+		# 	# self.shop_auth_msg(shop,False)
+		# 	# shop_auth_fail_msg('13163263783','woody','woody')
+		# 	self.render('customer/storage-change.html')
+		# gevent.spawn(async_task)
 
-# 	def get_data(self):
-# 		import requests
-# 		shop_list = []
-# 		good_list = []
-# 		import os
-# 		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
-# 		c = f.read()
-# 		s = eval(c)
-# 		# print(type(s))
-# 		i = self.session.query(models.Spider_Shop).count()-1
-# 		for key in s:
-# 				temp = s.get(key,None)
-# 				if temp:
-# 						shop = {}
-# 						shop['shop_id']            = i
-# 						shop['shop_address']       = temp.get('shop_address',None)
-# 						shop['shop_logo']          = temp.get('shop_logo',None)
-# 						shop['delivery_freight']   = temp.get('delivery_freight',None)
-# 						shop['shop_link']          = temp.get('shop_link',None)
-# 						shop['delivery_time']      = temp.get('delivery_time',None)
-# 						shop['shop_phone']         = temp.get('shop_phone',None)
-# 						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
-# 						shop['delivery_area']      = temp.get('delivery_area',None)
-# 						shop['shop_name']          = temp.get('shop_name',None)
-# 						shop['shop_notice']        = temp.get('shop_notice',None)
-# 						url = "http://api.map.baidu.com/geocoder/v2/?address="+temp.get('shop_address',None)+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
-# 						r = requests.get(url)
-# 						result = json.loads(r.text)
-# 						if result["status"] == 0:
-# 							shop['lat']  = float(result["result"]["location"]["lat"])
-# 							shop['lon'] = float(result["result"]["location"]["lng"])
-# 						else:
-# 							shop['lat'] = 0
-# 							shop['lon'] = 0
-# 						shop_list.append(shop)
-# 						temp_goods                 = temp.get('goods_list',None)
-# 						for temp_good in temp_goods:
-# 								good = {}
-# 								good['goods_price']  = temp_good.get('goods_price',None)
-# 								good['good_img_url'] = temp_good.get('good_img_url',None)
-# 								good['shop_id']      = i
-# 								good['sales']       = temp_good.get('sales',None)
-# 								good['goods_name']  = temp_good.get('goods_name',None)
-# 								good_list.append(good)
-# 				i += 1
-# 		# print(shop_list)
-# 		# print(i)
-# 		return shop_list,good_list
+	def get_data(self):
+		import requests
+		shop_list = []
+		good_list = []
+		import os
+		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
+		c = f.read()
+		s = eval(c)
+		# print(type(s))
+		i = self.session.query(models.Spider_Shop).count()-1
+		for key in s:
+				temp = s.get(key,None)
+				if temp:
+						shop = {}
+						shop['shop_id']            = i
+						shop['shop_address']       = temp.get('shop_address',None)
+						shop['shop_logo']          = temp.get('shop_logo',None)
+						shop['delivery_freight']   = temp.get('delivery_freight',None)
+						shop['shop_link']          = temp.get('shop_link',None)
+						shop['delivery_time']      = temp.get('delivery_time',None)
+						shop['shop_phone']         = temp.get('shop_phone',None)
+						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
+						shop['delivery_area']      = temp.get('delivery_area',None)
+						shop['shop_name']          = temp.get('shop_name',None)
+						shop['shop_notice']        = temp.get('shop_notice',None)
+						url = "http://api.map.baidu.com/geocoder/v2/?address="+temp.get('shop_address',None)+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+						r = requests.get(url)
+						result = json.loads(r.text)
+						if result["status"] == 0:
+							shop['lat']  = float(result["result"]["location"]["lat"])
+							shop['lon'] = float(result["result"]["location"]["lng"])
+						else:
+							shop['lat'] = 0
+							shop['lon'] = 0
+						shop_list.append(shop)
+						temp_goods                 = temp.get('goods_list',None)
+						for temp_good in temp_goods:
+								good = {}
+								good['goods_price']  = temp_good.get('goods_price',None)
+								good['good_img_url'] = temp_good.get('good_img_url',None)
+								good['shop_id']      = i
+								good['sales']       = temp_good.get('sales',None)
+								good['goods_name']  = temp_good.get('goods_name',None)
+								good_list.append(good)
+				i += 1
+		# print(shop_list)
+		# print(i)
+		return shop_list,good_list
 
 # 支付超时判断
 # 返回：
