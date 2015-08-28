@@ -123,6 +123,8 @@ class OnlineWxPay(CustomerBaseHandler):
 			unifiedOrder.setParameter('trade_type',"JSAPI")
 			prepay_id = unifiedOrder.getPrepayId()
 			# print("[WeixinPay]prepay_id:",prepay_id)
+			if not prepay_id:
+				return self.send_fail("微信支付失败，请稍后再试！")
 			jsApi.setPrepayId(prepay_id)
 			renderPayParams = jsApi.getParameters()
 			# print("[WeixinPay]renderPayParams:",renderPayParams)

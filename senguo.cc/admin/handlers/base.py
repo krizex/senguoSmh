@@ -2046,11 +2046,14 @@ class WxOauth2:
 
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		template_id_short = 'TM00351'
-		template_id = cls.get_template_id(admin_id,template_id_short,access_token)
-		if not template_id:
-			return False
+		if other_access_token:
+			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+			if not template_id:
+				return False
+			else:
+				print('template_id get success',template_id)
 		else:
-			print('template_id get success',template_id)
+			template_id = '5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg'
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -2172,12 +2175,14 @@ class WxOauth2:
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		print(touser,access_token,'wx_openid and access_token')
 		template_id_short = 'OPENTM200746866'
-		template_id = cls.get_template_id(admin_id,template_id_short,access_token)
-		if not template_id:
-			return False
+		if other_access_token:
+			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+			if not template_id:
+				return False
+			else:
+				print('template_id get success',template_id)
 		else:
-			print('template_id get success',template_id)
-
+			template_id = 'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0'
 		postdata = {
 			'touser' : touser,
 			# 'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
@@ -2205,11 +2210,14 @@ class WxOauth2:
 	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		template_id_short = 'OPENTM202521011'
-		template_id = cls.get_template_id(admin_id,template_id_short,access_token)
-		if not template_id:
-			return False
+		if other_access_token:
+			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+			if not template_id:
+				return False
+			else:
+				print('template_id get success',template_id)
 		else:
-			print('template_id get success',template_id)
+			template_id = '5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0'
 		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
 		postdata = {
 			'touser':touser,
