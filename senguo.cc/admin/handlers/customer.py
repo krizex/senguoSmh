@@ -1468,6 +1468,7 @@ class Market(CustomerBaseHandler):
 						#判断商品是否参加了限时折扣活动 还不知道需不需要加上
 						has_discount_activity1=0 # 标记是否有活动
 						discount_rate=10  #标记折扣
+
 						q_price=None
 						end_time1=0
 						if q_all:
@@ -1490,14 +1491,18 @@ class Market(CustomerBaseHandler):
 									has_discount_activity=1
 									q_price=q_query
 						if has_discount_activity:
-							q_pricr_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_price.discount_id).first()
-							if q_pricr_group.discount_way==0:
-								end_time1=q_pricr_group.end_date
-							else:
-								end_time1=int(time.time())-8*3600+q_pricr_group.t_time
+							if q_price:
+								q_price_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_price.discount_id).first()
+								discount_rate=q_price.discount_rate
+								if q_price_group.discount_way==0:
+									end_time1=q_price_group.end_date
+								else:
+									end_time1=int(time.time())-8*3600+q_pricr_group.t_time
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
+
+				charge_types.sort(key=lambda item:item['discount_rate'],reverse=False)
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
 				saled = fruit.saled if fruit.saled else 0
 				# print("[CustomerMarket]w_getdata:",fruit.name,fruit.len(fruit.img_url.split(";")),fruit.detail_describe)

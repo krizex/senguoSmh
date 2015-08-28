@@ -2662,7 +2662,7 @@ class Goods(AdminBaseHandler):
 							num = 0
 						relate = select_num/unit_num
 						try:
-							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_[0,-2])
+							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_([0,-2]))
 						except:
 							q_charge = None
 						if q_charge:
@@ -5440,7 +5440,7 @@ class Discount(AdminBaseHandler):
 					#进行判断添加这个时刻有没有已经存在进行的活动
 					q_goods_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=-2).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 					for m in q_goods_all:
-						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
 						if q_group_all:
 							if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 								return self.send_fail("商品"+str(qq.index(x)+1)+"时间段选择和之前面向所有分组的限时折扣活动时间段冲突")
@@ -5454,7 +5454,7 @@ class Discount(AdminBaseHandler):
 					elif x.use_goods==-1:
 						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
@@ -5467,14 +5467,14 @@ class Discount(AdminBaseHandler):
 					else:
 						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 
 						q_single=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=x.use_goods).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_single:
-							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
 							if q_group_single:
 								if not self.judgetimeright(q_group_single,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
