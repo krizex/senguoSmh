@@ -1336,6 +1336,10 @@ class AdminBaseHandler(_AccountBaseHandler):
 		if shop_id:
 			self.current_shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 
+		if_current_shops = self.if_current_shops()
+		if not if_current_shops:
+			return self.redirect(self.reverse_url("switchshop"))
+		
 		# if not self.current_user.shops:
 		# 	if admin:
 		# 		try:
@@ -1379,8 +1383,9 @@ class AdminBaseHandler(_AccountBaseHandler):
 				shop = None
 			if shop:
 				self.current_shop = shop
+				return True
 			else:
-				return self.redirect(self.reverse_url("switchshop"))
+				return False
 
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())

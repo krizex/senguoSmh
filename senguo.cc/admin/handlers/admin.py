@@ -94,7 +94,6 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminHome"))
 
@@ -189,6 +188,9 @@ class Home(AdminBaseHandler):
 
 # 店铺切换
 class SwitchShop(AdminBaseHandler):
+	def if_current_shops(self):
+		return True
+
 	@tornado.web.authenticated
 	def get(self):
 		if self.is_pc_browser()==False:
@@ -340,7 +342,6 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 # 销售统计 add by jyj 2015-7-8
 class SellStatic(AdminBaseHandler):
 	def get(self):
-		self.if_current_shops()
 		return self.render("admin/sell-count.html",context=dict(subpage='sellstatic'))
 
 	@tornado.web.authenticated
@@ -989,7 +990,6 @@ class SellStatic(AdminBaseHandler):
 # 订单统计
 class OrderStatic(AdminBaseHandler):
 	def get(self):
-		self.if_current_shops()
 		return self.render("admin/order-count.html",context=dict(subpage='orderstatic'))
 
 	@tornado.web.authenticated
@@ -1209,7 +1209,6 @@ class OrderStatic(AdminBaseHandler):
 class FollowerStatic(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		return self.render("admin/user-count.html",context=dict(subpage='userstatic'))
 
 	@tornado.web.authenticated
@@ -1303,7 +1302,6 @@ class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "page:int")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 10
@@ -1385,7 +1383,6 @@ class Order(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
-		self.if_current_shops()
 		order_type = self.args["order_type"]
 		
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
@@ -1875,7 +1872,6 @@ class Shelf(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "id:int")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 
 		fruit_type_d = {}
@@ -2092,7 +2088,6 @@ class Goods(AdminBaseHandler):
 
 	@AdminBaseHandler.check_arguments("type?","sub_type?","type_id?:int","page?:int","filter_status?","order_status1?","order_status2?","filter_status2?","content?")
 	def get(self):
-		self.if_current_shops()
 		action = self._action
 		_id = str(time.time())
 		current_shop = self.current_shop
@@ -2990,7 +2985,6 @@ class editorTest(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str")
 	def get(self):
-		self.if_current_shops()
 		if "action" in self.args:
 			if self.args["action"] == "editor" :
 				shop_id = self.current_shop.id
@@ -3021,7 +3015,6 @@ class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "order_by:str","if_reverse?:int", "page?:int", "wd?:str")
 	def get(self):
-		self.if_current_shops()
 		# if self.is_pc_browser()==False:
 		# 	return self.redirect(self.reverse_url("MadminComment"))
 		action = self.args["action"]
@@ -3164,7 +3157,6 @@ class Staff(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		staffs = self.current_shop.staffs
 		if action == "hire":
@@ -3294,7 +3286,6 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "id?:int","page?:int","wd?:str")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		subpage=''
 		if action == 'customer_order':
@@ -3334,7 +3325,6 @@ class Config(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action",'status?')
 	def get(self):
-		self.if_current_shops()
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action = self.args["action"]
@@ -3625,7 +3615,6 @@ class AdminAuth(AdminBaseHandler):
 	def initialize(self, action):
 		self._action = action
 	def get(self):
-		self.if_current_shops()
 		next_url = self.get_argument('next', '')
 		if self._action == 'wxauth':
 			if self.is_pc_browser():
@@ -3695,7 +3684,6 @@ class AdminAuth(AdminBaseHandler):
 class ShopBalance(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		subpage = 'shopBlance'
 		shop = self.current_shop
 		shop.is_balance = 0
@@ -3955,7 +3943,6 @@ class ShopBalance(AdminBaseHandler):
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
@@ -4046,7 +4033,6 @@ class ShopAuthenticate(AdminBaseHandler):
 	@tornado.web.authenticated
 	# @AdminBaseHandler.check_arguments()
 	def get(self):
-		self.if_current_shops()
 		shop_id = self.current_shop.id
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
 		try:
@@ -4181,7 +4167,6 @@ class Marketing(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","data?:str","coupon_id?:int","select_rule?:int","coupon_type?:int","page?")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		current_shop_id=self.current_shop.id
 		current_shop=self.current_shop
@@ -4646,7 +4631,6 @@ class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str", "page?:int")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 10
@@ -4698,7 +4682,6 @@ class Confession(AdminBaseHandler):
 class MessageManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		return self.render('admin/shop-wx-set.html',context=dict(subpage='shop_set',shopSubPage='wx_set'))
 
 	@tornado.web.authenticated

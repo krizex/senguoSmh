@@ -444,6 +444,9 @@ class Home(CustomerBaseHandler):
 
 # 创建店铺
 class CreateShop(AdminBaseHandler):
+	def if_current_shops(self):
+		return True
+		
 	@tornado.web.authenticated
 	def get(self):
 		token = self.get_qiniu_token("Market_cookie","apply")
