@@ -1112,9 +1112,8 @@ class OrderStatic(SuperBaseHandler):
 		elif action == "receive_time":
 			return self.receive_time()
 
-	@SuperBaseHandler.check_arguments("type:int")
+	@SuperBaseHandler.check_arguments("type:int","start_date?:str","end_date?:str")
 	def order_time(self):
-
 		type = self.args["type"]
 		# woody 8.4
 		level = self.current_user.level
@@ -1130,16 +1129,22 @@ class OrderStatic(SuperBaseHandler):
 		else:
 			return self.send_fail('level error')
 
-		if type == 1:  # 累计数据
+		if type == 1:  # 如果type=1，表示要获取历史累计数据；如果type=2,表示获取指定时间段的数据
 			pass
-		elif type == 2:  # 昨天数据
-			now = datetime.datetime.now() - datetime.timedelta(1)
-			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
+		elif type == 2:  
+			start_date = self.args['start_date']
+			end_date = self.args['end_date']
+			start_date = datetime.datetime.strptime(start_date,'%Y-%m-%d')
+			end_date = datetime.datetime.strptime(end_date,'%Y-%m-%d')
+
+			start_date = datetime.datetime(start_date.year, start_date.month, start_date.day)
+			end_date = end_date + datetime.timedelta(1)
+			end_date = datetime.datetime(end_date.year, end_date.month, end_date.day)
 			q = q.filter(models.Order.create_date >= start_date,
-					   models.Order.create_date <= end_date)
+					   models.Order.create_date < end_date)
 		else:
 			return self.send_error(404)
+
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
@@ -1153,7 +1158,7 @@ class OrderStatic(SuperBaseHandler):
 					data[e[0]] += 1
 		return self.send_success(data=data)
 
-	@SuperBaseHandler.check_arguments("type:int")
+	@SuperBaseHandler.check_arguments("type:int","start_date?:str","end_date?:str")
 	def receive_time(self):
 		type = self.args["type"]
 		# woody 8.4
@@ -1174,11 +1179,16 @@ class OrderStatic(SuperBaseHandler):
 		if type == 1:
 			orders = q.all()
 		elif type == 2:
-			now = datetime.datetime.now() - datetime.timedelta(1)
-			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
+			start_date = self.args['start_date']
+			end_date = self.args['end_date']
+			start_date = datetime.datetime.strptime(start_date,'%Y-%m-%d')
+			end_date = datetime.datetime.strptime(end_date,'%Y-%m-%d')
+
+			start_date = datetime.datetime(start_date.year, start_date.month, start_date.day)
+			end_date = end_date + datetime.timedelta(1)
+			end_date = datetime.datetime(end_date.year, end_date.month, end_date.day)
 			orders = q.filter(models.Order.create_date >= start_date,
-							  models.Order.create_date <= end_date).all()
+							  models.Order.create_date < end_date).all()
 		else:
 			return self.send_error(404)
 

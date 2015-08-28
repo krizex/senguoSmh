@@ -231,7 +231,7 @@ class Third(CustomerBaseHandler):
 					if qq.jpush_id==jpush_id:
 						new_device=0
 			if new_device==1 and q:
-				print(new_device,'new_device')
+				# print(new_device,'new_device')
 				new_jpushinfo=models.Jpushinfo(user_id=q.id,user_type=0,jpush_id=jpush_id)
 				self.session.add(new_jpushinfo)
 				self.session.commit()
@@ -1122,12 +1122,15 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @get_unblock
+	@CustomerBaseHandler.check_arguments("code?")
 	def get(self, shop_code):
 		# print('[CustomerMarket]login in')
+		code = self.args.get('code',None)
 		w_follow = True
 		# fruits=''
 		# page_size = 10
 		# return self.send_success()
+		# print(self.current_user.id)
 
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
@@ -1142,36 +1145,50 @@ class Market(CustomerBaseHandler):
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
 			admin_id    = shop.admin.id
-			wx_openid   = self.session.query(models.Mp_customer_link).first()
-			if wx_openid:
-				# print('[CustomerMarket]whatttttttttttttttt')
-				pass
-			else:
-				#生成wx_openid
-				if self.is_wexin_browser():
-					# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
-					wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
-					# print(wx_openid,appid,appsecret)
-					if wx_openid:
+			# admin_customer_openid  = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+		
+			#生成wx_openid
+			if self.is_wexin_browser():
+				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+				if len(code) == 0:
+					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
+					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
+					return self.redirect(url)
+				else:
+					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
+				# wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
+				# print(wx_openid,appid,appsecret)
+				if wx_openid:
+					#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
+					admin_customer_openid = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+					if admin_customer_openid:
+						# print('update other wxopenid')
+						admin_customer_openid.wx_openid = wx_openid
+					else:
 						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
 						self.session.add(admin_customer_openid)
-						self.session.commit()
-					# else:
-					#	print('[CustomerMarket]get openid failed')
-				# else:
-				#	print('[CustomerMarket]haahahahah')
+					self.session.commit()
+				else:
+					print('[CustomerMarket]get openid failed')
+			# else:
+			#	print('[CustomerMarket]haahahahah')
 		else:
 			pass
 		# print('[CustomerMarket]success??????????????????????????????????')
 
 		# self.current_shop = shop
 		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
+		# try:
+		# 	shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
+		# except NoResultFound:
+		# 	return self.write('您访问的店铺不存在')
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
 		shop_auth = shop.shop_auth
-		if shop.marketing:
-			shop_marketing = shop.marketing.confess_active
+		marketing = self.session.query(models.Marketing).filter_by(id = shop.id).first()
+		if marketing:
+			shop_marketing = marketing.confess_active
 			coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
 			if coupon_have==0:
 				coupon_active=0
@@ -1190,7 +1207,6 @@ class Market(CustomerBaseHandler):
 			seckill_active = 0
 			discount_active=1
 			##
-
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
@@ -1355,7 +1371,7 @@ class Market(CustomerBaseHandler):
 		# print('[CustomerMarket]code:',code)
 		if len(code) == 0:
 			# print('[CustomerMarket]get code')
-			appid = 'wx0ed17cdc9020a96e'
+			# appid = 'wx0ed17cdc9020a96e'
 			redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
 			url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
 			# print("[CustomerMarket]url:",url)
@@ -2451,26 +2467,27 @@ class Cart(CustomerBaseHandler):
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
-		self.cart_callback(order.id)
-		self.session.commit()
+
+		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
-	def cart_callback(self,order_id):
+	@classmethod
+	def cart_callback(self,session,order_id):
 		# print("[CustomerCart]cart_callback: order_id:",order_id)
 		# try:
 		# 	order_id = int(self.args['order_id'])
 		# except:
 		# 	Logger.error("CartCallback: get order_id error")
 		# 	return self.send_fail("CartCallback: get order_id error")
-		order = self.session.query(models.Order).filter_by(id = int(order_id)).first()
+		order = session.query(models.Order).filter_by(id = int(order_id)).first()
 		if not order:
 			# print("[CustomerCart]cart_callback: order not found")
 			return self.send_fail("[CustomerCart]cart_callback: order not found")
 		totalPrice = order.new_totalprice
 		shop_id = order.shop_id
 		customer_id = order.customer_id
-		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-		shop     = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		customer = session.query(models.Customer).filter_by(id = customer_id).first()
+		shop     = session.query(models.Shop).filter_by(id = shop_id).first()
 		if not shop or not customer:
 			# print("[CustomerCart]cart_callback: shop/customer not found")
 			return self.send_fail('[CustomerCart]cart_callback: shop/customer not found')
@@ -2481,9 +2498,9 @@ class Cart(CustomerBaseHandler):
 		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
 			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
 		else:
 			access_token = None
-
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -2493,12 +2510,12 @@ class Cart(CustomerBaseHandler):
 		####################################################
 		# print("[CustomerCart]cart_callback: pay_type:",self.args['pay_type'])
 		if order.pay_type == 2:
-			shop_follow = self.session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
+			shop_follow = session.query(models.CustomerShopFollow).with_lockmode('update').filter_by(customer_id = self.current_user.id,\
 				shop_id = shop_id).first()
 			if not shop_follow:
 				return self.send_fail('[CustomerCart]cart_callback: shop_follow not found')
 			shop_follow.shop_balance -= totalPrice   #用户对应 店铺余额减少 ，单位：元
-			self.session.flush()
+			session.flush()
 			#生成一条余额交易记录
 			balance_record = '余额支付：订单' + order.num
 			balance_history = models.BalanceHistory(customer_id = self.current_user.id,\
@@ -2514,6 +2531,9 @@ class Cart(CustomerBaseHandler):
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
 			self.send_admin_message(self.session,order,access_token)
 			
+			session.add(balance_history)
+			session.flush()
+		session.commit()
 		return True
 
 	@classmethod
@@ -3472,131 +3492,131 @@ class wxChargeCallBack(CustomerBaseHandler):
 		return self.send_success(qr_url=qr_url)
 
 # 插入爬取店铺数据（访问路由：/customer/test）
-class InsertData(CustomerBaseHandler):
-	# @tornado.web.authenticated
-	# @CustomerBaseHandler.check_arguments("code?:str")
-	# @tornado.web.asynchronous
-	def get(self):
-		import requests
-		import json
-		shop_list , good_list = self.get_data()
-		# print(shop_list)
-		# for shop in shop_list:
-		# 	try:
-		# 		link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
-		# 	except:
-		# 		link_exist = None
-		# 	if not link_exist:
-		# 		temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
-		# 			shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
-		# 			delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-		# 			delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
-		# 			lon = shop['lon'],shop_province = 420000,shop_city = 420100)
-		# 		self.session.add(temp_shop)
-		# self.session.flush()
+# class InsertData(CustomerBaseHandler):
+# 	# @tornado.web.authenticated
+# 	# @CustomerBaseHandler.check_arguments("code?:str")
+# 	# @tornado.web.asynchronous
+# 	def get(self):
+# 		import requests
+# 		import json
+# 		shop_list , good_list = self.get_data()
+# 		# print(shop_list)
+# 		# for shop in shop_list:
+# 		# 	try:
+# 		# 		link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
+# 		# 	except:
+# 		# 		link_exist = None
+# 		# 	if not link_exist:
+# 		# 		temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
+# 		# 			shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
+# 		# 			delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
+# 		# 			delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
+# 		# 			lon = shop['lon'],shop_province = 420000,shop_city = 420100)
+# 		# 		self.session.add(temp_shop)
+# 		# self.session.flush()
 
-		# for good in good_list:
-		# 	temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
-		# 		sales = good['sales'],goods_name = good['goods_name'])
-		# 	self.session.add(temp_good)
-		# self.session.commit()
-		shop = self.session.query(models.Shop).filter(models.Shop.shop_name.like('%%%s%%' % '')).count()
-		print(shop)
-		shop_all = self.session.query(models.Shop).count()
-		print(shop_all)
+# 		# for good in good_list:
+# 		# 	temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
+# 		# 		sales = good['sales'],goods_name = good['goods_name'])
+# 		# 	self.session.add(temp_good)
+# 		# self.session.commit()
+# 		shop = self.session.query(models.Shop).filter(models.Shop.shop_name.like('%%%s%%' % '')).count()
+# 		print(shop)
+# 		shop_all = self.session.query(models.Shop).count()
+# 		print(shop_all)
 
-		# session = DBSession()
+# 		# session = DBSession()
 
-		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-		# print(shop.shop_balance)
-		# shop.shop_balance += 100
-		# session.commit()
+# 		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+# 		# print(shop.shop_balance)
+# 		# shop.shop_balance += 100
+# 		# session.commit()
 
-		# session2 = DBSession()
-		# shop2 = session2.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-		# print(shop2.shop_balance)
-		# shop2.shop_balance += 100
-		# session2.commit()
+# 		# session2 = DBSession()
+# 		# shop2 = session2.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+# 		# print(shop2.shop_balance)
+# 		# shop2.shop_balance += 100
+# 		# session2.commit()
 
-		# shop3 = self.session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-		# print(shop3.shop_balance)
+# 		# shop3 = self.session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
+# 		# print(shop3.shop_balance)
 
 
-		return self.send_success(shop=shop,shop_all=shop_all)
-		# import multiprocessing
-		# from multiprocessing import Process
-		# import datetime
-		# from sqlalchemy import create_engine, func, ForeignKey, Column
-		# session = self.session
-		# from handlers.base import UrlShorten
-		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
-		# print(short,type(short))
-		# print(UrlShorten.get_long_url(short))
-		# try:
-		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-		# except:
-		# 	return self.send_fail('shop not found')
-		# # self.shop_auth_msg(shop,False)
-		# # shop_auth_fail_msg('13163263783','woody','woody')
-		# self.render('customer/storage-change.html')
-		# def async_task():
-		#   try:
-		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-		# 	except:
-		# 		return self.send_fail('shop not found')
-		# 	# self.shop_auth_msg(shop,False)
-		# 	# shop_auth_fail_msg('13163263783','woody','woody')
-		# 	self.render('customer/storage-change.html')
-		# gevent.spawn(async_task)
+# 		return self.send_success(shop=shop,shop_all=shop_all)
+# 		# import multiprocessing
+# 		# from multiprocessing import Process
+# 		# import datetime
+# 		# from sqlalchemy import create_engine, func, ForeignKey, Column
+# 		# session = self.session
+# 		# from handlers.base import UrlShorten
+# 		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
+# 		# print(short,type(short))
+# 		# print(UrlShorten.get_long_url(short))
+# 		# try:
+# 		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+# 		# except:
+# 		# 	return self.send_fail('shop not found')
+# 		# # self.shop_auth_msg(shop,False)
+# 		# # shop_auth_fail_msg('13163263783','woody','woody')
+# 		# self.render('customer/storage-change.html')
+# 		# def async_task():
+# 		#   try:
+# 		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
+# 		# 	except:
+# 		# 		return self.send_fail('shop not found')
+# 		# 	# self.shop_auth_msg(shop,False)
+# 		# 	# shop_auth_fail_msg('13163263783','woody','woody')
+# 		# 	self.render('customer/storage-change.html')
+# 		# gevent.spawn(async_task)
 
-	def get_data(self):
-		import requests
-		shop_list = []
-		good_list = []
-		import os
-		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
-		c = f.read()
-		s = eval(c)
-		# print(type(s))
-		i = self.session.query(models.Spider_Shop).count()-1
-		for key in s:
-				temp = s.get(key,None)
-				if temp:
-						shop = {}
-						shop['shop_id']            = i
-						shop['shop_address']       = temp.get('shop_address',None)
-						shop['shop_logo']          = temp.get('shop_logo',None)
-						shop['delivery_freight']   = temp.get('delivery_freight',None)
-						shop['shop_link']          = temp.get('shop_link',None)
-						shop['delivery_time']      = temp.get('delivery_time',None)
-						shop['shop_phone']         = temp.get('shop_phone',None)
-						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
-						shop['delivery_area']      = temp.get('delivery_area',None)
-						shop['shop_name']          = temp.get('shop_name',None)
-						shop['shop_notice']        = temp.get('shop_notice',None)
-						url = "http://api.map.baidu.com/geocoder/v2/?address="+temp.get('shop_address',None)+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
-						r = requests.get(url)
-						result = json.loads(r.text)
-						if result["status"] == 0:
-							shop['lat']  = float(result["result"]["location"]["lat"])
-							shop['lon'] = float(result["result"]["location"]["lng"])
-						else:
-							shop['lat'] = 0
-							shop['lon'] = 0
-						shop_list.append(shop)
-						temp_goods                 = temp.get('goods_list',None)
-						for temp_good in temp_goods:
-								good = {}
-								good['goods_price']  = temp_good.get('goods_price',None)
-								good['good_img_url'] = temp_good.get('good_img_url',None)
-								good['shop_id']      = i
-								good['sales']       = temp_good.get('sales',None)
-								good['goods_name']  = temp_good.get('goods_name',None)
-								good_list.append(good)
-				i += 1
-		# print(shop_list)
-		# print(i)
-		return shop_list,good_list
+# 	def get_data(self):
+# 		import requests
+# 		shop_list = []
+# 		good_list = []
+# 		import os
+# 		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
+# 		c = f.read()
+# 		s = eval(c)
+# 		# print(type(s))
+# 		i = self.session.query(models.Spider_Shop).count()-1
+# 		for key in s:
+# 				temp = s.get(key,None)
+# 				if temp:
+# 						shop = {}
+# 						shop['shop_id']            = i
+# 						shop['shop_address']       = temp.get('shop_address',None)
+# 						shop['shop_logo']          = temp.get('shop_logo',None)
+# 						shop['delivery_freight']   = temp.get('delivery_freight',None)
+# 						shop['shop_link']          = temp.get('shop_link',None)
+# 						shop['delivery_time']      = temp.get('delivery_time',None)
+# 						shop['shop_phone']         = temp.get('shop_phone',None)
+# 						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
+# 						shop['delivery_area']      = temp.get('delivery_area',None)
+# 						shop['shop_name']          = temp.get('shop_name',None)
+# 						shop['shop_notice']        = temp.get('shop_notice',None)
+# 						url = "http://api.map.baidu.com/geocoder/v2/?address="+temp.get('shop_address',None)+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+# 						r = requests.get(url)
+# 						result = json.loads(r.text)
+# 						if result["status"] == 0:
+# 							shop['lat']  = float(result["result"]["location"]["lat"])
+# 							shop['lon'] = float(result["result"]["location"]["lng"])
+# 						else:
+# 							shop['lat'] = 0
+# 							shop['lon'] = 0
+# 						shop_list.append(shop)
+# 						temp_goods                 = temp.get('goods_list',None)
+# 						for temp_good in temp_goods:
+# 								good = {}
+# 								good['goods_price']  = temp_good.get('goods_price',None)
+# 								good['good_img_url'] = temp_good.get('good_img_url',None)
+# 								good['shop_id']      = i
+# 								good['sales']       = temp_good.get('sales',None)
+# 								good['goods_name']  = temp_good.get('goods_name',None)
+# 								good_list.append(good)
+# 				i += 1
+# 		# print(shop_list)
+# 		# print(i)
+# 		return shop_list,good_list
 
 # 支付超时判断
 # 返回：

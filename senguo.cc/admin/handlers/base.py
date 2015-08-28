@@ -707,7 +707,8 @@ class GlobalBaseHandler(BaseHandler):
 			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
 				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
-				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,'code':d.fruit_type.code})
+				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,\
+				'code':d.fruit_type.code,'buylimit':d.buy_limit})
 		if _type and _type=="one":
 			data = data[0]
 		# print([GlobalBaseHandler]getGoodsData, data:",data)
@@ -1046,14 +1047,27 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	# 发送新订单模版消息给配送员, woody,6.17
 	@classmethod
-	def send_staff_message(self,session,order):
+	def send_staff_message(self,session,order,other_access_token = None):
 		# print('[TempMsg]login in send_staff_message')
 		# print("[TempMsg]Send staff message to staff ID:",order.SH2_id)
 		try:
 			staff_info = session.query(models.Accountinfo).filter_by(id = order.SH2_id).first()
 		except NoResultFound:
 			return self.send_fail('[_AccountBaseHandler]send_staff_message: staff_info not found')
-		openid = staff_info.wx_openid
+
+		if order.shop.admin.has_mp:
+			#获取staff对应自己平台的openid
+			mp_staff = session.query(models.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(staff_info.id)).first()
+			if mp_admin:
+				touser = mp_staff.wx_openid
+				# print(touser,'staff self openid')
+			else:
+				# print('get staff_admin error')
+				touser = staff_info.wx_openid
+		else:
+			touser   = staff_info.wx_openid
+			# print(touser,'openid')
+		# openid = staff_info.wx_openid
 		staff_name = staff_info.nickname
 		order_id = order.num
 		order_type = order.type
@@ -1064,29 +1078,53 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		phone = order.phone
 		address = order.address_text
 		shop_name = order.shop.shop_name
+
+		admin_id = order.shop.admin.id
 		order_shopid = order.shop_id
 		# 非自提订单发送配送员模版消息
 		# if order_type != 3:
-		WxOauth2.post_staff_msg(openid,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-			order_totalPrice,send_time,phone,address,order_shopid)
+		WxOauth2.post_staff_msg(touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
+			order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token)
+
 		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
 	@classmethod
 	def send_admin_message(self,session,order,other_access_token = None):
+		# session = models.DBSession()
 		access_token = other_access_token if other_access_token else None
 		admin_name = order.shop.admin.accountinfo.nickname
+		# touser     = order.shop.admin.accountinfo.wx_openid
 		customer_id = order.customer_id
 		admin_id    = order.shop.admin.id
-		if order.shop.admin.has_mp:
-			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = admin_id ,customer_id = customer_id).first()
-			if mp_customer:
-				touser = mp_customer.wx_openid
-			else:
-				touser = order.shop.admin.accountinfo.wx_openid
+		try:
+			customer = session.query(models.Customer).filter_by(id = customer_id).first()
+		except NoResultFound:
+			return self.send_fail('customer not found')
 
+		# print(admin_id,customer_id)
+		if order.shop.admin.has_mp:
+			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
+			if mp_customer:
+				c_touser = mp_customer.wx_openid
+				# print(c_touser,'other openid')
+			else:
+				# print('get mp_customer error')
+				c_touser = customer.accountinfo.wx_openid
+
+			#获取卖家对应自己平台的openid
+			mp_admin = session.query(models.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(admin_id)).first()
+			if mp_admin:
+				touser = mp_admin.wx_openid
+				# print(touser,'admin self openid')
+			else:
+				# print('get mp_admin error')
+				touser = order.shop.admin.accountinfo.wx_openid
 		else:
-			touser = order.shop.admin.accountinfo.wx_openid
+			c_touser = customer.accountinfo.wx_openid
+			touser   = order.shop.admin.accountinfo.wx_openid
+			# print(c_touser,'openid')
+		# print(c_touser,'which openid')
 		shop_id    = order.shop.id
 		shop_name  = order.shop.shop_name
 		order_id   = order.num
@@ -1098,12 +1136,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_type = '立即送' if order_type == 1 else ('按时达' if order_type == 2 else '自提')
 		create_date= order.create_date
 		customer_name=order.receiver
+		# c_tourse   =customer.accountinfo.wx_openid
 
-		try:
-			customer = session.query(models.Customer).filter_by(id = customer_id).first()
-		except NoResultFound:
-			return self.send_fail('customer not found')
-		c_tourse   =customer.accountinfo.wx_openid
 		goods = []
 		f_d = eval(order.fruits)
 		for f in f_d:
@@ -1118,7 +1152,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order_realid = order.id
 		if order.shop.super_temp_active != 0:
 			WxOauth2.post_order_msg(touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,send_time,goods,
-				phone,address,access_token)
+				phone,address,admin_id,access_token)
 		try:
 			other_admin = session.query(models.HireLink).filter_by(shop_id = shop_id,active = 1, work = 9 , temp_active = 1).first()
 		except NoResultFound:
@@ -1138,8 +1172,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			else:
 				other_touser = info.wx_openid
 			WxOauth2.post_order_msg(other_touser,other_name,shop_name,order_id,order_type,create_date,customer_name,order_totalPrice,
-				send_time,goods,phone,address,access_token)
-		WxOauth2.order_success_msg(c_tourse,shop_name,create_date,goods,order_totalPrice,order_realid,access_token)
+				send_time,goods,phone,address,admin_id,access_token)
+		WxOauth2.order_success_msg(c_touser,shop_name,create_date,goods,order_totalPrice,order_realid,admin_id,access_token)
 
 		# 订单自动打印
 		auto_print = order.shop.config.auto_print
@@ -1171,7 +1205,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 
 	# 发送订单完成模版消息给用户
 	@classmethod
-	def order_done_msg(self,session,order):
+	def order_done_msg(self,session,order,other_access_token = None):
 		# print('[TempMsg]login order_done_msg')
 		order_num = order.num
 		order_sendtime = order.arrival_day + " " + order.arrival_time
@@ -1179,13 +1213,26 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		customer_id= order.customer_id
 		shop_name = order.shop.shop_name
 		order_id = order.id
+		admin_id = order.shop.admin.id
 		# print('[TempMsg]order_num:',order_num,', order_sendtime:',order_sendtime,', shop_phone:',shop_phone)
-		try:
-			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
-		except NoResultFound:
-			return self.send_fail('[TempMsg]order_done_msg: customer not found')
-		touser = customer_info.wx_openid
-		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id)
+		if order.shop.admin.has_mp:
+
+			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
+			if mp_customer:
+				touser = mp_customer.wx_openid
+				# print(touser,'other openid')
+			else:
+				# print('get mp_customer error')
+				touser = order.shop.admin.accountinfo.wx_openid
+
+		else:
+			touser = order.shop.admin.accountinfo.wx_openid
+		# try:
+		# 	customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		# except NoResultFound:
+		# 	return self.send_fail('[TempMsg]order_done_msg: customer not found')
+		# touser = customer_info.wx_openid
+		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id,other_access_token)
 
 	# 发送店铺认证状态更新模版消息给管理员
 	@classmethod
@@ -1199,10 +1246,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def order_cancel_msg(self,session,order,cancel_time,other_access_token = None):
 		access_token = other_access_token if other_access_token else None
 		touser = order.shop.admin.accountinfo.wx_openid
+		admin_id = order.shop.admin.id
 		order_num = order.num
 		shop_name = order.shop.shop_name
 		cancel_time = cancel_time
-		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,access_token)
+		WxOauth2.order_cancel_msg(touser,order_num,cancel_time,shop_name,admin_id,access_token)
 		concel_auto_print = order.shop.config.concel_auto_print
 		print_type = order.shop.config.receipt_type
 		wireless_type = order.shop.config.wireless_type
@@ -1359,13 +1407,17 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	@classmethod
 	def get_other_accessToken(self,session,admin_id):
 		now = datetime.datetime.now().timestamp()
+		# print(now,'now',admin_id)
+		session = models.DBSession()
 		try:
-			admin_info = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+			admin_info = session.query(models.ShopAdmin).filter_by(id = int(admin_id)).first()
 		except:
+			# print('get admin_info error')
 			return None
 		if admin_info.mp_name and admin_info.mp_appid and admin_info.mp_appsecret:
 			if admin_info.access_token and now - admin_info.token_creatime < 3600:
-				print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token,", token_creatime:",admin_info.token_creatime)
+				# print(admin_info.token_creatime,'token_creatime')
+				# print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token,", token_creatime:",admin_info.token_creatime)
 				return admin_info.access_token
 			else:
 				appid = admin_info.mp_appid
@@ -1377,12 +1429,13 @@ class _AccountBaseHandler(GlobalBaseHandler):
 					admin_info.access_token = data['access_token']
 					admin_info.token_creatime = now
 					session.commit()
-					print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token)
+					# print("[WxAuth]get_other_accessToken: access_token:",admin_info.access_token)
 					return data['access_token']
 				else:
 					# print("[WxAuth]Token error")
 					return None
 		else:
+			# print('has no mp!~~~~~~~~~~~~~~~~~~~~~~~~~`')
 			return None
 
 	##############################################################################################
@@ -1392,7 +1445,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	# 客户 对 平台 和 该店铺来说都变成 老客户
 	##############################################################################################
 	@classmethod
-	def order_done(self,session,order):
+	def order_done(self,session,order,other_access_token = None):
 		# print('[_AccountBaseHandler]login order_done')
 		now = datetime.datetime.now()
 		order.arrival_day = now.strftime("%Y-%m-%d")
@@ -1401,7 +1454,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_id           = order.shop_id
 		totalprice        = order.totalPrice
 
-		self.order_done_msg(session,order)
+		self.order_done_msg(session,order,other_access_token)
 
 		order.shop.is_balance = 1
 		order.shop.order_count += 1  #店铺订单数加1
@@ -1636,10 +1689,10 @@ class AdminBaseHandler(_AccountBaseHandler):
 		"""这个函数在get、post等函数运行前运行"""
 		shop_id = self.get_secure_cookie("shop_id") or b'0'         
 		shop_id = int(shop_id.decode())
-		try:
-			admin = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.accountinfo.id,active=1,work=9).first()
-		except:
-			admin = None
+		# try:
+		# 	admin = self.session.query(models.HireLink).filter_by(staff_id=self.current_user.accountinfo.id,active=1,work=9).first()
+		# except:
+		# 	admin = None
 
 		try:
 			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
@@ -1647,28 +1700,33 @@ class AdminBaseHandler(_AccountBaseHandler):
 			super_admin = None
 
 
-		if not admin and not super_admin:
-			return self.redirect(self.reverse_url("ApplyHome"))
+		if not super_admin:
+			return self.redirect(self.reverse_url("ApplyLogin"))
 
-		if admin:
-			if shop_id:
-				try:
-					shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
-					.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
-						models.HireLink.active == 1,models.HireLink.work == 9).first()
-				except:
-					shop = None
-			else:
-				try:
-					shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
-					.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
-						models.HireLink.active == 1,models.HireLink.work == 9).first()
-				except:
-					shop = None
-			self.current_shop = shop
+		# if admin:
+		# 	if shop_id:
+		# 		try:
+		# 			shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+		# 			.filter(models.Shop.id == shop_id,models.HireLink.staff_id == self.current_user.accountinfo.id,\
+		# 				models.HireLink.active == 1,models.HireLink.work == 9).first()
+		# 		except:
+		# 			shop = None
+		# 	else:
+		# 		try:
+		# 			shop = self.session.query(models.Shop).join(models.HireLink,models.Shop.id == models.HireLink.shop_id)\
+		# 			.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+		# 				models.HireLink.active == 1,models.HireLink.work == 9).first()
+		# 		except:
+		# 			shop = None
+		# 	self.current_shop = shop
 
 		if shop_id:
 			self.current_shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+
+		if_current_shops = self.if_current_shops()
+		# print(if_current_shops)
+		if not if_current_shops:
+			return self.redirect(self.reverse_url("switchshop"))
 
 		# if not self.current_user.shops:
 		# 	if admin:
@@ -1713,8 +1771,11 @@ class AdminBaseHandler(_AccountBaseHandler):
 				shop = None
 			if shop:
 				self.current_shop = shop
+				return True
 			else:
-				return self.redirect(self.reverse_url("switchshop"))
+				return False
+		else:
+			return True
 
 	def get_login_url(self):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
@@ -2387,11 +2448,33 @@ class WxOauth2:
 			return None
 		else:
 			return data['openid']
+	@classmethod
+	def get_template_id(cls,admin_id,template_id_short,access_token):
+		session = models.DBSession()
+		admin = session.query(models.ShopAdmin).filter_by(id = admin_id).first()
+		if not admin:
+			return False
+		template_id_zip = eval(admin.template_id)
+		template_id = template_id_zip.get(template_id_short,None)
+		if not template_id:
+			url = 'https://api.weixin.qq.com/cgi-bin/template/api_add_template?access_token={0}'.format(access_token)
+			data = json.dumps({"template_id_short":template_id_short})
+			r = requests.post(url,data=data)
+			s = r.text
+			if isinstance(s,bytes):
+				s = s.decode('utf-8')
+			s = json.loads(s)
+			template_id = s.get('template_id',None)
+			template_id_zip[template_id_short] = template_id
+			admin.template_id = str(template_id_zip)
+			session.commit()
+			return template_id
+		else:
+			return template_id
 
 	# 获取微信 jsapi
 	@classmethod
 	def get_jsapi_ticket(cls):
-		global jsapi_ticket
 		if datetime.datetime.now().timestamp() - jsapi_ticket["create_timestamp"]\
 				< 7100 and jsapi_ticket["jsapi_ticket"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
 			return jsapi_ticket["jsapi_ticket"]
@@ -2451,7 +2534,9 @@ class WxOauth2:
 
 	# 店铺申请成功模版消息（发送给申请者）
 	@classmethod
-	def post_template_msg(cls, touser, shop_name, name, phone):
+	def post_template_msg(cls, touser, shop_name, name):
+
+		template_id_short = 'OPENTM201136105'
 		time = datetime.datetime.now().strftime('%Y-%m-%d')
 		postdata = {
 			"touser": touser,
@@ -2523,10 +2608,18 @@ class WxOauth2:
 	# 新订单模版消息（发送给管理员）
 	@classmethod
 	def post_order_msg(cls,touser,admin_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,goods,phone,address,other_access_token = None):
+		order_totalPrice,send_time,goods,phone,address,admin_id,other_access_token = None):
 
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-
+		template_id_short = 'TM00351'
+		if other_access_token:
+			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+			if not template_id:
+				return False
+			# else:
+			#	print('template_id get success',template_id)
+		else:
+			template_id = '5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg'
 		remark = "订单总价：" + str(order_totalPrice) + '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -2535,7 +2628,8 @@ class WxOauth2:
 			   + "请及时登录森果后台处理订单。"
 		postdata = {
 			'touser' : touser,
-			'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
+			# 'template_id':"5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg",
+			'template_id':template_id,
 			"url":"http://i.senguo.cc/madmin/orderDetail/"+order_id,
 			"topcolor":"#FF0000",
 			"data":{
@@ -2557,10 +2651,19 @@ class WxOauth2:
 
 	# 新订单模版消息（发送给配送员）
 	@classmethod
-	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
-		order_totalPrice,send_time,phone,address,order_shopid,other_access_token = None):
-
+	def post_staff_msg(cls,touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,
+		order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token = None):
+		# access_token = cls.get_client_access_token()
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		if other_access_token:
+			template_id_short = 'TM00351'
+			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+			if not template_id:
+				return False
+			else:
+				print('template_id get success',template_id)
+		else:
+			template_id = '5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg'
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
 			   + "送达时间：" + send_time + '\n'\
 			   + "客户电话：" + phone + '\n'\
@@ -2580,7 +2683,8 @@ class WxOauth2:
 		# print(link_url)
 		postdata = {
 			'touser':touser,
-			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			# 'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			'template_id':'template_id',
 			'url':link_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
@@ -2601,10 +2705,19 @@ class WxOauth2:
 
 	# 批量新订单模版消息（发送给配送员）
 	@classmethod
-	def post_batch_msg(cls,touser,staff_name,shop_name,count):
+	def post_batch_msg(cls,touser,staff_name,shop_name,count,admin_id,other_access_token = None):
+		access_token = cls.get_client_access_token()
+		# access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		# template_id_short = 'TM00351'
+		# template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+		# if not template_id:
+		# 	return False
+		# else:
+		# 	print('template_id get success',template_id)
 		postdata = {
 			'touser':touser,
 			'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
+			# 'template_id':template_id,
 			'url':staff_order_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有 {2} 个新的订单需要配送。".format(staff_name,shop_name,count),"color": "#44b549"},
@@ -2616,7 +2729,7 @@ class WxOauth2:
 				"remark":{"value":"\n有多个订单需要配送，具体信息请点击“详情”进入查看。","color":"#173177"},
 			}
 		}
-		access_token = cls.get_client_access_token()
+		# access_token = cls.get_client_access_token()
 		res = requests.post(cls.template_msg_url.format(access_token = access_token),data = json.dumps(postdata),headers = {"connection":"close"})
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
@@ -2626,11 +2739,23 @@ class WxOauth2:
 
 	# 订单提交成功模版消息（发送给用户）
 	@classmethod
-	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,other_access_token = None):
+	def order_success_msg(cls,touser,shop_name,order_create,goods,order_totalPrice,order_realid,admin_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		# print(touser,access_token,'wx_openid and access_token')
+		template_id_short = 'OPENTM200746866'
+		if other_access_token:
+			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+			if not template_id:
+				# print('get template_id error')
+				return False
+			# else:
+			#	print('template_id get success',template_id)
+		else:
+			template_id = 'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0'
 		postdata = {
 			'touser' : touser,
-			'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
+			# 'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
+			'template_id':template_id,
 			'url'    : 'http://i.senguo.cc/customer/orders/detail/' + str(order_realid),
 			'topcolor': "#FF0000",
 			"data":{
@@ -2651,12 +2776,22 @@ class WxOauth2:
 
 	# 订单完成模版消息（发送给用户）
 	@classmethod
-	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,other_access_token = None):
+	def order_done_msg(cls,touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id,other_access_token = None):
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		template_id_short = 'OPENTM202521011'
+		if other_access_token:
+			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+			if not template_id:
+				return False
+			# else:
+			#	print('template_id get success',template_id)
+		else:
+			template_id = '5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0'
 		describe = '\n如有任何疑问，请拨打商家电话：%s。' % shop_phone if shop_phone else '\n如有任何疑问，请及时联系商家。'
 		postdata = {
 			'touser':touser,
-			'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
+			# 'template_id':'5_JWJNqfAAH8bXu2M_v9_MFWJq4ZPUdxHItKQTRbHW0',
+			'template_id':template_id,
 			'url':'http://i.senguo.cc/customer/orders/detail/' + str(order_id),
 			'topcolor':'#FF0000',
 			"data":{
@@ -2675,11 +2810,20 @@ class WxOauth2:
 
 	# 订单取消模版消息（发送给管理员）
 	@classmethod
-	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,other_access_token = None):
-		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+	def order_cancel_msg(cls,touser,order_num,cancel_time,shop_name,admin_id,other_access_token = None):
+		access_token = cls.get_client_access_token()
+		# access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		# template_id_short = 'OPENTM201449108'
+		# template_id = cls.get_template_id(admin_id,template_id_short,access_token)
+		# if not template_id:
+		# 	return False
+		# else:
+		# 	print('template_id get success',template_id)
+
 		postdata = {
 			'touser':touser,
 			'template_id':'EcqyvbnALGmeG8O-SJw_XCIlMvBOH5mB8YM_qCsgSwE',
+			# 'template_id':template_id,
 			'url':'i.senguo.cc/admin',
 			'topcolor':'#FF0000',
 			'data':{

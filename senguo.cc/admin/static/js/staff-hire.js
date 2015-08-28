@@ -29,7 +29,7 @@ $(document).ready(function(){
                         token=res.token;
                     },
                     function(){
-                        alert('网络错误！');}
+                        alert('您的网络暂时不通畅，请稍候再试');}
                 );
                 $('#edit_file_upload').data('uploadifive').settings.formData = {
                     'key':key,

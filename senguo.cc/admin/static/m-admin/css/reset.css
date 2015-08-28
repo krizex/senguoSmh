@@ -111,6 +111,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .ml4{margin-left: 4px;}
 .mt-100{margin-top: -100px;}
 .mb8{margin-bottom: 8px;}
+.mb20{margin-bottom:20px !important;}
 /*高度*/
 .h0{height: 0 !important;overflow: hidden;}
 /*提示框*/

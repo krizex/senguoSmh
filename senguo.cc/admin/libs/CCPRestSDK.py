@@ -135,7 +135,7 @@ class REST:
         except Exception as error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
     
     #  获取子帐号
     # @param startNo  可选参数    开始的序号，默认从0开始
@@ -191,7 +191,7 @@ class REST:
         except Exception as error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
 
     # 子帐号信息查询
     # @param friendlyName 必选参数   子帐号名称
@@ -242,7 +242,7 @@ class REST:
         except Exception as error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
         
     # 发送模板短信
     # @param to  必选参数     短信接收彿手机号码集合,用英文逗号分开
@@ -316,7 +316,7 @@ class REST:
         except Exception as  error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
 
     # 双向回呼
     # @param fromPhone  必选参数   主叫电话号码
@@ -372,7 +372,7 @@ class REST:
         except Exception as error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}       
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}       
     # 营销外呼
     # @param to 必选参数    被叫号码
     # @param mediaName 可选参数    语音文件名称，格式 wav。与mediaTxt不能同时为空。当不为空时mediaTxt属性失效。
@@ -425,7 +425,7 @@ class REST:
         except Exception as error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
     
     # 语音验证码
     # @param verifyCode  必选参数   验证码内容，为数字和英文字母，不区分大小写，长度4-8位
@@ -480,7 +480,7 @@ class REST:
         except Exception as  error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
     
     # IVR外呼
     # @param number  必选参数     待呼叫号码，为Dial节点的属性
@@ -526,7 +526,7 @@ class REST:
         except Exception as  error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
         
     
     # 话单下载
@@ -578,7 +578,7 @@ class REST:
         except Exception as error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
     
     # 主帐号信息查询
 
@@ -618,7 +618,7 @@ class REST:
         except Exception as error:
             if self.Iflog:
                 self.log(url,body,data)
-            return {'172001':'网络错误'}
+            return {'172001':'您的网络暂时不通畅，请稍候再试'}
     
     #子帐号鉴权
     def subAuth(self):
