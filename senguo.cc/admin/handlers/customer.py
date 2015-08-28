@@ -2022,7 +2022,6 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
-<<<<<<< HEAD
 
 		# added by jyj 2015-8-26
 		#fruits 为一个字典，形式：{'12647': 2, '12667': 6},表示计价方式和数量的键值对字典；
@@ -2057,10 +2056,8 @@ class Cart(CustomerBaseHandler):
 		#为order表新增字段activity_type，类型为键值对字符串，键是计价方式，值是计价方式对应的活动名称，用于存储该订单中每种计价方式id对应的水果参与的活动名称
 		# 如果值为空字符串，则表示未参与任何活动；如果值为非空，则表示参与了值字符串所表示的活动。
 		activity_name = {0:'',1:'秒杀',2:'折扣'}
-
-=======
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
->>>>>>> tmp
+
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
