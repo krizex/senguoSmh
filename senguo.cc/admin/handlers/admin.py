@@ -194,6 +194,7 @@ class SwitchShop(AdminBaseHandler):
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminHome"))
 		shop_list = []
+		other_shop_list = []
 		try:
 			shops = self.current_user.shops
 		except:
@@ -207,8 +208,11 @@ class SwitchShop(AdminBaseHandler):
 		if shops:
 			shop_list += self.getshop(shops)
 		if other_shops:
-			shop_list += self.getshop(other_shops)
-		return self.render("admin/switch-shop.html", context=dict(shop_list=shop_list))
+			other_shop_list += self.getshop(other_shops)
+
+		super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
+
+		return self.render("admin/switch-shop.html", context=dict(shop_list=shop_list,other_shop_list=other_shop_list,super_admin=super_admin))
 	def getshop(self,shops):
 		shop_list = []
 		for shop in shops:
@@ -3498,15 +3502,15 @@ class Config(AdminBaseHandler):
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
-			try:
-				if_admin = self.session.query(models.ShopAdmin).filter_by(id=_id).first()
-			except:
-				if_admin = None
-			if if_admin:
-				return self.send_fail('该用户已是森果的卖家，不能添加其为管理员')
-			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
-			if if_shop:
-				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
+			# try:
+			# 	if_admin = self.session.query(models.ShopAdmin).filter_by(id=_id).first()
+			# except:
+			# 	if_admin = None
+			# if if_admin:
+			# 	return self.send_fail('该用户已是森果的卖家，不能添加其为管理员')
+			# if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
+			# if if_shop:
+			# 	return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
 				return self.send_fail('最多可添加三个管理员')
