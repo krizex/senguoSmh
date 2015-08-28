@@ -412,7 +412,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# print("[AliPay]login create_alipay_url:",price,order_id)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_num),
-			subject      = 'alipay',
+			subject      = '订单号：' + str(order_num),
 			total_fee    = float(price),
 			#defaultbank  = CMB,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
