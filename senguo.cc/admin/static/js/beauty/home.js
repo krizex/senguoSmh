@@ -336,18 +336,21 @@ var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}"  end
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
                         '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
-                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9 {{if is_activity!=1 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
+                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9 {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
                         '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
                     '</div>'+
-                    '<div class="wrap-furit-opera bg-color num_box" is_bought="{{is_bought}}">'+
-                        '<span class="to-add add add_cart_num wspan hidden">+</span>'+
+                    '<div class="wrap-furit-opera bg-color num_box">'+
+                        '{{if is_activity!=1}}'+
+                        '<span class="to-add add add_cart_num wspan">+</span>'+
                         '<p class="furit-opera number-change hidden">'+
                             '<span class="minus number-minus wspan">-</span>'+
                             '<input type="text" value="" class="number-input text" disabled="disabled"/>'+
                             '<span class="add number-plus wspan">+</span>'+
                         '</p>'+
+                        '{{else if is_activity==1}}'+
                         '<div class="wrap-seckill-btns"><span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}">抢!</span>'+
-                        '<span class="seckill-btn seckill-btn-yes hidden {{if is_bought==0}}hidden{{/if}}">已抢</span></div>'+
+                        '<span class="seckill-btn seckill-btn-yes {{if is_bought==0}}hidden{{/if}}">已抢</span></div>'+
+                        '{{/if}}'+
                     '</div>'+
                 '</div>'+
                 '{{if storage<=0 }}'+

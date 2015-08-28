@@ -61,7 +61,7 @@ body{font-size: 14px;}
 .desaturate .color{color:#ccc !important;}
 .desaturate .price{color:#ccc !important;}
 
-.status-tip{position:absolute;width:45px;height:45px;top:15px;left:15px;background-size: 45px;background-repeat: no-repeat;background-position:center center;}
+.status-tip{position:absolute;width:45px;height:45px;top:15px;left:15px;background-size: 45px;background-repeat: no-repeat;background-position:center center;border-radius: 4px;}
 .tag2{background-image: url("/static/images/tag2.png");}
 .tag3{background-image: url("/static/images/tag3.png");}
 .tag4{background-image: url("/static/images/tag4.png");}
