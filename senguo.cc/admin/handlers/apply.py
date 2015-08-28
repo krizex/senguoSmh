@@ -40,6 +40,7 @@ product = "embed"
 # 弹出式
 # product = "popup&popupbtnid=submit-button"
 
+# 极验验证码
 class GeeTest(CustomerBaseHandler):
 	def get(self):
 		gt = geetest.geetest(captcha_id, private_key)
@@ -49,13 +50,13 @@ class GeeTest(CustomerBaseHandler):
 			challenge = gt.geetest_register()
 		except:
 			challenge = ""
-		print(challenge,'challenge',len(challenge))
+		# print(challenge,'challenge',len(challenge))
 		if isinstance(challenge,bytes):
 			challenge = challenge.decode('utf-8')
 		if len(challenge) == 32:
 			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
 			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
-			print(url)
+			# print(url)
 		self.render("apply/login.html", url=url)
 
 	def post(self):
@@ -65,9 +66,9 @@ class GeeTest(CustomerBaseHandler):
 		challenge = self.get_argument("geetest_challenge")
 		validate = self.get_argument("geetest_validate")
 		seccode = self.get_argument("geetest_seccode")
-		print (challenge)
-		print (seccode)
-		print (validate,'validate')
+		# print(challenge)
+		# print(seccode)
+		# print(validate,'validate')
 		gt = geetest.geetest(captcha_id, private_key)
 		result = gt.geetest_validate(challenge, validate, seccode)
 		if result:
@@ -371,13 +372,13 @@ class Home(CustomerBaseHandler):
 			challenge = gt.geetest_register()
 		except:
 			challenge = ""
-		print(challenge,'challenge',len(challenge))
+		# print(challenge,'challenge',len(challenge))
 		if isinstance(challenge,bytes):
 			challenge = challenge.decode('utf-8')
 		if len(challenge) == 32:
 			url = "http://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
 			httpsurl = "https://%s%s&challenge=%s&product=%s" % (BASE_URL, captcha_id, challenge, product)
-			print(url)
+			# print(url)
 		return self.render('apply/home.html',logo_img=logo_img,nickname=nickname,phone=phone,realname=realname,wx_username=wx_username,url=url)
 
 	@tornado.web.authenticated
@@ -387,9 +388,9 @@ class Home(CustomerBaseHandler):
 		challenge = self.get_argument("geetest_challenge")
 		validate = self.get_argument("geetest_validate")
 		seccode = self.get_argument("geetest_seccode")
-		print (challenge,)
-		print (seccode)
-		print (validate,'validate')
+		# print (challenge,)
+		# print (seccode)
+		# print (validate,'validate')
 		if len(challenge) <2 or len(seccode) <2 or len(validate) <2:
 			return self.send_fail('请先完成图形验证')
 		gt = geetest.geetest(captcha_id, private_key)
@@ -431,7 +432,7 @@ class Home(CustomerBaseHandler):
 			return self.send_fail("微信号请不要超过20个字")
 
 		if_normal_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
-		print(if_normal_admin)
+		# print(if_normal_admin)
 		self.current_user.accountinfo.phone=self.args["phone"]
 		self.current_user.accountinfo.realname=self.args["realname"]
 		self.current_user.accountinfo.wx_username=self.args["wx_username"]

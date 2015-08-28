@@ -193,7 +193,7 @@ function getContent(action,page){
            else return alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('您的网络暂时不通畅，请稍候再试');}
     );
 }
 
@@ -295,7 +295,7 @@ function getSearchContent(action,inputinfo,page){
            else return alert(res.error_text);
         },
         function(){
-            alert('网络错误！');}
+            alert('您的网络暂时不通畅，请稍候再试');}
     );
 }
 

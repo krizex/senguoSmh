@@ -40,6 +40,6 @@ function commit(){
                 }
                 $('#commentPublic').parents('.comment-box').modal('hide');
             }
-        else return alert('网络错误！');
-    },function(){ return alert('网络错误！');});
+        else return alert('您的网络暂时不通畅，请稍候再试');
+    },function(){ return alert('您的网络暂时不通畅，请稍候再试');});
 }

@@ -696,6 +696,9 @@ function dealGoods($item,type){
             $('.ok-edit-goods').attr("data-flag","on");
             Tip(res.error_text);
         }
+    },function(){
+        $('.ok-edit-goods').attr("data-flag","on");
+        return Tip('您的网络暂时不通畅，请稍候再试');
     });
 }
 //初始化编辑商品
@@ -804,7 +807,8 @@ function singleGroup(goods_id,group_id,$obj){
         }else{
             Tip(res.error_text);
         }
-    });
+    },
+    function(){return Tip('您的网络暂时不通畅，请稍候再试');});
 }
 //批量分组
 function batchGroup(name,group_id,$obj){
@@ -838,7 +842,8 @@ function batchGroup(name,group_id,$obj){
         }else{
             Tip(res.error_text);
         }
-    });
+    },
+    function(){return Tip('您的网络暂时不通畅，请稍候再试');});
 }
 //批量上架&下架商品
 function batchGoods(type){
@@ -880,7 +885,8 @@ function batchGoods(type){
         }else{
             Tip(res.error_text);
         }
-    });
+    },
+    function(){return Tip('您的网络暂时不通畅，请稍候再试');});
 }
 //删除商品
 function delGoods(id, $obj){
@@ -901,7 +907,8 @@ function delGoods(id, $obj){
         }else{
             Tip(res.error_text);
         }
-    });
+    },
+    function(){return Tip('您的网络暂时不通畅，请稍候再试');});
 }
 //上下架商品
 function switchGoodsRack(id,$obj){
@@ -919,7 +926,8 @@ function switchGoodsRack(id,$obj){
         }else{
             Tip(res.error_text);
         }
-    });
+    },
+    function(){return Tip('您的网络暂时不通畅，请稍候再试');});
 }
 function initEditor($obj,type){
     if(type=="preview"){
@@ -982,7 +990,7 @@ function getGoodsItem(action,page,type_id,value){
                 Tip(res.error_text);
             }
         }
-    })
+    });
 }
 function insertGoods(data){
     for(var i=0; i<data.length; i++){
@@ -1341,6 +1349,6 @@ function getData2(con){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误')}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试');}
     );
 }
