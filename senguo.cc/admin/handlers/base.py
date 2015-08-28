@@ -1908,7 +1908,6 @@ class WxOauth2:
 	# 获取微信 jsapi
 	@classmethod
 	def get_jsapi_ticket(cls):
-		global jsapi_ticket
 		if datetime.datetime.now().timestamp() - jsapi_ticket["create_timestamp"]\
 				< 7100 and jsapi_ticket["jsapi_ticket"]:  # jsapi_ticket过期时间为7200s，但为了保险起见7100s刷新一次
 			return jsapi_ticket["jsapi_ticket"]
@@ -2175,9 +2174,12 @@ class WxOauth2:
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
 		print(touser,access_token,'wx_openid and access_token')
 		template_id_short = 'OPENTM200746866'
+
+
 		if other_access_token:
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 			if not template_id:
+				print('get template_id error')
 				return False
 			else:
 				print('template_id get success',template_id)
