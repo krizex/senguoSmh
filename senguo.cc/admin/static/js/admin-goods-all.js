@@ -274,7 +274,7 @@ $(document).ready(function(){
         });
     }else{
         curItem.find(".goods-classify").html(classify).attr("data-id",class_id);
-        cancelAddGoods();
+        cancelAddGoods("edit");
     }
 }).on("click",".choose-classify",function(){//重选分类
     if(cur_type == "add"){
@@ -287,6 +287,7 @@ $(document).ready(function(){
         $(".wrap-classify").removeClass("hidden");
         $(".goods-step").children(".step1").removeClass("c999").addClass("c333");
         $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
+        goodsEdit = true;
     }
 }).on("click","#upload-img",function(){ //保存上传后的图片
     var $list = $("#item-img-lst").children(".img-bo");
@@ -329,9 +330,9 @@ $(document).ready(function(){
     }
     curEditor = $(this);
 }).on("click",".pop-editor",function(e){
-    if($(e.target).closest(".wrap-kindeditor").size()==0){
-        $(".pop-editor").hide();
-    }
+    // if($(e.target).closest(".wrap-kindeditor").size()==0){
+    //     $(".pop-editor").hide();
+    // }
 }).on("click",".pop-unit",function(e){
     if($(e.target).closest(".wrap-unit").size()==0){
         $(".pop-unit").hide();
@@ -494,7 +495,7 @@ function simpleUnitSwitch(price_unit,cur_unit){
     curPrice.find(".second-num").html(second);
 }
 //取消添加商品
-function cancelAddGoods(){
+function cancelAddGoods(type){
     $(".wrap-classify").prevAll("div").removeClass("hidden");
     $(".wrap-classify").addClass("hidden");
     $("#add-goods").removeClass("hidden");
@@ -502,7 +503,11 @@ function cancelAddGoods(){
     $(".goods-step").children(".step2").removeClass("c333").addClass("c999");
     $(".new-goods").empty().addClass("hidden");
     $(".goods-classify-box").removeClass("hidden");
-    goodsEdit=false;
+    if(type&&type=="edit"){
+        goodsEdit=true;
+    }else{
+        goodsEdit=false;
+    }
 }
 //切换库存单位
 function switchUnit($list,id,name){

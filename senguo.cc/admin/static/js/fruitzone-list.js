@@ -277,7 +277,7 @@ var shopItem=function (shops){
             '</div>'+
             '<div class="pull-left info">'+
             '<p class="shop_name font14"><span class="shop_auth"></span></p>'+
-            '<p class="shop_attr">满意度 <span class="shop_satisfy"></span>&nbsp;&nbsp;&nbsp;评价 <span class="shop_comment_cont"></span>&nbsp;&nbsp;&nbsp;商品数 <span class="shop_goods_count"></span></p>'+
+            '<p class="shop_attr"><span class="tit">满意度</span> <span class="shop_satisfy"></span><span class="tit">&nbsp;&nbsp;&nbsp;评价</span><span class="shop_comment_cont"></span>&nbsp;&nbsp;&nbsp;商品数 <span class="shop_goods_count"></span></p>'+
             '<p class="text-grey9 adre-box"><span class="distance"></span><i class="location"></i><span class="shop_code"></span></p>'+
             '</div>'+
             '</div>'+
@@ -296,10 +296,16 @@ var shopItem=function (shops){
         var lat = shops[i].lon;//经度
         var lon = shops[i].lat;//纬度
         var distance = shops[i].distance;
+        var comment_active = shops[i].comment_active;
         var hide='';
         var statu = '';
         var dishide = '';
         var link = '/'+shop_code;
+        if(comment_active==0){
+            $item.find('.tit').hide();
+            $item.find('.shop_satisfy').hide();
+            $item.find('.shop_comment_cont').hide();
+        }
         if(!lat || lat == 0 || !ulat || ulat == 0){
             dishide = "hidden";
         }else{

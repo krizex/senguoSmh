@@ -10,12 +10,13 @@ $(document).ready(function(){
         $(".wrap-mark-set").children(".mark-choose").eq(tag_index-1).addClass("active");
         new QRCode($("#big-code2")[0],{
             width : 300,
-            height : 300
+            height : 300,
+            colorDark : "#433943"
         }).makeCode( $("#shop_url").html());
     }
 
 }).on("click",".gogoods",function(){
-    if(confirm("当前商品未完成，确定返回吗？")){
+    if(confirm("当前编辑未完成，确定返回吗？")){
         window.location.href="/madmin/goods";
     }
 }).on("click",".goods_status",function(){
@@ -710,3 +711,13 @@ function getData2(con){
     };
 })(jQuery);
 
+//android端上传图片
+function uploadImgForAndroid(url){
+    var w = width+10;
+    var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img src="'+url+'?imageView2/1/w/100/h/100" url="'+url+'" alt="商品图片" class="image"/><a href=" " class="icon-del"></a></li>');
+    $("#add-img").closest("li").before($item);
+    if ($("#img_list").children("li").size() == 6) {
+        $("#img-lst").addClass("hide");
+        $(".moxie-shim").addClass("hide");
+    }
+}

@@ -187,3 +187,10 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
         preloader.load( file.getSource() );
     }
 }
+//android端上传图片
+function uploadImgForAndroid(url){
+    $("#notice_img").attr("src",url+"?imageView2/1/w/100/h/100").attr("url",url);
+    $(".img-cover").addClass("hide");
+    $(".del-img").removeClass("hide");
+    $(".moxie-shim").addClass("hide");
+}

@@ -147,8 +147,12 @@ $(document).ready(function(){
     for(var key in cart_fs) {
         num_list[cart_fs[key][0]]=cart_fs[key][1];
     }
+    var __n=0;
     window.onbeforeunload = function(){
-        setTimeout(function(){addCart(_url);SetCookie("fromdetail",1)}, 2);
+        if(__n==0){
+            setTimeout(function(){addCart(_url);SetCookie("fromdetail",1);__n=1}, 2);
+        }
+        
     }
 }).on("click","#dianzan",function(){
     var $this = $(this);

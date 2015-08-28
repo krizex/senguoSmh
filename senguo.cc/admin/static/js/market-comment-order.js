@@ -6,6 +6,7 @@ $(document).ready(function(){
     });
 }).on("click","#commit-order-point",function(){  //完成评价
     var user_txt = $("#user-txt").val();
+    var comment_active=$("#comment_active").val();
     if($.trim(user_txt).length==0){
         noticeBox("评论不能为空哦！")
         return false;
@@ -49,7 +50,12 @@ $(document).ready(function(){
                     noticeBox(res.notice);
                 }
                 setTimeout(function(){
-                    window.location.href="/customer/comment?page=0";
+                    if(comment_active==1||comment_active=="1"){
+                        window.location.href="/customer/comment?page=0";
+                    }else{
+                        window.location.href="/customer/orders?action=finish";
+                    }
+                    
                 },2000);
             }else{
                 noticeBox(res.error_txt);
