@@ -232,11 +232,27 @@ $(document).ready(function(){
     var storage=Number($this.parents(".goods_item_item").attr('data-num'));
     var id=$this.parents(".goods_item_item").attr('data-id');
     var shop_code=$('#shop_code').val();
+    var is_activity = parseInt($(this).attr("is_activity"));
     if (storage > 0) {
-        addCart("/"+shop_code+"/goods/"+id);
+        if(is_activity==0){
+            addCart("/"+shop_code+"/goods/"+id);
+        }else{
+            return noticeBox("活动商品无法查看商品详情哦~~");
+        }
     }else if(storage<=0){
         return noticeBox("当前商品已经卖完啦");
     }
+}).on("click",".seckill-goods",function(){//秒杀
+    var id = $(this).attr("data-id");
+    var s_goods_id =  $(this).attr("seckill_goods_id");
+    window.dataObj.fruits[id]=1;
+    $(this).addClass("hidden");
+    $(this).next(".seckill-btn-yes").removeClass("hidden");
+    wobble($('.cart_num'));
+    window.dataObj.cart_count++;
+    $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
+    seckill_goods_ids.push(s_goods_id);
+    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 });
 var myScroll;
 function loaded() {
@@ -286,8 +302,8 @@ function loaded() {
 var _action=6;
 var _finished=true;
 var _search;
-var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}">'+
-        '<div class="goods-img-box {{desaturate}}">'+
+var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" is_activity="{{is_activity}}" end-time="{{end_time}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}">'+
+        '<div class="goods-img-box {{desaturate}}"  is_activity="{{is_activity}}">'+
             '<img class="goods_img lazy_img" src="{{img_url}}" alt="{{name}}" data-original="{{img_url}}"/>'+
             '<div class="goods-img-hover"></div>'+
             '<div class="status-tip {{tag}}"></div>'+
@@ -297,15 +313,23 @@ var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" data-num="{{s
                 '<p class="g-name clip">{{name}}</p>'+
                 '<p class="g-detail clip">{{intro}}</p>'+
             '</div>'+
+            '{{if is_activity!=1}}'+
             '<div class="wrap-operate">'+
                 '<span href="javascript:;" class="roll-btn minus-gds number-minus hidden">&nbsp;</span>'+
                 '<span href="javascript:;" class="roll-btn add-gds number-plus hidden">&nbsp;</span>'+
                 '<span href="javascript:;" class="roll-btn buy-gds to-add add_cart_num">买</span>'+
             '</div>'+
+            '{{else}}'+
+            '<div class="wrap-operate" is_bought="{{is_bought}}">'+
+            '<span href="javascript:;" class="roll-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">抢</span>'+
+            '<span href="javascript:;" class="roll-btn seckill-btn-yes add_cart_num {{if is_bought==0}}hidden{{/if}}">抢</span>'+
+            '</div>'+
+            '{{/if}}'+
             '<div class="attr-right">'+
                 '<div class="wrap-src-price">'+
-                    '<p class="src-price"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
-                    '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span></p>'+
+                    '<p class="src-price {{if is_activity>0 }}hidden{{/if}}"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
+                    '<p class="text-grey9 f12 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
+                    '<p class="cur-price color"><span class="f12 rmb">￥</span><span class="cur-price-num">{{cur_price}}</span><span class="price-dif price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{discount_rate}}折</span></span></p>'+
                 '</div>'+
                 '<div class="wrap-bug-text hidden">'+
                     '<span class="bug-num"><span class="font16">x </span><span class="buy-num number-input">1</span></span>'+
@@ -472,6 +496,13 @@ var fruitItem=function(box,fruits,type){
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
     var detail_no=fruits['detail_no'];
+    var is_activity = fruits['is_activity'];
+    var price_dif = fruits['price_dif'];
+    var activity_piece = fruits['activity_piece'];//库存
+    var charge_type_id = fruits['charge_type_id'];
+    var seckill_id = fruits['seckill_goods_id'];
+    var is_bought = fruits['is_bought'];
+    var end_time = fruits['end_time'];
     var heart='';
     var sold_out='';
     var ori_img='';
@@ -479,6 +510,8 @@ var fruitItem=function(box,fruits,type){
     var src_price=0;
     var cur_price=0;
     var price_all=0;
+    var discount_rate = 0;
+    var has_discount_activity = 0;
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
     if(favour_today=='true'){
@@ -502,8 +535,16 @@ var fruitItem=function(box,fruits,type){
     }else{
         tag = "";
     }
+    if(is_activity==1){
+        tag='tag6';
+    }else if(is_activity==2){
+        tag='tag2';
+    }
     if(!intro){
         intro=" ";
+    }
+    if(is_activity==1 && activity_piece==0 && charge_type){
+        storage=0;
     }
     if(charge_type){
         var relate=charge_type.relate;
@@ -525,7 +566,9 @@ var fruitItem=function(box,fruits,type){
             src_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
         }
         cur_price=charge_type.price+"元/"+charge_type.num+charge_type.unit;
-        price_all=charge_type.price
+        price_all=charge_type.price;
+        discount_rate = charge_type.discount_rate;
+        has_discount_activity = charge_type.has_discount_activity;
     }
     if(storage<=0){
         sold_out="";
@@ -556,11 +599,58 @@ var fruitItem=function(box,fruits,type){
         relate:relate,
         limit_today:limit_today,
         charge_id:charge_id,
-        charge_price:charge_price
+        charge_price:charge_price,
+        is_activity:is_activity,
+        price_dif:price_dif,
+        activity_piece:activity_piece,//库存
+        charge_type_id:charge_type_id,
+        seckill_id:seckill_id,
+        is_bought:is_bought,
+        end_time:end_time,
+        discount_rate:discount_rate,
+        has_discount_activity:has_discount_activity
     });
-    box.append(html);
+    var $obj = $(html);
+    box.append($obj);
+    if(is_activity>0){
+        countTime($obj);
+    }
     //$('.lazy_img').lazyload({threshold:200,effect:"fadeIn"});
 };
+function countTime($obj){
+    var time_end = parseInt($obj.attr("end-time"))*1000;
+    var time_now = new Date().getTime();
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
+    if(time_distance >= 0){
+        // 天时分秒换算
+        int_day = Math.floor(time_distance/86400000)
+        time_distance -= int_day * 86400000;
+        int_hour = Math.floor(time_distance/3600000)
+        time_distance -= int_hour * 3600000;
+        int_minute = Math.floor(time_distance/60000)
+        time_distance -= int_minute * 60000;
+        int_second = Math.floor(time_distance/1000)
+        if(int_hour < 10)
+            int_hour = "0" + int_hour;
+        if(int_minute < 10)
+            int_minute = "0" + int_minute;
+        if(int_second < 10)
+            int_second = "0" + int_second;
+        // 显示时间
+        if(int_day>0){
+            $obj.find(".day").html(int_day+"天");
+        }
+        $obj.find(".hour").html(int_hour+"时");
+        $obj.find(".minute").html(int_minute+"分");
+        $obj.find(".second").html(int_second+"秒");
+        setTimeout(function(){
+            countTime($obj);
+        },1000);
+    }else{
+        //noticeBox("结束了");
+    }
+}
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
 function cartNum(cart_ms,list){
@@ -681,12 +771,14 @@ function addCart(link){
     var fruits=window.dataObj.fruits;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_goods_ids:seckill_goods_ids
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success)
             {
+                SetCookie('cart_count',$(".cart_num").html());
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);
