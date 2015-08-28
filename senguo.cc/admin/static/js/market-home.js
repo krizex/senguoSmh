@@ -381,9 +381,9 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                 '<span class="pull-right text-grey sale font12 {{if is_activity!=1 }}hidden{{/if}}">库存: <span class="color number">{{activity_piece}}</span>份</span>'+
                             '</p>'+
                             '<p class="great-number font12">'+
-                                '<em class="bg_change heart {{heart}} {{if is_activity==1 }}hidden{{/if}}" data-id="{{favour}}"></em>'+
-                                '<span class="great {{if is_activity==1 }}hidden{{/if}}">{{favour}}</span>'+
-                                '<span class="{{if is_activity!=1 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
+                                '<em class="bg_change heart {{heart}} {{if is_activity>0 }}hidden{{/if}}" data-id="{{favour}}"></em>'+
+                                '<span class="great {{if is_activity>0 }}hidden{{/if}}">{{favour}}</span>'+
+                                '<span class="{{if is_activity==0 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{if is_activity==1 && activity_piece>0 }}'+
@@ -449,7 +449,7 @@ var fruitItem=function(box,fruits,type){
     var ori_img='';
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
-    if(is_activity==1 && activity_piece==0 && charge_types==0){
+    if(is_activity==1 && activity_piece==0 && charge_types.length==0){
         storage=0;
     }
     if(favour_today=='true'){
@@ -499,7 +499,7 @@ var fruitItem=function(box,fruits,type){
     });
     var $obj = $(html);
     box.append($obj);
-    if(is_activity==1){
+    if(is_activity>0){
         countTime($obj);
     }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
@@ -536,7 +536,6 @@ function countTime($obj){
         },1000);
     }else{
         //noticeBox("结束了");
-
     }
 }
 window.dataObj.fruits={};
@@ -661,7 +660,7 @@ function stopDefault(e) {
     return false;
 }
 
-function addCart(link,$obj){
+function addCart(link){
     var url='';
     var action = 4;
     fruits_num();
@@ -671,19 +670,13 @@ function addCart(link,$obj){
         fruits:fruits,
         seckill_goods_ids:seckill_goods_ids
     };
-    /*if(link==0){
-        args.price_dif = $obj.find(".price-dif").html();
-        args.seckill_goods_id=$obj.attr("seckill_goods_id");
-    }*/
     if(!isEmptyObj(fruits)){
         fruits={};
     }
     $.postJson(url,args,function(res){
             if(res.success)
             {
-                if(link!=0){
-                   window.location.href=link;
-                }
+                window.location.href=link;
             }
             else return noticeBox(res.error_text);
         }
