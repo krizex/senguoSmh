@@ -1873,7 +1873,6 @@ class Cart(CustomerBaseHandler):
 		else:
 			_order_address = address.address_text
 		
-
 		##########
 		
 		if qshop:
