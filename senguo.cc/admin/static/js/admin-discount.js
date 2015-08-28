@@ -285,7 +285,7 @@ $(document).ready(function () {
 }).on("click",".jmp-main",function(){
     var inputpage=parseInt($(".input-page").val())
     var pagetotal=parseInt($('.page-total').text());
-    var selected_status=$(".use_goods_group").attr("data-id");
+    var selected_status=current_tab;
     if (inputpage<1 || inputpage>pagetotal ||isNaN(inputpage)){
         Tip("输入的页码值不符合要求");
     }
@@ -487,7 +487,7 @@ function adddiscount(){
     var action="newdiscount";
     var args={action:action,data:data};
     var url='';
-    $(this).attr('data-flag',"off");//给点击时间上锁，防止多次点击
+    $(this).attr('data-flag',"off");//给点事件上锁，防止多次点击
     $.postJson(url,args,
         function(res){
             if(res.success){
@@ -519,9 +519,9 @@ function editdiscount(){
         function(res){
             if(res.success){
                 Tip('编辑限时折扣成功!');
-                // setTimeout(function(){
-                //     window.location.href="/admin/discount?action=discount";
-                // },1500);
+            setTimeout(function(){
+                window.location.href="/admin/discount?action=discount";
+            },1500);
             }else{
                 Tip(res.error_text);
             }
