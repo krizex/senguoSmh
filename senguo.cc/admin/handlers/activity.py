@@ -865,7 +865,11 @@ class Discount(CustomerBaseHandler):
 				if x.discount_way==0:
 					end_time=x.end_date
 				else:
-					end_time=int(time.time())-8*3600+x.t_time
+					now=datetime.datetime.now()
+					now2=datetime.datetime(now.year,now.month,now.day)
+					end_time=x.t_time+time.mktime(now2.timetuple())
+					if end_time<0:
+						end_time=0
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id,status=1).all()
 				for y in qq:
 					chargesingle=[]

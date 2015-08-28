@@ -519,9 +519,9 @@ function editdiscount(){
         function(res){
             if(res.success){
                 Tip('编辑限时折扣成功!');
-            setTimeout(function(){
-                window.location.href="/admin/discount?action=discount";
-            },1500);
+            // setTimeout(function(){
+            //     window.location.href="/admin/discount?action=discount";
+            // },1500);
             }else{
                 Tip(res.error_text);
             }
