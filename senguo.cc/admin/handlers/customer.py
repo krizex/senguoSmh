@@ -2023,7 +2023,6 @@ class Cart(CustomerBaseHandler):
 		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
-	@classmethod
 	def cart_callback(self,session,order_id):
 		# print("[CustomerCart]cart_callback: order_id:",order_id)
 		# try:
