@@ -1442,6 +1442,7 @@ class Market(CustomerBaseHandler):
 
 				charge_types= []
 				has_discount_activity=0  #标记该商品是否参与限时折扣
+				end_time1=0
 				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=-2).first() # 查询是否有所有商品都打折的情况
 				for charge_type in fruit.charge_types:
 					if charge_type.active !=0 and charge_type.activity_type in [0,-2,2]:
@@ -1466,17 +1467,19 @@ class Market(CustomerBaseHandler):
 									allow_num = fruit.limit_num - limit_if.buy_num
 						#判断商品是否参加了限时折扣活动 还不知道需不需要加上
 						has_discount_activity1=0 # 标记是否有活动
-						discount_rate=None  #标记折扣
+						discount_rate=10  #标记折扣
+						q_price=None
+						end_time1=0
 						if q_all:
 							has_discount_activity1=1
 							has_discount_activity=1
-							discount_rate=q_all.discount_rate
+							q_price=q_all
 						else:
 							q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=fruit.group_id,use_goods=-1).first() # 查询是否有所有商品都打折的情况
 							if q_part:
 								has_discount_activity1=1
 								has_discount_activity=1
-								discount_rate=q_part.discount_rate
+								q_price=q_part
 							else:
 								q_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=fruit.group_id,use_goods=fruit.id).first()
 								q_discount=[]
@@ -1485,7 +1488,12 @@ class Market(CustomerBaseHandler):
 								if charge_type.id in q_discount:
 									has_discount_activity1=1
 									has_discount_activity=1
-									discount_rate=q_query.discount_rate
+									q_price=q_query
+						if has_discount_activity:
+							if q_price.discount_way==0:
+								end_time1=q_price.end_date
+							else:
+								end_time1=int(time.time())-8*3600+q_price.t_time
 						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
@@ -1586,6 +1594,7 @@ class Market(CustomerBaseHandler):
 						data_item2['saled'] = saled
 						data_item2['favour'] = fruit.favour
 						data_item2['limit_num'] = fruit.limit_num
+						data_item2['end_time'] = end_time1
 						data.append(data_item2)
 				##
 			return data
