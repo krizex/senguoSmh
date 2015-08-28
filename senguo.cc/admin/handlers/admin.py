@@ -2466,8 +2466,10 @@ class Goods(AdminBaseHandler):
 				args["detail_describe"] = data["detail_describe"].replace("script","'/script/'")
 			if "tag" in data and  data["tag"]:
 				args["tag"] = data["tag"]
-			if "limit_num" in data:
-				args["limit_num"] = data["limit_num"]
+			if "tag" in data and  data["tag"]:
+				args["tag"] = data["tag"]
+			if "buylimit" in data:
+				args["buy_limit"] = data["buylimit"]
 			if "group_id" in data:
 				group_id = int(data["group_id"])
 				if group_id == -1:
@@ -2694,6 +2696,7 @@ class Goods(AdminBaseHandler):
 						group_id = group_id,
 						detail_describe = detail_describe,
 						tag = int(data["tag"]),
+						buy_limit = int(data["buylimit"]),
 						fruit_type_id = fruit_type_id
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).all()

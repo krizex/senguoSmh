@@ -1396,7 +1396,7 @@ class Fruit(MapBase, _CommonApi):
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
-	name = Column(String(20))
+	name = Column(String(50))
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 	current_saled = Column(Integer, default=0) #售出：未处理的订单数
 	saled = Column(Integer, default=0) #销量
@@ -1415,6 +1415,8 @@ class Fruit(MapBase, _CommonApi):
 	classify  = Column(Integer, default=0)  #:0:水果 1:干果 3:其他
 	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
+
+	buy_limit = Column(Integer, default=0) #0:all 1:only new user 2:only old user 3:only charge user
 
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)

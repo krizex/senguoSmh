@@ -202,7 +202,7 @@ $(document).ready(function(){
     var index = goods_item.index();
     var group = {id:goods_item.find(".current-group").attr("data-id"),text:goods_item.find(".current-group").html()};
     var switch_btn = {id:goods_item.find(".switch-btn").attr("data-id"),text:goods_item.find(".switch-btn").attr("class")};
-    $.getItem("/static/items/admin/goods-item.html?v=20150816",function(data){
+    $.getItem("/static/items/admin/goods-item.html?v=20150819",function(data){
         var goodsItem = data;
         var $item = $(goodsItem).clone();
         $item.find(".current-group").attr("data-id",group.id).html(group.text);
@@ -251,7 +251,7 @@ $(document).ready(function(){
     var class_id = $(this).attr("data-id");
     var goods_code = $(this).attr("data-code");
     if(cur_type=="add"){
-        $.getItem("/static/items/admin/goods-item.html?v=20150816",function(data){
+        $.getItem("/static/items/admin/goods-item.html?v=20150819",function(data){
             var goodsItem = data;
             var $item = $(goodsItem).clone();
             $item.find(".goods-classify").html(classify).attr("data-id",class_id);
@@ -464,6 +464,9 @@ $(document).ready(function(){
 }).on("click",".tag-item",function(){
     var $this=$(this);
     $this.addClass('active').siblings('.tag-item').removeClass('active');
+}).on("click",".buylimit-item",function(){
+    var $this=$(this);
+    $this.addClass('active').siblings('.buylimit-item').removeClass('active');
 });
 //切换单位
 function simpleUnitSwitch(price_unit,cur_unit){
@@ -533,9 +536,10 @@ function dealGoods($item,type){
     var storage = $item.find(".stock-num").val().trim();
     var unit = $item.find(".current-unit").attr("data-id");
     var tag =$item.find(".tag-item.active").attr("data-id");
-    if(name.length>12 || name==""){
+    var buylimit =$item.find(".buylimit-item.active").attr("data-id");
+    if(name.length>25 || name==""){
         $('.ok-edit-goods').attr("data-flag","on");
-        return Tip("商品名称不能为空且不能超过12个字");
+        return Tip("商品名称不能为空且不能超过25个字");
     }
     if(!testNum.test(storage)){
         $('.ok-edit-goods').attr("data-flag","on");
@@ -651,7 +655,8 @@ function dealGoods($item,type){
         storage: storage,//库存,
         intro: info,//商品简介,
         name: name,//商品名称,
-        tag:tag
+        tag:tag,
+        buylimit:buylimit
     };
     if(type == "edit"){
         data.goods_id=$item.attr("data-id");
@@ -745,6 +750,7 @@ function initEditGoods($item,index){
     $item.find(".group-edit-goods-lst").html($("#group-goods-lst").children(".presentation").clone());
     $item.find(".group-edit-goods-lst").find(".group-counts").hide();
     $item.find(".tag-item").eq(parseInt(goods.tag)-1).addClass('active').siblings('.tag-item').removeClass('active');
+    $item.find(".buylimit-item").eq(parseInt(goods.buylimit)).addClass('active').siblings('.buylimit-item').removeClass('active');
 }
 //编辑完成
 function finishEditGoods($item,data){
