@@ -167,7 +167,7 @@ class GlobalBaseHandler(BaseHandler):
 						elif now_time<x.t_time:
 							status=1
 						else:
-							status=2
+							status=0
 					else:
 						status=0
 				x.update(self.session,status=status)

@@ -5,7 +5,7 @@
 <input class="hidden can_new_discount" value={{can_new_discount}}>
 <input id="page_end" class="hidden" value="{{page_end}}">
 <div class="clearfix top-box">
-    <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="javascript:;" class="ml10 f14 show-detail">查看详情</a></p>
+    <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="/bbs/detail/88" class="ml10 f14 show-detail">查看详情</a></p>
     <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
      <a class="mode-cm pull-right mt10 close_all {%if discount_active_cm==0%}work-mode{%else%}stop-mode{%end%}" data-flag="on" title="点击切换状态" data-status="{{discount_active_cm}}" ><span class="tit">{%if discount_active_cm==0%}已启用{%else%}已停用{%end%}</span><span class="circle"></span></a>
     <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
@@ -71,13 +71,13 @@
                             </div>
                             <p class="er-text">限时折扣活动链接</p>
                             <div class="wrap-ipt">
-                                <input type="text" class="sw-link-txt" value="http://senguo.cc/zhoubing/goods/22" disabled="">
+                                <input type="text" class="sw-link-txt" value="http://i.senguo.cc/discount/{{shop_code}}?action=detail" disabled="">
                                 <input type="button" class="sw-link-copy" value="复制链接">
                             </div>
                             <div class="wrap-er group">
                                 <img class="er-logo" src="/static/images/favicon.ico" alt="">
                                 <div class="er-text lh80 fl">链接二维码</div>
-                                <div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>
+                                <div class="er-img fl er-code-img" title="http://i.senguo.cc/discount/{{shop_code}}?action=detail"></div>
                             </div>
                         </div>
                     </td>
@@ -124,13 +124,13 @@
                             </div>
                             <p class="er-text">限时折扣活动链接</p>
                             <div class="wrap-ipt">
-                                <input type="text" class="sw-link-txt" value="http://senguo.cc/zhoubing/goods/22" disabled="">
+                                <input type="text" class="sw-link-txt" value="http://i.senguo.cc/discount/{{shop_code}}?action=detail" disabled="">
                                 <input type="button" class="sw-link-copy" value="复制链接">
                             </div>
                             <div class="wrap-er group">
                                 <img class="er-logo" src="/static/images/favicon.ico" alt="">
                                 <div class="er-text lh80 fl">链接二维码</div>
-                                <div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>
+                                <div class="er-img fl er-code-img" title="http://i.senguo.cc/discount/{{shop_code}}?action=detail"></div>
                             </div>
                         </div>
                     </td>

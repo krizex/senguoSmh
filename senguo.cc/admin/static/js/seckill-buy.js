@@ -257,7 +257,7 @@ function countTime(time,start_time,type,$obj){
     }else{
         //Tip("这场秒杀结束啦~~");
         setTimeout(function(){
-            window.location.reload(true);
+            //window.location.reload(true);
         },1000);
     }
 }

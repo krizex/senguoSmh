@@ -4971,7 +4971,7 @@ class Discount(AdminBaseHandler):
 		for y in q1:
 			x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 			data0.append(x_goodsgroup)
-			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2])).all()
 			for x in Chargetype:
 				x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
 				chargesingle.append(x_charge)
@@ -4987,7 +4987,7 @@ class Discount(AdminBaseHandler):
 		for y in q1:
 			x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 			data0.append(x_goodsgroup)
-			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2])).all()
 			for x in Chargetype:
 				x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
 				chargesingle.append(x_charge)
@@ -5005,7 +5005,7 @@ class Discount(AdminBaseHandler):
 			for y in q1:
 				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 				data0.append(x_goodsgroup)
-				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2])).all()
 				for z in Chargetype:
 					x_charge={"charge_id":z.id,"charge":str(z.price)+'元/'+str(z.num)+self.getUnit(z.unit)}
 					chargesingle.append(x_charge)
@@ -5446,7 +5446,7 @@ class Discount(AdminBaseHandler):
 					#进行判断添加这个时刻有没有已经存在进行的活动
 					q_goods_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=-2).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 					for m in q_goods_all:
-						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 						if q_group_all:
 							if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 								return self.send_fail("商品"+str(qq.index(x)+1)+"时间段选择和之前面向所有分组的限时折扣活动时间段冲突")
@@ -5460,7 +5460,8 @@ class Discount(AdminBaseHandler):
 					elif x.use_goods==-1:
 						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
+							print(q_group_all,"gggggg")
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
@@ -5473,14 +5474,14 @@ class Discount(AdminBaseHandler):
 					else:
 						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 
 						q_single=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=x.use_goods).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_single:
-							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_single:
 								if not self.judgetimeright(q_group_single,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
@@ -5505,7 +5506,7 @@ class Discount(AdminBaseHandler):
 					#进行判断添加这个时刻有没有已经存在进行的活动
 					q_goods_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=-2).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
 					for m in q_goods_all:
-						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 						if q_group_all:
 							if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 								return self.send_fail("商品"+str(qq.index(x)+1)+"时间段选择和之前面向所有分组的限时折扣活动时间段冲突")
@@ -5517,9 +5518,9 @@ class Discount(AdminBaseHandler):
 								return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 					elif x.use_goods==-1:
-						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
+						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
@@ -5530,22 +5531,22 @@ class Discount(AdminBaseHandler):
 								return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 					else:
-						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
+						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 
 						q_single=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=x.use_goods).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
 						for m in q_single:
-							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_single:
 								if not self.judgetimeright(q_group_single,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
 
 					_index=qq.index(x)
-					discount_good=discount_goods[x]
+					discount_good=discount_goods[_index]
 					if x.status==1:
 						if  discount_close[_index]==3:
 							status=3
@@ -5554,7 +5555,7 @@ class Discount(AdminBaseHandler):
 						x.update(self.session,shop_id=current_shop_id,discount_id=discount_id,use_goods_group=discount_good["use_goods_group"],\
 							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)
 			else:
-				self.send_fail("限时折扣的状态已经发生变化，编辑失败")
+				return self.send_fail("限时折扣的状态已经发生变化，编辑失败")
 			self.session.commit()
 			return self.send_success()
 		elif action=="close_one":
@@ -5566,7 +5567,6 @@ class Discount(AdminBaseHandler):
 			self.session.flush()
 			#停用之后会修改原chargetype的值和fruit的相关值(fruit 待做)
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).with_lockmode('update').all()
-			print(qq,'@@@@@@@@@@@2')
 			for y in qq:
 				y.update(session=self.session,status=3)
 				#停用之后会修改原chargetype的值和fruit的相关值(fruit 待做)
@@ -5574,7 +5574,6 @@ class Discount(AdminBaseHandler):
 				#考虑如果有所有商品和所有分组的情况
 				if y.use_goods_group==-2:
 					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,activity_status=2).with_lockmode('update').all()
-					print(q_fruit,'@@@@@@@@@@@1')
 					for m in q_fruit:
 						q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id,activity_type=2).with_lockmode('update').all()
 						for n in q_charge:
@@ -5583,7 +5582,6 @@ class Discount(AdminBaseHandler):
 
 				elif y.use_goods==-1:
 					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,activity_status=2,group_id=y.use_goods_group).with_lockmode('update').all()
-					print(q_fruit,'@@@@@@@@@@@2')
 					for m in q_fruit:
 						q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id,activity_type=2).with_lockmode('update').all()
 						for n in q_charge:
