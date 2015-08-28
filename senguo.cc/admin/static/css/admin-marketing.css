@@ -145,7 +145,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .ml10{margin-left: 10px;}
 .ml20{margin-left: 20px !important;}
 .input-width{width: 40px !important;}
-.seckill-new-div{margin-top: 10px;margin-right: 50px;margin-bottom: 0px;padding: 15px;background-color:#FFF;}
+.seckill-new-div{margin-top: 10px;margin-right: 50px;margin-bottom: 0px;padding: 15px;background-color:#FFF;border-radius: 1px;border:solid;border-color: #eee;}
 .mb30{margin-bottom: 30px !important;}
 .w130{width: 130px !important;}
 .scroll-bar-discount{overflow: hidden;max-height: 200px;overflow-y: auto;}
