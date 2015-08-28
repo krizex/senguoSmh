@@ -151,6 +151,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .scroll-bar-discount{overflow: hidden;max-height: 200px;overflow-y: auto;}
 .invisiable{visibility: hidden;}
 .discount_rate{width: 100px !important;}
+.scroll-bar{overflow: hidden;overflow-y: auto;}
 /**/
 .add-link{float:left !important;color:#33CC66;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
 .delete-link{float: right !important;color:#ff0000;margin-right: 50px;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
