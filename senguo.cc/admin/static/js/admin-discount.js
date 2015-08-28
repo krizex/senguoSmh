@@ -3,6 +3,8 @@ var goods_list=null;
 var index1=0;
 var new_discount_item;
 var current_tab=0;// 标记当前选中的tab标签
+var page_begin=[1,1,1,1];  //记录四个页面的开始页码
+var page_end=[1,1,1,1];   //记录四个页面的结束页码
 $(document).ready(function () {
     $('.switch-btn-c').each(function () {
         var $this = $(this);
@@ -17,6 +19,11 @@ $(document).ready(function () {
     goods_list=eval($("#goods").val());
     charge_list=eval($("#charge").val());
     new_discount_item=$('.to_clone').clone().removeClass("to_clone");
+    goods_number=parseInt($('#discount-length').val());
+    page_end=eval($("#page_end").val());
+    if (isNaN(goods_number)){
+        goods_number=1;
+    }
     if($("#discount_detail").size()>0){//详情
         $(".copy-coupon-code").zclip({
                 path: "/static/js/third/ZeroClipboard.swf",
@@ -121,11 +128,14 @@ $(document).ready(function () {
 }).on('click','.chinav li',function(){
     var index = $(this).index();
     type = index;
+    current_tab=index;
     if(index==1){
         $(".wrap-tb table").eq(1).removeClass("invisiable").addClass("hidden");
     }
     $(".chinav li").removeClass("active").eq(index).addClass("active");
     $(".wrap-tb table").addClass("hidden").eq(index).removeClass("hidden");
+    $('.page-now').text(page_begin[index]);
+    $('.page-total').text(page_end[index]);
 }).on('click','.open-week',function(){
     if($(this).hasClass('forbidden-btn')){
         return false;
@@ -153,7 +163,7 @@ $(document).ready(function () {
     var index = $(this).closest("li").index();
     index1=index;
     var $this=$(this);
-    getGoods(index,$this.closest('td').find(".use_goods_lst"));
+    getGoods(index,$this);
     $this.closest('div').find(".use_goods_group").html($this.html()).attr("data-id",id);
     $this.closest('tr').find(".use_goods").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lst .item",function(){
@@ -217,17 +227,17 @@ $(document).ready(function () {
         $prev.find('.discount-new').removeClass('hidden');
     }
     goods_number-=1;
-}).on('click','.pre-page',function(){
+}).on('click','.pre-page-detail',function(){
     var pagenow=parseInt($('.page-now').text());
     var selected_status=$(".use_goods_group").attr("data-id");
     if (pagenow==1){
         Tip("当前已经是第一页，不能再向前翻页");
     }
     else {
-        $(".page-now").text(pagenow-1);
+        $('.page-now').text(pagenow-1);
         // insertcoupon(selected_status,pagenow-1);
     }
-}).on('click','.next-page',function(){
+}).on('click','.next-page-detail',function(){
      var pagenow=parseInt($('.page-now').text());
      var pagetotal=parseInt($('.page-total').text());
      var select_rule=$(".use_goods_group").attr("data-id");
@@ -238,7 +248,7 @@ $(document).ready(function () {
         $('.page-now').text(pagenow+1);
         // insertcoupon(select_rule,pagenow+1);
      }
-}).on("click",".jump-to",function(){
+}).on("click",".jmp-detail",function(){
     var inputpage=parseInt($(".input-page").val())
     var pagetotal=parseInt($('.page-total').text());
     var select_rule=$(".use_goods_group").attr("data-id");
@@ -248,6 +258,41 @@ $(document).ready(function () {
     else{
         $('.page-now').text(inputpage);
         // insertcoupon(select_rule,inputpage);
+    }
+}).on('click','.pre-page-main',function(){
+    var pagenow=parseInt($('.page-now').text());
+    var selected_status=current_tab;
+    if (pagenow==1){
+        Tip("当前已经是第一页，不能再向前翻页");
+    }
+    else {
+        $('.page-now').text(pagenow-1);
+        page_begin[current_tab]=page_begin[current_tab]-1;
+        insertcoupon(selected_status,pagenow-1);
+    }
+}).on('click','.next-page-main',function(){
+     var pagenow=parseInt($('.page-now').text());
+     var pagetotal=parseInt($('.page-total').text());
+      var selected_status=current_tab;
+     if (pagenow==pagetotal){
+        Tip("当前已经是最后一页，不能再向后翻页");
+     }
+     else{
+        $('.page-now').text(pagenow+1);
+        page_begin[current_tab]=page_begin[current_tab]+1;
+        insertcoupon(selected_status,pagenow+1);
+     }
+}).on("click",".jmp-main",function(){
+    var inputpage=parseInt($(".input-page").val())
+    var pagetotal=parseInt($('.page-total').text());
+    var selected_status=$(".use_goods_group").attr("data-id");
+    if (inputpage<1 || inputpage>pagetotal ||isNaN(inputpage)){
+        Tip("输入的页码值不符合要求");
+    }
+    else{
+        $('.page-now').text(inputpage);
+        page_begin[current_tab]=inputpage;
+        insertcoupon(selected_status,inputpage);
     }
 }).on('click','.ok-discount',function(){
     if($(this).attr('data-flag')=='off'){
@@ -286,7 +331,7 @@ $(document).ready(function () {
     }
     var id = $(this).attr("data-id");
     var status=parseInt($('.furit-type-discount').find('.active').attr('data-id'));
-    current_tab=status;
+    // current_tab=status;
     window.location.href="/admin/discount?action=details&discount_id="+id+"&page=1"+"&status="+status;
 }).on('click','.go-back',function(){
     window.history.back();
@@ -418,6 +463,7 @@ function getinfo(){
         discount_good={"use_goods_group":use_goods_group,"use_goods":use_goods,"charges":charges,"discount_rate":discount_rate};
         discount_goods[i-1]=discount_good;
         }
+    console.log(goods_number);
     discount_id=parseInt($("#goods").attr("discount_id"));
     data={
         "discount_way":discount_way,
@@ -511,7 +557,8 @@ function getNowFormatDate() {
             + seperator2 + date.getSeconds();
     return currentdate;
 }
-function getGoods(index,$obj){
+function getGoods(index,$this){
+    var $obj=$this.closest('td').find(".use_goods_lst");
     $obj.empty();
     var goods = goods_list[index];
     var lis = '';
@@ -521,8 +568,8 @@ function getGoods(index,$obj){
         lis+='<li class="presentation" role="presentation"><a class="item" title="'+goods[i].goods_name+'" href="javascript:;" data-id="'+goods[i].goods_id+'">'+goods[i].goods_name+'</a></li>';
     }
     $obj.append(lis);
-    $('.charge-type').addClass("hidden");
-    $('.charge-type button').remove();
+    $this.closest('table').find('.charge-type').addClass("hidden");
+    $this.closest('table').find('.charge-type button').remove();
 }
 function getCharge(index1,index2,$obj){
     $obj.empty();
@@ -532,4 +579,88 @@ function getCharge(index1,index2,$obj){
         lis+=' <button class=" charge-btn mt6 mr10" charge_id='+charges[i].charge_id+'>'+charges[i].charge+'</button>';
     }
     $obj.append(lis);
+}
+
+function insertcoupon(selected_status,page){
+    var url='';
+    var action="change_page";
+    var data={
+   action:action,page:page,selected_status:selected_status
+    }
+    var  args={
+        action:action,data:data
+    }
+    $.postJson(url,args,function(res){
+                if(res.success){
+                        var coupons = res.output_data;
+                        var tabs=[$('.tab1'),$('.tab2'),$('.tab3'),$('.tab4')];
+                        var $this=tabs[current_tab];
+                        $this.empty();
+                        if(coupons.length!=0){
+                            for(var i=0; i<coupons.length; i++){
+                                var coupon = coupons[i];
+                                var trow='';
+                                var temp=null;
+                                trow='<tr class="detail-tr dis-coupon" data-id="{{discount_id}}" >'+
+                                        '<td>{{if discount_way==0}}{{start_date}}到{{end_date}} {{else}} {{weeks}}<br>{{start_date}}到{{end_date}} {{/if}}</td>'+
+                                        '<td>{{goods}}</td>'+
+                                        '<td>{{incart_num}}/{{ordered_num}}</td>'+
+                                        '<td class="operate">'+
+                                            '<a href="/admin/discount?action=editdiscountpage&discount_id={{discount_id}}" class="mr10 discount-edit" data-id="{{discount_id}}" >编辑</a>'+
+                                            '<a href="javascript:;" class="mr10 spread-btn ">推广</a>'+
+                                            '<a href="javascript:;" class="red-txt close_one" data-id="{{discount_id}}">停用</a>'+
+                                            '<span class="stop">已停用</span>'+
+                                            '<div class="sw-er-tip all-position invisible">'+
+                                                '<div class="top-arr">'+
+                                                    '<span class="line1"></span>'+
+                                                    '<span class="line2"></span>'+
+                                                '</div>'+
+                                                '<p class="er-text">优惠券链接</p>'+
+                                                '<div class="wrap-ipt">'+
+                                                    '<input type="text" class="sw-link-txt" value="" disabled="">'+
+                                                    '<input type="button" class="sw-link-copy" value="复制链接">'+
+                                                '</div>'+
+                                                '<div class="wrap-er group">'+
+                                                   '<img class="er-logo" src="/static/images/favicon.ico" alt="">'+
+                                                    '<div class="er-text lh80 fl">链接二维码</div>'+
+                                                    '<div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>'+
+                                                '</div>'+
+                                            '</div>'+
+                                        '</td>'+
+                                   ' </tr>';
+                                var render=template.compile(trow);
+                                temp=render({
+                                    discount_way:coupon.discount_way,
+                                    discount_id:coupon.discount_id,
+                                    start_date:coupon.start_date,
+                                    end_date:coupon.end_date,
+                                    weeks:coupon.weeks,
+                                    goods:coupon.goods,
+                                    incart_num:coupon.incart_num,
+                                    ordered_num:coupon.ordered_num,
+                                });
+                                $this.append(temp);
+                                if($("#discount_detail").size()>0){//详情
+                                            $(".sw-link-copy").zclip({
+                                                    path: "/static/js/third/ZeroClipboard.swf",
+                                                    copy: function(){
+                                                        return $(this).prev('span').html();
+                                                    },
+                                                    afterCopy:function(){
+                                                        Tip("优惠券码已经复制到剪切板");
+                                                    }
+                                                });
+                                            }
+                            }
+                        }
+                        else{
+                            temp= '<tr><td colspan="6" class="txt-center c999">当前没有优惠券</td></tr>';
+                            // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
+                            $("#list-coupons").append(temp);
+                        }
+                        }
+                        else Tip(error_text);
+            }, function () {
+            Tip('网络好像不给力呢~ ( >O< ) ~');
+        });
 }

@@ -134,7 +134,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .mode-cm{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:30px;font-size:14px;top:-45px;}
 .mode-cm .circle{display:inline-block;width:28px;height:28px;background:#fff;border-radius:50%;position:absolute;top:2px;}
 .discount_close{margin-left: 420px;}
-
+.w50{width: 60px !important;}
 /*added by jyj for seckill*/
 .font14{font-size: 14px !important;}
 .mt20{margin-top: 20px !important;}
@@ -148,8 +148,10 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .seckill-new-div{margin-top: 10px;margin-right: 50px;margin-bottom: 0px;padding: 15px;background-color:#FFF;}
 .mb30{margin-bottom: 30px !important;}
 .w130{width: 130px !important;}
-.scroll-bar{overflow: hidden;max-height: 1500px;overflow-y: auto;}
-
+.scroll-bar-discount{overflow: hidden;max-height: 200px;overflow-y: auto;}
+.invisiable{visibility: hidden;}
+.discount_rate{width: 100px !important;}
+/**/
 .add-link{float:left !important;color:#33CC66;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
 .delete-link{float: right !important;color:#ff0000;margin-right: 50px;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
 
@@ -176,6 +178,5 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .dis-seckill>td{color: #999;}
 
 .spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
-.invisiable{visibility: hidden;}
-/**/
+
 

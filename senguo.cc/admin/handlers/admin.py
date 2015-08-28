@@ -4973,9 +4973,11 @@ class Discount(AdminBaseHandler):
 			chargegroup=[]
 			data1.append(data0)
 			data0=[]
-	def  getdiscount(self,data,status):
+	def  getdiscount(self,data,status,max_item,page_end,page):
 		current_shop_id=self.current_shop.id
-		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=status).order_by(desc(models.DiscountShopGroup.create_date)).all()
+		q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=status).order_by(desc(models.DiscountShopGroup.create_date)).offset((page-1)*max_item).limit(max_item).all()
+		q_all_count=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=status).count()
+		page_end.append(int(q_all_count/max_item)+1)
 		for x in q:
 			weeks=''
 			weekscontent=["","周一","周二","周三","周四","周五","周六","周日"]
@@ -5052,84 +5054,6 @@ class Discount(AdminBaseHandler):
 			goods=goods[1:]
 			data_tmp={"discount_id":x.discount_id,"discount_way":x.discount_way,"start_date":start_date,"end_date":end_date,"incart_num":x.incart_num,"ordered_num":x.ordered_num,"weeks":weeks,"goods":goods}
 			data.append(data_tmp)
-	# def judgetimeright(self,q,can_choose,start_date,end_date,f_time,t_time,discount_way,weeks):
-	# 	current_shop_id=self.current_shop.id
-	# 	now_date=int(time.time())
-	# 	can_choose=True
-	# 	print(q,'@@@@@@@@1')
-	# 	if q:
-	# 		for y in q:
-	# 			ygroup=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=y.discount_id).first()
-	# 			if ygroup.discount_way==0 and discount_way==0:
-	# 				if start_date<ygroup.start_date and end_date>=ygroup.start_date:
-	# 					can_choose=False
-	# 				elif start_date>=ygroup.start_date and start_date<=ygroup.end_date:
-	# 					can_choose=False
-	# 			elif ygroup.discount_way==1 and discount_way==1:
-	# 				for week in weeks:
-	# 					if week in eval(ygroup.weeks):
-	# 						if f_time<ygroup.f_time and t_time>=ygroup.f_time:
-	# 							can_choose=False
-	# 							break
-	# 						elif f_time>=ygroup.f_time and f_time<=ygroup.t_time:
-	# 							can_choose=False
-	# 							break
-	# 			elif ygroup.discount_way==0 and discount_way==1:
-	# 				begin=int(time.strftime('%w',time.localtime(ygroup.start_date)))
-	# 				end=int(time.strftime('%w',time.localtime(ygroup.end_date)))
-	# 				if begin==0:
-	# 					begin=7
-	# 				if now_date>=ygroup.start_date:
-	# 					if ygroup.end_date-now_date>=7*24*3600:
-	# 						can_choose=False
-	# 					else:
-	# 						begin=int(time.strftime('%w',time.localtime(now_date)))
-	# 						if begin==0:
-	# 							begin=7
-	# 						for week in weeks:
-	# 							if week>=begin and week<=end:
-	# 								can_choose=False
-	# 								break		
-	# 				else:
-	# 					if ygroup.end_date-ygroup.start_date>=7*24*3600:
-	# 						can_choose=1
-	# 					else:
-	# 						end=int(time.strftime('%w',time.localtime(ygroup.end_date)))
-	# 						if end==0:
-	# 							end=7
-	# 						for week in weeks:
-	# 							if week>=begin and week<=end:
-	# 								can_choose=False
-	# 								break							
-	# 			elif ygroup.discount_way==1 and discount_way==0:
-	# 				begin=int(time.strftime('%w',time.localtime(start_date)))
-	# 				end=int(time.strftime('%w',time.localtime(end_date)))
-	# 				if begin==0:
-	# 					begin=7
-	# 				if now_date>=start_date:
-	# 					if end_date-now_date>=7*24*3600:
-	# 						can_choose=False
-	# 					else:
-	# 						begin=int(time.strftime('%w',time.localtime(now_date)))
-	# 						if begin==0:
-	# 							begin=7
-	# 						for week in eval(ygroup.weeks):
-	# 							if week>=begin and week<=end:
-	# 								can_choose=False
-	# 								break		
-	# 				else:
-	# 					if end_date-start_date>=7*24*3600:
-	# 						can_choose=False
-	# 					else:
-	# 						if end==0:
-	# 							end=7
-	# 						for week in weeks:
-	# 							if week>=begin and week<=end:
-	# 								can_choose=False
-	# 								break				
-	# 			if can_choose==1:
-	# 				break
-	# 	return can_choose
 
 	def judgetimeright(self,q,start_date,end_date,f_time,t_time,discount_way,weeks):
 		current_shop_id=self.current_shop.id
@@ -5220,6 +5144,9 @@ class Discount(AdminBaseHandler):
 			now_date=int(time.time())
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).all()
 			can_new_discount=0
+			page_end=[]
+			max_item=10
+			page=1; #初始默认第一页
 			for x in q:
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id).all()
 				for y in qq:
@@ -5233,10 +5160,10 @@ class Discount(AdminBaseHandler):
 			data=[]
 			for x in range(0,4):
 				data_tmp=[]
-				self.getdiscount(data_tmp,x)
+				self.getdiscount(data_tmp,x,max_item,page_end,page)
 				data.append(data_tmp)
 			discount_active_cm=self.session.query(models.Marketing).filter_by(id=current_shop_id).first().discount_active
-			return self.render("admin/discount-main.html",discount_active_cm=discount_active_cm,output_data=data,can_new_discount=can_new_discount,context=dict(subpage='marketing',subpage2='discount_active'))
+			return self.render("admin/discount-main.html",discount_active_cm=discount_active_cm,output_data=data,page_end=page_end,can_new_discount=can_new_discount,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="newdiscountpage":
 			data=[]
 			data1=[]
@@ -5280,6 +5207,7 @@ class Discount(AdminBaseHandler):
 					use_goods=q1.name
 				discount={"id":x.inner_id,"use_goods_group":x.use_goods_group,"use_goods":x.use_goods,"use_goods_group_text":use_goods_group,"use_goods_text":use_goods,"status":x.status,"discount_rate":x.discount_rate,"charges":eval(x.charge_type)}
 				discount_items.append(discount)
+			print(discount_items,'44444')
 			return self.render("admin/discount-edit.html",discount_items=discount_items,output_data=data,data1=data1,chargetype=chargetype,common_info=common_info,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="details":
 			discount_id=int(self.args["discount_id"])
@@ -5308,7 +5236,7 @@ class Discount(AdminBaseHandler):
 				data_tmp={"goods":goods,"incart_num":x.incart_num,"ordered_num":x.ordered_num,"discount_rate":x.discount_rate}
 				data.append(data_tmp)
 			return self.render("admin/discount-detail.html",output_data=data,data1={"total":len(q),"totalpage":int(len(q)/max_item)+1},context=dict(subpage='marketing',subpage2='discount_active'))
-	@AdminBaseHandler.check_arguments("action?:str", "data?","discount_id?")
+	@AdminBaseHandler.check_arguments("action?:str", "data?","discount_id?","page?","select_status?")
 	def post(self):
 		action=self.args["action"]
 		current_shop_id=self.current_shop.id
@@ -5386,7 +5314,12 @@ class Discount(AdminBaseHandler):
 			t_time=data["t_time"]
 			weeks=data["weeks"]
 			discount_goods=data["discount_goods"]
-
+			# 向数据库中插入数据
+			discount_id=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).count()+1
+			new_discount=models.DiscountShopGroup(shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,weeks=str(weeks),\
+				discount_way=discount_way,f_time=f_time,t_time=t_time,status=status,create_date=create_date,incart_num=0,ordered_num=0)
+			self.session.add(new_discount)
+			self.session.flush()
 			for x in discount_goods:
 				#首先排除和该时间段重叠的所有商品,这个只是排除了含有所有分组的那些活动（且内部只含有一个商品，为所有分组的）
 				q_goods_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=-2).filter(models.DiscountShop.status<2).all()
@@ -5436,17 +5369,10 @@ class Discount(AdminBaseHandler):
 					
 					if not self.judge_seckill(current_shop_id,x["use_goods"],discount_way,start_date,end_date,f_time,t_time,weeks):
 						return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
-
-
-			# 向数据库中插入数据
-			discount_id=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).count()+1
-			new_discount=models.DiscountShopGroup(shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,weeks=str(weeks),\
-				discount_way=discount_way,f_time=f_time,t_time=t_time,status=status,create_date=create_date,incart_num=0,ordered_num=0)
-			self.session.add(new_discount)
-			self.session.flush()
-			new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),\
-				status=status,discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
-			self.session.add(new_discount)
+				new_discount=models.DiscountShop(shop_id=current_shop_id,discount_id=discount_id,inner_id=discount_goods.index(x)+1,use_goods_group=x["use_goods_group"],use_goods=x["use_goods"],charge_type=str(x["charges"]),\
+					status=status,discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
+				self.session.add(new_discount)
+				self.session.flush()
 			self.session.commit()
 			return self.send_success()
 		elif action=="editdiscount":
@@ -5470,7 +5396,7 @@ class Discount(AdminBaseHandler):
 			weeks=data["weeks"]
 			discount_goods=data["discount_goods"]
 			discount_close=data["discount_close"]
-			print(q.status,'@@@@@@')
+			print(discount_close,'@@@@@@---')
 			if q.status==0:
 				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,discount_way=discount_way,weeks=str(weeks),f_time=f_time,t_time=t_time)
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
@@ -5520,14 +5446,16 @@ class Discount(AdminBaseHandler):
 						if not self.judge_seckill(current_shop_id,x.use_goods,discount_way,start_date,end_date,f_time,t_time,weeks):
 							return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 					_index=qq.index(x)
+					print(discount_close,'ffffff')
 					discount_good=discount_goods[_index]
-					if x.status==1:
+					if x.status==0:
 						if  discount_close[_index]==3:
 							status=3
 						else:
 							status=x.status
 						x.update(self.session,shop_id=current_shop_id,discount_id=discount_id,use_goods_group=discount_good["use_goods_group"],\
-							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)	
+							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)
+						print(x.status,'#####')	
 			elif q.status==1:
 				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,end_date=end_date,t_time=t_time)
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
@@ -5631,6 +5559,16 @@ class Discount(AdminBaseHandler):
 				self.session.flush()
 			self.session.commit()
 			return self.send_success()
+		elif action=="change_page":
+			data=self.args["data"]
+			page=data["page"]
+			selected_status=data["selected_status"]
+			max_item=10
+			page_end=[]
+			# 下面四个data对应于４种状态的限时折扣
+			output_data=[]
+			self.getdiscount(output_data,selected_status,max_item,page_end,page)
+			return self.send_success(output_data=output_data)
 
 
 

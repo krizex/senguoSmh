@@ -170,8 +170,6 @@ class GlobalBaseHandler(BaseHandler):
 							status=2
 					else:
 						status=0
-				if x.id==75:
-					print(x.weeks)
 				x.update(self.session,status=status)
 				self.session.flush()
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,discount_id=x.discount_id).with_lockmode('update').all()
