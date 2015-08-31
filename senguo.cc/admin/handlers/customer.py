@@ -1381,14 +1381,11 @@ class Market(CustomerBaseHandler):
 				activity_query = activity_query[0]
 				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
 				notices.append(('','',seckill_img_url,1))
-				for x in shop.config.notices:
-					if x.active == 1:
-						notices.append((x.summary, x.detail,x.img_url,0))
+				
+		for x in shop.config.notices:
+			if x.active == 1:
+				notices.append((x.summary, x.detail,x.img_url,0))
 
-			else:
-				notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
-		else:
-			notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
