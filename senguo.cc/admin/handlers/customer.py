@@ -1643,7 +1643,7 @@ class Market(CustomerBaseHandler):
 					if data_item1['is_activity'] == 1 and shop_tpl != 0:
 						pass
 					else:
-						data_item2['charge_types'] = charge_types
+						data_item2['charge_types'] = [x for x in charge_types if x['activity_type'] in [-2,0,2]]
 						data_item2['storage'] = fruit.storage
 						data_item2['saled'] = saled
 						data_item2['favour'] = fruit.favour
@@ -2558,8 +2558,8 @@ class Cart(CustomerBaseHandler):
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
 			self.send_admin_message(self.session,order,access_token)
 			
-			session.add(balance_history)
-			session.flush()
+			# session.add(balance_history)
+			# session.flush()
 		session.commit()
 		return True
 
