@@ -1148,7 +1148,7 @@ class Market(CustomerBaseHandler):
 			# else:
 			#	print('[CustomerMarket]haahahahah')
 		else:
-			print('has no mp!!!!!!!!!!!!!!')
+			# print('has no mp!!!!!!!!!!!!!!')
 			pass
 		# print('[CustomerMarket]success??????????????????????????????????')
 
@@ -1934,7 +1934,6 @@ class Cart(CustomerBaseHandler):
 		else:
 			_order_address = address.address_text
 		
-
 		##########
 		
 		if qshop:

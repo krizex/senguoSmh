@@ -1774,7 +1774,13 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
 				
 				# 发送订单模版消息给送货员
-				self.send_staff_message(self.session,order)
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				else:
+					access_token = None
+				self.send_staff_message(self.session,order,access_token)
 
 			elif action == "edit_status":
 				if order.status == -1:
