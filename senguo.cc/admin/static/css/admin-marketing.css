@@ -169,18 +169,12 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .send-day .btn-default:focus{border: none;}
 .ver-8 {vertical-align: 8px;}
 .w110{width: 110px;}
-
 .edit-activity{z-index: 2999;font-size: 16px;}
 .spread-activity{z-index: 2999;font-size: 16px;}
 .stop-activity{z-index: 2999;font-size: 16px;}
-
 .ver-10{vertical-align: 10px !important;}
-
 .dis-seckill>td{color: #999;}
-
 .spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
-
-
 .edit-box{background-color: #f4f5f9;padding: 15px 20px;margin:0 0 20px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
 .edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
