@@ -2136,7 +2136,7 @@ class WxOauth2:
 		postdata = {
 			'touser':touser,
 			# 'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-			'template_id':'template_id',
+			'template_id':template_id,
 			'url':link_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
