@@ -234,7 +234,7 @@ class Order(StaffBaseHandler):
 				if order.status not in [1,2,3,4]:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 5
-				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 					# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
 					# print(order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)

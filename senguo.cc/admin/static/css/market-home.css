@@ -12,7 +12,7 @@
 .goods-list-item .great-number em{background:url('../svg/icon_list-2.png') no-repeat 0 center;display:inline-block;width:10px;height:10px;background-size:140px 180px;}
 .goods-list-item .great-number .gray-heart{background-position:-70px -80px;}
 .goods-list-item .great-number .red-heart{background-position:-70px -70px !important;}
-.goods-list-item .num_box{width:90px;overflow:hidden;height:32px;}
+.goods-list-item .num_box{width:87px;overflow:hidden;height:32px;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
 .goods-list-item .charge-first{width:100%;float:left;line-height:36px;padding-right:25px;}
