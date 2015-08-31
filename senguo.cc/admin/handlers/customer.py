@@ -1115,7 +1115,7 @@ class Market(CustomerBaseHandler):
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 		if shop.admin.has_mp:
-			# print('[CustomerMarket]login shop.admin.has_mp')
+			print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
@@ -1127,7 +1127,7 @@ class Market(CustomerBaseHandler):
 				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 				if len(code) == 0:
 					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
-					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
+					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
 					return self.redirect(url)
 				else:
 					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
@@ -1148,6 +1148,7 @@ class Market(CustomerBaseHandler):
 			# else:
 			#	print('[CustomerMarket]haahahahah')
 		else:
+			print('has no mp!!!!!!!!!!!!!!')
 			pass
 		# print('[CustomerMarket]success??????????????????????????????????')
 

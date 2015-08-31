@@ -728,7 +728,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		if order.shop.admin.has_mp:
 			#获取staff对应自己平台的openid
 			mp_staff = session.query(models.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(staff_info.id)).first()
-			if mp_admin:
+			if mp_staff:
 				touser = mp_staff.wx_openid
 				# print(touser,'staff self openid')
 			else:
