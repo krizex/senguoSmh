@@ -40,10 +40,6 @@ $(document).ready(function(){
         $(this).addClass('active').siblings(".item").removeClass("active");
     });
 
-    $("#sure-staff").on("click",function(){
-        var staff_id=$(".staff-list>.active").attr("data-id");
-        orderEdit($(this),"edit_SH2",staff_id)
-    });
     swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
         grabCursor: true,
@@ -83,6 +79,9 @@ $(document).ready(function(){
     if($(e.target).closest(".forbid_click").size()==0){
        window.location.href="/madmin/orderDetail/"+num;
     }
+}).on("click","#sure-staff",function(){
+    var staff_id=$(".staff-list>.active").attr("data-id");
+    orderEdit($(this),"edit_SH2",staff_id);
 }).on("click",".order-grade .task-staff",function(e){
     var $this=$(this);
     var status=parseInt($this.parents('.m-order-item').attr('data-status'));
@@ -352,6 +351,9 @@ function orderEdit(target,action,content){
     data={order_id:order_id};
     if(action=='edit_SH2')
     {
+        if(!content){
+            return Tip("请选择员工");
+        }
         data.staff_id=parseInt(content);
     }
     args={
