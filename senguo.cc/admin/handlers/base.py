@@ -753,7 +753,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# if order_type != 3:
 		WxOauth2.post_staff_msg(touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 			order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token)
-
 		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
