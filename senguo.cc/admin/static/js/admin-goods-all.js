@@ -1180,6 +1180,9 @@ function initImgList($list){
 function drag(obj){
     obj.onmousedown=function(ev){
         var $this = $(obj);
+        if($this.closest(".del-img").size()>0){
+            return false;
+        }
         var oEvent = ev || event;
         var disX = oEvent.clientX-$this.position().left;
         var disY = oEvent.clientY-$this.position().top;

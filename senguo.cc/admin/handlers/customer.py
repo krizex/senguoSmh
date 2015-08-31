@@ -319,6 +319,20 @@ class customerGoods(CustomerBaseHandler):
 			good = []
 			img_url = ''
 
+		buy_limit = good.buy_limit
+		good.userlimit = 0
+		if buy_limit !=0:
+			if buy_limit in [1,2]:
+				try:
+					good.userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop.id).first()[0]+1
+				except:
+					good.userlimit = 0
+			elif buy_limit == 3:
+				if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop.id,balance_type=0).first()
+				if if_charge:
+					good.userlimit = 3
+				else:
+					good.userlimit = 0
 		charge_types= []
 		for charge_type in good.charge_types:
 			if charge_type.active != 0:
@@ -347,6 +361,13 @@ class customerGoods(CustomerBaseHandler):
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		if good.buy_limit != good.userlimit and good.buy_limit !=0 :
+			key_allow = []
+			for charge_type in good.charge_types:
+				for key in cart_fs:
+					if key[0] != charge_type.id:
+						key_allow.append(key[0])
+			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
@@ -1300,7 +1321,7 @@ class Market(CustomerBaseHandler):
 		elif action == 9:
 			return self.search_list()
 	# @classmethod
-	def w_getdata(self,session,m,customer_id):
+	def w_getdata(self,session,m,customer_id,shop_id):
 			data = []
 			w_tag = ''
 			# print("[CustomerMarket]customer_id:",customer_id)
@@ -1351,10 +1372,25 @@ class Market(CustomerBaseHandler):
 					detail_no = True
 				else:
 					detail_no = False
-
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit in [1,2]:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buy_limit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
+						
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
 				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
 					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no)})
+					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no),\
+					'buylimit':buy_limit,'userlimit':userlimit})
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1384,7 +1420,7 @@ class Market(CustomerBaseHandler):
 		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
-		fruit_list = self.w_getdata(self.session,fruits,customer_id)
+		fruit_list = self.w_getdata(self.session,fruits,customer_id,shop_id)
 		# print("[CustomerMarket]fruit_list: total_page:",total_page)
 		return self.send_success(data = fruit_list ,nomore = nomore,group_id=group_id)
 
@@ -1407,7 +1443,7 @@ class Market(CustomerBaseHandler):
 			nomore = True
 		#fruits = fruits.offset(offset).limit(page_size).all()
 		fruits = fruits.all()
-		fruit_list = self.w_getdata(self.session,fruits,customer_id)
+		fruit_list = self.w_getdata(self.session,fruits,customer_id,shop_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
 	@unblock
@@ -1437,7 +1473,7 @@ class Market(CustomerBaseHandler):
 		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-		fruits_data = self.w_getdata(self.session,fruits,customer_id)
+		fruits_data = self.w_getdata(self.session,fruits,customer_id,shop_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
@@ -1609,7 +1645,9 @@ class Cart(CustomerBaseHandler):
 		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
-		for item in cart_f:
+		if len(cart_f) == 0:
+			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
+		for item in cart_f.keys():
 			fruit = cart_f[item].get('charge_type').fruit
 			fruit_id = fruit.id
 			fruit_storage = fruit.storage
@@ -1726,6 +1764,29 @@ class Cart(CustomerBaseHandler):
 				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				singlemoney=charge_type.price*fruits[str(charge_type.id)] 
 				fruit=charge_type.fruit
+
+
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit in [1,2]:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buy_limit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop_id,balance_type=0).first()
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
+					if buy_limit != userlimit and buy_limit !=0 :
+						if buy_limit == 1:
+							return self.send_fail("该商品仅限新用户购买")
+						elif buy_limit==2:
+							return self.send_fail("该商品仅限老用户购买")
+						elif buy_limit==3:
+							return self.send_fail("该商品仅限充值用户购买")
 
 				# totalPrice
 				if m_fruit_goods==[]:
@@ -2023,6 +2084,7 @@ class Cart(CustomerBaseHandler):
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
+		print(order.id)
 		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
@@ -2049,7 +2111,7 @@ class Cart(CustomerBaseHandler):
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
-		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
 			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
 			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
@@ -3007,7 +3069,8 @@ class wxChargeCallBack(CustomerBaseHandler):
 		return self.send_success(qr_url=qr_url)
 
 # 插入爬取店铺数据（访问路由：/customer/test）
-# class InsertData(CustomerBaseHandler):
+class InsertData(CustomerBaseHandler):
+	pass
 # 	# @tornado.web.authenticated
 # 	# @CustomerBaseHandler.check_arguments("code?:str")
 # 	# @tornado.web.asynchronous
