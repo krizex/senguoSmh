@@ -2,7 +2,7 @@
 {% block title%}微信通知{% end %}
 {% block setcontent %}
 	{% if _shop_auth ==0 %}
-	 <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+	<h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
 	{% else %}
 	<div class="set-description">
 	    <p>如果您有已认证的微信服务号，则可开通订单微信通知。开通后的公众号具有订单模板消息通知功能。</p>
@@ -10,7 +10,7 @@
 	</div>
 	<ul class="info-set-list mt20 font14">
 	    <li class="item clearfix">
-	    	<a href="{{reverse_url('BbsDetail',21)}}" target="_blank" class="pull-right mt30">查看模板添加详细教程</a>
+	    	<a href="{{reverse_url('BbsDetail',21)}}" target="_blank" class="pull-right mt30">查看详细教程</a>
 	    	<div class="clearfix">
 	      		<p class="tit">第一步：进入微信公众平台管理后台，点击页面左下方的『开发者中心』进行如下操作：</p>
 	      		<p class="text-grey2 ml40">1. 在『开发者中心』的『配置项』选项下，找到『接口权限表』板块下的『网页服务』类目；</p>
@@ -19,7 +19,7 @@
                 <p class="text-pink ml40">注意：请务必设置正确的链接，否则所有用户将无法正常登录您的森果店铺。</p>
 	      	</div>
 	    </li>
-	     <li class="item clearfix">
+        <li class="item clearfix">
 	    	<a href="javascript:;" class="wx-edit pull-right mt30">编辑</a>
 	    	<div class="clearfix">
 	      		<p class="tit">第二步：提交微信公众平台相关信息</p>
