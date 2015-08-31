@@ -550,6 +550,7 @@ function dealGoods($item,type){
     //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
+    var img_flag = false;
     if(imgUrls.size()==0){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请至少添加一张商品图片");
@@ -561,12 +562,23 @@ function dealGoods($item,type){
         var arr2 = [];
         imgUrls.each(function(){
             var $this = $(this);
-            arr1.push($this.closest("li").attr("data-index"));
-            //console.log($this.attr("url"));
-            arr2.push($this.attr("url"));
+            if(!!$this.attr("url")){
+                arr1.push($this.closest("li").attr("data-index"));
+                arr2.push($this.attr("url"));
+                mg_flag = false;
+            }else{
+                img_flag = true;
+                return false;
+            }
+            
         });
         imgList.index = arr1;
         imgList.src = arr2;
+    }
+    if(img_flag){
+        Tip(" 图片正在上传中，稍等一会儿～");
+        $('.ok-edit-goods').attr("data-flag","on");
+        return false;
     }
     //售价方式
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
