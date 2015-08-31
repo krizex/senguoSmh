@@ -3657,7 +3657,7 @@ class AdminAuth(AdminBaseHandler):
 		code =self.args["code"]
 		mode = self.args["mode"]
 		user =''
-		if mode not in ["mp", "kf"]:
+		if mode not in ["mp", "kf", "iOS"]:
 			return self.send_error(400)
 		wx_userinfo = self.get_wx_userinfo(code, mode)
 		if self.current_shop.admin.accountinfo.wx_unionid == wx_userinfo["unionid"]:
