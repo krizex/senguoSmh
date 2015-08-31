@@ -2900,11 +2900,12 @@ class GoodsImport(AdminBaseHandler):
 				return self.send_fail("该店铺不属于您，无法获取数据")
 			goods_list = []
 			for fruit in shop.fruits:
-				charge_types = []
-				for charge in fruit.charge_types:
-					charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
-				img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
-				goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
+				if fruit.active != 0:
+					charge_types = []
+					for charge in fruit.charge_types:
+						charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
+					img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
+					goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
 			return self.send_success(goods_list=goods_list)
 
 		elif action == "import_goods":
