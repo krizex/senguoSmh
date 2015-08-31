@@ -161,6 +161,8 @@ function unitText(target,n){
         case 9:target.text('件');break;
         case 10:target.text('筐');break;
         case 11:target.text('包');break;
+	case 12:target.text('今天价');break; 
+	case 13:target.text('明天价');break;
     }
 }
 function tagText(target,n){
