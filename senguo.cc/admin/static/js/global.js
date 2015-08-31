@@ -47,7 +47,6 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
 };
 
 $.getItem = function(url, success) {
-    // $.get(url, success);
     $.ajax({
         url: url,
         type: "get",
@@ -69,7 +68,6 @@ $.getItem = function(url, success) {
     }
 })(jQuery);
 
-
 function Int(target){
     target=parseInt(target);
     return target;
@@ -81,6 +79,7 @@ function checkTime(i)
     {i="0" + i}
     return i
 }
+
 function percentNum(num,num2){
     return Math.round(num/num2*10000)/100.00+"%";
 }
