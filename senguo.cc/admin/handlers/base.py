@@ -2107,7 +2107,7 @@ class WxOauth2:
 		order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token = None):
 		# access_token = cls.get_client_access_token()
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-		print(access_token)
+		# print(access_token)
 		if other_access_token:
 			template_id_short = 'TM00351'
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
