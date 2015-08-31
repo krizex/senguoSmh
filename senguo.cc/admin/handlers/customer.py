@@ -1094,7 +1094,7 @@ class Market(CustomerBaseHandler):
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 		if shop.admin.has_mp:
-			# print('[CustomerMarket]login shop.admin.has_mp')
+			print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
@@ -1106,7 +1106,7 @@ class Market(CustomerBaseHandler):
 				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 				if len(code) == 0:
 					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
-					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
+					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
 					return self.redirect(url)
 				else:
 					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
@@ -1127,6 +1127,7 @@ class Market(CustomerBaseHandler):
 			# else:
 			#	print('[CustomerMarket]haahahahah')
 		else:
+			print('has no mp!!!!!!!!!!!!!!')
 			pass
 		# print('[CustomerMarket]success??????????????????????????????????')
 
@@ -1706,7 +1707,7 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
 			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:"今天价",13:"明天价"}
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
