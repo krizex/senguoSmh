@@ -559,7 +559,7 @@ function dealGoods($item,type){
         return Tip("商品图片最多只能添加5张");
     }else{
         var arr1 = [];
-        var arr2 = [];
+        var arr2 = []
         imgUrls.each(function(){
             var $this = $(this);
             if(!!$this.attr("url")){

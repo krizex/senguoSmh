@@ -1359,7 +1359,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# 	admin = None
 
 		try:
-			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
 		except:
 			super_admin = None
 
