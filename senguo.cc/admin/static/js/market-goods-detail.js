@@ -33,24 +33,25 @@ $(document).ready(function(){
     }
     var slide_img_len=$(".swiper-wrapper img").length;
     var slide_img_height=[];
-    for(var i=0;i<slide_img_len;i++){
-        var hie=$(".swiper-wrapper img").eq(i).height();
-        slide_img_height.push(hie);        
-    }
-    for(var i=0;i<slide_img_height;i++){
-        //内层循环，找到第i大的元素，并将其和第i个元素交换
-        for(var j=i;j<slide_img_height;j++){
-            if(slide_img_height[i]<slide_img_height[j]){
-                //交换两个元素的位置
-                var temp=slide_img_height[i];
-                slide_img_height[i]=slide_img_height[j];
-                slide_img_height[j]=temp;
+    setTimeout(function(){
+       for(var i=0;i<slide_img_len;i++){
+            var hie=$(".swiper-wrapper img").eq(i).height();
+            slide_img_height.push(hie);        
+        }
+        for(var i=0;i<slide_img_height;i++){
+            //内层循环，找到第i大的元素，并将其和第i个元素交换
+            for(var j=i;j<slide_img_height;j++){
+                if(slide_img_height[i]<slide_img_height[j]){
+                    //交换两个元素的位置
+                    var temp=slide_img_height[i];
+                    slide_img_height[i]=slide_img_height[j];
+                    slide_img_height[j]=temp;
+                }
             }
         }
-    }
-    $(".swiper-container").height(slide_img_height[0]);
-    $(".swiper-wrapper").height(slide_img_height[0]);
-    console.log(slide_img_height);
+        $(".swiper-container").height(slide_img_height[0]);
+        $(".swiper-wrapper").height(slide_img_height[0]);
+    },200);
     //初始化购物车数量
     if(getCookie("cart_count")!=''){
         $("#cart-now-num").html(getCookie("cart_count")).removeClass("move-cart");

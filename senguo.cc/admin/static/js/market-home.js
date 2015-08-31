@@ -392,7 +392,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id=
                                 '</span>'+
                                 '<span class="pull-right text-grey sale font12">销量: <span class="color number">{{saled}}</span></span>'+
                             '</span>'+
-                            '<p>'+
+                            '<p class="buylimit-box">'+
                                 '{{if buylimit >0 }}<span class="buylimit">{{buylimit_txt}}</span>{{/if}}'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+

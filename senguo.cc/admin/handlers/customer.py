@@ -322,12 +322,12 @@ class customerGoods(CustomerBaseHandler):
 		buy_limit = good.buy_limit
 		good.userlimit = 0
 		if buy_limit !=0:
-			if buy_limit == 1 or 2:
+			if buy_limit in [1,2]:
 				try:
 					good.userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop.id).first()[0]+1
 				except:
 					good.userlimit = 0
-			elif buylimit == 3:
+			elif buy_limit == 3:
 				if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop.id,balance_type=0).first()
 				if if_charge:
 					good.userlimit = 3
@@ -1375,13 +1375,14 @@ class Market(CustomerBaseHandler):
 				buy_limit = fruit.buy_limit
 				userlimit = 0
 				if buy_limit !=0:
-					if buy_limit == 1 or 2:
+					if buy_limit in [1,2]:
 						try:
 							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
 						except:
 							userlimit = 0
-					elif buylimit == 3:
+					elif buy_limit == 3:
 						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
+						
 						if if_charge:
 							userlimit = 3
 						else:
@@ -1767,12 +1768,12 @@ class Cart(CustomerBaseHandler):
 				buy_limit = fruit.buy_limit
 				userlimit = 0
 				if buy_limit !=0:
-					if buy_limit == 1 or 2:
+					if buy_limit in [1,2]:
 						try:
 							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop_id).first()[0]+1
 						except:
 							userlimit = 0
-					elif buylimit == 3:
+					elif buy_limit == 3:
 						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop_id,balance_type=0).first()
 						if if_charge:
 							userlimit = 3
