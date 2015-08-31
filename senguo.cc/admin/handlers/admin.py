@@ -3628,6 +3628,9 @@ class Config(AdminBaseHandler):
 		elif action == "comment_active":
 			self.current_shop.config.comment_active = 0 if self.current_shop.config.comment_active == 1 else 1
 			self.session.commit()
+		elif action=="mp_active":
+			self.current_shop.admin.has_mp = 0 if self.current_shop.admin.has_mp == 1 else 1
+			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success()

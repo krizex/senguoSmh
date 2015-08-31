@@ -414,6 +414,36 @@ $(document).ready(function(){
             }
             else{
                 Tip(res.error_text);
+                $this.attr("data-flag","on");
+            }
+        },
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
+}).on('click','.mp_active',function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var status=Int($this.attr('data-status'));
+    var url='/admin/config';
+    var action="mp_active";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                }
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                }
+            }
+            else{
+                Tip(res.error_text);
+                $this.attr("data-flag","on");
             }
         },
         function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
