@@ -13,7 +13,7 @@ function FeedBack(){
                 $('#feedBox').modal('hide');
         },
         function(){
-            alert('网络错误！');
+            alert('您的网络暂时不通畅，请稍候再试');
         }
     );
 }

@@ -695,6 +695,9 @@ class ShopAdmin(MapBase, _AccountApi):
 	mp_appid= Column(String(64))
 	mp_appsecret = Column(String(64))
 
+	# woody 8.25
+	template_id = Column(String(300),default="{}")
+
 	access_token = Column(String(64))
 	token_creatime = Column(Integer)
 
@@ -1392,7 +1395,7 @@ class Fruit(MapBase, _CommonApi):
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	fruit_type_id = Column(Integer, ForeignKey(FruitType.id), nullable=False)
 
-	name = Column(String(20))
+	name = Column(String(50))
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
 	current_saled = Column(Integer, default=0) #售出：未处理的订单数
 	saled = Column(Integer, default=0) #销量
@@ -1416,6 +1419,7 @@ class Fruit(MapBase, _CommonApi):
 	activity_status = Column(TINYINT,default=0)  #0(该商品未参与任何活动),1(参与秒杀活动),2(参与限时折扣),...(等待扩展中)
 	seckill_charge_type = Column(Integer,default=0) #秒杀活动中该商品所使用的计价方式id
 	##
+	buy_limit = Column(Integer, default=0) #0:all 1:only new user 2:only old user 3:only charge user
 
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)

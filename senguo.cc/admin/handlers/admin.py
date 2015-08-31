@@ -94,7 +94,6 @@ class Access(AdminBaseHandler):
 class Home(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminHome"))
 
@@ -189,11 +188,15 @@ class Home(AdminBaseHandler):
 
 # 店铺切换
 class SwitchShop(AdminBaseHandler):
+	def if_current_shops(self):
+		return True
+
 	@tornado.web.authenticated
 	def get(self):
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminHome"))
 		shop_list = []
+		other_shop_list = []
 		try:
 			shops = self.current_user.shops
 		except:
@@ -207,8 +210,11 @@ class SwitchShop(AdminBaseHandler):
 		if shops:
 			shop_list += self.getshop(shops)
 		if other_shops:
-			shop_list += self.getshop(other_shops)
-		return self.render("admin/switch-shop.html", context=dict(shop_list=shop_list))
+			other_shop_list += self.getshop(other_shops)
+
+		super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
+
+		return self.render("admin/switch-shop.html", context=dict(shop_list=shop_list,other_shop_list=other_shop_list,super_admin=super_admin))
 	def getshop(self,shops):
 		shop_list = []
 		for shop in shops:
@@ -336,7 +342,6 @@ class RealtimeWebsocket(tornado.websocket.WebSocketHandler):
 # 销售统计 add by jyj 2015-7-8
 class SellStatic(AdminBaseHandler):
 	def get(self):
-		self.if_current_shops()
 		return self.render("admin/sell-count.html",context=dict(subpage='sellstatic'))
 
 	@tornado.web.authenticated
@@ -985,7 +990,6 @@ class SellStatic(AdminBaseHandler):
 # 订单统计
 class OrderStatic(AdminBaseHandler):
 	def get(self):
-		self.if_current_shops()
 		return self.render("admin/order-count.html",context=dict(subpage='orderstatic'))
 
 	@tornado.web.authenticated
@@ -1205,7 +1209,6 @@ class OrderStatic(AdminBaseHandler):
 class FollowerStatic(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		return self.render("admin/user-count.html",context=dict(subpage='userstatic'))
 
 	@tornado.web.authenticated
@@ -1299,7 +1302,6 @@ class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "page:int")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 10
@@ -1382,7 +1384,6 @@ class Order(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
-		self.if_current_shops()
 		order_type = self.args["order_type"]
 		
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
@@ -1533,13 +1534,25 @@ class Order(AdminBaseHandler):
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			# 发送订单模版消息给送货员
 			if send_message:
-				self.send_staff_message(self.session,order)
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				else:
+					access_token = None
+				self.send_staff_message(self.session,order,access_token)
 
 		if order_status == 5:
 			# print('[AdminOrder]edit_status: login in order_status 5')
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
-			self.order_done(self.session,order)
+			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+				# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+				access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+				# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+			else:
+				access_token = None
+			self.order_done(self.session,order,access_token)
 
 	# 订单计数
 	def _count(self):
@@ -1861,6 +1874,7 @@ class Order(AdminBaseHandler):
 				count += 1
 			if count > 0:
 				shop_id = self.current_shop.id
+				admin_id = self.current_shop.admin.id
 				staff_info = []
 				try:
 					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
@@ -1874,7 +1888,7 @@ class Order(AdminBaseHandler):
 					openid = self.current_shop.admin.accountinfo.wx_openid
 					staff_name = self.current_shop.admin.accountinfo.nickname
 				shop_name = self.current_shop.shop_name
-				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count)
+				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count,admin_id)
 		# 批量打印订单
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
@@ -1893,7 +1907,6 @@ class Shelf(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "id:int")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 
 		fruit_type_d = {}
@@ -2115,6 +2128,7 @@ class Goods(AdminBaseHandler):
 	def get(self):
 		self.if_current_shops()
 		self.update_seckill()
+
 		action = self._action
 		_id = str(time.time())
 		current_shop = self.current_shop
@@ -2483,8 +2497,10 @@ class Goods(AdminBaseHandler):
 				args["detail_describe"] = data["detail_describe"].replace("script","'/script/'")
 			if "tag" in data and  data["tag"]:
 				args["tag"] = data["tag"]
-			if "limit_num" in data:
-				args["limit_num"] = data["limit_num"]
+			if "tag" in data and  data["tag"]:
+				args["tag"] = data["tag"]
+			if "buylimit" in data:
+				args["buy_limit"] = data["buylimit"]
 			if "group_id" in data:
 				group_id = int(data["group_id"])
 				if group_id == -1:
@@ -2714,6 +2730,7 @@ class Goods(AdminBaseHandler):
 						group_id = group_id,
 						detail_describe = detail_describe,
 						tag = int(data["tag"]),
+						buy_limit = int(data["buylimit"]),
 						fruit_type_id = fruit_type_id
 						)
 				_data = self.session.query(models.Fruit).filter_by(id=int(data["goods_id"])).all()
@@ -3025,7 +3042,6 @@ class editorTest(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str")
 	def get(self):
-		self.if_current_shops()
 		if "action" in self.args:
 			if self.args["action"] == "editor" :
 				shop_id = self.current_shop.id
@@ -3056,7 +3072,6 @@ class Follower(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str", "order_by:str","if_reverse?:int", "page?:int", "wd?:str")
 	def get(self):
-		self.if_current_shops()
 		# if self.is_pc_browser()==False:
 		# 	return self.redirect(self.reverse_url("MadminComment"))
 		action = self.args["action"]
@@ -3199,7 +3214,6 @@ class Staff(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		staffs = self.current_shop.staffs
 		if action == "hire":
@@ -3329,7 +3343,6 @@ class SearchOrder(AdminBaseHandler):  # 用户历史订单
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "id?:int","page?:int","wd?:str")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		subpage=''
 		if action == 'customer_order':
@@ -3369,7 +3382,6 @@ class Config(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action",'status?')
 	def get(self):
-		self.if_current_shops()
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action = self.args["action"]
@@ -3537,15 +3549,15 @@ class Config(AdminBaseHandler):
 			if self.current_shop.admin.id !=self.current_user.id:
 				return self.send_fail('您没有添加管理员的权限')
 			_id = int(self.args["data"]["id"])
-			try:
-				if_admin = self.session.query(models.ShopAdmin).filter_by(id=_id).first()
-			except:
-				if_admin = None
-			if if_admin:
-				return self.send_fail('该用户已是森果的卖家，不能添加其为管理员')
-			if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
-			if if_shop:
-				return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
+			# try:
+			# 	if_admin = self.session.query(models.ShopAdmin).filter_by(id=_id).first()
+			# except:
+			# 	if_admin = None
+			# if if_admin:
+			# 	return self.send_fail('该用户已是森果的卖家，不能添加其为管理员')
+			# if_shop = self.session.query(models.Shop).filter_by(admin_id =_id).first()
+			# if if_shop:
+			# 	return self.send_fail('该用户已是其它店铺的超级管理员，不能添加其为管理员')
 			admin_count = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active = 1,work=9).count()
 			if admin_count == 3:
 				return self.send_fail('最多可添加三个管理员')
@@ -3660,7 +3672,6 @@ class AdminAuth(AdminBaseHandler):
 	def initialize(self, action):
 		self._action = action
 	def get(self):
-		self.if_current_shops()
 		next_url = self.get_argument('next', '')
 		if self._action == 'wxauth':
 			if self.is_pc_browser():
@@ -3730,7 +3741,6 @@ class AdminAuth(AdminBaseHandler):
 class ShopBalance(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		subpage = 'shopBlance'
 		shop = self.current_shop
 		shop.is_balance = 0
@@ -3990,7 +4000,6 @@ class ShopBalance(AdminBaseHandler):
 class ShopConfig(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
@@ -4081,7 +4090,6 @@ class ShopAuthenticate(AdminBaseHandler):
 	@tornado.web.authenticated
 	# @AdminBaseHandler.check_arguments()
 	def get(self):
-		self.if_current_shops()
 		shop_id = self.current_shop.id
 		token = self.get_qiniu_token("shopAuth_cookie",shop_id)
 		try:
@@ -4682,7 +4690,6 @@ class Confession(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action?:str", "page?:int")
 	def get(self):
-		self.if_current_shops()
 		action = self.args["action"]
 		page = self.args["page"]
 		page_size = 10
@@ -4734,7 +4741,6 @@ class Confession(AdminBaseHandler):
 class MessageManage(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		return self.render('admin/shop-wx-set.html',context=dict(subpage='shop_set',shopSubPage='wx_set'))
 
 	@tornado.web.authenticated
@@ -4965,7 +4971,7 @@ class Discount(AdminBaseHandler):
 		for y in q1:
 			x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 			data0.append(x_goodsgroup)
-			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2])).all()
 			for x in Chargetype:
 				x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
 				chargesingle.append(x_charge)
@@ -4981,7 +4987,7 @@ class Discount(AdminBaseHandler):
 		for y in q1:
 			x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 			data0.append(x_goodsgroup)
-			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+			Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2])).all()
 			for x in Chargetype:
 				x_charge={"charge_id":x.id,"charge":str(x.price)+'元/'+str(x.num)+self.getUnit(x.unit)}
 				chargesingle.append(x_charge)
@@ -4999,7 +5005,7 @@ class Discount(AdminBaseHandler):
 			for y in q1:
 				x_goodsgroup={"goods_id":y.id,"goods_name":y.name}
 				data0.append(x_goodsgroup)
-				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).all()
+				Chargetype=self.session.query(models.ChargeType).filter_by(fruit_id=y.id,active=1).filter(models.ChargeType.activity_type.in_([0,2])).all()
 				for z in Chargetype:
 					x_charge={"charge_id":z.id,"charge":str(z.price)+'元/'+str(z.num)+self.getUnit(z.unit)}
 					chargesingle.append(x_charge)
@@ -5440,7 +5446,7 @@ class Discount(AdminBaseHandler):
 					#进行判断添加这个时刻有没有已经存在进行的活动
 					q_goods_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=-2).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 					for m in q_goods_all:
-						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 						if q_group_all:
 							if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 								return self.send_fail("商品"+str(qq.index(x)+1)+"时间段选择和之前面向所有分组的限时折扣活动时间段冲突")
@@ -5454,7 +5460,8 @@ class Discount(AdminBaseHandler):
 					elif x.use_goods==-1:
 						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
+							print(q_group_all,"gggggg")
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
@@ -5467,14 +5474,14 @@ class Discount(AdminBaseHandler):
 					else:
 						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 
 						q_single=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=x.use_goods).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_single:
-							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShop.discount_id!=discount_id).first()
+							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_single:
 								if not self.judgetimeright(q_group_single,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
@@ -5499,7 +5506,7 @@ class Discount(AdminBaseHandler):
 					#进行判断添加这个时刻有没有已经存在进行的活动
 					q_goods_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=-2).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
 					for m in q_goods_all:
-						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+						q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 						if q_group_all:
 							if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 								return self.send_fail("商品"+str(qq.index(x)+1)+"时间段选择和之前面向所有分组的限时折扣活动时间段冲突")
@@ -5511,9 +5518,9 @@ class Discount(AdminBaseHandler):
 								return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 					elif x.use_goods==-1:
-						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
+						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
@@ -5524,22 +5531,22 @@ class Discount(AdminBaseHandler):
 								return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 
 					else:
-						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
+						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
-							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 
 						q_single=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=x.use_goods).filter(models.DiscountShop.status<2,models.DiscountShop.id!=discount_id).all()
 						for m in q_single:
-							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
+							q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
 							if q_group_single:
 								if not self.judgetimeright(q_group_single,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
 
 					_index=qq.index(x)
-					discount_good=discount_goods[x]
+					discount_good=discount_goods[_index]
 					if x.status==1:
 						if  discount_close[_index]==3:
 							status=3
@@ -5548,7 +5555,7 @@ class Discount(AdminBaseHandler):
 						x.update(self.session,shop_id=current_shop_id,discount_id=discount_id,use_goods_group=discount_good["use_goods_group"],\
 							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)
 			else:
-				self.send_fail("限时折扣的状态已经发生变化，编辑失败")
+				return self.send_fail("限时折扣的状态已经发生变化，编辑失败")
 			self.session.commit()
 			return self.send_success()
 		elif action=="close_one":
@@ -5560,7 +5567,6 @@ class Discount(AdminBaseHandler):
 			self.session.flush()
 			#停用之后会修改原chargetype的值和fruit的相关值(fruit 待做)
 			qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).with_lockmode('update').all()
-			print(qq,'@@@@@@@@@@@2')
 			for y in qq:
 				y.update(session=self.session,status=3)
 				#停用之后会修改原chargetype的值和fruit的相关值(fruit 待做)
@@ -5568,7 +5574,6 @@ class Discount(AdminBaseHandler):
 				#考虑如果有所有商品和所有分组的情况
 				if y.use_goods_group==-2:
 					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,activity_status=2).with_lockmode('update').all()
-					print(q_fruit,'@@@@@@@@@@@1')
 					for m in q_fruit:
 						q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id,activity_type=2).with_lockmode('update').all()
 						for n in q_charge:
@@ -5577,7 +5582,6 @@ class Discount(AdminBaseHandler):
 
 				elif y.use_goods==-1:
 					q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,activity_status=2,group_id=y.use_goods_group).with_lockmode('update').all()
-					print(q_fruit,'@@@@@@@@@@@2')
 					for m in q_fruit:
 						q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id,activity_type=2).with_lockmode('update').all()
 						for n in q_charge:
@@ -5646,6 +5650,7 @@ class MarketingSeckill(AdminBaseHandler):
 				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(desc(models.SeckillActivity.start_time)).offset(page*page_size).limit(page_size).all()
 			for item in query_list:
 				activity_item = {}
+				activity_item['shop_code'] = current_shop.shop_code
 				activity_item['activity_id'] = item.id
 				activity_item['goods_list'] = ''
 				activity_item['start_time'] = time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(item.start_time))
@@ -5754,7 +5759,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.active != 0,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
@@ -5845,7 +5850,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for fruit_id in fruit_id_usable_list:
 				fruit_id = int(fruit_id)
 				query_list = self.session.query(models.ChargeType.price,models.ChargeType.num,models.ChargeType.unit,models.ChargeType.relate,models.ChargeType.id).\
-							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.activity_type.in_([0,2])).all()
+							            filter(models.ChargeType.fruit_id == fruit_id,models.ChargeType.active != 0,models.ChargeType.activity_type.in_([0,2])).all()
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
@@ -6017,7 +6022,7 @@ class MarketingSeckill(AdminBaseHandler):
 				seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == item,models.SeckillGoods.status != 0).all()
 				if seckill_goods_query:
 					seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
-					killing_fruit_list = self.session.query(models.Fruit).fliter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+					killing_fruit_list = self.session.query(models.Fruit).filter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
 					for e in killing_fruit_list:
 						e.activity_status = 0
 			self.session.flush()
@@ -6268,7 +6273,7 @@ class MarketingSeckill(AdminBaseHandler):
 			seckill_goods_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).all()
 			if seckill_goods_query:
 				seckill_fruit_id_list = [x.fruit_id for x in seckill_goods_query]
-				killing_fruit_list = self.session.query(models.Fruit).fliter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
+				killing_fruit_list = self.session.query(models.Fruit).filter(models.Fruit.id.in_(seckill_fruit_id_list)).with_lockmode('update').all()
 				for e in killing_fruit_list:
 					e.activity_status = 0
 				self.session.flush()

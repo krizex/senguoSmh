@@ -65,7 +65,7 @@ $(document).ready(function(){
                         token=res.token;
                     },
                     function(){
-                        alert('网络错误！');}
+                        alert('您的网络暂时不通畅，请稍候再试');}
                 );
                 $('#file_upload').data('uploadifive').settings.formData = {
                     'key':key,
@@ -121,7 +121,7 @@ function infoPublic() {
                 alert('发布成功！');
                 window.location.href="/infowall/supply";
             }
-        else alert('网络错误');
+        else alert('您的网络暂时不通畅，请稍候再试');
     })
 
 }

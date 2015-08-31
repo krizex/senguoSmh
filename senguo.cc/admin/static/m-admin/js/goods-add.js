@@ -6,8 +6,10 @@ $(document).ready(function(){
         $("#img_list").children("li").height(width);
         goods_id = $("#finish_btn").attr("data-id");
         type="edit";
-        var tag_index = $(".wrap-mark-set").attr("data-id");
-        $(".wrap-mark-set").children(".mark-choose").eq(tag_index-1).addClass("active");
+        var tag_index = $(".wrap-tag").attr("data-id");
+        $(".wrap-tag").children(".mark-choose").eq(tag_index-1).addClass("active");
+        var buylimit_index = $(".wrap-buylimit").attr("data-id");
+        $(".wrap-buylimit").children(".mark-choose").eq(buylimit_index).addClass("active");
         new QRCode($("#big-code2")[0],{
             width : 300,
             height : 300,
@@ -32,8 +34,7 @@ $(document).ready(function(){
     }
 }).on("click",".wrap-mark-set span",function(){
     var id = $(this).attr("data-id");
-    $(".wrap-mark-set span").removeClass("active");
-    $(this).addClass("active");
+    $(this).addClass("active").siblings().removeClass("active");
 }).on("click",".icon-del",function(){//删除商品图片
     $(this).closest("li").remove();
     $("#img-lst").removeClass("hide");
@@ -278,9 +279,10 @@ function finishGoods(){
     var group_id = $(".choose-group").attr("data-id");
     var storage = $.trim($(".stock-num").val());
     var unit = $(".current-unit").attr("data-id");
-    var tag =$(".wrap-mark-set").find(".active").attr("data-id");
-    if(name.length>12 || name==""){
-        return Tip("商品名称不能为空且不能超过12个字");
+    var tag =$(".wrap-tag").find(".active").attr("data-id");
+    var buylimit =$(".wrap-buylimit").find(".active").attr("data-id");
+    if(name.length>25 || name==""){
+        return Tip("商品名称不能为空且不能超过25个字");
     }
     if(!testNum.test(storage)){
         return Tip("请填写正确的库存，只能为数字")
@@ -393,7 +395,8 @@ function finishGoods(){
         storage: storage,//库存,
         intro: info,//商品简介,
         name: name,//商品名称,
-        tag:tag
+        tag:tag,
+        buylimit:buylimit
     };
     if(type == "edit"){
         data.goods_id=goods_id;
@@ -684,7 +687,7 @@ function getData2(con){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误');}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试');}
     );
 }
 (function ($) {

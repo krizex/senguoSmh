@@ -605,7 +605,7 @@ function orderPrint(target,action){
                 }
                 else return Tip(res.error_text);
             },
-            function(){return Tip('网络错误')}
+            function(){return Tip('您的网络暂时不通畅，请稍候再试')}
         );
         function getData(target){
             var parent=target.parents('.order-list-item');
@@ -695,7 +695,7 @@ function orderDelete(target){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误')}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试')}
     )
 }
 
@@ -862,7 +862,7 @@ function orderEdit(target,action,content){
                 return Tip(res.error_text);
             }
         },
-        function(){return Tip('网络错误')}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试')}
     )
 }
 
@@ -949,7 +949,7 @@ function operateSelf(type,$obj){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误')}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试')}
     );
 }
 //初始化百度地图
@@ -1085,7 +1085,7 @@ function initBmap(){
                     }
                     else return Tip(res.error_text);
                 },
-                function(){return Tip('网络错误')}
+                function(){return Tip('您的网络暂时不通畅，请稍候再试')}
             );
         }
     });

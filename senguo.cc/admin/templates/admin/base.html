@@ -17,19 +17,22 @@
 </head>
 <body>
 {% set current_shop = handler.current_shop %}
-{% set _shop_auth = current_shop.shop_auth %}
 {% set num1=0 %}
 {% set num2=0 %}
 {% set num3=0 %}
-{% for order in current_shop.orders %}
-    {% if order.type==1 and order.status==1 %}
-    {% set num1=num1+1%}
-    {% end %}
-    {% if order.type==2 and order.status==1 %}
-    {% set num2=num2+1%}
-    {% end %}
-    {% if order.type==3 and order.status==1 %}
-    {% set num3=num3+1%}
+{% set _shop_auth=0 %}
+{% if current_shop %}
+    {% set _shop_auth = current_shop.shop_auth %}
+    {% for order in current_shop.orders %}
+        {% if order.type==1 and order.status==1 %}
+        {% set num1=num1+1%}
+        {% end %}
+        {% if order.type==2 and order.status==1 %}
+        {% set num2=num2+1%}
+        {% end %}
+        {% if order.type==3 and order.status==1 %}
+        {% set num3=num3+1%}
+        {% end %}
     {% end %}
 {% end %}
 <header class="backstage-header header-fix">
