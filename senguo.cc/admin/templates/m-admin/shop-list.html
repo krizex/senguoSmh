@@ -6,8 +6,7 @@
 <div class="header">
     <a href="javascript:;" class="back goback">返回</a>
     <span>店铺列表</span>
-    {% if handler.current_shop and handler.current_shop.admin_id == current_user.id %}<a href="javascript:;" class="head-right spread-list">分享店铺</a>{% end %}
-
+    {% if context['super_admin'] %}<a href="javascript:;" class="head-right spread-list">分享店铺</a>{% end %}
 </div>
 {% end %}
 {% block content %}

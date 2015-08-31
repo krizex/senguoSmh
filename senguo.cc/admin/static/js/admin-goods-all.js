@@ -1107,7 +1107,11 @@ $(document).ready(function(){
             'FileUploaded': function (up, file, info) {
                 $("#" + file.id).prev(".img-cover").remove();
                 $("#" + file.id).next("a").removeClass("hidden");
-                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                if(info && info.key){
+                    $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+info.key);
+                }else{
+                    $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                }
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
