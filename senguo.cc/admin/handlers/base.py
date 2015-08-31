@@ -753,7 +753,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# if order_type != 3:
 		WxOauth2.post_staff_msg(touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 			order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token)
-
 		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
@@ -2107,7 +2106,7 @@ class WxOauth2:
 		order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token = None):
 		# access_token = cls.get_client_access_token()
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
-		print(access_token)
+		# print(access_token)
 		if other_access_token:
 			template_id_short = 'TM00351'
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
