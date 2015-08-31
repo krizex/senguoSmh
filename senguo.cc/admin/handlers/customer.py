@@ -1678,6 +1678,7 @@ class Cart(CustomerBaseHandler):
 										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int")
 	def post(self,shop_code):#提交订单
 		# print("[CustomerCart]pay_type:",self.args['pay_type'])
+		#print(self.args)
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
@@ -1795,7 +1796,9 @@ class Cart(CustomerBaseHandler):
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
-
+		#如果订单为空，则不能提交
+		if len(f_d) == 0:
+			return self.send_fail("订单内容不能为空，请重新下单！")
 		#按时达/立即送 的时间段处理
 		start_time = 0
 		end_time = 0
