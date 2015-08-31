@@ -2678,11 +2678,13 @@ class Goods(AdminBaseHandler):
 							num = 0
 						relate = select_num/unit_num
 						try:
-							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_([0,-2]))
+							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_((0,2))).one()
+							#q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).one()
 						except:
 							q_charge = None
+						print(q_charge)
 						if q_charge:
-							q_charge.one().update(session=self.session,price=price,
+							q_charge.update(session=self.session,price=price,
 												  unit=charge_type["unit"],
 												  num=num,
 												  unit_num=unit_num,
@@ -2704,10 +2706,10 @@ class Goods(AdminBaseHandler):
 
 				if "del_charge_types" in data  and  data['del_charge_types']:
 					try:
-						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]),models.ChargeType.activity_type==0)
+						#q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]),models.ChargeType.activity_type==0)
+						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]))
 					except:
 						return self.send_fail('del_charge_types error')
-					# print([AdminGoods]Delete charge type:",q)
 					# q.delete(synchronize_session=False)
 					for charge in q:
 						charge.update(session=self.session,active=0)
@@ -5525,7 +5527,7 @@ class Discount(AdminBaseHandler):
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 						
-						q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x["use_goods_group"]).all()
+						q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x.use_goods_group).all()
 						for m in q_all:
 							if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
 								return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")

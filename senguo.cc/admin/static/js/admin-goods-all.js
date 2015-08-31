@@ -562,7 +562,6 @@ function dealGoods($item,type){
         imgUrls.each(function(){
             var $this = $(this);
             arr1.push($this.closest("li").attr("data-index"));
-            //console.log($this.attr("url"));
             arr2.push($this.attr("url"));
         });
         imgList.index = arr1;
@@ -1095,7 +1094,11 @@ $(document).ready(function(){
             'FileUploaded': function (up, file, info) {
                 $("#" + file.id).prev(".img-cover").remove();
                 $("#" + file.id).next("a").removeClass("hidden");
-                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                if(info && info.key){
+                    $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+info.key);
+                }else{
+                    $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                }
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -1180,6 +1183,9 @@ function initImgList($list){
 function drag(obj){
     obj.onmousedown=function(ev){
         var $this = $(obj);
+        if($(ev.target).hasClass("del-img")){
+            return false;
+        }
         var oEvent = ev || event;
         var disX = oEvent.clientX-$this.position().left;
         var disY = oEvent.clientY-$this.position().top;

@@ -2550,16 +2550,11 @@ class Cart(CustomerBaseHandler):
 				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.flush()
-		self.session.commit()
-
+		session.commit()
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(self.session,order,access_token)
-			
-			# session.add(balance_history)
-			# session.flush()
-		session.commit()
+			self.send_admin_message(self.session,order,access_token)			
 		return True
 
 	@classmethod
