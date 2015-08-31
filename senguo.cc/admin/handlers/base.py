@@ -724,6 +724,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		except NoResultFound:
 			return self.send_fail('[_AccountBaseHandler]send_staff_message: staff_info not found')
 
+		admin_id = order.shop.admin.id
 		if order.shop.admin.has_mp:
 			#获取staff对应自己平台的openid
 			mp_staff = session.query(models.Mp_customer_link).filter_by(admin_id=int(admin_id),customer_id=int(staff_info.id)).first()
@@ -747,8 +748,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		phone = order.phone
 		address = order.address_text
 		shop_name = order.shop.shop_name
-
-		admin_id = order.shop.admin.id
 		order_shopid = order.shop_id
 		# 非自提订单发送配送员模版消息
 		# if order_type != 3:

@@ -54,7 +54,7 @@
             <td>{{data["nickname"]}}<br>ID:{{data["customer_id"]}}</td>
             <td>{{data["get_date"]}}</td>
             <td>{{data["use_date"]}}</td>
-            <td>订单号:<a href="{{reverse_url("adminSearchOrder")}}?action=order&&id={{data["order_id"]}}">{{data["order_id"] or '无'}}</a></td>
+            <td>订单号:<a href="{{reverse_url("adminSearchOrder")}}?action=order&&wd={{data["order_id"]}}">{{data["order_id"] or '无'}}</a></td>
         </tr>
         {% elif  data["coupon_status"]==0 %}
         <tr class=" ">
