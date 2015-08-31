@@ -35,7 +35,7 @@ $(document).ready(function(){
     var slide_img_height=[];
     for(var i=0;i<slide_img_len;i++){
         var hie=$(".swiper-wrapper img").eq(i).height();
-        slide_img_height.push(hie);
+        slide_img_height.push(hie);        
     }
     for(var i=0;i<slide_img_height;i++){
         //内层循环，找到第i大的元素，并将其和第i个元素交换
