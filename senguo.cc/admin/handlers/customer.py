@@ -1171,7 +1171,7 @@ class Market(CustomerBaseHandler):
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 
 		if shop.admin.has_mp:
-			# print('[CustomerMarket]login shop.admin.has_mp')
+			print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
@@ -1183,7 +1183,7 @@ class Market(CustomerBaseHandler):
 				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 				if len(code) == 0:
 					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
-					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
+					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
 					return self.redirect(url)
 				else:
 					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
@@ -1204,6 +1204,7 @@ class Market(CustomerBaseHandler):
 			# else:
 			#	print('[CustomerMarket]haahahahah')
 		else:
+			print('has no mp!!!!!!!!!!!!!!')
 			pass
 		# print('[CustomerMarket]success??????????????????????????????????')
 
@@ -2126,7 +2127,8 @@ class Cart(CustomerBaseHandler):
 		#为order表新增字段activity_type，类型为键值对字符串，键是计价方式，值是计价方式对应的活动名称，用于存储该订单中每种计价方式id对应的水果参与的活动名称
 		# 如果值为空字符串，则表示未参与任何活动；如果值为非空，则表示参与了值字符串所表示的活动。
 		activity_name = {0:'',1:'秒杀',2:'折扣'}
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
+
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:"今天价",13:"明天价"}
 
 		f_d={}
 		totalPrice=0

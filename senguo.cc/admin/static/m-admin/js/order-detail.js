@@ -6,7 +6,7 @@ $(document).ready(function(){
     cookie.setCookie("mdetail",1);
 }).on("click","#sure-staff",function(){
     var $this=$(this);
-    orderEdit($this,'edit_SH2',$this.attr("data-id")); 
+    orderEdit($this,'edit_SH2',$(".staff-list .active").attr("data-id")); 
 }).on("click",".staff-list>li",function(){
     var $this=$(this);
     var index = $this.index();
