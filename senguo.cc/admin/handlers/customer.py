@@ -1171,7 +1171,7 @@ class Market(CustomerBaseHandler):
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 
 		if shop.admin.has_mp:
-			# print('[CustomerMarket]login shop.admin.has_mp')
+			print('[CustomerMarket]login shop.admin.has_mp')
 			appid = shop.admin.mp_appid
 			appsecret = shop.admin.mp_appsecret
 			customer_id = self.current_user.id
@@ -1183,7 +1183,7 @@ class Market(CustomerBaseHandler):
 				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
 				if len(code) == 0:
 					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
-					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_base&state=123#wechat_redirect'.format(appid,redirect_uri)
+					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
 					return self.redirect(url)
 				else:
 					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
@@ -1204,6 +1204,7 @@ class Market(CustomerBaseHandler):
 			# else:
 			#	print('[CustomerMarket]haahahahah')
 		else:
+			print('has no mp!!!!!!!!!!!!!!')
 			pass
 		# print('[CustomerMarket]success??????????????????????????????????')
 
@@ -1381,14 +1382,11 @@ class Market(CustomerBaseHandler):
 				activity_query = activity_query[0]
 				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
 				notices.append(('','',seckill_img_url,1))
-				for x in shop.config.notices:
-					if x.active == 1:
-						notices.append((x.summary, x.detail,x.img_url,0))
+				
+		for x in shop.config.notices:
+			if x.active == 1:
+				notices.append((x.summary, x.detail,x.img_url,0))
 
-			else:
-				notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
-		else:
-			notices = [(x.summary, x.detail,x.img_url,0) for x in shop.config.notices if x.active == 1]
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
@@ -1643,7 +1641,7 @@ class Market(CustomerBaseHandler):
 					if data_item1['is_activity'] == 1 and shop_tpl != 0:
 						pass
 					else:
-						data_item2['charge_types'] = charge_types
+						data_item2['charge_types'] = [x for x in charge_types if x['activity_type'] in [-2,0,2]]
 						data_item2['storage'] = fruit.storage
 						data_item2['saled'] = saled
 						data_item2['favour'] = fruit.favour
@@ -2129,7 +2127,8 @@ class Cart(CustomerBaseHandler):
 		#为order表新增字段activity_type，类型为键值对字符串，键是计价方式，值是计价方式对应的活动名称，用于存储该订单中每种计价方式id对应的水果参与的活动名称
 		# 如果值为空字符串，则表示未参与任何活动；如果值为非空，则表示参与了值字符串所表示的活动。
 		activity_name = {0:'',1:'秒杀',2:'折扣'}
-		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:""}
+
+		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:"今天价",13:"明天价"}
 
 		f_d={}
 		totalPrice=0
@@ -2558,8 +2557,8 @@ class Cart(CustomerBaseHandler):
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
 			self.send_admin_message(self.session,order,access_token)
 			
-			session.add(balance_history)
-			session.flush()
+			# session.add(balance_history)
+			# session.flush()
 		session.commit()
 		return True
 
