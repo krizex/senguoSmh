@@ -12,6 +12,7 @@
 	    <div class="wrap-pay-txt">
 	        <p>如果您有已认证的微信服务号，则可开通订单微信通知。开通后的公众号具有订单模板消息通知功能。</p>
 	    	<p>订单微信通知包括：管理员新订单通知、用户已下单通知、配送员新订单通知等。</p>
+	    	<p>该功能仅限已认证的微信服务号使用。</p>
 	    </div>
 	</div>
 	<ul class="info-set-list mt20 font14">
@@ -40,17 +41,18 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body font14">
+                   <h5 class="text-pink">注意：该功能仅限已认证的服务号使用，使用未认证服务号或订阅号使用该功能会导致您的店铺参数出错，无法进入您的店铺。</h5>
                    <ul>
                    		<li class="clearfix">
-                   			<input type="text" class="pull-right" id="AppName"/>
+                   			<input type="text" class="pull-right" id="AppName" value="{{current_shop.admin.mp_name or ''}}" />
                    			公众号名称
                    		</li>
                    		<li class="clearfix">
-                   			<input type="text" class="pull-right" id="AppID"/>
+                   			<input type="text" class="pull-right" id="AppID" value="{{current_shop.admin.mp_appid or ''}}"/>
                    			AppID
                    		</li>
                    		<li class="clearfix">
-                   			<input type="text" class="pull-right" id="AppSecret"/>
+                   			<input type="text" class="pull-right" id="AppSecret" value="{{current_shop.admin.mp_appsecret or ''}}"/>
                    			AppSecret
                    		</li>
                    </ul>
