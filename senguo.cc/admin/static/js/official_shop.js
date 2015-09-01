@@ -255,7 +255,6 @@ function initShop(res){
                 if(pro==shop_province){shop_province=area[pro]['name']}
                 for(var cit in area[pro]['city']){
                     if(shop_city&&cit==shop_city){shop_city=area[pro]['city'][cit]['name']}
-
                 }
             }
             if(!shop_trademark_url) {shop_trademark_url='/static/images/TDSG_l.png'}

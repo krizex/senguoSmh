@@ -43,7 +43,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pr{position: relative;}
 .txt-center{text-align: center !important;}
 .txt-ar{text-align: right;}
-.txt-al{text-align: left;}
+.txt-al{text-align: left !important;}
 .tb-wap{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .tb-wap td{padding: 2rem 0;color: #202020;font-size: 1.5rem;line-height:18px;border-bottom: 2px solid #ccc;}
 .tb-wap input{color: #222;width: 100%;height: 18px;font-size:1.5rem;padding: 2px;border:none;line-height: 18px;}
@@ -87,6 +87,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pt50{padding-top: 50px !important;}
 .pt70{padding-top: 70px !important;}
 .pm80{padding-bottom: 80px;}
+.pm40{padding-bottom: 40px;}
 .pb45{padding-bottom:45px;}
 .mt0{margin-top: 0 !important;}
 .mt2{margin-top: 2px;}

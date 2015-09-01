@@ -1,0 +1,295 @@
+{% extends 'market-base.html' %}
+{% block title%}限时折扣{% end %}
+{% block setcontent %}
+{% if shop_code and shop_code!='not set' %}
+<input class="hidden can_new_discount" value={{can_new_discount}}>
+<input id="page_end" class="hidden" value="{{page_end}}">
+<div class="clearfix top-box">
+    <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="/bbs/detail/88" class="ml10 f14 show-detail">查看详情</a></p>
+    <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
+     <a class="mode-cm pull-right mt10 close_all {%if discount_active_cm==0%}work-mode{%else%}stop-mode{%end%}" data-flag="on" title="点击切换状态" data-status="{{discount_active_cm}}" ><span class="tit">{%if discount_active_cm==0%}已启用{%else%}已停用{%end%}</span><span class="circle"></span></a>
+    <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
+</div>
+<div class="{%if discount_active_cm==1%}hidden{%end%}" id="discount_hidden">
+{%if output_data==[]%}
+    <div class="wrap-coupon-img txt-center">
+        <img src="/static/images/coupon.jpg" alt="" width="238">
+        <div class="wrap-newbtn">
+            <a href="{{reverse_url("DiscountNew")}}?action=newdiscountpage" class="newbtn add-btn  mt6 mr10">+新建折扣</a>
+        </div>
+    </div>
+{% else %}
+<div class="category-list" >
+    <div class="c999">限时折扣<span class="c333"> / 管理</span></div>
+    <div class="subnav-box group mt20">
+        <ul class="subnav chinav pull-left furit-type-discount">
+            <li class="txt-center active" data-id=0><a href="javascript:;">未开始</a></li>
+            <li class="txt-center" data-id=1><a href="javascript:;">进行中</a></li>
+            <li class="txt-center" data-id=2><a href="javascript:;">已结束</a></li>
+            <li class="txt-center" data-id=3><a href="javascript:;">已停用</a></li>
+        </ul>
+        <div class="wrap-newbtn fr">
+            <a href="javascript:;" class="newbtn add-btn  mt6 mr10 cm_new_discout">+新建折扣</a>
+        </div>
+    </div>
+    <div class="wrap-tb mt30">
+        <table class="tb-enty tb-active ">
+            <colgroup>
+                <col width="40%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+            </colgroup>
+            <thead>
+                <tr class="thead">
+                    <td>折扣时间</td>
+                    <td>秒杀商品</td>
+                    <td>加入购物车/下单</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody class="tab1">
+            {%if output_data[0]==[]%}
+            <tr>
+                <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
+            </tr>
+            {%else%}
+            {% for discount in output_data[0] %}
+                <tr class="detail-tr " data-id="{{discount['discount_id']}}" id="discount_detail">
+                    <td>{%if discount["discount_way"]==0%}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
+                    <td>{{discount["goods"]}}</td>
+                    <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
+                    <td class="operate">
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
+                        <a href="javascript:;" class="mr10 spread-btn">推广</a>
+                        <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
+                        <span class="stop">已停用</span>
+                        <div class="sw-er-tip all-position invisible">
+                            <div class="top-arr">
+                                <span class="line1"></span>
+                                <span class="line2"></span>
+                            </div>
+                            <p class="er-text">限时折扣活动链接</p>
+                            <div class="wrap-ipt">
+                                <input type="text" class="sw-link-txt" value="http://i.senguo.cc/discount/{{shop_code}}?action=detail" disabled="">
+                                <input type="button" class="sw-link-copy" value="复制链接">
+                            </div>
+                            <div class="wrap-er group">
+                                <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                                <div class="er-text lh80 fl">链接二维码</div>
+                                <div class="er-img fl er-code-img" title="http://i.senguo.cc/discount/{{shop_code}}?action=detail"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% end %}
+            {%end%}
+            </tbody>
+        </table>
+        <table class="tb-enty tab2 invisiable">
+            <colgroup>
+                <col width="40%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+            </colgroup>
+            <thead>
+                <tr class="thead">
+                    <td>折扣时间</td>
+                    <td>秒杀商品</td>
+                    <td>加入购物车/下单</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody class="tab2">
+            {%if output_data[1]==[]%}
+            <tr>
+                <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
+            </tr>
+            {%else%}
+            {% for discount in output_data[1] %}
+                <tr class="detail-tr " data-id="{{discount['discount_id']}}" id="discount_detail">
+                    <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
+                    <td>{{discount["goods"]}}</td>
+                    <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
+                    <td class="operate">
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
+                        <a href="javascript:;" class="mr10 spread-btn">推广</a>
+                        <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
+                        <span class="stop">已停用</span>
+                        <div class="sw-er-tip all-position invisible">
+                            <div class="top-arr">
+                                <span class="line1"></span>
+                                <span class="line2"></span>
+                            </div>
+                            <p class="er-text">限时折扣活动链接</p>
+                            <div class="wrap-ipt">
+                                <input type="text" class="sw-link-txt" value="http://i.senguo.cc/discount/{{shop_code}}?action=detail" disabled="">
+                                <input type="button" class="sw-link-copy" value="复制链接">
+                            </div>
+                            <div class="wrap-er group">
+                                <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                                <div class="er-text lh80 fl">链接二维码</div>
+                                <div class="er-img fl er-code-img" title="http://i.senguo.cc/discount/{{shop_code}}?action=detail"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% end %}
+            {%end%}
+            </tbody>
+        </table>
+        <table class="tb-enty hidden ">
+            <colgroup>
+                <col width="40%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+            </colgroup>
+            <thead>
+                <tr class="thead">
+                    <td>折扣时间</td>
+                    <td>秒杀商品</td>
+                    <td>加入购物车/下单</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody class="tab3">
+            {%if output_data[2]==[]%}
+            <tr>
+                <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
+            </tr>
+            {%else%}
+            {% for discount in output_data[2] %}
+                <tr class="detail-tr dis-coupon" data-id="{{discount['discount_id']}}">
+                    <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
+                    <td>{{discount["goods"]}}</td>
+                    <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
+                    <td class="operate">
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}">编辑</a>
+                        <a href="javascript:;" class="mr10 spread-btn">推广</a>
+                        <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
+                        <span class="stop">已过期</span>
+                        <div class="sw-er-tip all-position invisible">
+                            <div class="top-arr">
+                                <span class="line1"></span>
+                                <span class="line2"></span>
+                            </div>
+                            <p class="er-text">优惠券链接</p>
+                            <div class="wrap-ipt">
+                                <input type="text" class="sw-link-txt" value="" disabled="">
+                                <input type="button" class="sw-link-copy" value="复制链接">
+                            </div>
+                            <div class="wrap-er group">
+                                <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                                <div class="er-text lh80 fl">链接二维码</div>
+                                <div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% end %}
+            {%end%}
+            </tbody>
+        </table>
+        <table class="tb-enty hidden">
+            <colgroup>
+                <col width="40%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+                <col width="20%"/>
+            </colgroup>
+            <thead>
+                <tr class="thead">
+                    <td>折扣时间</td>
+                    <td>秒杀商品</td>
+                    <td>加入购物车/下单</td>
+                    <td>操作</td>
+                </tr>
+            </thead>
+            <tbody class="tab4">
+            {%if output_data[3]==[]%}
+            <tr>
+                <td colspan="7" class="txt-center c999">当前没有限时折扣</td>
+            </tr>
+            {%else%}
+            {% for discount in output_data[3] %}
+                <tr class="detail-tr dis-coupon" data-id="{{discount['discount_id']}}" >
+                    <td>{%if discount["discount_way"]==0 %}{{discount['start_date']}}到{{discount['end_date']}} {%else%} {{discount["weeks"]}}<br>{{discount['start_date']}}到{{discount['end_date']}} {%end%}</td>
+                    <td>{{discount["goods"]}}</td>
+                    <td>{{discount['incart_num']}}/{{discount['ordered_num']}}</td>
+                    <td class="operate">
+                        <a href="{{reverse_url("DiscountMain")}}?action=editdiscountpage&discount_id={{discount['discount_id']}}" class="mr10 discount-edit" data-id="{{discount['discount_id']}}" >编辑</a>
+                        <a href="javascript:;" class="mr10 spread-btn ">推广</a>
+                        <a href="javascript:;" class="red-txt close_one" data-id="{{discount['discount_id']}}">停用</a>
+                        <span class="stop">已停用</span>
+                        <div class="sw-er-tip all-position invisible">
+                            <div class="top-arr">
+                                <span class="line1"></span>
+                                <span class="line2"></span>
+                            </div>
+                            <p class="er-text">优惠券链接</p>
+                            <div class="wrap-ipt">
+                                <input type="text" class="sw-link-txt" value="" disabled="">
+                                <input type="button" class="sw-link-copy" value="复制链接">
+                            </div>
+                            <div class="wrap-er group">
+                                <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                                <div class="er-text lh80 fl">链接二维码</div>
+                                <div class="er-img fl er-code-img" title="http://senguo.cc/zhoubing/goods/22"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% end %}
+            {%end%}
+            </tbody>
+        </table>
+        <div class="users-pagination list-pagination group pull-right mt0 cm_jump">
+            <ul>
+                <li><a href="javascript:;" class="page-btn pre-page pre-page-main">&nbsp;</a></li>
+                <li>
+                    <span class="page-now">1</span>/<span class="page-total">{{page_end[0]}}</span>
+                </li>
+                <li><a href="javascript:;" class="page-btn next-page next-page-main">&nbsp;</a></li>
+                <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
+                <li><a href="javascript:;" class="jump-to jmp-main">跳转</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+</div>
+{%end%}
+{% else %}
+<h4 class="mt20">您还未设置店铺号，不能进行营销设置，<a href="{{reverse_url('adminShopConfig')}}">点击设置店铺号</a></h4>
+{% end %}
+{% end %}
+{% block other %}
+<div class="pop-win pop-detail hidden">
+    <div class="pop-container">
+        <a href="javascript:;" class="close-pop close-tip">x</a>
+        <span class="rolli">i</span>
+        <div class="pop-top">
+            <p class="detail-title">提示</p>
+        </div>
+        <div class="pop-cont c666">
+            <p class="f16 c333">优惠券发放规则</p>
+            <p class="mt10">1、商家可通过新建两种类型的优惠券进行促销、充值活动。</p>
+            <p>2、在领取时间内，优惠券将发放至商城的发现列表中，供用户领取；商家也可通过发
+                放兑换码，供用在商城中我的优惠券列表中领取。</p>
+            <p>3、每笔订单仅限使用一张优惠券，不可找零、叠加、拆分使⽤用。</p>
+            <p>4、请慎重考虑使用停用功能。一旦停用，该优惠券发放机制失效，但已领取优惠券的
+                用户优惠券仍能使用。</p>
+            <p>5、使用非正常途径或手段获得的优惠券奖励无效，最终解释权归森果所有。</p>
+        </div>
+        <div class="pop-bm">
+            <a href="javascript:;" class="close-tip">我知道了</a>
+            <a href="{{reverse_url("BbsDetail",88)}}" target="_blank">更多详情</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="{{static_url('js/admin-discount.js')}}"></script>
+{% end %}

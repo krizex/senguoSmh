@@ -5,8 +5,6 @@ var _group_finished=true;
 $(document).ready(function(){
     var width = $("#swiper-container").width();
     var height = $(window).height();
-    //$(".container").height(height).css("overflow","hidden").css("paddingBottom","0");
-    //$("#wrap-home-box").height(height-50);
     $(".notice-item").width("100%");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
     var swiper = new Swiper('#swiper-container',{
@@ -93,20 +91,30 @@ $(document).ready(function(){
     }
 }).on('click','.notice-item',function(){
         //公告详情
-        var $this=$(this);
+    var $this=$(this);
+    if($this.attr("data-url")){
+        var url = $this.attr("data-url");
+        window.location.href=url;
+    }else{
         var detail=$this.find('.notice-detail').val();
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
+    }
 }).on('click','.goods-list-item',function(e){
     var $this=$(this);
     var storage=Number($this.attr('data-num'));
     var detail_no=$this.attr('data-detail');
     var id=$this.attr('data-id');
+    var is_activity = parseInt($this.attr("is_activity"));
     var shop_code=$('#shop_code').val();
     if($(e.target).closest(".forbid_click").size()==0){
         if (storage > 0 && detail_no=='False') {
-            addCart("/"+shop_code+"/goods/"+id);
+            if(is_activity==0){
+                addCart("/"+shop_code+"/goods/"+id);
+            }else{
+                return noticeBox("活动商品无法查看商品详情哦~~");
+            }
         }else if(storage<=0){
             return noticeBox("当前商品已经卖完啦");
         }
@@ -249,10 +257,20 @@ $(document).ready(function(){
             SetCookie('cart_count',window.dataObj.cart_count);
             $this.removeClass('add_cart_num');
         }
-       
     }
     else {return noticeBox('库存不足啦！┑(￣▽ ￣)┍ ',$this)} 
     parent.attr({'data-storage':storage-change_num});
+}).on("click",".seckill-goods",function(){//秒杀
+    var id = $(this).closest("li").attr("data-id");
+    var s_goods_id =  $(this).closest("li").attr("seckill_goods_id");
+    window.dataObj.fruits[id]=1;
+    $(this).addClass("hidden");
+    $(this).next(".seckill-btn-yes").removeClass("hidden");
+    wobble($('.cart_num'));
+    window.dataObj.cart_count++;
+    $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
+    seckill_goods_ids.push(s_goods_id);
+    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -339,7 +357,6 @@ var goodsList=function(page,action,_group_id){
     if(action==9){
         args.search = _search;
     }
-    // alert('i am here');
     $.postJson(url,args,function(res){
             if(res.success)
             {
@@ -375,38 +392,54 @@ var goodsList=function(page,action,_group_id){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" end-time="{{end_time}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
                                 '<img src="/static/images/holder.png" class="img lazy_img" data-original="{{ori_img}}">'+
-                                '<span class="tag text-white text-center tagItem font8 {{tag}}"></span>'+
+                                '<span class="tag text-white text-center tagItem font8 {{if is_activity==0}}{{tag}}{{/if}}"></span>'+
+                                '<span class="status-goods {{if is_activity==1}}status-seckill{{else if is_activity==2}}status-discount{{else}}hidden{{/if}}"></span>'+
                             '</a>'+
                         '</div>'+
                         '<div class="goods-info pull-left">'+
                             '<span class="clearfix">'+
                                 '<span class="pull-left color fruit-name font14">{{name}}</span>'+
-                                '<span class="great-number font12 pull-right">'+
+                                '<span class="great-number font12 pull-right {{if is_activity==1 }}hidden{{/if}}">'+
                                     '<em class="bg_change heart {{heart}}" data-id="{{favour}}"></em>'+
                                     '<span class="great">{{favour}}</span>'+
                                 '</span>'+
-                                '<span class="pull-right text-grey sale font12">销量: <span class="color number">{{saled}}</span></span>'+
-                            '</span>'+
-                            '<p class="buylimit-box">'+
+                                '<span class="pull-right text-grey sale font12 {{if is_activity==1 }}hidden{{/if}}">销量: <span class="color number">{{saled}}</span></span>'+
+                                '<span class="pull-right text-grey sale font12 {{if is_activity!=1 }}hidden{{/if}}">库存: <span class="color number">{{activity_piece}}</span>份</span>'+
+                            '</p>'+
+
+                            '<p class="buylimit-box font12">'+
+                                '<span class="{{if is_activity==0 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                                 '{{if buylimit >0 }}<span class="buylimit">{{buylimit_txt}}</span>{{/if}}'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
+                                '{{if is_activity==1 && activity_piece>0 }}'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">'+
+                                    '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
+                                    '<span class="price-bo">{{charge_type_text}}</span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
+                                    '</span>'+
+                                    '<span class="forbid_click pull-right num_box wrap-seckill-price">'+
+                                        '<span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}">抢!</span>'+
+                                        '<span class="seckill-btn seckill-btn-yes {{if is_bought==0}}hidden{{/if}}">已抢</span>'+
+                                    '</span>'+
+                                '</li>'+
+                                '{{/if}}'+
                                 '{{each charge_types as key}}'+
-                                '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow={{key["allow_num"]}}>'+
+                                '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow="{{key["allow_num"]}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                         '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
+                                        '<span class="price-tip {{if key["has_discount_activity"]==0 }}hidden{{/if}}"><span class="price-dif">{{key["discount_rate"]}}</span>折</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box">'+
                                         '<span class="to-add pull-right show forbid_click add_cart_num bg_change"></span>'+
                                         '<span class="pull-right p0 number-change hidden forbid_click">'+
-                                            '<button class="minus-plus pull-right number-plus bg_change"></button>'+
-                                            '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
-                                            '<button class="minus-plus pull-right number-minus bg_change"></button>'+
+                                        '<button class="minus-plus pull-right number-plus bg_change"></button>'+
+                                        '<span class="number-input pull-right text-green text-center line34 height34 bg_change"></span>'+
+                                        '<button class="minus-plus pull-right number-minus bg_change"></button>'+
                                         '</span>'+
                                     '</span>'+
                                 '</li>'+
@@ -434,6 +467,14 @@ var fruitItem=function(box,fruits,type){
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
     var detail_no=fruits['detail_no'];
+    var is_activity = fruits['is_activity'];
+    var price_dif = fruits['price_dif'];
+    var activity_piece = fruits['activity_piece'];//库存
+    var charge_type_text = fruits['charge_type_text'];
+    var charge_type_id = fruits['charge_type_id'];
+    var seckill_id = fruits['seckill_goods_id'];
+    var is_bought = fruits['is_bought'];
+    var end_time = fruits['end_time'];
     var buylimit=fruits['buylimit'];
     var userlimit=fruits['userlimit'];
     var heart='';
@@ -442,6 +483,9 @@ var fruitItem=function(box,fruits,type){
     var buylimit_txt="";
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
+    if(is_activity==1 && activity_piece==0 && charge_types.length==0){
+        storage=0;
+    }
     if(favour_today=='true'){
         heart='red-heart';
     }else{
@@ -450,7 +494,7 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-        ori_img=img_url+'?imageView2/1/w/170/h/170';
+        ori_img=img_url+'?imageView2/1/w/120/h/120';
     }
     if(tag==2){
         tag='limit_tag';
@@ -485,13 +529,59 @@ var fruitItem=function(box,fruits,type){
         charge_types:charge_types,
         sold_out:sold_out,
         ori_img:ori_img,
+        is_activity:is_activity,
+        price_dif:price_dif,
+        activity_piece:activity_piece,//库存
+        charge_type_text:charge_type_text,
+        charge_type_id:charge_type_id,
+        seckill_id:seckill_id,
+        is_bought:is_bought,
+        end_time:end_time,
         buylimit:buylimit,
         buylimit_txt:buylimit_txt,
         userlimit:userlimit
     });
-    box.append(html);
+    var $obj = $(html);
+    box.append($obj);
+    if(is_activity>0){
+        countTime($obj);
+    }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
+function countTime($obj){
+    var time_end = parseInt($obj.attr("end-time"))*1000;
+    var time_now = new Date().getTime();
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
+    if(time_distance >= 0){
+        // 天时分秒换算
+        int_day = Math.floor(time_distance/86400000)
+        time_distance -= int_day * 86400000;
+        int_hour = Math.floor(time_distance/3600000)
+        time_distance -= int_hour * 3600000;
+        int_minute = Math.floor(time_distance/60000)
+        time_distance -= int_minute * 60000;
+        int_second = Math.floor(time_distance/1000)
+        if(int_hour < 10)
+            int_hour = "0" + int_hour;
+        if(int_minute < 10)
+            int_minute = "0" + int_minute;
+        if(int_second < 10)
+            int_second = "0" + int_second;
+        // 显示时间
+        if(int_day>0){
+            $obj.find(".day").html(int_day+"天");
+        }
+        $obj.find(".hour").html(int_hour+"时");
+        $obj.find(".minute").html(int_minute+"分");
+        $obj.find(".second").html(int_second+"秒");
+        setTimeout(function(){
+            countTime($obj);
+        },1000);
+    }else{
+        //noticeBox("结束了");
+    }
+}
 window.dataObj.fruits={};
 window.dataObj.mgoods={};
 function cartNum(cart_ms,list){
@@ -517,13 +607,9 @@ function cartNum(cart_ms,list){
                         var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
                         var unit_num=parseFloat(charge.find('.num').text());
                         var change_num=relate*unit_num*cart_ms[key][1];
-                        $parent.attr({'data-storage':storage-change_num});
-                        //if(charge.hasClass('more_charge')) {
-                        //    $parent.find('.charge-list').show();
-                        //    $parent.find('.back-shape').toggleClass('hidden');
-                        //    $parent.find('.toggle_icon').removeClass('arrow');
-                        //    $parent.removeClass('pr35');
-                        //}
+                        if($parent.attr("is_activity")!="1"){
+                            $parent.attr({'data-storage':storage-change_num});
+                        }
                     }
                 }
             }
@@ -623,19 +709,26 @@ function addCart(link){
     var fruits=window.dataObj.fruits;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_goods_ids:seckill_goods_ids
     };
-    if(!isEmptyObj(fruits)){fruits={}}
+    if(!isEmptyObj(fruits)){
+        fruits={};
+    }
     $.postJson(url,args,function(res){
             if(res.success)
             {
+                SetCookie('cart_count',$(".cart_num").html());
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);
         }
     );
 }
-
+function isEmptyObj(obj){
+    for(var n in obj){return false}
+    return true;
+}
 function great(type,id){
     var url='';
     var menu_type;

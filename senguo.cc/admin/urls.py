@@ -29,8 +29,14 @@ handlers = [
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 
-	#(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
+	#秒杀折扣预售团购
+	(r"/seckill/(\w+)", handlers.activity.Seckill, {}, "ConfessionSeckill"),
+	(r"/discount/(\w+)", handlers.activity.Discount, {}, "ConfessionDiscount"),
+	(r"/gbuy", handlers.activity.Gbuy, {}, "ConfessionGbuy"),
+	(r"/presell", handlers.activity.Presell, {}, "ConfessionPresell"),
+	(r"/(\w+)/gbuy/(\w+)", handlers.activity.GbuyDetail, {}, "ConfessionGbuyDetail"),
 
+	#(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
@@ -53,6 +59,11 @@ handlers = [
 	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
 	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
 	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
+	# 限时折扣
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountMain"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountNew"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountDetail"),
+	
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -247,6 +258,7 @@ handlers = [
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
+	(r"/admin/marketing/seckill",handlers.admin.MarketingSeckill,{},"adminMarketingSeckill"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
 	(r"/admin",handlers.admin.SwitchShop,{},"switchshop"),
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),

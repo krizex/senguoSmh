@@ -1,0 +1,150 @@
+<!-- created by jyj 2015-8-11 -->
+{% extends 'market-base.html' %}
+{% block title%}商品秒杀{% end %}
+{% set action = action%}
+
+{% block setcontent %}
+<div class="action-div hidden" data-value="{{action}}"></div>
+<div class="clearfix top-box">
+               <div class="col-sm-9 col-md-9">
+                             <p>商品秒杀是给商家提供的一个店铺营销工具，适用于新品上市、水果促销、节假日活动等场合。</p>
+                             <p>可以更好地招徕用户、提高品牌影响力。</p>
+                             <p class="mt20"><a href="/bbs/detail/88" target="_blank" class="font14">点击查看使用教程</a></p>
+               </div>  
+               <div class="col-sm-3 col-md-3">
+                             <a class="mode  pull-right mt10 open-switch" data-flag="off" title="点击切换状态" data-status="{{seckill_active2}}"><span class="tit"></span><span class="circle"></span></a>
+               </div>
+</div>
+
+<div class="category-list mt10 seckill-manage">
+               <div>
+                             <span class="c999">商品秒杀</span>
+                             <span class="c333"> / 秒杀管理</span>
+               </div>
+               <div class="subnav-box group mt20">
+                   <div class="wrap-newbtn fr">
+                        <a href="{{reverse_url('adminMarketingSeckill')}}?action=seckill_new" class="newbtn add-btn  mt6 mr10 new-seckill">+新建秒杀</a>
+                   </div>
+                 <ul class="status-choose subnav chinav furit-type pull-left">
+                               <li class="txt-center active nostart" data-type="nostart"><a href="javascript:;">未开始</a></li>
+                               <li class="txt-center killing" data-type="killing"><a href="javascript:;">进行中</a></li>
+                               <li class="txt-center finished" data-type="finished"><a href="javascript:;">已结束</a></li>
+                               <li class="txt-center stoped" data-type="stoped"><a href="javascript:;">已停用</a></li>
+                 </ul>
+               </div>　　　　
+               <div class="wrap-tb mt10">
+                             <table class="tb-enty tb-active">
+                                           <colgroup>
+                                                          <col width="20%"/>
+                                                          <col width="10%"/>
+                                                          <col width="35%"/>
+                                                          <col width="15%"/>
+                                                          <col width="20%"/>
+                                           </colgroup>
+                                           <thead>
+                                                          <tr class="thead">
+                                                                        <td>秒杀开始时间</td>
+                                                                        <td>持续时间</td>
+                                                                        <td>秒杀商品</td>
+                                                                        <td>领取 / 下单</td>
+                                                                        <td>操作</td>
+                                                          </tr>
+                                            </thead>
+                                            <tbody class="seckill-list">
+                                                          {% if len(output_data) == 0%}
+                                                          <tr>
+                                                                        <td colspan="5" class="txt-center c999 font14" data-id="0">没有当前状态的秒杀活动</td>
+                                                          </tr>
+                                                          {% else %}
+                                                                 {% if status == 1%}
+                                                                 {% for data in output_data%}
+                                                          <tr data-id="{{data['activity_id']}}">　　 
+                                                                        <td colspan="1">{{data['start_time']}}</td>
+                                                                        <td colspan="1">{{data['continue_time']}}</td>
+                                                                        <td colspan="1">{{data['goods_list']}}</td>
+                                                                        <td colspan="1">{{data['picked']}} / {{data['ordered']}}</td>
+                                                                        <td colspan="1" class="operate">　　
+                                                                                       <a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>
+                                                                                       <a href="javascript:;" class="ml10 spread-activity" title="点击推广此秒杀活动">推广</a>
+                                                                                       <a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>
+                                                                                       <div class="sw-er-tip spread-position invisible" title="">
+                                                                                              <div class="top-arr">
+                                                                                                     <span class="line1"></span>
+                                                                                                     <span class="line2"></span>
+                                                                                              </div>
+                                                                                              <p class="er-text">活动链接</p>
+                                                                                              <div class="wrap-ipt">
+                                                                                                     <input type="text" class="sw-link-txt" value="http://i.senguo.cc/seckill/{{data['shop_code']}}?activity_id={{data['activity_id']}}" disabled="">
+                                                                                                     <input type="button" class="sw-link-copy" value="复制链接">
+                                                                                              </div>
+                                                                                              <div class="wrap-er group">
+                                                                                                     <img class="er-logo" src="/static/images/favicon.ico" alt="">
+                                                                                                     <div class="er-text lh80 fl">链接二维码</div>
+                                                                                                     <div class="er-img fl er-code-img" title="http://i.senguo.cc/seckill/{{data['shop_code']}}?activity_id={{data['activity_id']}}"></div>
+                                                                                              </div>
+                                                                                       </div>
+                                                                        </td>
+                                                          </tr>
+                                                                 {% end %}
+                                                                 {% elif status == 2%}
+                                                                 {% for data in output_data%}
+                                                          <tr data-id="{{data['activity_id']}}">　　 
+                                                                        <td colspan="1">{{data['start_time']}}</td>
+                                                                        <td colspan="1">{{data['continue_time']}}</td>
+                                                                        <td colspan="1">{{data['goods_list']}}</td>
+                                                                        <td colspan="1">{{data['picked']}} / {{data['ordered']}}</td>
+                                                                        <td colspan="1">　　
+                                                                                       <a href="javascript:;" class="edit-activity" title="点击编辑此秒杀活动">编辑</a>
+                                                                                       <a href="javascript:;" class="ml10 spread-activity" title="点击推广此秒杀活动">推广</a>
+                                                                                       <a href="javascript:;" class="ml10 stop-activity" title="点击停用此秒杀活动">停用</a>
+                                                                        </td>
+                                                          </tr>
+                                                                 {% end %}
+                                                                 {% elif status == 0%}
+                                                                 {% for data in output_data%}
+                                                          <tr data-id="{{data['activity_id']}}" class="dis-seckill">　　 
+                                                                        <td colspan="1">{{data['start_time']}}</td>
+                                                                        <td colspan="1">{{data['continue_time']}}</td>
+                                                                        <td colspan="1">{{data['goods_list']}}</td>
+                                                                        <td colspan="1">{{data['picked']}} / {{data['ordered']}}</td>
+                                                                        <td colspan="1">　　
+                                                                                       <span>已结束</span>
+                                                                        </td>
+                                                          </tr>
+                                                                 {% end %}
+                                                                 {% elif status == -1%}
+                                                                 {% for data in output_data%}
+                                                          <tr data-id="{{data['activity_id']}}" class="dis-seckill">　　 
+                                                                        <td colspan="1">{{data['start_time']}}</td>
+                                                                        <td colspan="1">{{data['continue_time']}}</td>
+                                                                        <td colspan="1">{{data['goods_list']}}</td>
+                                                                        <td colspan="1">{{data['picked']}} / {{data['ordered']}}</td>
+                                                                        <td colspan="1">　　
+                                                                                       <span>已停用</span>
+                                                                        </td>
+                                                          </tr>
+                                                                 {% end %}
+                                                                 {% end %}
+                                                          {% end %}
+                                            </tbody>
+                             </table>    
+              </div>
+              <div class="users-pagination list-pagination group sec-pager" page-sum="{{page_sum}}">
+                      <ul>
+                             <li><a href="javascript:;" class="page-btn pre-page sec-pre-page hidden">&nbsp;</a></li>
+                             <li>
+                                    <span class="sec-page-now page-now">1</span>/<span class="page-total sec-page-total">{{page_sum}}</span>
+                             </li>
+                             <li><a href="javascript:;" class="page-btn next-page sec-next-page {% if page_sum == 1%}hidden{% end %}">&nbsp;</a></li>
+                             <li><input class="sec-input-page  input-page form-control" type="text" placeholder="输入页码"></li>
+                             <li><a href="javascript:;" class="sec-jump-to jump-to">跳转</a></li>
+                      </ul>
+              </div>
+</div>
+    
+{% end %}
+
+{% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="{{static_url('js/admin-marketing-seckill.js')}}"></script>
+{% end %}

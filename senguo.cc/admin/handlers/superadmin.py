@@ -2574,6 +2574,7 @@ class CheckCash(SuperBaseHandler):
 		level = self.current_user.level
 		if level == 1:
 			return self.send_error(404)
+
 		return self.render("superAdmin/balance-check.html",level=level,context=dict(page='check'))
 
 	@tornado.web.authenticated

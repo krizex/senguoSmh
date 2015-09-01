@@ -37,6 +37,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .mt20{margin-top: 20px;}
 .mt40{margin-top: 40px;}
 .ml20{margin-left: 20px;}
+.pm80{padding-bottom: 80px;}
 .mt2{margin-top: 2px;}
 .rotate-img{-webkit-transform:rotate(90deg);transform:rotate(90deg);}
 .rotate-img2{-webkit-transform:rotate(180deg);transform:rotate(180deg);}

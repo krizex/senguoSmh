@@ -248,7 +248,7 @@ function initProviceAndCityCode(p, c){
         }
     })
 }
-/*根据经纬度获取距离*/
+/*距离转换*/
 function getDist(dis){
     var res = 0;
     if(dis<1000){

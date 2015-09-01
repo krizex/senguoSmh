@@ -565,12 +565,11 @@ function dealGoods($item,type){
             if(!!$this.attr("url")){
                 arr1.push($this.closest("li").attr("data-index"));
                 arr2.push($this.attr("url"));
-                mg_flag = false;
+                img_flag = false;
             }else{
                 img_flag = true;
                 return false;
             }
-            
         });
         imgList.index = arr1;
         imgList.src = arr2;
