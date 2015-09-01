@@ -413,8 +413,8 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                             '</p>'+
 
                             '<p class="buylimit-box font12">'+
-                                '<span class="{{if is_activity==0 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                                 '{{if buylimit >0 }}<span class="buylimit">{{buylimit_txt}}</span>{{/if}}'+
+                                '<span class="{{if is_activity==0 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{if is_activity==1 && activity_piece>0 }}'+
@@ -506,11 +506,11 @@ var fruitItem=function(box,fruits,type){
         tag='new_tag';
     }
     if(buylimit==1){
-        buylimit_txt="仅限新用户";
+        buylimit_txt="限新用户";
     }else if(buylimit==2){
-        buylimit_txt="仅限老用户";
+        buylimit_txt="限老用户";
     }else if(buylimit==3){
-        buylimit_txt="仅限充值用户";
+        buylimit_txt="限充值用户";
     }
     var render=template.compile(goods_item);
     var html=render({
@@ -572,9 +572,9 @@ function countTime($obj){
         if(int_day>0){
             $obj.find(".day").html(int_day+"天");
         }
-        $obj.find(".hour").html(int_hour+"时");
-        $obj.find(".minute").html(int_minute+"分");
-        $obj.find(".second").html(int_second+"秒");
+        $obj.find(".hour").html(int_hour+":");
+        $obj.find(".minute").html(int_minute+":");
+        $obj.find(".second").html(int_second);
         setTimeout(function(){
             countTime($obj);
         },1000);
