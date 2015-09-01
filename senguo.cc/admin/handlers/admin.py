@@ -1534,7 +1534,7 @@ class Order(AdminBaseHandler):
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			# 发送订单模版消息给送货员
 			if send_message:
-				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
 					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
@@ -1546,7 +1546,7 @@ class Order(AdminBaseHandler):
 			# print('[AdminOrder]edit_status: login in order_status 5')
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
-			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 				# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 				access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
 				# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
@@ -1775,7 +1775,13 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
 				
 				# 发送订单模版消息给送货员
-				self.send_staff_message(self.session,order)
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
+					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				else:
+					access_token = None
+				self.send_staff_message(self.session,order,access_token)
 
 			elif action == "edit_status":
 				if order.status == -1:
@@ -2942,12 +2948,13 @@ class GoodsImport(AdminBaseHandler):
 				return self.send_fail("该店铺不属于您，无法获取数据")
 			goods_list = []
 			for fruit in shop.fruits:
-				charge_types = []
-				for charge in fruit.charge_types:
-					if charge.activity_type == 0:
-						charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
-				img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
-				goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
+				if fruit.active != 0:
+					charge_types = []
+					for charge in fruit.charge_types:
+						if charge.activity_type == 0:
+							charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
+					img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
+					goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
 			return self.send_success(goods_list=goods_list)
 
 		elif action == "import_goods":
@@ -3664,6 +3671,9 @@ class Config(AdminBaseHandler):
 		elif action == "comment_active":
 			self.current_shop.config.comment_active = 0 if self.current_shop.config.comment_active == 1 else 1
 			self.session.commit()
+		elif action=="mp_active":
+			self.current_shop.admin.has_mp = 0 if self.current_shop.admin.has_mp == 1 else 1
+			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -3690,7 +3700,7 @@ class AdminAuth(AdminBaseHandler):
 		code =self.args["code"]
 		mode = self.args["mode"]
 		user =''
-		if mode not in ["mp", "kf"]:
+		if mode not in ["mp", "kf", "iOS"]:
 			return self.send_error(400)
 		wx_userinfo = self.get_wx_userinfo(code, mode)
 		if self.current_shop.admin.accountinfo.wx_unionid == wx_userinfo["unionid"]:
@@ -4761,6 +4771,9 @@ class MessageManage(AdminBaseHandler):
 			shop_admin.mp_name = mp_name
 			shop_admin.mp_appid = mp_appid
 			shop_admin.mp_appsecret = mp_appsecret
+			#将access_token设为过期，然后template_id置为空
+			shop_admin.token_creatime = 0
+			shop_admin.template_id = "{}"
 			self.session.commit()
 			return self.send_success()
 

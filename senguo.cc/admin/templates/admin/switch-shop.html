@@ -62,7 +62,7 @@
         </div>
         <div class="sw-bm">
             <div class="sw-top2">
-                <p><span class="font14">我创建的店铺</span> {% if not context['super_admin'] %}(您还不是卖家，无法创建您自己的店铺){% end %}{% if current_shop and current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link ml10" id="spread-list">推广店铺链接</a>{% end %}</p>
+                <p><span class="font14">我创建的店铺</span> {% if not context['super_admin'] %}(您还不是卖家，无法创建您自己的店铺){% else %}<a href="javascript:;" class="text-link ml10" id="spread-list">推广店铺链接</a>{% end %}</p>
                 {% if current_shop %}
                 <div class="sw-er-tip po-list invisible">
                     <div class="left-arr">

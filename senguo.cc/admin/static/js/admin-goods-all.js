@@ -550,6 +550,7 @@ function dealGoods($item,type){
     //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
+    var img_flag = false;
     if(imgUrls.size()==0){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请至少添加一张商品图片");
@@ -558,14 +559,25 @@ function dealGoods($item,type){
         return Tip("商品图片最多只能添加5张");
     }else{
         var arr1 = [];
-        var arr2 = [];
+        var arr2 = []
         imgUrls.each(function(){
             var $this = $(this);
-            arr1.push($this.closest("li").attr("data-index"));
-            arr2.push($this.attr("url"));
+            if(!!$this.attr("url")){
+                arr1.push($this.closest("li").attr("data-index"));
+                arr2.push($this.attr("url"));
+                img_flag = false;
+            }else{
+                img_flag = true;
+                return false;
+            }
         });
         imgList.index = arr1;
         imgList.src = arr2;
+    }
+    if(img_flag){
+        Tip("图片正在上传中，请稍候");
+        $('.ok-edit-goods').attr("data-flag","on");
+        return false;
     }
     //售价方式
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
@@ -624,10 +636,9 @@ function dealGoods($item,type){
         if(editor.body.innerHTML.length>8000){
             $('.ok-edit-goods').attr("data-flag","on");
             return Tip("商品图文详情过长，请精简一下");
-        }else{
-            detail_describe = $item.find(".show-txtimg").attr("data-text");
         }
     }
+    detail_describe = $item.find(".show-txtimg").attr("data-text");
     //商品限购、排序优先级
     var limit_num = $item.find(".limit_num").val().trim();
     var priority = $item.find(".goods-priority").val().trim();
@@ -1183,7 +1194,7 @@ function initImgList($list){
 function drag(obj){
     obj.onmousedown=function(ev){
         var $this = $(obj);
-        if($(ev.target).hasClass("del-img")){
+        if($this.closest(".del-img").size()>0){
             return false;
         }
         var oEvent = ev || event;
@@ -1316,7 +1327,6 @@ function getData(type,sub_type){
                         });
                         $('.fruit-list').append(html);
                     }
-
                 }
             }
         }
