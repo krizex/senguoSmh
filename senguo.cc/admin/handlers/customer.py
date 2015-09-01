@@ -1491,7 +1491,7 @@ class Market(CustomerBaseHandler):
 			self.send_fail("[CustomerMarket]favour: shop_point error")
 		if favour:
 			if favour.create_date == datetime.date.today():
-				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
+				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对同一商品赞一次哦")
 			else:  # 今天没点过赞，更新时间
 				try:
 					point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
