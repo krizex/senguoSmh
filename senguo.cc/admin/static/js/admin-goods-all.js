@@ -580,7 +580,7 @@ function dealGoods($item,type){
         imgList.src = arr2;
     }
     if(img_flag){
-        Tip(" 图片正在上传中，稍等一会儿～");
+        Tip("图片正在上传中，稍等一会儿～");
         $('.ok-edit-goods').attr("data-flag","on");
         return false;
     }
