@@ -174,6 +174,7 @@ handlers = [
 
 	# added by woody 8.3
 	(r"/super/admin",handlers.superadmin.AdminManager,{},"superareaadmin"),
+	(r"/super/newuser",handlers.superadmin.MakeNewUser,{},"newuser"),
 
 	## 店铺申请接入管理
 	# 所有店铺

@@ -8,6 +8,7 @@
         <li class="active"><a href="{{reverse_url('superareaadmin')}}?action=check_admin">查看</a></li>
         {% if if_super%}
         <li class=""><a href="{{reverse_url('superareaadmin')}}?action=add_admin">添加</a></li>
+        <li class=""><a href="{{reverse_url('newuser')}}">生成新用户</a></li>
         {% end %}
     </ul>
 </div>
