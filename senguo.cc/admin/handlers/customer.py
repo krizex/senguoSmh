@@ -1098,7 +1098,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @get_unblock
-	@CustomerBaseHandler.check_arguments("code?","action")
+	@CustomerBaseHandler.check_arguments("code?","action?")
 	def get(self, shop_code):
 		# print('[CustomerMarket]login in')
 		code = self.args.get('code',None)
@@ -1115,7 +1115,7 @@ class Market(CustomerBaseHandler):
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
-		if 'action' not in self.args: 
+		if  len(self.args.get('action')) < 1: 
 			if shop.admin.has_mp:
 				print('[CustomerMarket]login shop.admin.has_mp')
 				appid = shop.admin.mp_appid
