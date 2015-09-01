@@ -1555,7 +1555,7 @@ class Market(CustomerBaseHandler):
 									now=datetime.datetime.now()
 									now2=datetime.datetime(now.year,now.month,now.day)
 									end_time1=q_price_group.t_time+time.mktime(now2.timetuple())
-						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
 
