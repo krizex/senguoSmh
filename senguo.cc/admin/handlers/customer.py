@@ -1115,7 +1115,7 @@ class Market(CustomerBaseHandler):
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
-		if action not in self.args: 
+		if 'action' not in self.args: 
 			if shop.admin.has_mp:
 				print('[CustomerMarket]login shop.admin.has_mp')
 				appid = shop.admin.mp_appid
