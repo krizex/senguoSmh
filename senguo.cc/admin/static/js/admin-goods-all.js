@@ -550,6 +550,7 @@ function dealGoods($item,type){
     //商品图片
     var imgUrls = $item.find(".drag-img-list").find("img");
     var imgList = {};
+    var img_flag = false;
     if(imgUrls.size()==0){
         $('.ok-edit-goods').attr("data-flag","on");
         return Tip("请至少添加一张商品图片");
@@ -558,15 +559,26 @@ function dealGoods($item,type){
         return Tip("商品图片最多只能添加5张");
     }else{
         var arr1 = [];
-        var arr2 = [];
+        var arr2 = []
         imgUrls.each(function(){
             var $this = $(this);
-            arr1.push($this.closest("li").attr("data-index"));
-            //console.log($this.attr("url"));
-            arr2.push($this.attr("url"));
+            if(!!$this.attr("url")){
+                arr1.push($this.closest("li").attr("data-index"));
+                arr2.push($this.attr("url"));
+                mg_flag = false;
+            }else{
+                img_flag = true;
+                return false;
+            }
+            
         });
         imgList.index = arr1;
         imgList.src = arr2;
+    }
+    if(img_flag){
+        Tip(" 图片正在上传中，稍等一会儿～");
+        $('.ok-edit-goods').attr("data-flag","on");
+        return false;
     }
     //售价方式
     var price_type = $item.find(".edit-item-right").children(".wrap-add-price");
@@ -1095,7 +1107,11 @@ $(document).ready(function(){
             'FileUploaded': function (up, file, info) {
                 $("#" + file.id).prev(".img-cover").remove();
                 $("#" + file.id).next("a").removeClass("hidden");
-                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                if(info && info.key){
+                    $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+info.key);
+                }else{
+                    $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                }
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
