@@ -56,10 +56,6 @@ $(document).ready(function(){
     window.onunloadcancel = function(){
         clearTimeout(zb_t);
     }
-
-    $(document).on("click",".goods-all-item",function(){
-        console.log($(this).find(".show-txtimg").attr("data-text"));
-    })
     
 }).on("click",".all-select-box",function(){
     $(this).toggleClass("checked-box");
