@@ -568,11 +568,11 @@ var fruitItem=function(box,fruits,type){
         tag='tag2';
     }
     if(buylimit==1){
-        buylimit_txt="仅限新用户";
+        buylimit_txt="限新用户";
     }else if(buylimit==2){
-        buylimit_txt="仅限老用户";
+        buylimit_txt="限老用户";
     }else if(buylimit==3){
-        buylimit_txt="仅限充值用户";
+        buylimit_txt="限充值用户";
     }
     if(!intro){
         intro=" ";

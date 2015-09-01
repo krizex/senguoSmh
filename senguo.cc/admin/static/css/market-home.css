@@ -12,12 +12,12 @@
 .goods-list-item .great-number em{background:url('../svg/icon_list-2.png') no-repeat 0 center;display:inline-block;width:10px;height:10px;background-size:140px 180px;}
 .goods-list-item .great-number .gray-heart{background-position:-70px -80px;}
 .goods-list-item .great-number .red-heart{background-position:-70px -70px !important;}
-.goods-list-item .num_box{width:89px;overflow:hidden;height:32px;}
+.goods-list-item .num_box{width:90px;overflow:hidden;height:32px;}
 .goods-list-item .charge-style{clear:both;}
 .goods-list-item .charge-style span,a{display:inline-block;}
 .goods-list-item .charge-first{width:100%;float:left;line-height:36px;padding-right:25px;}
-.goods-list-item .charge-list{padding-right:20px;overflow:hidden;}
-.goods-list-item .charge-list li{height:36px;line-height:36px;position: relative;}
+.goods-list-item .charge-list{padding-right:25px;overflow:hidden;}
+.goods-list-item .charge-list li{height:36px;line-height:36px;}
 .goods-list-item .number-change{position:relative;width:90px;z-index:10;}
 .goods-list-item .minus-plus{display:inline-block;float:left;width:32px;height:32px;border:none;background:url('../svg/icon_list-2.png') no-repeat;background-size:140px 180px;position:absolute;z-index:10;}
 .goods-list-item .number-input{width:60px;position:absolute;left:14px;height:30px;line-height:30px;top:1px;border:1px solid #f7f7f8;background:#fff;}
@@ -196,6 +196,6 @@
 
 .seckill-goods{background-color: #FF9800 !important;}
 
-.buylimit{display:inline-block;font-size: 12px;color: #72D6B3;width:80px;height: 16px;line-height: 14px;text-align: center;border-radius: 4px;margin-right: 4px;border: 1px solid #72D6B3;}
-.buylimit-box{min-height:30px;}
-.goods-list-item .buylimit{margin-top:8px;color:#fec306;border-color:#fec306;}
+.buylimit{display:inline-block;font-size: 12px;color: #72D6B3;width:66px;height: 16px;line-height: 14px;text-align: center;border-radius: 4px;margin-right: 4px;border: 1px solid #72D6B3;}
+.buylimit-box{margin-top:8px;min-height:30px;}
+.goods-list-item .buylimit{color:#fec306;border-color:#fec306;}
