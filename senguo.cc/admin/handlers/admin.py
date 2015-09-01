@@ -4726,6 +4726,9 @@ class MessageManage(AdminBaseHandler):
 			shop_admin.mp_name = mp_name
 			shop_admin.mp_appid = mp_appid
 			shop_admin.mp_appsecret = mp_appsecret
+			#将access_token设为过期，然后template_id置为空
+			shop_admin.token_creatime = 0
+			shop_admin.template_id = "{}"
 			self.session.commit()
 			return self.send_success()
 
