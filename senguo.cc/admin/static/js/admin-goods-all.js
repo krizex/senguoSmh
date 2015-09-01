@@ -576,7 +576,7 @@ function dealGoods($item,type){
         imgList.src = arr2;
     }
     if(img_flag){
-        Tip(" 图片正在上传中，稍等一会儿～");
+        Tip("图片正在上传中，请稍候");
         $('.ok-edit-goods').attr("data-flag","on");
         return false;
     }
@@ -637,10 +637,9 @@ function dealGoods($item,type){
         if(editor.body.innerHTML.length>8000){
             $('.ok-edit-goods').attr("data-flag","on");
             return Tip("商品图文详情过长，请精简一下");
-        }else{
-            detail_describe = $item.find(".show-txtimg").attr("data-text");
         }
     }
+    detail_describe = $item.find(".show-txtimg").attr("data-text");
     //商品限购、排序优先级
     var limit_num = $item.find(".limit_num").val().trim();
     var priority = $item.find(".goods-priority").val().trim();
@@ -1329,7 +1328,6 @@ function getData(type,sub_type){
                         });
                         $('.fruit-list').append(html);
                     }
-
                 }
             }
         }

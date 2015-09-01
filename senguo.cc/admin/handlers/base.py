@@ -1630,12 +1630,12 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				buy_limit = fruit.buy_limit
 				userlimit = 0
 				if buy_limit !=0:
-					if buy_limit == 1 or 2:
+					if buy_limit in [1,2]:
 						try:
 							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop_id).first()[0]+1
 						except:
 							userlimit = 0
-					elif buylimit == 3:
+					elif buy_limit == 3:
 						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop_id,balance_type=0).first()
 						if if_charge:
 							userlimit = 3
@@ -1932,6 +1932,8 @@ class WxOauth2:
 				s = s.decode('utf-8')
 			s = json.loads(s)
 			template_id = s.get('template_id',None)
+			if template_id is None:
+				return False
 			template_id_zip[template_id_short] = template_id
 			admin.template_id = str(template_id_zip)
 			session.commit()
