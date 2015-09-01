@@ -322,8 +322,19 @@ class customerGoods(CustomerBaseHandler):
 			img_url = ''
 
 		charge_types= []
+		seckill_active = shop.marketing.seckill_active
+		charge_type_activity_type = []
+		if seckill_active == 1:
+			self.update_seckill()			
+			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop.id,activity_status = 2).all()
+			if activity_query:
+				charge_type_activity_type = [-2,0,1,2]
+			else:
+				charge_type_activity_type = [-2,0,2]
+		else:
+			charge_type_activity_type = [-2,0,2]
 		for charge_type in good.charge_types:
-			if charge_type.active != 0:
+			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type:
 				unit  = charge_type.unit
 				unit =self.getUnit(unit)
 				limit_today = False
