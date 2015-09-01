@@ -27,7 +27,7 @@ $(document).ready(function(){
     if($("#goods_set").hasClass("hide")){
         $(this).children("span").html("收起高级设置");
         $("#goods_set").removeClass("hide");
-        document.body.scrollTop=$(window).scrollTop()+100;
+        document.body.scrollTop=$(window).scrollTop()+120;
     }else{
         $(this).children("span").html("展开高级设置");
         $("#goods_set").addClass("hide");

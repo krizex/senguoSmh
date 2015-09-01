@@ -220,6 +220,17 @@ $(document).ready(function(){
     var change_num=relate*unit_num*1;
     var buy_today=$this.parents('.charge-item').attr('data-buy');
     var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    var buy_limit=parseInt(parent.attr("data-buylimit"));
+    var user_limit=parseInt(parent.attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
     if(change_num==NaN){
         change_num=0;
     }
@@ -274,6 +285,17 @@ $(document).ready(function(){
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
         var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+        var buy_limit=parseInt(parent.attr("data-buylimit"));
+        var user_limit=parseInt(parent.attr("data-userlimit"));
+        if(buy_limit!=user_limit&&buy_limit!=0){
+            if(buy_limit==1){
+                return noticeBox("该商品仅限新用户购买");
+            }else if(buy_limit==2){
+                return noticeBox("该商品仅限老用户购买");
+            }else if(buy_limit==3){
+                return noticeBox("该商品仅限充值用户购买");
+            }
+        }
         if(buy_today=='True'&&num>=allow_num){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
@@ -370,7 +392,7 @@ var goodsList=function(page,action,_group_id){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" end-time="{{end_time}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}">'+
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" end-time="{{end_time}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
@@ -380,15 +402,19 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                             '</a>'+
                         '</div>'+
                         '<div class="goods-info pull-left">'+
-                            '<p class="clearfix">'+
+                            '<span class="clearfix">'+
                                 '<span class="pull-left color fruit-name font14">{{name}}</span>'+
+                                '<span class="great-number font12 pull-right {{if is_activity==1 }}hidden{{/if}}">'+
+                                    '<em class="bg_change heart {{heart}}" data-id="{{favour}}"></em>'+
+                                    '<span class="great">{{favour}}</span>'+
+                                '</span>'+
                                 '<span class="pull-right text-grey sale font12 {{if is_activity==1 }}hidden{{/if}}">销量: <span class="color number">{{saled}}</span></span>'+
                                 '<span class="pull-right text-grey sale font12 {{if is_activity!=1 }}hidden{{/if}}">库存: <span class="color number">{{activity_piece}}</span>份</span>'+
                             '</p>'+
-                            '<p class="great-number font12">'+
-                                '<em class="bg_change heart {{heart}} {{if is_activity>0 }}hidden{{/if}}" data-id="{{favour}}"></em>'+
-                                '<span class="great {{if is_activity>0 }}hidden{{/if}}">{{favour}}</span>'+
+
+                            '<p class="buylimit-box font12">'+
                                 '<span class="{{if is_activity==0 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
+                                '{{if buylimit >0 }}<span class="buylimit">{{buylimit_txt}}</span>{{/if}}'+
                             '</p>'+
                             '<ul class="charge-list charge-style font14 color {{charge_types}}">'+
                                 '{{if is_activity==1 && activity_piece>0 }}'+
@@ -449,9 +475,12 @@ var fruitItem=function(box,fruits,type){
     var seckill_id = fruits['seckill_goods_id'];
     var is_bought = fruits['is_bought'];
     var end_time = fruits['end_time'];
+    var buylimit=fruits['buylimit'];
+    var userlimit=fruits['userlimit'];
     var heart='';
     var sold_out='';
     var ori_img='';
+    var buylimit_txt="";
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
     if(is_activity==1 && activity_piece==0 && charge_types.length==0){
@@ -475,6 +504,13 @@ var fruitItem=function(box,fruits,type){
         tag='sale_tag';
     }else if(tag==5){
         tag='new_tag';
+    }
+    if(buylimit==1){
+        buylimit_txt="仅限新用户";
+    }else if(buylimit==2){
+        buylimit_txt="仅限老用户";
+    }else if(buylimit==3){
+        buylimit_txt="仅限充值用户";
     }
     var render=template.compile(goods_item);
     var html=render({
@@ -500,7 +536,10 @@ var fruitItem=function(box,fruits,type){
         charge_type_id:charge_type_id,
         seckill_id:seckill_id,
         is_bought:is_bought,
-        end_time:end_time
+        end_time:end_time,
+        buylimit:buylimit,
+        buylimit_txt:buylimit_txt,
+        userlimit:userlimit
     });
     var $obj = $(html);
     box.append($obj);
@@ -556,24 +595,22 @@ function cartNum(cart_ms,list){
                 var add = charge.siblings('.num_box').find('.to-add');
                 var change = charge.siblings('.num_box').find('.number-change');
                 var input = change.find('.number-input');
-                if (id == cart_ms[key][0]) {
-                    var $parent=charge.parents('.goods-list-item');
-                    var storage=$parent.attr('data-num');
-                    add.addClass('hidden');
-                    change.removeClass('hidden');
-                    input.text(cart_ms[key][1]);
-                    var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
-                    var unit_num=parseFloat(charge.find('.num').text());
-                    var change_num=relate*unit_num*cart_ms[key][1];
-                    if($parent.attr("is_activity")!="1"){
-                        $parent.attr({'data-storage':storage-change_num});
+                var buy_limit=parseInt(charge.parents('.goods-list-item').attr("data-buylimit"));
+                var user_limit=parseInt(charge.parents('.goods-list-item').attr("data-userlimit"));
+                if(buy_limit == user_limit||buy_limit==0){
+                    if (id == cart_ms[key][0]) {
+                        var $parent=charge.parents('.goods-list-item');
+                        var storage=$parent.attr('data-num');
+                        add.addClass('hidden');
+                        change.removeClass('hidden');
+                        input.text(cart_ms[key][1]);
+                        var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
+                        var unit_num=parseFloat(charge.find('.num').text());
+                        var change_num=relate*unit_num*cart_ms[key][1];
+                        if($parent.attr("is_activity")!="1"){
+                            $parent.attr({'data-storage':storage-change_num});
+                        }
                     }
-                    //if(charge.hasClass('more_charge')) {
-                    //    $parent.find('.charge-list').show();
-                    //    $parent.find('.back-shape').toggleClass('hidden');
-                    //    $parent.find('.toggle_icon').removeClass('arrow');
-                    //    $parent.removeClass('pr35');
-                    //}
                 }
             }
         }

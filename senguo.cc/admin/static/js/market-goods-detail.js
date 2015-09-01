@@ -22,6 +22,7 @@ $(document).ready(function(){
         $("#cart-bg").css("left",((mWidth-width)/2+width-54)+"px");
         $("#back-bg").css("left",(mWidth-width)/2+"px");
     }
+
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
@@ -36,6 +37,27 @@ $(document).ready(function(){
     if($(".swiper-slide").size()==3){
         swiper.stopAutoplay();
     }
+    var slide_img_len=$(".swiper-wrapper img").length;
+    var slide_img_height=[];
+    setTimeout(function(){
+       for(var i=0;i<slide_img_len;i++){
+            var hie=$(".swiper-wrapper img").eq(i).height();
+            slide_img_height.push(hie);        
+        }
+        for(var i=0;i<slide_img_height;i++){
+            //内层循环，找到第i大的元素，并将其和第i个元素交换
+            for(var j=i;j<slide_img_height;j++){
+                if(slide_img_height[i]<slide_img_height[j]){
+                    //交换两个元素的位置
+                    var temp=slide_img_height[i];
+                    slide_img_height[i]=slide_img_height[j];
+                    slide_img_height[j]=temp;
+                }
+            }
+        }
+        $(".swiper-container").height(slide_img_height[0]);
+        $(".swiper-wrapper").height(slide_img_height[0]);
+    },200);
     //初始化购物车数量
     if(getCookie("cart_count")!=''){
         $("#cart-now-num").html(getCookie("cart_count")).removeClass("move-cart");
@@ -46,6 +68,7 @@ $(document).ready(function(){
         $(".goods-choose-lst li").removeClass("active").eq(index).addClass("active");
         $(".goods-info-lst li").removeClass("active").eq(index).addClass("active");
     });
+
     $(".now-buy").on("click",function(){
         var $this=$(this);
         var id=parseInt($this.siblings(".want-num").attr('data-id'));
@@ -55,6 +78,17 @@ $(document).ready(function(){
         var change_num=relate*unit_num;
         var buy_today=$this.parents('li').attr('data-buy');
         var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        var buy_limit=parseInt($(".wrap-goods-detail").attr("data-buylimit"));
+        var user_limit=parseInt($(".wrap-goods-detail").attr("data-userlimit"));
+        if(buy_limit!=user_limit&&buy_limit!=0){
+            if(buy_limit==1){
+                return noticeBox("该商品仅限新用户购买");
+            }else if(buy_limit==2){
+                return noticeBox("该商品仅限老用户购买");
+            }else if(buy_limit==3){
+                return noticeBox("该商品仅限充值用户购买");
+            }
+        }
         if(buy_today=='True'&&allow_num<=0){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
@@ -90,6 +124,18 @@ $(document).ready(function(){
         var change_num=relate*unit_num*1;
         var buy_today=$this.parents('li').attr('data-buy');
         var allow_num=parseInt($this.parents('li').attr('data-allow'));
+        var buy_limit=parseInt($(".wrap-goods-detail").attr("data-buylimit"));
+        var user_limit=parseInt($(".wrap-goods-detail").attr("data-userlimit"));
+        if(buy_limit!=user_limit&&buy_limit!=0){
+            if(buy_limit==1){
+                return noticeBox("该商品仅限新用户购买");
+            }else if(buy_limit==2){
+                return noticeBox("该商品仅限老用户购买");
+            }else if(buy_limit==3){
+                return noticeBox("该商品仅限充值用户购买");
+            }
+            
+        }
         if(buy_today=='True'&&num>=allow_num){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }

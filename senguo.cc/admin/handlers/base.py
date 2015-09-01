@@ -1084,7 +1084,6 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		# if order_type != 3:
 		WxOauth2.post_staff_msg(touser,staff_name,shop_name,order_id,order_type,create_date,customer_name,\
 			order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token)
-
 		# print('[TempMsg]Send staff message SUCCESS')
 
 	# 发送新订单模版消息给管理员 & 自动打印订单 & 卖家版APP推送
@@ -1694,7 +1693,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# 	admin = None
 
 		try:
-			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).first()
+			super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
 		except:
 			super_admin = None
 
@@ -2154,7 +2153,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					img_url=charge_type.fruit.img_url.split(";")[0]
 				else:
 					img_url= None
-				#查询是否有限时折扣活动
+
+				# 查询是否有限时折扣活动
 				self.updatediscount()
 				discount_rate=1
 				num=None
@@ -2167,6 +2167,28 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
 										  "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
+
+				# 限购：仅新用户/仅老用户/仅充值用户
+				fruit = charge_type.fruit
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit in [1,2]:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buy_limit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop_id,balance_type=0).first()
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
+				if buy_limit == userlimit or buy_limit ==0 :
+					fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
+											  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
+											   "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
+
 		return fruits
 
 	@property
@@ -2464,6 +2486,8 @@ class WxOauth2:
 				s = s.decode('utf-8')
 			s = json.loads(s)
 			template_id = s.get('template_id',None)
+			if template_id is None:
+				return False
 			template_id_zip[template_id_short] = template_id
 			admin.template_id = str(template_id_zip)
 			session.commit()
@@ -2654,6 +2678,7 @@ class WxOauth2:
 		order_totalPrice,send_time,phone,address,order_shopid,admin_id,other_access_token = None):
 		# access_token = cls.get_client_access_token()
 		access_token = other_access_token if other_access_token else cls.get_client_access_token()
+		# print(access_token)
 		if other_access_token:
 			template_id_short = 'TM00351'
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
@@ -2683,7 +2708,7 @@ class WxOauth2:
 		postdata = {
 			'touser':touser,
 			# 'template_id':'5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg',
-			'template_id':'template_id',
+			'template_id':template_id,
 			'url':link_url,
 			"data":{
 				"first":{"value":"配送员 {0} 您好，店铺『{1}』有新的订单需要配送。".format(staff_name,shop_name),"color": "#44b549"},
