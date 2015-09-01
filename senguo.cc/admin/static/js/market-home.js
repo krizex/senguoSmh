@@ -536,7 +536,7 @@ var fruitItem=function(box,fruits,type){
         charge_type_id:charge_type_id,
         seckill_id:seckill_id,
         is_bought:is_bought,
-        end_time:end_time
+        end_time:end_time,
         buylimit:buylimit,
         buylimit_txt:buylimit_txt,
         userlimit:userlimit
