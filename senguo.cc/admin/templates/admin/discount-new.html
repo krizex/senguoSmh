@@ -16,32 +16,29 @@
 <input type="hidden" id="charge" value="{{chargetype}}"/>
 <div class="wrap-newcoupon mt20">
     <div class="newcoupon-box group">
-        <div class="wrap-discounttb fl">
+        <div class="wrap-discounttb fl pr20">
             <table class="coupon-tb">
                 <colgroup>
-                    <col width="14%"/>
-                    <col width="2%" />
-                    <col width="84%"/>
+                    <col width="130"/>
                 </colgroup>
                 <thead>
                 <tr>
                     <td class="">折扣时间</td>
                     <td>
                         <a href="javascript:;" class="radio radio-active open-single" data-id="0"></a>
+                        <span>单次</span>
                     </td>
-                    <td><span>单次</span></td>
                 </tr>
                 </thead>
             </table>
             <table class="coupon-tb single-day">
                 <colgroup>
-                    <col width="16%"/>
-                    <col width="9%"/>
-                    <col width="75%"/>
+                    <col width="130"/>
+                    <col width="90"/>
                 </colgroup>
                 <tbody>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td>开始时间</td>
                     <td>
                         <div class="">
@@ -50,7 +47,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td>结束时间</td>
                     <td>
                          <input type="text" class="Wdate end_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})">
@@ -60,27 +57,24 @@
             </table>
             <table class="coupon-tb">
                 <colgroup>
-                    <col width="14%"/>
-                    <col width="2%"/>
-                    <col width="84%"/>
+                    <col width="130"/>
                 </colgroup>
                 <thead>
                 <tr>
-                    <td class=""></td>
+                    <td class="">&nbsp;</td>
                     <td>
                         <a href="javascript:;" class="radio open-week" data-id="1"></a>
+                        <span>开启周期（多选）</span>
                     </td>
-                    <td><span>开启周期（多选）</span></td>
                 </tr>
                 </thead>
             </table>
             <table class="coupon-tb week hidden">
                 <colgroup>
-                    <col width="14%"/>
-                    <col width="86%"/>
+                    <col width="130"/>
                 </colgroup>
                 <thead>
-                    <td class=""></td>
+                    <td class="">&nbsp;</td>
                     <td class="change-week">
                         <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='1'>周一</a>
                         <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='2'>周二</a>
@@ -94,13 +88,12 @@
             </table>
             <table class="coupon-tb week-time hidden">
                 <colgroup>
-                    <col width="16%"/>
-                    <col width="9%"/>
-                    <col width="75%"/>
+                    <col width="130"/>
+                    <col width="90"/>
                 </colgroup>
                 <tbody>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td>开始时间 </td>
                     <td>
                         <div class=""> 
@@ -147,7 +140,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td class="text-below">结束时间 </td>
                     <td>
                         <div class="">
@@ -198,14 +191,12 @@
             <p class="c999 f12 mt6 discount-tip hidden">开始结束时间均为选择的日期当天内的时间段</p>
             <table class="coupon-tb discount_item">
                 <colgroup>
-                    <col width="16%"/>
-                    <col width="60%"/>
-                    <col width="24%">
+                    <col width="120"/>
                 </colgroup>
                 <tbody class="to_clone new_tbody">
                 <tr class="">
                     <td class="ver-top "><span class="ver-5  should_remove">折扣商品<br></span></td>
-                    <td class="no_border">
+                    <td class="no_border wrap-white">
                          <table class="">
                             <tr><div class="text_gray">商品<span class="goods_number" goods-id="1">1</span></div></tr>
                             <tr class="no_border" >   
@@ -247,8 +238,8 @@
                         </table>
                     </td>
                     <tr>
-                        <td></td>
-                         <td><a href="javascript:;" class=" text_green mt6 mr10 discount-new" >+新建</a><a href="javascript:;" class="  mt6 mr10 discount_delete text_red hidden" >删除</a></td>
+                        <td>&nbsp;</td>
+                         <td><a href="javascript:;" class=" text_green mt6 mr10 discount-new" >+新建</a><a href="javascript:;" class="fr mt6 mr10 discount_delete text_red hidden" >删除</a></td>
                     </tr>
                 </tr>
                 </tbody>

@@ -1534,7 +1534,7 @@ class Order(AdminBaseHandler):
 			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			# 发送订单模版消息给送货员
 			if send_message:
-				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
 					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
@@ -1546,7 +1546,7 @@ class Order(AdminBaseHandler):
 			# print('[AdminOrder]edit_status: login in order_status 5')
 			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
-			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret:
+			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 				# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 				access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
 				# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
@@ -1775,7 +1775,13 @@ class Order(AdminBaseHandler):
 				order.update(session=self.session, status=4, SH2_id=int(data["staff_id"]))
 				
 				# 发送订单模版消息给送货员
-				self.send_staff_message(self.session,order)
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
+					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				else:
+					access_token = None
+				self.send_staff_message(self.session,order,access_token)
 
 			elif action == "edit_status":
 				if order.status == -1:
@@ -2678,11 +2684,13 @@ class Goods(AdminBaseHandler):
 							num = 0
 						relate = select_num/unit_num
 						try:
-							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_([0,-2]))
+							q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).filter(models.ChargeType.activity_type.in_((0,2))).one()
+							#q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).one()
 						except:
 							q_charge = None
+						print(q_charge)
 						if q_charge:
-							q_charge.one().update(session=self.session,price=price,
+							q_charge.update(session=self.session,price=price,
 												  unit=charge_type["unit"],
 												  num=num,
 												  unit_num=unit_num,
@@ -2704,10 +2712,10 @@ class Goods(AdminBaseHandler):
 
 				if "del_charge_types" in data  and  data['del_charge_types']:
 					try:
-						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]),models.ChargeType.activity_type==0)
+						#q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]),models.ChargeType.activity_type==0)
+						q = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(data["del_charge_types"]))
 					except:
 						return self.send_fail('del_charge_types error')
-					# print([AdminGoods]Delete charge type:",q)
 					# q.delete(synchronize_session=False)
 					for charge in q:
 						charge.update(session=self.session,active=0)
@@ -2940,12 +2948,13 @@ class GoodsImport(AdminBaseHandler):
 				return self.send_fail("该店铺不属于您，无法获取数据")
 			goods_list = []
 			for fruit in shop.fruits:
-				charge_types = []
-				for charge in fruit.charge_types:
-					if charge.activity_type == 0:
-						charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
-				img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
-				goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
+				if fruit.active != 0:
+					charge_types = []
+					for charge in fruit.charge_types:
+						if charge.activity_type == 0:
+							charge_types.append({"price":charge.price,"unit":self.getUnit(charge.unit)})
+					img_url = fruit.img_url.split(";")[0] if fruit.img_url else "/static/images/TDSG.png"
+					goods_list.append({"id":fruit.id,"name":fruit.name,"charge_types":charge_types,"imgurl":img_url})
 			return self.send_success(goods_list=goods_list)
 
 		elif action == "import_goods":
@@ -3662,6 +3671,9 @@ class Config(AdminBaseHandler):
 		elif action == "comment_active":
 			self.current_shop.config.comment_active = 0 if self.current_shop.config.comment_active == 1 else 1
 			self.session.commit()
+		elif action=="mp_active":
+			self.current_shop.admin.has_mp = 0 if self.current_shop.admin.has_mp == 1 else 1
+			self.session.commit()
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -3688,7 +3700,7 @@ class AdminAuth(AdminBaseHandler):
 		code =self.args["code"]
 		mode = self.args["mode"]
 		user =''
-		if mode not in ["mp", "kf"]:
+		if mode not in ["mp", "kf", "iOS"]:
 			return self.send_error(400)
 		wx_userinfo = self.get_wx_userinfo(code, mode)
 		if self.current_shop.admin.accountinfo.wx_unionid == wx_userinfo["unionid"]:
@@ -4759,6 +4771,9 @@ class MessageManage(AdminBaseHandler):
 			shop_admin.mp_name = mp_name
 			shop_admin.mp_appid = mp_appid
 			shop_admin.mp_appsecret = mp_appsecret
+			#将access_token设为过期，然后template_id置为空
+			shop_admin.token_creatime = 0
+			shop_admin.template_id = "{}"
 			self.session.commit()
 			return self.send_success()
 
@@ -5525,7 +5540,7 @@ class Discount(AdminBaseHandler):
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
 						
-						q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x["use_goods_group"]).all()
+						q_all=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=x.use_goods_group).all()
 						for m in q_all:
 							if not self.judge_seckill(current_shop_id,m.id,discount_way,start_date,end_date,f_time,t_time,weeks):
 								return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")

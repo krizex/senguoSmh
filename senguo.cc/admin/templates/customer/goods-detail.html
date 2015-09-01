@@ -12,7 +12,7 @@
 </script>
 {% if good %}
 <input type="hidden" value="{{handler.shop_code}}" id="shop_code"/>
-<div class="wrap-goods-detail pm80" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}">
+<div class="wrap-goods-detail pm80" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}" data-buylimit="{{good.buy_limit}}" data-userlimit="{{good.userlimit}}">
     <div class="img-list">
         <a href="javascript:;" class="roll-bg back add-cart" id="back-bg" data-href="{{reverse_url('Market',handler.shop_code)}}"><i></i></a>
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
@@ -28,11 +28,12 @@
         <div class="pagination"></div>
     </div>
     <div class="wrap-goods-info">
-        <p class="goods-title">{{good.name or ''}}{% if good.tag>1 %}<span class="goods-tag">{% if good.tag==2 %}限时折扣{% elif good.tag==3 %}热销水果{% elif good.tag==4 %}今日特价{% else %}新品上架{% end %}</span>{% end %}</p>
+        <p class="goods-title">{{good.name or ''}}</p>
         <p class="goods-num">
             <span id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}"><span class="zan {% if good.favour_today %}zaned{% end %}"></span><span class="num">{{good.favour or 0}}</span></span>
             <span>&nbsp;销量 {{good.saled or 0}}</span>
         </p>
+        <p>{% if good.tag>1 %}<span class="goods-tag">{% if good.tag==2 %}限时折扣{% elif good.tag==3 %}热销水果{% elif good.tag==4 %}今日特价{% else %}新品上架{% end %}</span>{% end %}{% if good.buy_limit>0 %}<span class="goods-tag">{% if good.buy_limit==1 %}限新用户{% elif good.buy_limit==2 %}限老用户{% else %}限充值用户{% end %}</span>{% end %}</p>
         <p class="goods-info">{{good.intro or ''}}</p>
     </div>
     <ul class="wrap-choose-goods">

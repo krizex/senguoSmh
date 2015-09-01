@@ -7,9 +7,8 @@
 .c999{color: #999!important;}
 .top-box{line-height:20px;margin-bottom:20px;position:relative;padding:15px;background:#f4f5f9;}
 .top-box .action-btn{position:absolute;right:10px;top:18px;}
-
+.pr20{padding-right: 20px!important;}
 table{width:100%;border-collapse:collapse;table-layout: fixed;}
-tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px solid #eee;}
 .wrap-coupontb tr{border:none;}
 .set-box td{padding:10px;border-top:solid 1px #eee;}
 .set-box textarea{width:100%;padding:2px;border:#eee solid 1px;}
@@ -84,7 +83,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .tb-enty .dis-coupon a{display: none;}
 .operate .stop{display: none;}
 .operate{position: relative;}
-.all-position{top: 100%;right: -40px;left:auto;margin-top: 10px;border-color: #eee;}
+.all-position{top: 100%;right: -18px;left:auto;margin-top: 16px;border-color: #eee;}
 .tb-enty .dis-coupon span{display: inline;}
 .wrap-coupontb{background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;height:610px;}
 .coupon-prview{width: 20%;border: 1px solid #e7e7eb;border-left:none;height: 610px;}
@@ -121,7 +120,8 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .discount_delete{margin-left: 420px;}
 .wrap-discounttb{background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;}
 /*.discount-detail{width: 700px;margin-left: 100px;}*/
-.no_border{border: 0px;background-color: #fff;}
+.no_border{background-color: #fff;border: none;}
+.wrap-white{padding-left: 10px !important;border: 1px solid #999;}
 .discount_rate{margin-left: 25px}
 .use_group{margin-left: 10px}
 .charge-type{border: none;}
@@ -169,18 +169,12 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .send-day .btn-default:focus{border: none;}
 .ver-8 {vertical-align: 8px;}
 .w110{width: 110px;}
-
 .edit-activity{z-index: 2999;font-size: 16px;}
 .spread-activity{z-index: 2999;font-size: 16px;}
 .stop-activity{z-index: 2999;font-size: 16px;}
-
 .ver-10{vertical-align: 10px !important;}
-
 .dis-seckill>td{color: #999;}
-
 .spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
-
-
 .edit-box{background-color: #f4f5f9;padding: 15px 20px;margin:0 0 20px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
 .edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}

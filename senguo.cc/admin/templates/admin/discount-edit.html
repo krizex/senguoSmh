@@ -16,32 +16,29 @@
 <input type="hidden" id="charge" value="{{chargetype}}"/>
 <div class="wrap-newcoupon mt20">
     <div class="newcoupon-box group">
-        <div class="wrap-discounttb fl">
+        <div class="wrap-discounttb fl pr20">
             <table class="coupon-tb">
                 <colgroup>
-                    <col width="14%"/>
-                    <col width="2%" />
-                    <col width="84%"/>
+                    <col width="130"/>
                 </colgroup>
                 <thead>
                 <tr>
                     <td class="">折扣时间</td>
                     <td>
                         <a href="javascript:;" class="radio {%if common_info["edit_status"]!=0%}forbidden-btn{%end%} {%if common_info["discount_way"]==0 %}radio-active{%end%} open-single" data-id="0"></a>
+                        <span>单次</span>
                     </td>
-                    <td><span>单次</span></td>
                 </tr>
                 </thead>
             </table>
             <table class="coupon-tb single-day {%if common_info["discount_way"]==1 %}hidden{%end%}">
                 <colgroup>
-                    <col width="16%"/>
-                    <col width="9%"/>
-                    <col width="75%"/>
+                    <col width="130"/>
+                    <col width="90"/>
                 </colgroup>
                 <tbody>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td>开始时间</td>
                     <td>
                         <div class="">
@@ -50,7 +47,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td>结束时间</td>
                     <td>
                          <input type="text" class="Wdate end_date {%if common_info["edit_status"]==3%}disabled{%end%} " id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})" value="{{common_info["end_date"]}}" old_end_date={{common_info["end_date"]}} {%if common_info["edit_status"]==3%}disabled="disabled"{%end%}>
@@ -60,27 +57,24 @@
             </table>
             <table class="coupon-tb">
                 <colgroup>
-                    <col width="14%"/>
-                    <col width="2%"/>
-                    <col width="84%"/>
+                    <col width="130"/>
                 </colgroup>
                 <thead>
                 <tr>
-                    <td class=""></td>
+                    <td>&nbsp;</td>
                     <td>
                         <a href="javascript:;" class="radio open-week {%if common_info["edit_status"]!=0%}forbidden-btn{%end%} {%if common_info["discount_way"]==1 %}radio-active{%end%}" data-id="1"></a>
+                        <span>开启周期（多选）</span>
                     </td>
-                    <td><span>开启周期（多选）</span></td>
                 </tr>
                 </thead>
             </table>
             <table class="coupon-tb week {%if common_info["discount_way"]==0 %}hidden{%end%}">
                 <colgroup>
-                    <col width="14%"/>
-                    <col width="86%"/>
+                    <col width="130"/>
                 </colgroup>
                 <thead>
-                    <td class=""></td>
+                    <td>&nbsp;</td>
                     <td class="change-week ">
                     {%set weeks=["","周一","周二","周三","周四","周五","周六","周日"]%}
                     {%for x in range(1,8)%}
@@ -91,13 +85,12 @@
             </table>
             <table class="coupon-tb week-time {%if common_info["discount_way"]==0 %}hidden{%end%}">
                 <colgroup>
-                    <col width="16%"/>
-                    <col width="9%"/>
-                    <col width="75%"/>
+                    <col width="130"/>
+                    <col width="90"/>
                 </colgroup>
                 <tbody>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td>开始时间 </td>
                     <td>
                         <div class=""> 
@@ -144,7 +137,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td></td>
+                    <td>&nbsp;</td>
                     <td class="text-below">结束时间 </td>
                     <td>
                         <div class="">
@@ -197,14 +190,12 @@
             {%for data in discount_items%}
             <table class="coupon-tb discount_item">
                 <colgroup>
-                    <col width="16%"/>
-                    <col width="60%"/>
-                    <col width="24%">
+                    <col width="120"/>
                 </colgroup>
                 <tbody class="to_clone new_tbody">
                 <tr class="">
                     <td class="ver-top "><span class="ver-5  should_remove {%if discount_items.index(data)>1%}hidden{%end%}">折扣商品<br></span></td>
-                    <td class="no_border">
+                    <td class="no_border wrap-white">
                          <table class="">
                             <tr><div class="text_gray">商品<span class="goods_number" goods-id={{data["id"]}}>{{data["id"]}}</span></div></tr>
                             <tr class="no_border" >   
@@ -262,7 +253,7 @@
                     </td>
                     <tr>
                         <td></td>
-                         <td><a href="javascript:;" class="mt6 mr10 discount_close 
+                         <td><a href="javascript:;" class="mt6 mr10 fr discount_close
                          {%if data["status"]==3%}text_gray{%else%}text_red{%end%} " data-id={{data["status"]}} >{%if data["status"]==3%}已{%end%}停用</a></td>
                     </tr>
                 </tr>

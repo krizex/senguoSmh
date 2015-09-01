@@ -463,9 +463,8 @@ function getinfo(){
         discount_good={"use_goods_group":use_goods_group,"use_goods":use_goods,"charges":charges,"discount_rate":discount_rate};
         discount_goods[i-1]=discount_good;
         }
-    console.log(goods_number);
-    discount_id=parseInt($("#goods").attr("discount_id"));
-    data={
+    var discount_id=parseInt($("#goods").attr("discount_id"));
+    var data={
         "discount_way":discount_way,
         "start_date":start_date,
         "end_date":end_date,
@@ -476,7 +475,7 @@ function getinfo(){
         "discount_id":discount_id,
         "discount_close":discount_close
     }
-    return data
+    return data;
 }
 function adddiscount(){
     var data=getinfo();
@@ -519,9 +518,9 @@ function editdiscount(){
         function(res){
             if(res.success){
                 Tip('编辑限时折扣成功!');
-            // setTimeout(function(){
-            //     window.location.href="/admin/discount?action=discount";
-            // },1500);
+                setTimeout(function(){
+                     window.location.href="/admin/discount?action=discount";
+                },1500);
             }else{
                 Tip(res.error_text);
             }

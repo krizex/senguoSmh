@@ -321,6 +321,20 @@ class customerGoods(CustomerBaseHandler):
 			good = []
 			img_url = ''
 
+		buy_limit = good.buy_limit
+		good.userlimit = 0
+		if buy_limit !=0:
+			if buy_limit in [1,2]:
+				try:
+					good.userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop.id).first()[0]+1
+				except:
+					good.userlimit = 0
+			elif buy_limit == 3:
+				if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop.id,balance_type=0).first()
+				if if_charge:
+					good.userlimit = 3
+				else:
+					good.userlimit = 0
 		charge_types= []
 		seckill_active = shop.marketing.seckill_active
 		charge_type_activity_type = []
@@ -368,6 +382,13 @@ class customerGoods(CustomerBaseHandler):
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]
+		if good.buy_limit != good.userlimit and good.buy_limit !=0 :
+			key_allow = []
+			for charge_type in good.charge_types:
+				for key in cart_fs:
+					if key[0] != charge_type.id:
+						key_allow.append(key[0])
+			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
@@ -1164,7 +1185,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @get_unblock
-	@CustomerBaseHandler.check_arguments("code?")
+	@CustomerBaseHandler.check_arguments("code?","action?")
 	def get(self, shop_code):
 		# print('[CustomerMarket]login in')
 		code = self.args.get('code',None)
@@ -1174,6 +1195,7 @@ class Market(CustomerBaseHandler):
 		# return self.send_success()
 		# print(self.current_user.id)
 
+
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
@@ -1181,43 +1203,44 @@ class Market(CustomerBaseHandler):
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 
-		if shop.admin.has_mp:
-			print('[CustomerMarket]login shop.admin.has_mp')
-			appid = shop.admin.mp_appid
-			appsecret = shop.admin.mp_appsecret
-			customer_id = self.current_user.id
-			admin_id    = shop.admin.id
-			# admin_customer_openid  = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
-		
-			#生成wx_openid
-			if self.is_wexin_browser():
-				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
-				if len(code) == 0:
-					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
-					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
-					return self.redirect(url)
-				else:
-					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
-				# wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
-				# print(wx_openid,appid,appsecret)
-				if wx_openid:
-					#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
-					admin_customer_openid = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
-					if admin_customer_openid:
-						# print('update other wxopenid')
-						admin_customer_openid.wx_openid = wx_openid
+		if len(self.args.get('action')) < 1: 
+			if shop.admin.has_mp:
+				print('[CustomerMarket]login shop.admin.has_mp')
+				appid = shop.admin.mp_appid
+				appsecret = shop.admin.mp_appsecret
+				customer_id = self.current_user.id
+				admin_id    = shop.admin.id
+				# admin_customer_openid  = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+			
+				#生成wx_openid
+				if self.is_wexin_browser():
+					# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+					if len(code) == 0:
+						redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
+						url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
+						return self.redirect(url)
 					else:
-						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
-						self.session.add(admin_customer_openid)
-					self.session.commit()
-				else:
-					print('[CustomerMarket]get openid failed')
-			# else:
-			#	print('[CustomerMarket]haahahahah')
-		else:
-			print('has no mp!!!!!!!!!!!!!!')
-			pass
-		# print('[CustomerMarket]success??????????????????????????????????')
+						wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
+					# wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
+					# print(wx_openid,appid,appsecret)
+					if wx_openid:
+						#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
+						admin_customer_openid = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+						if admin_customer_openid:
+							# print('update other wxopenid')
+							admin_customer_openid.wx_openid = wx_openid
+						else:
+							admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
+							self.session.add(admin_customer_openid)
+						self.session.commit()
+					else:
+						print('[CustomerMarket]get openid failed')
+				# else:
+				#	print('[CustomerMarket]haahahahah')
+			else:
+				# print('has no mp!!!!!!!!!!!!!!')
+				pass
+			# print('[CustomerMarket]success??????????????????????????????????')
 
 		# self.current_shop = shop
 		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
@@ -1446,7 +1469,7 @@ class Market(CustomerBaseHandler):
 		elif action == 9:
 			return self.search_list()
 	# @classmethod
-	def w_getdata(self,session,m,customer_id):
+	def w_getdata(self,session,m,customer_id,shop_id):
 			self.update_seckill()
 			self.updatediscount()
 			data = []
@@ -1660,6 +1683,28 @@ class Market(CustomerBaseHandler):
 						data_item2['end_time'] = end_time1
 						data.append(data_item2)
 				##
+
+				# 限购：仅新用户/仅老用户/仅充值用户
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit in [1,2]:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buy_limit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
+						
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
+				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
+					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
+					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no),\
+					'buylimit':buy_limit,'userlimit':userlimit})
+				
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1689,7 +1734,7 @@ class Market(CustomerBaseHandler):
 		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all()
-		fruit_list = self.w_getdata(self.session,fruits,customer_id)
+		fruit_list = self.w_getdata(self.session,fruits,customer_id,shop_id)
 		# print("[CustomerMarket]fruit_list: total_page:",total_page)
 		return self.send_success(data = fruit_list ,nomore = nomore,group_id=group_id)
 
@@ -1712,7 +1757,7 @@ class Market(CustomerBaseHandler):
 			nomore = True
 		#fruits = fruits.offset(offset).limit(page_size).all()
 		fruits = fruits.all()
-		fruit_list = self.w_getdata(self.session,fruits,customer_id)
+		fruit_list = self.w_getdata(self.session,fruits,customer_id,shop_id)
 		return self.send_success(data = fruit_list ,nomore = nomore)
 
 	@unblock
@@ -1742,7 +1787,7 @@ class Market(CustomerBaseHandler):
 		if total_page <= page:
 			nomore = True
 		fruits = fruits.offset(offset).limit(page_size).all() if count_fruit >10  else fruits.all()
-		fruits_data = self.w_getdata(self.session,fruits,customer_id)
+		fruits_data = self.w_getdata(self.session,fruits,customer_id,shop_id)
 		return self.send_success(data = fruits_data,nomore=nomore)
 
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
@@ -1758,7 +1803,7 @@ class Market(CustomerBaseHandler):
 			self.send_fail("[CustomerMarket]favour: shop_point error")
 		if favour:
 			if favour.create_date == datetime.date.today():
-				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
+				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对同一商品赞一次哦")
 			else:  # 今天没点过赞，更新时间
 				try:
 					point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)
@@ -1999,7 +2044,9 @@ class Cart(CustomerBaseHandler):
 		if not cart or (not (eval(cart.fruits))): #购物车为空
 			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
 		cart_f = self.read_cart(shop_id)
-		for item in cart_f:
+		if len(cart_f) == 0:
+			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
+		for item in cart_f.keys():
 			fruit = cart_f[item].get('charge_type').fruit
 			fruit_id = fruit.id
 			fruit_storage = fruit.storage
@@ -2068,6 +2115,7 @@ class Cart(CustomerBaseHandler):
 										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int","discount_ids?")
 	def post(self,shop_code):#提交订单
 		# print("[CustomerCart]pay_type:",self.args['pay_type'])
+		#print(self.args)
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
@@ -2197,6 +2245,29 @@ class Cart(CustomerBaseHandler):
 					totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				fruit=charge_type.fruit
 
+
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit in [1,2]:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=self.current_user.id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buy_limit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=self.current_user.id,shop_id=shop_id,balance_type=0).first()
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
+					if buy_limit != userlimit and buy_limit !=0 :
+						if buy_limit == 1:
+							return self.send_fail("该商品仅限新用户购买")
+						elif buy_limit==2:
+							return self.send_fail("该商品仅限老用户购买")
+						elif buy_limit==3:
+							return self.send_fail("该商品仅限充值用户购买")
+
 				# totalPrice
 				if m_fruit_goods==[]:
 					m_fruit_group.append(fruit.group_id)
@@ -2267,6 +2338,10 @@ class Cart(CustomerBaseHandler):
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.2f%s" % (charge_type.price*discount_rate, charge_type.num, unit[charge_type.unit]),"activity_name":activity_name[charge_type.activity_type],\
 									 "discount_rate":discount_rate}
+
+		#如果订单为空，则不能提交
+		if len(f_d) == 0:
+			return self.send_fail("订单内容不能为空，请重新下单！")
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -2346,7 +2421,6 @@ class Cart(CustomerBaseHandler):
 		else:
 			_order_address = address.address_text
 		
-
 		##########
 		
 		if qshop:
@@ -2505,7 +2579,6 @@ class Cart(CustomerBaseHandler):
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
-
 		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
@@ -2532,7 +2605,7 @@ class Cart(CustomerBaseHandler):
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
-		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret:
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
 			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)
 			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
@@ -2561,16 +2634,11 @@ class Cart(CustomerBaseHandler):
 				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.flush()
-		self.session.commit()
-
+		session.commit()
 		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(self.session,order,access_token)
-			
-			# session.add(balance_history)
-			# session.flush()
-		session.commit()
+			self.send_admin_message(self.session,order,access_token)			
 		return True
 
 	@classmethod
@@ -3529,7 +3597,8 @@ class wxChargeCallBack(CustomerBaseHandler):
 		return self.send_success(qr_url=qr_url)
 
 # 插入爬取店铺数据（访问路由：/customer/test）
-# class InsertData(CustomerBaseHandler):
+class InsertData(CustomerBaseHandler):
+	pass
 # 	# @tornado.web.authenticated
 # 	# @CustomerBaseHandler.check_arguments("code?:str")
 # 	# @tornado.web.asynchronous

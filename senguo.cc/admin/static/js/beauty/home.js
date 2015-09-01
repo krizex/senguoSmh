@@ -138,6 +138,17 @@ $(document).ready(function(){
     var change_num=relate*unit_num*1;
     var buy_today=$this.parents('.charge-item').attr('data-buy');
     var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+    var buy_limit=parseInt(parent.attr("data-buylimit"));
+    var user_limit=parseInt(parent.attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
     if(change_num==NaN){
         change_num=0;
     }
@@ -183,6 +194,17 @@ $(document).ready(function(){
         var regNum=/^[0-9]*$/;
         var buy_today=$this.parents('.charge-item').attr('data-buy');
         var allow_num=parseInt($this.parents('.charge-item').attr('data-allow'));
+        var buy_limit=parseInt(parent.attr("data-buylimit"));
+        var user_limit=parseInt(parent.attr("data-userlimit"));
+        if(buy_limit!=user_limit&&buy_limit!=0){
+            if(buy_limit==1){
+                return noticeBox("该商品仅限新用户购买");
+            }else if(buy_limit==2){
+                return noticeBox("该商品仅限老用户购买");
+            }else if(buy_limit==3){
+                return noticeBox("该商品仅限充值用户购买");
+            }
+        }
         if(buy_today=='True'&&num>=allow_num){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
         }
@@ -334,7 +356,7 @@ var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}" end-ti
                     '</a>'+
                 '</li>';
 //第二页
-var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}"  end-time="{{end_time}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}">'+
+var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" end-time="{{end_time}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
                 '<a href="javascript:;" url="{{link}}" is_activity="{{is_activity}}" class="link-url _add_cart {{if storage<=0 }}desaturate{{/if}}"><img src="/static/images/holder_fruit.png" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/><div class="status-tip {{tag}}"></div></a>'+
                 '<div class="fruit-right charge-item {{if storage<=0 }}desaturate{{/if}}"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
@@ -389,6 +411,8 @@ var fruitItem=function(box,fruits,type){
     var sold_out='';
     var ori_img='';
     var shop_code=$('#shop_code').val();
+    var buylimit=fruits['buylimit'];
+    var userlimit=fruits['userlimit'];
     if(!code) {code='TDSG';}
     if(saled>9999){saled='9999+'}
     if(favour_today=='true'){
@@ -457,6 +481,8 @@ var fruitItem=function(box,fruits,type){
         seckill_id:seckill_id,
         is_bought:is_bought,
         end_time:end_time
+        buylimit:buylimit,
+        userlimit:userlimit
     });
     var $obj = $(html);
     box.append($obj);
@@ -581,16 +607,20 @@ function cartNum(cart_ms,list){
                 var add = charge.siblings('.num_box').find('.to-add');
                 var change = charge.siblings('.num_box').find('.number-change');
                 var input = change.find('.number-input');
-                if (id == cart_ms[key][0]) {
-                    var $parent=charge.parents('.goods-list-item');
-                    var storage=$parent.attr('data-num');
-                    add.addClass('hidden');
-                    change.removeClass('hidden');
-                    input.val(cart_ms[key][1]);
-                    var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
-                    var unit_num=parseFloat(charge.find('.num').text());
-                    var change_num=relate*unit_num*cart_ms[key][1];
-                    $parent.attr({'data-storage':storage-change_num});
+                var buy_limit=parseInt(charge.parents('.goods-list-item').attr("data-buylimit"));
+                var user_limit=parseInt(charge.parents('.goods-list-item').attr("data-userlimit"));
+                if(buy_limit == user_limit||buy_limit==0){
+                    if (id == cart_ms[key][0]) {
+                        var $parent=charge.parents('.goods-list-item');
+                        var storage=$parent.attr('data-num');
+                        add.addClass('hidden');
+                        change.removeClass('hidden');
+                        input.val(cart_ms[key][1]);
+                        var relate=parseFloat(charge.parents('.charge-item').attr('data-relate'));
+                        var unit_num=parseFloat(charge.find('.num').text());
+                        var change_num=relate*unit_num*cart_ms[key][1];
+                        $parent.attr({'data-storage':storage-change_num});
+                    }
                 }
             }
         }
