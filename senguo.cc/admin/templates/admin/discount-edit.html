@@ -208,6 +208,9 @@
                                                 <span class="caret pull-right no-margin-left rotate0"></span>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst scroll-bar-discount" role="menu" aria-labelledby="dropdownMenu18">
+                                                <li class="presentation" role="presentation">
+                                                    <a class="item" href="javascript:;" data-id="-2">所有分组</a>
+                                                </li>
                                                 {% for group in output_data%}
                                                 <li class="presentation" role="presentation">
                                                     <a class="item" href="javascript:;" data-id="{{group['group_id']}}">{{group['group_name']}}</a>

@@ -213,11 +213,11 @@ $(document).ready(function(){
     stopDefault(e);
     var link=$(this).attr('href');
     addCart(link);
-}).on("click","link-url",function(){
+}).on("click",".link-url",function(){
     var is_activity = parseInt($(this).attr("is_activity"));
     var url = $(this).attr("url");
     if(is_activity==0){
-        window.location.href=url;
+        addCart(url);
     }else{
         return noticeBox("活动商品无法查看商品详情哦~~");
     }
@@ -272,7 +272,6 @@ var goodsList=function(page,action,_group_id,type){
     if(action==9){
         args.search = _search;
     }
-    // alert('i am here');
     $.postJson(url,args,function(res){
             if(res.success)
             {

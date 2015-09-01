@@ -1616,7 +1616,7 @@ class Notice(MapBase):
 	detail = Column(String(500)) #详情
 	img_url = Column(String(100)) #公告背景
 
-	seckill_img_url = Column(String(100)) #秒杀公告背景
+	seckill_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp') #秒杀公告背景
 	# gbuy_img_url = Column(String(100)) #团购公告背景
 	discount_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d') #折扣公告背景
 	# presell_img_url = Column(String(100)) #预售公告背景

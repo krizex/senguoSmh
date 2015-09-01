@@ -11,7 +11,7 @@
     window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
 </script>
 {% if good %}
-<input type="hidden" value="{{handler.shop_code}}" id="shop_code"/>
+<input type="hidden" value="{{handler.shop_code}}" is_activity="{{good.activity_status}}" id="shop_code"/>
 <div class="wrap-goods-detail pm80" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}">
     <div class="img-list">
         <a href="javascript:;" class="roll-bg back add-cart" id="back-bg" data-href="{{reverse_url('Market',handler.shop_code)}}"><i></i></a>

@@ -305,7 +305,7 @@ $(document).ready(function(){
 }).on("click",".show-txtimg",function(){
     var isEditor = $(this).attr("data-flag");
     var sHtml = $(this).attr("data-text");
-    if(isEditor=="true"){
+    if(isEditor){
         if(editor){
             $("#ueditor").css("width","100%");
             editor.body.innerHTML=$(this).attr("data-text")||"";
