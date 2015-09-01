@@ -1932,6 +1932,8 @@ class WxOauth2:
 				s = s.decode('utf-8')
 			s = json.loads(s)
 			template_id = s.get('template_id',None)
+			if template_id is None:
+				return False
 			template_id_zip[template_id_short] = template_id
 			admin.template_id = str(template_id_zip)
 			session.commit()

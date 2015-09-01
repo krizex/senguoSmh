@@ -1098,7 +1098,7 @@ class StorageChange(tornado.websocket.WebSocketHandler):
 class Market(CustomerBaseHandler):
 	@tornado.web.authenticated
 	# @get_unblock
-	@CustomerBaseHandler.check_arguments("code?")
+	@CustomerBaseHandler.check_arguments("code?","action?")
 	def get(self, shop_code):
 		# print('[CustomerMarket]login in')
 		code = self.args.get('code',None)
@@ -1108,49 +1108,51 @@ class Market(CustomerBaseHandler):
 		# return self.send_success()
 		# print(self.current_user.id)
 
+
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
-		if shop.admin.has_mp:
-			print('[CustomerMarket]login shop.admin.has_mp')
-			appid = shop.admin.mp_appid
-			appsecret = shop.admin.mp_appsecret
-			customer_id = self.current_user.id
-			admin_id    = shop.admin.id
-			# admin_customer_openid  = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
-		
-			#生成wx_openid
-			if self.is_wexin_browser():
-				# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
-				if len(code) == 0:
-					redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
-					url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
-					return self.redirect(url)
-				else:
-					wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
-				# wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
-				# print(wx_openid,appid,appsecret)
-				if wx_openid:
-					#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
-					admin_customer_openid = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
-					if admin_customer_openid:
-						# print('update other wxopenid')
-						admin_customer_openid.wx_openid = wx_openid
+		if  len(self.args.get('action')) < 1: 
+			if shop.admin.has_mp:
+				print('[CustomerMarket]login shop.admin.has_mp')
+				appid = shop.admin.mp_appid
+				appsecret = shop.admin.mp_appsecret
+				customer_id = self.current_user.id
+				admin_id    = shop.admin.id
+				# admin_customer_openid  = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+			
+				#生成wx_openid
+				if self.is_wexin_browser():
+					# print('[CustomerMarket]weixin aaaaaaaaaaaaaaaaaaaaaaaaaaaaa',appid,appsecret)
+					if len(code) == 0:
+						redirect_uri = APP_OAUTH_CALLBACK_URL + '/' + shop_code
+						url = 'https://open.weixin.qq.com/connect/oauth2/authorize?appid={0}&redirect_uri={1}&response_type=code&scope=snsapi_userinfo&state=123#wechat_redirect'.format(appid,redirect_uri)
+						return self.redirect(url)
 					else:
-						admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
-						self.session.add(admin_customer_openid)
-					self.session.commit()
-				else:
-					print('[CustomerMarket]get openid failed')
-			# else:
-			#	print('[CustomerMarket]haahahahah')
-		else:
-			# print('has no mp!!!!!!!!!!!!!!')
-			pass
-		# print('[CustomerMarket]success??????????????????????????????????')
+						wx_openid = WxOauth2.get_access_token_openid_other(code,appid,appsecret)
+					# wx_openid = self.get_customer_openid(appid,appsecret,shop.shop_code)
+					# print(wx_openid,appid,appsecret)
+					if wx_openid:
+						#如果该用户在对应平台下存有wxopenid则更新，如果没有则生成
+						admin_customer_openid = self.session.query(models.Mp_customer_link).filter_by(admin_id=admin_id,customer_id=customer_id).first()
+						if admin_customer_openid:
+							# print('update other wxopenid')
+							admin_customer_openid.wx_openid = wx_openid
+						else:
+							admin_customer_openid = models.Mp_customer_link(admin_id = admin_id ,customer_id = customer_id , wx_openid = wx_openid)
+							self.session.add(admin_customer_openid)
+						self.session.commit()
+					else:
+						print('[CustomerMarket]get openid failed')
+				# else:
+				#	print('[CustomerMarket]haahahahah')
+			else:
+				# print('has no mp!!!!!!!!!!!!!!')
+				pass
+			# print('[CustomerMarket]success??????????????????????????????????')
 
 		# self.current_shop = shop
 		# print("[CustomerMarket]self.current_shop.shop_code:",self.current_shop.shop_code)
@@ -1489,7 +1491,7 @@ class Market(CustomerBaseHandler):
 			self.send_fail("[CustomerMarket]favour: shop_point error")
 		if favour:
 			if favour.create_date == datetime.date.today():
-				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对一个商品赞一次哦")
+				return self.send_fail("亲，你今天已经为该商品点过赞了，一天只能对同一商品赞一次哦")
 			else:  # 今天没点过赞，更新时间
 				try:
 					point_history = models.PointHistory(customer_id = self.current_user.id ,shop_id =shop_id)

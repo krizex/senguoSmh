@@ -16,28 +16,35 @@
 	    </div>
 	</div>
 	<ul class="info-set-list mt20 font14">
+		<li class="item clearfix">
+            <div class="clearfix">
+                <p class="tit">请注意：开启微信通知后，森果会自动在您的公众平台模版消息中添加3个模版，而每个公众平台最多</p>
+                <p class="tit ml40">可添加15个模版，所以请在开通微信通知功能前确认您的公众平台开通了模版消息功能，</p>
+                <p class="tit ml40">并且『模版消息』中已有的模版数量小于13个。</p>
+            </div>
+        </li>
 	    <li class="item clearfix">
-	    	<a href="{{reverse_url('BbsDetail',21)}}" target="_blank" class="pull-right mt30">查看详细教程</a>
-	    	<div class="clearfix">
-	      		<p class="tit">第一步：进入微信公众平台管理后台，点击页面左下方的『开发者中心』进行如下操作：</p>
-	      		<p class="text-grey2 ml40">1. 在『开发者中心』的『配置项』选项下，找到『接口权限表』板块下的『网页服务』类目；</p>
-	      		<p class="text-grey2 ml40">2. 点击『网页服务』类目中第一项『网页授权获取用户基本信息』后面的『修改』按钮；</p>
-	      		<p class="text-grey2 ml40">3. 在弹出的对话框中填入链接“auth.senguo.cc”（不包含引号），并点击『确定』按钮。</p>
+	    	<a href="{{reverse_url('BbsDetail',0)}}" target="_blank" class="pull-right mt40">查看详细教程</a>
+            <div class="clearfix">
+                <p class="tit">第一步：进入微信公众平台管理后台，点击页面左下方的『开发者中心』进行如下操作：</p>
+                <p class="text-grey2 ml40">1. 在『开发者中心』的『配置项』选项下，找到『接口权限表』板块下的『网页服务』类目；</p>
+                <p class="text-grey2 ml40">2. 点击『网页服务』类目中第一项『网页授权获取用户基本信息』后面的『修改』按钮；</p>
+                <p class="text-grey2 ml40">3. 在弹出的对话框中填入链接“auth.senguo.cc”（不包含引号），并点击『确定』按钮。</p>
                 <p class="text-pink ml40">注意：请务必设置正确的链接，否则所有用户将无法正常登录您的森果店铺。</p>
-	      	</div>
-	    </li>
+            </div>
+        </li>
         <li class="item clearfix">
-	    	<a href="javascript:;" class="wx-edit pull-right mt30">编辑</a>
-	    	<div class="clearfix">
-	      		<p class="tit">第二步：提交微信公众平台相关信息</p>
-	      		<p class="text-grey2 ml40">微信公众号名称：<span class="name">{{current_shop.admin.mp_name}}</span></p>
-	      		<p class="text-grey2 ml40">AppID：<span class="id">{{current_shop.admin.mp_appid}}</span></p>
-	      		<p class="text-grey2 ml40">AppSecret：<span class="secret">{{current_shop.admin.mp_appsecret}}</span></p>
-                <p class="text-pink ml40">提示：AppID、AppSecret 请在微信公众平台管理后台的『开发者中心』查看</p>
-	      	</div>
-	    </li>
-	</ul>
-	<div class="modal wx-edit-box" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+            <a href="javascript:;" class="wx-edit pull-right mt40">编辑</a>
+            <div class="clearfix">
+                <p class="tit">第二步：提交微信公众平台相关信息</p>
+                <p class="text-grey2 ml40">微信公众号名称：<span class="name">{{current_shop.admin.mp_name}}</span></p>
+                <p class="text-grey2 ml40">AppID：<span class="id">{{current_shop.admin.mp_appid}}</span></p>
+                <p class="text-grey2 ml40">AppSecret：<span class="secret">{{current_shop.admin.mp_appsecret}}</span></p>
+                <p class="text-pink ml40">提示：AppID、AppSecret 请在微信公众平台管理后台的『开发者中心』查看。</p>
+            </div>
+        </li>
+    </ul>
+    <div class="modal wx-edit-box" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body font14">
@@ -64,6 +71,6 @@
             </div>
         </div>
     </div>
-	{% end %}
+    {% end %}
 {% end %}
 {% block setbottom %}<script src="{{static_url('js/admin-set.js')}}"></script>{% end %}
