@@ -2186,7 +2186,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 							userlimit = 0
 				if buy_limit == userlimit or buy_limit ==0 :
 					fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
-											  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num}
+											  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
+											   "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
 
 		return fruits
 

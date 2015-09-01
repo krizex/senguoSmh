@@ -642,7 +642,7 @@ var fruitItem=function(box,fruits,type){
         is_bought:is_bought,
         end_time:end_time,
         discount_rate:discount_rate,
-        has_discount_activity:has_discount_activity
+        has_discount_activity:has_discount_activity,
         buylimit:buylimit,
         buylimit_txt:buylimit_txt,
         userlimit:userlimit

@@ -1523,6 +1523,24 @@ class Market(CustomerBaseHandler):
 				has_discount_activity=0  #标记该商品是否参与限时折扣
 				end_time1=0
 				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=-2).first() # 查询是否有所有商品都打折的情况
+
+				# 限购：仅新用户/仅老用户/仅充值用户
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit in [1,2]:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buy_limit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
+						
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
+
 				for charge_type in fruit.charge_types:
 					if charge_type.active !=0 and charge_type.activity_type in [0,-2,2]:
 						unit  = charge_type.unit
@@ -1607,6 +1625,8 @@ class Market(CustomerBaseHandler):
 				data_item1['group_id'] = fruit.group_id
 				data_item1['detail_no'] = str(detail_no)
 				data_item1['is_activity'] = 0
+				data_item1['buylimit'] = buy_limit
+				data_item1['userlimit'] = userlimit
 
 				data_item2['id'] = fruit.id
 				data_item2['shop_id'] = fruit.shop_id
@@ -1619,6 +1639,8 @@ class Market(CustomerBaseHandler):
 				data_item2['favour_today'] = str(favour_today)
 				data_item2['group_id'] = fruit.group_id
 				data_item2['detail_no'] = str(detail_no)
+				data_item2['buylimit'] = buy_limit
+				data_item2['userlimit'] = userlimit
 
 				fruit_id = fruit.id
 				bought_customer_list = []
@@ -1682,28 +1704,6 @@ class Market(CustomerBaseHandler):
 						data_item2['limit_num'] = fruit.limit_num
 						data_item2['end_time'] = end_time1
 						data.append(data_item2)
-				##
-
-				# 限购：仅新用户/仅老用户/仅充值用户
-				buy_limit = fruit.buy_limit
-				userlimit = 0
-				if buy_limit !=0:
-					if buy_limit in [1,2]:
-						try:
-							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
-						except:
-							userlimit = 0
-					elif buy_limit == 3:
-						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
-						
-						if if_charge:
-							userlimit = 3
-						else:
-							userlimit = 0
-				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
-					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no),\
-					'buylimit':buy_limit,'userlimit':userlimit})
 				
 			return data
 
