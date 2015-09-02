@@ -832,7 +832,7 @@ class IncStatic(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("page:int")
 	def curve(self):
 		page = self.args["page"]
-		
+
 		if page == 0:
 			now = datetime.datetime.now()
 			start_date = datetime.datetime(now.year, now.month, 1)
@@ -877,21 +877,17 @@ class IncStatic(SuperBaseHandler):
 				day = datetime.datetime.fromtimestamp(info[1]).day
 				data[day][i] += 1
 
-		count(all_infos, 1)		#计算增加的所有用户的数量
-		count(admin_infos, 2)	#计算增加的商家的数量
-		count(customer_infos, 3)#计算增加的顾客的数量
-		count(phone_infos, 4)	#计算增加的有留电话的用户数量
-		#modified by sunmh 计算total时，需要加上过滤条件
+		count(all_infos, 1)
+		count(admin_infos, 2)
+		count(customer_infos, 3)
+		count(phone_infos, 4)
 		if level == 0:
-			total = self.session.query(models.Accountinfo).\
-					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).count()
+			total = self.session.query(models.Accountinfo).count()
 		elif level == 1:
-			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).\
-					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).count()
+			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).count()
 		else:
 			return self.send_fail('level error')
 
-		#计算每日的累计用户数
 		for x in range(1, end_date.day+1)[::-1]:
 			data[x][5] = total
 			total -= data[x][1]
@@ -909,106 +905,6 @@ class IncStatic(SuperBaseHandler):
 		page_sum = (datetime.datetime.now() - datetime.datetime.
 					fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
 		return self.send_success(data=l[::-1], page_sum=page_sum)
-
-# 统计 - 余额统计
-# add by sunmh 2015年09月01日11:26:57
-class AmountStatic(SuperBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		level = self.current_user.level
-		return self.render("superAdmin/count-amount.html",level=level, context=dict(subpage='count',subcount='amount'))
-
-	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action:str")
-	def post(self):
-		action = self.args["action"]
-		if action == "amount_trend":
-			return self.amount_trend()
-		else:
-			return self.error(404)
-
-	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action:str","type:int","current_year?:str","current_month?:str")
-	def amount_trend(self):
-		type = self.args["type"]
-		
-		#type=1表示按天来进行排序,只取当前月份的
-		if type == 1:  
-			current_year = self.args['current_year']
-			current_month = self.args['current_month']
-			if len(current_month)<2:
-				current_month='0'+current_month
-			#print(current_month,current_year,'Test')
-			#current_month='12'
-
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
-				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			# 按天分组，获取所有进入平台的金额
-			q_total=q.filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
-			# 按天分组，获取所有的从微信进入平台的金额
-			q_wechat=q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
-			# 按天分组，获取所有的从支付宝进入平台的金额
-			q_alipay=q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
-			# 获取当前月份的所有记录中日期数最大的记录，便于确定返回的数组的大小
-			q_range=self.session.query(func.max(func.day(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month)
-			#print(q_range.all()[0][0])
-		elif type==2:	#type=2表示按周来进行排序，取全年的所有周的数据
-			current_year = self.args['current_year']
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time)).\
-				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_range=self.session.query(func.max(func.week(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year)
-			#print(q_range.all())
-		elif type==3:	#type=3表示按月来进行排序，取全年的所有月份的数据
-			current_year = self.args['current_year']
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
-				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
-			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
-			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
-			q_range = self.session.query(func.max(func.month(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year)
-			#print(q_range.all())
-		else:
-			return self.send_error(404)
-
-		data = []
-		#数组的大小
-		if q_range.all()[0][0] is not None:
-			rangeOfArray=int(q_range.all()[0][0])
-			for x in range(1, rangeOfArray+1):
-				data.append({'total': 0, 'wechat': 0, 'alipay': 0})
-			#组装数组
-			def assembleArray(s_type,q_infos):
-				for info in q_infos:
-					index = info[1]-1
-					value = round(info[0],2)
-					data[index][s_type] = value
-			
-			assembleArray('total',q_total.all())
-			assembleArray('wechat',q_wechat.all())
-			assembleArray('alipay',q_alipay.all())
-		else:
-			if type==1:
-				if current_month in ('01','03','05','07','08','10','12'):
-					rangeOfArray=31
-				elif current_month in ('04','06','09','11'):
-					rangeOfArray=30
-				elif int(current_year)%4==0:
-					rangeOfArray=29
-				else:
-					rangeOfArray=28
-			elif type==2:
-				rangeOfArray=52
-			else:
-				rangeOfArray=12
-			for x in range(1, rangeOfArray+1):
-				data.append({'total': 0, 'wechat': 0, 'alipay': 0})
-		#print(data)
-		return self.send_success(data=data)
-
-
 
 # 统计 - 用户属性分布
 class DistributStatic(SuperBaseHandler):

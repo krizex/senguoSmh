@@ -13,16 +13,14 @@
 <!-- added by jyj 2015-8-3 -->
 {% set sell_active = "" %}
 <!--  -->
-<!-- added by sunmh 2015年09月01日11:13:12 -->
-{% set amount_active = "" %}
-<!--  -->
+
 {% if subcount == "user"%}
     {% set user_active = "active"%}
 {% elif subcount == "shop"%}
     {% set shop_active = "active"%}
 {% elif subcount == "attribute"%}
     {% set attribute_active = "active"%}
-<!--change by jyj 2015-6-15-->
+    <!--change by jyj 2015-6-15-->
 {% elif subcount == "apply"%}
     {% set apply_active = "active"%}
 <!---->
@@ -30,10 +28,6 @@
 <!-- added by jyj 2015-8-3 -->
 {% elif subcount == "sell" %}
     {% set sell_active = "active" %}
-<!--  -->
-<!-- added by sunmh 2015年09月01日11:04:50 -->
-{% elif subcount == "amount" %}
-    {% set amount_active = "active" %}
 <!--  -->
 <!--add by jyj 2015-6-15-->
 {% else %}
@@ -63,11 +57,6 @@
             <!-- added by jyj 2015-8-3 -->
             <li class="sell nav_item {{sell_active}}">
                 <a href="{{reverse_url('superSellStatic')}}">销售统计</a>                
-            </li>
-            <!--  -->
-            <!-- added by sunmh 2015年09月01日11:04:43 -->
-            <li class="amount nav_item {{amount_active}}">
-                <a href="{{reverse_url('superAmountStatic')}}">余额统计</a>                
             </li>
             <!--  -->
         </ul>
