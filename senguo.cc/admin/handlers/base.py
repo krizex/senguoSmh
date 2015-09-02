@@ -2158,12 +2158,23 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				self.updatediscount()
 				discount_rate=1
 				num=None
-				q=self.session.query(models.ChargeType).filter_by(id=charge_type.id,activity_type=2).first()
-				if q:
-					qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).first()
-					if qq:
-						if charge_type.id in eval(qq.charge_type):
-							discount_rate = qq.discount_rate/10
+				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,status=1,use_goods_group=-2).first()
+				if q_all:
+					q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).first()
+					discount_rate = q_group.discount_rate/10
+			    else:
+			    	q_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=charge_type.fruit.group_id,use_goods=-1,status=1).first()
+					if q_part:
+						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).first()
+						discount_rate = q_group.discount_rate/10
+					else:
+						q=self.session.query(models.ChargeType).filter_by(id=charge_type.id,activity_type=2).first()
+						if q:
+							qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).first()
+							if qq:
+								if charge_type.id in eval(qq.charge_type):
+									q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).first()
+									discount_rate = q_group.discount_rate/10
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
 										  "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
