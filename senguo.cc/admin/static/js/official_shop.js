@@ -166,10 +166,37 @@
 var shopTotal=function(){
 	var total_count=$('#total_count').val().toString();
 	var n_length=total_count.length;
-	var num_2=Int(total_count.substring(0,1));
-	var num_3=Int(total_count.substring(1,2));
-	var num_4=Int(total_count.substring(2,3));
-	var number=[num_2,num_3,num_4];
+    var num_1=0;
+    var num_2=0;
+    var num_3=0;
+    var num_4=0;
+    if(n_length==1){
+        num_1=0;
+        num_2=0;
+        num_3=0;
+        num_4=total_count;
+    }else if(n_length==2){
+        num_1=0;
+        num_2=0;
+        num_3=Int(total_count.substring(0,1));
+        num_4=Int(total_count.substring(1,2));
+    }else if(n_length==3){
+        num_1=0;
+        num_2=Int(total_count.substring(0,1));
+        num_3=Int(total_count.substring(1,2));
+        num_4=Int(total_count.substring(2,3));
+    }else if(n_length==4){
+        num_1=Int(total_count.substring(0,1));
+        num_2=Int(total_count.substring(1,2));
+        num_3=Int(total_count.substring(2,3));
+        num_4=Int(total_count.substring(3,4));
+    }else{
+        num_1=9;
+        num_2=9;
+        num_3=9;
+        num_4=9;
+    }
+	var number=[num_1,num_2,num_3,num_4];
 	number=bubbleSort(number);
 	window.dataObj.time=number+1;  
 	var n4=0;
@@ -192,16 +219,18 @@ var shopTotal=function(){
 		        else {$('.num3').text(num_3)}
 		        if(num2!=num_2) $('.num2').text(n2++);
 		        else {$('.num2').text(num_2)}
+                if(num1!=num_1) $('.num1').text(n1++);
+                else {$('.num1').text(num_1)}
 		        setTimeout(function() {
 		                count(time,num_4,num_3,num_2,num_1)
 		            },
 		            50)
 		    }
 	}    
-	count(number+1,num_4,num_3,num_2);  
+	count(number+1,num_4,num_3,num_2,num_1);
 }
 
-
+var page = 0;
 var getData=function(action,page,type,data){
 	var url='';
 	var action =action;

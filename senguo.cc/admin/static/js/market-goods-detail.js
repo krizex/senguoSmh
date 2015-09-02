@@ -212,6 +212,17 @@ $(document).ready(function(){
     var link=$(this).attr('data-href');
     SetCookie("fromdetail","")
     addCart(link);
+}).on("click",".seckill-buy",function(){
+    var id = $(this).closest("li").attr("data-id");
+    var s_goods_id =  $(this).closest("li").attr("seckill_goods_id");
+    window.dataObj.fruits[id]=1;
+    $(this).addClass("hidden");
+    $(this).next(".seckill-btn-yes").removeClass("hidden");
+    wobble($('.cart_num'));
+    window.dataObj.cart_count++;
+    $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
+    seckill_goods_ids.push(s_goods_id);
+    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 });
 //点赞
 function great(id,$this){
