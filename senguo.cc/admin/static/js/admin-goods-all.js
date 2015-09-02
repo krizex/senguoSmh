@@ -565,7 +565,7 @@ function dealGoods($item,type){
             if(!!$this.attr("url")){
                 arr1.push($this.closest("li").attr("data-index"));
                 arr2.push($this.attr("url"));
-                mg_flag = false;
+                img_flag = false;
             }else{
                 img_flag = true;
                 return false;
@@ -591,11 +591,13 @@ function dealGoods($item,type){
     }else{
         price_type.each(function(){
             var id = $(this).attr("data-id");
-            var unit_num = $(this).attr("data-first");
+            //var unit_num = $(this).attr("data-first");
+            var unit_num = $(this).find(".first-num").html();
             var unit = $(this).find(".price-unit").attr("data-id");
             var unit_name = $(this).find(".price-unit").html();
             var num = $(this).find(".price-num").val().trim();
-            var select_num = $(this).attr("data-second");
+            //var select_num = $(this).attr("data-second");
+            var select_num = $(this).find(".second-num").html();
             var price = $(this).find(".current-price").val().trim();
             var market_price = $(this).find(".market-price").val().trim();
             if(!testMoney.test(num) || !testMoney.test(price)){
