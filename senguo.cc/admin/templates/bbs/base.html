@@ -3,17 +3,12 @@
 <head>
     <title>{% block title %}森果社区{% end %}</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1,initial-scale=1,user-scalable=no">
     <meta name="keywords" content="森果,水果商城,水果,O2O,森果登录,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
     <meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
-    <meta content="yes" name="apple-mobile-web-app-capable">
-    <meta content="yes" name="apple-touch-fullscreen">
-    <meta content="black" name="apple-mobile-web-app-status-bar-style">
     <meta name="format-detection" content="telephone=no">
-    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="{{static_url('bbs/css/reset.css')}}">
-    <link rel="stylesheet" type="text/css" href="{{static_url('bbs/css/main.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('bbs/css/bbs-main.css')}}">
     {% block head %}{% end %}
     <script>
         window.dataObj = {
@@ -27,9 +22,54 @@
     {% else %}
     {% set if_login = False %}
     {% end %}
-    <header>
-        {% block header %}{% end %}
-    </header>
+    <div class="wrap-bbst">
+        <div class="bbs-top">
+            <div class="bbx-top-box w980">
+                <div class="wrap-userinfo fr">
+                    <a href="javascript:;">
+                        <img src="/static/images/TDSG.png" alt="张三的头像"/>
+                        <span class="name-text ml5">用户名</span>
+                    </a>
+                </div>
+                <a href="/bbs" class="logo-sg"></a>
+                <div class="wrap-search">
+                    <input type="text" class="search-input" id="search_bbs" placeholder="请输入文章标题关键字"/>
+                    <a href="javascript:;" class="search-btn"></a>
+                </div>
+            </div>
+        </div>
+        <div class="wrap-nav">
+            <ul class="nav-list w980 group">
+                <li>
+                    <a href="/bbs">首页</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="0">官方公告</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="1">产品更新</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="2">运营干货</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="3">水果百科</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="4">使用教程</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="5">水果供求</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="6">森果前沿</a>
+                </li>
+                <li>
+                    <a href="javascript:;" data-id="7">用户交流</a>
+                </li>
+            </ul>
+        </div>
+    </div>
     <div class="container">
         {% block content %}{% end %}
     </div>

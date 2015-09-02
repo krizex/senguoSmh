@@ -2,40 +2,50 @@
 {% block title %}{% end %}
 {% block head %}
 {% end %}
-{% block header %}
-<div class="header">
-    <a href="javascript:;" class="back bbs-menu" id="bbs-menu">所有版块</a>
-    <span>森果社区</span>
-    <a href="{{reverse_url('BbsSearch')}}" class="head-right search"><em></em></a>
-    <div class="wrap-menu-list h0">
-        <ul class="menu-list">
-            <li data-id="0">官方公告</li>
-            <li data-id="1">产品更新</li>
-            <li data-id="2">运营干货</li>
-            <li data-id="3">水果百科</li>
-            <li data-id="4">使用教程</li>
-            <li data-id="5">水果供求</li>
-            <li data-id="6">森果前沿</li>
+{% block content %}
+<div class="wrap-main group">
+    <div class="wrap-right fr">
+        <a class="publish-box"></a>
+        <div class="aside-box">
+            <p class="aside-title">热门文章</p>
+            <ul class="aside-list">
+                <li>
+                    <p class="clip">热门文章名字，热门文章名字来了啊</p>
+                    <div class="wrap-topic-attr">
+
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <div class="wrap-left box-border">
+        <ul class="topic-list">
+            <li>
+                <h4 class="topic-title">森果又出新功能啦，哈哈哈哈，大家快来强势围观吧！大家快来强势围观吧！大家快来强势围观吧！<span class="topic-tip">官</span></h4>
+                <div class="wrap-topic-attr">
+                    <div class="fr">
+                        <a href="javascript:;" class="icon-topic dianzan">100</a>
+                        <a href="javascript:;" class="icon-topic reply">100</a>
+                    </div>
+                    <span class="topic-class">运营干货</span>
+                    <span>骑驴看账本</span>
+                    <span>5小时前</span>
+                </div>
+            </li>
+            <li>
+                <h4 class="topic-title">森果又出新功能啦，哈哈哈哈，大家快来强势围观吧！大家快来强势围观吧！大家快来强势围观吧！<span class="topic-tip">官</span></h4>
+                <div class="wrap-topic-attr">
+                    <div class="fr">
+                        <a href="javascript:;" class="icon-topic dianzan dianzan-active">100</a>
+                        <a href="javascript:;" class="icon-topic reply">100</a>
+                    </div>
+                    <span class="topic-class">运营干货</span>
+                    <span>骑驴看账本</span>
+                    <span>5小时前</span>
+                </div>
+            </li>
         </ul>
     </div>
-</div>
-{% end %}
-{% block content %}
-<div class="wrap-main">
-    <ul class="atical-list">
-        <!--<li>
-            <p class="title"><span class="atical-mark">产品更新</span>号外号外！森果商城新版功能上线啦，店铺现在有多套模版可
-                切换了哦！森果商城新版功能上线啦，店铺现在有多套模版可切换了哦！</p>
-            <div class="atical-attr">
-                <span class="fr">
-                    <a href="javascript:;" class="wrap-icon dianzan"><i class="icon-dz"></i>122</a>
-                    <a href="javascript:;" class="wrap-icon comment"><i class="icon-com"></i>133</a>
-                </span>
-                <span class="time mr10">一天前</span>
-                <span class="author">森果运营</span>
-            </div>
-        </li>-->
-    </ul>
 </div>
 <div class="wrap-loading-box hide">
     <div class="loading-box">
