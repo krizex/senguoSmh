@@ -47,7 +47,7 @@ try:
 except ImportError:
     pycurl = None
 
-from setting import MP_APPID, MP_APPSECRET
+from settings import MP_APPID, MP_APPSECRET
 
 class WxPayConf_pub(object):
     """配置账号信息"""
