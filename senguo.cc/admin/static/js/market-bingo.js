@@ -256,11 +256,7 @@ $(document).ready(function(){
     var shop_code=$('#shop_code').val();
     var is_activity = parseInt($(this).attr("is_activity"));
     if (storage > 0) {
-        if(is_activity==0){
-            addCart("/"+shop_code+"/goods/"+id);
-        }else{
-            return noticeBox("活动商品无法查看商品详情哦~~");
-        }
+        addCart("/"+shop_code+"/goods/"+id);
     }else if(storage<=0){
         return noticeBox("当前商品已经卖完啦");
     }

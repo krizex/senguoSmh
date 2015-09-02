@@ -238,11 +238,7 @@ $(document).ready(function(){
 }).on("click",".link-url",function(){
     var is_activity = parseInt($(this).attr("is_activity"));
     var url = $(this).attr("url");
-    if(is_activity==0){
-        addCart(url);
-    }else{
-        return noticeBox("活动商品无法查看商品详情哦~~");
-    }
+    addCart(url);
 }).on("click",".seckill-goods",function(){//秒杀
     var id = $(this).attr("data-id");
     var s_goods_id =  $(this).attr("seckill_goods_id");
