@@ -2162,8 +2162,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				if q_all:
 					q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).first()
 					discount_rate = q_group.discount_rate/10
-			    else:
-			    	q_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=charge_type.fruit.group_id,use_goods=-1,status=1).first()
+				else:
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=charge_type.fruit.group_id,use_goods=-1,status=1).first()
 					if q_part:
 						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).first()
 						discount_rate = q_group.discount_rate/10
