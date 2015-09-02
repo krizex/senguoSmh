@@ -128,7 +128,7 @@
 .seckill-btn{width: 60px;height: 28px;line-height: 28px;float:right;cursor:pointer;text-align: center;color: #fff;font-weight: bold;border-radius: 4px;background-color: #FF9800;}
 .seckill-btn-yes{background-color: #ddd !important;}
 .price-bo{color: #59D5AA;margin-right: 4px;cursor: pointer;}
-.price-tip{display: inline-block;color: #FF9800;cursor: pointer;padding: 0 4px;border-radius: 12px;border: 1px solid #ff9800;font-size: 12px;height: 18px;line-height: 16px;}
+.price-tip{display: inline-block;color: #FF9800;cursor: pointer;padding: 0 4px;border-radius: 12px;border: 1px solid #ff9800;font-size: 12px;height: 18px;line-height: 16px;margin-left: 4px;vertical-align: 1px;transform: scale(0.9);-webkit-transform: scale(0.9);}
 .price-dif{-webkit-transform:scale(0.9);}
 .wrap-seckill-price{position: absolute;top: 4px;right: -20px;}
 /*swiper*/
