@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}支付方式{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>支付方式</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-list pb45">
+    <ul class="pay-list mt15">
+        <li>
+            <div>
+                <div class="fr">
+                    <span class="switch-btn {% if handler.current_shop.config.online_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="online"><i></i><span>{% if handler.current_shop.config.online_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
+                </div>
+                <div class="pay-left">
+                    <p class="c333">在线支付</p>
+                    <p class="c84 mt4">用用户下单时使用支付宝支付或者微信支付，下单的同时完成付款。<span class="dgreen">推荐开启</span></p>
+                </div>
+            </div>
+            <div class="wrap-pay-more">
+                <span class="down">更多<i></i></span><span class="up">收回<i></i></span>
+            </div>
+            <div class="wrap-pay-text hide">
+                <p class="dgreen">注意：网页版微信支付只能在微信聊天窗口、微信群、朋友圈进行，订阅号下不能使用微信支付。订阅号卖家请提示用户复制店铺链接到浏览器或非订阅号区域进行充值。</p>
+                <p class="pcolor mt4">微信支付、支付宝支付、银联支付以及商家提现所产生的、由平台收取的2%手续费，森果平台全额补贴，卖家不用支付一分钱！</p>
+            </div>
+        </li>
+        <li>
+            <div>
+                <div class="fr">
+                    <span class="switch-btn {% if handler.current_shop.config.balance_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="balance"><i></i><span>{% if handler.current_shop.config.balance_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
+                </div>
+                <div class="pay-left">
+                    <p class="c333">余额支付</p>
+                    <p class="c84 mt4">用户提前在店铺充值，急速下单。极大程度提高用户粘度。<span class="dgreen">推荐开启</span></p>
+                </div>
+            </div>
+            <div class="wrap-pay-more">
+                <span class="down">更多<i></i></span><span class="up">收回<i></i></span>
+            </div>
+            <div class="wrap-pay-text hide">
+                <p class="pcolor ">店铺认证后默认开启，只有当账户余额为0且当所有余额支付的订单完成，余额支付才能关闭。</p>
+                <p class="dgreen mt4">注意：网页版微信支付只能在微信聊天窗口、微信群、朋友圈进行，订阅号下不能使用微信支付。订阅号卖家请提示用户复制店铺链接到浏览器或非订阅号区域进行充值。</p>
+                <p class="pcolor mt4">微信支付、支付宝支付、银联支付以及商家提现所产生的、由平台收取的2%手续费，森果平台全额补贴，卖家不用支付一分钱！</p>
+            </div>
+        </li>
+        <li>
+            <div>
+                <div class="fr">
+                    <span class="switch-btn {% if handler.current_shop.config.cash_on_active==1 %}switch-abtn{% end %} switch-pay"  data-action="cash"><i></i><span>{% if handler.current_shop.config.cash_on_active==1 %}已启用{% else %}未启用{% end %}</span></span>
+                </div>
+                <div class="pay-left">
+                    <p class="c333">货到付款</p>
+                    <p class="c84 mt4">用户先下单，收到商品付款，由送货员收取现金，耗费人力。<span class="dgreen">推荐关闭</span></p>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set.js')}}"></script>
+{% end %}

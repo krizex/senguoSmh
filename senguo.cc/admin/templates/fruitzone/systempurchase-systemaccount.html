@@ -1,0 +1,41 @@
+{% extends 'systempurchase-base.html'%}
+
+{% block head-title %} 支付订单 {% end %}
+
+{% block page-detail%}
+
+
+
+
+{% import dal.models as models%}
+<h4>账户详情</h4>
+{% if current_user.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER%}
+  {% if current_user.system_username%}
+  <ul class="list-group">
+    <li class="list-group-item">
+      <label class="">商城后台登录网址</label><br/>
+      <span class=""><a href="http://open.wexinfruit.com/backstage">http://open.wexinfruit.com/backstage</a></span>
+    </li>
+    <li class="list-group-item">
+      <label class="">系统登录用户名</label><br />
+      <span class="">{{current_user.system_username}}</span>
+    </li>
+    <li>
+	<label>系统登录密码</label><br/>
+	<span>123456(此密码为默认登录密码，请及时登录后台管理系统更改您的密码)</span>
+    </li>
+    <li class="list-group-item">
+      <label class="">商铺地址</label><br />
+      <a class="" href="{{current_user.system_market_url}}">{{current_user.system_market_url}}</a>
+    </li>
+  </ul>
+  <p class="bg-info proper-padding">您的账户密码客服已经发送到您的邮箱或者通过其他方式联系到了您，请注意查收。如果有问题请联系：<a href="mailto:wolf@senguo.cc">wolf@senguo.cc</a></p>
+  {% else %}
+  <p class="" style="text-align:center;">系统管理员正在处理您的订单，我们将会在1日内处理完，并通过邮件将账户信息发送给您。</p>
+  {% end %}
+
+{% else %}
+<p class="" style="text-align:center;">您在森果商城暂无账户，<a href="{{reverse_url('fruitzoneSystemPurchaseChargeTypes')}}">去购买系统</a></p>
+{% end %}
+
+{% end %}

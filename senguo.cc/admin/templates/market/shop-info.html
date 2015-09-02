@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}店铺信息录入{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header head_tab">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>店铺信息录入</span>
+    <a href="javascript:;" class="head-right" id="save_info">提交</a>
+</div>
+{% end %}
+{% block content %}
+<input type="hidden" id="token" value="{{token}}"/>
+<div class="wrap-shop-info pb45">
+    <ul class="data-list mt15">
+        <li class="logo-li" id="shop_img_box">
+            <a href="javascript:;">
+                <span class="fr"><span class="img-border"><img id="shop_logo" src="{{shop_logo}}" alt="店铺logo"/></span></span>
+                <span class="text-left ">店铺logo</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="edit_item" data-action="name">
+                <span class="fr c333 more" id="shop_name">{{shop_name}}</span>
+                <span class="text-left">店铺名称</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="edit_item" data-action="phone">
+                <span class="fr c333 more" id="shop_tel">{{shop_phone}}</span>
+                <span class="text-left">联系电话</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="edit_item" data-action="area">
+                <span class="fr c333 more" id="shop_area">{{delivery_area}}</span>
+                <span class="text-left">配送范围</span>
+            </a>
+        </li>
+        <li class="info-li">
+            <a href="javascript:;" class="edit_item group" data-action="address">
+                <span class="fr c333 more text-clip" id="shop_address">{{shop_address}}</span>
+                <span class="text-left info-left">店铺地址</span>
+            </a>
+        </li>
+    </ul>
+    <p class="c666 mt10 txt-center">信息录入</p>
+    <ul class="data-list mt10">
+        <li id="add-licence-box">
+            <a href="javascript:;" class="" id="add-licence" data-action="licence" url="">
+                <span class="fr c333 shop_status more" id="shop_licence"><span>{{shop_auth}}</span><img src="/static/images/load.gif" alt="loading" class="loading"/></span>
+                <span class="text-left">营业执照</span>
+            </a>
+        </li>
+        <li>
+            <a href="javascript:;" class="" data-flag="0" id="shoper" data-id="{{id}}">
+                <span class="fr c333 shop_auth more" id="shop_shoper">{{admin_info}}</span>
+                <span class="text-left">店长信息</span>
+            </a>
+        </li>
+        <li class="info-li">
+            <a href="javascript:;" class="group" data-action="staff" id="staffer">
+                <span class="fr c333 text-clip more" id="shop_staff">{{staff_info}}</span>
+                <span class="text-left info-left">配送员信息</span>
+            </a>
+        </li>
+    </ul>
+    <ul class="data-list mt10">
+        <li>
+            <a href="javascript:;" class="edit_item" data-action="remark">
+                <span class="fr c333 more" id="shop_remark">{{description}}</span>
+                <span class="text-left">备注信息</span>
+            </a>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin pop-name hide">
+    <div class="pop-bcontent">
+        <h3 id="b_title">店铺名称</h3>
+        <div class="wp-ipt mt44">
+            <input class="shop_text hide" type="text"/>
+            <textarea class="shop_area hide"></textarea>
+        </div>
+        <div class="wrap-bbtns">
+            <a href="javascript:;" class="ok-bbtn dgreen">完成</a>
+            <a href="javascript:;" class="cancel-bbtn c666">取消</a>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<script src="/static/js/plupload/i18n/zh_CN.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script src="{{static_url('market/js/shop-info.js')}}"></script>
+{% end %}

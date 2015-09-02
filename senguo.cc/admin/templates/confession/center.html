@@ -1,0 +1,13 @@
+{% extends 'base.html'%}
+{% block title %}{{shop_name}}-告白墙-个人中心{% end %}
+{% block content %}
+<header class="detail-header text-white center-block">
+    <a href="{{reverse_url('ConfessionHome',shop_code)}}" class="return-btn bg_change">&nbsp;</a>
+    <span class="title font16">告白墙-个人中心</span>
+</header>
+<div class="box mt50 center-box">
+	<p class="group font14"><a href="{{reverse_url('ConfessionHome',shop_code)}}?action=public&page=0" class="text-grey3"><span class="fl">我发布的告白</span><span  class="fr text-pink">{{pub_count}}<i class="arr-right fr ml10"></i></span></a></p>
+	<p class="group font14"><a href="{{reverse_url('ConfessionHome',shop_code)}}?action=receive&page=0" class="text-grey3"><span class="fl">我收到的告白</span><span  class="fr text-pink">{{receive_count}}<i class="arr-right fr ml10"></i></span></a></p>
+	<p class="group font14"><a href="{{reverse_url('ConfessionHome',shop_code)}}?action=comment&page=0" class="text-grey3"><span class="fl">我评论过的告白</span><span  class="fr text-pink">{{comment_count}}<i class="arr-right fr ml10"></i></a></span></p>
+</div>
+{% end %}{% block bottom %}<script src="{{static_url('js/confession/center.js')}}"></script>{% end %}

@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+{% set goodsSubpage = context.get('goodsSubpage')%}
+{% set fruit_active="" %}
+{% set home_hide="" %}
+
+{% if goodsSubpage == "home"%}
+    {% set home_hide ="hidden" %}
+{% elif goodsSubpage == "fruit" %}
+    {% set fruit_active = "active" %}
+{% end %}
+<span class="right-title">商品管理</span>
+<div class="subnav-box">
+    <ul class="subnav pull-left">
+        <li class="{{fruit_active}} item"><a href="{{reverse_url('adminShelf')}}?action=fruit&&id=1">水果</a></li>
+        <li class="item dry_active"><a href="{{reverse_url('adminShelf')}}?action=fruit&&id=1001">干果</a></li>
+        {% for menu in menus %}
+        <li class="item menu_active" data-id="{{menu.id}}"><a href="{{reverse_url('adminShelf')}}?action=menu&id={{menu.id}}">{{menu.name}}</a><span class="edit-btn class_name_edit" style="display:none;"></span></li>
+        {% end %}
+        <li><a href="javascript:;" id="add-new-goodsType">+添加分类</a></li>
+    </ul>
+    <!--<div class="search-input input-group pull-right">
+        <form method="post" action="" id="post">
+            <input type="text" value="" placeholder="输入水果名称或套餐名称" class="search-con form-control"/>
+            <input type="submit" value="商品搜索" class="search-btn form-control"/>
+        </form>
+    </div>-->
+</div>
+<!--goods-classify-end-->
+<div class="mode-lock {{home_hide}}">
+    <div class="mode-content unlock-mode pull-left">
+        <p class="lock-unlock">已开启平价水果栏目</p>
+        <p class="mode-introduce">此种模式商品栏目将在前台商场显示。</p>
+        <!--<p class="set-introduce">点击右方全部下架，该类目下的所有商品将被下架</p>-->
+    </div>
+    <div class="mode-set pull-right">
+        <a href="#" class="stop-btn btn-style bg-green check-shelf">查看已上架</a>
+        <!--<a href="#" class="stop-btn btn-style lock-mode">全部下架</a>-->
+    </div>
+</div>
+<!--goods-mode-lock-end-->
+<div class="admin-goods-list">
+    {% block left %}
+    <div class="goods-list-con pull-left">
+        {% block goodsLeft %}{% end %}
+    </div>
+    {% end %}
+    {% block goodsRight %}
+    {% end %}
+</div>
+<!--添加新的商品分类start-->
+<div class="modal fade add-goodsType-box"  tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title" id="myModalLabel">新建商品分类</h4>
+            </div>
+            <div class="modal-body set-width-float">
+                <input type="text" id="type-name" placeholder="输入商品分类名称（请不要超过5个字）" class="center-block w-auto-60 text-center text-grey2 set-bottom10 set-padding-10"/>
+                <!--<textarea id="type-intro" placeholder="分类说明（请不要超过60个字）" class="center-block w-auto-60  text-center text-grey2 set-padding-10"></textarea>-->
+            </div>
+            <div class="modal-footer">
+                <div class="col-lg-6 col-md-6 col-sm-6">
+                    <button type="button" class="btn btn-default bg-grey text-white" data-dismiss="modal">取消</button>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 type_add hidden">
+                     <button type="button" class="btn btn-default bg-green pull-left text-white" id="add-goodsType">确定</button>
+                </div>
+                <div class="col-lg-6 col-md-6 col-sm-6 type_eidt hidden">
+                    <button type="button" class="btn btn-default bg-green pull-left text-white" id="edit-goodsType">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--添加新的商品分类end-->
+{% end %}

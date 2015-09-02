@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}首单短信验证设置{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>首单短信验证</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-set">
+    <ul class="data-list mt15">
+        <li class="phone-verify">
+            <a href="javascript:;" id="phone_verify" data-status="{{text_message_active}}">
+                <span class="fr mt24"><span class="switch-btn {% if text_message_active ==1 %}switch-abtn{% end %}"><i></i><span>{% if text_message_active ==1 %}已启用{% else %}未启用{% end %}</span></span></span>
+                <span class="text-left c333 mt6">
+                    <span>首单短信验证</span>
+                    <p class="c84 mt4">新用户第一次在您店铺下单时，会提示绑定手机号。此功能能有效避免恶意订单，<span class="dgreen">建议开启</span></p>
+                </span>
+            </a>
+        </li>
+    </ul>
+</div>
+{% end %}
+{% block fix %}
+{% end %}
+{% block bottom %}
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-set.js')}}"></script>
+{% end %}

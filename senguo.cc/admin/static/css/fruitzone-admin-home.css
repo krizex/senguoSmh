@@ -1,0 +1,21 @@
+/*-------------------------------------admin-home----------------------------------------------*/
+.user-center-info{width:100%;border-bottom:1px solid #e7e7eb;border-top:1px solid #e7e7eb;margin-top:0.8em;position:relative;}
+.user-center-info a{display:inline-block;width:100%;padding:1em;background:url('../images/next-black-2px.png') no-repeat 95% center;}
+.user-center-info .user-img{width:6.5em;height:6.5em;box-shadow:1px 1px 2px #aaa;}
+.user-center-info .info{padding-left:2em;}
+.user-center-info .info .username{color:#333;font-size:1.6em;margin-bottom:1em;height:2em;}
+.user-center-info .info .to-tie{display:inine-block;color:#FF2424;font-size:1.4em;}
+
+.center-list{margin-top:2.5em;}
+.center-list ul li{width:100%;margin-top:-1px;border-top:1px solid #e7e7eb;border-bottom:1px solid #e7e7eb;font-size:1.4em;}
+.center-list ul li a{display:block;color:#333;padding:1em;background:url('../images/next-black-2px.png') no-repeat 95% center;}
+.center-list .w1{margin-top:1.5em;}
+
+.tie-popbox .tie-info{width:100%;}
+.tie-popbox .tie-info .input1{width:100%;border:1px solid #e7e7eb;border-radius:2px;background:#F9F9F9;font-size:1.6em;padding:0.5em 0;text-indent:0.5em;margin-bottom:0.5em;}
+.tie-popbox .tie-info .input1:focus{border-color:#00D681;}
+.tie-popbox .tie-info .phone-number{width:100%;float:left;}
+.tie-popbox .tie-info .phone-number .phone{width:65% !important;}
+.tie-popbox .tie-info .phone-number .get-code{width:30%;color:#fff;font-size:1.6em;padding:0.5em 0;text-align:center;}
+.tie-popbox  .concel-btn{background:#A0A0A0;color:#fff;width:45%;border-radius:1px;font-size:1.6em;}
+.tie-popbox  .tie-btn{;color:#fff;width:45%;border-radius:1px;font-size:1.6em;}

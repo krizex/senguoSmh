@@ -1,0 +1,51 @@
+{% extends 'goods-set-base.html' %}
+{% block setcontent %}
+<div class="wrap-classify">
+    <div class="subnav-box clearfix mt30">
+        <ul class="subnav pull-left furit-type">
+            <li class="text-center s-fruit active" data-type="fruit"><a href="javascript:;">水果</a></li>
+            <li class="text-center s-dryfruit" data-type="ganguo"><a href="javascript:;">干果</a></li>
+            <li class="text-center s-other" data-type="other"><a href="javascript:;">其它</a></li>
+        </ul>
+        <div class="search-input input-group pull-right classify-input">
+            <input type="text" value="" placeholder="搜索商品类目" class="search-con form-control" id="search-classify"/>
+            <input type="submit" value="" class="search-btn form-control fruit-search"/>
+        </div>
+    </div>
+    <div class="wrap-fruit-select">
+        <div class="fruit-select">
+            <div class="cate-title mt2">水果类目排列方式 : </div>
+            <div class="dropdown slide-down-select pull-left w130 mt2 ml5">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                    <em title="{{current_shop.shop_name}}" class="pull-left select-now" id="9">颜色</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 pro-list" role="menu">
+                    <li  role="presentation" data-pro="color">
+                        <a class="item" href="javascript:;">颜色</a>
+                    </li>
+                    <li  role="presentation"  data-pro="nature">
+                        <a class="item" href="javascript:;">味性</a>
+                    </li>
+                    <li  role="presentation"  data-pro="length">
+                        <a class="item" href="javascript:;">名称字数</a>
+                    </li>
+                    <!-- <li  role="presentation"  data-pro="color">
+                        <a class="item" href="javascript:;">地理位置</a>
+                    </li> -->
+                    <li  role="presentation"  data-pro="garden">
+                        <a class="item" href="javascript:;">生物学分类</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="fruit-content">
+        <ul class="fruit-list">
+           </ul>
+    </div>
+</div>
+{% end %}
+{% block js %}
+<script src="{{static_url('js/admin-goods-classify.js')}}"></script>
+{% end %}

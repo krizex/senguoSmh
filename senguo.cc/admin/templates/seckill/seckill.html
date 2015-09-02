@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block title %}秒杀活动{% end %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" url="/customer/discover/{{shop_code}}" class="back back-prev"></a>
+    <span id="seckill">秒杀活动</span>
+</div>
+{% end %}
+{% block content %}
+{% import json%}
+<script>
+    var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
+    window.dataObj.fruits={% raw json.dumps(context["fruits"]) %};
+</script>
+<input type="hidden" id="shop_code" value="{{shop_code}}"/>
+<div class="wrap-seckill pm40">
+    <div class="wrap-time-top">
+        <ul class="seckill-time-list group {% if activity_num <=1 %}hide{% end %}">
+            {% for i in range(len(output_data))%}
+            {% set sec = output_data[i]%}
+            <li>
+                <span class="sp-date">{{sec[0]}}<i class="tri-r"></i></span>
+                <ul class="stime-list">
+                    {% for j in range(len(sec[1])) %}
+                    {% set time = sec[1][j] %}
+                    <li class="{% if i==0 and j==0 %}active{% end %}" data-id="{{time['activity_id']}}" data-start="{{time['start_time']}}" data-continue="{{time['continue_time']}}">
+                        <span>{{time['start_time_text']}}</span>
+                        <i class="c-time {% if i==0 and j==0 %}cur-time{% end %}"></i>
+                    </li>
+                    {% end %}
+                </ul>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+    <div class="show-time-box seckill-ing">
+        <span class="time-status">抢购中</span>
+        <span class="ml4">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>
+    </div>
+    <div class="show-time-box no-seckill-time hide">
+        <span class="time-status">蓄势待发</span>
+        <span class="ml4">距开始&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>
+    </div>
+    <ul class="nm-list" id="seckill_list">
+
+    </ul>
+    <p class="no-result mt10">加载中...</p>
+</div>
+<a href="javascript:;" url="/customer/cart/{{shop_code}}"  class="go-cart">
+    <span class="cart-num origin-cart hide">0</span>
+</a>
+<ul class="hide" id="seckill-item">
+    <li>
+        <dl class="nm-dl">
+            <dt>
+                <img class="image" src="" alt="商品图片"/>
+                <div class="cover-img hide"></div>
+            </dt>
+            <dd>
+                <span class="tr-num">还剩<span class="store-num"></span>份</span>
+                <p class="c333 clip nm-name p0"></p>
+                <p class="mt20 goods-price-row">
+                    <span class="price-bo">1元/kg</span>
+                    <span class="price-tip">省<span class="price-dif"></span>元</span>
+                </p>
+                <span class="seckill-btns seckill-btn">抢!</span>
+                <span class="seckill-btns seckill-btn-more hide">更多惊喜</span>
+                <span class="seckill-btns seckill-btn-first hide">抢先看</span>
+            </dd>
+        </dl>
+    </li>
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/seckill-buy.js')}}"></script>
+{% end %}

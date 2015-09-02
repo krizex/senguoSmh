@@ -1,0 +1,40 @@
+<!-- add by jyj 2015-7-6 -->
+{% extends 'shop-base.html'%}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/superadmin-shop.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/superadmin-main.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-main.css')}}"/>
+{% end %}
+
+{% block shop %}
+{% set count=context["count"]%}
+{% set subpage2 = context["subpage2"] %}
+{% set info_active = "" %}
+{% set apply_active = "" %}
+
+{% if subpage2 == "info" %}
+    {% set info_active = "active" %}
+{% else %}
+    {% set apply_active = "active" %}
+{% end %}
+
+<div class="wrap-comment2">
+    <div class="head-div">
+        <ul class="group head-choose">
+            <li class="{{info_active}} info-list">评论详情</li>
+            <li class="{{apply_active}} apply-list">删除申请</li>
+        </ul>
+    </div>
+</div>
+
+{% block info %}
+{% end %}
+
+{% block apply %}
+{% end %}
+
+{% end %}
+
+{% block bottom %}
+<script src="{{static_url('js/superadmin-shop-manage.js')}}"></script>
+{% end %}

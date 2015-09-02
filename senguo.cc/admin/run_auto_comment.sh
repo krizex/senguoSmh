@@ -1,0 +1,1 @@
+nohup ./utils/db_init/order_auto_comment.py  2>&1 &

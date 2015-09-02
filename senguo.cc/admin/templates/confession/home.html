@@ -1,0 +1,63 @@
+{% extends 'base.html'%}
+{% block title %}{{shop_name}}-告白墙{% end %}
+{% block content %}
+<div class="confession-notice bg-pink txt-ac">
+	<div class="con">
+		<h1 class="text-white mt10">{{shop_name}}-告白墙</h1>
+	</div>
+	<p class="text-white notice">{{notice or '矮油，没有公告咧～'}}</p>
+	<img src="/static/confess/notice-borad.png" class="bg"/>
+</div>
+<span type="hidden"  id="data" data-more="{{nomore}}" data-code="{{shop_code}}"></span>
+<ul class="filter bg-white font14">
+	<li class="active group fl" data-type="new"><a href="javascript:;" class="fr">最新</a></li>
+	<li class="group fl" data-type="hot"><a href="javascript:;" class="fl">最热</a></li>
+</ul>
+<div class="box group">
+	<ul class="cofession-list group">
+	{% if 'datalist'  in context %}
+	{% if context['datalist'] == [] %}
+	<div  class="txt-ac no-record">
+		<img src="/static/images/empty.png" class="mb10"/>
+		<h1>这里啥也没有!</h1>
+	</div>
+	{% else %}
+	{% for data in context['datalist'] %}
+	{% set sty='' %}
+	{% if data['sex'] == 0 %}
+	{% set  sty ='sty0' %}
+	{% elif data['sex'] == 1%}
+	{% set sty ='sty1' %}
+	{% else %}
+	{% set sty ='sty2' %}
+	{% end %}
+	{% if data['type']==0 %}
+	{% set  sty ='sty0' %}
+	{% end %}
+	<li class="{{sty}} font14" data-id="{{data['id']}}">
+                	<div class="top group">
+                		<span>{% if data['type']==0 %}匿名用户{% else %} {{data['user']}} {% end %}  {% if data['name'] %}TO  {{data['name']}}{% end %}</span>
+                	</div>
+                	<div class="confession">
+                		<p><a href="{{reverse_url('ConfessionComment',shop_code)}}?num={{data['id']}}">{{data['confession']}}</a></p>
+                		<p class="group mt10 some-btn pr0">
+                			<a href="{{reverse_url('ConfessionComment',shop_code)}}?num={{data['id']}}" class="comment-btn fr  text-grey3 ml10"><i class="fl"></i><span class="num">{{data['comment']}}</span></a>
+                			<a href="javascript:;" class="fr great-btn"><i class="fl"></i><span class="num">{{data['great']}}</span></a>
+                		</p>
+                	</div>
+                	<p class="mt5 group mr5"><span class="fr">{{data['time']}}&nbsp;&nbsp;{{data['floor']}}楼</span></p>
+               </li>
+	{% end %}
+	{% end %}
+	{% end %}
+	</ul>
+</div>
+<div class="text-grey9 set-w100-fle font12 loading txt-ac mt10">~努力加载中 ( > < )~</div>
+<div class="home-bottom">
+	<a href="{{reverse_url('ConfessionCenter',shop_code)}}" class="txt-ac text-white bg-green to-confess fl"><i></i></a>
+	<a href="{{reverse_url('ConfessionPublic',shop_code)}}" class="txt-ac to-center fr"><i></i></a>
+</div>
+<a href="{{reverse_url('customerShopProfile',shop_code)}}" class="txt-ac to-market"><i></i></a>
+{% end %}{% block bottom %}
+<script src="{{static_url('js/confession/home.js')}}"></script>
+{% end %}

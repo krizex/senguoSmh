@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% block title %}用户管理{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-user.css')}}"/>{% end %}
+{% block content %}
+<span class="right-title">用户管理</span>
+<div class="subnav-box clearfix">
+    <ul class="subnav pull-left user-type">
+        <li class="all_user active"  data-url="all">
+            <a href="javascript:;">所有用户</a>
+        </li>
+        <li class="old_user" data-url="old">
+            <a href="javascript:;">老用户</a>
+        </li>
+        <li class="charge_user" data-url="charge">
+            <a href="javascript:;">充值用户</a>
+        </li>
+    </ul>
+    <div class="search-input input-group pull-right">
+        <input type="text" value="" placeholder="输入用户手机号、昵称或姓名" class="search-con form-control"/>
+        <input type="submit" value="用户搜索" class="search-btn form-control"/>
+    </div>
+</div>
+
+<div class="users-list-action clearfix bg-grey2 mt10">
+    <span class="pull-left move font14">用户数 (<span class="user-count"></span>)</span>
+    <li class="pull-right set-right10"> 
+        <div class="tit cate-title ml20">降序/升序：</div>
+        <div class="dropdown slide-down-select w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    <em class="pull-left filter_status" id="cur-sort-reverse" data-id="1">降序</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="if-reverse">
+                        <li data-id="1"><a class="item reverse">降序</a></li>
+                        <li data-id="0"><a class="item not-reverse">升序</a></li>
+                </ul>
+            </div>
+    </li>
+    <li class="pull-right set-right10"> 
+        <div class="tit cate-title">排序规则：</div>
+        <div class="dropdown slide-down-select w130">
+                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu1" data-toggle="dropdown">
+                    <em class="pull-left filter_status" id="cur-sort-way" data-id="time">关注时间</em>
+                    <span class="caret pull-right no-margin-left rotate0"></span>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu1" id="sort-way-list">
+                        <li data-id="time"><a class="item sort-time">关注时间</a></li>
+                        <li data-id="point"><a class="item sort-point">用户积分</a></li>
+                        <li data-id="balance"><a class="item sort-balance">账户余额</a></li>
+                </ul>
+            </div>
+    </li>
+</div>
+<ul class="users-list clearfix">
+
+</ul>
+<div class="wrap-loading-box hidden">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+<div class="modal fade remark-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content bg-white">
+                    <div class="modal-header clearfix">
+                        <span class="title pull-left" id="myModalLabel">添加用户备注：</span>
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                    </div>
+                    <div class="modal-body">
+                        <textarea class="remark-content center-block"></textarea>
+                    </div>
+                    <div class="modal-footer text-center">
+                         <button class="btn bg-green remark-sure text-white">确定</button>
+                    </div>
+                </div>
+            </div>
+         </div>
+<div class="users-pagination list-pagination">
+    <ul>
+        <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
+        <li>
+            <span class="page-now">1</span>/<span class="page-total"></span>
+        </li>
+        <li><a href="javascript:;" class="page-btn next-page">&nbsp;</a></li>
+        <li><input class="input-page form-control" type="text" placeholder="输入页码"/></li>
+        <li><a href="javascript:;" class="jump-to">跳转</a></li>
+    </ul>
+</div>
+
+<h4 class="text-center mt40 hidden notice">没有找到用户信息</h4>
+
+{% end %}
+{% block bottom %}<script src="{{static_url('js/admin-user.js')}}"></script>{% end %}

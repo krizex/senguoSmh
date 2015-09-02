@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge,chorme=1"/>
+    <meta charset="UTF-8"/>
+    <title>{% block title %}森果后台登录{% end %}</title>
+    <meta name="keywords" content="森果,水果商城,水果,O2O,森果登录,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
+    <meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="{{static_url('css/admin-global.css')}}"/>
+    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+</head>
+<body style="background:#f7f7f7;">
+<main class="auth-box" style="margin-bottom:0px !important;">
+    <h1 class="text-center font18">请使用您的微信扫描下方二维码<br>完成授权后即可成功添加管理员</h1>
+    <iframe src="{{link}}" width="100%"  height="600px"></iframe>
+    <p class="text-center"><a href="{{reverse_url('adminConfig')}}?action=admin">返回管理员设置</a></p>
+</main>
+
+<script src="/static/js/jquery.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+<script src="/static/js/template.js"></script>
+<script src="{{static_url('js/global.js')}}"></script>
+<script src="{{static_url('js/admin-public.js')}}"></script>
+{% block bottom %}{% end %}
+</body>
+</html>

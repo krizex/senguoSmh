@@ -1,0 +1,102 @@
+<div class="modal-dialog set-width-float goods-item">
+    <div class="modal-content w600 center-block">
+        <div class="modal-header bg-grey2">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">新增商品</h4>
+        </div>
+        <div class="modal-body set-width-float bg-grey3">
+            <div class="add-goods-item add-edit-item ">
+                <div class="upload-img goods-left pull-left">
+                    <span class="goods-tag"></span>
+                    <img src="/static/design_img/TDSG.png" class="imgPreview"/>
+                    <div class="upload-box btn-style2 green-color">
+                        <input id="file_upload" type="file" name="file_upload" class="uploadImg" />
+                        <p>上传/修改图片</p>
+                    </div>
+                    <a href="javascript:;" class="btn-style2 text-grey2 add-recover-img">恢复默认图</a>
+                </div>
+                <div class="goods-right pull-right">
+                    <p class="clearfix">
+                        <span class="pull-left">名称：<input type="text" class="w2 goodsName"/></span>
+                        <span class="pull-right">销量：<input type="text" class="w1 goodsSale"/></span>
+                    </p>
+                    <div class="clearfix set-bottom10 mt10">
+                        <span class="pull-left">库存单位： </span>
+                        <div class="item-unit btn-group pull-left set-right20">
+                            <button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown">
+                                <span data-id="1"  class="unitContent goodsUnit storage-unit">个</span>
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu unitlist storage-unit-list" role="menu">
+                                <li><a href="javascript:;" data-id="1">个</a></li>
+                                <li><a href="javascript:;" data-id="2">斤</a></li>
+                                <li><a href="javascript:;" data-id="3">份</a></li>
+                            </ul>
+                        </div>
+                        <span class="pull-left">库存：<input type="text" class="w1 goodsStorage"/></span>
+                    </div>
+                    <p>
+                        <span class="pull-left">简介:</span>
+                        <textarea class="pull-right w3 goodsIntro"></textarea>
+                    </p>
+                </div>
+                <div class="clearfix"></div>
+                <hr/>
+                <div class="goods-left tag-list pull-left">
+                    <p class="text-center">商品标签</p>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey active" data-id="1">无</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="2">限时折扣</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="3">热卖中</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="4">今日特价</a>
+                    <a href="javascript:;" class="btn-style3 text-white bg-grey" data-id="5">新品</a>
+                </div>
+                <div class=" goods-right pull-right">
+                    <p>
+                        排序优先级：<input type="text" class="w4 set-right10 goodsPriority"/>
+                        <small>(输入1-10的数字，数字越高，商品越靠前排布)</small>
+                    </p>
+                    <div class="add-charge-box bg-white set-width-float">
+                        <p class="clearfix">
+                            <span class="pull-left">计价方式</span>
+                            <a href="javascript:;" class="pull-right add-btn2 addNewCharge">+新增计价方式</a>
+                        </p>
+                        <ul class="add-charge-list add-goods-charge-list set-width-float">
+                            <li class="set-width-float item">
+                                <span class="pull-left">价格：<input type="text" class="w4 set-right5 charge-price"/></span>
+                                <span class="pull-left">数量：<input type="text" class="w4 set-right5 charge-num"/></span>
+                                <span class="pull-left">单位：</span>
+                                <div class="item-unit btn-group pull-left set-right5">
+                                    <button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown">
+                                        <span data-id="1"  class="unitContent charge-unit goodsUnit">个</span>
+                                        <span class="caret"></span>
+                                    </button>
+                                    <ul class="dropdown-menu unitlist goodsUnitList chargeUnitList" role="menu">
+                                        <li><a href="javascript:;" data-id="1">个</a></li>
+                                        <li><a href="javascript:;" data-id="2">斤</a></li>
+                                        <li><a href="javascript:;" data-id="3">份</a></li>
+                                    </ul>
+                                </div>
+                                <div class="pull-left unit-change hidden">
+                                    =
+                                    <input type="text" class="w4 set-left5 set-right5 charge-unit-num"/>
+                                    <span class="unit-change-show"></span>
+                                </div>
+                                <a href="javascript:;" class="delete-btn2 pull-right hidden"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
+                <hr/>
+                <div class="set-width-float">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <a href="javascript:;" class="modal-sure-btn pull-right add-goods-sure">确定</a>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <a href="javascript:;" class="modal-concel-btn add-goods-concel" data-dismiss="modal">取消</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

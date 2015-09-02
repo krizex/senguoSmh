@@ -1,0 +1,35 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            <h4 class="modal-title" id="myModalLabel">新增计价方式</h4>
+        </div>
+        <div class="modal-body set-width-float">
+            <div class="add-charge-list add-goods-charge-list set-width-float">
+                <span class="pull-left">价格：<input type="text" class="w4 set-right5 charge-price"/></span>
+                <span class="pull-left">数量：<input type="text" class="w4 set-right5 charge-num"/></span>
+                <span class="pull-left set-line26">单位：</span>
+                <div class="item-unit btn-group pull-left set-right5">
+                    <button type="button" class="btn btn-default dropdown-toggle w1" data-toggle="dropdown">
+                        <span data-id="1"  class="unitContent charge-unit goodsUnit">个</span>
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu unitlist goodsUnitList chargeUnitList" role="menu">
+                        <li><a href="javascript:;" data-id="1">个</a></li>
+                        <li><a href="javascript:;" data-id="2">斤</a></li>
+                        <li><a href="javascript:;" data-id="3">份</a></li>
+                    </ul>
+                </div>
+                <div class="pull-left unit-change hidden">
+                    =
+                    <input type="text" class="w4 set-left5 set-right5 charge-unit-num"/>
+                    <span class="unit-change-show"></span>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default bg-grey text-white" data-dismiss="modal">取消</button>
+            <button type="button" class="btn btn-default bg-green text-white editAddNewCharge">确定</button>
+        </div>
+    </div>
+</div>

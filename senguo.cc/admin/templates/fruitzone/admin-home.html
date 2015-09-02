@@ -1,0 +1,63 @@
+{% extends 'fix-bottom.html'%}
+{% block title%}个人中心 {% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/fruitzone-admin-home.css')}}"/>
+{% end %}
+
+{% block mainpage%}
+<header class="title-box">
+    <span class="title">个人中心</span>
+    <a href="{{reverse_url('adminLogout')}}" class="to-some">退出登录</a>
+</header>
+<div class="user-center-info white-color">
+    <a href="{{reverse_url('fruitzoneAdminProfile')}}">
+        <img src="{{current_user.accountinfo.headimgurl}}" class="pull-left user-img"/>
+        <div class="info pull-left">
+            <p class="username">{{current_user.accountinfo.nickname or '无'}}</p>
+        </div>
+    </a>
+</div>
+<div class="center-list">
+    <ul>
+        <li class="white-color">
+            <a href="{{reverse_url('fuirzoneAdminShops')}}">我的店铺管理</a>
+        </li>
+
+       <li class="white-color">
+            <a href="{{reverse_url('fuirzoneAdminShopsCollect')}}">我的收藏</a>
+        </li>
+        <!--<li class="w1 white-color">
+            <a href="{{reverse_url('fruitzoneSystemPurchase')}}"><strong>森果商城&后台管理</strong>系统接入申请</a>
+        </li>-->
+        <!-- <li class="w1 white-color">
+            <a href="{{reverse_url('fruitzoneSystemPurchase')}}">水果商城系统接入申请</a>
+        </li>
+        <li class="w1 white-color">
+            <a href="javascript:;" data-toggle="modal" data-target="#feedBox">意见反馈</a>
+        </li>
+        <li class="white-color">
+            <a href="http://mp.weixin.qq.com/s?__biz=MzA3Mzk3NTUyNQ==&mid=200574666&idx=1&sn=236c50b1d3c6e61ec1bbec985f9ece95#rd">关于森果</a>
+        </li>-->
+    </ul>
+</div>
+<div class="modal fade tie-popbox" id="feedBox" tabindex="-1" role="dialog"  aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>意见反馈</h4>
+             </div>
+            <div class="modal-body">
+                <textarea class="textstyle" id="feedbackInfo"></textarea>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn pull-left concel-btn" data-dismiss="modal">取消</button>
+                <button type="button" class="btn pull-right tie-btn green-color" id="feedbackEdit">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/fruitzone-admin-home.js')}}"></script>
+{% end %}

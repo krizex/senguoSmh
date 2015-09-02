@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}店铺地址{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="{{reverse_url('MadminInfo')}}" class="back">返回</a>
+    <span>店铺地址</span>
+    <a href="javascript:;" class="head-right finish-btn" id="finish_btn">完成</a>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-shop-address">
+    <p class="list-title pt10">地区信息</p>
+    <div class="address-item" id="address_select">
+        <span class="fr more"></span>
+        <span class="" id="address"></span>
+    </div>
+    <p class="list-title pt10">详情地址</p>
+    <div class="address-item">
+        <input type="text" class="address-ipt" placeholder="请输入详细地址"/>
+    </div>
+</div>
+{% end %}
+{% block fix %}
+<div class="pop-bwin hide">
+    <div class="wrap-address-list">
+        <ul class="address-list" id="privince_list">
+        </ul>
+        <ul class="address-list hide" id="city_list">
+        </ul>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/area.js')}}"></script>
+<script type="text/javascript" src="{{static_url('m-admin/js/shop-address.js')}}"></script>
+{% end %}
