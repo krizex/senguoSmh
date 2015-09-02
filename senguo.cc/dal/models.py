@@ -441,6 +441,11 @@ class SuperAdmin(MapBase, _AccountApi):
 	province  = Column(Integer)          #如果是省级代理，则该字段表示该省的code
 	purview  = Column(Integer,default=0) #用户能否查看自己所在地区不属于自己推广的店铺数据，1:可以，0:不可以
 
+	# added by woody 
+	# 用于储存原始unionid 和openid
+	wx_openid_back = Column(String(64))
+	wx_unionid_back = Column(String(64))
+
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
 
@@ -1326,6 +1331,7 @@ class Order(MapBase, _CommonApi):
 
 	self_address_id = Column(Integer,default=0) #自提点id 7.30
 
+	#当订单取消后，库存增加，销量不变，在售减少
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
@@ -1344,10 +1350,10 @@ class Order(MapBase, _CommonApi):
 				if fruits[int(charge_type.id)]==0:
 					continue
 				# print(fruits[int(charge_type.id)]['num'])
-				num = int(fruits[int(charge_type.id)]['num'] * (charge_type.select_num/charge_type.unit_num) * charge_type.num)
+				num = fruits[int(charge_type.id)]['num'] * charge_type.relate * charge_type.num
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
-				charge_type.fruit.saled -= num
+				# charge_type.fruit.saled -= num (销量不变)
 				# print("[Order]Order Canceled, restore storage:",num)
 		session.flush()
 		return True
@@ -1397,8 +1403,10 @@ class Fruit(MapBase, _CommonApi):
 
 	name = Column(String(50))
 	active = Column(TINYINT, default=1)#0删除，１:上架，２:下架
-	current_saled = Column(Integer, default=0) #售出：未处理的订单数
-	saled = Column(Integer, default=0) #销量
+	#将在售和已售变为float 
+	# woody 9.2
+	current_saled = Column(Float, default=0) #售出：未处理
+	saled = Column(Float, default=0) #销量
 	storage = Column(Float)
 	cart_storage = Column(Float,default = 0)
 	favour = Column(Integer, default=0)  # 赞

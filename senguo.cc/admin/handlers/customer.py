@@ -676,8 +676,8 @@ class Discover(CustomerBaseHandler):
 						day = '明天'
 					seckill_text = str(goods_count) + '种商品' + day + seckill_time +'大开杀戒'
 					seckill_display_flag = 1
-		print(discount_count)
-		print(discount_text)
+		# print(discount_count)
+		# print(discount_text)
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
 			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
@@ -2289,7 +2289,14 @@ class Cart(CustomerBaseHandler):
 							break
 
 				###使用优惠券
+
+
+				#fruits[str(charge_type.id)] 该计价方式对应的个数,比如售价2元/3斤的苹果买了1份，此时该值为1
+				#charge_type.num 该计价方式的单位数量，比如售价 2元/3斤，此时charge_type.num为3
+				#charge_type.relate，一份选择单位对应的库存单位的数量，比如库存单位为kg，所选单位为斤，则relate为0.5
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
+
+				print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -2328,10 +2335,11 @@ class Cart(CustomerBaseHandler):
 					self.session.flush()
 
 				charge_type.fruit.storage -= num  # 更新库存
-				if charge_type.fruit.saled:
-					charge_type.fruit.saled += num  # 更新销量
-				else:
-					charge_type.fruit.saled = num
+				#下单时不更新销量，订单完成时才更新
+				# if charge_type.fruit.saled:
+				# 	charge_type.fruit.saled += num  # 更新销量
+				# else:
+				# 	charge_type.fruit.saled = num
 				charge_type.fruit.current_saled += num  # 更新售出
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)
@@ -2654,15 +2662,17 @@ class Cart(CustomerBaseHandler):
 		if order.status == -1:
 			order.status = 0
 			order.del_reason = "timeout"
-			order.get_num(session,order.id)
+			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
 			fruits = eval(order.fruits)
-			if fruits:
-				ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
-					filter(models.ChargeType.id.in_(fruits.keys())).all()
-				for s in ss:
-					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-					s[0].current_saled -= num
-			session.commit()
+			# if fruits:
+			# 	ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+			# 		filter(models.ChargeType.id.in_(fruits.keys())).all()
+			# 	for s in ss:
+			# 		num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+			# 		s[0].current_saled -= num
+			# 		s[0].storage       += num
+			# 		print
+			# session.commit()
 
 			# 订单删除，恢复优惠券
 			coupon_key=order.coupon_key
@@ -2867,7 +2877,7 @@ class Order(CustomerBaseHandler):
 			# woody
 			# 3.27
 			session = self.session
-			order.get_num(session,order.id)
+			order.get_num(session,order.id) #当订单取消后，库存增加，销量不变，在售减少
 			########################################################################################
 			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
 			#同时产生一条余额记录
@@ -2875,12 +2885,18 @@ class Order(CustomerBaseHandler):
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
 			fruits = eval(order.fruits)
-			if fruits:
-				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
-					filter(models.ChargeType.id.in_(fruits.keys())).all()
-				for s in ss:
-					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-					s[0].current_saled -= num
+			# print(fruits)
+			# if fruits:
+			# 	ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+			# 		filter(models.ChargeType.id.in_(fruits.keys())).all()
+			# 	for s in ss:
+
+			# 		num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+			# 		print('before',s[0].current_saled,s[0].storage ,num,fruits[s[1].id]["num"],s[1].relate,s[1].num)
+			# 		s[0].current_saled -= num
+			# 		s[0].storage       += num
+			# 		print('after',s[0].current_saled,s[0].storage ,num)
+			# 	self.session.flush
 			if order.pay_type == 2:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
