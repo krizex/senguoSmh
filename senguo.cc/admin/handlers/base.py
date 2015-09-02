@@ -1462,15 +1462,18 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order.shop.shop_property += totalprice_inc
 		# print("[_AccountBaseHandler]order_done: order.shop.shop_property:",order.shop.shop_property)
 
+		#订单完成，库存不变，在售减少，销量增加
 		fruits = eval(order.fruits)
 		if fruits:
 			# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
 			ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType)\
 			.filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for s in ss:
-				num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+				num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
 				s[0].current_saled -= num
-
+				s[0].saled         += num
+			session.flush()
+			
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
