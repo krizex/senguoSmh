@@ -1331,7 +1331,7 @@ class Order(MapBase, _CommonApi):
 
 	self_address_id = Column(Integer,default=0) #自提点id 7.30
 
-
+	#当订单取消后，库存增加，销量不变，在售减少
 	def get_num(self,session,order_id):
 		try:
 			order = session.query(Order).filter_by(id = order_id).first()
@@ -1350,10 +1350,10 @@ class Order(MapBase, _CommonApi):
 				if fruits[int(charge_type.id)]==0:
 					continue
 				# print(fruits[int(charge_type.id)]['num'])
-				num = int(fruits[int(charge_type.id)]['num'] * (charge_type.select_num/charge_type.unit_num) * charge_type.num)
+				num = fruits[int(charge_type.id)]['num'] * (charge_type.select_num/charge_type.unit_num) * charge_type.num
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
-				charge_type.fruit.saled -= num
+				# charge_type.fruit.saled -= num (销量不变)
 				# print("[Order]Order Canceled, restore storage:",num)
 		session.flush()
 		return True

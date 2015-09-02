@@ -1808,21 +1808,22 @@ class Order(AdminBaseHandler):
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
-				order.get_num(session,order.id)
+				order.get_num(session,order.id)  #取消订单,库存增加，在售减少 
 				customer_id = order.customer_id
 				shop_id = order.shop_id
 
-				#取消订单,库存增加，在售减少,销量不变
-				fruits = eval(order.fruits)
-				if fruits:
-					# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
-					ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).filter(
-						models.ChargeType.id.in_(fruits.keys())).all()
-					for s in ss:
-						num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-						s[0].current_saled -= num
-						s[0].storage       += num
-					self.session.flush()
+				#取消订单,库存增加，在售减少 
+				#(此操作已封装在get_num函数中，此处若重复执行会导致库存对不上，这也是之前在售出现负数的原因)
+				# woody 9.2
+				# fruits = eval(order.fruits)
+				# if fruits:
+				# 	# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
+				# 	ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).filter(
+				# 		models.ChargeType.id.in_(fruits.keys())).all()
+				# for s in ss:
+				# 	num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+				# 	s[0].current_saled -= num
+				# 	s[0].storage       += num
 
 				if order.pay_type == 2:
 					#该订单之前 对应的记录作废
@@ -1833,6 +1834,8 @@ class Order(AdminBaseHandler):
 					else:
 						old_balance_history.is_cancel = 1
 						self.session.flush()
+
+
 
 					#恢复用户账户余额，同时产生一条记录
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = order.customer_id,\

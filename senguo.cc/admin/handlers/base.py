@@ -1135,7 +1135,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType)\
 			.filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for s in ss:
-				num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+				num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
 				s[0].current_saled -= num
 				s[0].saled         += num
 			session.flush()

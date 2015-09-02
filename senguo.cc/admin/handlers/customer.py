@@ -2170,17 +2170,17 @@ class Cart(CustomerBaseHandler):
 		if order.status == -1:
 			order.status = 0
 			order.del_reason = "timeout"
-			order.get_num(session,order.id)
+			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
 			fruits = eval(order.fruits)
-			if fruits:
-				ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
-					filter(models.ChargeType.id.in_(fruits.keys())).all()
-				for s in ss:
-					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-					s[0].current_saled -= num
-					s[0].storage       += num
-					print
-			session.commit()
+			# if fruits:
+			# 	ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+			# 		filter(models.ChargeType.id.in_(fruits.keys())).all()
+			# 	for s in ss:
+			# 		num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+			# 		s[0].current_saled -= num
+			# 		s[0].storage       += num
+			# 		print
+			# session.commit()
 
 			# 订单删除，恢复优惠券
 			coupon_key=order.coupon_key
@@ -2369,7 +2369,7 @@ class Order(CustomerBaseHandler):
 			# woody
 			# 3.27
 			session = self.session
-			order.get_num(session,order.id)
+			order.get_num(session,order.id) #当订单取消后，库存增加，销量不变，在售减少
 			########################################################################################
 			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
 			#同时产生一条余额记录
@@ -2377,13 +2377,18 @@ class Order(CustomerBaseHandler):
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
 			fruits = eval(order.fruits)
-			if fruits:
-				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
-					filter(models.ChargeType.id.in_(fruits.keys())).all()
-				for s in ss:
-					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-					s[0].current_saled -= num
-					s[0].storage       += num
+			# print(fruits)
+			# if fruits:
+			# 	ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+			# 		filter(models.ChargeType.id.in_(fruits.keys())).all()
+			# 	for s in ss:
+
+			# 		num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+			# 		print('before',s[0].current_saled,s[0].storage ,num,fruits[s[1].id]["num"],s[1].relate,s[1].num)
+			# 		s[0].current_saled -= num
+			# 		s[0].storage       += num
+			# 		print('after',s[0].current_saled,s[0].storage ,num)
+			# 	self.session.flush
 			if order.pay_type == 2:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
