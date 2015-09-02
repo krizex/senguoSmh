@@ -2295,6 +2295,7 @@ class Cart(CustomerBaseHandler):
 				#charge_type.num 该计价方式的单位数量，比如售价 2元/3斤，此时charge_type.num为3
 				#charge_type.relate，一份选择单位对应的库存单位的数量，比如库存单位为kg，所选单位为斤，则relate为0.5
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
+				num = float(format(num,'.1f'))  #格式化为小数点后一位小数
 
 				print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
 
