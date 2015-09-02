@@ -678,9 +678,9 @@ function countTime($obj){
         if(int_day>0){
             $obj.find(".day").html(int_day+"天");
         }
-        $obj.find(".hour").html(int_hour+"时");
-        $obj.find(".minute").html(int_minute+"分");
-        $obj.find(".second").html(int_second+"秒");
+        $obj.find(".hour").html(int_hour+":");
+        $obj.find(".minute").html(int_minute+":");
+        $obj.find(".second").html(int_second);
         setTimeout(function(){
             countTime($obj);
         },1000);
