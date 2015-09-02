@@ -2974,3 +2974,63 @@ class AdminManager(SuperBaseHandler):
 			return self.send_success()
 		else:
 			return self.send_error(404)
+
+
+#将平台用户置为新的用户，以便进行测试
+class MakeNewUser(SuperBaseHandler):
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action?:str')
+	def get(self):
+		action = self.args.get('action',None)
+		user_list = []
+		level = 0
+		if_super = True
+		super_user = self.session.query(models.SuperAdmin).all()
+		if action == 'backup':
+			for item in super_user:
+				item.wx_unionid_back = item.accountinfo.wx_unionid
+				item.wx_openid_back  = item.accountinfo.wx_openid
+			self.session.commit()
+			return self.send_success()
+		for item in super_user:
+			print(item.id,item.accountinfo.nickname)
+			if item.accountinfo.wx_unionid  is None:
+				isnew = True
+			else:
+				isnew = False
+			item_info = {'id':item.id,'nickname':item.accountinfo.nickname,'isnew':isnew}
+			user_list.append(item_info)
+		print(user_list)
+		return self.render('superAdmin/new_user.html',level  = 0,if_super = if_super,user_list=user_list)
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('user_id','action')
+	def post(self):
+		user_id = self.args.get('user_id')
+		action  = self.args.get('action',None)
+		user = self.session.query(models.SuperAdmin).filter_by(id = user_id).first()
+		if not user:
+			return self.send_fail("该用户不存在")
+		if action == 'modify':
+			user.accountinfo.wx_openid = None
+			user.accountinfo.wx_unionid = None
+		elif action == 'recover':
+			print('recover')
+			wx_unionid = user.wx_unionid_back
+			wx_openid  = user.wx_openid_back
+			#找到生成的新用户，将unionid和openid清零，以便还原之前的数据
+			new_user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_unionid).first()
+			if new_user and new_user.id != user_id:
+				new_user.wx_unionid = None
+				new_user.wx_openid  = None
+			#将旧用户信息还原
+			user.accountinfo.wx_unionid = wx_unionid
+			user.accountinfo.wx_openid  = wx_openid
+		else:
+			return self.send_fail(error_text = 'action error!!!')
+		self.session.commit()
+		return self.send_success()
+
+
+
+

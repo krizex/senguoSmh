@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block title%}产生新用户{% end %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/superadmin-user.css')}}"/>
+<style type="text/css">
+    .blue{
+        background-color: #009933;
+    }
+    .grey{
+        background-color:#999; 
+    }
+
+</style>
+{% end %}
+
+{% block content %}
+<div class="admin-left text-right pull-left">
+    <ul class="nav nav-stacked shop-manage-nav" role="tablist">
+        <li class="active"><a href="{{reverse_url('superareaadmin')}}?action=check_admin">查看</a></li>
+        {% if if_super%}
+        <li class=""><a href="{{reverse_url('superareaadmin')}}?action=add_admin">添加</a></li>
+        <li class=""><a href="{{reverse_url('newuser')}}">生成新用户</a></li>
+        {% end %}
+    </ul>
+</div>
+
+<div style="position:absolute;margin-left:25%;font-size:15px;">
+ <ul>
+ {% for user in user_list %}
+      <li style="margin-top:15px;">
+      <div style="">
+       
+        <span  class="user">{{user['nickname']}}</span>
+        <button class = "newuser {% if user['isnew'] %} grey {% else %} blue {% end %} " data-id = '{{user['id']}}' data-isnew='{{user['isnew']}}' action ='modify' style="float:right;margin-left:150px;color: #fff; ">置为新用户</button>
+        <button class="newuser {% if user['isnew'] %} blue {% else %} grey {% end %}" data-id = '{{user['id']}}' action = 'recover' style="float:right;margin-left:150px;color: #fff;width:90px;">还原</button>
+     </div>
+      </li>
+    {% end %}
+ </ul>
+</div>
+{% end %}
+
+<script type="text/javascript">
+    
+</script>
+
+
+{% block bottom %}
+<script src="{{static_url('js/new_user.js')}}"></script>
+{% end %}

@@ -441,6 +441,11 @@ class SuperAdmin(MapBase, _AccountApi):
 	province  = Column(Integer)          #如果是省级代理，则该字段表示该省的code
 	purview  = Column(Integer,default=0) #用户能否查看自己所在地区不属于自己推广的店铺数据，1:可以，0:不可以
 
+	# added by woody 
+	# 用于储存原始unionid 和openid
+	wx_openid_back = Column(String(64))
+	wx_unionid_back = Column(String(64))
+
 	def __repr__(self):
 		return "<SuperAdmin ({nickname}, {id})>".format(id=self.id, nickname=self.accountinfo.nickname)
 
