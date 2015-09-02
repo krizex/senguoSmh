@@ -877,14 +877,8 @@ class IncStatic(SuperBaseHandler):
 				day = datetime.datetime.fromtimestamp(info[1]).day
 				data[day][i] += 1
 
-		count(all_infos, 1)
-		count(admin_infos, 2)
-		count(customer_infos, 3)
-		count(phone_infos, 4)
 		if level == 0:
-			total = self.session.query(models.Accountinfo).count()
 		elif level == 1:
-			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).count()
 		else:
 			return self.send_fail('level error')
 
