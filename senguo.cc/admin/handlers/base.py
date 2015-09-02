@@ -1136,6 +1136,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			.filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for s in ss:
 				num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+				num = float(format(num,'.1f'))  #格式化为小数点后一位小数
 				s[0].current_saled -= num
 				s[0].saled         += num
 			session.flush()
