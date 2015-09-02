@@ -185,6 +185,7 @@ handlers = [
 
 	# added by woody 8.3
 	(r"/super/admin",handlers.superadmin.AdminManager,{},"superareaadmin"),
+	(r"/super/newuser",handlers.superadmin.MakeNewUser,{},"newuser"),
 
 	## 店铺申请接入管理
 	# 所有店铺
@@ -227,6 +228,10 @@ handlers = [
 	# added by jyj 2015-8-3
 	(r"/super/sellstatic",handlers.superadmin.SellStatic,{},"superSellStatic"),
 	# #
+	# added by sunmh 2015年09月01日11:18:22
+	(r"/super/amountstatic",handlers.superadmin.AmountStatic,{},"superAmountStatic"),
+	# #
+
 
 	# (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 

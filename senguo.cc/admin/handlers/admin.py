@@ -5366,6 +5366,8 @@ class Discount(AdminBaseHandler):
 				else:
 					status=1
 			else:
+				start_date=0
+				end_date=0
 				status=1		
 			f_time=data["f_time"]
 			t_time=data["t_time"]

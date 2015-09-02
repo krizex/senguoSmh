@@ -145,7 +145,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .ml10{margin-left: 10px;}
 .ml20{margin-left: 20px !important;}
 .input-width{width: 40px !important;}
-.seckill-new-div{margin-top: 10px;margin-right: 50px;margin-bottom: 0px;padding: 15px;background-color:#FFF;border-radius: 1px;border:solid;border-color: #eee;}
+.seckill-new-div{margin-top: 10px;margin-right: 50px;margin-bottom: 0px;padding: 15px;background-color:#FFF;border-radius: 1px;border:1px solid #eee;}
 .mb30{margin-bottom: 30px !important;}
 .w130{width: 130px !important;}
 .scroll-bar-discount{overflow: hidden;max-height: 200px;overflow-y: auto;}
@@ -169,9 +169,9 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .send-day .btn-default:focus{border: none;}
 .ver-8 {vertical-align: 8px;}
 .w110{width: 110px;}
-.edit-activity{z-index: 2999;font-size: 16px;}
-.spread-activity{z-index: 2999;font-size: 16px;}
-.stop-activity{z-index: 2999;font-size: 16px;}
+.edit-activity{z-index: 2999;font-size: 14px;}
+.spread-activity{z-index: 2999;font-size: 14px;}
+.stop-activity{z-index: 2999;font-size: 14px;}
 .ver-10{vertical-align: 10px !important;}
 .dis-seckill>td{color: #999;}
 .spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
@@ -182,4 +182,4 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .edit-box .work-mode .circle{right:2px;}
 .edit-box .stop-mode{text-indent:44px;}
 .edit-box .stop-mode .circle{left:2px;}
-
+.operate>a{font-size: 14px;}

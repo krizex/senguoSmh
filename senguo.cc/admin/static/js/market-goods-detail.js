@@ -5,6 +5,12 @@ $(document).ready(function(){
     setTimeout(function(){
         window.addEventListener('pagehide', onPopState);
     },1000);
+    if(parseInt($("#shop_code").attr("is_activity"))>0){
+        noticeBox("该商品处于活动中，请在商品列表页直接购买~");
+        setTimeout(function(){
+            window.location.href=_url;
+        },1200);
+    }
     function onPopState(){
         SetCookie("fromdetail",1);
         return addCart(_url);

@@ -492,7 +492,7 @@
 .user-mark{display: inline-block;max-width: 150px;margin-left: 6px;vertical-align: bottom;}
 .user-balance{padding-left: 16px;background: url('/static/m-admin/img/icon_u.png') no-repeat left -34px;background-size: 14px;}
 .user_list>li:first-child{width: 30%;}
-.user_list .uitem{width: 70%;font-weight: bold;}
+.user_list .uitem{width: 70%;}
 .wrap-user-menu{width: 30%;height: auto !important;}
 .user-top{background-color: #48b6a4;padding: 20px 0 0 0;}
 .wrap-user-img .img-border{border-color:#fff;}

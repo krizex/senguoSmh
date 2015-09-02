@@ -1397,6 +1397,7 @@ class Market(CustomerBaseHandler):
 
 		# added by jyj 2015-8-21
 		seckill_goods_ids = []
+		
 		if seckill_active == 1:
 			self.update_seckill()			
 			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
@@ -1416,6 +1417,7 @@ class Market(CustomerBaseHandler):
 				activity_query = activity_query[0]
 				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
 				notices.append(('','',seckill_img_url,1))
+		
 				
 		for x in shop.config.notices:
 			if x.active == 1:

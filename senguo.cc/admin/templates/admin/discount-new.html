@@ -8,7 +8,7 @@
 {% set shop_code = current_shop.shop_code %}
 <div class="wrap-newcoupon">
     <p class="c333 mt10 choose-text">
-        <a href="/discount?action=discount" class="c999 cancel-add-goods go-back">限时折扣</a>
+        <a href="admin/discount?action=discount" class="c999 cancel-add-goods ">限时折扣</a>
         <span class="c333"> / 新建折扣商品</span>
     </p>
 </div>
@@ -209,6 +209,9 @@
                                                 <span class="caret pull-right no-margin-left rotate0"></span>
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu18">
+                                                <li class="presentation" role="presentation">
+                                                    <a class="item" href="javascript:;" data-id="-2">所有分组</a>
+                                                </li>
                                                 {% for group in output_data%}
                                                 <li class="presentation" role="presentation">
                                                     <a class="item" href="javascript:;" data-id="{{group['group_id']}}">{{group['group_name']}}</a>

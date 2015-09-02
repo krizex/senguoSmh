@@ -6,9 +6,9 @@
 <input id="page_end" class="hidden" value="{{page_end}}">
 <div class="clearfix top-box">
     <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="/bbs/detail/88" class="ml10 f14 show-detail">查看详情</a></p>
-    <p class="mt6">用户可在下单支付时，选择使用优惠券抵扣现金。</p>
+    <p class="mt6">限时折扣是给商家提供的一个店铺营销工具。适用于周年庆、每周会员日、节假日活动等应用场景,</p>
      <a class="mode-cm pull-right mt10 close_all {%if discount_active_cm==0%}work-mode{%else%}stop-mode{%end%}" data-flag="on" title="点击切换状态" data-status="{{discount_active_cm}}" ><span class="tit">{%if discount_active_cm==0%}已启用{%else%}已停用{%end%}</span><span class="circle"></span></a>
-    <p>商家通过发放优惠券可吸引用户，提高用户粘性。优惠券形式有：活动优惠券、充值优惠券两类。</p>
+    <p>可以更好、更快捷地帮助商家增加用户粘度、提升品牌效力。</p>
 </div>
 <div class="{%if discount_active_cm==1%}hidden{%end%}" id="discount_hidden">
 {%if output_data==[]%}

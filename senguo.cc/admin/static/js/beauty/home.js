@@ -235,11 +235,11 @@ $(document).ready(function(){
     stopDefault(e);
     var link=$(this).attr('href');
     addCart(link);
-}).on("click","link-url",function(){
+}).on("click",".link-url",function(){
     var is_activity = parseInt($(this).attr("is_activity"));
     var url = $(this).attr("url");
     if(is_activity==0){
-        window.location.href=url;
+        addCart(url);
     }else{
         return noticeBox("活动商品无法查看商品详情哦~~");
     }
@@ -294,7 +294,6 @@ var goodsList=function(page,action,_group_id,type){
     if(action==9){
         args.search = _search;
     }
-    // alert('i am here');
     $.postJson(url,args,function(res){
             if(res.success)
             {
@@ -341,12 +340,12 @@ var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}" end-ti
                     '<div class="item-info bg-color">'+
                         '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
-                            '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span><span class=""></span>'+
+                            '<p class="p-row">￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span><span class=""></span>'+
                             '{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
-                            '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span>'+
+                            '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span></p>'+
                             '{{if charge_types["market_price"]>0 }}' +
                             '<p class="market {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
-                            '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
+                            '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}} font12 nowrap"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
                         '</div>'+
                         '<a href="{{link}}" class="skew now-buy">立即购买</a>'+
                     '</div>'+
@@ -515,9 +514,9 @@ function countTime($obj){
         if(int_day>0){
             $obj.find(".day").html(int_day+"天");
         }
-        $obj.find(".hour").html(int_hour+"时");
-        $obj.find(".minute").html(int_minute+"分");
-        $obj.find(".second").html(int_second+"秒");
+        $obj.find(".hour").html(int_hour+":");
+        $obj.find(".minute").html(int_minute+":");
+        $obj.find(".second").html(int_second);
         setTimeout(function(){
             countTime($obj);
         },1000);

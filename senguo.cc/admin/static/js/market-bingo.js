@@ -324,7 +324,7 @@ function loaded() {
 var _action=6;
 var _finished=true;
 var _search;
-var __item=' <li class="goods_item_item {{code}}" data-id="{{id}}" is_activity="{{is_activity}}" end-time="{{end_time}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}" data-userlimit="{{userlimit}}">'+
+var __item='<li class="goods_item_item {{code}}" data-id="{{id}}" is_activity="{{is_activity}}" end-time="{{end_time}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-relate="{{relate}}" data-unitnum="{{unitnum}}" data-buy="{{limit_today}}" data-charge="{{charge_id}}" data-price="{{charge_price}}" data-userlimit="{{userlimit}}" data-buylimit="{{buylimit}}">'+
         '<div class="goods-img-box {{desaturate}}" is_activity="{{is_activity}}">'+
             '<img class="goods_img lazy_img" src="{{img_url}}" alt="{{name}}" data-original="{{img_url}}"/>'+
             '<div class="goods-img-hover"></div>'+
@@ -568,11 +568,11 @@ var fruitItem=function(box,fruits,type){
         tag='tag2';
     }
     if(buylimit==1){
-        buylimit_txt="仅限新用户";
+        buylimit_txt="限新用户";
     }else if(buylimit==2){
-        buylimit_txt="仅限老用户";
+        buylimit_txt="限老用户";
     }else if(buylimit==3){
-        buylimit_txt="仅限充值用户";
+        buylimit_txt="限充值用户";
     }
     if(!intro){
         intro=" ";
@@ -678,9 +678,9 @@ function countTime($obj){
         if(int_day>0){
             $obj.find(".day").html(int_day+"天");
         }
-        $obj.find(".hour").html(int_hour+"时");
-        $obj.find(".minute").html(int_minute+"分");
-        $obj.find(".second").html(int_second+"秒");
+        $obj.find(".hour").html(int_hour+":");
+        $obj.find(".minute").html(int_minute+":");
+        $obj.find(".second").html(int_second);
         setTimeout(function(){
             countTime($obj);
         },1000);

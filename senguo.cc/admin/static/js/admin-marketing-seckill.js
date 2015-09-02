@@ -519,6 +519,16 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
+    if(!$(".cur-goods-group").attr("data-id")){
+        Tip('请选择商品分组！');
+        create_seckill_lock = "off";
+        return false;
+    }
+    if(!$(".cur-goods").attr("data-id")){
+        Tip('请选择商品名称！');
+        create_seckill_lock = "off";
+        return false;
+    }
 	if($('.choose-hour').attr('data-id').length == 0 || $('.choose-minute').attr('data-id').length == 0 || $('.choose-second').attr('data-id').length == 0){
 		Tip('持续时间未设置！');
 		create_seckill_lock = "off";
@@ -780,7 +790,7 @@ function getActivityItem(action,status,page,cutover){
 				var tr_item = "";
 				switch(status){
 					case '1':
-						tr_item = '<tr data-id="{{activity_id}}">'　 
+						tr_item = '<tr data-id="{{activity_id}}">'
 	                                                                        +'<td colspan="1">{{start_time}}</td>'
 	                                                                        +'<td colspan="1">{{continue_time}}</td>'
 	                                                                        +'<td colspan="1">{{goods_list}}</td>'
@@ -809,7 +819,7 @@ function getActivityItem(action,status,page,cutover){
 	                                                          	+'</tr>';
 						break;
 					case '2':
-						tr_item = '<tr data-id="{{activity_id}}">'　 
+						tr_item = '<tr data-id="{{activity_id}}">'
 	                                                                        +'<td colspan="1">{{start_time}}</td>'
 	                                                                        +'<td colspan="1">{{continue_time}}</td>'
 	                                                                        +'<td colspan="1">{{goods_list}}</td>'
@@ -838,7 +848,7 @@ function getActivityItem(action,status,page,cutover){
 	                                                          	+'</tr>';
 						break;
 					case '0':
-						tr_item = '<tr data-id="{{activity_id}}" class="dis-seckill">'　 
+						tr_item = '<tr data-id="{{activity_id}}" class="dis-seckill">'
 	                                                                        +'<td colspan="1">{{start_time}}</td>'
 	                                                                        +'<td colspan="1">{{continue_time}}</td>'
 	                                                                        +'<td colspan="1">{{goods_list}}</td>'
@@ -849,7 +859,7 @@ function getActivityItem(action,status,page,cutover){
 	                                                          	+'</tr>';
 						break;
 					case '-1':
-						tr_item = '<tr data-id="{{activity_id}}" class="dis-seckill">'　 
+						tr_item = '<tr data-id="{{activity_id}}" class="dis-seckill">'
 	                                                                        +'<td colspan="1">{{start_time}}</td>'
 	                                                                        +'<td colspan="1">{{continue_time}}</td>'
 	                                                                        +'<td colspan="1">{{goods_list}}</td>'
@@ -941,7 +951,7 @@ function getDetailItem(action,activity_id,page){
 			$('.detail-list').empty();
 			for (var i = 0;i < output_data.length;i++){
 		        		var data = output_data[i];
-				var tr_item = '<tr>'　 
+				var tr_item = '<tr>'
                                                           	+'<td colspan="1">{{fruit_name}}</td>'
                                                           	+'<td colspan="1">{{seckill_price}} / {{former_price}} {{charge_type}}</td>'
                                                           	+'<td colspan="1">{{discount}}</td>'
