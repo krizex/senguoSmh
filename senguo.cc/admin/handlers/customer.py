@@ -1809,7 +1809,14 @@ class Cart(CustomerBaseHandler):
 							break
 
 				###使用优惠券
+
+
+				#fruits[str(charge_type.id)] 该计价方式对应的个数,比如售价2元/3斤的苹果买了1份，此时该值为1
+				#charge_type.num 该计价方式的单位数量，比如售价 2元/3斤，此时charge_type.num为3
+				#charge_type.relate，一份选择单位对应的库存单位的数量，比如库存单位为kg，所选单位为斤，则relate为0.5
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
+
+				print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -1848,10 +1855,11 @@ class Cart(CustomerBaseHandler):
 					self.session.flush()
 
 				charge_type.fruit.storage -= num  # 更新库存
-				if charge_type.fruit.saled:
-					charge_type.fruit.saled += num  # 更新销量
-				else:
-					charge_type.fruit.saled = num
+				#下单时不更新销量，订单完成时才更新
+				# if charge_type.fruit.saled:
+				# 	charge_type.fruit.saled += num  # 更新销量
+				# else:
+				# 	charge_type.fruit.saled = num
 				charge_type.fruit.current_saled += num  # 更新售出
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)
@@ -2170,6 +2178,8 @@ class Cart(CustomerBaseHandler):
 				for s in ss:
 					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 					s[0].current_saled -= num
+					s[0].storage       += num
+					print
 			session.commit()
 
 			# 订单删除，恢复优惠券
@@ -2373,6 +2383,7 @@ class Order(CustomerBaseHandler):
 				for s in ss:
 					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
 					s[0].current_saled -= num
+					s[0].storage       += num
 			if order.pay_type == 2:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \

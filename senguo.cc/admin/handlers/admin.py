@@ -1742,11 +1742,11 @@ class Order(AdminBaseHandler):
 		# 编辑订单备注 / 编辑（修改）配送员 / 编辑订单状态（开始配送/完成订单） / 编辑订单总价 / 删除订单 / 打印订单
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
 			try:
-				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).first()
+				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).one()
 			except:
 				order = None
 			try:
-				shop = self.session.query(models.Shop).filter_by(id=order.shop_id).first()
+				shop = self.session.query(models.Shop).filter_by(id=order.shop_id).one()
 			except:
 				return self.send_error(404)
 			try:
@@ -1811,6 +1811,19 @@ class Order(AdminBaseHandler):
 				order.get_num(session,order.id)
 				customer_id = order.customer_id
 				shop_id = order.shop_id
+
+				#取消订单,库存增加，在售减少,销量不变
+				fruits = eval(order.fruits)
+				if fruits:
+					# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
+					ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).filter(
+						models.ChargeType.id.in_(fruits.keys())).all()
+					for s in ss:
+						num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+						s[0].current_saled -= num
+						s[0].storage       += num
+					self.session.flush()
+
 				if order.pay_type == 2:
 					#该订单之前 对应的记录作废
 					balance_record = ("%{0}%").format(order.num)
