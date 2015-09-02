@@ -676,8 +676,8 @@ class Discover(CustomerBaseHandler):
 						day = '明天'
 					seckill_text = str(goods_count) + '种商品' + day + seckill_time +'大开杀戒'
 					seckill_display_flag = 1
-		print(discount_count)
-		print(discount_text)
+		# print(discount_count)
+		# print(discount_text)
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
 			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\

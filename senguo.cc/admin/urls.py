@@ -253,7 +253,7 @@ handlers = [
 	(r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
 	(r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
 	(r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
-	(r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
+	# (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
 	(r"/admin/follower", handlers.admin.Follower, {}, "adminStaffFollower"),
 	(r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
 	(r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
