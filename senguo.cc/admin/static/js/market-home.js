@@ -92,9 +92,13 @@ $(document).ready(function(){
 }).on('click','.notice-item',function(){
         //公告详情
     var $this=$(this);
-    if($this.attr("data-url")){
+    var _type=parseInt($this.attr("data-type"))
+    if(_type==1){
         var url = $this.attr("data-url");
-        window.location.href=url;
+        if(url){
+            window.location.href=url;
+        }
+        
     }else{
         var detail=$this.find('.notice-detail').val();
         var detail_box=new Modal('detail_box');

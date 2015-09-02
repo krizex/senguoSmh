@@ -1382,8 +1382,6 @@ class Market(CustomerBaseHandler):
 		# added by cm 2015-8-24
 		has_seckill_activity = 0
 		has_discount_activity=0
-		seckill_img_url = ''
-		discount_img_url=''
 		notices = []
 		shop_id = shop.id
 
@@ -1392,8 +1390,6 @@ class Market(CustomerBaseHandler):
 			activity_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).all()
 			if activity_query:
 				has_discount_activity=1
-				discount_img_url=self.session.query(models.Notice).filter_by(config_id=shop_id).first().discount_img_url
-				notices.append(('','',discount_img_url,2))
 
 		# added by jyj 2015-8-21
 		seckill_goods_ids = []
@@ -1415,13 +1411,11 @@ class Market(CustomerBaseHandler):
 					seckill_goods_ids.append(item.id)
 
 				activity_query = activity_query[0]
-				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
-				notices.append(('','',seckill_img_url,1))
 		
 				
 		for x in shop.config.notices:
 			if x.active == 1:
-				notices.append((x.summary, x.detail,x.img_url,0))
+				notices.append((x.summary, x.detail,x.img_url,x.link,x.click_type))
 
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\

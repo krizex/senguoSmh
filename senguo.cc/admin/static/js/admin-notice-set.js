@@ -85,6 +85,18 @@ $(document).ready(function(){
         }
     }
 });
+}).on("click",".notice-type-choose li",function(){
+    var $this=$(this);
+    var index=$this.index();
+    $this.addClass("active").siblings("li").removeClass("active");
+    $(".set-list").eq(index).show().siblings(".set-list").hide();
+    if(index==0){
+        $(".add-btn-sty").show();
+    }else{
+        $(".add-btn-sty").hide();
+    }
+}).on("click",".href_type",function(){
+    $(this).addClass("active").siblings().removeClass("active");
 }).on("click",".add-new-address1",function(){
     if(NoticeEdit){
         return Tip("请先完成正在编辑的公告");
@@ -193,17 +205,33 @@ function noticeEdit(target){
     var parent=target.parents('.set-list-item');
     var notice_id=parent.data('id');
     var summary=parent.find('.notice_summary').val().trim();
-    var detail=parent.find('.notice_detail').val().trim();
+    var detail
+    var link=parent.find('.notice_link').val().trim();
+    var link_type;
     var img_url=parent.find(".preview-img").attr("url");
+    console.log(parent.find('.notice_detail'));
+     if(parent.find('.notice_detail').length!=0){
+        detail=parent.find('.notice_detail').val().trim();
+    }else{
+        detail="";
+    }
+    if(parent.find(".href_type.active").length!=0){
+        link_type=parseInt(parent.find(".href_type.active").attr("data-id"));
+    }else{
+        link_type=1;
+    }
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('摘要不能为空！')}
     if(!detail){return Tip('详情不能为空！')}
+    console.log(link);
     var data={
         notice_id:notice_id,
         summary:summary,
         detail:detail,
-        img_url:img_url
+        img_url:img_url,
+        link:link,
+        link_type:link_type
     };
     var args={
         action:action,
@@ -214,8 +242,15 @@ function noticeEdit(target){
             if(res.success){
                 parent.find('.notice_summary').val(summary);
                 parent.find('.notice_detail').val(detail);
+                parent.find('.notice_link').val(link);
+                if(link_type==0){
+                    detail=detail+" √";
+                }else{
+                    link=link+" √";
+                }
                 parent.find('.summary').text(summary);
-                parent.find('.detail').text(detail);
+                parent.find('.detail').text("").text(detail);
+                parent.find('.link').text("").text(link);
                 parent.find('.address-edit').hide();
                 parent.find('.address-show').show();
                 NoticeEdit=false;
