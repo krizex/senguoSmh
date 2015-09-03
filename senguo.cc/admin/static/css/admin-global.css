@@ -116,8 +116,8 @@ img{border:none;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;height:77px;}
 
 .subnav-box{position:relative;height:40px;border-bottom:1px solid #e7e7eb;width:100%;overflow:hidden;}
-.subnav li{float:left;width:90px;height:40px;text-align:center;line-height:42px;}
-.subnav li a{color:#333;font-size:14px;display:block;}
+.subnav li{float:left;width:90px;height:40px;font-size:14px;text-align:center;line-height:42px;border-bottom:-3px solid #fff;margin-top:-1px;}
+.subnav li a{color:#333;display:block;}
 .subnav li:hover{border-bottom:3px solid #a0a3ab;margin-top:-1px;}
 .subnav .active{border-bottom:3px solid #52b43f;margin-top:-1px;}
 .subnav .active:hover{border-bottom:3px solid #52b43f;margin-top:-1px;}

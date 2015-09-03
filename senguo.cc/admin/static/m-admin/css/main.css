@@ -304,7 +304,7 @@
 .add-notice-img{padding: 10px 6px;}
 .notice-list{padding: 0 10px;background-color: #fff;}
 .notice-list>li{border-bottom: 1px solid #e7e7e7;padding: 8px 10px;position: relative;}
-.notice-list .fr{margin-top: -3px;}
+.notice-switch{margin-top: -3px;}
 .notice-list>li:last-child{border-bottom: none;}
 .notice-list .notice-title{padding: 10px 0;}
 .notice-left{position: absolute;color: #333;}
@@ -317,6 +317,12 @@
 .notive-temp-img>img{height: 80px;max-width: 250px;}
 .notice-item{padding: 10px;background-color: #fff;}
 .notice-area{width: 100%;height: 56px;overflow: auto;line-height: 18px;color: #333;}
+.link-type{clear:both;width:100%;height:40px;line-height:40px;}
+.link-type li{width:40%;text-align:center;color:#333;background-color:#ddd;border-radius:4px;margin:0 10px;}
+.link-type li.active{background-color:#48b6a4;color:#fff;}
+.notice-type-choose{background-color: #fff;padding: 0 10px;position: relative;z-index: 1;border-bottom: #F0F4F0 solid 1px;height:30px;line-height:30px;}
+.notice-type-choose li{float:left;width:50%;height: 30px;line-height: 30px;text-align: center;color: #333;border-bottom:2px solid #fff;}
+.notice-type-choose li.active{border-bottom:2px solid #48b6a4;}
 /*支付*/
 .pcolor{color: #144141;}
 .pay-list>li{background-color: #fff;padding: 10px;margin-bottom: 10px;}

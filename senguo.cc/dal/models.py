@@ -407,7 +407,7 @@ class Accountinfo(MapBase, _CommonApi):
 	# 基本账户信息
 
 	# 性别，男1, 女2, 其他0
-	sex = Column(Integer, default=0)
+	sex = Column(TINYINT, default=0)
 	# 昵称
 	nickname = Column(String(64), default="")
 	# 真实姓名
@@ -1351,6 +1351,7 @@ class Order(MapBase, _CommonApi):
 					continue
 				# print(fruits[int(charge_type.id)]['num'])
 				num = fruits[int(charge_type.id)]['num'] * charge_type.relate * charge_type.num
+				# num = round(float(num),2)  #格式化为小数点后一位小数
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				# charge_type.fruit.saled -= num (销量不变)
@@ -1623,11 +1624,16 @@ class Notice(MapBase):
 	summary = Column(String(100)) #摘要
 	detail = Column(String(500)) #详情
 	img_url = Column(String(100)) #公告背景
-
-	seckill_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp') #秒杀公告背景
-	# gbuy_img_url = Column(String(100)) #团购公告背景
-	discount_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d') #折扣公告背景
-	# presell_img_url = Column(String(100)) #预售公告背景
+	_type = Column(Integer,default=0) 
+	#0:普通公告 
+	#1:秒杀公告 http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp 
+	#2:折扣公告 http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d
+	link = Column(String(60))
+	click_type = Column(Integer,default=0) #0:detail 1:link
+	# seckill_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp') #秒杀公告背景
+	# # gbuy_img_url = Column(String(100)) #团购公告背景
+	# discount_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d') #折扣公告背景
+	# # presell_img_url = Column(String(100)) #预售公告背景
 
 # 按时达时间段设置
 class Period(MapBase):

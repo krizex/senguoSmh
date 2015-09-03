@@ -1,6 +1,6 @@
  $(document).ready(function(){
     //shop total number
-     shopTotal();
+    shopTotal();
     //get top8
     getData('top');
     //map data
@@ -21,229 +21,231 @@
             });
             myChart.hideLoading();
             var options={
-            	      dataRange: {
-            	       show:false,
-	        min: 0,
-	        max: 2500,
-	        x: 'left',
-	        y: 'bottom',
-	        text:['高','低'],           // 文本，默认为数值文本
-	        calculable : true,
-	        color:['#fe6666','#fe6666'],
-	        textStyle:{color: '#fff'}
-	    },
-	     tooltip : {
-	        trigger: 'item'
-	    },
-	    series : [
-	        {
-	           dataRangeHoverLink:true,
-	            name: '同行数量',
-	            type: 'map',
-	            mapType: 'china',
-	            roam: false,
-                          selectedMode : 'single',
-	            itemStyle:{
-	                normal:{label:{show:true}},
-	                emphasis:{label:{show:true}}
-	            },
-		itemStyle: {
-		        normal: {
-		            borderWidth: 2,
-		            borderColor: '#fff',
-		            color: '#fe6666',
-		            label: {
-		                show: true,
-		                textStyle: {
-		                    color: '#fff'
-		                }
-		            }
-		        },
-		        emphasis: { // 也是选中样式
-		            borderWidth: 2,
-		            borderColor: '#fff',
-		            color: '#FF5252',
-		            label: {
-		                show: true,
-		                textStyle: {
-		                    color: '#fff'
-		                }
-		            }
-		        }
-		    },
-	            data:[
-	               
-	            ]
-	        }
-	    ]
-            };
-           var ecConfig = require('echarts/config');
-           var zrEvent = require('zrender/tool/event');
-           myChart.on(ecConfig.EVENT.MAP_SELECTED, function (param){
-	    var selected = param.selected;
-	    var str;
-	    var pro_code;
-	    var area=window.dataObj.area;
-	    for (var p in selected) {
-	        if (selected[p]) {
-	            str = p;
-	             for(var key in area){
-	              	var province=area[key]['name'].substring(0,2);
-	              	var province_long=area[key]['name'].substring(0,3);
-		    	if(province==str||province_long==str){
-		    		pro_code=Int(key);
-		    	}
-		    }
-		 window.dataObj.province_code=pro_code;
-		   $('.province_name').text(str);
-		   getData('filter',1,'province',pro_code);
-		   $('body','html').animate({scrollTop:'1000px'});
-		}
-	    }
-	});
-              options.series[0].data=[];
-              var area=window.dataObj.area;
-	 for(var key in area){
-		var province=area[key]['name'];
-		var pro_count=window.dataObj.province_count;
-		var num=0;
-		province=province.substring(0,2);
-		if(province=='黑龙') {province='黑龙江'}
-		if(province=='内蒙') {province='内蒙古'}
-		for(var i in pro_count){
-			if(key==pro_count[i][0]){num=pro_count[i][1]}
-		}
-		options.series[0].data.push({name:province,value:num});
-
-	}
-             myChart.refresh();
-            myChart.setOption(options);
-        }); 
+                dataRange: {
+                show:false,
+            min: 0,
+            max: 2500,
+            x: 'left',
+            y: 'bottom',
+            text:['高','低'],           // 文本，默认为数值文本
+            calculable : true,
+            color:['#fe6666','#fe6666'],
+            textStyle:{color: '#fff'}
+        },
+        tooltip : {
+            trigger: 'item'
+        },
+        series : [
+            {
+                dataRangeHoverLink:true,
+                name: '同行数量',
+                type: 'map',
+                mapType: 'china',
+                roam: false,
+                selectedMode : 'single',
+                itemStyle:{
+                    normal:{label:{show:true}},
+                    emphasis:{label:{show:true}}
+                },
+            itemStyle: {
+                normal: {
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    color: '#fe6666',
+                    label: {
+                        show: true,
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    }
+                },
+                emphasis: { // 也是选中样式
+                    borderWidth: 2,
+                    borderColor: '#fff',
+                    color: '#FF5252',
+                    label: {
+                        show: true,
+                        textStyle: {
+                            color: '#fff'
+                        }
+                    }
+                }
+            },
+            data:[ 
+            ]
+            }
+        ]
+        };
+        var ecConfig = require('echarts/config');
+        var zrEvent = require('zrender/tool/event');
+        myChart.on(ecConfig.EVENT.MAP_SELECTED, function (param){
+        var selected = param.selected;
+        var str;
+        var pro_code;
+        var area=window.dataObj.area;
+        for (var p in selected) {
+            if (selected[p]) {
+                str = p;
+                for(var key in area){
+                    var province=area[key]['name'].substring(0,2);
+                    var province_long=area[key]['name'].substring(0,3);
+                    if(province==str||province_long==str){
+                        pro_code=Int(key);
+                    }
+                }
+                window.dataObj.province_code=pro_code;
+                $('.province_name').text(str);
+                getData('filter',1,'province',pro_code);
+                $('body','html').animate({scrollTop:'1000px'});
+            }
+        }
+    });
+    options.series[0].data=[];
+    var area=window.dataObj.area;
+    for(var key in area){
+        var province=area[key]['name'];
+        var pro_count=window.dataObj.province_count;
+        var num=0;
+        province=province.substring(0,2);
+        if(province=='黑龙') {province='黑龙江'}
+        if(province=='内蒙') {province='内蒙古'}
+        for(var i in pro_count){
+            if(key==pro_count[i][0]){num=pro_count[i][1]}
+        }
+        options.series[0].data.push({name:province,value:num});
+    }
+    myChart.refresh();
+    myChart.setOption(options);
+    }); 
     //page
     $(document).on('click','.pagenation li',function(){
-   	var $this=$(this);
-   	var id=Int($this.attr('data-id'));
-   	var page_total=window.dataObj.page_total;
-   	var province_code=window.dataObj.province_code;
-   	$('.pagenation li').removeClass('active').eq(id-1).addClass('active');
-   	if(id==1){
-   		$('.pre_page').hide();
-   		$('.next_page').show().attr({'data-id':id+1});;
-   	}
-   	else if(id==page_total){
-   		$('.next_page').hide();
-   		$('.pre_page').show().attr({'data-id':id-1});;
-   	}
-   	else if(1<id<page_total){
-   		$('.pre_page').show().attr({'data-id':id-1});
-   		$('.next_page').show().attr({'data-id':id+1});
-   	}
-   	getData('filter',id,'province',province_code);
-	});
-     $(document).on('click','.pre_page',function(){
-     	var $this=$(this);
-   	var id=Int($this.attr('data-id'));
-   	var province_code=window.dataObj.province_code;
-   	$('.next_page').show();
-   	getData('filter',id,'province',province_code);
-   	$this.attr({'data-id':id-1});
-   	$('.next_page').show().attr({'data-id':id+1});
-   	$('.pagenation li').removeClass('active').eq(id-1).addClass('active');
-   	
-     });
-     $(document).on('click','.next_page',function(){
-     	var $this=$(this);
-   	var id=Int($this.attr('data-id'));
-   	var province_code=window.dataObj.province_code;
-   	$('.pre_page').show();
-   	getData('filter',id,'province',province_code);
-   	$this.attr({'data-id':id+1});
-   	$('.pre_page').show().attr({'data-id':id-1});
-   	$('.pagenation li').removeClass('active').eq(id-1).addClass('active');
-
-     });
+        var $this=$(this);
+        var id=Int($this.attr('data-id'));
+        var page_total=window.dataObj.page_total;
+        var province_code=window.dataObj.province_code;
+        $('.pagenation li').removeClass('active').eq(id-1).addClass('active');
+        if(id==1){
+            $('.pre_page').hide();
+            $('.next_page').show().attr({'data-id':id+1});;
+        }
+        else if(id==page_total){
+            $('.next_page').hide();
+            $('.pre_page').show().attr({'data-id':id-1});;
+        }
+        else if(1<id<page_total){
+            $('.pre_page').show().attr({'data-id':id-1});
+            $('.next_page').show().attr({'data-id':id+1});
+        }
+        getData('filter',id,'province',province_code);
+    });
+    $(document).on('click','.pre_page',function(){
+        var $this=$(this);
+        var id=Int($this.attr('data-id'));
+        var province_code=window.dataObj.province_code;
+        $('.next_page').show();
+        getData('filter',id,'province',province_code);
+        $this.attr({'data-id':id-1});
+        $('.next_page').show().attr({'data-id':id+1});
+        $('.pagenation li').removeClass('active').eq(id-1).addClass('active');
+    });
+    $(document).on('click','.next_page',function(){
+        var $this=$(this);
+        var id=Int($this.attr('data-id'));
+        var province_code=window.dataObj.province_code;
+        $('.pre_page').show();
+        getData('filter',id,'province',province_code);
+        $this.attr({'data-id':id+1});
+        $('.pre_page').show().attr({'data-id':id-1});
+        $('.pagenation li').removeClass('active').eq(id-1).addClass('active');
+    });
 });
-var shopTotal=function(){
-	var total_count=$('#total_count').val().toString();
-	var n_length=total_count.length;
-    var num_1=0;
-    var num_2=0;
-    var num_3=0;
-    var num_4=0;
-    if(n_length==1){
-        num_1=0;
-        num_2=0;
-        num_3=0;
-        num_4=total_count;
-    }else if(n_length==2){
-        num_1=0;
-        num_2=0;
-        num_3=Int(total_count.substring(0,1));
-        num_4=Int(total_count.substring(1,2));
-    }else if(n_length==3){
-        num_1=0;
-        num_2=Int(total_count.substring(0,1));
-        num_3=Int(total_count.substring(1,2));
-        num_4=Int(total_count.substring(2,3));
-    }else if(n_length==4){
-        num_1=Int(total_count.substring(0,1));
-        num_2=Int(total_count.substring(1,2));
-        num_3=Int(total_count.substring(2,3));
-        num_4=Int(total_count.substring(3,4));
-    }else{
-        num_1=9;
-        num_2=9;
-        num_3=9;
-        num_4=9;
+var shopTotal=function() {
+    var total_count = $('#total_count').val().toString();
+    var n_length = total_count.length;
+    var num_1 = 0;
+    var num_2 = 0;
+    var num_3 = 0;
+    var num_4 = 0;
+    if (n_length == 1) {
+        num_1 = 0;
+        num_2 = 0;
+        num_3 = 0;
+        num_4 = total_count;
+    } else if (n_length == 2) {
+        num_1 = 0;
+        num_2 = 0;
+        num_3 = Int(total_count.substring(0, 1));
+        num_4 = Int(total_count.substring(1, 2));
+    } else if (n_length == 3) {
+        num_1 = 0;
+        num_2 = Int(total_count.substring(0, 1));
+        num_3 = Int(total_count.substring(1, 2));
+        num_4 = Int(total_count.substring(2, 3));
+    } else if (n_length == 4) {
+        num_1 = Int(total_count.substring(0, 1));
+        num_2 = Int(total_count.substring(1, 2));
+        num_3 = Int(total_count.substring(2, 3));
+        num_4 = Int(total_count.substring(3, 4));
+    } else {
+        num_1 = 9;
+        num_2 = 9;
+        num_3 = 9;
+        num_4 = 9;
     }
-	var number=[num_1,num_2,num_3,num_4];
-	number=bubbleSort(number);
-	window.dataObj.time=number+1;  
-	var n4=0;
-	var n3=0;
-	var n2=0;
-	var n1=0;
-	var count=function(time,num_4,num_3,num_2,num_1) {
-		    if (window.dataObj.time == 0) {
-		        window.dataObj.time =time;
-		    }
-		    else {
-		        window.dataObj.time--;
-		        var num4=$('.num4').text();
-		        var num3=$('.num3').text();
-		        var num2=$('.num2').text();
-		        var num1=$('.num1').text();
-		        if(num4!=num_4) $('.num4').text(n4++);
-		        else {$('.num4').text(num_4)}
-		        if(num3!=num_3) $('.num3').text(n3++);
-		        else {$('.num3').text(num_3)}
-		        if(num2!=num_2) $('.num2').text(n2++);
-		        else {$('.num2').text(num_2)}
-                if(num1!=num_1) $('.num1').text(n1++);
-                else {$('.num1').text(num_1)}
-		        setTimeout(function() {
-		                count(time,num_4,num_3,num_2,num_1)
-		            },
-		            50)
-		    }
-	}    
-	count(number+1,num_4,num_3,num_2,num_1);
+    var number = [num_1, num_2, num_3, num_4];
+    number = bubbleSort(number);
+    window.dataObj.time = number + 1;
+    var n4 = 0;
+    var n3 = 0;
+    var n2 = 0;
+    var n1 = 0;
+    var count = function (time, num_4, num_3, num_2, num_1) {
+        if (window.dataObj.time == 0) {
+            window.dataObj.time = time;
+        }
+        else {
+            window.dataObj.time--;
+            var num4 = $('.num4').text();
+            var num3 = $('.num3').text();
+            var num2 = $('.num2').text();
+            var num1 = $('.num1').text();
+            if (num4 != num_4) $('.num4').text(n4++);
+            else {
+                $('.num4').text(num_4)
+            }
+            if (num3 != num_3) $('.num3').text(n3++);
+            else {
+                $('.num3').text(num_3)
+            }
+            if (num2 != num_2) $('.num2').text(n2++);
+            else {
+                $('.num2').text(num_2)
+            }
+            if (num1 != num_1) $('.num1').text(n1++);
+            else {
+                $('.num1').text(num_1)
+            }
+            setTimeout(function () {
+                    count(time, num_4, num_3, num_2, num_1)
+                },
+                50)
+        }
+    }
+    count(number + 1, num_4, num_3, num_2, num_1);
 }
-
 var page = 0;
 var getData=function(action,page,type,data){
-	var url='';
-	var action =action;
-	var args={
-		action:action,
-		page:page
-	};
-	if(action=='filter') {
-		if(type=='province'){args.province=data}
-	
-	}
-	$.postJson(url,args,function(res){
-	if(res.success){
+    var url='';
+    var action =action;
+    var args={
+        action:action,
+        page:page
+    };
+    if(action=='filter') {
+        if(type=='province'){args.province=data}
+    }
+    $.postJson(url,args,function(res){
+    if(res.success){
         if(window.dataObj.shop_item==undefined){
             $.getItem('/static/items/official/shop_item.html?v=20150613',function(data){
                 window.dataObj.shop_item=data;
@@ -256,11 +258,11 @@ var getData=function(action,page,type,data){
         $(".shop_list").css("display","none");
         //return $.noticeBox(res.error_text);
     }
-	},function(){
+    },function(){
             $(".shop_list").css("display","none");
            // return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')
         }
-	);
+    );
 }
 function initShop(res){
     var shops=res.shoplist;

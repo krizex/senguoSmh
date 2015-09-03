@@ -367,13 +367,25 @@ class customerGoods(CustomerBaseHandler):
 							allow_num = limit_if.allow_num
 						else:
 							allow_num = good.limit_num - limit_if.buy_num
-				#判断商品是否参加了限时折扣活动 还不知道需不需要加上
-				q_discount=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1).all()
+				# 查询是否有限时折扣活动
+				self.updatediscount()
+				discount_rate=1
 				has_discount_activity=0
-				discount_rate=None
-				if charge_type in q_discount:
+				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1,use_goods_group=-2).first()
+				if q_all:
 					has_discount_activity=1
-					discount_rate=q_discount.discount_rate
+					discount_rate = q_all.discount_rate/10
+				else:
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=-1,status=1).first()
+					if q_part:
+						has_discount_activity=1
+						discount_rate = q_part.discount_rate/10
+					else:
+						qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=good.id,status=1).first()
+						if qq:
+							if charge_type.id in eval(qq.charge_type):
+								has_discount_activity=1
+								discount_rate = qq.discount_rate/10				
 				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
 					"has_discount_activity":has_discount_activity,"discount_rate":discount_rate})
@@ -391,6 +403,7 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
+		print("@@@@@@@@@@@@@@",charge_types)
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 
 # 手机注册
@@ -1382,8 +1395,6 @@ class Market(CustomerBaseHandler):
 		# added by cm 2015-8-24
 		has_seckill_activity = 0
 		has_discount_activity=0
-		seckill_img_url = ''
-		discount_img_url=''
 		notices = []
 		shop_id = shop.id
 
@@ -1392,8 +1403,6 @@ class Market(CustomerBaseHandler):
 			activity_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).all()
 			if activity_query:
 				has_discount_activity=1
-				discount_img_url=self.session.query(models.Notice).filter_by(config_id=shop_id).first().discount_img_url
-				notices.append(('','',discount_img_url,2))
 
 		# added by jyj 2015-8-21
 		seckill_goods_ids = []
@@ -1415,13 +1424,13 @@ class Market(CustomerBaseHandler):
 					seckill_goods_ids.append(item.id)
 
 				activity_query = activity_query[0]
-				seckill_img_url = self.session.query(models.Notice).filter_by(config_id = shop_id).first().seckill_img_url
-				notices.append(('','',seckill_img_url,1))
 		
 				
 		for x in shop.config.notices:
 			if x.active == 1:
-				notices.append((x.summary, x.detail,x.img_url,0))
+				notices.append((x.summary, x.detail,x.img_url,x.link,x.click_type,x._type))
+
+		notices.sort(key=lambda x:x[5],reverse=True)
 
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
@@ -2295,6 +2304,7 @@ class Cart(CustomerBaseHandler):
 				#charge_type.num 该计价方式的单位数量，比如售价 2元/3斤，此时charge_type.num为3
 				#charge_type.relate，一份选择单位对应的库存单位的数量，比如库存单位为kg，所选单位为斤，则relate为0.5
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
+				# num = round(float(num),2)  #格式化为小数点后一位小数
 
 				print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
 

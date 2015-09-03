@@ -16,7 +16,10 @@ $(document).ready(function(){
         $("#cart-bg").css("left",((mWidth-width)/2+width-54)+"px");
         $("#back-bg").css("left",(mWidth-width)/2+"px");
     }
-
+    $("#back-bg").on("click",function(){
+        var url = $(this).attr("data-href");
+        window.location.href=url;
+    });
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
@@ -289,5 +292,39 @@ function cartNum(cart_ms){
 function fruits_num(){
     for(var key in num_list){
     if(num_list[key]==0){delete num_list[key];}
+    }
+}
+function countTime($obj){
+    var time_end = parseInt($obj.attr("end-time"))*1000;
+    var time_now = new Date().getTime();
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
+    if(time_distance >= 0){
+        // 天时分秒换算
+        int_day = Math.floor(time_distance/86400000)
+        time_distance -= int_day * 86400000;
+        int_hour = Math.floor(time_distance/3600000)
+        time_distance -= int_hour * 3600000;
+        int_minute = Math.floor(time_distance/60000)
+        time_distance -= int_minute * 60000;
+        int_second = Math.floor(time_distance/1000)
+        if(int_hour < 10)
+            int_hour = "0" + int_hour;
+        if(int_minute < 10)
+            int_minute = "0" + int_minute;
+        if(int_second < 10)
+            int_second = "0" + int_second;
+        // 显示时间
+        if(int_day>0){
+            $obj.find(".day").html(int_day+"天");
+        }
+        $obj.find(".hour").html(int_hour+":");
+        $obj.find(".minute").html(int_minute+":");
+        $obj.find(".second").html(int_second);
+        setTimeout(function(){
+            countTime($obj);
+        },1000);
+    }else{
+        //noticeBox("结束了");
     }
 }

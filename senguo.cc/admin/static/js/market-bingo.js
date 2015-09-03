@@ -84,12 +84,20 @@ $(document).ready(function(){
         }
     });
 }).on('click','.notice-item',function(){
-        //公告详情
-        var $this=$(this);
+    //公告详情
+    var $this=$(this);
+    var _type=parseInt($this.attr("data-type"))
+    if(_type==1){
+        var url = $this.attr("data-url");
+        if(url){
+            window.location.href=url;
+        }
+    }else{
         var detail=$this.find('.notice-detail').val();
         var detail_box=new Modal('detail_box');
         detail_box.modal('show');
         $('.detail-box').find('.detail').text(detail);
+    }
 }).on('click','.goods_item_item',function(e){
     var $this=$(this);
     var storage=Number($this.attr('data-num'));
