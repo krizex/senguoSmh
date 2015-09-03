@@ -378,7 +378,7 @@ class customerGoods(CustomerBaseHandler):
 				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1,use_goods_group=-2).first()
 				if q_all:
 					has_discount_activity=1
-					has_activity=1
+					has_activity=2
 					discount_rate = q_all.discount_rate
 					x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=q_all.discount_id).first()
 					if x.discount_way==0:
@@ -393,7 +393,7 @@ class customerGoods(CustomerBaseHandler):
 					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=-1,status=1).first()
 					if q_part:
 						has_discount_activity=1
-						has_activity=1
+						has_activity=2
 						discount_rate = q_part.discount_rate
 						x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=q_part.discount_id).first()
 						if x.discount_way==0:
@@ -409,7 +409,7 @@ class customerGoods(CustomerBaseHandler):
 						if qq:
 							if charge_type.id in eval(qq.charge_type):
 								has_discount_activity=1
-								has_activity=1
+								has_activity=2
 								discount_rate = qq.discount_rate
 								x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=qq.discount_id).first()
 								if x.discount_way==0:
@@ -496,7 +496,7 @@ class customerGoods(CustomerBaseHandler):
 		self.set_cookie("cart_count", str(cart_count))
 		# print("@@@@@@@@@@@@@@",charge_types)
 		# print("#########",seckill_goods_ids)
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_discount_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
 								seckill_goods_ids=seckill_goods_ids)
 
 # 手机注册
