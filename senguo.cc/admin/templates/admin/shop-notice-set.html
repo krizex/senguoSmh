@@ -128,6 +128,17 @@
                         <span class="pull-left set-left20 set-right20 font14">详情</span>
                         <textarea class="new-notice-detail pull-left" placeholder="请填写公告详情，公告详情只在“模版一”中展示"></textarea>
                     </div>
+                     <div class="clearfix">
+                        <span class="pull-left set-left20 set-right20 font14">链接</span>
+                        <input type="text" class="new-notice-link pull-left"/>
+                    </div>
+                    <div class="clearfix mt10">
+                        <span class="pull-left set-left20 set-right20 font14">点击公告背景跳转</span>
+                        <ul class="link-type">
+                            <li class="{%if notice and notice.click_type == 0 or not notice%}active{% end %} fl" data-id="0">详情</li>
+                            <li class="{%if notice and notice.click_type == 1 %}active{% end %} fr" data-id="1">链接</li>
+                        </ul>
+                    </div>
                     <div class="clearfix mt10">
                         <span class="pull-left set-left20 set-right20 font14">背景</span>
                         <div class="img_add_box" id="wrap-add-img">

@@ -85,6 +85,9 @@ $(document).ready(function(){
         }
     }
 });
+}).on("click",".link-type li",function(){
+    var $this=$(this);
+    $this.addClass("active").siblings("li").removeClass("active");
 }).on("click",".notice-type-choose li",function(){
     var $this=$(this);
     var index=$this.index();
@@ -176,14 +179,19 @@ function noticeAdd(){
     var summary=$('.new-notice-title').val().trim();
     var detail=$('.new-notice-detail').val().trim();
     var img_url=$("#add-img").attr("url");
+    var link=$(".new-notice-link").val().trim();
+    var link_type=$(".link-type .active").attr("data-id");
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('请输入摘要！')}
-    if(!detail){return Tip('请输入详情！')}
+    if(!detail&&!link){return Tip('请填入详情或链接！')}
+    if(link.length>50){return Tip('链接请不要超过50个字！')}
     var data={
         summary:summary,
         detail:detail,
-        img_url:img_url
+        img_url:img_url,
+        link:link,
+        link_type:link_type
     };
     var args={
         action:action,
@@ -209,7 +217,6 @@ function noticeEdit(target){
     var link=parent.find('.notice_link').val().trim();
     var link_type;
     var img_url=parent.find(".preview-img").attr("url");
-    console.log(parent.find('.notice_detail'));
      if(parent.find('.notice_detail').length!=0){
         detail=parent.find('.notice_detail').val().trim();
     }else{
@@ -223,8 +230,8 @@ function noticeEdit(target){
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('摘要不能为空！')}
-    if(!detail){return Tip('详情不能为空！')}
-    console.log(link);
+    if(!detail&&!link){return Tip('请填入详情或链接！')}
+    if(link.length>50){return Tip('链接请不要超过50个字！')}
     var data={
         notice_id:notice_id,
         summary:summary,

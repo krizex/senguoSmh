@@ -3461,9 +3461,23 @@ class Config(AdminBaseHandler):
 					img_url = data["img_url"]
 				else:
 					img_url = ''
+				if data["detail"]:
+					detail = data["detail"]
+				else:
+					detail =''
+				if "link" in data and data["link"]:
+					link = data["link"]
+				else:
+					link = ''
+				if "link_type" in data and data["link_type"]:
+					link_type = data["link_type"]
+				else:
+					link_type = 0
 				notice = models.Notice(
 					summary=data["summary"],
-					detail=data["detail"],
+					detail=detail,
+					link=link,
+					click_type=link_type,
 					img_url=img_url)
 				self.current_shop.config.notices.append(notice)
 				self.session.commit()
@@ -3496,9 +3510,12 @@ class Config(AdminBaseHandler):
 				else:
 					img_url = ''
 				notice.summary = data["summary"]
-				notice.detail = data["detail"]
-				notice.link = data["link"]
-				notice.click_type = data["link_type"]
+				if "detail" in data and data["detail"]:
+					notice.detail = data["detail"]
+				if "link" in data and data["link"]:
+					notice.link = data["link"]
+				if "link_type" in data and data["link_type"]:
+					notice.click_type = data["link_type"]
 				notice.img_url=img_url
 			self.session.commit()
 		elif action == "edit_recipe_img":
