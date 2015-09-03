@@ -40,9 +40,9 @@
             </ul>
         </div>
     </div>
-    <div class="wrap-left box-border">
-        <ul class="topic-list">
-            <li>
+    <div class="wrap-left">
+        <ul class="topic-list box-border" id="topic_list">
+            <!--<li>
                 <h4 class="topic-title">森果又出新功能啦，哈哈哈哈，大家快来强势围观吧！大家快来强势围观吧！大家快来强势围观吧！<span class="topic-tip">官</span></h4>
                 <div class="wrap-topic-attr">
                     <div class="fr">
@@ -65,26 +65,12 @@
                     <span>骑驴看账本</span>
                     <span>5小时前</span>
                 </div>
-            </li>
+            </li>-->
         </ul>
-        <a href="javascript:;" class="more-btn">加载更多</a>
+        <a href="javascript:;" class="more-btn mt10">加载更多</a>
     </div>
 </div>
-<div class="wrap-loading-box hide">
-    <div class="loading-box">
-        <div class="loader">
-            <div class="ball"></div>
-            <div class="ball"></div>
-            <div class="ball"></div>
-        </div>
-        <div class="load-txt">加载中...</div>
-    </div>
-</div>
-<p class="loading txt-center c999 mt10 hide"></p>
 <div class="fix-center publish-btns">
-{% if if_admin == True %}
-<a href="{{reverse_url('BbsPublish')}}" class="publish-tie if-login">发布</a>
-{% end %}
 </div>
 <div class="pop-win pop-login hide" data-id="{{if_login}}">
     <div class="pop-content">
@@ -103,5 +89,5 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('bbs/js/main1.js')}}"></script>
+<script src="{{static_url('bbs/js/bbs-main.js')}}"></script>
 {% end %}
