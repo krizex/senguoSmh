@@ -9,7 +9,7 @@
 {% import json%}
 <script>
     window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
-
+    var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
 </script>
 {% if good %}
 <input type="hidden" value="{{handler.shop_code}}" is_activity="{{good.activity_status}}" has_discount_activity="{{has_discount_activity}}" id="shop_code"/>
@@ -43,7 +43,8 @@
         <li data-buy="{{charge_types[0]['limit_today']}}" data-allow="{{charge_types[0]['allow_num']}}">
             <span class="now-price">{{charge_types[0]['price']}}元</span>
             <span class="old-price">{% if charge_types[0]['market_price'] and charge_types[0]['market_price']>0 %}<span class="market-price">{{charge_types[0]['market_price']}}元</span>{% end %}/<span class="number">{{charge_types[0]['num']}}</span>{{charge_types[0]['unit']}}</span>
-            <div class="seckill-buy" data-storage="{{good.storage}}" data-relate="{{charge_types[0]['relate']}}" data-id="{{charge_types[0]['id']}}">抢!</div>
+            {% if charge['has_discount_activity']>0 and good.activity_status==1 %}<span class="goods-tag activity-tag">{{charge['discount_rate']}}折</span>{% end %}
+            <div class="seckill-buy" data-storage="{{good.storage}}" data-relate="{{charge_types[0]['relate']}}" data-id="{{charge_types[0]['id']}}" data-storage="">抢!</div>
         </li>
         {% else %}
             {% for charge in charge_types %}
