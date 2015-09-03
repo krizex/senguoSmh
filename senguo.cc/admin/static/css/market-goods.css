@@ -64,7 +64,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .back>i{position: absolute;width: 10px;height: 18px;background-image: url('/static/images/goodsdetail_back.png'); top: 8px;left: 10px;}
 .share{position: absolute;right: 10px;top: 10px;}
 .share>i{position: absolute;width: 16px;height: 18px;background-image: url('/static/images/icon_share.png');top: 8px;left: 8px;}
-.shop-area{position: fixed;left: 10px;bottom:10px;min-width: 80px;padding-left: 40px;padding-right:10px;border:1px solid #23ac39;text-align: center;border-radius: 34px;height: 34px;line-height:32px;z-index:990;color: #333;font-size: 14px;background-color: #fff;}
+.shop-area{position: fixed;left: 10px;bottom:10px;min-width: 80px;padding-left: 40px;padding-right:10px;border:1px solid #23ac39;text-align: center;border-radius: 34px;height: 34px;line-height:32px;z-index:990;color: #333;font-size: 14px;background-color: #fff;max-width: 250px;}
 .shop-area .shop-in{position: absolute;left: 0;top: -1px;}
 .shop-area .shop-in>i{background-image:url('/static/images/goodsdetail_shop.png');width: 20px;height: 20px;top: 7px;left: 7px;position: absolute;}
 .cart-bg{position: fixed;right: 10px;bottom:10px;}
@@ -102,9 +102,9 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .comment-lst .com-top>img{width: 20px;height: 20px;border-radius: 50%;margin-right: 2px;margin-top: -2px;}
 .comment-lst .name{color: #333;font-size: 14px;}
 .comment-lst .com-txt{font-size: 14px;line-height: 18px;color: #999;}
-.goods-tag{display: inline-block;font-size: 12px;color: #fec306;width:80px;height: 16px;line-height: 14px;text-align: center;border-radius: 4px;margin-left: 4px;border: 1px solid #fec306;}
+.goods-tag{display: inline-block;font-size: 12px;color: #fec306;padding:0 2px;height: 16px;line-height: 14px;text-align: center;border-radius: 4px;margin-left: 4px;border: 1px solid #fec306;}
 .market-price{text-decoration:line-through;}
 .goods-info-lst{padding-bottom:50px;}
-.seckill-buy{position:absolute;right:62px;top:0;width: 90px;height: 30px;line-height: 30px;cursor:pointer;background-color:#7ebf91;text-align: center;color: #fff;font-size: 14px;border-radius: 30px;}
+.seckill-buy{position:absolute;right:0;top:0;width: 90px;height: 30px;line-height: 30px;cursor:pointer;background-color:#7ebf91;text-align: center;color: #fff;font-size: 14px;border-radius: 30px;}
 .seckill-buy-yes{background-color: #ccc;}
-.activity-tag{width: auto;padding: 0 2px;margin-left: 0;vertical-align: middle;}
+.activity-tag{margin-left: 0;vertical-align: middle;}

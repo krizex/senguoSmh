@@ -224,12 +224,10 @@ $(document).ready(function(){
 }).on("click",".seckill-buy",function(){
     var id = $(this).closest("li").attr("data-id");
     var s_goods_id =  $(this).closest("li").attr("seckill_goods_id");
-    window.dataObj.fruits[id]=1;
-    $(this).addClass("hidden");
-    $(this).next(".seckill-btn-yes").removeClass("hidden");
-    wobble($('.cart_num'));
-    window.dataObj.cart_count++;
-    $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
+    num_list[id]=1;
+    $(this).addClass("seckill-buy-yes");
+    var cart_now=parseInt($("#cart-now-num").html());
+    $("#cart-now-num").html(cart_now+1);
     seckill_goods_ids.push(s_goods_id);
     noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 });
@@ -264,15 +262,16 @@ function addCart(link){
     var fruits=num_list;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_goods_ids:seckill_goods_ids
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success)
             {   if(link){
+                    SetCookie('cart_count', $("#cart-now-num").html());
                     window.location.href=link;
                 }
-                
             }
             else return noticeBox(res.error_text);
         }
