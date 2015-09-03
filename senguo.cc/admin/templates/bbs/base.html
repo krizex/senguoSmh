@@ -27,7 +27,7 @@
             <div class="bbx-top-box w980">
                 <div class="wrap-userinfo fr">
                     <a href="javascript:;">
-                        <img src="/static/images/TDSG.png" alt="张三的头像"/>
+                        <img src="/static/images/person.png" alt="张三的头像"/>
                         <span class="name-text ml5">用户名</span>
                     </a>
                 </div>
@@ -41,7 +41,7 @@
         <div class="wrap-nav">
             <ul class="nav-list w980 group">
                 <li>
-                    <a href="/bbs">首页</a>
+                    <a class="active" href="/bbs">首页</a>
                 </li>
                 <li>
                     <a href="javascript:;" data-id="0">官方公告</a>
@@ -70,7 +70,7 @@
             </ul>
         </div>
     </div>
-    <div class="container">
+    <div class="bbs-container">
         {% block content %}{% end %}
     </div>
 {% block js %}

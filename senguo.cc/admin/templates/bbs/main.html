@@ -6,14 +6,36 @@
 <div class="wrap-main group">
     <div class="wrap-right fr">
         <a class="publish-box"></a>
-        <div class="aside-box">
-            <p class="aside-title">热门文章</p>
+        <div class="aside-box box-border mt10">
+            <p class="aside-title"><span>热门文章</span></p>
             <ul class="aside-list">
                 <li>
                     <p class="clip">热门文章名字，热门文章名字来了啊</p>
                     <div class="wrap-topic-attr">
-
+                        <div class="fr">
+                            <a href="javascript:;" class="icon-topic viewr">1403</a>
+                        </div>
+                        <span>大漠孤烟</span>
                     </div>
+                </li>
+            </ul>
+        </div>
+        <div class="aside-box box-border mt10">
+            <p class="aside-title"><span>活跃用户</span></p>
+            <ul class="aside-list">
+                <li>
+                    <dl class="dl">
+                        <dd>
+                            <img src="/static/images/person.png" alt="用户头像"/>
+                        </dd>
+                        <dt>
+                            <p class="f14 c333 clip">这是用户名</p>
+                            <p class="c999 f12 mt12">
+                                <span class="num-txt">发布:10篇</span>
+                                <span>评论:40条</span>
+                            </p>
+                        </dt>
+                    </dl>
                 </li>
             </ul>
         </div>
@@ -45,6 +67,7 @@
                 </div>
             </li>
         </ul>
+        <a href="javascript:;" class="more-btn">加载更多</a>
     </div>
 </div>
 <div class="wrap-loading-box hide">
@@ -80,5 +103,5 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('bbs/js/main.js')}}"></script>
+<script src="{{static_url('bbs/js/main1.js')}}"></script>
 {% end %}
