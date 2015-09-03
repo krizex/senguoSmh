@@ -114,11 +114,7 @@ $(document).ready(function(){
     var shop_code=$('#shop_code').val();
     if($(e.target).closest(".forbid_click").size()==0){
         if (storage > 0 && detail_no=='False') {
-            if(is_activity==0){
-                addCart("/"+shop_code+"/goods/"+id);
-            }else{
-                return noticeBox("活动商品无法查看商品详情哦~~");
-            }
+            addCart("/"+shop_code+"/goods/"+id);
         }else if(storage<=0){
             return noticeBox("当前商品已经卖完啦");
         }
@@ -396,7 +392,7 @@ var goodsList=function(page,action,_group_id){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" end-time="{{end_time}}" data-detail="{{if is_activity!=0 }}True{{else}}{{detail_no}}{{/if}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
+var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activity="{{is_activity}}" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" end-time="{{end_time}}" data-detail="{{detail_no}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
                     '<div class="clearfix box bg {{if storage<=0 }}desaturate{{/if}}">'+
                         '<div class="goods-img pull-left forbid_click">'+
                             '<a href="javascript:;" class="check-lg-img">'+
