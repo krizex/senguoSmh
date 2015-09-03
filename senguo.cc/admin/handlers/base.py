@@ -704,8 +704,8 @@ class GlobalBaseHandler(BaseHandler):
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
-			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
+			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled': float(format(d.current_saled,'.1f')),\
+				'saled':float(format(d.saled,'.1f')),'storage':float(format(d.storage,'.1f')),'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,\
 				'code':d.fruit_type.code,'buylimit':d.buy_limit})
@@ -1462,15 +1462,19 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order.shop.shop_property += totalprice_inc
 		# print("[_AccountBaseHandler]order_done: order.shop.shop_property:",order.shop.shop_property)
 
+		#订单完成，库存不变，在售减少，销量增加
 		fruits = eval(order.fruits)
 		if fruits:
 			# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
 			ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType)\
 			.filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for s in ss:
-				num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+				num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+				# num = float(format(num,'.1f'))  #格式化为小数点后一位小数
 				s[0].current_saled -= num
-
+				s[0].saled         += num
+			session.flush()
+			
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
@@ -2158,23 +2162,20 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				self.updatediscount()
 				discount_rate=1
 				num=None
-				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,status=1,use_goods_group=-2).first()
+				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=-2).first()
 				if q_all:
-					q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).first()
-					discount_rate = q_group.discount_rate/10
+					discount_rate = q_all.discount_rate/10
 				else:
-					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=charge_type.fruit.group_id,use_goods=-1,status=1).first()
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=charge_type.fruit.group_id,use_goods=-1,status=1).first()
 					if q_part:
-						q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).first()
-						discount_rate = q_group.discount_rate/10
+						discount_rate = q_part.discount_rate/10
 					else:
 						q=self.session.query(models.ChargeType).filter_by(id=charge_type.id,activity_type=2).first()
 						if q:
 							qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).first()
 							if qq:
 								if charge_type.id in eval(qq.charge_type):
-									q_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).first()
-									discount_rate = q_group.discount_rate/10
+									discount_rate = qq.discount_rate/10
 				fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 										  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
 										  "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
@@ -2198,7 +2199,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 				if buy_limit == userlimit or buy_limit ==0 :
 					fruits[charge_type.id] = {"charge_type": charge_type, "num": d[charge_type.id],
 											  "code": charge_type.fruit.fruit_type.code,"img_url":img_url,'limit_num':charge_type.fruit.limit_num,\
-											   "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
+											  "activity_type":charge_type.activity_type,"discount_rate":discount_rate}
 
 		return fruits
 

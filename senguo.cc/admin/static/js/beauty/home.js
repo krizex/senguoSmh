@@ -43,15 +43,15 @@ $(document).ready(function(){
         $('.wrap-goods-box').css('margin-top','40px');
         $('.classify-title').hide();
     }else if(link_action != null&&link_action=="all"){
-         $('.wrap-notice-box').addClass('hidden');
-         $('.wrap-home').removeClass('hidden');
-         $('.classify-list li').each(function(){
+        $('.wrap-notice-box').addClass('hidden');
+        $('.wrap-home').removeClass('hidden');
+        $('.classify-list li').each(function(){
             var $this=$(this);
             var id = Number($this.attr('data-id'));
             _group_id = id;
             goodsList(1,6,_group_id);
             scrollLoading(_group_id);
-         }); 
+        }); 
     }else{
         if($('.classify-list li').length==0){
             $(".wrap-loading-box").addClass("hidden");
@@ -68,9 +68,9 @@ $(document).ready(function(){
     }
     $('.bottom-nav').find('li').addClass('add_cart');
     var s_top = 0;
+    //分类滚动监听
     $(window).scroll(function(){
         if(link_search == null){
-         //分类滚动监听
             var box=$('.goods-list');
             for(var i=0;i<box.length;i++){
                 var id=$('.goods-list').eq(i).attr('data-id');
@@ -78,7 +78,7 @@ $(document).ready(function(){
                 var classify=$('.classify-'+id).text();
                 if($(window).scrollTop()>=dist){$('#classify').text(classify);}
             }
-         }
+        }
     });
 }).on('click','.more-goods',function(){
     var shop_code=$('#shop_code').val();
@@ -86,9 +86,17 @@ $(document).ready(function(){
 }).on('click','.notice-item',function(){
     //链接跳转
     var $this=$(this);
-    if($this.attr("data-url")){
+    var _type=parseInt($this.attr("data-type"))
+    if(_type==1){
         var url = $this.attr("data-url");
-        window.location.href=url;
+        if(url){
+            window.location.href=url;
+        }
+    }else{
+        var detail=$this.find('.notice-detail').val();
+        var detail_box=new Modal('detail_box');
+        detail_box.modal('show');
+        $('.detail-box').find('.detail').text(detail);
     }
 }).on("click","#menu",function(){
     var link_search=$.getUrlParam("search");
@@ -122,7 +130,7 @@ $(document).ready(function(){
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
     $.scrollTo({endY:top,duration:500,callback:function(){
-         setTimeout(function(){
+        setTimeout(function(){
             _group_finished=true;
         },500)
     }});
@@ -338,14 +346,14 @@ var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}" end-ti
                     '<img src="/static/images/holder_fruit.png" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
                     '<div class="status-tip {{tag}}"></div>'+
                     '<div class="item-info bg-color">'+
-                        '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
+                        '<div class="skew item-info-name {{if charge_types["market_price"]>0 || is_activity>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
                             '<p class="p-row">￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span><span class=""></span>'+
                             '{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
                             '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span></p>'+
                             '{{if charge_types["market_price"]>0 }}' +
                             '<p class="market {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
-                            '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}} font12 nowrap"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
+                            '<p class="{{if is_activity==0 }}hidden{{/if}} font12 nowrap"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
                         '</div>'+
                         '<a href="{{link}}" class="skew now-buy">立即购买</a>'+
                     '</div>'+
@@ -361,7 +369,7 @@ var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" end-
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
                         '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
-                        '{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
+                        '{{if is_activity==2 }}<span class="price-tip2 {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
                         '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span>'+
                         '{{if charge_types["market_price"]>0 }}<p class="market text-grey9 {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
                         '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
@@ -688,7 +696,6 @@ document.addEventListener('touchend', function (ev) {
             }
             break;
         case 2:   //下
-
             break;
         default:            
     }   
