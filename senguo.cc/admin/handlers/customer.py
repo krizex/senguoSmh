@@ -367,13 +367,25 @@ class customerGoods(CustomerBaseHandler):
 							allow_num = limit_if.allow_num
 						else:
 							allow_num = good.limit_num - limit_if.buy_num
-				#判断商品是否参加了限时折扣活动 还不知道需不需要加上
-				q_discount=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1).all()
+				# 查询是否有限时折扣活动
+				self.updatediscount()
+				discount_rate=1
 				has_discount_activity=0
-				discount_rate=None
-				if charge_type in q_discount:
+				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1,use_goods_group=-2).first()
+				if q_all:
 					has_discount_activity=1
-					discount_rate=q_discount.discount_rate
+					discount_rate = q_all.discount_rate/10
+				else:
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=-1,status=1).first()
+					if q_part:
+						has_discount_activity=1
+						discount_rate = q_part.discount_rate/10
+					else:
+						qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=good.id,status=1).first()
+						if qq:
+							if charge_type.id in eval(qq.charge_type):
+								has_discount_activity=1
+								discount_rate = qq.discount_rate/10				
 				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
 					"has_discount_activity":has_discount_activity,"discount_rate":discount_rate})
