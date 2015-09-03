@@ -20,7 +20,7 @@
         {% if notice._type == 0%}
         <ul class="notice-list mt15">
             <li class="notice-title">
-                <div class="fr">
+                <div class="notice-switch fr">
                     <span class="switch-btn {% if notice.active==1 %}switch-abtn{% end %} switch-notice"  data-id="{{notice.id}}"><i></i><span>{% if notice.active==1 %}已启用{% else %}未启用{% end %}</span></span>
                     <span class="del-notice ml10 c666 hide"  data-id="{{notice.id}}">删除</span>
                     <a href="{{reverse_url('MadminSetAttr')}}?action=addNotice&id={{notice.id}}" class="ml10 c666">编辑</a>
@@ -28,7 +28,7 @@
                 <span class="dgreen">公告{% if arrNum[index] %}{{arrNum[index]}}{% end %}</span>
             </li>
             <li class="group">
-                <span class="notice-left">摘要</span>
+                <span class="notice-left">标题</span>
                 <div class="notice-text fr">
                     {{notice.summary or '未设置'}}
                 </div>
@@ -39,8 +39,8 @@
                     {{notice.detail or '未设置'}}
                 </div>
             </li>
-             <li class="group">
-                <span class="notice-left"> 链接</span>
+            <li class="group">
+                <span class="notice-left">链接</span>
                 <div class="notice-text fr">
                     <a href="{{notice.link or ''}}">{{notice.link or '未设置'}}</a>
                 </div>
@@ -60,7 +60,7 @@
         {% if notice._type > 0%}
         <ul class="notice-list mt15">
             <li class="notice-title">
-                <div class="fr">
+                <div class="notice-switch fr">
                     <span class="switch-btn {% if notice.active==1 %}switch-abtn{% end %} switch-notice"  data-id="{{notice.id}}"><i></i><span>{% if notice.active==1 %}已启用{% else %}未启用{% end %}</span></span>
                     <span class="del-notice ml10 c666 hide"  data-id="{{notice.id}}">删除</span>
                     <a href="{{reverse_url('MadminSetAttr')}}?action=addNotice&id={{notice.id}}" class="ml10 c666">编辑</a>
@@ -68,7 +68,7 @@
                 <span class="dgreen">公告{% if arrNum[index] %}{{arrNum[index]}}{% end %}</span>
             </li>
             <li class="group">
-                <span class="notice-left">摘要</span>
+                <span class="notice-left">标题</span>
                 <div class="notice-text fr">
                     {{notice.summary or '未设置'}}
                 </div>
@@ -80,7 +80,7 @@
                 </div>
             </li>
              <li class="group">
-                <span class="notice-left"> 链接</span>
+                <span class="notice-left">链接</span>
                 <div class="notice-text fr">
                     <a href="{{notice.link or ''}}">{{notice.link or '未设置'}}</a>
                 </div>
@@ -107,14 +107,14 @@
             <span class="roll-left"></span>编辑和修改商城水果公告栏的内容
         </li>
         <li>
-            <span class="roll-left"></span>摘要为公告栏直接显示的内容，用户可点击查看详情。
+            <span class="roll-left"></span>标题为公告栏直接显示的内容，用户可点击查看详情活跳转到特定的链接。
         </li>
     </ul>
     <a href="javascript:;" class="close-pop" id="close-pop"></a>
 </div>
 <div class="pop-bwin pop-name hide">
     <div class="pop-bcontent">
-        <h3 id="b_title" class="txt-center">是否确认删除该公告？</h3>
+        <h3 id="b_title" class="txt-center">确认删除该公告？</h3>
         <div class="wrap-bbtns mt20 txt-center wrap-delbtns">
             <a href="javascript:;" class="ok-bbtn dgreen" id="del_notice">确认</a>
             <a href="javascript:;" class="cancel-bbtn c666">取消</a>
