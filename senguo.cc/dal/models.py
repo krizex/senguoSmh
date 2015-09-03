@@ -407,7 +407,7 @@ class Accountinfo(MapBase, _CommonApi):
 	# 基本账户信息
 
 	# 性别，男1, 女2, 其他0
-	sex = Column(Integer, default=0)
+	sex = Column(TINYINT, default=0)
 	# 昵称
 	nickname = Column(String(64), default="")
 	# 真实姓名
