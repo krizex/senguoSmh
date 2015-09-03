@@ -953,13 +953,14 @@ class AmountStatic(SuperBaseHandler):
 			q_range=self.session.query(func.max(func.day(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month)
 			#print(q_range.all()[0][0])
 		elif type==2:	#type=2表示按周来进行排序，取全年的所有周的数据
+			#修改，每周是按照周一到周日来算的，所以要给week的第二个参数赋值 sunmh 2015年09月03日14:52:14
 			current_year = self.args['current_year']
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time)).\
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_range=self.session.query(func.max(func.week(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year)
+			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_range=self.session.query(func.max(func.week(models.BalanceHistory.create_time,1))).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year)
 			#print(q_range.all())
 		elif type==3:	#type=3表示按月来进行排序，取全年的所有月份的数据
 			current_year = self.args['current_year']
@@ -995,7 +996,7 @@ class AmountStatic(SuperBaseHandler):
 					rangeOfArray=31
 				elif current_month in ('04','06','09','11'):
 					rangeOfArray=30
-				elif int(current_year)%4==0:
+				elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
 					rangeOfArray=29
 				else:
 					rangeOfArray=28

@@ -110,4 +110,8 @@
 .max-height-roll3{overflow: hidden;max-height: 450px;overflow-y: auto;width:98%;}
 .info-wrap{text-align: center;font-size:20px;margin-top: 30px;}
 
+/*add by sunmh 2015年09月03日*/
+.amount_total{text-align: right;}
+.amount_alipay{text-align: right;}
+.amount_wechat{text-align: right;}
 
