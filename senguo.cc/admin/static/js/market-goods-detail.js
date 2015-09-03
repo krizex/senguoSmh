@@ -1,6 +1,12 @@
 var num_list={};
 $(document).ready(function(){
     var _shop_code = $("#shop_code").val();
+    var end_time = parseInt($("#shop_code").attr("end_time"));
+    var has_discount_activity = parseInt($("#shop_code").attr("has_discount_activity"));
+    var is_activity = parseInt($("#shop_code").attr("is_activity"));
+    if(is_activity>0 && has_discount_activity==1){
+        countTime($("#time_box"));
+    }
     var _url='/'+_shop_code;
     setTimeout(function(){
         window.addEventListener('pagehide', onPopState);
@@ -295,7 +301,7 @@ function fruits_num(){
     }
 }
 function countTime($obj){
-    var time_end = parseInt($obj.attr("end-time"))*1000;
+    var time_end = parseInt($obj.attr("end_time"))*1000;
     var time_now = new Date().getTime();
     var time_distance = time_end - time_now;  // 结束时间减去当前时间
     var int_day, int_hour, int_minute, int_second;
@@ -318,9 +324,9 @@ function countTime($obj){
         if(int_day>0){
             $obj.find(".day").html(int_day+"天");
         }
-        $obj.find(".hour").html(int_hour+":");
-        $obj.find(".minute").html(int_minute+":");
-        $obj.find(".second").html(int_second);
+        $obj.find(".hour").html(int_hour+"时");
+        $obj.find(".minute").html(int_minute+"分");
+        $obj.find(".second").html(int_second+"秒");
         setTimeout(function(){
             countTime($obj);
         },1000);

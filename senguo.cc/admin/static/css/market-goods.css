@@ -39,6 +39,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .ml20{margin-left: 20px;}
 .pm80{padding-bottom: 80px;}
 .mt2{margin-top: 2px;}
+.mt10{margin-top: 10px !important;}
 .rotate-img{-webkit-transform:rotate(90deg);transform:rotate(90deg);}
 .rotate-img2{-webkit-transform:rotate(180deg);transform:rotate(180deg);}
 .pt5{padding-top: 5px;}
@@ -46,7 +47,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .grey-bg{background-color: #ccc !important;}
 .r70{right:-70px !important;}
 .w90{width: 90px !important;}
-
+.c999{color: #999 !important;}
 .wrap-goods-detail{position: relative;}
 .img-list{width: 100%;height: 0;padding-bottom: 60%;position: relative;background-color: #ebf0ef;}
 .swiper-container{width: 100%;height: 0;padding-bottom: 60%;overflow: hidden;position: relative;}
@@ -106,3 +107,4 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .goods-info-lst{padding-bottom:50px;}
 .seckill-buy{position:absolute;right:62px;top:0;width: 90px;height: 30px;line-height: 30px;cursor:pointer;background-color:#7ebf91;text-align: center;color: #fff;font-size: 14px;border-radius: 30px;}
 .seckill-buy-yes{background-color: #ccc;}
+.activity-tag{width: auto;padding: 0 2px;margin-left: 0;vertical-align: middle;}

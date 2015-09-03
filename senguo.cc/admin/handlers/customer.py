@@ -338,6 +338,8 @@ class customerGoods(CustomerBaseHandler):
 		charge_types= []
 		seckill_active = shop.marketing.seckill_active
 		charge_type_activity_type = []
+		end_time=0
+		has_discount_activity1=0
 		if seckill_active == 1:
 			self.update_seckill()			
 			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop.id,activity_status = 2).all()
@@ -369,26 +371,56 @@ class customerGoods(CustomerBaseHandler):
 							allow_num = good.limit_num - limit_if.buy_num
 				# 查询是否有限时折扣活动
 				self.updatediscount()
-				discount_rate=1
+				discount_rate=10
 				has_discount_activity=0
 				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1,use_goods_group=-2).first()
 				if q_all:
 					has_discount_activity=1
-					discount_rate = q_all.discount_rate/10
+					has_discount_activity1=1
+					discount_rate = q_all.discount_rate
+					x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=q_all.discount_id).first()
+					if x.discount_way==0:
+						end_time=x.end_date
+					else:
+						now=datetime.datetime.now()
+						now2=datetime.datetime(now.year,now.month,now.day)
+						end_time=x.t_time+time.mktime(now2.timetuple())
+						if end_time<0:
+							end_time=0
 				else:
 					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=-1,status=1).first()
 					if q_part:
 						has_discount_activity=1
-						discount_rate = q_part.discount_rate/10
+						has_discount_activity1=1
+						discount_rate = q_part.discount_rate
+						x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=q_part.discount_id).first()
+						if x.discount_way==0:
+							end_time=x.end_date
+						else:
+							now=datetime.datetime.now()
+							now2=datetime.datetime(now.year,now.month,now.day)
+							end_time=x.t_time+time.mktime(now2.timetuple())
+							if end_time<0:
+								end_time=0
 					else:
 						qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=good.id,status=1).first()
 						if qq:
 							if charge_type.id in eval(qq.charge_type):
 								has_discount_activity=1
-								discount_rate = qq.discount_rate/10				
-				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+								has_discount_activity1=1
+								discount_rate = qq.discount_rate
+								x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=qq.discount_id).first()
+								if x.discount_way==0:
+									end_time=x.end_date
+								else:
+									now=datetime.datetime.now()
+									now2=datetime.datetime(now.year,now.month,now.day)
+									end_time=x.t_time+time.mktime(now2.timetuple())
+									if end_time<0:
+										end_time=0			
+				charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'num':charge_type.num, 'unit':unit,\
 					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
-					"has_discount_activity":has_discount_activity,"discount_rate":discount_rate})
+					"has_discount_activity":has_discount_activity,"discount_rate":discount_rate,"end_time":end_time})
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -404,7 +436,7 @@ class customerGoods(CustomerBaseHandler):
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
 		print("@@@@@@@@@@@@@@",charge_types)
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_discount_activity=has_discount_activity1,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
 
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
