@@ -304,7 +304,7 @@
 .add-notice-img{padding: 10px 6px;}
 .notice-list{padding: 0 10px;background-color: #fff;}
 .notice-list>li{border-bottom: 1px solid #e7e7e7;padding: 8px 10px;position: relative;}
-.notice-list .fr{margin-top: -3px;}
+.notice-switch{margin-top: -3px;}
 .notice-list>li:last-child{border-bottom: none;}
 .notice-list .notice-title{padding: 10px 0;}
 .notice-left{position: absolute;color: #333;}
