@@ -1713,9 +1713,13 @@ class Article(MapBase, _CommonApi):
 	comment_num = Column(Integer,default = 0)#评论数
 	scan_num = Column(Integer,default = 0) #0:浏览数
 	if_scan = Column(Integer,default = 0) #0:是否浏览
-	status = Column(Integer,default = 1) #0:删除 1:正常
+	status = Column(Integer,default = 1) # -1:草稿 0:删除 1:正常
 	del_reason = Column(String(100)) #删除原因
 	create_time = Column(DateTime,default = func.now())
+	#9.3
+	public_time = Column(DateTime,default = func.now())
+	no_public = Column(Integer,default = 0) #0:发表至论坛 1:不发表至论坛
+	comment_private = Column(Integer,default = 0) #0:评论所有人可见 1:评论仅作者可见
 
 # 文章评论
 class ArticleComment(MapBase, _CommonApi):
