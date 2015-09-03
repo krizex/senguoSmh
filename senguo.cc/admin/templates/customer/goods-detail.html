@@ -9,7 +9,7 @@
 {% import json%}
 <script>
     window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
-    var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
+    var seckill_goods_ids= {% raw json.dumps(seckill_goods_ids) %}
 </script>
 {% if good %}
 <input type="hidden" value="{{handler.shop_code}}" is_activity="{{good.activity_status}}" has_discount_activity="{{has_discount_activity}}" id="shop_code"/>
@@ -39,28 +39,24 @@
         <p class="f12 mt10" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
     </div>
     <ul class="wrap-choose-goods">
-        {% if good.activity_status==1 %}
-        <li data-buy="{{charge_types[0]['limit_today']}}" data-allow="{{charge_types[0]['allow_num']}}">
-            <span class="now-price">{{charge_types[0]['price']}}元</span>
-            <span class="old-price">{% if charge_types[0]['market_price'] and charge_types[0]['market_price']>0 %}<span class="market-price">{{charge_types[0]['market_price']}}元</span>{% end %}/<span class="number">{{charge_types[0]['num']}}</span>{{charge_types[0]['unit']}}</span>
-            {% if charge['has_discount_activity']>0 and good.activity_status==1 %}<span class="goods-tag activity-tag">{{charge['discount_rate']}}折</span>{% end %}
-            <div class="seckill-buy" data-storage="{{good.storage}}" data-relate="{{charge_types[0]['relate']}}" data-id="{{charge_types[0]['id']}}" data-storage="">抢!</div>
-        </li>
-        {% else %}
             {% for charge in charge_types %}
-            <li data-buy="{{charge['limit_today']}}" data-allow="{{charge['allow_num']}}">
+            <li data-buy="{{charge['limit_today']}}" data-id="{{charge['id']}}" data-allow="{{charge['allow_num']}}" seckill_goods_id="charge['seckill_goods_id']">
                 <span class="now-price">{{charge['price']}}元</span>
                 <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
-                {% if charge['has_discount_activity']>0 and good.activity_status==2 %}<span class="goods-tag activity-tag">{{charge['discount_rate']}}折</span>{% end %}
+                {% if has_discount_activity>0 and good.activity_status==2 %}<span class="goods-tag activity-tag">{{charge['discount_rate']}}折</span>{% end %}
+                {% if has_discount_activity>0 and charge['is_seckill']==1 and good.activity_status==1 %}
+                <span class="goods-tag activity-tag">省{{charge['seckill_price_dif']}}元</span>
+                <div class="seckill-buy {% if charge['seckill_is_bought']==1 %}seckill-buy-yes{% end %}" data-relate="{{charge['relate']}}" data-id="{{charge['id']}}">抢!</div>
+                {% else %}
                 <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
                     <span class="minus minus-num">-</span>
                     <div class="input">1</div>
                     <span class="add add-num">+</span>
                 </div>
                 <div class="now-buy" data-storage="{{good.storage}}">立即购买</div>
+                {% end %}
             </li>
             {% end %}
-        {% end %}
     </ul>
     {% if good.detail_describe %}
     <ul class="goods-choose-lst group">
