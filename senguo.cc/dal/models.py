@@ -407,7 +407,7 @@ class Accountinfo(MapBase, _CommonApi):
 	# 基本账户信息
 
 	# 性别，男1, 女2, 其他0
-	sex = Column(Integer, default=0)
+	sex = Column(TINYINT, default=0)
 	# 昵称
 	nickname = Column(String(64), default="")
 	# 真实姓名
@@ -1351,7 +1351,7 @@ class Order(MapBase, _CommonApi):
 					continue
 				# print(fruits[int(charge_type.id)]['num'])
 				num = fruits[int(charge_type.id)]['num'] * charge_type.relate * charge_type.num
-				# num = float(format(num,'.1f'))  #格式化为小数点后一位小数
+				# num = round(float(num),2)  #格式化为小数点后一位小数
 				charge_type.fruit.storage+= num
 				charge_type.fruit.current_saled -=num
 				# charge_type.fruit.saled -= num (销量不变)
