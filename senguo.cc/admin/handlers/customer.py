@@ -1766,10 +1766,9 @@ class Market(CustomerBaseHandler):
 					else:
 						data_item1['is_bought'] = 0
 
-					seckill_charge_type_id = fruit_charge_type[str(fruit_id)]
-					charge_types = [e for e in charge_types if e['id'] != seckill_charge_type_id and e['activity_type'] in [2,0,-2]]
 					seckill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
 								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
+					charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] in [2,0,-2] and e['id'] != seckill_info.charge_type_id]
 					data_item1['is_activity'] = 1
 					data_item1['activity_id'] = seckill_info.activity_id
 					data_item1['seckill_goods_id'] = seckill_info.id
