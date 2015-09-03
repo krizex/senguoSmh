@@ -3510,9 +3510,9 @@ class Config(AdminBaseHandler):
 				else:
 					img_url = ''
 				notice.summary = data["summary"]
-				if "detail" in data and data["detail"]:
+				if "detail" in data:
 					notice.detail = data["detail"]
-				if "link" in data and data["link"]:
+				if "link" in data:
 					notice.link = data["link"]
 				if "link_type" in data and data["link_type"]:
 					notice.click_type = data["link_type"]
