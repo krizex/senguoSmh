@@ -350,8 +350,11 @@ class customerGoods(CustomerBaseHandler):
 				charge_type_activity_type = [-2,0,2]
 		else:
 			charge_type_activity_type = [-2,0,2]
-		for charge_type in good.charge_types:
-			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type:
+		seckill_former_charge_type_id = []
+		good_charge_type = good.charge_types
+		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
+		for charge_type in good_charge_type:
+			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type and charge_type.id not in seckill_former_charge_type_id:
 				unit  = charge_type.unit
 				unit =self.getUnit(unit)
 				limit_today = False
@@ -435,6 +438,7 @@ class customerGoods(CustomerBaseHandler):
 						is_seckill = 1
 						has_activity = 1
 						seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).first()
+						seckill_former_charge_type_id.append(seckill_goods.charge_type_id)
 						customer_query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop.id,seckill_goods_id=seckill_goods.id).all()
 						if customer_query:
 							if customer_query[0].status in [1,2]:
@@ -494,8 +498,10 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		# print("@@@@@@@@@@@@@@",charge_types)
-		# print("#########",seckill_goods_ids)
+		# print("@@seckill_goods_ids",seckill_goods_ids)
+		print("###charge_types",charge_types)
+		# print("$$$$$has_activity",has_activity)
+		print("@@@@@@seckill_former_charge_type_id",seckill_former_charge_type_id)
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
 								seckill_goods_ids=seckill_goods_ids)
 
