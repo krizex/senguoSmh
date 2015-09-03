@@ -189,11 +189,12 @@ class OnlineWxPay(CustomerBaseHandler):
 			##############################################################
 			print("[WeixinPay]handle WeixinPay Callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			data = self.request.body
-			print("[WeixinPay]request.body:",self.request.body)
+			# print("[WeixinPay]request.body:",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
+			total_fee    = float(int(xmlArray['total_fee'])/100)
 			order_num    = str(xmlArray['out_trade_no'])
 			order_num    = order_num.split('a')[0]
 			print("[WeixinPay]Callback order_num:",order_num)
@@ -212,7 +213,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				# return self.send_fail('order not found')
 				#如果没找到订单，也要生成一条余额记录
 				#因为customer_id和shop_id 是外键，不能为空，所以给它们赋一个特定的值
-				balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=0,balance_record='在线支付（微信）异常：空订单',
+				balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=total_fee,balance_record='在线支付（微信）异常：空订单',
 					transaction_id = transaction_id)
 				self.session.add(balance_history)
 				self.session.commit()
@@ -455,6 +456,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
 		order_num = notify_data["out_trade_no"]
 		ali_trade_no=notify_data["trade_no"]
+		total_fee  = float(notify_data["total_fee"])
 		# print("[AliPay]ali_trade_no:",ali_trade_no)
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
@@ -463,7 +465,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# order = models.Order.get_by_id(self.session,orderId)
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
-			balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=0,balance_record='在线支付（微信）异常：空订单',
+			balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=total_fee,balance_record='在线支付（支付宝）异常：空订单',
 				transaction_id = transaction_id)
 			self.session.add(balance_history)
 			self.session.commit()
