@@ -251,6 +251,19 @@ $(document).ready(function(){
 	}
 }).on('click','.choose-goods a',function(){
 	var $this = $(this);
+
+	$this.closest(".new-seckill-item").find('.choose-price').empty();
+	$this.closest(".new-seckill-item").find('.cur-charge-type').empty();
+	$this.closest(".new-seckill-item").find('.remain-store').empty();
+	$this.closest(".new-seckill-item").find('.remain-store').attr('data-id','');
+	$this.closest(".new-seckill-item").find('.activity-store-charge-type').empty();
+	$this.closest(".new-seckill-item").find('.activity-store-input').val('');
+	$this.closest(".new-seckill-item").find('.activity-store-input').attr('data-id','');
+	$this.closest(".new-seckill-item").find('.seckill-price-input').val('');
+	$this.closest(".new-seckill-item").find('.seckill-price-input').attr('data-id','');
+	$this.closest(".new-seckill-item").find('.seckill-charge-price').addClass('hidden');
+	$this.closest(".new-seckill-item").find('.activity-store').addClass('hidden');
+	
 	var cur_goods = $this.text();
 	var choose_goods_id = $this.attr('data-id');
 	var cur_goods_id = $this.closest(".new-seckill-item").find(".cur-goods").attr("data-id");
@@ -284,9 +297,41 @@ $(document).ready(function(){
 		var charge_type_text = charge_type_item[0] + '元/' +  charge_type_item[1] + charge_type_item[2];
 		var storage_piece = charge_type_item[5];
 		var charge_type_id = charge_type_item[4];
-		var list_item = '<button class="btn btn-default" data-id="'+storage_piece+ '"' + ' charge_type_id="' +charge_type_id +  '">'+charge_type_text+'</button>';
+		if (charge_type_list.length == 1){
+			var list_item = '<button class="btn btn-default active" data-id="'+storage_piece+ '"' + ' charge_type_id="' +charge_type_id +  '">'+charge_type_text+'</button>';
+		}
+		else{
+			var list_item = '<button class="btn btn-default" data-id="'+storage_piece+ '"' + ' charge_type_id="' +charge_type_id +  '">'+charge_type_text+'</button>';
+		}
 		$this.closest(".new-seckill-item").find(".choose-charge-type").append(list_item);
+
+		if (charge_type_list.length == 1){
+			if (storage_piece == 0){
+				Tip('当前计价方式对应的剩余库存为0份，请选择其他商品！');
+				return;
+			}
+			former_price = charge_type_item[0] ;
+			$this.closest(".new-seckill-item").find('.former-price').attr('data-id',former_price);
+
+			$this.closest(".new-seckill-item").find('.choose-charge-type').attr('data-flag','1');
+
+			var cur_charge_type = '元/' +  charge_type_item[1] + charge_type_item[2];
+			var cur_charge_type_text = '元/份 （每份含：' + cur_charge_type.substr(2,cur_charge_type.length-1) + '）';
+			$this.closest(".new-seckill-item").find('.seckill-charge-price').removeClass('hidden')
+			$this.closest(".new-seckill-item").find('.cur-charge-type').text(cur_charge_type_text);
+			$this.closest(".new-seckill-item").find('.seckill-price-input').removeClass('hidden');
+			$this.closest(".new-seckill-item").find(".activity-store").removeClass('hidden');
+
+			var remain_store_text = storage_piece + '份（每份含：'+ cur_charge_type.substr(2,cur_charge_type.length-1) +'）';
+			$this.closest(".new-seckill-item").find(".remain-store").text(remain_store_text);
+			$this.closest(".new-seckill-item").find(".remain-store").attr('data-id',storage_piece);
+
+			$this.closest(".new-seckill-item").find(".activity-store-charge-type").attr("charge_type_id",charge_type_id);
+			$this.closest(".new-seckill-item").find(".activity-store-charge-type").text('份（每份含：'+ cur_charge_type.substr(2,cur_charge_type.length-1) +'）');
+			$this.closest(".new-seckill-item").find(".activity-store-input").attr("data-id",storage_piece);
+		}
 	}
+
 }).on('click','.choose-goods-btn',function(){
 	var $this = $(this);
 	if ($this.attr('data-flag').length == 0){
