@@ -5360,7 +5360,7 @@ class Discount(AdminBaseHandler):
 						notice_query.img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d'
 					notice_query.active = 1
 				else:
-					notice_new = models.Notice(config_id=current_shop_id,_type=2,img_url='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d',click_type=1,link="http://senguo.cc/discount/"+self.current_shop.shop_code+"?action=detail")
+					notice_new = models.Notice(summary="限时折扣",config_id=current_shop_id,_type=2,img_url='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d',click_type=1,link="http://senguo.cc/discount/"+self.current_shop.shop_code+"?action=detail")
 					self.session.add(notice_new)
 
 			qq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).filter(models.DiscountShopGroup.status<2).with_lockmode('update').all()
@@ -6081,7 +6081,7 @@ class MarketingSeckill(AdminBaseHandler):
 					notice_query.img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp'
 				notice_query.active = 1
 			else:
-				notice_new = models.Notice(config_id=current_shop_id,_type=1,img_url='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp',click_type=1,link="http://senguo.cc/seckill/"+self.current_shop.shop_code)
+				notice_new = models.Notice(summary="秒杀",config_id=current_shop_id,_type=1,img_url='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp',click_type=1,link="http://senguo.cc/seckill/"+self.current_shop.shop_code)
 				self.session.add(notice_new)
 			self.session.commit()
 
