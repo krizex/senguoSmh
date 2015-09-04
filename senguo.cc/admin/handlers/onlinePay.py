@@ -224,8 +224,18 @@ class OnlineWxPay(CustomerBaseHandler):
 			totalPrice  = order.new_totalprice
 
 			order.status = 1  #修改订单状态
+			# order.transaction_id = transaction_id 
 			print("[WeixinPay]Callback order_num:",order_num,"change order.status to:",order.status)
 
+			create_date = order.create_date.timestamp()
+			now         = datetime.datetime.now().timestamp()
+			time_difference = now - create_date
+			if time_difference > 60 * 60 * 24 * 7:
+				balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+					balance_record='在线支付（微信）异常：一星期以前的订单，很可能是线下测试回调到线上的',transaction_id=transaction_id)
+				self.session.add(balance_history)
+				self.session.commit()
+				return self.write('success')
 			# 修改店铺总余额
 			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			# if not shop:
@@ -490,6 +500,16 @@ class OnlineAliPay(CustomerBaseHandler):
 		order.status = 1  #修改订单状态
 		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
 
+		create_date = order.create_date.timestamp()
+		now         = datetime.datetime.now().timestamp()
+		time_difference = now - create_date
+		if time_difference > 60 * 60 * 24 * 7:
+			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+				balance_record='在线支付（支付宝）异常：一星期以前的订单，很可能是线下测试回调到线上的',transaction_id=transaction_id)
+			self.session.add(balance_history)
+			self.session.commit()
+			return self.write('success')
+
 		# 修改店铺总余额
 		# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 		# if not shop:
@@ -572,6 +592,16 @@ class OnlineAliPay(CustomerBaseHandler):
 
 		order.status = 1  #修改订单状态
 		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
+
+		create_date = order.create_date.timestamp()
+		now         = datetime.datetime.now().timestamp()
+		time_difference = now - create_date
+		if time_difference > 60 * 60 * 24 * 7:
+			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+				balance_record='在线支付（支付宝）异常：一星期以前的订单，很可能是线下测试回调到线上的',transaction_id=transaction_id)
+			self.session.add(balance_history)
+			self.session.commit()
+			return self.write('success')
 
 		# 修改店铺总余额
 		# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
