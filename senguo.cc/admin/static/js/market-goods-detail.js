@@ -26,6 +26,8 @@ $(document).ready(function(){
         var url = $(this).attr("data-href");
         window.location.href=url;
     });
+    $(".swiper-container").css({"max-height":mWidth});
+    $(".swiper-wrapper").css({"max-height":mWidth});
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
@@ -40,27 +42,7 @@ $(document).ready(function(){
     if($(".swiper-slide").size()==3){
         swiper.stopAutoplay();
     }
-    var slide_img_len=$(".swiper-wrapper img").length;
-    var slide_img_height=[];
-    setTimeout(function(){
-       for(var i=0;i<slide_img_len;i++){
-            var hie=$(".swiper-wrapper img").eq(i).height();
-            slide_img_height.push(hie);        
-        }
-        for(var i=0;i<slide_img_height;i++){
-            //内层循环，找到第i大的元素，并将其和第i个元素交换
-            for(var j=i;j<slide_img_height;j++){
-                if(slide_img_height[i]<slide_img_height[j]){
-                    //交换两个元素的位置
-                    var temp=slide_img_height[i];
-                    slide_img_height[i]=slide_img_height[j];
-                    slide_img_height[j]=temp;
-                }
-            }
-        }
-        $(".swiper-container").height(slide_img_height[0]);
-        $(".swiper-wrapper").height(slide_img_height[0]);
-    },200);
+    
     //初始化购物车数量
     if(getCookie("cart_count")!=''){
         $("#cart-now-num").html(getCookie("cart_count")).removeClass("move-cart");
