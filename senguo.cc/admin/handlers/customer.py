@@ -808,10 +808,10 @@ class ShopProfile(CustomerBaseHandler):
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
-		satisfy = 0
-		commodity_quality = 0
-		send_speed        = 0
-		satisfy           = 0
+		satisfy = format(1,'.0%')
+		commodity_quality = 1
+		send_speed        = 1
+		shop_service      = 1
 		#是否关注判断
 		follow = True
 		shop_follow =self.session.query(models.CustomerShopFollow).filter_by(customer_id=self.current_user.id, \
