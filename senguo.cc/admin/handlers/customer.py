@@ -1527,6 +1527,8 @@ class Market(CustomerBaseHandler):
 				
 		for x in shop.config.notices:
 			if x.active == 1:
+				if not x._type:
+					x._type = 0
 				notices.append((x.summary, x.detail,x.img_url,x.link,x.click_type,x._type))
 
 		notices.sort(key=lambda x:x[5],reverse=True)
