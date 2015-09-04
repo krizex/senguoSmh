@@ -498,10 +498,7 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		# print("@@seckill_goods_ids",seckill_goods_ids)
 		print("###charge_types",charge_types)
-		# print("$$$$$has_activity",has_activity)
-		print("@@@@@@seckill_former_charge_type_id",seckill_former_charge_type_id)
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
 								seckill_goods_ids=seckill_goods_ids)
 
