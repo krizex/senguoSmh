@@ -1999,6 +1999,12 @@ class Cart(CustomerBaseHandler):
 
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
+		# num = '271000358'
+		old_order = self.session.query(models.Order).filter_by(num=num).first()
+		while old_order:
+			num  = str(int(num) + 1)
+			old_order = self.session.query(models.Order).filter_by(num=num).first()
+
 		########################################################################
 		# add default sender
 		# 3.11
@@ -2069,7 +2075,7 @@ class Cart(CustomerBaseHandler):
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-		print('[CustomerCart]Order commit success, order ID:',order.id)
+		print('[CustomerCart]Order commit success, order ID:',order.id,order.num)
 		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
