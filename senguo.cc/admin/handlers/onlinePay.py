@@ -594,39 +594,6 @@ class OnlineAliPay(CustomerBaseHandler):
 		if customer:
 			name = customer.accountinfo.nickname
 		else:
-<<<<<<< HEAD
-			return self.send_fail('customer not found')
-		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no,
-			shop_province = shop.shop_province,shop_name=shop.shop_name)
-		self.session.add(balance_history)
-		self.session.flush()
-		# print("[AliPay]balance_history:",balance_history)
-
-		#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
-		fruits = eval(order.fruits)
-		charge_type_list = list(fruits.keys())
-		seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
-		if seckill_goods:
-			seckill_goods_id = []
-			for item in seckill_goods:
-				seckill_goods_id.append(item.id)
-			customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
-								models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
-			if customer_seckill_goods:
-				for item in customer_seckill_goods:
-					item.status = 2
-				self.session.flush()
-			for item in seckill_goods:
-				item.storage_piece -= 1
-				item.ordered += 1
-			self.session.flush()
-			
-		self.session.commit()
-		print("handle_onAlipay_callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-=======
-			# return self.send_fail('customer not found')
 			name = None
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
@@ -647,11 +614,27 @@ class OnlineAliPay(CustomerBaseHandler):
 				shop_province = shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			# print("[AliPay]balance_history:",balance_history)
-			self.session.commit()
+			self.session.flush()
 			print("handle_onAlipay_callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
->>>>>>> d1f2846da146c81ca76ac3327b6be22e3c4e997b
+			#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
+			fruits = eval(order.fruits)
+			charge_type_list = list(fruits.keys())
+			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+			if seckill_goods:
+				seckill_goods_id = []
+				for item in seckill_goods:
+					seckill_goods_id.append(item.id)
+				customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+				if customer_seckill_goods:
+					for item in customer_seckill_goods:
+						item.status = 2
+					self.session.flush()
+				for item in seckill_goods:
+					item.storage_piece -= 1
+					item.ordered += 1
+				self.session.commit()
 
 		# 发送订单模版消息给管理员/自动打印订单
 		self.send_admin_message(self.session,order)
-
 		return self.redirect(self.reverse_url("noticeSuccess"))
