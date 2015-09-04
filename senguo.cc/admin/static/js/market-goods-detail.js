@@ -16,7 +16,8 @@ $(document).ready(function(){
         $("#cart-bg").css("left",((mWidth-width)/2+width-54)+"px");
         $("#back-bg").css("left",(mWidth-width)/2+"px");
     }
-
+    $(".swiper-container").css({"max-height":mWidth});
+    $(".swiper-wrapper").css({"max-height":mWidth});
     $("body").css("backgroundColor","#fff");
     $(".phone-box").css("paddingBottom","20px").css("backgroundColor","#fff");
     $(".swiper-wrapper").width(width*$(".swiper-slide").size());
@@ -31,8 +32,7 @@ $(document).ready(function(){
     if($(".swiper-slide").size()==3){
         swiper.stopAutoplay();
     }
-    $(".swiper-container").css({"max-height":mWidth,"overflow":"hidden"});
-    $(".swiper-wrapper").css({"max-height":mWidth,"overflow":"hidden"});
+    
     //初始化购物车数量
     if(getCookie("cart_count")!=''){
         $("#cart-now-num").html(getCookie("cart_count")).removeClass("move-cart");
