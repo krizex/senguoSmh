@@ -704,8 +704,12 @@ class GlobalBaseHandler(BaseHandler):
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
-			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled': float(format(d.current_saled,'.1f')),\
-				'saled':round(float(d.saled),2),'storage':round(float(d.storage),2),'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
+			saled=round(float(d.saled),2) if d.saled else 0
+			storage=round(float(d.storage),2) if d.storage else 0
+			current_saled=float(format(d.current_saled,'.1f')) if d.current_saled else 0
+
+			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':current_saled ,\
+				'saled':saled,'storage':storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,\
 				'code':d.fruit_type.code,'buylimit':d.buy_limit})
@@ -1799,6 +1803,40 @@ class AdminBaseHandler(_AccountBaseHandler):
 		current_shop_id = int(current_shop_id.decode())
 		self.update_seckill_base(current_shop_id)
 
+	def add_activity_notice(self,session,action,shop_code,current_shop_id):
+		if action == "seckill":
+			_type = 1
+			summary = "秒杀"
+			img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp'
+			link = "http://senguo.cc/seckill/"+shop_code
+		elif action == "discount":
+			_type = 2
+			summary = "限时折扣"
+			img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d'
+			link = "http://senguo.cc/discount/"+self.current_shop.shop_code+"?action=detail"
+		else:
+			return False
+		notice_query = session.query(models.Notice).filter_by(config_id = current_shop_id,_type=_type).with_lockmode('update').first()
+		if notice_query:
+			if not notice_query.img_url:
+				notice_query.img_url = img_url
+			notice_query.active = 1
+		else:
+			notice_new = models.Notice(summary=summary,config_id=current_shop_id,_type=_type,img_url=img_url,click_type=1,link=link)
+			session.add(notice_new)
+		session.flush()
+
+	def off_activity_notice(self,session,action,current_shop_id):
+		if action == "seckill":
+			_type = 1
+		elif action == "discount":
+			_type = 2
+		else:
+			return False
+		notice_query = session.query(models.Notice).filter_by(config_id = current_shop_id,_type=_type).with_lockmode('update').first()
+		if notice_query:
+			notice_query.active = 2
+		session.flush()
 
 	# 获取订单
 	def getOrder(self,orders):
