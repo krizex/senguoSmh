@@ -160,10 +160,12 @@ $(document).ready(function () {
     var id = parseInt($(this).attr("data-id"));
     var data={use_goods_group:id}
     var args={action:"check_group",data:data}
-    var index = $(this).closest("li").index();
-    index1=index;
     var $this=$(this);
-    getGoods(index,$this);
+    if($(this).attr("data-id")=="-2"){
+        $(".use_goods_lst").empty();
+    }else{
+        getGoods($this);
+    }
     $this.closest('div').find(".use_goods_group").html($this.html()).attr("data-id",id);
     $this.closest('tr').find(".use_goods").html("所有商品").attr("data-id","-1");
 }).on("click",".use_goods_lst .item",function(){
@@ -556,8 +558,10 @@ function getNowFormatDate() {
             + seperator2 + date.getSeconds();
     return currentdate;
 }
-function getGoods(index,$this){
+function getGoods($this){
     var $obj=$this.closest('td').find(".use_goods_lst");
+    var index = $this.closest("li").index()-1;
+    index1=index;
     $obj.empty();
     var goods = goods_list[index];
     var lis = '';
