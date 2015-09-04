@@ -366,16 +366,17 @@ class GlobalBaseHandler(BaseHandler):
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
-					unit_num = int(charge.unit_num) if charge.unit_num else 0
+					unit_num = float(charge.unit_num) if charge.unit_num else 0
 					select_num = int(charge.select_num) if charge.select_num else 0
 					charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
 						'num':charge.num,'unit_num':unit_num,'market_price':market_price,'select_num':select_num})
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
+
 			saled=round(float(d.saled),2) if d.saled else 0
 			storage=round(float(d.storage),2) if d.storage else 0
-			current_saled=float(format(d.current_saled,'.1f')) if d.current_saled else 0
+			current_saled=round(float(d.current_saled),2) if d.current_saled else 0
 
 			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':current_saled ,\
 				'saled':saled,'storage':storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
@@ -1120,7 +1121,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order.arrival_time= now.strftime("%H:%M")
 		customer_id       = order.customer_id
 		shop_id           = order.shop_id
-		totalprice        = order.totalPrice
+		totalprice        = order.new_totalprice
 
 		self.order_done_msg(session,order,other_access_token)
 
@@ -1128,8 +1129,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order.shop.order_count += 1  #店铺订单数加1
 
 		#add by jyj 2015-6-15
-		totalprice_inc = order.totalPrice
-		order.shop.shop_property += totalprice_inc
+		order.shop.shop_property += totalprice
 		# print("[_AccountBaseHandler]order_done: order.shop.shop_property:",order.shop.shop_property)
 
 		#订单完成，库存不变，在售减少，销量增加

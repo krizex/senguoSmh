@@ -17,11 +17,11 @@ def Check():
 	# *将balancehistory表中的所有店铺id查出来存放在列表shop_list_query1中
 	# *将系统中的所有status > -1的订单的数量不为0店铺的id查询出来存在一个列表shop_list_query2中
 	# *然后从列表shop_list_query2中除去shop_list_query1中的id 
-	shop_list_query1 = session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
+	# shop_list_query1 = session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
 	
-	shop_id_list1 = []
-	for item in shop_list_query1:
-		shop_id_list1.append(item[0])
+	shop_id_list1 = [816]
+	# for item in shop_list_query1:
+	# 	shop_id_list1.append(item[0])
 	total = len(shop_id_list1)
 
 	# *设定一个change_shop_id列表,把balancehistory表中修改过的店铺的id都存进去.
@@ -103,7 +103,7 @@ def Check():
 				# print("@@@@",len(pay_type_2))
 				# print(len(balance_type_1))
 				insert_order_num = [i for i in pay_type_2 if i not in balance_type_1]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s')).\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s')).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
@@ -145,7 +145,7 @@ def Check():
 			# *判断pay_type_3的长度是否大于balance_type_3，若大于，则说明order表中肯定有在线支付的订单记录没有插入到balancehistory表中，这时就要把相关记录插入到balancehistory表中
 			if len(pay_type_3) > len(balance_type_3):
 				insert_order_num = [i for i in pay_type_3 if i not in balance_type_3]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.online_type).\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.online_type).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				for i in range(len(insert_list)):
 					shop = session.query(models.Shop).filter_by(id = shop_id).first()
@@ -193,7 +193,7 @@ def Check():
 				# print("@@@@",len(pay_type_2_delete))
 				# print(len(balance_type_4_5))
 				insert_order_num = [i for i in pay_type_2_delete if i not in balance_type_4_5]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.del_reason).\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.del_reason).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
@@ -244,7 +244,7 @@ def Check():
 				# print("@@@@",len(pay_type_2_3_done))
 				# print(len(balance_type_6_7))
 				insert_order_num = [i for i in pay_type_2_3_done if i not in balance_type_6_7]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),\
 					       models.Order.arrival_day,models.Order.arrival_time,models.Order.pay_type,models.Order.today,models.Order.end_time).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				

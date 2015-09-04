@@ -2534,7 +2534,7 @@ class Goods(AdminBaseHandler):
 			goods = models.Fruit(**args)
 			for charge_type in data["charge_types"]:
 				if charge_type["unit_num"] and charge_type["unit_num"] !='':
-					unit_num = int(charge_type["unit_num"])
+					unit_num = float(charge_type["unit_num"])
 				else:
 					unit_num = 1
 				if charge_type["select_num"] and charge_type["select_num"] !='':
@@ -2645,7 +2645,7 @@ class Goods(AdminBaseHandler):
 						good = None
 					for charge_type in data["charge_types"]:
 						if charge_type["unit_num"] and charge_type["unit_num"] !='':
-							unit_num = int(charge_type["unit_num"])
+							unit_num = float(charge_type["unit_num"])
 						else:
 							unit_num = 1
 						if charge_type["select_num"] and charge_type["select_num"] !='':
