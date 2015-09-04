@@ -2559,7 +2559,10 @@ class Order(CustomerBaseHandler):
 				push.notification = jpush.notification(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
 				push.platform = jpush.all_
 				push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-				push.send()
+				try:
+					push.send()
+				except:
+					print("Jpush Error")
 			###
 
 			return self.send_success(notice=notice)
