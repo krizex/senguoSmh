@@ -71,7 +71,7 @@
         <td>操作</td>
     </tr>
     {% for notice in notices  %}
-    {% if notice._type > 0 %}
+    {% if notice._type and notice._type > 0 %}
     <tr class="set-list-item" data-id="{{notice.id}}">
         <td>
             <div class="mode action-mode notice_active" data-status="{{notice.active}}">

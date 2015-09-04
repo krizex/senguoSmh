@@ -284,7 +284,13 @@ class OnlineWxPay(CustomerBaseHandler):
 				self.session.commit()
 				print("[WeixinPay]handle WeixinPay Callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			# 发送订单模版消息给管理员/自动打印订单
-			self.send_admin_message(self.session,order)
+			if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+				# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+				access_token = self.get_other_accessToken(self.session,shop.admin.id)
+				# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+			else:
+				access_token = None
+			self.send_admin_message(self.session,order,access_token)
 
 			return self.write('success')
 
@@ -541,8 +547,13 @@ class OnlineAliPay(CustomerBaseHandler):
 			print("handle_onAlipay_notify SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 		# 发送订单模版消息给管理员/自动打印订单
-		self.send_admin_message(self.session,order)
-		
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+		else:
+			access_token = None
+		self.send_admin_message(self.session,order,access_token)
 		return self.write('success')
 
 	@CustomerBaseHandler.check_arguments("sign","result","out_trade_no","trade_no","request_token")
@@ -636,5 +647,13 @@ class OnlineAliPay(CustomerBaseHandler):
 				self.session.commit()
 
 		# 发送订单模版消息给管理员/自动打印订单
-		self.send_admin_message(self.session,order)
+
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+		else:
+			access_token = None
+		self.send_admin_message(self.session,order,access_token)
+
 		return self.redirect(self.reverse_url("noticeSuccess"))
