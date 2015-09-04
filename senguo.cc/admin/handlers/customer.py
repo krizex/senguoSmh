@@ -1784,13 +1784,23 @@ class Market(CustomerBaseHandler):
 						cur_charge_type_num = int(cur_charge_type.num)
 					else:
 						cur_charge_type_num = cur_charge_type.num
+					data_item1['charge_types'] = []
 					if shop_tpl == 0:
 						data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+						charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] != 1]
+						for e in charge_types:
+							data_item1['charge_types'].append(e)
+						charge_types = []
 					else:
 						charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.seckill_charge_type_id).first()
 						data_item1['charge_types'] = [{'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':self.getUnit(charge_type.unit),\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(False),\
 							'allow_num':1,"discount_rate":None,"has_discount_activity":0,'activity_type':charge_type.activity_type}]
+						charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] != 1]
+						for e in charge_types:
+							data_item1['charge_types'].append(e)
+						charge_types = []
+					
 
 					data_item1['price_dif'] = round(float(seckill_info.former_price - seckill_info.seckill_price),2)
 					if seckill_info.activity_piece - seckill_info.ordered > 0:
