@@ -413,7 +413,7 @@ class ShopManage(SuperBaseHandler):
 				shop_service = 0
 				if orders:
 					q = self.session.query(func.avg(models.Order.commodity_quality),\
-						func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+						func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
 					if q[0][0]:
 						commodity_quality = int(q[0][0])
 					if q[0][1]:
