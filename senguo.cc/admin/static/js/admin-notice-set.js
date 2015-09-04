@@ -181,7 +181,7 @@ function noticeAdd(){
         function(res){
             if(res.success){
                 $('#noticeBox').modal('hide');
-		window.location.reload();
+		          window.location.reload();
             }
             else return Tip(res.error_text);
         },
