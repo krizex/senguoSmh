@@ -4725,13 +4725,7 @@ class Marketing(AdminBaseHandler):
 			else:
 				q.coupon_active=0
 			coupon_active=q.coupon_active
-			# notice_query = self.session.query(models.Notice).filter_by(config_id = current_shop_id,_type=3).with_lockmode('update').first()
-			# if notice_query:
-			# 	if not notice_query.img_url:
-			# 		notice_query.img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp'
-			# 	notice_query.active = 1
-			# else:
-			# 	notice_new = models.Notice(config_id=current_shop_id,_type=3,img_url='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp',click_type=1,link="http://senguo.cc/seckill/"+self.current_shop.shop_code)
+			#self.add_activity_notice(self.session,"coupon",self.current_shop.shop_code)
 			self.session.commit()
 			return self.send_success(coupon_active_cm=coupon_active)
 		else:
@@ -5346,22 +5340,14 @@ class Discount(AdminBaseHandler):
 		if action=="close_all":
 			q=self.session.query(models.Marketing).filter_by(id=current_shop_id).with_lockmode('update').first()
 			discount_active_cm=q.discount_active
-			notice_query = self.session.query(models.Notice).filter_by(config_id = current_shop_id,_type=2).with_lockmode('update').first()
 			print(discount_active_cm)
 			if discount_active_cm==0:
 				q.update(self.session,discount_active=1)
-				if notice_query:
-					notice_query.active = 2
+				self.off_activity_notice(self.session,"discount",current_shop_id)
 			else:
 				q.update(self.session,discount_active=0)
-				
-				if notice_query:
-					if not notice_query.img_url:
-						notice_query.img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d'
-					notice_query.active = 1
-				else:
-					notice_new = models.Notice(summary="限时折扣",config_id=current_shop_id,_type=2,img_url='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d',click_type=1,link="http://senguo.cc/discount/"+self.current_shop.shop_code+"?action=detail")
-					self.session.add(notice_new)
+				self.add_activity_notice(self.session,"discount",self.current_shop.shop_code,current_shop_id)
+			
 
 			qq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).filter(models.DiscountShopGroup.status<2).with_lockmode('update').all()
 			for x in qq:
@@ -5488,6 +5474,7 @@ class Discount(AdminBaseHandler):
 					status=status,discount_rate=x["discount_rate"],incart_num=0,ordered_num=0)
 				self.session.add(new_discount)
 				self.session.flush()
+			self.add_activity_notice(self.session,"discount",self.current_shop.shop_code,current_shop_id)
 			self.session.commit()
 			return self.send_success()
 		elif action=="editdiscount":
@@ -6070,19 +6057,13 @@ class MarketingSeckill(AdminBaseHandler):
 				cur_fruit.activity_status = 1
 				self.session.flush()
 
+			self.add_activity_notice(self.session,"seckill",self.current_shop.shop_code,current_shop_id)
 			self.session.commit()
 
 		elif action == 'seckill_on':
 			query = self.session.query(models.Marketing).filter_by(id = current_shop_id).with_lockmode('update').first()
 			query.seckill_active = 1
-			notice_query = self.session.query(models.Notice).filter_by(config_id = current_shop_id,_type=1).with_lockmode('update').first()
-			if notice_query:
-				if not notice_query.img_url:
-					notice_query.img_url = 'http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp'
-				notice_query.active = 1
-			else:
-				notice_new = models.Notice(summary="秒杀",config_id=current_shop_id,_type=1,img_url='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp',click_type=1,link="http://senguo.cc/seckill/"+self.current_shop.shop_code)
-				self.session.add(notice_new)
+			self.add_activity_notice(self.session,"seckill",self.current_shop.shop_code,current_shop_id)
 			self.session.commit()
 
 		elif action == 'seckill_off':
@@ -6121,9 +6102,7 @@ class MarketingSeckill(AdminBaseHandler):
 			for item in query_list:
 				item.activity_status = -1
 
-			notice_query = self.session.query(models.Notice).filter_by(config_id = current_shop_id,_type=1).with_lockmode('update').first()
-			if notice_query:
-				notice_query.active = 2
+			self.off_activity_notice(self.session,"seckill",current_shop_id)
 			self.session.commit()
 		elif action == 'get_sec_item':
 			page = self.args['page']
