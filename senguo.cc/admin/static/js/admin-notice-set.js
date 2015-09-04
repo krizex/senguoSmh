@@ -168,6 +168,8 @@ function noticeAdd(){
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('请输入摘要！')}
     if(!detail){return Tip('请输入详情！')}
+    if($('.add-new-notice').attr("data-flag")=="off") return false;
+    $('.add-new-notice').attr("data-flag","off");
     var data={
         summary:summary,
         detail:detail,
@@ -181,11 +183,12 @@ function noticeAdd(){
         function(res){
             if(res.success){
                 $('#noticeBox').modal('hide');
-		window.location.reload();
-            }
-            else return Tip(res.error_text);
-        },
-        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
+		          window.location.reload();
+            }else{
+                $('.add-new-notice').attr("data-flag","on");
+                return Tip(res.error_text);
+            } 
+        });
 }
 function noticeEdit(target){
     var url=link;
@@ -199,6 +202,8 @@ function noticeEdit(target){
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('摘要不能为空！')}
     if(!detail){return Tip('详情不能为空！')}
+    if(target.attr("data-flag")=="off") return false;
+    target.attr("data-flag","off");
     var data={
         notice_id:notice_id,
         summary:summary,
@@ -219,10 +224,12 @@ function noticeEdit(target){
                 parent.find('.address-edit').hide();
                 parent.find('.address-show').show();
                 NoticeEdit=false;
+                target.attr("data-flag","on");
+            }else{
+                target.attr("data-flag","on");
+                return Tip(res.error_text);
             }
-            else return Tip(res.error_text);
-        },
-        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
+        });
 }
 
 function noticeActive(target){
