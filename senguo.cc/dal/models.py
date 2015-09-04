@@ -1563,25 +1563,25 @@ class Config(MapBase, _CommonApi):
 	intime_period = Column(Integer,nullable=False,default = 30)
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(Boolean,nullable=False,default = 1)
-	cash_on_active = Column(Boolean,nullable=False,default = 0)#0:货到付款关闭 1:货到付款付开启 5.4
-	online_on_active = Column(Boolean,nullable=False,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
-	balance_on_active = Column(Boolean,nullable=False,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
-	text_message_active = Column(Boolean,nullable=False,default = 0) #首单短信验证 0:关闭 1:开启 5.7
+	cash_on_active = Column(TINYINT,nullable=False,default = 0)#0:货到付款关闭 1:货到付款付开启 5.4
+	online_on_active = Column(TINYINT,nullable=False,default = 1) #0:在线支付关闭 1:在线支付开启 5.4
+	balance_on_active = Column(TINYINT,nullable=False,default = 1) #0:余额支付关闭 1:余额支付开启 5.4
+	text_message_active = Column(TINYINT,nullable=False,default = 0) #首单短信验证 0:关闭 1:开启 5.7
 
 	day_on_time = Column(TINYINT,nullable=False,default = 0) #按时达 0:all 1:今天 2:明天
 	receipt_type = Column(TINYINT,nullable=False,default = 0) #0:有线打印 1:无线打印 7.13
-	auto_print =  Column(Boolean,nullable=False,default = 0) #0:按需打印  1:自动打印 7.13
-	concel_auto_print = Column(Boolean,nullable=False,default = 0) #订单取消自动打印 0:off 1:on 7.24
+	auto_print =  Column(TINYINT,nullable=False,default = 0) #0:按需打印  1:自动打印 7.13
+	concel_auto_print = Column(TINYINT,nullable=False,default = 0) #订单取消自动打印 0:off 1:on 7.24
 	wireless_type = Column(TINYINT,nullable=False,default = 0) #打印机品牌 0:易联云  1:飞印 7.13
 	wireless_print_num = Column(String(20)) #无线打印机终端号 7.13
 	wireless_print_key = Column(String(20)) #无线打印机密钥 7.13
 
-	self_on = Column(Boolean,nullable=False,default = 1) #0:自提停用 1:自提启用 7.30
+	self_on = Column(TINYINT,nullable=False,default = 1) #0:自提停用 1:自提启用 7.30
 	day_self = Column(TINYINT,nullable=False,default = 0) #自提 0:all 1:今天 2:明天 7.30
 	self_end_time = Column(Integer,nullable=False,default = 0) #自提下单截止时间 7.30
 	self_addresses = relationship("SelfAddress")
 
-	comment_active = Column(Boolean,nullable=False,default = 1) #0:comment off 1:comment on
+	comment_active = Column(TINYINT,nullable=False,default = 1) #0:comment off 1:comment on
 
 #自提地址 7.30 max10
 class SelfAddress(MapBase,_CommonApi):
