@@ -7,38 +7,43 @@
 <input type="hidden" id="token" value="{{token}}" />
 <div class="wrap-main group">
     <div class="wrap-right fr">
-        <a href="javascript:;" class="publish-box"></a>
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>热门文章</span></p>
             <ul class="aside-list">
-                <li>
-                    <p class="clip">热门文章名字，热门文章名字来了啊</p>
-                    <div class="wrap-topic-attr">
-                        <div class="fr">
-                            <a href="javascript:;" class="icon-topic viewr">1403</a>
+                {% for topic in handler.getHotArticle%}
+                <li data-id="{{topic['id']}}">
+                    <a href="/bbs/detail/{{topic['id']}}">
+                        <p class="clip c333">{{topic['title']}}</p>
+                        <div class="wrap-topic-attr">
+                            <div class="fr">
+                                <span class="icon-topic viewr">{{topic['scan_num']}}</span>
+                            </div>
+                            <span>{{topic['nickname']}}</span>
                         </div>
-                        <span>大漠孤烟</span>
-                    </div>
+                    </a>
                 </li>
+                {% end %}
             </ul>
         </div>
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>活跃用户</span></p>
             <ul class="aside-list">
+                {% for user in handler.getHotCustomer%}
                 <li>
                     <dl class="dl">
                         <dd>
-                            <img src="/static/images/person.png" alt="用户头像"/>
+                            <img src="{{user['imgurl'] or '/static/images/person.png'}}" alt="用户头像"/>
                         </dd>
                         <dt>
-                        <p class="f14 c333 clip">这是用户名</p>
+                        <p class="f14 c333 clip">{{user['nickname']}}</p>
                         <p class="c999 f12 mt12">
-                            <span class="num-txt">发布:10篇</span>
-                            <span>评论:40条</span>
+                            <span class="num-txt">发布:{{user['article_num']}}篇</span>
+                            <span>评论:{{user['comment_num']}}条</span>
                         </p>
                         </dt>
                     </dl>
                 </li>
+                {% end %}
             </ul>
         </div>
     </div>
@@ -48,19 +53,19 @@
                 <span>标题</span>
                 <div class="wrap-choose-type">
                     <i class="i-choose"></i>
-                    <a href="javascript:;" class="choose-type" id="choose_type">选择板块</a>
-                    <ul class="type-lst">
-                        <li data-id="0">官方公告</li>
-                        <li data-id="1">产品更新</li>
+                    <a href="javascript:;" class="choose-type" id="choose_type" data-id="">选择板块</a>
+                    <ul class="type-lst classify_type">
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="0">官方公告</li>
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="1">产品更新</li>
                         <li data-id="2">运营干货</li>
                         <li data-id="3">水果百科</li>
-                        <li data-id="4">使用教程</li>
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="4">使用教程</li>
                         <li data-id="5">水果供求</li>
-                        <li data-id="6">森果前沿</li>
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="6">森果前沿</li>
                         <li data-id="7">用户交流</li>
                     </ul>
                 </div>
-                <input type="text" class="title-ipt" placeholder="请输入标题"/>
+                <input type="text" class="title-ipt article_title" placeholder="请输入标题"/>
             </div>
             <div class="publish-row mt10">
                 <span class="edit-left">内容</span>
@@ -71,8 +76,8 @@
             <div class="publish-row mt10">
                 <span>&nbsp;</span>
                 <div class="wrap-type-pli">
-                    <span class="checkbox checked">不发表至论坛</span>
-                    <span class="checkbox ml10">回帖仅自己可见</span>
+                    <span class="checkbox checked if_bbs">不发表至论坛</span>
+                    <span class="checkbox ml10 if_my">回帖仅自己可见</span>
                 </div>
             </div>
             <div class="publish-row mt10 publish-btns">
@@ -104,17 +109,17 @@
                 <span>年</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span>9</span>
+                    <span>10</span>
                     <ul class="time-list">
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <li>5</li>
-                        <li>6</li>
-                        <li>7</li>
-                        <li>8</li>
-                        <li>9</li>
+                        <li>01</li>
+                        <li>02</li>
+                        <li>03</li>
+                        <li>04</li>
+                        <li>05</li>
+                        <li>06</li>
+                        <li>07</li>
+                        <li>08</li>
+                        <li>09</li>
                         <li>10</li>
                         <li>11</li>
                         <li>12</li>
@@ -123,17 +128,17 @@
                 <span>月</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span>9</span>
+                    <span>10</span>
                     <ul class="time-list">
-                        <li>1</li>
-                        <li>2</li>
-                        <li>3</li>
-                        <li>4</li>
-                        <li>5</li>
-                        <li>6</li>
-                        <li>7</li>
-                        <li>8</li>
-                        <li>9</li>
+                        <li>01</li>
+                        <li>02</li>
+                        <li>03</li>
+                        <li>04</li>
+                        <li>05</li>
+                        <li>06</li>
+                        <li>07</li>
+                        <li>08</li>
+                        <li>09</li>
                         <li>10</li>
                         <li>11</li>
                         <li>12</li>
@@ -159,11 +164,61 @@
                     </ul>
                 </div>
                 <span>日</span>
+                <div class="wrap-choose-time">
+                    <i class="icon-ctime"></i>
+                    <span>10</span>
+                    <ul class="time-list">
+                        <li>00</li>
+                        <li>01</li>
+                        <li>02</li>
+                        <li>03</li>
+                        <li>04</li>
+                        <li>05</li>
+                        <li>06</li>
+                        <li>07</li>
+                        <li>08</li>
+                        <li>09</li>
+                        <li>10</li>
+                        <li>11</li>
+                        <li>12</li>
+                        <li>13</li>
+                        <li>14</li>
+                        <li>15</li>
+                        <li>16</li>
+                        <li>17</li>
+                        <li>18</li>
+                        <li>19</li>
+                        <li>20</li>
+                        <li>21</li>
+                        <li>22</li>
+                        <li>23</li>
+                    </ul>
+                </div>
+                <span>时</span>
+                <div class="wrap-choose-time">
+                    <i class="icon-ctime"></i>
+                    <span>30</span>
+                    <ul class="time-list">
+                        <li>00</li>
+                        <li>05</li>
+                        <li>10</li>
+                        <li>15</li>
+                        <li>20</li>
+                        <li>25</li>
+                        <li>30</li>
+                        <li>35</li>
+                        <li>40</li>
+                        <li>45</li>
+                        <li>50</li>
+                        <li>55</li>
+                    </ul>
+                </div>
+                <span>分</span>
             </div>
             <!--<p class="c999 mt20">本文章将在<span class="dgreen">今天晚上21:35</span>自动发布</p>-->
-            <div class="wrap-btns mt20">
-                <a href="javascript:;" class="pop-btns cancel-pop">取消</a>
-                <a href="javascript:;" class="pop-btns commit-btn">完成</a>
+            <div class="wrap-bttns">
+                <a href="javascript:;" class="pop-btns commit-btn" id="commit_btn">完成</a>
+                <a href="javascript:;" class="pop-btns ml10 cancel-pop">取消</a>
             </div>
         </div>
     </div>

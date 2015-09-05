@@ -1,3 +1,4 @@
+var ueditor = null;
 $(document).ready(function(){
     $(".menu-list li").on("click",function(){
         var id = parseInt($(this).attr("data-id"));
@@ -26,14 +27,19 @@ $(document).ready(function(){
     }
     if($(".publish-box-bk").size()>0){//发布
         initEditor();
+    }else{
+        articleList(0);
+        scrollLoading();
     }
-    articleList(0);
-    scrollLoading();
+}).on("click",".classify_type li",function(e){
+    var id=$(this).attr("data-id");
+    $("#choose_type").attr("data-id",id);
+    $(".classify_type").hide();
 }).on("click",".atical-list li",function(e){
     var id=$(this).attr("data-id");
     if($(e.target).closest(".dianzan").size()==0){
-    	window.location.href="/bbs/detail/"+id;
-    } 
+        window.location.href="/bbs/detail/"+id;
+    }
 }).on("click",".atical-attr .dianzan",function(){
     if(if_login=='False'){
         $('.pop-login').removeClass("hide");
@@ -57,7 +63,23 @@ $(document).ready(function(){
         }
     });
 }).on("click","#go_publish",function(){
-    
+    var url = $(this).attr("url");
+    window.location.href=url;
+}).on("click",".cancel-pop,.close-win",function(){
+    $(this).closest(".pop-win").addClass("hide");
+}).on("click",".cancel-bn",function(){
+    window.location.href="/bbs";
+}).on("click",".now-bn",function(){//发布
+    publishAtical($(this),1)
+}).on("click",".publish-bn",function(){//定时发布
+    $(".pop-now").removeClass("hide");
+}).on("click",".draft-bn",function(){//存草稿
+    publishAtical($(this),-1)
+}).on("click","#commit_btn",function(){
+    publishAtical($(this),2)
+}).on("click",".time-list li",function(){
+    $(this).closest("ul").before("span").html($(this).html());
+    $(this).closest("ul").hide();
 });
 var finished=true;
 var nomore =false;
@@ -137,13 +159,68 @@ function articleList(page){
     })
 };
 function initEditor(){
-    var editor = UM.getEditor('ueditor',{toolbars: [
+    ueditor = UM.getEditor('ueditor',{toolbars: [
         ['fullscreen', 'source', 'undo', 'redo'],
         ['simpleupload', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc']
     ]});
     QINIU_TOKEN=$("#token").val();
     QINIU_BUCKET_DOMAIN="7rf3aw.com2.z0.glb.qiniucdn.com/";
-    /*if($obj.attr("data-text")){
-        editor.body.innerHTML=$obj.attr("data-text");
-    }*/
+
+}
+function publishAtical(target,type){
+    if(target.attr("data-statu")=="1") {
+        return false;
+    }
+    target.attr("data-statu", "1");
+    var url = "";
+    var classify =$("#choose_type").attr("data-id");
+    if(!classify){
+        target.attr("data-statu", "0");
+        return Tip("请选择板块");
+    }
+    var title=$(".article_title").val();
+    if(title == "" || title.length>20){
+        target.attr("data-statu", "0");
+        return Tip("标题不能为空且不能超过20个字");
+    }
+    var article= ueditor.getContent();
+    if(!article){
+        target.attr("data-statu", "0");
+        return Tip("文章内容不能为空");
+    }
+    var public = 0;
+    if($(".if_bbs").hasClass("checked")){
+        public = 1;
+    }
+    var private = 0;
+    if($(".if_bbs").hasClass("checked")){
+        private = 1;
+    }
+    var publictime="";
+    if(type==2){
+        publictime = $("#commit_btn").attr("data-time");
+    }
+    var args = {
+        action:"",
+        data:{
+            classify:classify,
+            title:title,
+            article:article,
+            public:public,
+            type:type,
+            publictime:publictime,
+            private:private
+        }
+    };
+    $.postJson(url,args,function(res){
+        target.attr("data-statu", "0");
+        if(res.success){
+            Tip("发布成功");
+            setTimeout(function(){
+                window.location.href="/bbs/detail/"+res.id;
+            },2000);
+        }else{
+            Tip(res.error_text);
+        }
+    });
 }
