@@ -138,7 +138,7 @@ class Detail(FruitzoneBaseHandler):
 		if action in ["article_great","collect"]:
 
 			try:
-				record = self.session.query(models.ArticleGreat).filter_by(article_id = _id,account_id = self.current_user.id).first()
+				record = self.session.query(models.ArticleGreat).filter_by(article_id = _id,account_id = self.current_user.id).one()
 			except:
 				record = None
 
@@ -504,6 +504,25 @@ class Profile(FruitzoneBaseHandler):
 			nomore = self.getListData(-1)[1]
 			return self.send_success(datalist=datalist,nomore=nomore)
 		return self.render("bbs/profile.html")
+
+
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("action:str","data")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		if action == "del_collect":
+			try:
+				article_id = int(data["id"])
+			except:
+				return send_fail("id error")
+			try:
+				record = self.session.query(models.ArticleGreat).filter_by(article_id = _id,account_id = self.current_user.id).one()
+			except:
+				return send_fail("该文章不存在")
+			if record:
+				record.collect = 0
+				self.session.commit()
 
 	def getListData(self,status):
 		page = 0
