@@ -1159,15 +1159,15 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.send_error(403)
 		order_id=str(self.args["out_trade_no"])
 		ali_trade_no=self.args["trade_no"]
+		data = order_id.split('a')
+		totalPrice = float(data[0])/100
+		# shop_id = self.get_cookie('market_shop_id')
+		shop_id = int(data[1])
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
 			return self.redirect(self.reverse_url("customerBalance")+('?shop_id=%s') % shop_id)
 
 		# print("[AliCharge]order_id:",order_id,"ali_trade_no:",ali_trade_no)
-		data = order_id.split('a')
-		totalPrice = float(data[0])/100
-		# shop_id = self.get_cookie('market_shop_id')
-		shop_id = int(data[1])
 		customer_id = self.current_user.id
 		# print("[AliCharge]totalPrice:",totalPrice,", shop_id:",shop_id,", customer_id:",customer_id)
 		# code = self.args['code']
