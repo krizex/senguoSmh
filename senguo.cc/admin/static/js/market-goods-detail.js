@@ -1,6 +1,12 @@
 var num_list={};
 $(document).ready(function(){
     var _shop_code = $("#shop_code").val();
+    var end_time = parseInt($("#shop_code").attr("end_time"));
+    var has_discount_activity = parseInt($("#shop_code").attr("has_discount_activity"));
+    var is_activity = parseInt($("#shop_code").attr("is_activity"));
+    if(is_activity>0 && has_discount_activity==1){
+        countTime($("#time_box"));
+    }
     var _url='/'+_shop_code;
     setTimeout(function(){
         window.addEventListener('pagehide', onPopState);
@@ -16,6 +22,10 @@ $(document).ready(function(){
         $("#cart-bg").css("left",((mWidth-width)/2+width-54)+"px");
         $("#back-bg").css("left",(mWidth-width)/2+"px");
     }
+    $("#back-bg").on("click",function(){
+        var url = $(this).attr("data-href");
+        window.location.href=url;
+    });
     $(".swiper-container").css({"max-height":mWidth});
     $(".swiper-wrapper").css({"max-height":mWidth});
     $("body").css("backgroundColor","#fff");
@@ -192,6 +202,26 @@ $(document).ready(function(){
     var link=$(this).attr('data-href');
     SetCookie("fromdetail","")
     addCart(link);
+}).on("click",".seckill-buy",function(){
+    var buy_limit=parseInt($(".wrap-goods-detail").attr("data-buylimit"));
+    var user_limit=parseInt($(".wrap-goods-detail").attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
+    var id = $(this).closest("li").attr("data-id");
+    var s_goods_id =  $(this).closest("li").attr("seckill_goods_id");
+    num_list[id]=1;
+    $(this).addClass("seckill-buy-yes");
+    var cart_now=parseInt($("#cart-now-num").html());
+    $("#cart-now-num").html(cart_now+1);
+    seckill_goods_ids.push(s_goods_id);
+    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 });
 //点赞
 function great(id,$this){
@@ -224,15 +254,16 @@ function addCart(link){
     var fruits=num_list;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_goods_ids:seckill_goods_ids
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success)
             {   if(link){
+                    SetCookie('cart_count', $("#cart-now-num").html());
                     window.location.href=link;
                 }
-                
             }
             else return noticeBox(res.error_text);
         }
@@ -258,5 +289,39 @@ function cartNum(cart_ms){
 function fruits_num(){
     for(var key in num_list){
     if(num_list[key]==0){delete num_list[key];}
+    }
+}
+function countTime($obj){
+    var time_end = parseInt($obj.attr("end_time"))*1000;
+    var time_now = new Date().getTime();
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
+    if(time_distance >= 0){
+        // 天时分秒换算
+        int_day = Math.floor(time_distance/86400000)
+        time_distance -= int_day * 86400000;
+        int_hour = Math.floor(time_distance/3600000)
+        time_distance -= int_hour * 3600000;
+        int_minute = Math.floor(time_distance/60000)
+        time_distance -= int_minute * 60000;
+        int_second = Math.floor(time_distance/1000)
+        if(int_hour < 10)
+            int_hour = "0" + int_hour;
+        if(int_minute < 10)
+            int_minute = "0" + int_minute;
+        if(int_second < 10)
+            int_second = "0" + int_second;
+        // 显示时间
+        if(int_day>0){
+            $obj.find(".day").html(int_day+"天");
+        }
+        $obj.find(".hour").html(int_hour+"时");
+        $obj.find(".minute").html(int_minute+"分");
+        $obj.find(".second").html(int_second+"秒");
+        setTimeout(function(){
+            countTime($obj);
+        },1000);
+    }else{
+        //noticeBox("结束了");
     }
 }

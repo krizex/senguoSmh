@@ -213,10 +213,11 @@ class OnlineWxPay(CustomerBaseHandler):
 				# return self.send_fail('order not found')
 				#如果没找到订单，也要生成一条余额记录
 				#因为customer_id和shop_id 是外键，不能为空，所以给它们赋一个特定的值
-				balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=total_fee,balance_record='在线支付（微信）异常：空订单',
-					transaction_id = transaction_id)
+				balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(微信)异常：空订单',
+					balance_type=3,transaction_id = transaction_id)
 				self.session.add(balance_history)
 				self.session.commit()
+				print("[WeixinPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 				return self.write('success')
 
 			customer_id = order.customer_id
@@ -249,19 +250,39 @@ class OnlineWxPay(CustomerBaseHandler):
 				# return self.send_fail('shop_follow not found')
 				#没有关注店铺也要生成余额记录
 				balance_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,balance_value=totalPrice,
-					balance_record='在线支付(微信)：订单（用户未关注店铺的情况）'+ order.num,name = name,balance_type=3,shop_totalPrice=shop.shop_balance,
+					balance_record='在线支付(微信)异常：用户未关注，订单'+ order.num,name = name,balance_type=3,shop_totalPrice=shop.shop_balance,
 					transaction_id=transaction_id,shop_province=shop.shop_province,shop_name=shop.shop_name)
 				self.session.add(balance_history)
 				self.session.commit()
+				print("[WeixinPay]No CustomerShopFollow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			# print("[WeixinPay]shop_balance:",shop.shop_balance)
-			else:
-				# 支付成功后  生成一条余额支付记录
+			else:	
 				balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
 					balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
 					shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
 					shop_province=shop.shop_province,shop_name=shop.shop_name)
 				self.session.add(balance_history)
+				self.session.flush()
 				# print("[WeixinPay]balance_history:",balance_history)
+
+				#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
+				fruits = eval(order.fruits)
+				charge_type_list = list(fruits.keys())
+				seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+				if seckill_goods:
+					seckill_goods_id = []
+					for item in seckill_goods:
+						seckill_goods_id.append(item.id)
+					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+										models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+					if customer_seckill_goods:
+						for item in customer_seckill_goods:
+							item.status = 2
+						self.session.flush()
+					for item in seckill_goods:
+						item.storage_piece -= 1
+						item.ordered += 1
+					self.session.flush()
 				self.session.commit()
 				print("[WeixinPay]handle WeixinPay Callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			# 发送订单模版消息给管理员/自动打印订单
@@ -452,7 +473,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("service","v","sec_id","sign","notify_data")
 	def handle_onAlipay_notify(self):
-		print("handle_onAlipay_notify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		print("[AliPay]handle_onAlipay_notify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		sign = self.args.pop('sign')
 		signmethod = self._alipay.getSignMethod(**self.args)
 		# print("[AliPay]Callback success")
@@ -461,6 +482,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# print("[AliPay]Callback data:",self.args['notify_data'])
 		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
 		order_num = notify_data["out_trade_no"]
+		print("[AliPay]Callback order_num:",order_num)
 		ali_trade_no=notify_data["trade_no"]
 		total_fee  = float(notify_data["total_fee"])
 		# print("[AliPay]ali_trade_no:",ali_trade_no)
@@ -471,10 +493,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		# order = models.Order.get_by_id(self.session,orderId)
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
-			balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=total_fee,balance_record='在线支付（支付宝）异常：空订单',
-				transaction_id = transaction_id)
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单',
+				balance_type=3,transaction_id = transaction_id)
 			self.session.add(balance_history)
 			self.session.commit()
+			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return self.write('success')
 		##############################################################
 		# 在线支付成功回调业务处理
@@ -509,13 +532,13 @@ class OnlineAliPay(CustomerBaseHandler):
 			shop_id = shop_id).first()
 		if not shop_follow:
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
-				balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单(用户未关注店铺的情况)'+ order.num, name = name , balance_type = 3,
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = None,transaction_id=ali_trade_no,
+				balance_value = totalPrice,balance_record = '在线支付(支付宝)异常：用户未关注，订单'+ order.num, name = name , balance_type = 3,
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = 0,transaction_id=ali_trade_no,
 				shop_province = shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			# print("[AliPay]balance_history:",balance_history)
 			self.session.commit()
-			print("handle_onAlipay_callback no CustomerShopFollow but success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			print("[AliPay]No CustomerShopFollow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		else:
 			# 支付成功后  生成一条余额支付记录
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
@@ -525,7 +548,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			self.session.add(balance_history)
 			# print("[AliPay]balance_history:",balance_history)
 			self.session.commit()
-			print("handle_onAlipay_notify SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			print("[AliPay]handle_onAlipay_notify SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 		# 发送订单模版消息给管理员/自动打印订单
 		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
@@ -539,7 +562,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("sign","result","out_trade_no","trade_no","request_token")
 	def handle_onAlipay_callback(self):
-		print("handle_onAlipay_callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		print("[AliPay]handle_onAlipay_callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		sign = self.args.pop("sign")
 		signmethod = self._alipay.getSignMethod()
 		if signmethod(self.args) != sign:
@@ -554,10 +577,11 @@ class OnlineAliPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
-			balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=0,balance_record='在线支付（微信）异常：空订单',
-				transaction_id = transaction_id)
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=0,balance_record='在线支付(微信)异常：空订单',
+				balance_type=3,transaction_id = transaction_id)
 			self.session.add(balance_history)
 			self.session.commit()
+			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return self.write('success')
 		##############################################################
 		# 在线支付成功回调业务处理
@@ -586,19 +610,18 @@ class OnlineAliPay(CustomerBaseHandler):
 		if customer:
 			name = customer.accountinfo.nickname
 		else:
-			# return self.send_fail('customer not found')
 			name = None
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		if not shop_follow:
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
-				balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单(用户未关注店铺的情况)'+ order.num, name = name , balance_type = 3,
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = None,transaction_id=ali_trade_no,
+				balance_value = totalPrice,balance_record = '在线支付(支付宝)异常：用户未关注，订单'+ order.num, name = name , balance_type = 3,
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = 0,transaction_id=ali_trade_no,
 				shop_province = shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			# print("[AliPay]balance_history:",balance_history)
 			self.session.commit()
-			print("handle_onAlipay_callback no CustomerShopFollow but success!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			print("[AliPay]No CustomerShopFollow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		else:
 			# 支付成功后  生成一条余额支付记录
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
@@ -607,10 +630,33 @@ class OnlineAliPay(CustomerBaseHandler):
 				shop_province = shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			# print("[AliPay]balance_history:",balance_history)
-			self.session.commit()
+			self.session.flush()
 			print("handle_onAlipay_callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
+			#在线支付完成，CustomerSeckillGoods表对应的状态变为2,SeckillGoods表也做相应变化
+			fruits = eval(order.fruits)
+			charge_type_list = list(fruits.keys())
+			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+			if seckill_goods:
+				seckill_goods_id = []
+				for item in seckill_goods:
+					seckill_goods_id.append(item.id)
+				customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+				if customer_seckill_goods:
+					for item in customer_seckill_goods:
+						item.status = 2
+					self.session.flush()
+				for item in seckill_goods:
+					item.storage_piece -= 1
+					item.ordered += 1
+				self.session.flush()
+			self.session.commit()
+			print("[AliPay]handle_onAlipay_callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+
+
 		# 发送订单模版消息给管理员/自动打印订单
+
 		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
 			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
 			access_token = self.get_other_accessToken(self.session,shop.admin.id)

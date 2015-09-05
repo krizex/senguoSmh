@@ -999,7 +999,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		if not customer:
 			# return self.send_fail("customer not found")
-			name = '未知'
+			name = None
 		else:
 			name = customer.nickname
 
@@ -1008,7 +1008,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			# return self.send_fail('shop not found')
 			shop_province = None
 			shop_name     = None
-			shop_totalPrice=None
+			shop_totalPrice=0
 		else:
 			shop.shop_balance += totalPrice
 			self.session.flush()
@@ -1026,8 +1026,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 			# return self.send_fail('shop_follow not found')
 			# 支付成功后  生成一条余额支付记录
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
-				balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户未关注店铺 ' , name = name , balance_type = 0,
-				shop_totalPrice = shop_totalPrice,customer_totalPrice = None,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
+				balance_value = totalPrice,balance_record = '余额充值(支付宝)失败：用户未关注店铺' , name = name , balance_type = 0,
+				shop_totalPrice = shop_totalPrice,customer_totalPrice = 0,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
 			self.session.add(balance_history)
 			# print("[AliCharge]balance_history:",balance_history)
 			self.session.commit()
@@ -1184,7 +1184,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 			# return self.send_fail('shop not found')
 			shop_province = None
 			shop_name     = None
-			shop_totalPrice=None
+			shop_totalPrice=0
 		else:
 			shop.shop_balance += totalPrice
 			self.session.flush()
@@ -1201,8 +1201,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 			# return self.send_fail('[AliCharge]shop_follow not found')
 			# 支付成功后  生成一条余额支付记录
 			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
-				balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户未关注店铺 ' , name = name , balance_type = 0,
-				shop_totalPrice = shop_totalPrice,customer_totalPrice = None,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
+				balance_value = totalPrice,balance_record = '余额充值(支付宝)失败：用户未关注店铺' , name = name , balance_type = 0,
+				shop_totalPrice = shop_totalPrice,customer_totalPrice = 0,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
 			self.session.add(balance_history)
 			# print("[AliCharge]balance_history:",balance_history)
 			self.session.commit()

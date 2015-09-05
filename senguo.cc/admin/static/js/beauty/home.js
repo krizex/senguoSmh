@@ -43,15 +43,15 @@ $(document).ready(function(){
         $('.wrap-goods-box').css('margin-top','40px');
         $('.classify-title').hide();
     }else if(link_action != null&&link_action=="all"){
-         $('.wrap-notice-box').addClass('hidden');
-         $('.wrap-home').removeClass('hidden');
-         $('.classify-list li').each(function(){
+        $('.wrap-notice-box').addClass('hidden');
+        $('.wrap-home').removeClass('hidden');
+        $('.classify-list li').each(function(){
             var $this=$(this);
             var id = Number($this.attr('data-id'));
             _group_id = id;
             goodsList(1,6,_group_id);
             scrollLoading(_group_id);
-         }); 
+        }); 
     }else{
         if($('.classify-list li').length==0){
             $(".wrap-loading-box").addClass("hidden");
@@ -68,9 +68,9 @@ $(document).ready(function(){
     }
     $('.bottom-nav').find('li').addClass('add_cart');
     var s_top = 0;
+    //分类滚动监听
     $(window).scroll(function(){
         if(link_search == null){
-         //分类滚动监听
             var box=$('.goods-list');
             for(var i=0;i<box.length;i++){
                 var id=$('.goods-list').eq(i).attr('data-id');
@@ -78,11 +78,26 @@ $(document).ready(function(){
                 var classify=$('.classify-'+id).text();
                 if($(window).scrollTop()>=dist){$('#classify').text(classify);}
             }
-         }
+        }
     });
 }).on('click','.more-goods',function(){
     var shop_code=$('#shop_code').val();
     window.location.href="/"+shop_code+"?action=all"; 
+}).on('click','.notice-item',function(){
+    //链接跳转
+    var $this=$(this);
+    var _type=parseInt($this.attr("data-type"))
+    if(_type==1){
+        var url = $this.attr("data-url");
+        if(url){
+            window.location.href=url;
+        }
+    }else{
+        var detail=$this.find('.notice-detail').val();
+        var detail_box=new Modal('detail_box');
+        detail_box.modal('show');
+        $('.detail-box').find('.detail').text(detail);
+    }
 }).on("click","#menu",function(){
     var link_search=$.getUrlParam("search");
     if(link_search != null){
@@ -115,7 +130,7 @@ $(document).ready(function(){
     var group_id=Number($this.attr('data-id'));
     var top=$('.goods-list-'+group_id).offset().top-40;
     $.scrollTo({endY:top,duration:500,callback:function(){
-         setTimeout(function(){
+        setTimeout(function(){
             _group_finished=true;
         },500)
     }});
@@ -228,6 +243,34 @@ $(document).ready(function(){
     stopDefault(e);
     var link=$(this).attr('href');
     addCart(link);
+}).on("click",".link-url",function(){
+    var is_activity = parseInt($(this).attr("is_activity"));
+    var url = $(this).attr("url");
+    addCart(url);
+}).on("click",".seckill-goods",function(){//秒杀
+    var $this=$(this);
+    var parent=$this.closest('.goods_item_item');
+    var buy_limit=parseInt(parent.attr("data-buylimit"));
+    var user_limit=parseInt(parent.attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
+    var id = $(this).attr("data-id");
+    var s_goods_id =  $(this).attr("seckill_goods_id");
+    window.dataObj.fruits[id]=1;
+    $(this).addClass("hidden");
+    $(this).next(".seckill-btn-yes").removeClass("hidden");
+    wobble($('.cart_num'));
+    window.dataObj.cart_count++;
+    $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
+    seckill_goods_ids.push(s_goods_id);
+    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
 });
 $('.loading').html("~努力加载中 ( > < )~").show();
 var scrollLoading=function(_group_id){
@@ -268,7 +311,6 @@ var goodsList=function(page,action,_group_id,type){
     if(action==9){
         args.search = _search;
     }
-    // alert('i am here');
     $.postJson(url,args,function(res){
             if(res.success)
             {
@@ -307,14 +349,20 @@ var goodsList=function(page,action,_group_id,type){
             $(".wrap-loading-box").remove();
         }
 };
-var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}">'+
-                    '<a href="{{link}}">'+
+//第一页
+var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}" end-time="{{end_time}}">'+
+                    '<a href="javascript:;" url="{{link}}" is_activity="{{is_activity}}" class="link-url" >'+
                     '<img src="/static/images/holder_fruit.png" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/>'+
+                    '<div class="status-tip {{tag}}"></div>'+
                     '<div class="item-info bg-color">'+
-                        '<div class="skew item-info-name {{if charge_types["market_price"]>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
+                        '<div class="skew item-info-name {{if charge_types["market_price"]>0 || is_activity>0 }}mt10{{else}}mt20{{/if}}">{{name}}</div>'+
                         '<div class="skew item-info-price mt10" data-id="{{charge_types["id"]}}">'+
-                            '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span>'+
-                            '{{if charge_types["market_price"]>0 }}<p class="market">￥ <span class="market-price">{{charge_types["market_price"]}}元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
+                            '<p class="p-row">￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span><span class=""></span>'+
+                            '{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
+                            '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span></p>'+
+                            '{{if charge_types["market_price"]>0 }}' +
+                            '<p class="market {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/<span class="num">{{charge_types["num"]}}</span><span class="chargeUnit">{{charge_types["unit"]}}</span></span></p>{{/if}}'+
+                            '<p class="{{if is_activity==0 }}hidden{{/if}} font12 nowrap"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
                         '</div>'+
                         '<a href="{{link}}" class="skew now-buy">立即购买</a>'+
                     '</div>'+
@@ -323,21 +371,30 @@ var goods_item1='<li class="{{code}} {{if storage<=0 }}desaturate{{/if}}">'+
                     '{{/if}}'+
                     '</a>'+
                 '</li>';
-var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
-                '<a href="{{link}}" class="_add_cart {{if storage<=0 }}desaturate{{/if}}"><img src="/static/images/holder_fruit.png" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/></a>'+
+//第二页
+var goods_item2='<li class="{{code}} goods-list-item" data-id="{{goos_id}}" end-time="{{end_time}}" data-num="{{storage}}" data-storage="{{storage}}" data-limit="{{limit_num}}" data-favour="{{favour_today}}" data-detail="{{detail_no}}" data-buylimit="{{buylimit}}" data-userlimit="{{userlimit}}">'+
+                '<a href="javascript:;" url="{{link}}" is_activity="{{is_activity}}" class="link-url _add_cart {{if storage<=0 }}desaturate{{/if}}"><img src="/static/images/holder_fruit.png" alt="水果图片" class="img lazy_img" data-original="{{ori_img}}"/><div class="status-tip {{tag}}"></div></a>'+
                 '<div class="fruit-right charge-item {{if storage<=0 }}desaturate{{/if}}"  data-id="{{charge_types["id"]}}" data-relate="{{charge_types["relate"]}}" data-buy="{{charge_types["limit_today"]}}" data-allow={{charge_types["allow_num"]}}>'+
                     '<p class="name">{{name}}</p>'+
                     '<div class="price charge-type">'+
                         '￥ <span class="price font16">{{charge_types["price"]}}</span>元/<span class="num">{{charge_types["num"]}}</span>{{charge_types["unit"]}}</span>'+
-                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
+                        '{{if is_activity==2 }}<span class="price-tip2 {{if has_discount_activity==0 }}hidden{{/if}}">{{charge_types["discount_rate"]}}折</span>' +
+                        '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span>'+
+                        '{{if charge_types["market_price"]>0 }}<p class="market text-grey9 {{if is_activity>0 }}hidden{{/if}}">￥ <span class="market-price">{{charge_types["market_price"]}}元/{{charge_types["num"]}}{{charge_types["unit"]}}</span></p>{{/if}}'+
+                        '<p class="text-grey9 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
                     '</div>'+
                     '<div class="wrap-furit-opera bg-color num_box">'+
-                        '<span class="to-add add add_cart_num">+</span>'+
+                        '{{if is_activity!=1}}'+
+                        '<span class="to-add add add_cart_num wspan">+</span>'+
                         '<p class="furit-opera number-change hidden">'+
-                            '<span class="minus number-minus">-</span>'+
-                            '<input type="text" value="" class="number-input text" readonly/>'+
-                            '<span class="add number-plus">+</span>'+
+                            '<span class="minus number-minus wspan">-</span>'+
+                            '<input type="text" value="" class="number-input text" disabled="disabled"/>'+
+                            '<span class="add number-plus wspan">+</span>'+
                         '</p>'+
+                        '{{else if is_activity==1}}'+
+                        '<div class="wrap-seckill-btns"><span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">抢!</span>'+
+                        '<span class="seckill-btn seckill-btn-yes {{if is_bought==0}}hidden{{/if}}">已抢</span></div>'+
+                        '{{/if}}'+
                     '</div>'+
                 '</div>'+
                 '{{if storage<=0 }}'+
@@ -359,6 +416,13 @@ var fruitItem=function(box,fruits,type){
     var favour_today=fruits['favour_today'];
     var limit_num=fruits['limit_num'];
     var detail_no=fruits['detail_no'];
+    var is_activity = fruits['is_activity'];
+    var price_dif = fruits['price_dif'];
+    var activity_piece = fruits['activity_piece'];//库存
+    var charge_type_id = fruits['charge_type_id'];
+    var seckill_id = fruits['seckill_goods_id'];
+    var is_bought = fruits['is_bought'];
+    var end_time = fruits['end_time'];
     var heart='';
     var sold_out='';
     var ori_img='';
@@ -382,19 +446,29 @@ var fruitItem=function(box,fruits,type){
             ori_img=img_url+'?imageView2/2/w/800';
         }
     }
-    if(tag==2){
-        tag='limit_tag';
-    }else if(tag==3){
-        tag='hot_tag';
-    }else if(tag==4){
-        tag='sale_tag';
-    }else if(tag==5){
-        tag='new_tag';
+    if(tag==2){//折扣
+        tag='tag2';
+    }else if(tag==3){//热销
+        tag='tag3';
+    }else if(tag==4){//特价
+        tag='tag4';
+    }else if(tag==5){//新品
+        tag='tag5';
+    }else{
+        tag = "";
+    }
+    if(is_activity==1){
+        tag='tag6';
+    }else if(is_activity==2){
+        tag='tag2';
     }
     if(type=='recommend'){
         var render=template.compile(goods_item1);
     }else{
         var render=template.compile(goods_item2);
+    }
+    if(is_activity==1 && activity_piece==0 && charge_types.length==0){
+        storage=0;
     }
     if(charge_types.length>0){
         charge_types=charge_types[0];
@@ -416,12 +490,57 @@ var fruitItem=function(box,fruits,type){
         sold_out:sold_out,
         ori_img:ori_img,
         link:'/'+shop_code+'/goods/'+id,
+        is_activity:is_activity,
+        price_dif:price_dif,
+        activity_piece:activity_piece,//库存
+        charge_type_id:charge_type_id,
+        seckill_id:seckill_id,
+        is_bought:is_bought,
+        end_time:end_time,
         buylimit:buylimit,
         userlimit:userlimit
     });
-    box.append(html);
+    var $obj = $(html);
+    box.append($obj);
+    if(is_activity>0){
+        countTime($obj);
+    }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
 };
+function countTime($obj){
+    var time_end = parseInt($obj.attr("end-time"))*1000;
+    var time_now = new Date().getTime();
+    var time_distance = time_end - time_now;  // 结束时间减去当前时间
+    var int_day, int_hour, int_minute, int_second;
+    if(time_distance >= 0){
+        // 天时分秒换算
+        int_day = Math.floor(time_distance/86400000)
+        time_distance -= int_day * 86400000;
+        int_hour = Math.floor(time_distance/3600000)
+        time_distance -= int_hour * 3600000;
+        int_minute = Math.floor(time_distance/60000)
+        time_distance -= int_minute * 60000;
+        int_second = Math.floor(time_distance/1000)
+        if(int_hour < 10)
+            int_hour = "0" + int_hour;
+        if(int_minute < 10)
+            int_minute = "0" + int_minute;
+        if(int_second < 10)
+            int_second = "0" + int_second;
+        // 显示时间
+        if(int_day>0){
+            $obj.find(".day").html(int_day+"天");
+        }
+        $obj.find(".hour").html(int_hour+":");
+        $obj.find(".minute").html(int_minute+":");
+        $obj.find(".second").html(int_second);
+        setTimeout(function(){
+            countTime($obj);
+        },1000);
+    }else{
+        //noticeBox("结束了");
+    }
+}
 function goodsNum(target,action){
     var item=target.siblings('.number-input');
     var change=target.parents('.number-change');
@@ -460,7 +579,6 @@ function goodsNum(target,action){
         {
             num--;
             item.val(num);
-            //console.log(change_num);
             if(num<0){
                 storage = change_num;
             }else{
@@ -532,12 +650,14 @@ function addCart(link){
     var fruits=window.dataObj.fruits;
     var args={
         action:action,
-        fruits:fruits
+        fruits:fruits,
+        seckill_goods_ids:seckill_goods_ids
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
             if(res.success)
             {
+                SetCookie('cart_count',$(".cart_num").html());
                 window.location.href=link;
             }
             else return noticeBox(res.error_text);
@@ -585,7 +705,6 @@ document.addEventListener('touchend', function (ev) {
             }
             break;
         case 2:   //下
-
             break;
         default:            
     }   

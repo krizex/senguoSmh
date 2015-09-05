@@ -107,7 +107,8 @@ img{border:none;}
 .red-tip{color: #fff;font-weight:normal;font-size: 12px;background-color: #ff6666;padding: 0 6px;border-radius: 20px;position: absolute;right: 38px;line-height: 20px;height: 20px;text-indent: 0;-webkit-transform:translate(55%,0);min-width: 20px;text-align: center;}
 .on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 6px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;min-width: 20px;}
 .red-toll{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;right: 34px;top:15px;}
-.red-toll1{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;left: 175px;top:15px;}
+.red-toll1{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;left: 256px;top:15px;}
+.red-toll2{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;left: 345px;top:15px;}
 
 /*右侧公共样式*/
 .container-right{width:82.5%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:750px;}
@@ -115,8 +116,8 @@ img{border:none;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;height:77px;}
 
 .subnav-box{position:relative;height:40px;border-bottom:1px solid #e7e7eb;width:100%;overflow:hidden;}
-.subnav li{float:left;width:90px;height:40px;text-align:center;line-height:42px;}
-.subnav li a{color:#333;font-size:14px;display:block;}
+.subnav li{float:left;width:90px;height:40px;font-size:14px;text-align:center;line-height:42px;border-bottom:-3px solid #fff;margin-top:-1px;}
+.subnav li a{color:#333;display:block;}
 .subnav li:hover{border-bottom:3px solid #a0a3ab;margin-top:-1px;}
 .subnav .active{border-bottom:3px solid #52b43f;margin-top:-1px;}
 .subnav .active:hover{border-bottom:3px solid #52b43f;margin-top:-1px;}

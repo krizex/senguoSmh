@@ -9,10 +9,11 @@
 {% import json%}
 <script>
     window.dataObj.cart_fs = {% raw json.dumps(cart_fs) %}
+    var seckill_goods_ids= {% raw json.dumps(seckill_goods_ids) %}
 </script>
 {% if good %}
-<input type="hidden" value="{{handler.shop_code}}" id="shop_code"/>
-<div class="wrap-goods-detail" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}" data-buylimit="{{good.buy_limit}}" data-userlimit="{{good.userlimit}}">
+<input type="hidden" value="{{handler.shop_code}}" is_activity="{{good.activity_status}}" has_discount_activity="{{has_activity}}" id="shop_code"/>
+<div class="wrap-goods-detail pm80" data-id="{{good.id}}" data-limit="{{good.limit_num}}" data-storage="{{good.storage}}" data-buylimit="{{good.buy_limit}}" data-userlimit="{{good.userlimit}}">
     <div class="img-list">
         <a href="javascript:;" class="roll-bg back add-cart" id="back-bg" data-href="{{reverse_url('Market',handler.shop_code)}}"><i></i></a>
         <!--a href="javascript:;" class="roll-bg share"><i></i></a-->
@@ -28,27 +29,37 @@
         <div class="pagination"></div>
     </div>
     <div class="wrap-goods-info">
-        <p class="goods-title">{{good.name or ''}}</p>
+        <p class="goods-title">
+            <span>{{good.name or ''}}</span>
+            {% if good.activity_status>0 or good.tag>1 %}<span class="goods-tag">{% if good.activity_status==1 %}秒杀{% elif good.activity_status==2 %}限时折扣{% elif good.tag>1 %}{% if good.tag==2 %}限时折扣{% elif good.tag==3 %}热销水果{% elif good.tag==4 %}今日特价{% else %}新品上架{% end %}{% end %}</span>{% end %}
+            {% if good.buy_limit>0 %}<span class="goods-tag">{% if good.buy_limit==1 %}限新用户{% elif good.buy_limit==2 %}限老用户{% else %}限充值用户{% end %}</span>{% end %}
+        </p>
         <p class="goods-num">
             <span id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}"><span class="zan {% if good.favour_today %}zaned{% end %}"></span><span class="num">{{good.favour or 0}}</span></span>
             <span>&nbsp;销量 {{good.saled or 0}}</span>
         </p>
-        <p>{% if good.tag>1 %}<span class="goods-tag">{% if good.tag==2 %}限时折扣{% elif good.tag==3 %}热销水果{% elif good.tag==4 %}今日特价{% else %}新品上架{% end %}</span>{% end %}{% if good.buy_limit>0 %}<span class="goods-tag">{% if good.buy_limit==1 %}限新用户{% elif good.buy_limit==2 %}限老用户{% else %}限充值用户{% end %}</span>{% end %}</p>
         <p class="goods-info">{{good.intro or ''}}</p>
+        <p class="f12 mt10" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
     </div>
     <ul class="wrap-choose-goods">
-        {% for charge in charge_types %}
-        <li data-buy="{{charge['limit_today']}}" data-allow="{{charge['allow_num']}}">
-            <span class="now-price">{{charge['price']}}元</span>
-            <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
-            <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
-                <span class="minus minus-num">-</span>
-                <div class="input">1</div>
-                <span class="add add-num">+</span>
-            </div>
-            <div class="now-buy" data-storage="{{good.storage}}">立即购买</div>
-        </li>
-        {% end %}
+            {% for charge in charge_types %}
+            <li data-buy="{{charge['limit_today']}}" data-id="{{charge['id']}}" data-allow="{{charge['allow_num']}}" seckill_goods_id="{{charge['seckill_goods_id']}}">
+                <span class="now-price">{{charge['price']}}元</span>
+                <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
+                {% if charge['has_activity']>0 and good.activity_status==2 and charge['discount_rate']<10 %}<span class="goods-tag activity-tag">{{charge['discount_rate']}}折</span>{% end %}
+                {% if has_activity>0 and charge['is_seckill']==1 and good.activity_status==1 %}
+                <span class="goods-tag activity-tag">省{{charge['seckill_price_dif']}}元</span>
+                <div class="seckill-buy {% if charge['seckill_is_bought']==1 %}seckill-buy-yes{% end %}" data-relate="{{charge['relate']}}" data-id="{{charge['id']}}">抢!</div>
+                {% else %}
+                <div class="want-num" data-id="{{charge['id']}}" data-relate="{{charge['relate']}}">
+                    <span class="minus minus-num">-</span>
+                    <div class="input">1</div>
+                    <span class="add add-num">+</span>
+                </div>
+                <div class="now-buy" data-storage="{{good.storage}}">立即购买</div>
+                {% end %}
+            </li>
+            {% end %}
     </ul>
     {% if good.detail_describe %}
     <ul class="goods-choose-lst group">
@@ -85,7 +96,7 @@
     {% else %}
     <ul class="goods-info-lst"></ul>
     {% end %}
-    <a href="javascript:;" class="shop-area add-cart" id="shop-area" data-href="{{reverse_url('customerShopProfile',handler.shop_code)}}">
+    <a href="javascript:;" class="shop-area add-cart clip" id="shop-area" data-href="{{reverse_url('customerShopProfile',handler.shop_code)}}">
         <span class="roll-bg shop-in">
             <i></i>
         </span>
