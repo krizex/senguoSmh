@@ -35,6 +35,18 @@ $(document).ready(function(){
         },20);
     }
 }).on("click",".add-btn",function(){
+    var parent=$(this).closest('li');
+    var buy_limit=parseInt(parent.attr("data-buylimit"));
+    var user_limit=parseInt(parent.attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
     var $parent = $(this).closest(".wrap-operate");
     var num = parseInt($parent.attr("data-num"));
     var storage = parseInt($parent.attr("charge-storage"));
@@ -94,6 +106,18 @@ $(document).ready(function(){
     countTime((continue_time+start_time)*1000,start_time,1,$(".show-time-box"));//倒计时
     getList(id);
 }).on("click",".seckill-btn",function(){//抢
+    var parent=$(this).closest('li');
+    var buy_limit=parseInt(parent.attr("data-buylimit"));
+    var user_limit=parseInt(parent.attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
     var id = $(this).closest("li").attr("charge_type_id");
     var s_goods_id = $(this).closest("li").attr("seckill-id");
     var storage = parseInt($(this).closest("li").find(".store-num").html());
@@ -173,7 +197,7 @@ function insertGoods(data){
         $(".no-result").addClass("hide");
         for(var key in data){
             var $item = $("#seckill-item").children("li").clone();
-            $item.attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id).attr("is_bought",data[key].is_bought);
+            $item.attr("data-buylimit",data[key].buylimit).attr("data-userlimit",data[key].userlimit).attr("seckill-id",data[key].goods_seckill_id).attr("fruit-id",data[key].fruit_id).attr("charge_type_id",data[key].charge_type_id).attr("is_bought",data[key].is_bought);
             if(data[key].img_url){
                 $item.find(".image").attr("src",data[key].img_url+"?imageView2/1/w/100/h/100");
             }else{
