@@ -1329,6 +1329,8 @@ class Order(MapBase, _CommonApi):
 	new_totalprice=Column(Float,nullable=False)
 
 	self_address_id = Column(Integer,nullable=False,default=0) #自提点id 7.30
+	transaction_id = Column(String(64)) #在线支付，支付宝或微信返回的编码
+
 
 	#当订单取消后，库存增加，销量不变，在售减少
 	def get_num(self,session,order_id):
