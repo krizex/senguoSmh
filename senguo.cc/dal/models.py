@@ -1886,8 +1886,8 @@ class CouponsShop(MapBase, _CommonApi):
  	id=Column(Integer,autoincrement=True,primary_key=True)
  	shop_id=Column(Integer,nullable=False)
  	coupon_id=Column(Integer,nullable=False)
- 	coupon_type=Column(Integer,default=0)
- 	coupon_money=Column(Float)
+ 	coupon_type=Column(TINYINT,nullable=False,default=0)
+ 	coupon_money=Column(Float,nullable=False,default=0)
  	from_get_date=Column(Integer)
  	to_get_date=Column(Integer)
  	use_goods_group=Column(Integer)
@@ -1896,20 +1896,20 @@ class CouponsShop(MapBase, _CommonApi):
  	total_number=Column(Integer)
  	get_number=Column(Integer)
  	use_number=Column(Integer)
- 	valid_way=Column(Integer,default=0) #优惠方式, 0：固定日期  1：领取后生效
+ 	valid_way=Column(TINYINT,nullable=False,default=0) #优惠方式, 0：固定日期  1：领取后生效
  	from_valid_date=Column(Integer)
  	to_valid_date=Column(Integer)
  	start_day=Column(Integer)
  	last_day=Column(Integer)
  	get_limit=Column(Integer)
- 	closed=Column(Integer,default=0)
- 	get_rule=Column(Float,default=0)
+ 	closed=Column(Integer,nullable=False,default=0)
+ 	get_rule=Column(Float,nullable=False,default=0)
  	create_date=Column(Integer)
  		 	
 # 用户优惠券
 class CouponsCustomer(MapBase, _CommonApi):
 	__tablename__='coupon_customer'
-	coupon_type=Column(Integer,default=0)
+	coupon_type=Column(TINYINT,nullable=False,default=0)
 	coupon_id=Column(Integer,nullable=False)
 	coupon_key=Column(String(128),nullable=False,primary_key=True)
 	customer_id=Column(Integer)
@@ -1918,7 +1918,7 @@ class CouponsCustomer(MapBase, _CommonApi):
 	use_date=Column(Integer)
 	effective_time=Column(Integer)
 	uneffective_time=Column(Integer)
-	coupon_status=Column(Integer,default=0)
+	coupon_status=Column(TINYINT,nullable=False,default=0)
 	order_id=Column(Integer)
 
 # 极光推送消息
@@ -1926,5 +1926,5 @@ class Jpushinfo(MapBase, _CommonApi):
 	__tablename__="jpush_info"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	user_id=Column(Integer,nullable=False)
-	user_type=Column(Integer,nullable=False,default=0)  #0  admin 1 customer
+	user_type=Column(TINYINT,nullable=False,default=0)  #0  admin 1 customer
 	jpush_id=Column(String(16),nullable=False)
