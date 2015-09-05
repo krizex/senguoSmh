@@ -301,7 +301,7 @@ class Publish(FruitzoneBaseHandler):
 						if "publictime" in data and data["publictime"]:
 							public_time = data["public_time"]
 							try:
-								if public_time < time_now:
+								if public_time < time_now.strftime("%Y-%m-%d %H:%M:%S"):
 									public_time = time_now
 							except:
 								public_time = time_now
@@ -390,7 +390,7 @@ class DetailEdit(FruitzoneBaseHandler):
 						if "publictime" in data and data["publictime"]:
 							public_time = data["public_time"]
 							try:
-								if public_time < time_now:
+								if public_time < time_now.strftime("%Y-%m-%d %H:%M:%S"):
 									public_time = time_now
 							except:
 								public_time = time_now

@@ -1730,6 +1730,7 @@ class Article(MapBase, _CommonApi):
 	status = Column(TINYINT,nullable=False,default = 1) # -1:草稿 0:删除 1:正常 2:定时发布
 	del_reason = Column(String(100)) #删除原因
 	create_time = Column(DateTime,default = func.now())
+	
 	#9.3
 	public_time = Column(DateTime,default = func.now())
 	no_public = Column(Boolean,default = 0) #0:发表至论坛 1:不发表至论坛
