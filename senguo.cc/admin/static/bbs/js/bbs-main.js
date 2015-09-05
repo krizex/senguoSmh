@@ -31,9 +31,17 @@ $(document).ready(function(){
         articleList(0);
         scrollLoading();
     }
-}).on("click",".classify_type li",function(e){
+}).on("mouseover",".wrap-choose-type",function(){
+    $(".classify_type").show();
+}).on("mouseout",".wrap-choose-type",function(){
+    $(".classify_type").hide();
+}).on("mouseover",".wrap-choose-time",function(){
+    $(this).children(".time-list").show();
+}).on("mouseout",".wrap-choose-time",function(){
+    $(this).children(".time-list").hide();
+}).on("click",".classify_type li",function(){
     var id=$(this).attr("data-id");
-    $("#choose_type").attr("data-id",id);
+    $("#choose_type").attr("data-id",id).html($(this).html());
     $(".classify_type").hide();
 }).on("click",".atical-list li",function(e){
     var id=$(this).attr("data-id");
@@ -76,10 +84,18 @@ $(document).ready(function(){
 }).on("click",".draft-bn",function(){//存草稿
     publishAtical($(this),-1)
 }).on("click","#commit_btn",function(){
+    var year = $("#year").html();
+    var month = $("#month").html();
+    var day = $("#day").html();
+    var hour = $("#hour").html();
+    var minute = $("#minute").html();
+    $(this).attr("data-time",year+"-"+month+"-"+day+" "+hour+":"+minute);
     publishAtical($(this),2)
 }).on("click",".time-list li",function(){
-    $(this).closest("ul").before("span").html($(this).html());
-    $(this).closest("ul").hide();
+    $(this).closest(".wrap-choose-time").find("span").html($(this).html());
+    $(this).closest(".time-list").hide();
+}).on("click",".checkbox",function(){
+    $(this).toggleClass("checked");
 });
 var finished=true;
 var nomore =false;
@@ -179,7 +195,7 @@ function publishAtical(target,type){
         return Tip("请选择板块");
     }
     var title=$(".article_title").val();
-    if(title == "" || title.length>20){
+    if(title == "" || title.length>21){
         target.attr("data-statu", "0");
         return Tip("标题不能为空且不能超过20个字");
     }
@@ -217,7 +233,7 @@ function publishAtical(target,type){
         if(res.success){
             Tip("发布成功");
             setTimeout(function(){
-                window.location.href="/bbs/detail/"+res.id;
+                window.location.href="/bbs";
             },2000);
         }else{
             Tip(res.error_text);

@@ -1727,7 +1727,7 @@ class Article(MapBase, _CommonApi):
 	comment_num = Column(Integer,nullable=False,default = 0)#评论数
 	scan_num = Column(Integer,nullable=False,default = 0) #0:浏览数
 	if_scan = Column(TINYINT,nullable=False,default = 0) #0:是否浏览
-	status = Column(TINYINT,nullable=False,default = 1) #0:删除 1:正常
+	status = Column(TINYINT,nullable=False,default = 1) # -1:草稿 0:删除 1:正常 2:定时发布
 	del_reason = Column(String(100)) #删除原因
 	create_time = Column(DateTime,default = func.now())
 	#9.3

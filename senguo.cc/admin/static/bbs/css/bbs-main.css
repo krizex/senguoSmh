@@ -1,6 +1,7 @@
 html,body{height: 100%;}
 body{background-color: #f0f4f0;padding-top: 120px;}
 .w980{width: 980px;position: relative;left: 50%;margin-left: -490px;}
+div,span,p,li{-webkit-user-select:none;}
 /*首页*/
 .wrap-bbst{position: fixed;left: 0;top: 0;z-index:9999;width: 100%;}
 .bbs-top{background-color: #48b6a4;height: 60px;}
@@ -100,7 +101,7 @@ body{background-color: #f0f4f0;padding-top: 120px;}
 .edit-left{vertical-align: top;margin-top: 14px;}
 .wrap-editor{width: 582px;height: 400px;display: inline-block;}
 .wrap-type-pli{display: inline-block;}
-.wrap-type-pli .checkbox{display: inline-block;padding-left: 18px;color: #666;background: url('../img/check.png') no-repeat;background-position: 0 -25px;}
+.wrap-type-pli .checkbox{display: inline-block;cursor:pointer;padding-left: 18px;color: #666;background: url('../img/check.png') no-repeat;background-position: 0 -25px;}
 .wrap-type-pli .checked{background-position: 0 0;}
 .publish-btns>a{display: inline-block;width: 90px;height: 36px;line-height:36px;-webkit-box-sizing: border-box;font-size: 16px;text-align: center;border-radius: 4px;}
 .publish-btns .draft-bn,.publish-btns .publish-bn{border: 1px solid #4ab89e;color: #4ab89e;}

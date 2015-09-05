@@ -8,6 +8,7 @@ import qiniu
 import random
 import base64
 import json
+from collections import OrderedDict
 
 
 class Main(FruitzoneBaseHandler):
@@ -32,7 +33,7 @@ class Main(FruitzoneBaseHandler):
 			try:
 				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-					.filter(models.Article.status==1,models.Article.no_public==0,models.Article.public_time<=time_now)\
+					.filter(models.Article.status>=1,models.Article.no_public==0,models.Article.public_time<=time_now)\
 					.distinct(models.Article.id).order_by(models.Article.create_time.desc())
 			except:
 				article_lsit = None
@@ -40,7 +41,7 @@ class Main(FruitzoneBaseHandler):
 			if _type<100:
 					article_lsit=article_lsit.filter(models.Article.classify==_type)
 			if article_lsit:
-				if page == article_lsit.count()//page_size:
+				if page >= article_lsit.count()//page_size:
 					nomore = True
 				article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
 				for article in article_lsit:
@@ -62,7 +63,7 @@ class Detail(FruitzoneBaseHandler):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.Accountinfo.headimgurl_small)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-				.filter(models.Article.id==_id,models.Article.status==1,models.Article.public_time<=datetime.datetime.now()).first()
+				.filter(models.Article.id==_id,models.Article.status>=1,models.Article.public_time<=datetime.datetime.now()).first()
 		except:
 			return self.write("没有该文章的任何信息")
 
@@ -117,7 +118,7 @@ class Detail(FruitzoneBaseHandler):
 				comments = None
 
 			if comments:
-				if page == comments.count()//page_size:
+				if page >= comments.count()//page_size:
 					nomore = True
 				comments = comments.offset(page*page_size).limit(page_size).all()
 				for comment in comments:
@@ -137,7 +138,7 @@ class Detail(FruitzoneBaseHandler):
 		if action in ["article_great","collect"]:
 
 			try:
-				record = self.session.query(models.ArticleGreat).filter_by(article_id = _id,account_id = self.current_user.id).first()
+				record = self.session.query(models.ArticleGreat).filter_by(article_id = _id,account_id = self.current_user.id).one()
 			except:
 				record = None
 
@@ -284,6 +285,7 @@ class Publish(FruitzoneBaseHandler):
 		title=data["title"][0:100].replace("script","-/script/-")
 		article=data["article"].replace("script","-/script/-")
 		time_now=datetime.datetime.now()
+		public_time = time_now
 		if "public" in data and data["public"]:
 			try:
 				no_public = int(data["public"])
@@ -293,21 +295,24 @@ class Publish(FruitzoneBaseHandler):
 			no_public=0
 		if "type" in data and data["type"]:
 			try:
-				if int(data["type"]) in [-1,1]:
+				if int(data["type"]) in [-1,1,2]:
 					status=int(data["type"])
+					if int(data["type"]) == 2:
+						if "publictime" in data and data["publictime"]:
+							public_time = data["public_time"]
+							try:
+								if public_time < time_now:
+									public_time = time_now
+							except:
+								public_time = time_now
+						else:
+							public_time=time_now
 			except:
 				status = 1
 		else:
 			status=1
-		if "publictime" in data and data["publictime"]:
-			public_time = data["public_time"]
-			try:
-				if public_time < time_now:
-					public_time = time_now
-			except:
-				public_time = time_now
-		else:
-			public_time=time_now
+
+		
 		if "private" in data and data["private"]:
 			try:
 				comment_private = int(data["private"])
@@ -337,7 +342,7 @@ class DetailEdit(FruitzoneBaseHandler):
 	def get(self,_id):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.Accountinfo.headimgurl_small)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).one()
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status!=0).one()
 		except:
 			return self.write("没有该文章的任何信息")
 		if article[0].account_id != self.current_user.id:
@@ -361,7 +366,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		article.classify=int(data["classify"])
 		article.title=data["title"][0:100].replace("script","-/script/-")
 		article.article=data["article"].replace("script","-/script/-")
-		article.time_now=datetime.datetime.now()
+		time_now=datetime.datetime.now()
 		if "public" in data and data["public"]:
 			try:
 				article.no_public = int(data["public"])
@@ -369,17 +374,34 @@ class DetailEdit(FruitzoneBaseHandler):
 				no_public = 0
 		else:
 			no_public=0
-
+		if "public" in data and data["public"]:
+			try:
+				no_public = int(data["public"])
+			except:
+				no_public = 0
+		else:
+			no_public=0
 		if "type" in data and data["type"]:
 			try:
-				if int(data["type"]) in [-1,1]:
+				if int(data["type"]) in [-1,1,2]:
+					if article.status == 1 and int(data["type"]) == -1:
+						return send_fail("该文章不允许保存为草稿")
+					if int(data["type"]) == 2:
+						if "publictime" in data and data["publictime"]:
+							public_time = data["public_time"]
+							try:
+								if public_time < time_now:
+									public_time = time_now
+							except:
+								public_time = time_now
+						else:
+							public_time=time_now
 					status=int(data["type"])
-				if article.status == 1 and int(data["type"]) == -1:
-					return send_fail("该文章不允许保存为草稿")
 			except:
 				status = 1
 		else:
 			status=1
+
 		if "publictime" in data and data["publictime"]:
 			public_time = data["public_time"]
 			try:
@@ -425,7 +447,7 @@ class Search(FruitzoneBaseHandler):
 		except:
 			nomore = True
 		if article_lsit:
-			if page == article_lsit.count()//page_size:
+			if page >= article_lsit.count()//page_size:
 				nomore = True
 			article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
 			for article in article_lsit:
@@ -472,18 +494,27 @@ class Profile(FruitzoneBaseHandler):
 						datalist.append(self.getChangeList(_id,title,"comment",info))
 			
 			if datalist:
-				if page == len(datalist)//page_size:
+				if page >= len(datalist)//page_size:
 					nomore = True
-				datalist.sort(key=lambda x:x["time"],reverse=True)
+				datalist.sort(key=lambda x:x["wholetime"],reverse=True)
 				datalist = datalist[page*page_size:page*page_size+page_size]
-			return self.send_success(datalist=datalist,nomore=nomore)
+				_datalist = OrderedDict()
+				for data in datalist:
+					_datalist[data["date"]] = []
+					if data["date"] in _datalist:
+						for _data in datalist:
+							if _data["date"]==data["date"]:
+								_datalist[data["date"]].append(_data)
+					else:
+						_datalist[data["date"]]=data	
+			return self.send_success(datalist=_datalist,nomore=nomore)
 		elif action == "collect":
 			article_lsit = self.session.query(models.Article).join(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
 			.filter(models.Article.status==1,models.ArticleGreat.account_id==self.current_user.id,\
 				models.ArticleGreat.collect==1)\
 			.distinct(models.Article.id).order_by(models.Article.create_time.desc())
 			if article_lsit:
-				if page == article_lsit.count()//page_size:
+				if page >= article_lsit.count()//page_size:
 					nomore = True
 				article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
 				for article in article_lsit:
@@ -495,6 +526,25 @@ class Profile(FruitzoneBaseHandler):
 			return self.send_success(datalist=datalist,nomore=nomore)
 		return self.render("bbs/profile.html")
 
+
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("action:str","data")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		if action == "del_collect":
+			try:
+				article_id = int(data["id"])
+			except:
+				return send_fail("id error")
+			try:
+				record = self.session.query(models.ArticleGreat).filter_by(article_id = _id,account_id = self.current_user.id).one()
+			except:
+				return send_fail("该文章不存在")
+			if record:
+				record.collect = 0
+				self.session.commit()
+
 	def getListData(self,status):
 		page = 0
 		page_size = 10
@@ -502,7 +552,7 @@ class Profile(FruitzoneBaseHandler):
 		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article)\
 		.filter(models.Article.account_id==self.current_user.id,models.Article.status==status).order_by(models.Article.create_time.desc())
 		if article_list:
-			if page == article_list.count()//page_size:
+			if page >= article_list.count()//page_size:
 				nomore = True
 			article_list = article_list.offset(page*page_size).limit(page_size).all()
 		if article_list:
@@ -525,5 +575,5 @@ class Profile(FruitzoneBaseHandler):
 		comment = ""
 		if _type == "comment":
 			comment = info[3]
-		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,\
-		"time":info[2].strftime("%H:%M"),"date":info[2].strftime("%m月 %d日"),"comment":comment}
+		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,"time":info[2].strftime("%H:%M"),\
+		"date":info[2].strftime("%m月 %d日"),"comment":comment,"wholetime":info[2].strftime("%Y-%m-%d %H:%M:%S")}
