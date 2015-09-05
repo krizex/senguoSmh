@@ -346,7 +346,8 @@ class DetailEdit(FruitzoneBaseHandler):
 						"type":self.article_type(article[0].classify),"type_id":article[0].classify}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
-		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data)
+		if_admin = self.if_super()
+		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
