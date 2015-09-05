@@ -727,7 +727,7 @@ class GlobalBaseHandler(BaseHandler):
 			article_great=None
 		if article_great and article_great.great == 1:
 			great_if=True
-		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
+		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].public_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
 			"comment_num":article[0].comment_num,"great_if":great_if,"admin_if":article[0].if_admin}
 		return data
@@ -1709,8 +1709,8 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		.distinct(models.Article.id,models.ArticleComment.id).all()
 		customer_list = []
 		for customer in customers:
-			article_num=self.session.query(models.Article).filter_by(account_id=customer[0]).count()
-			comment_num=self.session.query(models.ArticleComment).filter_by(account_id=customer[0]).count()
+			article_num=self.session.query(models.Article).filter_by(account_id=customer[0]).filter(models.Article.status>0).count()
+			comment_num=self.session.query(models.ArticleComment).filter_by(account_id=customer[0],status=1).count()
 			if article_num !=0 or comment_num !=0 :
 				customer_list.append({"nickname":customer[1],"imgurl":customer[2],"article_num":article_num,"comment_num":comment_num})
 		customer_list.sort(key=lambda x:(x["article_num"],x["comment_num"]),reverse=True)
