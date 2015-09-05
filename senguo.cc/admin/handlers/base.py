@@ -434,6 +434,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	_wx_oauth_pc = "https://open.weixin.qq.com/connect/qrconnect?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_login&state=ohfuck#wechat_redirect"
 	_wx_oauth_weixin = "https://open.weixin.qq.com/connect/oauth2/authorize?appid={appid}&redirect_uri={redirect_uri}&response_type=code&scope=snsapi_userinfo&state=onfuckweixin#wechat_redirect"
 
+	# 刷新数据库优惠券信息
+	def updatecoupon(self,customer_id):
+		current_shop_id=self.get_secure_cookie("shop_id") 
+		self.updatecouponbase(current_shop_id,customer_id)
+		
 	# 判断是否为微信浏览器
 	def is_wexin_browser(self):
 		if "User-Agent" in self.request.headers:
@@ -1459,10 +1464,10 @@ class AdminBaseHandler(_AccountBaseHandler):
 		# return self.get_wexin_oauth_link(next_url=self.request.full_url())
 		return self.reverse_url('customerLogin')
 	
-	# 刷新数据库优惠券信息
-	def updatecoupon(self,customer_id):
-		current_shop_id=self.get_secure_cookie("shop_id") 
-		self.updatecouponbase(current_shop_id,customer_id)
+	# # 刷新数据库优惠券信息
+	# def updatecoupon(self,customer_id):
+	# 	current_shop_id=self.get_secure_cookie("shop_id") 
+	# 	self.updatecouponbase(current_shop_id,customer_id)
 
 	# 获取订单
 	def getOrder(self,orders):
