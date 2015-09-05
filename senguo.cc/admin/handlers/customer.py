@@ -2651,14 +2651,29 @@ class Balance(CustomerBaseHandler):
 		else:
 			shop_name=shop.shop_name
 			shop_logo=shop.shop_trademark_url
+
+		if not self.session.query(models.CustomerShopFollow).filter_by(
+				customer_id=self.current_user.id, shop_id=shop.id).first():
+			w_follow = False
+			shop.fans_count = shop.fans_count + 1
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
+			if shop_follow:
+				if shop_follow.shop_point is not None:
+					shop_follow.shop_point += 10
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add follow point:",now,shop_follow.shop_point)
+				else:
+					shop_follow.shop_point = 10
+			if shop_follow.bing_add_point == 0:
+				if self.current_user.accountinfo.phone != None:
+					shop_follow.shop_point += 10
+					shop_follow.bing_add_point = 1
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add phone point:",now,shop_follow.shop_point,'phone')
+
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,
 			shop_id = shop_id).first()
-		if not shop_follow:
-			# print('[CustomerBalance]shop_follow none')
-			shop_follow = models.CustomerShopFollow(customer_id=customer_id,shop_id=shop_id,shop_balance=0)
-			self.session.add(shop_follow)
-			self.session.commit()
-		else:
+		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
 				shop_balance = format(shop_balance,'.2f')
