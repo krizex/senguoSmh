@@ -8,29 +8,36 @@
         <div class="aside-box box-border">
             <p class="aside-title"><span>热门文章</span></p>
             <ul class="aside-list">
-                <li>
-                    <p class="clip">热门文章名字，热门文章名字来了啊</p>
-                    <div class="wrap-topic-attr">
-                        <div class="fr">
-                            <a href="javascript:;" class="icon-topic viewr">1403</a>
+                {% for topic in handler.getHotArticle%}
+                <li data-id="{{topic['id']}}">
+                    <a href="/bbs/detail/{{topic['id']}}">
+                        <p class="clip c333">{{topic['title']}}</p>
+                        <div class="wrap-topic-attr">
+                            <div class="fr">
+                                <span class="icon-topic viewr">{{topic['scan_num']}}</span>
+                            </div>
+                            <span>{{topic['nickname']}}</span>
                         </div>
-                        <span>大漠孤烟</span>
-                    </div>
+                    </a>
                 </li>
+                {% end %}
             </ul>
         </div>
     </div>
     <div class="wrap-left">
         <div class="topic-detail box-border">
-            <h3 class="topic-title">这里是文章标题这里是文章标题这里是文章标题这里是文章标题这里是文章标题这里是文章标题</h3>
-            <p class="detail-user">
-                <span class="topic-class">产品更新</span>
+            <h3 class="topic-title">{{article["title"]}}</h3>
+            <p class="detail-user mt10">
+                <span class="topic-class">{{article["type"]}}</span>
                 <span>
-                    <img src="/static/images/person.png" alt="用户头像" class="detail-img"/>
-                    <span>作者名称</span>
+                    <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像" class="detail-img"/>
+                    <span>{{article["nickname"]}}</span>
                 </span>
-                <span>2015/08/14 19:45</span>
+                <span>{{article["time"]}}</span>
             </p>
+            <div class="detail-cont mt10">
+                {% raw article["article"] %}
+            </div>
         </div>
     </div>
 </div>

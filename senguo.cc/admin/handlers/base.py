@@ -365,15 +365,20 @@ class GlobalBaseHandler(BaseHandler):
 					market_price ="" if charge.market_price == None else charge.market_price
 					unit = int(charge.unit)
 					unit_name = self.getUnit(unit)
-					unit_num = int(charge.unit_num) if charge.unit_num else 0
+					unit_num = float(charge.unit_num) if charge.unit_num else 0
 					select_num = int(charge.select_num) if charge.select_num else 0
 					charge_types.append({'id':charge.id,'price':charge.price,'unit':unit,'unit_name':unit_name,\
 						'num':charge.num,'unit_num':unit_num,'market_price':market_price,'select_num':select_num})
 
 			_unit = int(d.unit)
 			_unit_name = self.getUnit(_unit)
-			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':d.current_saled,\
-				'saled':d.saled,'storage':d.storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
+
+			saled=round(float(d.saled),2) if d.saled else 0
+			storage=round(float(d.storage),2) if d.storage else 0
+			current_saled=round(float(d.current_saled),2) if d.current_saled else 0
+
+			data.append({'id':d.id,'fruit_type_id':d.fruit_type_id,'name':d.name,'active':d.active,'current_saled':current_saled ,\
+				'saled':saled,'storage':storage,'unit':_unit,'unit_name':_unit_name,'tag':d.tag,'imgurl':img_url,'intro':intro,'priority':d.priority,\
 				'limit_num':d.limit_num,'add_time':add_time,'delete_time':delete_time,'group_id':group_id,'group_name':group_name,\
 				'detail_describe':detail_describe,'favour':d.favour,'charge_types':charge_types,'fruit_type_name':d.fruit_type.name,\
 				'code':d.fruit_type.code,'buylimit':d.buy_limit})
@@ -393,7 +398,7 @@ class GlobalBaseHandler(BaseHandler):
 			great_if=True
 		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
-			"comment_num":article[0].comment_num,"great_if":great_if}
+			"comment_num":article[0].comment_num,"great_if":great_if,"admin_if":article[0].if_admin}
 		return data
 
 	# 获取森果社区文章评论
@@ -863,7 +868,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-			push.send()
+			try:
+				push.send()
+			except:
+				print("Jpush Error")
 		###
 
 	# 发送订单完成模版消息给用户
@@ -938,7 +946,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-			push.send()
+			try:
+				push.send()
+			except:
+				print("Jpush Error")
 		###
 
 	# 无线打印订单
@@ -1115,7 +1126,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order.arrival_time= now.strftime("%H:%M")
 		customer_id       = order.customer_id
 		shop_id           = order.shop_id
-		totalprice        = order.totalPrice
+		totalprice        = order.new_totalprice
 
 		self.order_done_msg(session,order,other_access_token)
 
@@ -1123,19 +1134,22 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		order.shop.order_count += 1  #店铺订单数加1
 
 		#add by jyj 2015-6-15
-		totalprice_inc = order.totalPrice
-		order.shop.shop_property += totalprice_inc
+		order.shop.shop_property += totalprice
 		# print("[_AccountBaseHandler]order_done: order.shop.shop_property:",order.shop.shop_property)
 
+		#订单完成，库存不变，在售减少，销量增加
 		fruits = eval(order.fruits)
 		if fruits:
 			# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
 			ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType)\
 			.filter(models.ChargeType.id.in_(fruits.keys())).all()
 			for s in ss:
-				num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+				num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+				# num = round(float(num),2)  #格式化为小数点后一位小数
 				s[0].current_saled -= num
-
+				s[0].saled         += num
+			session.flush()
+			
 		try:
 			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
 		except NoResultFound:
@@ -1339,6 +1353,35 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		#         customer_id=self.current_user.id, shop_id=shop_id).first():
 		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
 		return self._shop_id
+
+	@property
+	def getHotArticle(self):
+		datalist = []
+		try:
+			article_list = self.session.query(models.Article.id,models.Article.title,models.Article.scan_num,models.Accountinfo.nickname)\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.status==1)\
+				.distinct(models.Article.id).order_by(models.Article.scan_num.desc()).limit(5).all()
+		except:
+			article_list = None
+		for article in article_list:
+			datalist.append({"id":article[0],"title":article[1],"scan_num":article[2],"nickname":article[3]})
+		return datalist
+
+	@property
+	def getHotCustomer(self):
+		customers = self.session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small)\
+		.outerjoin(models.Article,models.Accountinfo.id==models.Article.account_id)\
+		.outerjoin(models.ArticleComment,models.Accountinfo.id==models.ArticleComment.account_id)\
+		.distinct(models.Article.id,models.ArticleComment.id).all()
+		customer_list = []
+		for customer in customers:
+			article_num=self.session.query(models.Article).filter_by(account_id=customer[0]).count()
+			comment_num=self.session.query(models.ArticleComment).filter_by(account_id=customer[0]).count()
+			if article_num !=0 or comment_num !=0 :
+				customer_list.append({"nickname":customer[1],"imgurl":customer[2],"article_num":article_num,"comment_num":comment_num})
+		customer_list.sort(key=lambda x:(x["article_num"],x["comment_num"]),reverse=True)
+		customer_list=customer_list[0:5]
+		return customer_list
 
 # 店铺管理后台基类方法
 class AdminBaseHandler(_AccountBaseHandler):

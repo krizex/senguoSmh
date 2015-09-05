@@ -3,11 +3,12 @@ import dal.models as models
 import tornado.web
 from settings import *
 import datetime, time
-from sqlalchemy import desc, and_, or_
+from sqlalchemy import desc, and_, or_,func
 import qiniu
 import random
 import base64
 import json
+
 
 class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated
@@ -27,10 +28,12 @@ class Main(FruitzoneBaseHandler):
 			nomore = False
 			datalist = []
 			today =  time.strftime('%Y-%m-%d', time.localtime() )
+			time_now = datetime.datetime.now()
 			try:
 				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-					.filter(models.Article.status==1).distinct(models.Article.id).order_by(models.Article.create_time.desc())
+					.filter(models.Article.status==1,models.Article.no_public==0,models.Article.public_time<=time_now)\
+					.distinct(models.Article.id).order_by(models.Article.create_time.desc())
 			except:
 				article_lsit = None
 
@@ -45,7 +48,11 @@ class Main(FruitzoneBaseHandler):
 			return self.send_success(datalist=datalist,nomore=nomore)
 
 		if_admin = self.if_super()
-		return self.render("bbs/main.html",if_admin=if_admin)
+
+		if self.is_pc_browser():
+			return self.render("bbs/main.html",if_admin=if_admin)
+		else:
+			return self.render("bbs/main.html",if_admin=if_admin)
 
 # 社区 - 文章详情
 class Detail(FruitzoneBaseHandler):
@@ -55,7 +62,7 @@ class Detail(FruitzoneBaseHandler):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-				.filter(models.Article.id==_id,models.Article.status==1).first()
+				.filter(models.Article.id==_id,models.Article.status==1,models.Article.public_time<=datetime.datetime.now()).first()
 		except:
 			return self.write("没有该文章的任何信息")
 
@@ -70,9 +77,10 @@ class Detail(FruitzoneBaseHandler):
 		# 		article[0].scan_num = article[0].scan_num +1
 		if article:
 			article[0].scan_num = article[0].scan_num +1
+			self.session.flush()
 		else:
 			return self.write("您访问的地址错误或该文章已被删除")
-		self.session.commit()
+		
 
 		great_if = False
 		collect_if = False
@@ -116,6 +124,7 @@ class Detail(FruitzoneBaseHandler):
 					comments_list.append(self.getArticleComment(comment))
 				return self.send_success(data=comments_list,nomore=nomore)
 		if_admin = self.if_super()
+		self.session.commit()
 		return self.render("bbs/artical-detail.html",article=article_data,author_if=author_if,if_admin=if_admin)
 
 	@tornado.web.authenticated
@@ -215,7 +224,7 @@ class Detail(FruitzoneBaseHandler):
 			comment = models.ArticleComment(
 				article_id = _id,
 				account_id = self.current_user.id,
-				comment = self.args["data"]["comment"],
+				comment = self.args["data"]["comment"][0:500].replace("script","-/script/-"),
 				comment_author_id = comment_author_id,
 				_type = _type
 			)
@@ -264,21 +273,58 @@ class Publish(FruitzoneBaseHandler):
 	def get(self):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
-		return self.render("bbs/publish.html",token=qiniuToken,edit=False)
+		if_admin = self.if_super()
+		return self.render("bbs/publish.html",token=qiniuToken,edit=False,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
 	def post(self):
 		data=self.args["data"]
 		classify=int(data["classify"])
-		title=data["title"]
-		article=data["article"]
+		title=data["title"][0:100].replace("script","-/script/-")
+		article=data["article"].replace("script","-/script/-")
+		time_now=datetime.datetime.now()
+		if "public" in data and data["public"]:
+			try:
+				no_public = int(data["public"])
+			except:
+				no_public = 0
+		else:
+			no_public=0
+		if "type" in data and data["type"]:
+			try:
+				if int(data["type"]) in [-1,1]:
+					status=int(data["type"])
+			except:
+				status = 1
+		else:
+			status=1
+		if "publictime" in data and data["publictime"]:
+			public_time = data["public_time"]
+			try:
+				if public_time < time_now:
+					public_time = time_now
+			except:
+				public_time = time_now
+		else:
+			public_time=time_now
+		if "private" in data and data["private"]:
+			try:
+				comment_private = int(data["private"])
+			except:
+				comment_private = 0
+		else:
+			comment_private=0
 		new_article=models.Article(
 			title=title,
 			article=article,
 			classify=classify,
 			account_id=self.current_user.id,
-			status = 1
+			status = status,
+			no_public = no_public,
+			public_time = public_time,
+			comment_private = comment_private,
+			if_admin = self.if_super()
 		)
 		self.session.add(new_article)
 		self.session.commit()
@@ -291,10 +337,11 @@ class DetailEdit(FruitzoneBaseHandler):
 	def get(self,_id):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).first()
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).one()
 		except:
 			return self.write("没有该文章的任何信息")
-
+		if article[0].account_id != self.current_user.id:
+			return self.redirect(self.reverse_url("BbsMain"))
 		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"type_id":article[0].classify}
 		_id = str(time.time())
@@ -306,9 +353,52 @@ class DetailEdit(FruitzoneBaseHandler):
 	def post(self,_id):
 		data=self.args["data"]
 		article = self.session.query(models.Article).filter_by(id=_id).first()
-		article.title=data["title"]
-		article.article=data["article"]
-		article.classify=data["classify"]
+		if article.account_id != self.current_user.id:
+			return self.send_fail("您不是该文章的作者")
+		if article.status == 0 :
+			return self.send_fail("该文章已删除")
+		article.classify=int(data["classify"])
+		article.title=data["title"][0:100].replace("script","-/script/-")
+		article.article=data["article"].replace("script","-/script/-")
+		article.time_now=datetime.datetime.now()
+		if "public" in data and data["public"]:
+			try:
+				article.no_public = int(data["public"])
+			except:
+				no_public = 0
+		else:
+			no_public=0
+
+		if "type" in data and data["type"]:
+			try:
+				if int(data["type"]) in [-1,1]:
+					status=int(data["type"])
+				if article.status == 1 and int(data["type"]) == -1:
+					return send_fail("该文章不允许保存为草稿")
+			except:
+				status = 1
+		else:
+			status=1
+		if "publictime" in data and data["publictime"]:
+			public_time = data["public_time"]
+			try:
+				if public_time < time_now:
+					public_time = time_now
+			except:
+				public_time = time_now
+		else:
+			public_time=time_now
+		if "private" in data and data["private"]:
+			try:
+				comment_private = int(data["private"])
+			except:
+				comment_private = 0
+		else:
+			comment_private=0
+		article.no_public=no_public
+		article.status=status
+		article.public_time=public_time
+		article.comment_private=comment_private
 		self.session.commit()
 		return self.send_success(id=_id)
 
@@ -343,5 +433,96 @@ class Search(FruitzoneBaseHandler):
 
 # 社区 - 个人中心
 class Profile(FruitzoneBaseHandler):
+	@tornado.web.authenticated
+	@FruitzoneBaseHandler.check_arguments("action:str","page:int")
 	def get(self):
+		page = 0
+		page_size = 10
+		action = "publish"
+		nomore = False
+		time_now = datetime.datetime.now()
+		datalist = []
+		if "action" in self.args:
+			action = self.args["action"]
+		if "page" in self.args:
+			page = int(self.args["page"])
+		if action == "publish":
+			datalist = self.getListData(1)[0]
+			nomore = self.getListData(1)[1]
+			return self.send_success(datalist=datalist,nomore=nomore)
+		elif action == "notice":
+			articles=self.session.query(models.Article.id,models.Article.title).filter(models.Article.account_id==self.current_user.id).all()
+			for item in articles:
+				_id = item[0]
+				title = item[1]
+				if_great = self.session.query(models.Accountinfo.nickname,models.Accountinfo.headimgurl_small,models.ArticleGreat.create_time)\
+				.join(models.ArticleGreat,models.Accountinfo.id==models.ArticleGreat.account_id)\
+				.filter(models.ArticleGreat.article_id==_id,models.ArticleGreat.great==1).all()
+				if if_great:
+					for info in if_great:
+						datalist.append(self.getChangeList(_id,title,"great",info))
+
+				if_comment = self.session.query(models.Accountinfo.nickname,models.Accountinfo.headimgurl_small,\
+					models.ArticleComment.create_time,models.ArticleComment.comment)\
+				.join(models.ArticleComment,models.Accountinfo.id==models.ArticleComment.account_id)\
+				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==0).all()
+				if if_comment:
+					for info in if_comment:
+						datalist.append(self.getChangeList(_id,title,"comment",info))
+			
+			if datalist:
+				if page == len(datalist)//page_size:
+					nomore = True
+				datalist.sort(key=lambda x:x["time"],reverse=True)
+				datalist = datalist[page*page_size:page*page_size+page_size]
+			return self.send_success(datalist=datalist,nomore=nomore)
+		elif action == "collect":
+			article_lsit = self.session.query(models.Article).join(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
+			.filter(models.Article.status==1,models.ArticleGreat.account_id==self.current_user.id,\
+				models.ArticleGreat.collect==1)\
+			.distinct(models.Article.id).order_by(models.Article.create_time.desc())
+			if article_lsit:
+				if page == article_lsit.count()//page_size:
+					nomore = True
+				article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
+				for article in article_lsit:
+					datalist.append(self.getArticleData(article))
+			return self.send_success(datalist=datalist,nomore=nomore)
+		elif action == "draft":
+			datalist = self.getListData(-1)[0]
+			nomore = self.getListData(-1)[1]
+			return self.send_success(datalist=datalist,nomore=nomore)
 		return self.render("bbs/profile.html")
+
+	def getListData(self,status):
+		page = 0
+		page_size = 10
+		datalist=[]
+		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article)\
+		.filter(models.Article.account_id==self.current_user.id,models.Article.status==status).order_by(models.Article.create_time.desc())
+		if article_list:
+			if page == article_list.count()//page_size:
+				nomore = True
+			article_list = article_list.offset(page*page_size).limit(page_size).all()
+		if article_list:
+			for article in article_list:
+				datalist.append({"id":article[0],"title":article[1],"time":article[2].strftime("%Y/%m/%d %H:%M"),"article":article[3]})
+		return datalist,nomore
+
+	def getArticleData(self,article):
+		data={"id":article.id,"title":article.title,"time":article.create_time.strftime("%Y/%m/%d %H:%M"),\
+			"type":self.article_type(article.classify),"great_num":article.great_num,\
+			"comment_num":article.comment_num}
+		return data
+
+	def getNotice(self,article):
+		data={"id":article[0],"title":article[1],"great_time":article[2].strftime("%H:%M"),\
+			"comment_time":article[3].strftime("%H:%M"),"nickname":article[4],"imgurl":article[5]}
+		return data
+
+	def getChangeList(self,_id,title,_type,info):
+		comment = ""
+		if _type == "comment":
+			comment = info[3]
+		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,\
+		"time":info[2].strftime("%H:%M"),"date":info[2].strftime("%m月 %d日"),"comment":comment}

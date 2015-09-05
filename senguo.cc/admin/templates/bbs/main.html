@@ -5,38 +5,44 @@
 {% block content %}
 <div class="wrap-main group">
     <div class="wrap-right fr">
-        <a href="javascript:;" class="publish-box"></a>
+        <a href="javascript:;" url="/bbs/publish" class="publish-box"></a>
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>热门文章</span></p>
             <ul class="aside-list">
-                <li>
-                    <p class="clip">热门文章名字，热门文章名字来了啊</p>
-                    <div class="wrap-topic-attr">
-                        <div class="fr">
-                            <a href="javascript:;" class="icon-topic viewr">1403</a>
+                {% for topic in handler.getHotArticle%}
+                <li data-id="{{topic['id']}}">
+                    <a href="/bbs/detail/{{topic['id']}}">
+                        <p class="clip c333">{{topic['title']}}</p>
+                        <div class="wrap-topic-attr">
+                            <div class="fr">
+                                <span class="icon-topic viewr">{{topic['scan_num']}}</span>
+                            </div>
+                            <span>{{topic['nickname']}}</span>
                         </div>
-                        <span>大漠孤烟</span>
-                    </div>
+                    </a>
                 </li>
+                {% end %}
             </ul>
         </div>
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>活跃用户</span></p>
             <ul class="aside-list">
+                {% for user in handler.getHotCustomer%}
                 <li>
                     <dl class="dl">
                         <dd>
-                            <img src="/static/images/person.png" alt="用户头像"/>
+                            <img src="{{user['imgurl'] or '/static/images/person.png'}}" alt="用户头像"/>
                         </dd>
                         <dt>
-                            <p class="f14 c333 clip">这是用户名</p>
+                            <p class="f14 c333 clip">{{user['nickname']}}</p>
                             <p class="c999 f12 mt12">
-                                <span class="num-txt">发布:10篇</span>
-                                <span>评论:40条</span>
+                                <span class="num-txt">发布:{{user['article_num']}}篇</span>
+                                <span>评论:{{user['comment_num']}}条</span>
                             </p>
                         </dt>
                     </dl>
                 </li>
+                {% end %}
             </ul>
         </div>
     </div>

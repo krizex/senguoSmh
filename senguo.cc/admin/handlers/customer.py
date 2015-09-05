@@ -808,10 +808,10 @@ class ShopProfile(CustomerBaseHandler):
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
-		satisfy = 0
-		commodity_quality = 0
-		send_speed        = 0
-		satisfy           = 0
+		satisfy = format(1,'.0%')
+		commodity_quality = 1
+		send_speed        = 1
+		shop_service      = 1
 		#是否关注判断
 		follow = True
 		shop_follow =self.session.query(models.CustomerShopFollow).filter_by(customer_id=self.current_user.id, \
@@ -821,7 +821,7 @@ class ShopProfile(CustomerBaseHandler):
 		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
 		if orders:
 			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
 			if q[0][0]:
 				commodity_quality = int(q[0][0])
 			if q[0][1]:
@@ -1024,8 +1024,8 @@ class Comment(CustomerBaseHandler):
 		except:
 			comment_active = 0
 		if orders:
-			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+			q = self.session.query(func.avg(models.Order.commodity_quality),func.avg(models.Order.send_speed),
+				func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
 			if q[0][0]:
 				commodity_quality = int(q[0][0])
 			if q[0][1]:
@@ -1809,7 +1809,13 @@ class Cart(CustomerBaseHandler):
 							break
 
 				###使用优惠券
+
+
+				#fruits[str(charge_type.id)] 该计价方式对应的个数,比如售价2元/3斤的苹果买了1份，此时该值为1
+				#charge_type.num 该计价方式的单位数量，比如售价 2元/3斤，此时charge_type.num为3
+				#charge_type.relate，一份选择单位对应的库存单位的数量，比如库存单位为kg，所选单位为斤，则relate为0.5
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
+				print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
 
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
@@ -1848,10 +1854,11 @@ class Cart(CustomerBaseHandler):
 					self.session.flush()
 
 				charge_type.fruit.storage -= num  # 更新库存
-				if charge_type.fruit.saled:
-					charge_type.fruit.saled += num  # 更新销量
-				else:
-					charge_type.fruit.saled = num
+				#下单时不更新销量，订单完成时才更新
+				# if charge_type.fruit.saled:
+				# 	charge_type.fruit.saled += num  # 更新销量
+				# else:
+				# 	charge_type.fruit.saled = num
 				charge_type.fruit.current_saled += num  # 更新售出
 				if charge_type.fruit.storage < 0:
 					return self.send_fail('“%s”库存不足' % charge_type.fruit.name)
@@ -1992,6 +1999,12 @@ class Cart(CustomerBaseHandler):
 
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
+		# num = '271000358'
+		old_order = self.session.query(models.Order).filter_by(num=num).first()
+		while old_order:
+			num  = str(int(num) + 1)
+			old_order = self.session.query(models.Order).filter_by(num=num).first()
+
 		########################################################################
 		# add default sender
 		# 3.11
@@ -2062,7 +2075,7 @@ class Cart(CustomerBaseHandler):
 
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
 		cart.update(session=self.session, fruits='{}')#清空购物车
-		print('[CustomerCart]Order commit success, order ID:',order.id)
+		print('[CustomerCart]Order commit success, order ID:',order.id,order.num)
 		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
 		if self.args['pay_type'] == 3:
 			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
@@ -2162,15 +2175,17 @@ class Cart(CustomerBaseHandler):
 		if order.status == -1:
 			order.status = 0
 			order.del_reason = "timeout"
-			order.get_num(session,order.id)
+			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
 			fruits = eval(order.fruits)
-			if fruits:
-				ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
-					filter(models.ChargeType.id.in_(fruits.keys())).all()
-				for s in ss:
-					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-					s[0].current_saled -= num
-			session.commit()
+			# if fruits:
+			# 	ss = session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+			# 		filter(models.ChargeType.id.in_(fruits.keys())).all()
+			# 	for s in ss:
+			# 		num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
+			# 		s[0].current_saled -= num
+			# 		s[0].storage       += num
+			# 		print
+			# session.commit()
 
 			# 订单删除，恢复优惠券
 			coupon_key=order.coupon_key
@@ -2359,7 +2374,7 @@ class Order(CustomerBaseHandler):
 			# woody
 			# 3.27
 			session = self.session
-			order.get_num(session,order.id)
+			order.get_num(session,order.id) #当订单取消后，库存增加，销量不变，在售减少
 			########################################################################################
 			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
 			#同时产生一条余额记录
@@ -2367,12 +2382,18 @@ class Order(CustomerBaseHandler):
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
 			fruits = eval(order.fruits)
-			if fruits:
-				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
-					filter(models.ChargeType.id.in_(fruits.keys())).all()
-				for s in ss:
-					num = fruits[s[1].id]["num"]*s[1].unit_num*s[1].num
-					s[0].current_saled -= num
+			# print(fruits)
+			# if fruits:
+			# 	ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).\
+			# 		filter(models.ChargeType.id.in_(fruits.keys())).all()
+			# 	for s in ss:
+
+			# 		num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+			# 		print('before',s[0].current_saled,s[0].storage ,num,fruits[s[1].id]["num"],s[1].relate,s[1].num)
+			# 		s[0].current_saled -= num
+			# 		s[0].storage       += num
+			# 		print('after',s[0].current_saled,s[0].storage ,num)
+			# 	self.session.flush
 			if order.pay_type == 2:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
@@ -2538,7 +2559,10 @@ class Order(CustomerBaseHandler):
 				push.notification = jpush.notification(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
 				push.platform = jpush.all_
 				push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-				push.send()
+				try:
+					push.send()
+				except:
+					print("Jpush Error")
 			###
 
 			return self.send_success(notice=notice)
@@ -2951,9 +2975,6 @@ class payTest(CustomerBaseHandler):
 
 			# code = self.args['code']
 			# path_url = self.request.full_url()
-
-
-
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[WxCharge]customer_id:",customer_id,", shop_id:",shop_id,", totalPrice:",totalPrice)
 			#########################################################
@@ -2966,34 +2987,52 @@ class payTest(CustomerBaseHandler):
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
 				return self.write('success')
+			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
+			if customer:
+				name = customer.accountinfo.nickname
+			else:
+				name = None
+
+			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			if not shop:
+				# return self.send_fail('[WxCharge]shop not found')
+				shop_totalPrice = None
+				shop_province   = None
+				shop_name       = None
+			else:
+				shop.shop_balance += totalPrice
+				self.session.flush()
+
+				shop_totalPrice = shop.shop_balance
+				shop_province=shop.shop_province
+				shop_name=shop.shop_name
+
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
 			# print("[WxCharge]customer_id:",customer_id,", shop_id:",shop_id)
 			if not shop_follow:
-				return self.send_fail('[WxCharge]shop_follow not found')
-			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-			self.session.flush()
-
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			if not shop:
-				return self.send_fail('[WxCharge]shop not found')
-			shop.shop_balance += totalPrice
-			self.session.flush()
-			# print("[WxCharge]shop_balance after charge:",shop.shop_balance)
-
-			# 支付成功后  生成一条余额支付记录
-			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-			if customer:
-				name = customer.accountinfo.nickname
-			#name = self.current_user.accountinfo.nickname
-			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
-				shop_province=shop.shop_province,shop_name=shop.shop_name)
-			self.session.add(balance_history)
-			# print("[WxCharge]balance_history:",balance_history)
-			self.session.commit()
-			
+				# return self.send_fail('[WxCharge]shop_follow not found')
+				balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,
+					balance_value=totalPrice,balance_record = '余额充值(微信)：用户未关注店铺',name=name,balance_type = 0,
+					shop_totalPrice=shop_totalPrice,customer_totalPrice = None,transaction_id=transaction_id,
+					shop_province=shop_province,shop_name=shop_name)
+				self.session.add(balance_history)
+				self.session.commit()
+				# return self.write('success')
+			else:
+				shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+				self.session.flush()
+				# print("[WxCharge]shop_balance after charge:",shop.shop_balance)
+				# 支付成功后  生成一条余额支付记录
+				#name = self.current_user.accountinfo.nickname
+				balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
+					balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name ,name = name,balance_type = 0,
+					shop_totalPrice = shop_totalPrice,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
+					shop_province=shop_province,shop_name=shop_name)
+				self.session.add(balance_history)
+				# print("[WxCharge]balance_history:",balance_history)
+				self.session.commit()
+				
 			# 充值送优惠券
 			self.updatecoupon(customer_id)
 			CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
