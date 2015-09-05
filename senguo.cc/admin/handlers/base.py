@@ -399,7 +399,7 @@ class GlobalBaseHandler(BaseHandler):
 			great_if=True
 		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
-			"comment_num":article[0].comment_num,"great_if":great_if}
+			"comment_num":article[0].comment_num,"great_if":great_if,"admin_if":article[0].if_admin}
 		return data
 
 	# 获取森果社区文章评论
@@ -1357,12 +1357,15 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 
 	@property
 	def getHotArticle(self):
+		datalist = []
 		try:
 			article_list = self.session.query(models.Article.id,models.Article.title,models.Article.scan_num,models.Accountinfo.nickname)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.status==1)\
 				.distinct(models.Article.id).order_by(models.Article.scan_num.desc()).limit(5).all()
 		except:
 			article_list = None
+		for article in article_list:
+			datalist.append({"id":article[0],"title":article[1],"scan_num":article[2],"nickname":article[3]})
 		return article_list
 
 	@property
@@ -1376,7 +1379,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			article_num=self.session.query(models.Article).filter_by(account_id=customer[0]).count()
 			comment_num=self.session.query(models.ArticleComment).filter_by(account_id=customer[0]).count()
 			if article_num !=0 or comment_num !=0 :
-				customer_list.append({"id":customer[0],"nickname":customer[1],"imgurl":customer[2],"article_num":article_num,"comment_num":comment_num})
+				customer_list.append({"nickname":customer[1],"imgurl":customer[2],"article_num":article_num,"comment_num":comment_num})
 		customer_list.sort(key=lambda x:(x["article_num"],x["comment_num"]),reverse=True)
 		customer_list=customer_list[0:5]
 		return customer_list

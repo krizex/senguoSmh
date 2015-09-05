@@ -1717,8 +1717,9 @@ class Article(MapBase, _CommonApi):
 	create_time = Column(DateTime,default = func.now())
 	#9.3
 	public_time = Column(DateTime,default = func.now())
-	no_public = Column(TINYINT,default = 0) #0:发表至论坛 1:不发表至论坛
-	comment_private = Column(TINYINT,default = 0) #0:评论所有人可见 1:评论仅作者可见
+	no_public = Column(Boolean,default = 0) #0:发表至论坛 1:不发表至论坛
+	comment_private = Column(Boolean,default = 0) #0:评论所有人可见 1:评论仅作者可见
+	if_admin = Column(Boolean,default = False) #是否是管理员发布
 
 # 文章评论
 class ArticleComment(MapBase, _CommonApi):
