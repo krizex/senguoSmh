@@ -68,7 +68,7 @@
             <div class="price-item" data-id="{{charge['id']}}">
                 <div class="c666 add-title mt6">
                     <a href="javascript:;" class="del-price fr dgreen mr10" data-id="{{charge['id']}}">删除</a>
-                    <span>售价<span class="price-index">{{index+1}}</span> : <span class="first-num">{{int(charge['unit_num'])}}</span><span class="now-unit">{{charge['unit_name']}}</span>=<span class="second-num">{{int(charge['select_num'])}}</span><span class="stock-unit">{{data['unit_name']}}</span></span>
+                    <span>售价<span class="price-index">{{index+1}}</span> : <span class="first-num">{{float(charge['unit_num'])}}</span><span class="now-unit">{{charge['unit_name']}}</span>=<span class="second-num">{{int(charge['select_num'])}}</span><span class="stock-unit">{{data['unit_name']}}</span></span>
                 </div>
                 <ul class="add-list">
                     <li>

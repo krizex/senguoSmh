@@ -107,7 +107,7 @@ class ShopList(FruitzoneBaseHandler):
 						send_speed = 0
 						shop_service = 0
 						q = self.session.query(func.avg(models.Order.commodity_quality),\
-							func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop.id).all()
+							func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id ,models.Order.status.in_((6,7))).all()
 						if q[0][0]:
 							commodity_quality = int(q[0][0])
 						if q[0][1]:
@@ -981,7 +981,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print("[AliCharge]ali_trade_no:",ali_trade_no)
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
-			return self.send_success()
+			return self.write('success')
 		data = orderId.split('a')
 		totalPrice = float(data[0])/100
 		# shop_id = self.get_cookie('market_shop_id')
@@ -996,38 +996,51 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 同时店铺余额相应增加
 		# 应放在 支付成功的回调里
 		#########################################################
+		customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		if not customer:
+			# return self.send_fail("customer not found")
+			name = '未知'
+		else:
+			name = customer.nickname
+
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			# return self.send_fail('shop not found')
+			shop_province = None
+			shop_name     = None
+			shop_totalPrice=None
+		else:
+			shop.shop_balance += totalPrice
+			self.session.flush()
+
+			shop_province = shop.shop_province
+			shop_name     = shop.shop_name
+			shop_totalPrice=shop.shop_balance
+		# print("[AliCharge]shop_balance after charge:",shop.shop_balance)
 
 		# 支付成功后，用户对应店铺 余额 增1加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		# print("[AliCharge]customer_id:",customer_id,", shop_id:",shop_id)
 		if not shop_follow:
-			return self.send_fail('shop_follow not found')
-		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-		self.session.flush()
-
-		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_fail('shop not found')
-		shop.shop_balance += totalPrice
-
-
-		shop_province = shop.shop_province
-		self.session.flush()
-
-		# print("[AliCharge]shop_balance after charge:",shop.shop_balance)
-		customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
-		if not customer:
-			return self.send_fail("customer not found")
-		name = customer.nickname
-
-		# 支付成功后  生成一条余额支付记录
-		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop.shop_name)
-		self.session.add(balance_history)
-		# print("[AliCharge]balance_history:",balance_history)
-		self.session.commit()
+			# return self.send_fail('shop_follow not found')
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
+				balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户未关注店铺 ' , name = name , balance_type = 0,
+				shop_totalPrice = shop_totalPrice,customer_totalPrice = None,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
+			self.session.add(balance_history)
+			# print("[AliCharge]balance_history:",balance_history)
+			self.session.commit()
+		else:
+			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+			self.session.flush()
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
+				balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
+				shop_totalPrice = shop_totalPrice,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
+			self.session.add(balance_history)
+			# print("[AliCharge]balance_history:",balance_history)
+			self.session.commit()
 
 		self.updatecoupon(customer_id)
 		CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
@@ -1082,6 +1095,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 						return self.send_success(success_message)
 					self.session.commit()
 		self.session.commit()
+		return self.write('success')
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 	def _create_tmporder_url(self, charge_data):
@@ -1164,31 +1178,45 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# 同时店铺余额相应增加
 		# 应放在 支付成功的回调里
 		#########################################################
+		name = self.current_user.accountinfo.nickname
+		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			# return self.send_fail('shop not found')
+			shop_province = None
+			shop_name     = None
+			shop_totalPrice=None
+		else:
+			shop.shop_balance += totalPrice
+			self.session.flush()
 
+			shop_province = shop.shop_province
+			shop_name     = shop.shop_name
+			shop_totalPrice=shop.shop_balance
+		# print("[AliCharge]shop_balance after charge:",shop.shop_balance)
 		# 支付成功后，用户对应店铺 余额 增1加
 		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 			shop_id = shop_id).first()
 		# print("[AliCharge]customer_id:",customer_id,", shop_id:",self.current_user.accountinfo.nickname,shop_id,'没充到别家店铺去吧')
 		if not shop_follow:
-			return self.send_fail('[AliCharge]shop_follow not found')
-		shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-		self.session.flush()
+			# return self.send_fail('[AliCharge]shop_follow not found')
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
+				balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户未关注店铺 ' , name = name , balance_type = 0,
+				shop_totalPrice = shop_totalPrice,customer_totalPrice = None,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
+			self.session.add(balance_history)
+			# print("[AliCharge]balance_history:",balance_history)
+			self.session.commit()
+		else:
+			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+			self.session.flush()
 
-		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_fail('[AliCharge]shop not found')
-		shop.shop_balance += totalPrice
-		self.session.flush()
-		# print("[AliCharge]shop_balance after charge:",shop.shop_balance)
-
-		# 支付成功后  生成一条余额支付记录
-		name = self.current_user.accountinfo.nickname
-		balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop.shop_province,shop_name=shop.shop_name)
-		self.session.add(balance_history)
-		# print("[AliCharge]balance_history:",balance_history)
-		self.session.commit()
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =self.current_user.id ,shop_id = shop_id,\
+				balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
+				shop_totalPrice = shop_totalPrice,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
+			self.session.add(balance_history)
+			# print("[AliCharge]balance_history:",balance_history)
+			self.session.commit()
 
 		self.updatecoupon(customer_id)
 		CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
