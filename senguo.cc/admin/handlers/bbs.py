@@ -8,6 +8,7 @@ import qiniu
 import random
 import base64
 import json
+from collections import OrderedDict
 
 
 class Main(FruitzoneBaseHandler):
@@ -474,9 +475,18 @@ class Profile(FruitzoneBaseHandler):
 			if datalist:
 				if page == len(datalist)//page_size:
 					nomore = True
-				datalist.sort(key=lambda x:x["time"],reverse=True)
+				datalist.sort(key=lambda x:x["wholetime"],reverse=True)
 				datalist = datalist[page*page_size:page*page_size+page_size]
-			return self.send_success(datalist=datalist,nomore=nomore)
+				_datalist = OrderedDict()
+				for data in datalist:
+					_datalist[data["date"]] = []
+					if data["date"] in _datalist:
+						for _data in datalist:
+							if _data["date"]==data["date"]:
+								_datalist[data["date"]].append(_data)
+					else:
+						_datalist[data["date"]]=data	
+			return self.send_success(datalist=_datalist,nomore=nomore)
 		elif action == "collect":
 			article_lsit = self.session.query(models.Article).join(models.ArticleGreat,models.Article.id==models.ArticleGreat.article_id)\
 			.filter(models.Article.status==1,models.ArticleGreat.account_id==self.current_user.id,\
@@ -525,5 +535,5 @@ class Profile(FruitzoneBaseHandler):
 		comment = ""
 		if _type == "comment":
 			comment = info[3]
-		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,\
-		"time":info[2].strftime("%H:%M"),"date":info[2].strftime("%m月 %d日"),"comment":comment}
+		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,"time":info[2].strftime("%H:%M"),\
+		"date":info[2].strftime("%m月 %d日"),"comment":comment,"wholetime":info[2].strftime("%Y-%m-%d %H:%M:%S")}
