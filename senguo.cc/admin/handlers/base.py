@@ -1366,7 +1366,7 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			article_list = None
 		for article in article_list:
 			datalist.append({"id":article[0],"title":article[1],"scan_num":article[2],"nickname":article[3]})
-		return article_list
+		return datalist
 
 	@property
 	def getHotCustomer(self):
