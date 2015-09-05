@@ -60,7 +60,7 @@ class Detail(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments("action:?","page?")
 	def get(self,_id):
 		try:
-			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
+			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.Accountinfo.headimgurl_small)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
 				.filter(models.Article.id==_id,models.Article.status==1,models.Article.public_time<=datetime.datetime.now()).first()
 		except:
@@ -97,10 +97,10 @@ class Detail(FruitzoneBaseHandler):
 		author_if = False
 		if self.current_user and article[0].account_id == self.current_user.id:
 			author_if = True
-		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].create_time,"article":article[0].article,\
-						"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
-						"comment_num":article[0].comment_num,"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
-
+		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].public_time,"article":article[0].article,\
+						"type":self.article_type(article[0].classify),"nickname":article[1],"imgurl":article[3],\
+						"great_num":article[0].great_num,"comment_num":article[0].comment_num,\
+						"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
 		if "action" in self.args and self.args["action"] == "comment":
 			if self.args["page"]==[]:
 				page = 0
@@ -336,7 +336,7 @@ class DetailEdit(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self,_id):
 		try:
-			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id)\
+			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.Accountinfo.headimgurl_small)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).one()
 		except:
 			return self.write("没有该文章的任何信息")
@@ -346,7 +346,8 @@ class DetailEdit(FruitzoneBaseHandler):
 						"type":self.article_type(article[0].classify),"type_id":article[0].classify}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
-		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data)
+		if_admin = self.if_super()
+		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
