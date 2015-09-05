@@ -1707,7 +1707,7 @@ class Cart(CustomerBaseHandler):
 				self_address_list=None
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
+						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list\
 						   ,context=dict(subpage='cart'))
 
