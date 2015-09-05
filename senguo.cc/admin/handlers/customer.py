@@ -259,7 +259,7 @@ class customerGoods(CustomerBaseHandler):
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			# w_follow = False
 			shop.fans_count = shop.fans_count + 1
-			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
@@ -1185,7 +1185,7 @@ class Market(CustomerBaseHandler):
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
 			shop.fans_count = shop.fans_count + 1
-			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
