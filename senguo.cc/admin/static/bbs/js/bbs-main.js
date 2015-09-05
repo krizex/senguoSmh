@@ -1,36 +1,16 @@
-var ueditor = null;
+var ueditor = null,_type = 100,_search=false,key="";
 $(document).ready(function(){
-    $(".menu-list li").on("click",function(){
-        var id = parseInt($(this).attr("data-id"));
-        $('#bbs-menu').text($(this).text());
-        $(".wrap-menu-list").addClass("h0");
-        page=0;
-        _type=id;
-        $('.atical-list').empty();
-        articleList(0);
-    });
-    var link_action=$.getUrlParam("action");
-    if(link_action=="official"){
-        page=0;
-        _type=0;
-        $('#bbs-menu').text('官方公告');
-    }else if(link_action=="update"){
-        page=0;
-        _type=1;
-        $('#bbs-menu').text('产品更新');
-    }else if(link_action=="dry"){
-        page=0;
-        _type=2;
-        $('#bbs-menu').text('运营干货');
-    }else{
-        _type=100;
-    }
     if($(".publish-box-bk").size()>0){//发布
         initEditor();
     }else{
-        articleList(0);
+        articleList(0,true);
         scrollLoading();
     }
+}).on("click",".nav-list a",function(){
+    $(".nav-list a").removeClass("active");
+    $(this).addClass("active");
+    _type = $(this).attr("data-id");
+    articleList(0,true);
 }).on("mouseover",".wrap-choose-type",function(){
     $(".classify_type").show();
 }).on("mouseout",".wrap-choose-type",function(){
@@ -96,6 +76,25 @@ $(document).ready(function(){
     $(this).closest(".time-list").hide();
 }).on("click",".checkbox",function(){
     $(this).toggleClass("checked");
+}).on("keydown","#search_bbs",function(e){
+    if(e.keyCode==13){
+        key = $.trim($("#search_bbs").val());
+        if(key==""){
+            return Tip("请输入关键字");
+        }else{
+            articleSearch(0,key);
+        }
+    }
+}).on("click","#search_btn",function(){
+    key = $.trim($("#search_bbs").val());
+    if(key==""){
+        return Tip("请输入关键字");
+    }else{
+        articleSearch(0,key);
+    }
+}).on("click","#topic_list li",function(){
+    var id = $(this).attr("data-id");
+    window.location.href="/bbs/detail/"+id;
 });
 var finished=true;
 var nomore =false;
@@ -123,14 +122,19 @@ function scrollLoading(){
         if(finished == true &&(main.height()-range) <= totalheight  &&nomore==false ) {
             finished=false;
             page++;
-            articleList(page);
+            if(_search){
+                articleSearch(page,key);
+            }else{
+                articleList(page,false);
+            }
         }
         else if(nomore==true){
             $('.more-btn').html("~ 没有更多了 ~").show();
         }
     });
 }
-function articleList(page){
+function articleList(page,flag){
+    _search=false;
     $.ajax({
         url:'/bbs?page='+page+"&type="+_type,
         type:"get",
@@ -139,7 +143,10 @@ function articleList(page){
                 var datalist=res.datalist;
                 nomore=res.nomore;
                 if(nomore==true){
-                    $('.more-btn').html("~ 没有更多了 ~").show();
+                    $('.more-btn').html("~ 没有更多了 ~");
+                }
+                if(flag==true){
+                    $("#topic_list").empty();
                 }
                 for(var i in datalist){
                         var render = template.compile(item);
@@ -173,6 +180,52 @@ function articleList(page){
             }
         }
     })
+};
+function articleSearch(page,search){
+    _search=true;
+    var url="/bbs/search";
+    var args={page:page,data:search};
+    $.postJson(url,args,function(res){
+        if(res.success){
+            var datalist=res.datalist;
+            nomore=res.nomore;
+            $("#topic_list").empty();
+            if(nomore==true){
+                $('.more-btn').html("~ 没有更多了 ~");
+                if(page==0&&datalist.length==0){
+                    $('.more-btn').html("~ 没有搜索结果 ~");
+                }
+            }
+            for(var i in datalist){
+                var render = template.compile(item);
+                var id=datalist[i]['id'];
+                var title=datalist[i]['title'];
+                var time=datalist[i]['time'];
+                var type=datalist[i]['type'];
+                var nickname=datalist[i]['nickname'];
+                var great_num=datalist[i]['great_num'];
+                var comment_num=datalist[i]['comment_num'];
+                var great_if=datalist[i]['great_if'];
+                if(great_if==true){
+                    great_if='dianzan-active';
+                }
+                var list_item =render({
+                    id:id,
+                    title:title,
+                    time:time,
+                    type:type,
+                    nickname:nickname,
+                    great_num:great_num,
+                    comment_num:comment_num,
+                    great_if:great_if
+                });
+                $("#topic_list").append(list_item);
+            }
+            finished=true;
+        }else{
+            Tip(res.error_text);
+        }
+    });
 };
 function initEditor(){
     ueditor = UM.getEditor('ueditor',{toolbars: [
