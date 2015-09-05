@@ -435,7 +435,7 @@ class Search(FruitzoneBaseHandler):
 # 社区 - 个人中心
 class Profile(FruitzoneBaseHandler):
 	@tornado.web.authenticated
-	@FruitzoneBaseHandler.check_arguments("action:str","page:int")
+	@FruitzoneBaseHandler.check_arguments("action?:str","page?:int")
 	def get(self):
 		page = 0
 		page_size = 10
