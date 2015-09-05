@@ -34,7 +34,7 @@ class Main(FruitzoneBaseHandler):
 				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
 					.filter(models.Article.status>=1,models.Article.no_public==0,models.Article.public_time<=time_now)\
-					.distinct(models.Article.id).order_by(models.Article.create_time.desc())
+					.distinct(models.Article.id).order_by(models.Article.public_time.desc())
 			except:
 				article_lsit = None
 
@@ -299,7 +299,7 @@ class Publish(FruitzoneBaseHandler):
 					status=int(data["type"])
 					if int(data["type"]) == 2:
 						if "publictime" in data and data["publictime"]:
-							public_time = data["public_time"]
+							public_time = data["publictime"]
 							try:
 								if public_time < time_now.strftime("%Y-%m-%d %H:%M:%S"):
 									public_time = time_now
@@ -311,8 +311,6 @@ class Publish(FruitzoneBaseHandler):
 				status = 1
 		else:
 			status=1
-
-		
 		if "private" in data and data["private"]:
 			try:
 				comment_private = int(data["private"])
@@ -388,7 +386,7 @@ class DetailEdit(FruitzoneBaseHandler):
 						return send_fail("该文章不允许保存为草稿")
 					if int(data["type"]) == 2:
 						if "publictime" in data and data["publictime"]:
-							public_time = data["public_time"]
+							public_time = data["publictime"]
 							try:
 								if public_time < time_now.strftime("%Y-%m-%d %H:%M:%S"):
 									public_time = time_now
@@ -396,21 +394,14 @@ class DetailEdit(FruitzoneBaseHandler):
 								public_time = time_now
 						else:
 							public_time=time_now
+					elif int(data["type"]) == 1:
+						public_time=time_now
 					status=int(data["type"])
 			except:
 				status = 1
 		else:
 			status=1
 
-		if "publictime" in data and data["publictime"]:
-			public_time = data["public_time"]
-			try:
-				if public_time < time_now:
-					public_time = time_now
-			except:
-				public_time = time_now
-		else:
-			public_time=time_now
 		if "private" in data and data["private"]:
 			try:
 				comment_private = int(data["private"])
