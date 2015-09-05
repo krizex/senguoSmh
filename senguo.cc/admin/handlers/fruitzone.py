@@ -1161,7 +1161,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		ali_trade_no=self.args["trade_no"]
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
-			return self.redirect(self.reverse_url("customerBalance"))
+			return self.redirect(self.reverse_url("customerBalance")+('?shop_id=%s') % shop_id)
 
 		# print("[AliCharge]order_id:",order_id,"ali_trade_no:",ali_trade_no)
 		data = order_id.split('a')
@@ -1272,4 +1272,4 @@ class SystemPurchase(FruitzoneBaseHandler):
 					self.session.commit()
 		self.session.commit()
 		# return self.send_success(text = 'success')
-		return self.redirect(self.reverse_url("customerBalance"))
+		return self.redirect(self.reverse_url("customerBalance")+('?shop_id=%s') % shop_id)
