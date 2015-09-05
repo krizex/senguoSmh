@@ -448,6 +448,7 @@ class CouponProfile(CustomerBaseHandler):
 	def get(self):
 		current_customer_id=self.current_user.id
 		action=self.args["action"]
+		shop_id = self.args['shop_id']
 		if action=="get_all":
 			current_shop_id=self.get_cookie("market_shop_id")
 			self.updatecoupon(current_customer_id)
@@ -483,20 +484,20 @@ class CouponProfile(CustomerBaseHandler):
 					data.append(x_coupon)
 				else:
 					pass
-			return self.render("coupon/coupon-profile.html",output_data=data)
+			return self.render("coupon/coupon-profile.html",shop_id = shop_id ,output_data=data)
 		elif action=="get_one":
+			market_shop_id=self.args["shop_id"]
 			try:
-				market_shop_id=self.args["shop_id"]
 				shop = self.session.query(models.Shop).filter_by(id=market_shop_id).first()
 				current_shop_id=shop.id
 				self.set_cookie("market_shop_id",str(current_shop_id))
 			except:
-				return self.render("coupon/coupon-profile.html",output_data=[])
+				return self.render("coupon/coupon-profile.html",shop_id = market_shop_id, output_data=[])
 			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]
 			coupon_id=self.args["coupon_id"]
-			x=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0,coupon_id=coupon_id).first()
+			x=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=0,closed=0,coupon_id=coupon_id).first()
 			if x:
 				if  x.to_get_date>now_date:
 					if x.use_goods_group==0:
@@ -524,7 +525,7 @@ class CouponProfile(CustomerBaseHandler):
 						"get_number":x.get_number,"coupon_id":x.coupon_id,"remain_number":x.total_number-x.get_number,"use_goods":use_goods,"from_valid_date":from_valid_date,"to_valid_date":to_valid_date,"last_day":x.last_day,\
 						"from_get_date":from_get_date,"to_get_date":to_get_date}
 					data.append(x_coupon)
-			return self.render("coupon/coupon-profile.html",output_data=data)
+			return self.render("coupon/coupon-profile.html",shop_id=shop_id,output_data=data)
 #优惠券列表		
 class CouponList(CustomerBaseHandler):
 	def getcoupon(self,coupon_status,data):

@@ -437,9 +437,9 @@ class SuperAdmin(MapBase, _AccountApi):
 	accountinfo = relationship(Accountinfo)
 
 	# added by woody
-	level   = Column(Integer,default=0)  #0代表森果内部员工，1代表省级代理
-	province  = Column(Integer)          #如果是省级代理，则该字段表示该省的code
-	purview  = Column(Integer,default=0) #用户能否查看自己所在地区不属于自己推广的店铺数据，1:可以，0:不可以
+	level   = Column(TINYINT,nullable=False,default=0)  #0代表森果内部员工，1代表省级代理
+	province  = Column(Integer,nullable=False,default=0)#如果是省级代理，则该字段表示该省的code
+	purview  = Column(TINYINT,nullable=False,default=0) #用户能否查看自己所在地区不属于自己推广的店铺数据，1:可以，0:不可以
 
 	# added by woody 
 	# 用于储存原始unionid 和openid
@@ -493,12 +493,12 @@ class ShopTemp(MapBase, _CommonApi):
 	shop_city = Column(Integer)
 	shop_address_detail = Column(String(1024), nullable=False)
 	# 是否做实体店
-	have_offline_entity = Column(Integer, default=False)
+	have_offline_entity = Column(TINYINT, nullable=False, default=0)
 	# 店铺介绍
 	shop_intro = Column(String(568))
-	shop_phone=Column(String(32))
-	lat              = Column(MyReal)  #纬度
-	lon              = Column(MyReal)  #经度
+	shop_phone = Column(String(32))
+	lat        = Column(MyReal,nullable=False)  #纬度
+	lon        = Column(MyReal,nullable=False)  #经度
 
 	admin = relationship("ShopAdmin")
 
@@ -515,11 +515,11 @@ class Shop(MapBase, _CommonApi):
 	shop_name = Column(String(128), nullable=False)
 	shop_code = Column(String(128), nullable=False, default="not set")
 	create_date_timestamp = Column(Integer, nullable=False)
-	shop_status = Column(Integer, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
-	shop_auth =Column(Integer,default =0)#0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
-	auth_change=Column(Integer,default =0)#0未认证 1:认证一次 2:认证两次 #yy4.30
+	shop_status = Column(TINYINT,nullable=False, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
+	shop_auth =Column(TINYINT,nullable=False,default =0) #0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
+	auth_change=Column(TINYINT,nullable=False,default =0)#0:未认证 1:认证一次 2:认证两次 #yy4.30
 	# on or off
-	status   = Column(Integer,default = 1) # 0:关闭  1:营业中 2:筹备中 3:休息中
+	status   = Column(TINYINT,nullable=False,default = 1) # 0:关闭  1:营业中 2:筹备中 3:休息中
 
 	admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 	admin = relationship("ShopAdmin")
@@ -528,7 +528,7 @@ class Shop(MapBase, _CommonApi):
 	shop_trademark_url = Column(String(2048))
 
 	# 服务区域，SHOP_SERVICE_AREA
-	shop_service_area = Column(Integer, default=SHOP_SERVICE_AREA.OTHERS)
+	shop_service_area = Column(Integer,nullable=False, default=SHOP_SERVICE_AREA.OTHERS)
 	deliver_area = Column(String(100))  # 配送区域
 
 	# 地址
@@ -536,22 +536,22 @@ class Shop(MapBase, _CommonApi):
 	shop_city = Column(Integer)
 	shop_address_detail = Column(String(1024), nullable=False)
 	shop_sales_range = Column(String(128))
-	lat              = Column(MyReal)  #纬度
-	lon              = Column(MyReal)  #经度
-	area_type = Column(Integer,default=0) #区域类型
+	lat              = Column(MyReal,nullable=False,default=0)  #纬度
+	lon              = Column(MyReal,nullable=False,default=0)  #经度
+	area_type = Column(TINYINT,nullable=False,default=0) #区域类型
 	roundness = Column(String(50)) #圆心
-	area_radius = Column(Integer,default=0) #半径
+	area_radius = Column(Integer,nullable=False,default=0) #半径
 	area_list = Column(String(2048)) #区域数组
 
 	# 是否做实体店
-	have_offline_entity = Column(Integer, default=False)
+	have_offline_entity = Column(TINYINT,nullable=False, default=0)
 
 	alipay_account = Column(String(128)) #提现账户 2015-5-06 yy
 	alipay_account_name  = Column(String(32)) #提现账户认证名 2015-5-06 yy
 
 	###################################################
 	#the phone of shop ,   added by woody
-	shop_phone=Column(String(16))
+	shop_phone=Column(String(32))
 
 	# 店铺介绍
 	shop_intro = Column(String(568))
@@ -581,12 +581,12 @@ class Shop(MapBase, _CommonApi):
 	wx_qr_code = Column(String(1024))
 
 	#店铺  余额 和 冻结 余额
-	shop_balance = Column(Float,default = 0)
-	available_balance= Column(Float,default = 0) # 可提现余额 ，当 订单完成后 钱才会转入其中
+	shop_balance = Column(Float,nullable=False,default = 0)
+	available_balance= Column(Float,nullable=False,default = 0) # 可提现余额 ，当 订单完成后 钱才会转入其中
 
-	is_balance = Column(Integer,default = 0) # shop对应的余额是否有变动
-	old_msg = Column(Integer,default = 0) # 已经浏览过的店铺消息与评价数量
-	order_count = Column(Integer,default = 0) # 店铺已完成订单总数
+	is_balance = Column(TINYINT,nullable=False,default = 0) # shop对应的余额是否有变动
+	old_msg = Column(Integer,nullable=False,default = 0) # 已经浏览过的店铺消息与评价数量
+	order_count = Column(Integer,nullable=False,default = 0) # 店铺已完成订单总数
 	orders = relationship("Order")
 	staffs = relationship("ShopStaff", secondary="hire_link")
 	fruits = relationship("Fruit", order_by="desc(Fruit.priority)")
@@ -594,7 +594,7 @@ class Shop(MapBase, _CommonApi):
 	config = relationship("Config", uselist=False)
 	marketing = relationship("Marketing", uselist=False)
 
-	super_temp_active = Column(Integer,default = 1) #1:超级管理员是否接收微信模版消息, 0:不接收 1:接收#5.26
+	super_temp_active = Column(TINYINT,nullable=False,default = 1) #1:超级管理员是否接收微信模版消息, 0:不接收 1:接收#5.26
 
 	# group_priority = Column(String(50)) #[group.id,group index]
 	#add 6.4pm by jyj
@@ -603,7 +603,7 @@ class Shop(MapBase, _CommonApi):
 	#add 6.5pm by cm
 	shop_property = Column(Float,default = 0,nullable = False)
 
-	shop_tpl = Column(Integer,default = 0) #店铺模版, 0:customer 1:beauty 6.17
+	shop_tpl = Column(TINYINT,nullable=False,default = 0) #店铺模版, 0:customer 1:beauty 6.17
 	spread_member_code = Column(String(30)) #7.27
 
 
@@ -645,7 +645,7 @@ class Shop(MapBase, _CommonApi):
 class ShopAuthenticate(MapBase,_AccountApi):
 	__tablename__ = "shop_auth"
 	id  = Column(Integer,primary_key = True ,nullable = False)
-	shop_type  = Column(Integer) #认证类型 1:个人认证 2:企业认证
+	shop_type  = Column(TINYINT) #认证类型 1:个人认证 2:企业认证
 	company_name = Column(String(128))
 	business_licence = Column(String(2048))
 	realname   = Column(String(16))
@@ -653,11 +653,11 @@ class ShopAuthenticate(MapBase,_AccountApi):
 	handle_img   = Column(String(2048))
 	front_img  = Column(String(2048))
 	behind_img = Column(String(2048))
-	has_done   = Column(Integer,default = 0) # 0:申请中 1:申请成功 2:申请被拒绝
+	has_done   = Column(TINYINT,nullable=False,default = 0) # 0:申请中 1:申请成功 2:申请被拒绝
 	shop_id = Column(Integer,ForeignKey(Shop.id))#yy4.29
 	decline_reason =Column(String(200))#yy4.29
 	shop = relationship('Shop')
-	create_time = Column(DateTime, default=func.now())
+	create_time = Column(DateTime, nullable=False, default=func.now())
 	# code       = Column(Integer)
 
 # 角色：商家，即店铺的管理员
@@ -670,11 +670,11 @@ class ShopAdmin(MapBase, _AccountApi):
 	id = Column(Integer, ForeignKey(Accountinfo.id), primary_key=True, nullable=False)
 	accountinfo = relationship(Accountinfo)
 	# 角色类型，SHOPADMIN_ROLE_TYPE: [SHOP_OWNER, SYSTEM_USER]
-	role = Column(Integer, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
+	role = Column(TINYINT, nullable=False, default=SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
 	# 权限类型，SHOPADMIN_PRIVILEGE: [ALL, ]
-	privileges = Column(Integer, default=SHOPADMIN_PRIVILEGE.NONE)
+	privileges = Column(TINYINT, nullable=False, default=SHOPADMIN_PRIVILEGE.NONE)
 	# 过期时间
-	expire_time = Column(Integer, default=0)
+	expire_time = Column(Integer, nullable=False, default=0)
 	# 系统购买数据
 	system_orders = relationship("SystemOrder", uselist=True)
 
@@ -692,16 +692,16 @@ class ShopAdmin(MapBase, _AccountApi):
 	info = relationship("Info")
 	info_collect = relationship("Info", secondary="info_collect")
 	comment = relationship("Comment")
-	temp_active  = Column(Integer,default = 1) #1:receive the message from wx 0:do not receive #5.25 drop
+	temp_active  = Column(TINYINT,nullable=False,default = 1) #1:receive the message from wx 0:do not receive #5.25 drop
 
 	# mp_openid = Column(Integer(64))     #mobile
-	has_mp  = Column(Integer , default = 0)   # 0:admin has no his mp , 1:shop admin has his mp
+	has_mp  = Column(TINYINT, nullable=False, default = 0)   # 0:admin has no his mp , 1:shop admin has his mp
 	mp_name = Column(String(32))    #公众平台名称
 	mp_appid= Column(String(64))
 	mp_appsecret = Column(String(64))
 
 	# woody 8.25
-	template_id = Column(String(300),default="{}")
+	template_id = Column(String(300),nullable=False,default="{}")
 
 	access_token = Column(String(64))
 	token_creatime = Column(Integer)
@@ -799,14 +799,14 @@ class HireLink(MapBase, _CommonApi):
 
 	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True)
-	work = Column(TINYINT, default=3) #工作类型： 1:JH,2:SH1,3:SH2 9:admin
-	money = Column(Float, default=0)  # 已收货款
+	work = Column(TINYINT,nullable=False, default=3) #工作类型： 1:JH,2:SH1,3:SH2 9:admin
+	money = Column(Float,nullable=False, default=0)  # 已收货款
 	address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
 	address2 = Column(String(200)) #二级
 	remark = Column(String(500))
-	active = Column(TINYINT, default=1)#0:删除 1:上班 2下班
-	default_staff = Column(Integer, default=0)#0: 非默认员工 1：默认员工 35.9
-	temp_active = Column(Integer,default = 0) #1:是否接收微信模版消息 0:不接收 1:接收 #5.26
+	active = Column(TINYINT,nullable=False, default=1)#0:删除 1:上班 2下班
+	default_staff = Column(TINYINT,nullable=False,default=0)#0: 非默认员工 1：默认员工 35.9
+	temp_active = Column(TINYINT,nullable=False,default = 0) #1:是否接收微信模版消息 0:不接收 1:接收 #5.26
 
 # 员工申请表
 class HireForm(MapBase):
@@ -814,10 +814,10 @@ class HireForm(MapBase):
 
 	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	work = Column(TINYINT, default=3)#默认为SH2
+	work = Column(TINYINT,nullable=False, default=3)#默认为SH2
 	intro = Column(String(500))
 	advantage = Column(String(500))
-	status = Column(TINYINT, default=1)#1：申请中，2：通过，3：未通过
+	status = Column(TINYINT,nullable=False, default=1)#1：申请中，2：通过，3：未通过
 	staff = relationship("ShopStaff", uselist=False, join_depth=2)
 	create_time = Column(DateTime, default=func.now()) #5.26
 
@@ -844,16 +844,16 @@ class Customer(MapBase, _AccountApi):
 class Points(MapBase,_CommonApi):
 	__tablename__ = "points"
 	id = Column(Integer,ForeignKey(Customer.id) ,primary_key = True ,nullable = False)
-	signIn_count = Column(Float,default=0)
-	totalPrice = Column(Float,default = 0)
-	follow_count = Column(Float,default = 0)
-	favour_count = Column(Float,default = 0)
-	comment_count = Column(Float,default = 0)
+	signIn_count = Column(Float,nullable=False,default=0)
+	totalPrice = Column(Float,nullable=False,default = 0)
+	follow_count = Column(Float,nullable=False,default = 0)
+	favour_count = Column(Float,nullable=False,default = 0)
+	comment_count = Column(Float,nullable=False,default = 0)
 	# count        = Column(Float,default = 0)
-	totalCount = Column(Float,default = 0)
-	balance_count = Column(Float,default =0)
-	phone_count   = Column(Float,default = 0)
-	address_count = Column(Float,default = 0)
+	totalCount = Column(Float,nullable=False,default = 0)
+	balance_count = Column(Float,nullable=False,default =0)
+	phone_count   = Column(Float,nullable=False,default = 0)
+	address_count = Column(Float,nullable=False,default = 0)
 
 	# def get_count(self,session,id):
 	#     try:
@@ -987,9 +987,9 @@ class PointHistory(MapBase,_CommonApi):
 	customer_id = Column(Integer, ForeignKey(CustomerShopFollow.customer_id), \
 		nullable=False)
 	shop_id = Column(Integer, ForeignKey(CustomerShopFollow.shop_id), nullable=False)
-	point_type =Column(Integer)
-	each_point = Column(Float,default = 0)
-	create_time = Column(DateTime,default=func.now())
+	point_type = Column(TINYINT,nullable=False,default = 0)
+	each_point = Column(Float,nullable=False,default = 0)
+	create_time = Column(DateTime,nullable=False,default=func.now())
 
 class COUNTER_TYPE:
 	SYSTEM_ORDER_COUNTER = 1
@@ -1323,9 +1323,11 @@ class Order(MapBase, _CommonApi):
 
 	coupon_key=Column(String(128))    #优惠券码
 	coupon_money=Column(Float,nullable=False,default=0)  #优惠金额
-	new_totalprice=Column(Float,nullable=False)
+	new_totalprice=Column(Float,nullable=False,default=0)
 
 	self_address_id = Column(Integer,nullable=False,default=0) #自提点id 7.30
+	transaction_id = Column(String(64)) #在线支付，支付宝或微信返回的编码
+
 
 	#当订单取消后，库存增加，销量不变，在售减少
 	def get_num(self,session,order_id):
@@ -1405,7 +1407,7 @@ class Fruit(MapBase, _CommonApi):
 	current_saled = Column(Float,nullable=False, default=0) #售出：未处理
 	saled = Column(Float,nullable=False, default=0) #销量
 	storage = Column(Float,nullable=False,default=0) #库存
-	cart_storage = Column(Float,default = 0)
+	cart_storage = Column(Float,nullable=False,default = 0)
 	favour = Column(Integer,nullable=False, default=0)  # 赞
 	unit = Column(TINYINT,nullable=False,default=4)#库存单位, 1:个 2:斤 3:份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:筐 11:包 12:今天价 13:明天价
 	tag = Column(TINYINT,nullable=False, default=TAG.NULL) #标签
@@ -1413,18 +1415,18 @@ class Fruit(MapBase, _CommonApi):
 	intro = Column(String(100))
 	priority = Column(TINYINT,nullable=False, default=1)
 	limit_num =  Column(Integer,nullable=False, default=0) #max number could buy #5.27
-	add_time = Column(DateTime,nullable=False, default=func.now()) #5.27
+	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
-	group_id =  Column(Integer, default=0) #商品分组, 0:默认分组 -1:推荐分组 >0:自定义分组 #5.27
-	classify  = Column(Integer, default=0)  #:0:水果 1:干果 3:其他
-	temp_mgoods_id =  Column(Integer, default=0)  #to save mgoods_id for temp
+	group_id =  Column(Integer,nullable=False, default=0) #商品分组, 0:默认分组 -1:推荐分组 >0:自定义分组 #5.27
+	classify  = Column(TINYINT,nullable=False, default=0)  #0:水果 1:干果 3:其他
+	temp_mgoods_id =  Column(Integer,nullable=False, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
 
 	# added by jyj 2015-8-19 for seckill and other activity
 	activity_status = Column(TINYINT,default=0)  #0(该商品未参与任何活动),1(参与秒杀活动),2(参与限时折扣),...(等待扩展中)
 	seckill_charge_type = Column(Integer,default=0) #秒杀活动中该商品所使用的计价方式id
 	##
-	buy_limit = Column(Integer, default=0) #0:all 1:only new user 2:only old user 3:only charge user
+	buy_limit = Column(Integer,nullable=False, default=0) #0:all 1:only new user 2:only old user 3:only charge user
 
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
@@ -1462,10 +1464,10 @@ class GoodsGroup(MapBase, _CommonApi):
 	__tablename__ = "goods_group" #5.27 self define
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
-	name =  Column(String(50))
-	status = Column(Integer,default = 1) #0:been deleted 1:normal
+	name =  Column(String(50),nullable=False)
+	status = Column(TINYINT,nullable=False,default = 1) #0:been deleted 1:normal
 	intro = Column(String(100))
-	create_time = Column(DateTime, default=func.now())
+	create_time = Column(DateTime,nullable=False, default=func.now())
 
 # 商品分组优先级
 class GroupPriority(MapBase, _CommonApi):
@@ -1473,8 +1475,8 @@ class GroupPriority(MapBase, _CommonApi):
 	__table_args__ = {"extend_existing": True}
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
-	group_id = Column(Integer)
-	priority = Column(Integer)
+	group_id = Column(Integer, nullable=False, default=0)
+	priority = Column(Integer, nullable=False, default=0)
 
 # 商品限购
 class GoodsLimit(MapBase, _CommonApi):
@@ -1483,7 +1485,7 @@ class GoodsLimit(MapBase, _CommonApi):
 	charge_type_id = Column(Integer, nullable=False)
 	fruit_id   = Column(Integer)
 	customer_id = Column(Integer, ForeignKey(Customer.id), nullable=False)
-	create_time = Column(DateTime, default=func.now())
+	create_time = Column(DateTime,nullable=False, default=func.now())
 	limit_num = Column(Integer)
 	buy_num = Column(Integer)
 	allow_num = Column(Integer)
@@ -1592,22 +1594,21 @@ class SelfAddress(MapBase,_CommonApi):
 	 id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	 config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
 	 address = Column(String(1024), nullable=False)
-	 active = Column(Integer,default = 1) #0:delete 1:on 2:off
-	 if_default = Column(Integer,default = 0) #0:not default 1:default 2:shop_address
-	 lat    = Column(MyReal,default = 0)  #纬度
-	 lon    = Column(MyReal,default = 0)  #经度
-
+	 active = Column(TINYINT,nullable=False,default = 1) #0:delete 1:on 2:off
+	 if_default = Column(TINYINT,nullable=False,default = 0) #0:not default 1:default 2:shop_address
+	 lat    = Column(MyReal,nullable=False,default = 0)  #纬度
+	 lon    = Column(MyReal,nullable=False,default = 0)  #经度
 
 # 店铺营销功能状态
 class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	confess_active = Column(Integer,default = 1) #1:告白墙开启 0:告白墙关闭
-	coupon_active=Column(Integer,default=0)  #0:开启 1:关闭
+	confess_active = Column(TINYINT,nullable=False,default = 1) #1:告白墙开启 0:告白墙关闭
+	coupon_active=Column(TINYINT,nullable=False,default=0)  #0:开启 1:关闭
 	discount_active=Column(Integer,default=1)  #0:开启 1:关闭
 	confess_notice = Column(String(500))
-	confess_type = Column(Integer,default = 1) #1:告白模式 0:非告白模式
-	confess_only = Column(Integer,default = 0) #1:单条发布开启  0:单条发布关闭
+	confess_type = Column(TINYINT,nullable=False,default = 1) #1:告白模式 0:非告白模式
+	confess_only = Column(TINYINT,nullable=False,default = 0) #1:单条发布开启  0:单条发布关闭
 	seckill_active=Column(TINYINT,default=0)  #控制店铺秒杀活动是否开启  0:关闭  1:开启
 
 # 商城首页的公告
@@ -1637,11 +1638,11 @@ class Period(MapBase):
 
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
-	active = Column(TINYINT, default=1)  #1:开启 2：关闭
+	active = Column(TINYINT,nullable=False, default=1)  #1:开启 2：关闭
 	name = Column(String(20))
 	start_time = Column(Time)
 	end_time = Column(Time)
-	config_type = Column(Integer,default = 0) #0:按时达 1:自提 #7.30
+	config_type = Column(Integer,nullable=False,default = 0) #0:按时达 1:自提 #7.30
 
 # 一级地址
 class Address1(MapBase, _CommonApi):
@@ -1942,9 +1943,8 @@ class Jpushinfo(MapBase, _CommonApi):
 	__tablename__="jpush_info"
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	user_id=Column(Integer,nullable=False)
-	user_type=Column(Integer,nullable=False)  #0  admin 1 customer
-	jpush_id=Column(String(128),nullable=False)
-
+	user_type=Column(Integer,nullable=False,default=0)  #0  admin 1 customer
+	jpush_id=Column(String(16),nullable=False)
 
 # 折扣商品
 class DiscountShopGroup(MapBase, _CommonApi):
