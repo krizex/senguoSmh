@@ -24,6 +24,9 @@ $(document).ready(function(){
     }else{
         _type=100;
     }
+    if($(".publish-box-bk").size()>0){//发布
+        initEditor();
+    }
     articleList(0);
     scrollLoading();
 }).on("click",".atical-list li",function(e){
@@ -131,3 +134,14 @@ function articleList(page){
         }
     })
 };
+function initEditor(){
+    var editor = UM.getEditor('ueditor',{toolbars: [
+        ['fullscreen', 'source', 'undo', 'redo'],
+        ['simpleupload', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc']
+    ]});
+    QINIU_TOKEN=$("#token").val();
+    QINIU_BUCKET_DOMAIN="7rf3aw.com2.z0.glb.qiniucdn.com/";
+    /*if($obj.attr("data-text")){
+        editor.body.innerHTML=$obj.attr("data-text");
+    }*/
+}

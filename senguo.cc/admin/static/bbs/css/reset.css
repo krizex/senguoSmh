@@ -66,6 +66,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .c666{color: #666!important;}
 .c999{color: #999!important;}
 .blue-txt{color: #6ba4ef;}
+.dgreen{color: #4ab89e !important;}
 /*背景色*/
 .bg-white{background-color: #fff !important;}
 /*盒模型*/
@@ -81,6 +82,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .mt0{margin-top: 0!important;}
 .mt2{margin-top: 2px;}
 .mt4{margin-top: 4px;}
+.mt6{margin-top: 6px;}
 .mt15{margin-top: 15px;}
 .mt44{margin-top: 44px;}
 .mt10{margin-top: 10px;}
@@ -90,6 +92,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .ml5{margin-left: 5px;}
 .mr10{margin-right: 10px;}
 .mt-100{margin-top: -100px;}
+.mb20{margin-bottom: 20px;}
 /*提示框*/
 .zb-tip{width: 70%;max-width:400px;position: fixed;left: 50%;top: 20%;-webkit-transform:translate(-50%,-50%);z-index:10000;color: #fff;border-radius: 10px;padding: 10px 8px;text-align: center;font-size: 14px;line-height:26px;background-color: rgba(255,105,105,.8);}
 /*页面头部*/

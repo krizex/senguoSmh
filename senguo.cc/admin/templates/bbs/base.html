@@ -30,6 +30,20 @@
                         <img src="/static/images/person.png" alt="张三的头像"/>
                         <span class="name-text ml5">用户名</span>
                     </a>
+                    <ul class="wrap-user-pro">
+                        <li>
+                            <span class="icon-inform icon_psh">我的发布</span>
+                        </li>
+                        <li>
+                            <span class="icon-inform icon_tz">我的通知</span>
+                        </li>
+                        <li>
+                            <span class="icon-inform icon_sc">我的收藏</span>
+                        </li>
+                        <li>
+                            <span class="icon-inform icon_draft">我的草稿</span>
+                        </li>
+                    </ul>
                 </div>
                 <a href="/bbs" class="logo-sg"></a>
                 <div class="wrap-search">
@@ -73,9 +87,29 @@
     <div class="bbs-container">
         {% block content %}{% end %}
     </div>
-{% block js %}
-    <script type="text/javascript" src="/static/bbs/js/zepto.min.js"></script>
-{% end %}
+    <div class="foot" id="footer">
+        <ul class="links ft">
+            <li class="links_item no_extra">
+                <a href="{{reverse_url('OfficialHome')}}" target="_blank">森果官网</a>
+            </li>
+            <li class="links_item">
+                <a href="{{reverse_url('OfficialProduct')}}" target="_blank">产品介绍</a>
+            </li>
+            <li class="links_item">
+                <a href="#">服务协议</a>
+            </li>
+            <li class="links_item">
+                <a href="{{reverse_url('OfficialAbout')}}" target="_blank">关于森果</a>
+            </li>
+            <li class="links_item">
+                <a href="mailto:wolf@senguo.cc">联系邮箱</a>
+            </li>
+            <li class="links_item">
+                <p class="copyright">Copyright © 2014-2015 Senguo.cc. All Rights Reserved.</p>
+            </li>
+        </ul>
+    </div>
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
 <script type="text/javascript" src="/static/js/template.js"></script>
 <script type="text/javascript" src="/static/bbs/js/util.js"></script>
 <script type="text/javascript" src="/static/bbs/js/base.js"></script>
