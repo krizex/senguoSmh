@@ -202,7 +202,7 @@
             <div class="send-address-choose clearfix center-block bg-white box-style">
                 <p class="clearfix">
                     <span class="pull-left text-grey9 font14 m-b5 pl10">支付方式</span>
-                    <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="/customer/recharge" class="a-cz" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">+充值</a></span>
+                    <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="{{reverse_url('customerBalance')}}?shop_id={{shop_id}}" class="a-cz" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">+充值</a></span>
                 </p>
                 <ul id="payType" class="pay_type list-group font12" data-shop="{{shop_status}}">
                    <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-type="wx" data-auth="{{show_balance}}" data-status="{{config.online_on_active}}">

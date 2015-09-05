@@ -10,11 +10,11 @@
         <dd class="fl"><img src="{{shop_logo or '/static/images/TDSG.png'}}?imageView2/1/w/170/h/170" alt="头像"/></dd>
         <dt class="fl group">
             <div class="fl bal-shop">
-                <p class="clip">所在店铺：<span id="shopName">{{shop_name}}</span></p>
+                <p class="clip">所在店铺：<span id="shopName" shop-id="{{shop_id}}">{{shop_name}}</span></p>
                 <p class="clip">当前余额：{{shop_balance}}元</p>
             </div>
             <div class="fr bal-cz">
-                <a class="cz-btn" href="{{reverse_url('customerRecharge')}}">充值</a>
+                <a class="cz-btn" href="{{reverse_url('customerRecharge')}}?shop_id={{shop_id}}">充值</a>
             </div>
         </dt>
     </dl>
