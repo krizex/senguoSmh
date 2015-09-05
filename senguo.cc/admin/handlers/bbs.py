@@ -33,7 +33,7 @@ class Main(FruitzoneBaseHandler):
 			try:
 				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-					.filter(models.Article.status==1,models.Article.no_public==0,models.Article.public_time<=time_now)\
+					.filter(models.Article.status>=1,models.Article.no_public==0,models.Article.public_time<=time_now)\
 					.distinct(models.Article.id).order_by(models.Article.create_time.desc())
 			except:
 				article_lsit = None
@@ -63,7 +63,7 @@ class Detail(FruitzoneBaseHandler):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.Accountinfo.headimgurl_small)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-				.filter(models.Article.id==_id,models.Article.status==1,models.Article.public_time<=datetime.datetime.now()).first()
+				.filter(models.Article.id==_id,models.Article.status>=1,models.Article.public_time<=datetime.datetime.now()).first()
 		except:
 			return self.write("没有该文章的任何信息")
 
@@ -285,6 +285,7 @@ class Publish(FruitzoneBaseHandler):
 		title=data["title"][0:100].replace("script","-/script/-")
 		article=data["article"].replace("script","-/script/-")
 		time_now=datetime.datetime.now()
+		public_time = time_now
 		if "public" in data and data["public"]:
 			try:
 				no_public = int(data["public"])
@@ -294,21 +295,24 @@ class Publish(FruitzoneBaseHandler):
 			no_public=0
 		if "type" in data and data["type"]:
 			try:
-				if int(data["type"]) in [-1,1]:
+				if int(data["type"]) in [-1,1,2]:
 					status=int(data["type"])
+					if int(data["type"]) == 2:
+						if "publictime" in data and data["publictime"]:
+							public_time = data["public_time"]
+							try:
+								if public_time < time_now:
+									public_time = time_now
+							except:
+								public_time = time_now
+						else:
+							public_time=time_now
 			except:
 				status = 1
 		else:
 			status=1
-		if "publictime" in data and data["publictime"]:
-			public_time = data["public_time"]
-			try:
-				if public_time < time_now:
-					public_time = time_now
-			except:
-				public_time = time_now
-		else:
-			public_time=time_now
+
+		
 		if "private" in data and data["private"]:
 			try:
 				comment_private = int(data["private"])
@@ -338,7 +342,7 @@ class DetailEdit(FruitzoneBaseHandler):
 	def get(self,_id):
 		try:
 			article = self.session.query(models.Article,models.Accountinfo.nickname,models.Accountinfo.id,models.Accountinfo.headimgurl_small)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status==1).one()
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.id==_id,models.Article.status!=0).one()
 		except:
 			return self.write("没有该文章的任何信息")
 		if article[0].account_id != self.current_user.id:
@@ -362,7 +366,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		article.classify=int(data["classify"])
 		article.title=data["title"][0:100].replace("script","-/script/-")
 		article.article=data["article"].replace("script","-/script/-")
-		article.time_now=datetime.datetime.now()
+		time_now=datetime.datetime.now()
 		if "public" in data and data["public"]:
 			try:
 				article.no_public = int(data["public"])
@@ -370,17 +374,34 @@ class DetailEdit(FruitzoneBaseHandler):
 				no_public = 0
 		else:
 			no_public=0
-
+		if "public" in data and data["public"]:
+			try:
+				no_public = int(data["public"])
+			except:
+				no_public = 0
+		else:
+			no_public=0
 		if "type" in data and data["type"]:
 			try:
-				if int(data["type"]) in [-1,1]:
+				if int(data["type"]) in [-1,1,2]:
+					if article.status == 1 and int(data["type"]) == -1:
+						return send_fail("该文章不允许保存为草稿")
+					if int(data["type"]) == 2:
+						if "publictime" in data and data["publictime"]:
+							public_time = data["public_time"]
+							try:
+								if public_time < time_now:
+									public_time = time_now
+							except:
+								public_time = time_now
+						else:
+							public_time=time_now
 					status=int(data["type"])
-				if article.status == 1 and int(data["type"]) == -1:
-					return send_fail("该文章不允许保存为草稿")
 			except:
 				status = 1
 		else:
 			status=1
+
 		if "publictime" in data and data["publictime"]:
 			public_time = data["public_time"]
 			try:
