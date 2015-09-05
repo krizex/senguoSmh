@@ -1122,7 +1122,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print("[AliCharge]url:",url)
 
 		authed_url = self._alipay.create_direct_pay_by_user_url(
-			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+ str(customer_id)  + 'a'+ str(int(time.time())),
+			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+ str(customer_id) + 'a'+ str(int(time.time())),
 			subject = 'alipay charge',
 			total_fee = price,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
@@ -1159,15 +1159,15 @@ class SystemPurchase(FruitzoneBaseHandler):
 			return self.send_error(403)
 		order_id=str(self.args["out_trade_no"])
 		ali_trade_no=self.args["trade_no"]
-		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
-		if old_balance_history:
-			return self.redirect(self.reverse_url("customerBalance"))
-
-		# print("[AliCharge]order_id:",order_id,"ali_trade_no:",ali_trade_no)
 		data = order_id.split('a')
 		totalPrice = float(data[0])/100
 		# shop_id = self.get_cookie('market_shop_id')
 		shop_id = int(data[1])
+		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
+		if old_balance_history:
+			return self.redirect(self.reverse_url("customerBalance")+('?shop_id=%s') % shop_id)
+
+		# print("[AliCharge]order_id:",order_id,"ali_trade_no:",ali_trade_no)
 		customer_id = self.current_user.id
 		# print("[AliCharge]totalPrice:",totalPrice,", shop_id:",shop_id,", customer_id:",customer_id)
 		# code = self.args['code']
@@ -1272,4 +1272,4 @@ class SystemPurchase(FruitzoneBaseHandler):
 					self.session.commit()
 		self.session.commit()
 		# return self.send_success(text = 'success')
-		return self.redirect(self.reverse_url("customerBalance"))
+		return self.redirect(self.reverse_url("customerBalance")+('?shop_id=%s') % shop_id)

@@ -42,7 +42,7 @@
             <img class="chbox-img" src="/static/images/coupon_charge.png" alt="充值获取优惠券"/>
             <p class="status-txt mt18">充值即可获得买水果送优惠券机会<br>充多送更多！</p>
         </div>
-        <a href="/customer/recharge" class="go-next mt10">前往充值</a>
+        <a href="{{reverse_url('customerBalance')}}?shop_id={{shop_id}}" class="go-next mt10">前往充值</a>
     </div>
     {% end %}
 </div>

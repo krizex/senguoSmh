@@ -262,7 +262,7 @@ class customerGoods(CustomerBaseHandler):
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			# w_follow = False
 			shop.fans_count = shop.fans_count + 1
-			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
@@ -656,7 +656,7 @@ class Home(CustomerBaseHandler):
 		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,context=dict(subpage='center'))
+			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,shop_id=shop_id,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
@@ -1398,7 +1398,7 @@ class Market(CustomerBaseHandler):
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
 			shop.fans_count = shop.fans_count + 1
-			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
@@ -2223,7 +2223,7 @@ class Cart(CustomerBaseHandler):
 				self_address_list=None
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
+						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list\
 						   ,context=dict(subpage='cart'))
 
@@ -3284,42 +3284,62 @@ class OrderDetail(CustomerBaseHandler):
 # 我的 - 余额详情
 class Balance(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('shop_id')
 	def get(self):
 		customer_id = self.current_user.id
-		shop_id     = self.shop_id
+		# shop_id     = self.shop_id
+		shop_id     = self.args['shop_id']
 		shop_balance= 0
 		history     = []
-		try:
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-			shop_id = shop_id).first()
-		except:
-			print('[CustomerBalance]shop_follow none')
-		try:
-			shop=self.session.query(models.Shop).filter_by(id = shop_id).first()
-		except:
-			print('[CustomerBalance]shop none')
-		if shop:
+		if len(shop_id)==0:
+			return self.send_fail('shop_id empty!!!')
+		shop=self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		else:
 			shop_name=shop.shop_name
 			shop_logo=shop.shop_trademark_url
-		if not shop_follow:
-			print('[CustomerBalance]shop_follow not fount')
+
+		if not self.session.query(models.CustomerShopFollow).filter_by(
+				customer_id=self.current_user.id, shop_id=shop.id).first():
+			w_follow = False
+			shop.fans_count = shop.fans_count + 1
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
+			if shop_follow:
+				if shop_follow.shop_point is not None:
+					shop_follow.shop_point += 10
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add follow point:",now,shop_follow.shop_point)
+				else:
+					shop_follow.shop_point = 10
+			if shop_follow.bing_add_point == 0:
+				if self.current_user.accountinfo.phone != None:
+					shop_follow.shop_point += 10
+					shop_follow.bing_add_point = 1
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add phone point:",now,shop_follow.shop_point,'phone')
+
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,
+			shop_id = shop_id).first()
 		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
 				shop_balance = format(shop_balance,'.2f')
 			else:
 				shop_balance = 0.00
-
-		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name, shop_logo=shop_logo)
+		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name, shop_logo=shop_logo,shop_id=shop_id)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("page:int")
+	@CustomerBaseHandler.check_arguments("page:int","shop_id?")
 	def post(self):
 		page_size = 20
 		page = int(self.args["page"])
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
-		shop_id  = self.shop_id
+		# shop_id  = self.shop_id
+		shop_id    = self.args['shop_id']
+		if not shop_id or len(shop_id)==0:
+			return self.send_fail('shop_id empty !!!!')
 		history   = []
 		data = []
 		pages = 0
@@ -3425,13 +3445,16 @@ class Points(CustomerBaseHandler):
 # 余额充值
 class Recharge(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('code?:str','action?:str')
+	@CustomerBaseHandler.check_arguments('code?:str','action?:str','shop_id')
 	def get(self):
 		code = ''
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
-		current_shop_id=self.get_cookie("market_shop_id")
+		# current_shop_id=self.get_cookie("market_shop_id")
+		current_shop_id = self.args['shop_id']
+		if not current_shop_id or len(current_shop_id)==0:
+			return self.send_fail('shop_id empty !!!')
 		current_customer_id=self.current_user.id
 		self.updatecoupon(current_customer_id)
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).all()
