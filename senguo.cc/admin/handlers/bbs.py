@@ -34,7 +34,7 @@ class Main(FruitzoneBaseHandler):
 				article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 					.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
 					.filter(models.Article.status>=1,models.Article.no_public==0,models.Article.public_time<=time_now)\
-					.distinct(models.Article.id).order_by(models.Article.create_time.desc())
+					.distinct(models.Article.id).order_by(models.Article.public_time.desc())
 			except:
 				article_lsit = None
 
