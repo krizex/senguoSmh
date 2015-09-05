@@ -269,6 +269,19 @@ $(document).ready(function(){
         return noticeBox("当前商品已经卖完啦");
     }
 }).on("click",".seckill-goods",function(){//秒杀
+    var $this=$(this);
+    var parent=$this.closest('.goods_item_item');
+    var buy_limit=parseInt(parent.attr("data-buylimit"));
+    var user_limit=parseInt(parent.attr("data-userlimit"));
+    if(buy_limit!=user_limit&&buy_limit!=0){
+        if(buy_limit==1){
+            return noticeBox("该商品仅限新用户购买");
+        }else if(buy_limit==2){
+            return noticeBox("该商品仅限老用户购买");
+        }else if(buy_limit==3){
+            return noticeBox("该商品仅限充值用户购买");
+        }
+    }
     var id = $(this).attr("data-id");
     var s_goods_id =  $(this).attr("seckill_goods_id");
     window.dataObj.fruits[id]=1;
