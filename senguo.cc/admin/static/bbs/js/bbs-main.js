@@ -56,6 +56,8 @@ $(document).ready(function(){
             Tip(res.error_text);
         }
     });
+}).on("click","#go_publish",function(){
+    
 });
 var finished=true;
 var nomore =false;
