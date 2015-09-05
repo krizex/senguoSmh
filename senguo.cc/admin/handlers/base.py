@@ -1203,7 +1203,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』收到了新的订单，订单编号："+order_id+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-			push.send()
+			try:
+				push.send()
+			except:
+				print("Jpush Error")
 		###
 
 	# 发送订单完成模版消息给用户
@@ -1278,7 +1281,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			push.notification = jpush.notification(alert="您的店铺『"+shop_name+"』有一笔订单被用户取消，订单编号："+order_num+"，点击查看详情", android=android_msg, ios=ios_msg)
 			push.platform = jpush.all_
 			push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-			push.send()
+			try:
+				push.send()
+			except:
+				print("Jpush Error")
 		###
 
 	# 无线打印订单

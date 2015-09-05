@@ -1314,7 +1314,7 @@ class Market(CustomerBaseHandler):
 
 		if len(self.args.get('action')) < 1: 
 			if shop.admin.has_mp:
-				print('[CustomerMarket]login shop.admin.has_mp')
+				# print('[CustomerMarket]login shop.admin.has_mp')
 				appid = shop.admin.mp_appid
 				appsecret = shop.admin.mp_appsecret
 				customer_id = self.current_user.id
@@ -2231,9 +2231,11 @@ class Cart(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int","discount_ids?")
-	def post(self,shop_code):#提交订单
+
+	# 提交订单
+	def post(self,shop_code):
 		# print("[CustomerCart]pay_type:",self.args['pay_type'])
-		#print(self.args)
+		# print(self.args)
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
@@ -2269,7 +2271,7 @@ class Cart(CustomerBaseHandler):
 		elif len(fruits) < 1:
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
-			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
+			return self.send_fail("您的购物篮太满啦！请不要一次性下单超过20种商品")
 
 		# added by jyj 2015-8-26
 		#fruits 为一个字典，形式：{'12647': 2, '12667': 6},表示计价方式和数量的键值对字典；
@@ -2304,7 +2306,6 @@ class Cart(CustomerBaseHandler):
 		#为order表新增字段activity_type，类型为键值对字符串，键是计价方式，值是计价方式对应的活动名称，用于存储该订单中每种计价方式id对应的水果参与的活动名称
 		# 如果值为空字符串，则表示未参与任何活动；如果值为非空，则表示参与了值字符串所表示的活动。
 		activity_name = {0:'',1:'秒杀',2:'折扣'}
-
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:"今天价",13:"明天价"}
 
 		f_d={}
@@ -2363,7 +2364,7 @@ class Cart(CustomerBaseHandler):
 					totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				fruit=charge_type.fruit
 
-
+				# 购买限制
 				buy_limit = fruit.buy_limit
 				userlimit = 0
 				if buy_limit !=0:
@@ -2404,15 +2405,13 @@ class Cart(CustomerBaseHandler):
 							m_price.append(singlemoney)
 							break
 
-				###使用优惠券
-
-
 				#fruits[str(charge_type.id)] 该计价方式对应的个数,比如售价2元/3斤的苹果买了1份，此时该值为1
 				#charge_type.num 该计价方式的单位数量，比如售价 2元/3斤，此时charge_type.num为3
 				#charge_type.relate，一份选择单位对应的库存单位的数量，比如库存单位为kg，所选单位为斤，则relate为0.5
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
-				print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
+				# print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
 
+				# 商品限购
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
 
@@ -2466,7 +2465,7 @@ class Cart(CustomerBaseHandler):
 
 		#如果订单为空，则不能提交
 		if len(f_d) == 0:
-			return self.send_fail("订单内容不能为空，请重新下单！")
+			return self.send_fail("您的订单未能成功保存，请确保网络通畅，重新下单")
 
 		#按时达/立即送 的时间段处理
 		start_time = 0
@@ -2546,8 +2545,7 @@ class Cart(CustomerBaseHandler):
 		else:
 			_order_address = address.address_text
 		
-		##########
-		
+		# 优惠券是否可用的检查
 		if qshop:
 			if qshop.use_goods_group==-2  and qshop.use_goods==-1 and totalPrice>=qshop.use_rule :
 				can_use_coupon=1
@@ -2563,7 +2561,6 @@ class Cart(CustomerBaseHandler):
 						group_money+=m_price[x]
 			if group_money>=qshop.use_rule:
 				can_use_coupon=1
-		 	
 		if can_use_coupon==0 and coupon_key!='None':
 			return self.send_fail("对不起，你使用的优惠券不满足使用条件，请重新选择")
 		if can_use_coupon:
@@ -2596,6 +2593,7 @@ class Cart(CustomerBaseHandler):
 				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
 			self.session.flush()
 
+		# 生成订单号
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
 		# num = '271000358'
@@ -2619,7 +2617,9 @@ class Cart(CustomerBaseHandler):
 			w_SH2_id =default_staff.staff_id
 		else:
 			if w_admin is not None:
-					w_SH2_id = w_admin.admin.id
+				w_SH2_id = w_admin.admin.id
+		
+		# 如果为在线支付订单，则先将订单状态置为 -1（未支付），否则置为 1（已下单）
 		if self.args['pay_type'] == 3:
 			if current_shop.shop_auth == 0:
 				return self.send_fail('当前店铺未认证，在线支付不可用')
@@ -2627,7 +2627,7 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
-
+		# 生成订单
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -2673,7 +2673,8 @@ class Cart(CustomerBaseHandler):
 			self.session.flush()
 		except:
 			return self.send_fail("您的订单提交失败，请保证网络通畅，重新提交")
-		#使用优惠券
+
+		# 订单生成后，优惠券状态更新
 		coupon_key=order.coupon_key
 		if coupon_key!='None':
 			use_date=int(time.time())
@@ -2684,12 +2685,14 @@ class Cart(CustomerBaseHandler):
 			qq.update(self.session,use_number=use_number)
 			self.session.flush()
 
+		# 订单生成后，清空购物车
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
-		cart.update(session=self.session, fruits='{}')#清空购物车
-		print('[CustomerCart]Order commit success, order ID:',order.id,order.num)
-		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
+		cart.update(session=self.session, fruits='{}')
+		# print('[CustomerCart]Order commit success, order.id & order.num:',order.id,order.num)
+
+		# 如果提交订单是在线支付 ，则将订单号存入 cookie，进入支付前的页面
 		if self.args['pay_type'] == 3:
-			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
+			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
@@ -2736,12 +2739,6 @@ class Cart(CustomerBaseHandler):
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
-		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
-			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
-			access_token = self.get_other_accessToken(self.session,shop.admin.id)
-			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
-		else:
-			access_token = None
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -2766,17 +2763,27 @@ class Cart(CustomerBaseHandler):
 			self.session.add(balance_history)
 			self.session.flush()
 		session.commit()
-		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
+
+		# 订单生成全部处理完成后，根据是否有第三方服务号来选择性发送模版消息
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+		else:
+			access_token = None
+
+		# 如果非在线支付订单，则发送模版消息、自动打印订单、订单消息推送给app（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(self.session,order,access_token)			
+			self.send_admin_message(session,order,access_token)
+
 		return True
 
 	@classmethod
 	def order_cancel_auto(self,session,order_id):
-		print("[CustomerCart]Order auto cancel: order ID:",order_id)
+		# print("[CustomerCart]Order auto cancel: order ID:",order_id)
 		order = session.query(models.Order).filter_by(id = order_id).first()
-		print("[CustomerCart]Order auto cancel: order.status:",order.num,order.status)
+		# print("[CustomerCart]Order auto cancel: order.status:",order.num,order.status)
 		if not order:
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
@@ -2837,20 +2844,6 @@ class CartCallback(CustomerBaseHandler):
 class Notice(CustomerBaseHandler):
 	def get(self):
 		return self.render("notice/order-success.html",context=dict(subpage='cart'))
-
-class Wexin(CustomerBaseHandler):
-	@CustomerBaseHandler.check_arguments("action?:str", "url:str")
-	def post(self):
-		if "action" in self.args and not self.args["action"]:
-			# from handlers.base import WxOauth2
-			return WxOauth2.post_template_msg('o5SQ5t_xLVtTysosFBbEgaFjlRSI', '良品铺子', '廖斯敏', '13163263783')
-		noncestr = "".join(random.sample('zyxwvutsrqponmlkjihgfedcba0123456789', 10))
-		timestamp = datetime.datetime.now().timestamp()
-		url = self.args["url"]
-		# print('[CustomerWexin]url:',url)
-
-		return self.send_success(noncestr=noncestr, timestamp=timestamp,
-								 signature=self.signature(noncestr, timestamp, url))
 
 # 我的 - 我的订单
 class Order(CustomerBaseHandler):
@@ -2998,7 +2991,10 @@ class Order(CustomerBaseHandler):
 			# woody
 			# 3.27
 			session = self.session
-			order.get_num(session,order.id) #当订单取消后，库存增加，销量不变，在售减少
+
+			#当订单取消后，库存增加，销量不变，在售减少
+			order.get_num(session,order.id)
+
 			########################################################################################
 			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
 			#同时产生一条余额记录
@@ -3030,8 +3026,7 @@ class Order(CustomerBaseHandler):
 				if not shop:
 					return self.send_fail('[Order]Order cancel: shop not found')
 
-				#将 该订单 对应的 余额记录取出来 ，置为 不可用
-
+				#将 该订单 对应的 余额记录取出来，置为 不可用
 				balance_record = ("%{0}%").format(order.num)
 				# print("[CustomerOrder]balance_record:",balance_record)
 
@@ -3203,7 +3198,10 @@ class Order(CustomerBaseHandler):
 				push.notification = jpush.notification(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
 				push.platform = jpush.all_
 				push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-				push.send()
+				try:
+					push.send()
+				except:
+					print("Jpush Error")
 			###
 
 			return self.send_success(notice=notice)
@@ -3624,7 +3622,7 @@ class payTest(CustomerBaseHandler):
 			# 应放在 支付成功的回调里
 			#########################################################
 			# 支付成功后，用户对应店铺 余额 增加
-			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
+			# 判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
 				return self.write('success')
@@ -3637,7 +3635,7 @@ class payTest(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			if not shop:
 				# return self.send_fail('[WxCharge]shop not found')
-				shop_totalPrice = None
+				shop_totalPrice = 0
 				shop_province   = None
 				shop_name       = None
 			else:
@@ -3654,8 +3652,8 @@ class payTest(CustomerBaseHandler):
 			if not shop_follow:
 				# return self.send_fail('[WxCharge]shop_follow not found')
 				balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,
-					balance_value=totalPrice,balance_record = '余额充值(微信)：用户未关注店铺',name=name,balance_type = 0,
-					shop_totalPrice=shop_totalPrice,customer_totalPrice = None,transaction_id=transaction_id,
+					balance_value=totalPrice,balance_record = '余额充值(微信)失败：用户未关注店铺',name=name,balance_type = 0,
+					shop_totalPrice=shop_totalPrice,customer_totalPrice = 0,transaction_id=transaction_id,
 					shop_province=shop_province,shop_name=shop_name)
 				self.session.add(balance_history)
 				self.session.commit()

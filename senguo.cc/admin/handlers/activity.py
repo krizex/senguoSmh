@@ -672,6 +672,25 @@ class CouponDetail(CustomerBaseHandler):
 					x_coupon={"use_goods_group":use_goods_group,"use_goods":use_goods,"shop_name":shop.shop_name,"effective_time":m_effective_time,"use_rule":qq.use_rule,"coupon_key":mcoupon_key,"coupon_money":qq.coupon_money,"get_date":m_get_date,"uneffective_time":m_uneffective_time,"coupon_status":1}
 					return self.send_success(output_data=x_coupon)
 
+class UserLimit():
+	def getLimit(self,fruit):
+		buy_limit = fruit.buy_limit
+		userlimit = 0
+		if buy_limit !=0:
+			if buy_limit in [1,2]:
+				try:
+					userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
+				except:
+					userlimit = 0
+			elif buy_limit == 3:
+				if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
+				
+				if if_charge:
+					userlimit = 3
+				else:
+					userlimit = 0
+		return buy_limit,userlimit
+
 class CouponCustomer(CustomerBaseHandler):	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_id?:int")
@@ -720,7 +739,7 @@ class CouponCustomer(CustomerBaseHandler):
 			else:
 				return self.send_fail("对不起，这批优惠券已经被抢空了，下次再来哦！")
 #秒杀
-class Seckill(CustomerBaseHandler):
+class Seckill(CustomerBaseHandler,UserLimit):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("activity_id?:int")
 	def get(self,shop_code):
@@ -792,7 +811,6 @@ class Seckill(CustomerBaseHandler):
 			fruits = eval(query.fruits)
 		else:
 			fruits = {}
-
 		return self.render("seckill/seckill.html",output_data=output_data,activity_num=activity_num,shop_code=shop_code,context=dict(seckill_goods_ids=seckill_goods_ids,fruits=fruits))
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","activity_id?:int")
@@ -818,6 +836,9 @@ class Seckill(CustomerBaseHandler):
 				goods_item['is_bought'] = 1
 
 			cur_goods = self.session.query(models.Fruit).filter_by(id = goods.fruit_id).first()
+
+			goods_item['buylimit'] = self.getLimit(cur_goods)[0]
+			goods_item['userlimit'] = self.getLimit(cur_goods)[1]
 			if cur_goods.img_url:
 				goods_item['img_url'] = cur_goods.img_url.split(';')[0]
 			else:
@@ -841,7 +862,7 @@ class Seckill(CustomerBaseHandler):
 		return self.send_success(output_data = output_data)
 
 # 限时折扣
-class Discount(CustomerBaseHandler):
+class Discount(CustomerBaseHandler,UserLimit):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
 	def get(self,shop_code):
@@ -855,7 +876,6 @@ class Discount(CustomerBaseHandler):
 			fruits={}
 			if q_cart:
 				fruits=eval(q_cart.fruits)
-			print(fruits)
 			q=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,status=1).all()
 			data=[]
 			data1=[]
@@ -891,7 +911,9 @@ class Discount(CustomerBaseHandler):
 								img_url = each_frut.img_url.split(';')[0]
 							else:
 								img_url= ""
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url}
+							buylimit = self.getLimit(each_frut)[0]
+							userlimit = self.getLimit(each_frut)[1]
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"buylimit":buylimit,"userlimit":userlimit}
 							data1.append(tmp)
 							chargesingle=[]
 						data0={"end_time":end_time,"group_data":data1}
@@ -915,7 +937,9 @@ class Discount(CustomerBaseHandler):
 								img_url = each_frut.img_url.split(';')[0]
 							else:
 								img_url= ""
-							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url}
+							buylimit = self.getLimit(each_frut)[0]
+							userlimit = self.getLimit(each_frut)[1]
+							tmp={"discount_rate":y.discount_rate,"goods_id":each_frut.id,"goods_name":each_frut.name,"charge_types":chargesingle,"storage":each_frut.storage,"img_url":img_url,"buylimit":buylimit,"userlimit":userlimit}
 							data1.append(tmp)
 							chargesingle=[]
 						data0={"end_time":end_time,"group_data":data1}
@@ -939,7 +963,9 @@ class Discount(CustomerBaseHandler):
 							img_url = fruit.img_url.split(';')[0]
 						else:
 							img_url= ""
-						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage,"img_url":img_url}
+						buylimit = self.getLimit(fruit)[0]
+						userlimit = self.getLimit(fruit)[1]
+						tmp={"discount_rate":y.discount_rate,"goods_id":y.use_goods,"goods_name":fruit.name,"charge_types":chargesingle,"storage":fruit.storage,"img_url":img_url,"buylimit":buylimit,"userlimit":userlimit}
 						data1.append(tmp)
 						chargesingle=[]
 						data0={"end_time":end_time,"group_data":data1}
