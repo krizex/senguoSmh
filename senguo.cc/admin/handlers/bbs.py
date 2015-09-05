@@ -41,7 +41,7 @@ class Main(FruitzoneBaseHandler):
 			if _type<100:
 					article_lsit=article_lsit.filter(models.Article.classify==_type)
 			if article_lsit:
-				if page == article_lsit.count()//page_size:
+				if page >= article_lsit.count()//page_size:
 					nomore = True
 				article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
 				for article in article_lsit:
@@ -118,7 +118,7 @@ class Detail(FruitzoneBaseHandler):
 				comments = None
 
 			if comments:
-				if page == comments.count()//page_size:
+				if page >= comments.count()//page_size:
 					nomore = True
 				comments = comments.offset(page*page_size).limit(page_size).all()
 				for comment in comments:
@@ -426,7 +426,7 @@ class Search(FruitzoneBaseHandler):
 		except:
 			nomore = True
 		if article_lsit:
-			if page == article_lsit.count()//page_size:
+			if page >= article_lsit.count()//page_size:
 				nomore = True
 			article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
 			for article in article_lsit:
@@ -473,7 +473,7 @@ class Profile(FruitzoneBaseHandler):
 						datalist.append(self.getChangeList(_id,title,"comment",info))
 			
 			if datalist:
-				if page == len(datalist)//page_size:
+				if page >= len(datalist)//page_size:
 					nomore = True
 				datalist.sort(key=lambda x:x["wholetime"],reverse=True)
 				datalist = datalist[page*page_size:page*page_size+page_size]
@@ -493,7 +493,7 @@ class Profile(FruitzoneBaseHandler):
 				models.ArticleGreat.collect==1)\
 			.distinct(models.Article.id).order_by(models.Article.create_time.desc())
 			if article_lsit:
-				if page == article_lsit.count()//page_size:
+				if page >= article_lsit.count()//page_size:
 					nomore = True
 				article_lsit = article_lsit.offset(page*page_size).limit(page_size).all()
 				for article in article_lsit:
@@ -512,7 +512,7 @@ class Profile(FruitzoneBaseHandler):
 		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article)\
 		.filter(models.Article.account_id==self.current_user.id,models.Article.status==status).order_by(models.Article.create_time.desc())
 		if article_list:
-			if page == article_list.count()//page_size:
+			if page >= article_list.count()//page_size:
 				nomore = True
 			article_list = article_list.offset(page*page_size).limit(page_size).all()
 		if article_list:
