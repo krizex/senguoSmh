@@ -461,8 +461,8 @@ class Profile(FruitzoneBaseHandler):
 		if "page" in self.args:
 			page = int(self.args["page"])
 		if action == "publish":
-			datalist = self.getListData(1)[0]
-			nomore = self.getListData(1)[1]
+			datalist = self.getListData(1,page)[0]
+			nomore = self.getListData(1,page)[1]
 			return self.send_success(datalist=datalist,nomore=nomore)
 		elif action == "notice":
 			articles=self.session.query(models.Article.id,models.Article.title).filter(models.Article.account_id==self.current_user.id).all()
@@ -512,8 +512,8 @@ class Profile(FruitzoneBaseHandler):
 					datalist.append(self.getArticleData(article))
 			return self.send_success(datalist=datalist,nomore=nomore)
 		elif action == "draft":
-			datalist = self.getListData(-1)[0]
-			nomore = self.getListData(-1)[1]
+			datalist = self.getListData(-1,page)[0]
+			nomore = self.getListData(-1,page)[1]
 			return self.send_success(datalist=datalist,nomore=nomore)
 		return self.render("bbs/profile.html")
 
@@ -536,8 +536,8 @@ class Profile(FruitzoneBaseHandler):
 				record.collect = 0
 				self.session.commit()
 
-	def getListData(self,status):
-		page = 0
+	def getListData(self,status,page):
+		page = page
 		page_size = 10
 		datalist=[]
 		nomore = False
@@ -567,5 +567,9 @@ class Profile(FruitzoneBaseHandler):
 		comment = ""
 		if _type == "comment":
 			comment = info[3]
+		try:
+			date = info[2].strftime("%m月 %d日")
+		except:
+			date = ""
 		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,"time":info[2].strftime("%H:%M"),\
-		"date":info[2].strftime("%m月 %d日"),"comment":comment,"wholetime":info[2].strftime("%Y-%m-%d %H:%M:%S")}
+		"date":date,"comment":comment,"wholetime":info[2].strftime("%Y-%m-%d %H:%M:%S")}
