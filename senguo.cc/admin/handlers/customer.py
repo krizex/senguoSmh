@@ -461,7 +461,7 @@ class customerGoods(CustomerBaseHandler):
 						if seckill_start_time < int(time.time()):
 							has_activity = 0
 							seckill_not_start = 1
-							former_charge_type = self.session.query(modes.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
+							former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
 							unit = self.getUnit(former_charge_type.unit)
 				charge_types.append({'id':former_charge_type.id if seckill_not_start else charge_type.id,'price':round(former_charge_type.price,2) if seckill_not_start else round(charge_type.price*discount_rate/10,2),\
 					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,\
