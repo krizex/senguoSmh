@@ -149,7 +149,7 @@ class CurlClient(object):
         #post提交方式
         if post:
             self.curl.setopt(pycurl.POST, True)
-            self.curl.setopt(pycurl.POSTFIELDS, xml)
+            self.curl.setopt(pycurl.POSTFIELDS, xml.encode('utf-8'))
         buff = StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, buff.write)
 
@@ -379,7 +379,7 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        # print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
+        #print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
         prepay_id = self.result["prepay_id"]
         return prepay_id
 
