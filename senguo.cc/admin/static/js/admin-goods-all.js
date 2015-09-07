@@ -75,7 +75,7 @@ $(document).ready(function(){
 }).on("click",".show-add-img",function(){   //上传图片
     var goods_txt = $(this).closest(".goods-all-item").find(".goods-classify").html();
     var $item = $(this).closest(".item-img-lst").children(".img-bo").clone();
-    getPicture(0);
+    getPicture("goods",0);
     $("#add-img-btn").closest("li").prevAll("li").remove();
     if($item.size()>0){
         $item.css({position:"relative",left:"0",top:"0"});
@@ -402,7 +402,7 @@ $(document).ready(function(){
     curEditor.attr("data-text",editor.body.innerHTML);
     $(".pop-editor").hide();
     editor.body.innerHTML="";
-}).on("click",".pre-page",function(){//上页
+}).on("click",".users-pagination .pre-page",function(){//上页
     if(pn==0){
         return Tip("当前已经是第一页");
     }
@@ -412,7 +412,7 @@ $(document).ready(function(){
     }else{
         getGoodsItem("all",pn);
     }
-}).on("click",".next-page",function(){//下一页
+}).on("click",".users-pagination .next-page",function(){//下一页
     var total = $(".page-total").html();
     if(pn==parseInt(total)-1){
         return Tip("当前已经是最后一页");
@@ -423,7 +423,7 @@ $(document).ready(function(){
     }else{
         getGoodsItem("all",pn);
     }
-}).on("click",".jump-to",function(){
+}).on("click",".users-pagination .jump-to",function(){
     var num = $(this).closest("ul").find(".input-page").val().trim();
     var total = $(".page-total").html();
     if(parseInt(num)!=num || num=="" || parseInt(num)<1 || parseInt(num)>parseInt(total)){
@@ -434,7 +434,7 @@ $(document).ready(function(){
     }else{
         getGoodsItem("all",num-1);
     }
-}).on("keyup",".input-page",function(e){
+}).on("keyup",".users-pagination .input-page",function(e){
     if(e.keyCode==13){
         var num = $(this).closest("ul").find(".input-page").val().trim();
         var total = $(".page-total").html();
@@ -470,38 +470,44 @@ $(document).ready(function(){
     $this.addClass('active').siblings('.buylimit-item').removeClass('active');
 }).on("click","#add-img-box",function(){
     $(".pop-picture-library").show();
+}).on("click",".picture-list li",function(){
+     if($("#item-img-lst").children(".img-bo").size()<5){
+        var src = $(this).find("img").attr("src");
+        var index = $("#item-img-lst").children(".img-bo").size();
+        var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" url="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
+        $("#add-img-box").before(item);
+        //$(this).prev(".img-selected").show();
+        //$(this).addClass("selected-img");
+        if($("#item-img-lst").children(".img-bo").size()==5){
+            $("#item-img-lst").children(".add-img-box").addClass("hidden");
+        }
+    }else{
+        Tip("商品图片最多只能添加5张");
+        $("#item-img-lst").children(".add-img-box").addClass("hidden");
+    }
+    $(".pop-picture-library").hide();
+}).on("click","#upload-picture",function(){
+    $(".pop-picture-library").hide();
+}).on("click",".picture-pre-page",function(){
+    var page_now=parseInt($(".picture-now").text());
+    if(page_now>1){
+        getPicture("goods",page_now-1);
+    }
+}).on("click",".picture-next-page",function(){
+    console.log(23333);
+    var page_now=parseInt($(".picture-now").text());
+    var page_toatal=parseInt($(".picture-total").text());
+    if(page_now+1<=page_toatal){
+        getPicture("goods",page_now+1);
+    }
+}).on("click",".picture-jump-to",function(){
+    var page_toatal=parseInt($(".picture-total").text());
+    var page=parseInt($(".picture-page").val().trim());
+    if(1<=page<=page_toatal){
+        getPicture("goods",page_now+1);
+    }
 });
 
-function getPicture(page){
-     $.ajax({
-        url:'/admin/picture?action=goods&page='+page,
-        type:"get",
-        success:function(res){
-            if(res.success){
-                var data = res.datalist;
-                var total = res.total_page;
-                if(parseInt(page)==0){
-                    $(".picture-total").text(total);
-                }
-                $(".picture-now").text(parseInt(page)+1);
-                $('.picture-list').empty();
-                var item='<li class="img-bo" data-id="{{id}}">'+
-                        '<div class="img-selected">已选</div>'+
-                        '<img src="{{imgurl}}?imageView2/1/w/60/h/60" alt="商品图片"/>'+
-                        '<a class="show-bigimg" data-src="{{imgurl}}?imageView2/1/w/200/h/200" href="javascript:;">预览大图</a>'+
-                    '</li>';
-                for(var key in data){
-                    var render = template.compile(item);
-                    var html = render({
-                        imgurl:data[key]['imgurl'],
-                        id:data[key]['id']
-                    });
-                    $('.picture-list').append(html);
-                }
-            }
-        }
-    });
-}
 //切换单位
 function simpleUnitSwitch(price_unit,cur_unit){
     var unit = curPrice.attr("data-unit");

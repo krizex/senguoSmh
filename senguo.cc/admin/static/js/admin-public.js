@@ -76,6 +76,39 @@ $(document).ready(function(){
     return Tip("您的店铺还未进行认证，此功能暂不可用");
 });
 
+function getPicture(action,page){
+     $.ajax({
+        url:'/admin/picture?action='+action+'&page='+page,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.datalist;
+                var total = res.total_page;
+                if(parseInt(page)==0){
+                    $(".picture-total").text(total);
+                    $(".picture-pre-page").hide();
+                }else{
+                    $(".picture-pre-page").show();
+                }
+                $(".picture-now").text(parseInt(page)+1);
+                $('.picture-list').empty();
+                var item='<li class="img-bo" data-id="{{id}}">'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/80/h/80" alt="商品图片"/>'+
+                    '</li>';
+                for(var key in data){
+                    var render = template.compile(item);
+                    var html = render({
+                        imgurl:data[key]['imgurl'],
+                        id:data[key]['id']
+                    });
+                    $('.picture-list').append(html);
+                }
+            }
+        }
+    });
+}
+
 function stopDefault(e){
     if(e&&e.preventDefault){
         e.preventDefault();
