@@ -78,8 +78,8 @@
             <div class="publish-row mt10">
                 <span>&nbsp;</span>
                 <div class="wrap-type-pli">
-                    <span class="checkbox if_bbs">不发表至论坛</span>
-                    <span class="checkbox ml10 if_my">回帖仅自己可见</span>
+                    <span class="checkbox {% if edit %}{% if article_data['public']==1 %}checked{% end %}{% end %} if_bbs">不发表至论坛</span>
+                    <span class="checkbox ml10 if_my {% if edit %}{% if article_data['private']==1 %}checked{% end %}{% end %}">回帖仅自己可见</span>
                 </div>
             </div>
             <div class="publish-row mt10 publish-btns">
