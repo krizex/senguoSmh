@@ -77,6 +77,40 @@
             </div>
         </div>
     </div>
+    <div class="pop-win pop-picture-library">
+        <div class="wrap-sty-box">
+             <ul class="picture-title wrap-sty">
+                <li class="active">图片库</li>
+                <li>系统默认图片</li>
+            </ul>
+            <div class="p15">
+                <span class="pull-left">点击图片即选中</span>
+                <button id="upload-picture" class="btn bg-green text-white pull-right">本地上传</button>
+            </div>
+             <div class="picture-library">
+               <ul class="group picture-list">
+                    <li class="img-bo">
+                        <div class="img-selected">已选</div>
+                        <img src="" alt="商品图片"/>
+                    </li>
+                </ul>
+                <div class="picture-pagination list-pagination group pull-right mt0">
+                    <ul>
+                        <li><a href="javascript:;" class="page-btn pre-page picture-pre-page">&nbsp;</a></li>
+                        <li>
+                            <span class="picture-now">1</span>/<span class="picture-total">1</span>
+                        </li>
+                        <li><a href="javascript:;" class="page-btn next-page picture-next-page">&nbsp;</a></li>
+                        <li><input class="input-page form-control picture-page" type="text" placeholder="输入页码"></li>
+                        <li><a href="javascript:;" class="jump-to pull-left picture-jump-to">跳转</a></li>
+                    </ul>
+                </div>
+            </div>
+             <div class="wrap-sty">
+                <a href="javascript:;" class="cancel-btn">取消</a>
+            </div>
+        </div>
+    </div>
 {% end %}
 {% block setbottom %}
 <script src="/static/js/plupload/plupload.full.min.js"></script>

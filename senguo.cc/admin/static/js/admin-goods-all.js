@@ -469,10 +469,11 @@ $(document).ready(function(){
     var $this=$(this);
     $this.addClass('active').siblings('.buylimit-item').removeClass('active');
 }).on("click","#add-img-box",function(){
+    pictureType="goods";
     $(".pop-picture-library").show();
 }).on("click",".picture-list li",function(){
      if($("#item-img-lst").children(".img-bo").size()<5){
-        var src = $(this).find("img").attr("src");
+        var src = $(this).find("img").attr("url");
         var index = $("#item-img-lst").children(".img-bo").size();
         var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" url="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
         $("#add-img-box").before(item);
@@ -488,24 +489,6 @@ $(document).ready(function(){
     $(".pop-picture-library").hide();
 }).on("click","#upload-picture",function(){
     $(".pop-picture-library").hide();
-}).on("click",".picture-pre-page",function(){
-    var page_now=parseInt($(".picture-now").text());
-    if(page_now>1){
-        getPicture("goods",page_now-1);
-    }
-}).on("click",".picture-next-page",function(){
-    console.log(23333);
-    var page_now=parseInt($(".picture-now").text());
-    var page_toatal=parseInt($(".picture-total").text());
-    if(page_now+1<=page_toatal){
-        getPicture("goods",page_now+1);
-    }
-}).on("click",".picture-jump-to",function(){
-    var page_toatal=parseInt($(".picture-total").text());
-    var page=parseInt($(".picture-page").val().trim());
-    if(1<=page<=page_toatal){
-        getPicture("goods",page_now+1);
-    }
 });
 
 //切换单位

@@ -2517,6 +2517,9 @@ class Goods(AdminBaseHandler):
 						if val == i:
 							imgurl = img_list[index]
 							img_urls.append(imgurl)
+							picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl).first()
+							if not picture:
+								self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl))
 						args["img_url"] = ";".join(img_urls)  if img_urls else None
 
 			if "priority" in data:
@@ -2633,6 +2636,9 @@ class Goods(AdminBaseHandler):
 							if val == i:
 								imgurl = img_list[index]
 								img_urls.append(imgurl)
+								picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl).first()
+								if not picture:
+									self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl))
 							if img_urls:
 								_img_urls = ";".join(img_urls)
 							else:
@@ -3423,6 +3429,9 @@ class Config(AdminBaseHandler):
 					detail=data["detail"],
 					img_url=img_url)
 				self.current_shop.config.notices.append(notice)
+				picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="notice",img_url=img_url).first()
+				if not picture:
+					self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="notice",img_url=img_url))
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
 				self.current_shop.config.update(session=self.session,
@@ -3455,6 +3464,9 @@ class Config(AdminBaseHandler):
 				notice.summary = data["summary"]
 				notice.detail = data["detail"]
 				notice.img_url=img_url
+				picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="notice",img_url=img_url).first()
+				if not picture:
+					self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="notice",img_url=img_url))
 			self.session.commit()
 		elif action == "edit_recipe_img":
 			return self.send_qiniu_token("receipt", self.current_shop.id)
@@ -4961,7 +4973,7 @@ class GetPicture(AdminBaseHandler):
 		for picture in pictures:
 			datalist.append({"imgurl":picture.img_url,"id":picture.id})
 		if page == 0:
-			total_page = picture_list.count()
+			total_page = picture_list.count()//page_size
 			return self.send_success(datalist=datalist,total_page=total_page)
 		else:
 			return self.send_success(datalist=datalist)

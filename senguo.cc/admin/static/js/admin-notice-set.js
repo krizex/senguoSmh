@@ -1,4 +1,4 @@
-var NoticeEdit;
+var NoticeEdit,imgIndex;
 $(document).ready(function(){
     //添加公告
     $('.add-new-notice').on('click',function(){
@@ -34,15 +34,13 @@ $(document).ready(function(){
     window.onunloadcancel = function(){
         clearTimeout(zb_t);
     }
-}).on("click",".add-new-address1",function(){
-    if(NoticeEdit){
-        return Tip("请先完成正在编辑的公告");
-    }
-    $("#noticeBox").modal("show");
+}).on("click","#upload-add",function(){
+    $(".pop-picture-library").show().attr({"action":"add"});
+    getPicture("notice",0);
     zb_timer = setTimeout(function(){
         var uploader1 = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
-        browse_button: 'upload-add',
+        browse_button: 'upload-picture',
         container: 'wrap-legal-img',
         max_file_size: '4mb',
         filters : {
@@ -91,8 +89,12 @@ $(document).ready(function(){
             }
         }
     });
-    },500);
-    
+},500);
+}).on("click",".add-new-address1",function(){
+    if(NoticeEdit){
+        return Tip("请先完成正在编辑的公告");
+    }
+    $("#noticeBox").modal("show");
 }).on('click','.notice-edit',function(){
     if(NoticeEdit){
         Tip("请先完成正在编辑的公告");
@@ -107,9 +109,14 @@ $(document).ready(function(){
     parent.siblings('.set-list-item').find('.edit-img').attr("id","");
     parent.siblings('.set-list-item').find(".address-show").show().siblings(".address-edit").hide();
       //公告背景添加
+}).on("click","#upload-per",function(){
+    imgIndex=$(this).parents(".set-list-item").index();
+    $(".pop-picture-library").show().attr({"action":"edit"});
+    getPicture("notice",0);
+    var parent=$(this).parents(".set-list-item");
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
-        browse_button: 'upload-per',
+        browse_button: 'upload-picture',
         container: 'wrap-legal-img',
         max_file_size: '4mb',
         filters : {
@@ -160,6 +167,19 @@ $(document).ready(function(){
             }
         }
     });
+}).on("click",".picture-list li",function(){
+    var action=$(".pop-picture-library").attr("action");
+    var img_url=$(this).find("img").attr("url");
+    if(action=="edit"){
+        $(".set-list-item").eq(imgIndex-1).find("img").attr({"src":img_url});
+        $(".set-list-item").eq(imgIndex-1).find(".preview-img").attr({"url":img_url});
+    }else{
+        $("#add-img").attr({"url":img_url,"src":img_url}).removeClass("hide");
+    }
+    
+    $(".pop-picture-library").hide();
+}).on("click","#upload-picture",function(){
+    $(".pop-picture-library").hide();
 });
 function noticeAdd(){
     var url=link;

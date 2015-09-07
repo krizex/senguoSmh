@@ -74,27 +74,72 @@ $(document).ready(function(){
 }).on("click",".no_auth",function(e){
     stopDefault(e);
     return Tip("您的店铺还未进行认证，此功能暂不可用");
+}).on("click",".picture-pre-page",function(){
+    var page_now=parseInt($(".picture-now").text());
+    if(page_now>1){
+        getPicture(pictureType,page_now-1);
+        $(".picture-now").text(parseInt(page_now-1));
+    }
+    $(".picture-next-page").show();
+}).on("click",".picture-next-page",function(){
+    var page_now=parseInt($(".picture-now").text());
+    var page_toatal=parseInt($(".picture-total").text());
+    if(page_toatal==page_now+1){
+        $(".picture-next-page").hide();
+    }
+    if(page_now<=page_toatal){
+        getPicture(pictureType,page_now+1);
+        $(".picture-now").text(parseInt(page_now+1));
+    }
+    console.log(page_toatal);
+     console.log(page_now);
+   
+}).on("click",".picture-jump-to",function(){
+    var page_now=parseInt($(".picture-now").text());
+    var page_toatal=parseInt($(".picture-total").text());
+    var page=parseInt($(".picture-page").val().trim());
+    console.log(page_toatal);
+    console.log(page);
+    console.log(page_toatal==page);
+    if(page_toatal==page){
+        $(".picture-next-page").hide();
+    }else{
+        $(".picture-next-page").show();
+    }
+    if(1<=page<=page_toatal){
+        getPicture(pictureType,page);
+        $(".picture-now").text(parseInt(page));
+    }
+   
+}).on("click",".pop-picture-library .cancel-btn",function(){
+    $(this).closest(".pop-win").hide();
 });
 
+var pictureType="goods";
 function getPicture(action,page){
+    if(page>=1){
+        page=page-1;
+    }
      $.ajax({
         url:'/admin/picture?action='+action+'&page='+page,
         type:"get",
         success:function(res){
             if(res.success){
                 var data = res.datalist;
-                var total = res.total_page;
+                var total = res.total_page+1;
                 if(parseInt(page)==0){
                     $(".picture-total").text(total);
                     $(".picture-pre-page").hide();
                 }else{
                     $(".picture-pre-page").show();
                 }
-                $(".picture-now").text(parseInt(page)+1);
+                if(total==1){
+                    $(".picture-pagination").hide();
+                }
                 $('.picture-list').empty();
                 var item='<li class="img-bo" data-id="{{id}}">'+
                         '<div class="img-selected">已选</div>'+
-                        '<img src="{{imgurl}}?imageView2/1/w/80/h/80" alt="商品图片"/>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/80/h/80" url="{{imgurl}}" alt="商品图片"/>'+
                     '</li>';
                 for(var key in data){
                     var render = template.compile(item);
