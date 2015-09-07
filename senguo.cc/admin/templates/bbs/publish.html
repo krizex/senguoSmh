@@ -53,7 +53,7 @@
                 <span>标题</span>
                 <div class="wrap-choose-type">
                     <i class="i-choose"></i>
-                    <a href="javascript:;" class="choose-type" id="choose_type" data-id="">选择板块</a>
+                    <a href="javascript:;" class="choose-type" id="choose_type" data-id="{% if edit %}{{article_data['type_id']}}{% end %}">{% if edit %}{{article_data['type']}}{% else %}选择版块{% end %}</a>
                     <ul class="type-lst classify_type">
                         <li class="{% if if_admin==False %}hide{% end %}" data-id="0">官方公告</li>
                         <li class="{% if if_admin==False %}hide{% end %}" data-id="1">产品更新</li>
@@ -65,12 +65,14 @@
                         <li data-id="7">用户交流</li>
                     </ul>
                 </div>
-                <input type="text" class="title-ipt article_title" placeholder="请输入标题"/>
+                <input type="text" class="title-ipt article_title" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="请输入标题"/>
             </div>
             <div class="publish-row mt10">
                 <span class="edit-left">内容</span>
                 <div class="wrap-editor">
-                    <script type="text/plain" id="ueditor" style="width:582px;height:400px;"></script>
+                    <script type="text/plain" id="ueditor" style="width:582px;height:400px;">
+                        <p>{% if edit %}{% raw article_data['article'] %}{% end %}</p>
+                    </script>
                 </div>
             </div>
             <div class="publish-row mt10">

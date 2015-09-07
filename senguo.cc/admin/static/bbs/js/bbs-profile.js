@@ -1,24 +1,49 @@
 /**
  * Created by Administrator on 2015/6/11.
  */
-var _type = 0,finished=false,page=0;
+var _type = 0,finished=false,page= 0,switch_flag=false,nomore=false;
 $(document).ready(function(){
+    if($.getUrlParam("id")){
+        _type = parseInt($.getUrlParam("id"));
+        $(".nav-profle li").removeClass("active").eq(_type).addClass("active");
+        if(_type==1){
+            $("#inform_list").removeClass("hide");
+            $("#topic_list").addClass("hide");
+            switch_flag = false;
+        }else{
+            switch_flag = true;
+            $("#inform_list").addClass("hide");
+            $("#topic_list").removeClass("hide");
+        }
+    }
     articleList(0);
     scrollLoading();
 }).on("click",".nav-profle li",function(){
     var index = $(this).index();
     _type = index;
     page=0;
-    articleList(0);
     $(".nav-profle li").removeClass("active").eq(index).addClass("active");
     if(index==1){
         $("#inform_list").removeClass("hide");
         $("#topic_list").addClass("hide");
+        switch_flag = false;
     }else{
+        switch_flag = true;
         $("#inform_list").addClass("hide");
         $("#topic_list").removeClass("hide");
     }
-
+    articleList(0);
+}).on("click",".topic-list li",function(e){
+    var id = $(this).attr("data-id");
+    if($(e.target).hasClass("del_topic")){//删除
+        if(confirm("确认删除？")){
+            delAtical(id);
+        }
+    }else if($(e.target).hasClass("edit_topic")){//编辑
+        window.location.href="/bbs/detailEdit/"+id;
+    }else{//详情
+        window.location.href="/bbs/detial/"+id;
+    }
 });
 function scrollLoading(){
     $(window).scroll(function(){
@@ -34,6 +59,24 @@ function scrollLoading(){
         }
         else if(nomore==true){
             $('.more-btn').html("~ 没有更多了 ~").show();
+        }
+    });
+}
+//删除文章
+function delAtical(id){
+    var url = "/bbs/detail/"+id;
+    var args = {
+        action:"delete",
+        data:{id:id}
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+            Tip("删除成功");
+            setTimeout(function(){
+                window.location.reload(true);
+            },1200);
+        }else{
+            Tip(res.error_text);
         }
     });
 }
@@ -67,9 +110,11 @@ function articleList(page){
                 nomore=res.nomore;
                 if(nomore==true){
                     $('.more-btn').html("~ 没有更多了 ~");
-                }else{
-                    insertProfile(datalist);
                 }
+                if(switch_flag){
+                    $("#topic_list").empty();
+                }
+                insertProfile(datalist);
                 finished=true;
             }
             else {
