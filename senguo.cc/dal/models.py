@@ -1749,6 +1749,7 @@ class ArticleComment(MapBase, _CommonApi):
 	create_time = Column(DateTime,nullable=False,default = func.now())
 	_type = Column(TINYINT,nullable=False,default = 0) #0: 评论  1:回复
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
+	reply_num = Column(Integer,nullable=False,default = 0) #评论回复数
 	if_scan = Column(TINYINT,nullable=False,default = 0) #0:是否浏览
 	status = Column(TINYINT,nullable=False,default = 1) #0:删除 1:正常
 
