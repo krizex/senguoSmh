@@ -468,6 +468,8 @@ $(document).ready(function(){
 }).on("click",".buylimit-item",function(){
     var $this=$(this);
     $this.addClass('active').siblings('.buylimit-item').removeClass('active');
+}).on("click","#add-img-box",function(){
+    $(".pop-picture-library").show();
 });
 
 function getPicture(page){
@@ -1101,7 +1103,7 @@ function insertGoods(data){
 $(document).ready(function(){
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
-        browse_button: 'add-img-btn',
+        browse_button: 'upload-picture',
         container: 'add-img-box',
         max_file_size: '4mb',
         filters : {
