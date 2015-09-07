@@ -140,6 +140,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[WeixinPay]totalPrice:",totalPrice)
+			shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 			unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
 			url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 			unifiedOrder.setParameter("notify_url",url)
@@ -184,6 +185,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		order_num = order.num
 		totalPrice = order.new_totalprice
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
+		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		wxPrice =int(totalPrice * 100)
 		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
