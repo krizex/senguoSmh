@@ -6,6 +6,7 @@
 </style>
 {% end %}
 {% block content %}
+<input type="hidden" value="{{author_if}}" id="author_if"/>
 <div class="wrap-main group">
     <div class="wrap-right fr">
         <div class="aside-box box-border">
@@ -32,6 +33,7 @@
             <h3 class="topic-title">{{article["title"]}}</h3>
             <p class="detail-user mt10">
                 <a href="javascript:;" class="fr" id="store-atical">收藏</a>
+                <a href="javascript:;" class="fr add-great">赞赞</a>
                 <span class="topic-class">{{article["type"]}}</span>
                 <span>
                     <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像" class="detail-img"/>
@@ -51,12 +53,12 @@
             <p class="mt10 publish-row group">
                 <a href="javascript:;" class="fr psh-commit" id="comment">发表评论</a>
                 <span class="c999 wrap-psh-img">
-                    <img src="/static/images/person.png" alt="用户头像"/>
-                    <span>用户名</span>
+                    <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像"/>
+                    <span>{{article["nickname"]}}</span>
                 </span>
             </p>
             <ul class="comment-list" id="comment_list">
-                <li>
+                <!--<li>
                     <dl class="dl">
                         <dd>
                             <img src="/static/images/person.png" alt="用户头像"/>
@@ -75,7 +77,7 @@
                             <a href="javascript:;" class="icon-topic reply comment-reply">回复</a>
                         </div>
                     </div>
-                </li>
+                </li>-->
             </ul>
         </div>
     </div>
@@ -108,5 +110,5 @@
 </div>
 {% end %}
 {% block bottom %}
-<script src="{{static_url('bbs/js/artical-detail.js')}}"></script>
+<script src="{{static_url('bbs/js/bbs-artical-detail.js')}}"></script>
 {% end %}

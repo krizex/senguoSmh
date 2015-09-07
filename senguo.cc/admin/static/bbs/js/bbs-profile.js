@@ -42,7 +42,7 @@ $(document).ready(function(){
     }else if($(e.target).hasClass("edit_topic")){//编辑
         window.location.href="/bbs/detailEdit/"+id;
     }else{//详情
-        window.location.href="/bbs/detial/"+id;
+        window.location.href="/bbs/detail/"+id;
     }
 });
 function scrollLoading(){
