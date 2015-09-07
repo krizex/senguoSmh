@@ -345,8 +345,8 @@ class DetailEdit(FruitzoneBaseHandler):
 			return self.write("没有该文章的任何信息")
 		if article[0].account_id != self.current_user.id:
 			return self.redirect(self.reverse_url("BbsMain"))
-		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,\
-						"type":self.article_type(article[0].classify),"type_id":article[0].classify}
+		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,"type":self.article_type(article[0].classify)\
+		,"type_id":article[0].classify,"public":article[0].no_public,"private":article[0].comment_private}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
