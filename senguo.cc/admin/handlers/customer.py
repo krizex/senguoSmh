@@ -2364,7 +2364,7 @@ class Cart(CustomerBaseHandler):
 					self.session.flush()
 		
 					if discount_flag==1:
-						totalPrice+=singlemoney*(q_price.discount_rate/10)
+						totalPrice += round(singlemoney*(q_price.discount_rate/10),2)
 						discount_rate=q_price.discount_rate/10
 					else:
 						totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
