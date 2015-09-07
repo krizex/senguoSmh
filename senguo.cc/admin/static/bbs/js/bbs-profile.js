@@ -57,6 +57,7 @@ function scrollLoading(){
             finished=false;
             page++;
             articleList(page);
+            switch_flag = false;
         }
         else if(nomore==true){
             $('.more-btn').html("~ 没有更多了 ~").show();
