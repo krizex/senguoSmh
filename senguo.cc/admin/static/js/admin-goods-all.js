@@ -75,6 +75,7 @@ $(document).ready(function(){
 }).on("click",".show-add-img",function(){   //上传图片
     var goods_txt = $(this).closest(".goods-all-item").find(".goods-classify").html();
     var $item = $(this).closest(".item-img-lst").children(".img-bo").clone();
+    getPicture(0);
     $("#add-img-btn").closest("li").prevAll("li").remove();
     if($item.size()>0){
         $item.css({position:"relative",left:"0",top:"0"});
@@ -468,6 +469,37 @@ $(document).ready(function(){
     var $this=$(this);
     $this.addClass('active').siblings('.buylimit-item').removeClass('active');
 });
+
+function getPicture(page){
+     $.ajax({
+        url:'/admin/picture?action=goods&page='+page,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.datalist;
+                var total = res.total_page;
+                if(parseInt(page)==0){
+                    $(".picture-total").text(total);
+                }
+                $(".picture-now").text(parseInt(page)+1);
+                $('.picture-list').empty();
+                var item='<li class="img-bo" data-id="{{id}}">'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/60/h/60" alt="商品图片"/>'+
+                        '<a class="show-bigimg" data-src="{{imgurl}}?imageView2/1/w/200/h/200" href="javascript:;">预览大图</a>'+
+                    '</li>';
+                for(var key in data){
+                    var render = template.compile(item);
+                    var html = render({
+                        imgurl:data[key]['imgurl'],
+                        id:data[key]['id']
+                    });
+                    $('.picture-list').append(html);
+                }
+            }
+        }
+    });
+}
 //切换单位
 function simpleUnitSwitch(price_unit,cur_unit){
     var unit = curPrice.attr("data-unit");

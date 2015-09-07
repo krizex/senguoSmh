@@ -4951,7 +4951,7 @@ class GetPicture(AdminBaseHandler):
 		action = self.args["action"]
 		page = int(self.args["page"])
 		datalist = []
-		page_size = 10
+		page_size = 12
 		if not action:
 			return self.send_fail("no action")
 		if not page:
