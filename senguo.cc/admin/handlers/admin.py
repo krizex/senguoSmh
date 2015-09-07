@@ -6221,7 +6221,7 @@ class MarketingSeckill(AdminBaseHandler):
 				seckill_goods = self.session.query(models.SeckillGoods).filter_by(id=seckill_goods_id).with_lockmode("update").first()
 				seckill_goods.status = 0
 
-				sec_fruit = self.session.query(models.Fruit).filter_by(id = fruit_id).with_lockmode('update').first()
+				sec_fruit = self.session.query(models.Fruit).filter_by(id = seckill_goods.fruit_id).with_lockmode('update').first()
 				sec_fruit.activity_status = 0
 				sec_fruit.seckill_charge_type = 0
 
@@ -6350,6 +6350,7 @@ class MarketingSeckill(AdminBaseHandler):
 			return self.send_success(page_sum = page_sum)
 		elif action == 'check_fruit':
 			data = self.args['data']
+			cur_activity_id = int(self.args['activity_id'])
 			choose_start_time = str(data['choose_start_time'])
 			choose_start_time = int(time.mktime(time.strptime(choose_start_time,'%Y-%m-%d %H:%M:%S')))
 			choose_continue_time = int(data['choose_continue_time'])
@@ -6357,11 +6358,11 @@ class MarketingSeckill(AdminBaseHandler):
 			choose_fruit_id = int(data['choose_fruit_id'])
 			goods_name = data['goods_name']
 
-			cur_fruit_activity_status = self.session.query(models.Fruit).filter_by(id = choose_fruit_id).first()
-			if cur_fruit_activity_status:
-				cur_fruit_activity_status = cur_fruit_activity_status.activity_status
-				if cur_fruit_activity_status != 0:
-					return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
+			# cur_fruit_activity_status = self.session.query(models.Fruit).filter_by(id = choose_fruit_id).first()
+			# if cur_fruit_activity_status:
+			# 	cur_fruit_activity_status = cur_fruit_activity_status.activity_status
+			# 	if cur_fruit_activity_status != 0:
+			# 		return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			if not self.judge_discount(choose_fruit_id,choose_start_time,choose_end_time):
 				return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
@@ -6375,6 +6376,7 @@ class MarketingSeckill(AdminBaseHandler):
 			if not cur_activity_list:
 				flag = 1
 			else:
+				cur_activity_list = [x for x in cur_activity_list if x != cur_activity_id]
 				fruit_query = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id.in_(cur_activity_list)).all()
 				for item in fruit_query:
 					if item.fruit_id == choose_fruit_id:

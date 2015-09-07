@@ -564,12 +564,12 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
-    if(!$(".cur-goods-group").attr("data-id")){
+    if(!$(".cur-goods-group").attr("data-id") && !$(".cur-goods-group").hasClass("clone-flag")){
         Tip('请选择商品分组！');
         create_seckill_lock = "off";
         return false;
     }
-    if(!$(".cur-goods").attr("data-id")){
+    if(!$(".cur-goods").attr("data-id") && !$(".cur-goods").hasClass("clone-flag")){
         Tip('请选择商品名称！');
         create_seckill_lock = "off";
         return false;
@@ -603,9 +603,14 @@ function createSeckill(action){
 			choose_fruit_id:choose_fruit_id,
 			goods_name:goods_name
 		};
+		var activity_id = 0;
+		if ($.getUrlParam("activity_id")){
+			activity_id = $.getUrlParam("activity_id")
+		}
 		var args = {
 			data:data,
-			action:'check_fruit'
+			action:'check_fruit',
+			activity_id:activity_id
 		};
 
 		$.ajaxSetup({

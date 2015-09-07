@@ -351,6 +351,8 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			charge_type_activity_type = [-2,0,2]
 		seckill_former_charge_type_id = []
+		charge={}
+		charge['is_seckill'] = 0
 		good_charge_type = good.charge_types
 		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
 		for charge_type in good_charge_type:
@@ -437,7 +439,9 @@ class customerGoods(CustomerBaseHandler):
 				if has_discount_activity == 0:
 					self.update_seckill()
 					if charge_type.activity_type == 1:
+
 						is_seckill = 1
+						charge['is_seckill'] = 1
 						has_activity = 1
 						seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).first()
 						seckill_former_charge_type_id.append(seckill_goods.charge_type_id)
@@ -458,7 +462,7 @@ class customerGoods(CustomerBaseHandler):
 						if seckill_goods.activity_piece - seckill_goods.ordered > 0:
 							seckill_activity_piece= seckill_goods.activity_piece - seckill_goods.ordered
 
-						if seckill_start_time < int(time.time()):
+						if seckill_start_time > int(time.time()):
 							has_activity = 0
 							seckill_not_start = 1
 							former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
@@ -508,8 +512,9 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
+		
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
-								seckill_goods_ids=seckill_goods_ids)
+								seckill_goods_ids=seckill_goods_ids,charge=charge)
 
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
