@@ -36,8 +36,8 @@
             <textarea class="notice_summary">{{notice.summary}}</textarea>
         </td>
         <td class="col-lg-4 address-show">
-            <p>链接：<span class="link"><a class="con" href="{{notice.link or ''}}" target="_blank">{% if notice.link %}{{notice.link.strip() or ''}}{% end %}</a>{%if notice.click_type==1 %} √{% end %}</span></p>
-            <p>详情：<span class="detail"><span class="con">{% if notice.detail %}{{notice.detail.strip() or '无'}}{% else %}无{% end %}</span>{%if notice.click_type==0 %} √{% end %}</span></p>
+            <p>链接：<span class="link"><a class="con" href="{{notice.link or ''}}" target="_blank">{% if notice.link %}{{notice.link.strip() or ''}}{% end %}</a>{%if notice.click_type==1 %}&nbsp;&nbsp;√{% end %}</span></p>
+            <p>详情：<span class="detail"><span class="con">{% if notice.detail %}{{notice.detail.strip() or '无'}}{% else %}无{% end %}</span>{%if notice.click_type==0 %}&nbsp;&nbsp;√{% end %}</span></p>
         </td>
         <td class="col-lg-4 address-edit" style="display:none;">
             <div class="href_type {%if notice.click_type==1 %}active{% end %}" data-id="1"><span class="pull-left">链接：</span><input class="notice_link ml10" value="{{notice.link}}"></div>
