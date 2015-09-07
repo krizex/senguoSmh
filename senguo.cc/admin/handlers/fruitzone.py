@@ -1122,7 +1122,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print("[AliCharge]url:",url)
 
 		authed_url = self._alipay.create_direct_pay_by_user_url(
-			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+ str(customer_id)  + 'a'+ str(int(time.time())),
+			out_trade_no= str(price*100) +'a'+str(shop_id)+'a'+ str(customer_id) + 'a'+ str(int(time.time())),
 			subject = 'alipay charge',
 			total_fee = price,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,

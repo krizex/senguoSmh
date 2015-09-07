@@ -140,8 +140,8 @@ class OnlineWxPay(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[WeixinPay]totalPrice:",totalPrice)
+			unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
 			url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
-			unifiedOrder.setParameter("body",str(order_num))
 			unifiedOrder.setParameter("notify_url",url)
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
@@ -187,7 +187,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		wxPrice =int(totalPrice * 100)
 		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",str(order_num))
+		unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
 		unifiedOrder.setParameter("notify_url",url)
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
@@ -240,7 +240,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				# return self.send_fail('order not found')
 				#如果没找到订单，也要生成一条余额记录
 				#因为customer_id和shop_id 是外键，不能为空，所以给它们赋一个特定的值
-				balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(微信)异常：空订单',
+				balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(微信)异常：空订单'+order_num,
 					balance_type=3,transaction_id = transaction_id)
 				self.session.add(balance_history)
 				self.session.commit()
@@ -251,20 +251,22 @@ class OnlineWxPay(CustomerBaseHandler):
 			shop_id     = order.shop_id
 			totalPrice  = order.new_totalprice
 
-			order.status = 1  #修改订单状态
-			order.transaction_id = transaction_id 
-			self.session.flush()
-			print("[WeixinPay]Callback order_num:",order_num,"change order.status to:",order.status)
-
 			create_date = order.create_date.timestamp()
 			now         = datetime.datetime.now().timestamp()
 			time_difference = now - create_date
 			if time_difference > 60 * 60 * 24 * 7:
 				balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
-					balance_record='在线支付（微信）异常：一星期以前的订单，很可能是线下测试回调到线上的',transaction_id=transaction_id)
+					balance_record='在线支付(微信)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
 				self.session.add(balance_history)
 				self.session.commit()
+				print("[WeixinPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 				return self.write('success')
+
+			order.status = 1  #修改订单状态
+			order.transaction_id = transaction_id 
+			self.session.flush()
+			print("[WeixinPay]Callback order_num:",order_num,"change order.status to:",order.status)
+
 			# 修改店铺总余额
 			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
 			# if not shop:
@@ -514,9 +516,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# order = models.Order.get_by_id(self.session,orderId)
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
-			balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=total_fee,balance_record='在线支付（支付宝）异常：空订单',
-				transaction_id = ali_trade_no)
-			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单',
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单'+order_num,
 				balance_type=3,transaction_id = transaction_id)
 			self.session.add(balance_history)
 			self.session.commit()
@@ -533,19 +533,20 @@ class OnlineAliPay(CustomerBaseHandler):
 		shop_id     = order.shop_id
 		totalPrice  = order.new_totalprice
 
-		order.status = 1  #修改订单状态
-		order.transaction_id = ali_trade_no
-		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
-
 		create_date = order.create_date.timestamp()
 		now         = datetime.datetime.now().timestamp()
 		time_difference = now - create_date
 		if time_difference > 60 * 60 * 24 * 7:
 			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
-				balance_record='在线支付（支付宝）异常：一星期以前的订单，很可能是线下测试回调到线上的',transaction_id=transaction_id)
+				balance_record='在线支付(支付宝)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			self.session.commit()
+			print("[AliPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return self.write('success')
+
+		order.status = 1  #修改订单状态
+		order.transaction_id = ali_trade_no
+		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
 
 		# 修改店铺总余额
 		# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
@@ -611,8 +612,8 @@ class OnlineAliPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
-			balance_history = models.BalanceHistory(customer_id=1,shop_id=3,balance_value=0,balance_record='在线支付（微信）异常：空订单',
-				transaction_id = ali_trade_no)
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=0,balance_record='在线支付(支付宝)异常：空订单'+order_num,
+				balance_type=3,transaction_id = ali_trade_no)
 			self.session.add(balance_history)
 			self.session.commit()
 			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -628,19 +629,20 @@ class OnlineAliPay(CustomerBaseHandler):
 		shop_id     = order.shop_id
 		totalPrice  = order.new_totalprice
 
-		order.status = 1  #修改订单状态
-		order.transaction_id = ali_trade_no
-		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
-
 		create_date = order.create_date.timestamp()
 		now         = datetime.datetime.now().timestamp()
 		time_difference = now - create_date
 		if time_difference > 60 * 60 * 24 * 7:
 			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
-				balance_record='在线支付（支付宝）异常：一星期以前的订单，很可能是线下测试回调到线上的',transaction_id=transaction_id)
+				balance_record='在线支付(支付宝)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
 			self.session.add(balance_history)
 			self.session.commit()
+			print("[AliPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			return self.write('success')
+
+		order.status = 1  #修改订单状态
+		order.transaction_id = ali_trade_no
+		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
 
 		# 修改店铺总余额
 		# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()

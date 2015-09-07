@@ -126,6 +126,7 @@ handlers = [
 	(r"/customer/recharge/AliPay", handlers.customer.RechargeAliPay, {}, "customerRechargeAliPay"),
 	(r"/customer/search", handlers.customer.GoodsSearch, {}, "customerGoodsSearch"),
 	(r"/notice/success", handlers.customer.Notice, {}, "noticeSuccess"),
+	(r"/wexin", handlers.customer.Wexin, {}, "Wexin"),
 	(r"/customer/phoneVerify", handlers.fruitzone.PhoneVerify, {
 		"action":"customer"}, "customerPhoneVerify"),
 	(r"/customer/onlinewxpay",handlers.onlinePay.OnlineWxPay,{},"onlineWxPay"),
