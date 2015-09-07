@@ -1919,7 +1919,7 @@ class CouponsShop(MapBase, _CommonApi):
  	start_day=Column(Integer)
  	last_day=Column(Integer)
  	get_limit=Column(Integer)
- 	closed=Column(Integer,nullable=False,default=0)
+ 	closed=Column(TINYINT,nullable=False,default=0)
  	get_rule=Column(Float,nullable=False,default=0)
  	create_date=Column(Integer)
  		 	
