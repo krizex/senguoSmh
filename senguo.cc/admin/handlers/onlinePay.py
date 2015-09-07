@@ -24,11 +24,37 @@ class QrWxpay(CustomerBaseHandler):
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
 
-# class RefundWxpay(CustomerBaseHandler):
-# 	@tornado.web.authenticated
-# 	def get(self):
-# 		refund_pub = Refund_pub()
-# 		refund_pub.setParameter('')
+class RefundWxpay(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		pass
+
+	@CustomerBaseHandler.check_arguments('order_id?:str')
+	def post(self):
+			# def wx_refund_pub(self,order_id):
+		order_id = self.args['order_id']
+		if len(order_id) == 0:
+			return self.send_fail('order_id error')
+		order = self.session.query(models.Order).filter_by
+
+		refund_pub = Refund_pub()
+		refund_pub.setParameter("out_trade_no",transaction_id)
+		refund_pub.setParameter("out_refund_no",transaction_id)
+		refund_pub.setParameter("total_fee",totalPrice)
+		refund_pub.setParameter('refund_fee',totalPrice)
+		refund_pub.setParameter('op_user_id','1223121101')
+		res = refund_pub.postXml()
+		if isinstance(res,bytes):
+			bianma = chardet.detect(res)['encoding']
+			res    = res.decode(bianma)
+		else:
+			print("[weixin Refund_pub] endong error")
+		res_dict = refund_pub.xmlToArray(res)
+		return_code = res_dict.get('return_code',None)
+		if return_code == 'success':
+			return True
+		else:
+			return False
 
 
 
@@ -112,8 +138,9 @@ class OnlineWxPay(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[WeixinPay]totalPrice:",totalPrice)
-			unifiedOrder.setParameter("body",str(order_num))
-			unifiedOrder.setParameter("notify_url",'http://auth.senguo.cc/customer/onlinewxpay')
+			unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
+			url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
+			unifiedOrder.setParameter("notify_url",url)
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
 			# orderPriceSplite = (order.price) * 100
@@ -156,9 +183,10 @@ class OnlineWxPay(CustomerBaseHandler):
 		totalPrice = order.new_totalprice
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
 		wxPrice =int(totalPrice * 100)
+		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",str(order_num))
-		unifiedOrder.setParameter("notify_url",'http://auth.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
+		unifiedOrder.setParameter("notify_url",url)
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
@@ -174,9 +202,6 @@ class OnlineWxPay(CustomerBaseHandler):
 		else:
 			qr_url = ""
 		return qr_url
-
-	def refund_pub(self,order_id):
-		pass
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
@@ -213,7 +238,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				# return self.send_fail('order not found')
 				#如果没找到订单，也要生成一条余额记录
 				#因为customer_id和shop_id 是外键，不能为空，所以给它们赋一个特定的值
-				balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(微信)异常：空订单',
+				balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(微信)异常：空订单'+order_num,
 					balance_type=3,transaction_id = transaction_id)
 				self.session.add(balance_history)
 				self.session.commit()
@@ -224,7 +249,20 @@ class OnlineWxPay(CustomerBaseHandler):
 			shop_id     = order.shop_id
 			totalPrice  = order.new_totalprice
 
+			create_date = order.create_date.timestamp()
+			now         = datetime.datetime.now().timestamp()
+			time_difference = now - create_date
+			if time_difference > 60 * 60 * 24 * 7:
+				balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+					balance_record='在线支付(微信)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
+				self.session.add(balance_history)
+				self.session.commit()
+				print("[WeixinPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+				return self.write('success')
+
 			order.status = 1  #修改订单状态
+			order.transaction_id = transaction_id 
+			self.session.flush()
 			print("[WeixinPay]Callback order_num:",order_num,"change order.status to:",order.status)
 
 			# 修改店铺总余额
@@ -305,9 +343,10 @@ class wxpayCallBack(CustomerBaseHandler):
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
 		wxPrice =int(totalPrice * 100)
+		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",str(order_num))
-		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("notify_url",url)
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
@@ -493,7 +532,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		# order = models.Order.get_by_id(self.session,orderId)
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
-			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单',
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单'+order_num,
 				balance_type=3,transaction_id = transaction_id)
 			self.session.add(balance_history)
 			self.session.commit()
@@ -510,7 +549,19 @@ class OnlineAliPay(CustomerBaseHandler):
 		shop_id     = order.shop_id
 		totalPrice  = order.new_totalprice
 
+		create_date = order.create_date.timestamp()
+		now         = datetime.datetime.now().timestamp()
+		time_difference = now - create_date
+		if time_difference > 60 * 60 * 24 * 7:
+			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+				balance_record='在线支付(支付宝)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
+			self.session.add(balance_history)
+			self.session.commit()
+			print("[AliPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return self.write('success')
+
 		order.status = 1  #修改订单状态
+		order.transaction_id = ali_trade_no
 		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
 
 		# 修改店铺总余额
@@ -577,8 +628,8 @@ class OnlineAliPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
-			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=0,balance_record='在线支付(微信)异常：空订单',
-				balance_type=3,transaction_id = transaction_id)
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=0,balance_record='在线支付(支付宝)异常：空订单'+order_num,
+				balance_type=3,transaction_id = ali_trade_no)
 			self.session.add(balance_history)
 			self.session.commit()
 			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -594,7 +645,19 @@ class OnlineAliPay(CustomerBaseHandler):
 		shop_id     = order.shop_id
 		totalPrice  = order.new_totalprice
 
+		create_date = order.create_date.timestamp()
+		now         = datetime.datetime.now().timestamp()
+		time_difference = now - create_date
+		if time_difference > 60 * 60 * 24 * 7:
+			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+				balance_record='在线支付(支付宝)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
+			self.session.add(balance_history)
+			self.session.commit()
+			print("[AliPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return self.write('success')
+
 		order.status = 1  #修改订单状态
+		order.transaction_id = ali_trade_no
 		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
 
 		# 修改店铺总余额

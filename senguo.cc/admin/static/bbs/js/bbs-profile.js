@@ -9,7 +9,16 @@ $(document).ready(function(){
     var index = $(this).index();
     _type = index;
     page=0;
+    articleList(0);
     $(".nav-profle li").removeClass("active").eq(index).addClass("active");
+    if(index==1){
+        $("#inform_list").removeClass("hide");
+        $("#topic_list").addClass("hide");
+    }else{
+        $("#inform_list").addClass("hide");
+        $("#topic_list").removeClass("hide");
+    }
+
 });
 function scrollLoading(){
     $(window).scroll(function(){
@@ -134,6 +143,5 @@ function insertProfile(data){
                 cur_time==kdate;
             }
         }
-        $("#inform_list").removeClass("hide");
     }
 }

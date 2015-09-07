@@ -27,8 +27,10 @@ function scrollLoading(){
 }
 function litsitem(page){
     var url='';
+    shop_id = $("#shopName").attr('shop-id')
     var args={
-        page:page
+        page:page,
+        shop_id:shop_id
     };
     $('.loading').html("~努力加载中 ( > < )~").show();
     $.postJson(url,args,function(res){

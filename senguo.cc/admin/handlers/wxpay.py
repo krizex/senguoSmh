@@ -61,7 +61,8 @@ class WxPayConf_pub(object):
     MCHID = "10023430"
     #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
     KEY = "af8164b968911db7567f98b73122dbc3"
-   
+
+    #商户号:1223121101
 
     #=======【异步通知url设置】===================================
     #异步通知url，商户根据实际开发过程设定
@@ -148,7 +149,7 @@ class CurlClient(object):
         #post提交方式
         if post:
             self.curl.setopt(pycurl.POST, True)
-            self.curl.setopt(pycurl.POSTFIELDS, xml)
+            self.curl.setopt(pycurl.POSTFIELDS, xml.encode('utf-8'))
         buff = StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, buff.write)
 
@@ -378,7 +379,7 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        # print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
+        #print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
         prepay_id = self.result["prepay_id"]
         return prepay_id
 

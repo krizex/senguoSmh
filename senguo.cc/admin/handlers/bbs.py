@@ -541,7 +541,7 @@ class Profile(FruitzoneBaseHandler):
 		page_size = 10
 		datalist=[]
 		nomore = False
-		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article)\
+		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article,models.Article.comment_num,models.Article.great_num,models.Article.classify)\
 		.filter(models.Article.account_id==self.current_user.id,models.Article.status==status).order_by(models.Article.create_time.desc())
 		if article_list:
 			if page >= article_list.count()//page_size:
@@ -549,7 +549,7 @@ class Profile(FruitzoneBaseHandler):
 			article_list = article_list.offset(page*page_size).limit(page_size).all()
 		if article_list:
 			for article in article_list:
-				datalist.append({"id":article[0],"title":article[1],"time":article[2].strftime("%Y/%m/%d %H:%M"),"article":article[3]})
+				datalist.append({"id":article[0],"title":article[1],"time":article[2].strftime("%Y/%m/%d %H:%M"),"article":article[3],"commentnum":article[4],"greatnum":article[5],"type":self.article_type(article[6])})
 		return datalist,nomore
 
 	def getArticleData(self,article):
