@@ -541,8 +541,12 @@ class Profile(FruitzoneBaseHandler):
 		page_size = 10
 		datalist=[]
 		nomore = False
+		if status == -1:
+			status_range = (-1,)
+		elif status == 1:
+			status_range = (1,2)
 		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article,models.Article.comment_num,models.Article.great_num,models.Article.classify)\
-		.filter(models.Article.account_id==self.current_user.id,models.Article.status==status).order_by(models.Article.create_time.desc())
+		.filter(models.Article.account_id==self.current_user.id).filter(models.Article.status.in_(status_range)).order_by(models.Article.create_time.desc())
 		if article_list:
 			if page >= article_list.count()//page_size:
 				nomore = True
