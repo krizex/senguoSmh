@@ -4942,3 +4942,22 @@ class WirelessPrint(AdminBaseHandler):
 				# print(r.url)
 				# print(r.status_code)
 				# print(r.text)
+
+
+class GetPicture(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","page:int")
+	def post(self):
+		action = self.args["action"]
+		page = int(self.args["page"])
+		page_size = 10
+		if not action:
+			return self.send_fail("no action")
+		if not page:
+			page = 0
+		picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action).order_by(models.PictureLibrary.create_time.desc())
+		total_page = picture_list.count()
+		pictures = picture_list.offset(page*page_size).limit(page_size).all()
+		return self.send_success(datalist=pictures,total_page=total_page)
+
+

@@ -4,6 +4,7 @@ import json
 import multiprocessing
 from multiprocessing import Process
 from dal.dis_dict import dis_dict
+from bs4 import BeautifulSoup
 session = models.DBSession()
 
 # def code_to_text(column_name, code):
@@ -142,6 +143,40 @@ session = models.DBSession()
 	# 	session.add(new_good2)
 	# session.commit()
 	# return self.send_success()
+
+def getPicture():
+	
+	shops = session.query(models.Shop).all()
+	for shop in shops:
+		goods = session.query(models.Fruit).filter_by(shop_id=shop.id).all()
+		if len(goods) >0 :
+			for good in goods:
+				imgs = []
+				if good.img_url:
+					imgs = good.img_url.split[";"]
+				if len(imgs>0):
+					for img in imgs:
+						session.add(models.PictureLibrary(_type="goods",shop_id=shop.id,img_url=img))
+						session.flush()
+				if good.detail_describe:
+					res_detail = BeautifulSoup(good.detail_describe)
+					res_img = res_detail.findAll("img")
+					for img in res_img:
+						session.add(models.PictureLibrary(_type="detail",shop_id=shop.id,img_url=img["src"]))
+						session.flush()
+
+		notices = session.query(models.Notice).filter_by(config_id=shop.id).all()
+		if len(notices) >0:
+			for notice in notices:
+				if notice.img_url:
+					session.add(models.PictureLibrary(_type="notice",shop_id=shop.id,img_url=notice.img_url))
+					session.flush()
+
+		if shop.shop_trademark_url:
+			session.add(models.PictureLibrary(_type="logo",shop_id=shop.id,img_url=shop.shop_trademark_url))
+			session.flush()
+
+
 
 g = multiprocessing.Process(name='getsomeshop',target=getsomeshop)
 g.start()
