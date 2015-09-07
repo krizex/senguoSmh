@@ -4950,14 +4950,34 @@ class GetPicture(AdminBaseHandler):
 	def get(self):
 		action = self.args["action"]
 		page = int(self.args["page"])
+		datalist = []
 		page_size = 10
 		if not action:
 			return self.send_fail("no action")
 		if not page:
 			page = 0
-		picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action).order_by(models.PictureLibrary.create_time.desc())
-		total_page = picture_list.count()
+		picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1).order_by(models.PictureLibrary.create_time.desc())
 		pictures = picture_list.offset(page*page_size).limit(page_size).all()
-		return self.send_success(datalist=pictures,total_page=total_page)
+		for picture in pictures:
+			datalist.append({"imgurl":picture.img_url,"id":picture.id})
+		if page == 0:
+			total_page = picture_list.count()
+			return self.send_success(datalist=datalist,total_page=total_page)
+		else:
+			return self.send_success(datalist=datalist)
 
-
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","data")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		if action == "del":
+			pic_id=int(data["id"])
+			try:
+				picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,id=pic_id,status=1).one()
+			except:
+				return self.send_fail("no such picture")
+			if picture:
+				picture.status = 0
+				self.session.commit()
+			return self.send_success()
