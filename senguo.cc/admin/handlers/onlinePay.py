@@ -35,8 +35,10 @@ class RefundWxpay(CustomerBaseHandler):
 		order_id = self.args['order_id']
 		if len(order_id) == 0:
 			return self.send_fail('order_id error')
-		order = self.session.query(models.Order).filter_by
-
+		order = self.session.query(models.Order).filter_by(id=order_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		totalPrice = order.totalPrice
 		refund_pub = Refund_pub()
 		refund_pub.setParameter("out_trade_no",transaction_id)
 		refund_pub.setParameter("out_refund_no",transaction_id)
@@ -472,6 +474,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	def create_alipay_url(self,price,order_num,shop_name):
 		# print("[AliPay]login create_alipay_url:",price,order_id)
+		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_num),
 			subject      = shop_name + '-订单号：' + str(order_num),

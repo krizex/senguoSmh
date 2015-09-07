@@ -54,7 +54,7 @@ class Home(AdminBaseHandler):
 				send_speed = 0
 				shop_service = 0
 				q = self.session.query(func.avg(models.Order.commodity_quality),\
-					func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id, models.Order.in_((6,7))).all()
+					func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id, models.Order.status.in_((6,7))).all()
 				if q[0][0]:
 					commodity_quality = int(q[0][0])
 				if q[0][1]:
