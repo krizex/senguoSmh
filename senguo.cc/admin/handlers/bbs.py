@@ -219,7 +219,9 @@ class Detail(FruitzoneBaseHandler):
 				comment_author_id = 0
 			elif action == "reply":
 				_type = 1
-				comment_author_id = self.session.query(models.ArticleComment).filter_by(id=data["comment_id"]).first().account_id
+				_comment_ = self.session.query(models.ArticleComment).filter_by(id=data["comment_id"]).first()
+				comment_author_id = _comment_.account_id
+				_comment_.reply_num = _comment_.reply_num+1
 			else:
 				return send_fail("[BbsDetail]no such action")
 			comment = models.ArticleComment(
