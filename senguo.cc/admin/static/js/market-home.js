@@ -282,7 +282,7 @@ $(document).ready(function(){
     window.dataObj.cart_count++;
     $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
     seckill_goods_ids.push(s_goods_id);
-    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
+    noticeBox("已添加到购物篮，请在秒杀结束前支付，否则会恢复原价哦！");
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
