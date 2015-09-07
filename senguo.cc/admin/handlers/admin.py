@@ -4947,7 +4947,7 @@ class WirelessPrint(AdminBaseHandler):
 class GetPicture(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","page:int")
-	def post(self):
+	def get(self):
 		action = self.args["action"]
 		page = int(self.args["page"])
 		page_size = 10

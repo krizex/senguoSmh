@@ -153,13 +153,13 @@ def getPicture():
 			for good in goods:
 				imgs = []
 				if good.img_url:
-					imgs = good.img_url.split[";"]
-				if len(imgs>0):
+					imgs = good.img_url.split(";")
+				if len(imgs)>0:
 					for img in imgs:
 						session.add(models.PictureLibrary(_type="goods",shop_id=shop.id,img_url=img))
 						session.flush()
 				if good.detail_describe:
-					res_detail = BeautifulSoup(good.detail_describe)
+					res_detail = BeautifulSoup(good.detail_describe,"lxml")
 					res_img = res_detail.findAll("img")
 					for img in res_img:
 						session.add(models.PictureLibrary(_type="detail",shop_id=shop.id,img_url=img["src"]))
@@ -175,9 +175,10 @@ def getPicture():
 		if shop.shop_trademark_url:
 			session.add(models.PictureLibrary(_type="logo",shop_id=shop.id,img_url=shop.shop_trademark_url))
 			session.flush()
+	session.commit()
 
 
 
-g = multiprocessing.Process(name='getsomeshop',target=getsomeshop)
+g = multiprocessing.Process(name='getPicture',target=getPicture)
 g.start()
 g.join()
