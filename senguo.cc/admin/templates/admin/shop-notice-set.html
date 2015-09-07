@@ -94,7 +94,7 @@
             <span class="link"><a class="con" href="{{notice.link or ''}}" target="_blank">{% if notice.link %}{{notice.link.strip() or '未设置'}}{% end %}</a></span>
         </td>
         <td class="col-lg-3 address-edit" style="display:none;">
-            <input class="notice_link ml10" value="{{notice.summary or ''}}">
+            <input class="notice_link ml10" value="{{notice.link or ''}}">
         </td>
         <td class="col-lg-3 address-show img_url">
             <div class="notice_img_box">
