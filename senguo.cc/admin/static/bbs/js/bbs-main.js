@@ -7,6 +7,9 @@ $(document).ready(function(){
         scrollLoading();
     }
 }).on("click",".nav-list a",function(){
+    if($(this).attr("data-id")=="100"){
+        window.location.href="/bbs";
+    }
     $(".nav-list a").removeClass("active");
     $(this).addClass("active");
     _type = $(this).attr("data-id");

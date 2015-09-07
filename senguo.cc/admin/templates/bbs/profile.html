@@ -7,8 +7,8 @@
     <div class="wrap-profile w980">
         <div class="profile-top box-border">
             <div class="profile-user">
-                <img src="/static/images/person.png" alt="用户头像" class="pro-img"/>
-                <p class="profile-name mt10">这里显示用户名</p>
+                <img src="{{handler.current_user.accountinfo.headimgurl_small or '/static/images/person.png'}}" alt="{{handler.current_user.accountinfo.nickname}}" class="pro-img"/>
+                <p class="profile-name mt10">{{handler.current_user.accountinfo.nickname}}</p>
             </div>
             <ul class="group nav-profle">
                 <li class="active">我的发布</li>
@@ -18,33 +18,9 @@
             </ul>
         </div>
         <div class="wrap-profile-list mt10">
-            <ul class="topic-list box-border">
-                <li>
-                    <h4 class="topic-title clip" title="阿斯达啊是打算打">阿斯达啊是打算打</h4>
-                    <div class="wrap-topic-attr">
-                        <div class="fr">
-                            <a href="javascript:;" class="icon-topic dianzan">0</a>
-                            <a href="javascript:;" class="icon-topic reply">0</a>
-                            <a href="javascript:;" class="topic-opt del_topic">删除</a>
-                        </div>
-                        <span class="topic-class">产品更新</span>
-                        <span>2015/08/14 19:25</span>
-                    </div>
-                </li>
-                <li>
-                    <h4 class="topic-title clip" title="阿斯达啊是打算打">阿斯达啊是打算打</h4>
-                    <div class="wrap-topic-attr">
-                        <div class="fr">
-                            <a href="javascript:;" class="icon-topic dianzan">0</a>
-                            <a href="javascript:;" class="icon-topic reply">0</a>
-                            <a href="javascript:;" class="topic-opt del_topic">删除</a>
-                        </div>
-                        <span class="topic-class">产品更新</span>
-                        <span>2015/08/14 19:25</span>
-                    </div>
-                </li>
+            <ul class="topic-list box-border" id="topic_list">
             </ul>
-            <ul class="topic-list box-border mt10">
+            <ul class="topic-list box-border hide">
                 <li>
                     <h4 class="topic-title clip" title="阿斯达啊是打算打">
                         <span class="fr c999 f14 normal">2015/09/02 19:25</span>
@@ -78,8 +54,8 @@
                     </div>
                 </li>
             </ul>
-            <ul class="inform-list box-border mt10">
-                <li>
+            <ul class="inform-list box-border hide" id="inform_list">
+                <!--<li>
                     <span class="li-roll"></span>
                     <span class="inform-time">8月15日</span>
                     <div class="wrap-item-box pm20">
@@ -96,17 +72,8 @@
                             这里显示内容这里显示内容这里显示内容这里显示内容这里显示内容这里显示内容
                         </p>
                     </div>
-                    <div class="wrap-item-box pm20">
-                        <div class="inform-item">
-                            <span class="fr c999">15:30</span>
-                            <img src="/static/images/person.png" alt="用户头像" class="inform-img"/>
-                            <span class="c333">用户名</span>
-                            <span class="ml10 c999">赞了您的</span>
-                            <a href="javascript:;" class="dgreen f14">在高校运营水果店的几个要点</a>
-                        </div>
-                    </div>
                 </li>
-                <li>
+                <li class="hide">
                     <span class="li-roll"></span>
                     <span class="inform-time">8月16日</span>
                     <div class="wrap-item-box pm20">
@@ -118,12 +85,41 @@
                             <a href="javascript:;" class="dgreen f14">在高校运营水果店的几个要点</a>
                         </div>
                     </div>
-                </li>
+                </li>-->
             </ul>
         </div>
-        <a href="javascript:;" class="more-btn mt10">加载更多</a>
+        <a href="javascript:;" class="more-btn mt10">~没有更多了~</a>
     </div>
 </div>
+<ul class="hide" id="item1">
+    <li>
+        <h4 class="topic-title clip" title=""></h4>
+        <div class="wrap-topic-attr">
+            <div class="fr">
+                <a href="javascript:;" class="icon-topic dianzan">0</a>
+                <a href="javascript:;" class="icon-topic reply">0</a>
+                <a href="javascript:;" class="topic-opt del_topic">删除</a>
+            </div>
+            <span class="topic-class"></span>
+            <span class="topic-tm">2015/08/14 19:25</span>
+        </div>
+    </li>
+</ul>
+<ul class="hide" id="item2">
+    <li>
+        <h4 class="topic-title clip" title="">
+            <span class="fr c999 f14 normal topic-tm"></span>
+            <span class="topic-tt"></span>
+        </h4>
+        <p class="c666 f14 pro-txt mt6 hide"></p>
+        <div class="wrap-topic-attr mt10">
+            <div class="fr">
+                <a href="javascript:;" class="topic-opt edit_topic">编辑</a>
+                <a href="javascript:;" class="topic-opt del_topic">删除</a>
+            </div>
+        </div>
+    </li>
+</ul>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('bbs/js/bbs-profile.js')}}"></script>

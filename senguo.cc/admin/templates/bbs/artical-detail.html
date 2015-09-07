@@ -27,10 +27,11 @@
             </ul>
         </div>
     </div>
-    <div class="wrap-left">
+    <div class="wrap-left" data-id="{{article['id']}}">
         <div class="topic-detail box-border">
             <h3 class="topic-title">{{article["title"]}}</h3>
             <p class="detail-user mt10">
+                <a href="javascript:;" class="fr" id="store-atical">收藏</a>
                 <span class="topic-class">{{article["type"]}}</span>
                 <span>
                     <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像" class="detail-img"/>
@@ -41,6 +42,52 @@
             <div class="detail-cont mt10">
                 {% raw article["article"] %}
             </div>
+        </div>
+        <div class="topic-detail box-border mt10">
+            <p class="c333">文章评论(3)</p>
+            <div class="wrap-textarea mt10">
+                <textarea class="detail-area" placeholder="你怎么看？"></textarea>
+            </div>
+            <p class="mt10 publish-row group">
+                <a href="javascript:;" class="fr psh-commit" id="comment">发表评论</a>
+                <span class="c999 wrap-psh-img">
+                    <img src="/static/images/person.png" alt="用户头像"/>
+                    <span>用户名</span>
+                </span>
+            </p>
+            <ul class="comment-list" id="comment_list">
+                <li>
+                    <dl class="dl">
+                        <dd>
+                            <img src="/static/images/person.png" alt="用户头像"/>
+                        </dd>
+                        <dt>
+                            <p class="f14 c666 clip">等待晴天<span class="ml10 c999">2015-09-01 12:33</span></p>
+                            <p class="c333 mt12">
+                                这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容
+                                这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容
+                            </p>
+                        </dt>
+                    </dl>
+                    <div class="wrap-topic-attr">
+                        <div class="fr">
+                            <a href="javascript:;" class="icon-topic dianzan comment-great">赞</a>
+                            <a href="javascript:;" class="icon-topic reply comment-reply">回复</a>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+<div class="hide">
+    <div class="wrap-comment-box mt6">
+        <div class="wrap-tarea">
+            <textarea class="com-area com_area"></textarea>
+        </div>
+        <div class="comm-btns">
+            <a href="javascript:;" class="comment-cancel">取消</a>
+            <a href="javascript:;" class="comment-back" id="comment_back">回复</a>
         </div>
     </div>
 </div>
@@ -61,5 +108,5 @@
 </div>
 {% end %}
 {% block bottom %}
-
+<script src="{{static_url('bbs/js/artical-detail.js')}}"></script>
 {% end %}

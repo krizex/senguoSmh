@@ -23,6 +23,17 @@ $(document).ready(function(){
             parent.location.href = location.href;
         }
     }
+    if($(".scrollUpf").size()>0){
+        $(window).scroll(function(){
+            if($(window).scrollTop()>150){
+                $(".scrollUpf").show();
+            }else{
+                $(".scrollUpf").hide();
+            }
+        });
+    }
 }).on("click",".cancel-btn",function(){
     $(".pop-win").addClass("hide");
+}).on("click","#scrollUp",function(){
+    $('html,body').animate({scrollTop: '0px'}, 300);
 });
