@@ -577,7 +577,7 @@ function getCharge(index1,index2,$obj){
     var charges=charge_list[index1][index2];
     var lis='';
     for(var i=0; i<charges.length; i++){
-        lis+=' <button class=" charge-btn mt6 mr10" charge_id='+charges[i].charge_id+'>'+charges[i].charge+'</button>';
+        lis+=' <button class="charge-btn mr10" charge_id='+charges[i].charge_id+'>'+charges[i].charge+'</button>';
     }
     $obj.append(lis);
 }

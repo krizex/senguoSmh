@@ -8,7 +8,7 @@
 {% set shop_code = current_shop.shop_code %}
 <div class="wrap-newcoupon">
     <p class="c333 mt10 choose-text">
-        <a href="admin/discount?action=discount" class="c999 cancel-add-goods ">限时折扣</a>
+        <a href="/admin/discount?action=discount" class="c999 cancel-add-goods">限时折扣</a>
         <span class="c333"> / 新建折扣商品</span>
     </p>
 </div>
@@ -42,7 +42,7 @@
                     <td>开始时间</td>
                     <td>
                         <div class="">
-                             <input type="text" class="Wdate start_date" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'})">
+                            <input type="text" placeholder="请点击选择时间" class="Wdate start_date" id="date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',maxDate:'#F{$dp.$D(\'date2\')}'})">
                         </div>
                     </td>
                 </tr>
@@ -50,7 +50,7 @@
                     <td>&nbsp;</td>
                     <td>结束时间</td>
                     <td>
-                         <input type="text" class="Wdate end_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})">
+                        <input type="text" placeholder="请点击选择时间" class="Wdate end_date" id="date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'#F{$dp.$D(\'date1\')}'})">
                     </td>
                 </tr>
                 </tbody>
@@ -76,13 +76,13 @@
                 <thead>
                     <td class="">&nbsp;</td>
                     <td class="change-week">
-                        <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='1'>周一</a>
-                        <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='2'>周二</a>
-                        <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='3'>周三</a>
-                        <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='4'>周四</a>
-                        <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='5'>周五</a>
-                        <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='6'>周六</a>
-                        <a href="javascript:;" class=" week-btn  mt6 mr10"week-id='7'>周日</a>
+                        <a href="javascript:;" class="week-btn mr10"week-id='1'>周一</a>
+                        <a href="javascript:;" class="week-btn mr10"week-id='2'>周二</a>
+                        <a href="javascript:;" class="week-btn mr10"week-id='3'>周三</a>
+                        <a href="javascript:;" class="week-btn mr10"week-id='4'>周四</a>
+                        <a href="javascript:;" class="week-btn mr10"week-id='5'>周五</a>
+                        <a href="javascript:;" class="week-btn mr10"week-id='6'>周六</a>
+                        <a href="javascript:;" class="week-btn mr10"week-id='7'>周日</a>
                     </td>
                 </thead>
             </table>
@@ -94,10 +94,10 @@
                 <tbody>
                 <tr>
                     <td>&nbsp;</td>
-                    <td>开始时间 </td>
+                    <td>开始时间</td>
                     <td>
                         <div class=""> 
-                             <div class="dropdown slide-down-select w50 mr10 time-btn-width">
+                            <div class="dropdown slide-down-select w50 mr10 time-btn-width">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 f-hour" data-id="0" >0</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
@@ -110,7 +110,7 @@
                                     {%end%}
                                 </ul>
                             </div><span class="text-below">时</span>
-                             <div class="dropdown slide-down-select w50 mr10 time-btn-width">
+                            <div class="dropdown slide-down-select w50 mr10 time-btn-width">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 f-minute" data-id="0" >0</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
@@ -123,7 +123,7 @@
                                     {%end%}
                                 </ul>
                             </div><span class="text-below">分</span>
-                             <div class="dropdown slide-down-select w50 mr10 time-btn-width">
+                            <div class="dropdown slide-down-select w50 mr10 time-btn-width">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 f-second" data-id="0" >0</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
@@ -141,7 +141,7 @@
                 </tr>
                 <tr>
                     <td>&nbsp;</td>
-                    <td class="text-below">结束时间 </td>
+                    <td class="text-below">结束时间</td>
                     <td>
                         <div class="">
                              <div class="dropdown slide-down-select w50 mr10 time-btn-width">
@@ -157,7 +157,7 @@
                                     {%end%}
                                 </ul>
                             </div><span class="text-below">时</span>
-                             <div class="dropdown slide-down-select w50 mr10 time-btn-width">
+                            <div class="dropdown slide-down-select w50 mr10 time-btn-width">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 t-minute" data-id="59" >59</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
@@ -170,13 +170,13 @@
                                     {%end%}
                                 </ul>
                             </div><span class="text-below">分</span>
-                             <div class="dropdown slide-down-select w50 mr10 time-btn-width">
+                            <div class="dropdown slide-down-select w50 mr10 time-btn-width">
                                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
                                     <em class="pull-left c333 t-second" data-id="59" >59</em>
                                     <span class="caret pull-right no-margin-left rotate0"></span>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-right w50 t-discount-second-items time-btn-width scroll-bar-discount" role="menu" aria-labelledby="dropdownMenu18">
-                                     {%for x in range(0,60)%}
+                                    {%for x in range(0,60)%}
                                     <li class="presentation" role="presentation">
                                         <a class="item" href="javascript:;" data-id={{x}} >{{x}}</a>
                                     </li>
@@ -235,14 +235,14 @@
                             </tr>
                             <tr class="no_border">
                                 <td>
-                                   活动折扣<input type="text" class="discount_rate"><span>折(1-10之间)</span>
+                                    活动折扣<input type="text" class="discount_rate" placeholder="最多1位小数"><span class="ml10">折（1-10之间）</span>
                                 </td>
                             </tr>
                         </table>
                     </td>
                     <tr>
                         <td>&nbsp;</td>
-                         <td><a href="javascript:;" class=" text_green mt6 mr10 discount-new" >+新建</a><a href="javascript:;" class="fr mt6 mr10 discount_delete text_red hidden" >删除</a></td>
+                        <td><a href="javascript:;" class="text_green mt6 mr10 discount-new">+新建</a><a href="javascript:;" class="fr mt6 mr10 discount_delete text_red hidden">删除</a></td>
                     </tr>
                 </tr>
                 </tbody>
