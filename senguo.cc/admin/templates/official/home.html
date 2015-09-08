@@ -9,26 +9,15 @@
         <div class="swiper-wrapper">
             <div class="swiper-slide item">
                 <img src="{{static_url('official_img/adone.jpg')}}" class="bg"/>
-               
-                <div class="bg-text">
-                    <a href="{{reverse_url('ApplyHome')}}">申请接入</a>
-                </div>
             </div>
             <div class="swiper-slide item">
                 <img src="{{static_url('official_img/adtwo.jpg')}}" class="bg"/>
-            
-                <div class="bg-text">
-                    <a href="{{reverse_url('ApplyHome')}}">申请接入</a>
-                </div>
             </div>
             <div class="swiper-slide item">
-                <img src="{{static_url('official_img/adthree.jpg')}}" class="bg"/>
-        
-                <div class="bg-text">
-                    <a href="{{reverse_url('ApplyHome')}}">申请接入</a>
-                </div>
+                <img src="{{static_url('official_img/adthree.jpg')}}" class="bg"/> 
             </div>
         </div>
+        <a class="apply-in" href="{{reverse_url('ApplyHome')}}">申请接入</a>
     </div>
     <div class="pagination"></div>
     <div class="turn-page">
@@ -36,12 +25,38 @@
         <img class="right" src="{{static_url('official_img/right_btn.png')}}" title="下一页"> 
     </div>
 </div>
+<!-- <div class="slide_box" id="slideBox">
+    <div class="swiper-container" id="swiper-container">
+        <div class="wrap-arrows">
+            <a href="javascript:;" class="prev slide-btn" title="上一页" id="prev">
+                <i class="icon-arrows arrows-left"></i>
+            </a>
+            <a href="javascript:;" class="next slide-btn" title="下一页" id="next">
+                <i class="icon-arrows arrows-right"></i>
+            </a>
+        </div>
+        <ul class="swiper-wrapper" id="swiper-wrapper">
+            <li class="swiper-slide item" data-index="0" >
+                <img src="{{static_url('official_img/adone.jpg')}}" class="bg" title="再小的水果店，也要有自己的O2O平台">
+            </li>
+            <li class="swiper-slide item" data-index="1">
+                <img src="{{static_url('official_img/adtwo.jpg')}}" class="bg" title="全平台水果商城">
+            </li>
+            <li class="swiper-slide item" data-index="2">
+                <img src="{{static_url('official_img/adthree.jpg')}}" class="bg" title="最好用的后台管理系统">
+            </li>
+        </ul>
+    </div>
+    <div class="bg-text">
+        <a href="/apply">申请接入</a>
+    </div>
+</div> -->
 <div class="center-block">
     <div class="news-bg">
         <ul class="bar-list group w1000">
             <li>
                 <ul class="text-list">
-                    <div class="title">官方公告<a class="pull-right font12" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official"  target="_blank">更多</a></div>
+                    <div class="title">官方公告<a class="pull-right font16" title="官方公告" href="{{reverse_url('BbsMain')}}?action=official"  target="_blank">更多</a></div>
                     {% for a in article_list["notice"]%}
                     <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}" target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
                     {% end %}
@@ -49,7 +64,7 @@
             </li>
             <li>
                 <ul class="text-list">
-                    <div class="title">产品更新<a class="pull-right font12" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update"  target="_blank">更多</a></div>
+                    <div class="title">产品更新<a class="pull-right font16" title="产品更新" href="{{reverse_url('BbsMain')}}?action=update"  target="_blank">更多</a></div>
                     {% for a in article_list["update"]%}
                     <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
                     {% end %}
@@ -57,7 +72,7 @@
             </li>
             <li>
                 <ul class="text-list">
-                    <div class="title">运营干货<a class="pull-right font12" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry"  target="_blank">更多</a></div>
+                    <div class="title">运营干货<a class="pull-right font16" title="运营干货" href="{{reverse_url('BbsMain')}}?action=dry"  target="_blank">更多</a></div>
                    {% for a in article_list["dry"]%}
                     <li><a href="{{reverse_url('BbsDetail',a.id)}}" title="{{a.title}}"  target="_blank">{{a.title}}<span class="date">{{handler.timeday(a.create_time)}}</span></a></li>
                     {% end %}
@@ -72,25 +87,25 @@
                 <li>
                     <div class="type-img"><img src="/static/official_img/o2o.png" alt="水果O2O"/></div>
                     <p class="mt20 first-title">水果O2O</p>
-                    <p class="second-title">森果有多种风格的商城模板，完善便捷的店铺管理功能，方便您进行水果O2O的一切探索。
+                    <p class="second-title">森果有多种风格的商城模板，完善便捷的店铺管理功能，方便您进行水果O2O的一切探索
                     </p>
                 </li>
                 <li>
                     <div class="type-img"><img src="/static/official_img/single.png" alt="水果连锁经营"/></div>
                     <p class="mt20 first-title">水果单店铺经营</p>
-                    <p class="second-title">省去店铺收银系统、CRM系统、商超系统等昂贵的成本，手机+电子秤+扫描枪，轻松开店。
+                    <p class="second-title">省去店铺收银系统、CRM系统、商超系统等昂贵的成本，手机+电子秤+扫描枪，轻松开店
                     </p>
                 </li>
                 <li>
                     <div class="type-img"><img src="/static/official_img/chain.png" alt="水果单店铺经营"/></div>
                     <p class="mt20 first-title">水果连锁经营</p>
-                    <p class="second-title">使用森果对您连锁经营的多个店铺进行管理，对每个店铺的采购和销售情况、员工和工资记录等，了如指掌。
+                    <p class="second-title">使用森果对您连锁经营的多个店铺进行管理，对每个店铺的采购和销售情况、员工和工资记录等，了如指掌
                     </p>
                 </li>
                 <li>
                     <div class="type-img"><img src="/static/official_img/aggregation.png" alt="水果商家聚合"/></div>
                     <p class="mt20 first-title">水果商家聚合</p>
-                    <p class="second-title">您可以将附近的水果店整合起来，打造水果商家聚合平台。
+                    <p class="second-title">您可以将附近的水果店整合起来，打造水果商家聚合平台
                     </p>
                 </li>
             </ul>
@@ -98,7 +113,7 @@
     </div>
     <div class="online-bg">
         <div class="wrap-trait w1000">
-            <p class="box-title mt30 online-title-color">线上买水果，森果更懂你</p>
+            <p class="box-title mt42 online-title-color">线上买水果，森果更懂你</p>
             <div class="online-business">
                 <ul>
                     <li class="trend">
@@ -136,8 +151,8 @@
                     <li class="item pull-right">
                         <div class="intro mt10">
                             <span class="o2o-right-title">高校</span>
-                            <p class="font18 o2o-item-title">水果O2O领跑之域</p>
-                            <p class="text-grey mt-3">学生越来越懒、社交平台传播快、寝室楼栋集中</p>
+                            <p class="font24 o2o-item-title">水果O2O领跑之域</p>
+                            <p class="font18 text-grey mt-3">学生越来越懒、社交平台传播快、寝室楼栋集中</p>
                         </div>
                     </li>
                 </ul>
@@ -151,8 +166,8 @@
                     <li class="item pull-left o2o-left-bg">
                         <div class="intro mt10">
                             <span class="o2o-left-title">商圈</span>
-                            <p class="font18 o2o-item-title">水果O2O盈利之所</p>
-                            <p class="text-grey mt-3">配送方便、写字楼与上班族、对果切等水果加工品需求高</p>
+                            <p class="font24 o2o-item-title">水果O2O盈利之所</p>
+                            <p class="font18 text-grey mt-3">配送方便、写字楼与上班族、对果切等水果加工品需求高</p>
                         </div>
                     </li>
                 </ul>
@@ -166,8 +181,8 @@
                     <li class="item pull-right">
                         <div class="intro mt10">
                             <span class="o2o-right-title">社区</span>
-                            <p class="font18 o2o-item-title">水果O2O必争之地</p>
-                            <p class="text-grey mt-3">小区人口集中、消费水平高、水果消费意识好、客单价高</p>
+                            <p class="font24 o2o-item-title">水果O2O必争之地</p>
+                            <p class="font18 text-grey mt-3">小区人口集中、消费水平高、水果消费意识好、客单价高</p>
                         </div>
                     </li>
                 </ul>
@@ -204,27 +219,27 @@
             <ul class="qa-list group">
                 <li>
                     <p class="qus">森果是免费的吗？</p>
-                    <p class="ans">森果系统对卖家是永久免费的，不仅免费，有很多原本收费的服务我们还有补贴。</p>
+                    <p class="ans font16">森果系统对卖家是永久免费的，不仅免费，有很多原本收费的服务我们还有补贴。</p>
                 </li>
                 <li>
                     <p class="qus">森果系统只能在微信上使用吗？</p>
-                    <p class="ans">森果提供了微信、qq、支付宝、手机号等多种登录方式。您可以在微信、qq、支付宝、微博等多个渠道进行店铺的推广与经营。</p>
+                    <p class="ans font16">森果提供了微信、qq、支付宝、手机号等多种登录方式。您可以在微信、qq、支付宝、微博等多个渠道进行店铺的推广与经营。</p>
                 </li>
                 <li>
                     <p class="qus">接入需要什么条件？</p>
-                    <p class="ans">几乎是不需要什么条件的。不过最好您进来是卖水果的，为水果行业提供免费的互联网工具，提高行业运转效率，这是我们的初衷。</p>
+                    <p class="ans font16">几乎是不需要什么条件的。不过最好您进来是卖水果的，为水果行业提供免费的互联网工具，提高行业运转效率，这是我们的初衷。</p>
                 </li>
                 <li>
                     <p class="qus">我是新手想学习水果开店经验？</p>
-                    <p class="ans">恭喜你来对了地方！森果平台是中国最大的水果零售商聚集地。您可以联系客户加入用户交流群向同行牛人学习，也可以在森果社区学习水果行业的相关知识。</p>
+                    <p class="ans font16">恭喜你来对了地方！森果平台是中国最大的水果零售商聚集地。您可以联系客户加入用户交流群向同行牛人学习，也可以在森果社区学习水果行业的相关知识。</p>
                 </li>
                 <li>
                     <p class="qus">你们提供货源吗？</p>
-                    <p class="ans">森果是一个免费的水果第三方平台，主要提供技术支持，目前不提供货源。不过我们会为您提供采购信息支持。</p>
+                    <p class="ans font16">森果是一个免费的水果第三方平台，主要提供技术支持，目前不提供货源。不过我们会为您提供采购信息支持。</p>
                 </li>
                 <li>
                     <p class="qus">店铺认证有什么作用？</p>
-                    <p class="ans">为保障店铺和消费者的权益，森果开设的店铺需要进行店铺认证。认证完全免费，且流程简单。店铺认证后才能使用支付等高级功能。</p>
+                    <p class="ans font16">为保障店铺和消费者的权益，森果开设的店铺需要进行店铺认证。认证完全免费，且流程简单。店铺认证后才能使用支付等高级功能。</p>
                 </li>
             </ul>
         </div>
