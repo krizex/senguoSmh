@@ -546,7 +546,7 @@ class RegistByPhone(CustomerBaseHandler):
 		else:
 			return self.send_fail(resault)
 
-	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	@CustomerBaseHandler.check_arguments("action:str","phone?:str","password?:str")
 	def post(self):
 		action = self.args['action']
 		if action == "get_code":
