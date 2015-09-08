@@ -40,7 +40,7 @@
             <span>&nbsp;销量 {{int(good.saled) or 0}}</span>
         </p>
         <p class="goods-info">{{good.intro or ''}}</p>
-        <p class="f12 mt10 {% if has_activity==0 %}hide{%end%}" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
+        <p class="f12 mt10 {% if has_activity==0 or good.activity_status==0 %}hide{%end%}" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
     </div>
     <ul class="wrap-choose-goods">
             {% for charge in charge_types %}
