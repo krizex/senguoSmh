@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    var height = $(window).height();
+    $(".wrap-post").css("minHeight",height-60);
     $(".com-atical").on("click",function(){//评论按钮
         var id = $(this).attr("data-id");
         var _type= $('.reply-btn').attr("id");
@@ -9,7 +11,8 @@ $(document).ready(function(){
         $(".wrap-post-attr").removeClass("bm10");
         if(_type=='reply'){
             $(".reply-ipt").val("").attr("placeholder","");
-        }
+        } 
+        
         $(".wrap-reply-box").removeClass("hide");
         $('.reply-btn').attr("id","comment").attr("data-id",id);
         $(".reply-ipt").focus();
@@ -45,6 +48,11 @@ $(document).ready(function(){
             Tip(res.error_text);
         }
     });
+}).on("click","body",function(e){
+    if($(e.target).closest(".forbid_click").size()==0){
+        $('.wrap-reply-box').addClass("hide");
+        $(".wrap-post-attr").addClass("bm10");
+    }
 }).on("click","#store-atical",function(){//收藏
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
@@ -56,7 +64,7 @@ $(document).ready(function(){
     var args={action:"collect",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
-            //$this.children("i").toggleClass("i-store-active");
+            $this.children("i").toggleClass("i-store-active");
         }else{
             Tip(res.error_text);
         }
@@ -84,7 +92,7 @@ $(document).ready(function(){
             Tip(res.error_text);
         }
     });
-}).on("click",".comment-reply",function(){//评论回复
+}).on("click",".comment-list .com-detail",function(){//评论回复
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
        return false; 
@@ -119,7 +127,7 @@ $(document).ready(function(){
             Tip(res.error_text);
         }
     });
-}).on("click","#comment_back",function(){//发表回复
+}).on("click","#reply",function(){//发表回复
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
        return false; 
@@ -147,25 +155,26 @@ var comment_item;
 var finished=true;
 var nomore =false;
 var page=0;
-var item='<li>'+
-            '<dl class="dl">'+
-                '<dd>'+
-                '<img src="{{imgurl}}" alt="{{nickname}}"/>'+
-                '</dd>'+
-                '<dt>'+
-                    '<p class="f14 c666 clip">{{nickname}}<span class="ml10 c999">{{time}}</span></p>'+
-                    '<p class="c333 mt12">'+
-                    '{{ if type==1 }}@{{nick_name}}{{/if}} {{comment}}'+
-                    '</p>'+
-                '</dt>'+
-            '</dl>'+
-            '<div class="wrap-topic-attr">'+
-                '<div class="fr">'+
-                    '<a href="javascript:;" class="icon-topic dianzan comment-great" data-id="{{id}}">赞</a>'+
-                    '<a href="javascript:;" class="icon-topic reply comment-reply" data-id="{{id}}">回复</a>'+
-                '</div>'+
-            '</div>'+
-        '</li>';
+var item=' <li class="forbid_click" data-id="{{id}}">'+
+                '<dl class="group comment-item">'+
+                    '<dd>'+
+                        '<span class="img-border"><img src="{{imgurl}}" alt="用户头像"/></span>'+
+                    '</dd>'+
+                    '<dt>'+
+                        '<p class="com-first">'+
+                            '<a href="javascript:;" class="wrap-icon dianzan fr comment-great" data-id="{{id}}">'+
+                            '<i class="post-dz {{ if great_if=="true" }}post-dz-active{{ /if }}"></i><span class="num">{{great_num}}</span>'+
+                            '</a>'+
+                            '<a href="javascript:;" class="nickname"  data-id="{{id}}">{{nickname}}</a>'+
+                        '</p>'+
+                        '<p class="com-detail">{{ if type==1 }}@{{nick_name}}{{/if}} {{comment}}</p>'+
+                        '<p class="f12 c999 mt2">{{time}}'+
+                            '{{ if author_if == "True" || comment_author == "true" }}<a href="javascript:;" class="del-comment fr c999"  data-id="{{id}}">删除</a>{{/if }}'+
+                        '</p>'+
+                    '</dt>'+
+                '</dl>'+
+            '</li>';
+
 function scrollLoading(){  
     $(window).scroll(function(){
         var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
@@ -179,25 +188,24 @@ function scrollLoading(){
             commentList(page);
         }
         else if(nomore==true){
-
+              $('.loading').html("~没有更多了~").show();
         }
     });
 }
 function commentList(page){
-    var id = $(".wrap-left").attr("data-id");
     $.ajax({
-        url:'/bbs/detail/'+id+'?page='+page+"&action=comment",
+        url:'/bbs/detail/'+$(".wrap-post").attr("data-id")+'?page='+page+"&action=comment",
         type:"get",
         success:function(res){
             if(res.success){
                 var data=res.data;
                 nomore=res.nomore;
                 if(page==0&&nomore==true&&data.length==0){
-                    //$('.sofa').removeClass("hide");
+                    $('.sofa').removeClass("hide");
                 }
                 for(var i in data){
-                   commentItem(data[i]);
-                }
+                       commentItem(data[i]);
+                    }
                 finished=true;
             }
             else {
@@ -206,7 +214,7 @@ function commentList(page){
         }
     })
 };
-//删除文章
+            
 function delAtical(id){
     var url = "";
     var args = {
@@ -224,14 +232,13 @@ function delAtical(id){
         }
     });
 }
-//评论
 function admireAtical(id,action,target){
     if(target.attr("data-statu")=="1") {
         return false;
     }
     target.attr("data-statu", "1");
     var url = "";
-    var comment=$.trim($('.detail-area').val());
+    var comment=$('.reply-ipt').val().trim();
     var data={comment:comment}
     if(action=="reply"){
         data.comment_id=id;
@@ -242,19 +249,23 @@ function admireAtical(id,action,target){
     }
     var args = {action:action,data:data};
     $.postJson(url,args,function(res){
-        target.attr("data-statu", "0");
+        if(action=="reply"){
+            $(".wrap-reply-box").addClass("hide");
+            $(".reply-ipt").val("");
+        }
         if(res.success){
-            if(action=="reply"){//回复评论
-                $(".com_area").val("");
-                target.closest('.wrap-comment-box').addClass("hide");
-            }else{//文章评论
-                $(".detail-area").val("");
-                var data=res.data;
-                commentItem(data,"new");
-                //$(".com-atical .num").text(parseInt($(".com-atical .num").text())+1);
-                //$('html,body').scrollTop($(".comment-list").offset().top);
-            }
+            $('.sofa').addClass("hide");
+            $('.comment .num').text(parseInt($('.comment .num').text()));
+            var data=res.data;
+            commentItem(data,"new");
+            $(".wrap-reply-box").addClass("hide");
+            $(".reply-ipt").val("");
+            $(".wrap-post-attr").addClass("bm10");
+            $(".com-atical .num").text(parseInt($(".com-atical .num").text())+1);
+            target.attr("data-statu", "0");
+            $('html,body').scrollTop($(".comment-list").offset().top);
         }else{
+            target.attr("data-statu", "0");
             Tip(res.error_text);
         }
     });
@@ -270,7 +281,7 @@ function commentItem(data,_type){
     var great_num=data['great_num'];
     var nick_name=data['nick_name'];
     var comment=data['comment'];
-    var imgurl=data['imgurl'] || '/static/images/person.png';
+    var imgurl=data['imgurl'];
     var great_if=data['great_if'].toString();
     var author_if=$('#author_if').val().toString();
     var comment_author=data['comment_author'].toString();
@@ -289,8 +300,9 @@ function commentItem(data,_type){
         comment_author:comment_author
     });
     if(_type=="new"){
-        $("#comment_list").prepend(list_item);
+        $(".comment-list").prepend(list_item);
     }else{
-       $("#comment_list").append(list_item);
+       $(".comment-list").append(list_item); 
     }
+    
 }

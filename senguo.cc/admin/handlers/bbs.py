@@ -49,11 +49,7 @@ class Main(FruitzoneBaseHandler):
 			return self.send_success(datalist=datalist,nomore=nomore)
 
 		if_admin = self.if_super()
-
-		if self.is_pc_browser():
-			return self.render("bbs/main.html",if_admin=if_admin)
-		else:
-			return self.render("bbs/main.html",if_admin=if_admin)
+		return self.render("{0}/main.html".format(self.getBbsPath),if_admin=if_admin)
 
 # 社区 - 文章详情
 class Detail(FruitzoneBaseHandler):
@@ -113,10 +109,11 @@ class Detail(FruitzoneBaseHandler):
 			try:
 				comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
 					.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
-					.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1).order_by(models.ArticleComment.create_time.desc())
+					.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1)\
+					.order_by(models.ArticleComment.create_time.desc())
 			except:
 				comments = None
-
+			
 			if comments:
 				if page >= comments.count()//page_size:
 					nomore = True
@@ -126,7 +123,7 @@ class Detail(FruitzoneBaseHandler):
 				return self.send_success(data=comments_list,nomore=nomore)
 		if_admin = self.if_super()
 		self.session.commit()
-		return self.render("bbs/artical-detail.html",article=article_data,author_if=author_if,if_admin=if_admin)
+		return self.render("{0}/artical-detail.html".format(self.getBbsPath),article=article_data,author_if=author_if,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:str","data?")
@@ -277,7 +274,7 @@ class Publish(FruitzoneBaseHandler):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
-		return self.render("bbs/publish.html",token=qiniuToken,edit=False,if_admin=if_admin)
+		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=False,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
@@ -352,7 +349,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
-		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data,if_admin=if_admin)
+		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=True,article_data=article_data,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
