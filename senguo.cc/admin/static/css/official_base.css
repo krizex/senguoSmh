@@ -159,7 +159,7 @@ a,input,button{ outline:none; }
 .text-list>li>a{display: block;font-size: 14px;color: #9f9f9f;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;padding-right: 60px;}
 .text-list .title{font-size: 16px;color: #58d0a6;height: 20px;line-height: 20px;margin-bottom: 10px;}
 .text-list .title>a{color: #9f9f9f;}
-.box-title{font-size: 22px;text-align: center;color: #333;}
+.box-title{font-size: 22px;text-align: center;color: #fff;font-weight: bold;}
 .black-bg{background-color: #1b1b1b;}
 .cyan-bg{background-color: #99cae8;}
 .purple-bg{background-color: #ac95c2;}
@@ -180,7 +180,7 @@ a,input,button{ outline:none; }
 .trait-list .rt-bg{right: 0;top:-1px;}
 .trait-list .first-lt{left: -1px;height: 16px;}
 .trait-list .five-lb{left: -1px;height: 15px;}
-.wrap-step{padding: 20px 50px;background-color: #E6E8EA;}
+.wrap-step{padding: 20px 50px;}
 .step-list{padding-top: 40px;}
 .step-list>li{float: left;width: 30%;}
 .step-list .roll-step{width: 50px;height:50px;border-radius:50%;text-align: center;margin: 0 auto;color: #fff;font-size: 14px;padding-top: 8px;line-height: 16px;}
@@ -202,8 +202,8 @@ a,input,button{ outline:none; }
 .type-list>li{float: left;width: 25%;padding: 0 10px;}
 .type-img{text-align: center;}
 .type-img>img{border-radius: 50%;}
-.type-list .first-title{color: #333;font-size: 14px;text-align: center;}
-.type-list .second-title{color: #999;font-size: 12px;margin-top: 5px;line-height: 18px;text-align: center;}
+.type-list .first-title{color: #fff;font-size: 16px;text-align: center;font-weight: bold;}
+.type-list .second-title{color: #fff;font-size: 14px;margin-top: 5px;line-height: 18px;text-align: center;}
 .more-list{color: #fff;position:absolute;top:310px;left: 50%;-webkit-transform:translate(-50%,0);display: block;width: 140px;font-size: 16px;text-align: center;height: 40px;line-height: 40px;border: 1px solid #fff;border-radius: 2px;-webkit-transition:all .2s ease-in-out;z-index:990;}
 .more-list:hover{text-decoration: none;background-color: #fff;color: #333;}
 /*右下角*/
@@ -226,3 +226,6 @@ a,input,button{ outline:none; }
 .wx-threeR{width: 0;height: 0;right: -32px;bottom: 17px;z-index:100;border-width: 16px;border-style: solid;border-color: transparent transparent transparent #33CC66;display: block;position: absolute;}
 .fi-kf-show .wx-threeR{bottom:5px;}
 .fi-kf-show .wx-threeRs{bottom:8px;}
+.online-bg{width: 100%;background-color: #f0f4f0;}
+.online-title-color{color: #000;}
+.new-users{width: 100%;background-color: #58d0a6;}
