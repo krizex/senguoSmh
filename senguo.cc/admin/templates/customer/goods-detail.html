@@ -31,7 +31,7 @@
     <div class="wrap-goods-info">
         <p class="goods-title">
             <span>{{good.name or ''}}</span>
-            {% if good.activity_status>0 or good.tag>1 %}<span class="goods-tag">{% if good.activity_status==1 %}秒杀{% elif good.activity_status==2 %}限时折扣{% elif good.tag>1 %}{% if good.tag==2 %}限时折扣{% elif good.tag==3 %}热销水果{% elif good.tag==4 %}今日特价{% else %}新品上架{% end %}{% end %}</span>{% end %}
+            {% if good.activity_status>0 or good.tag>1 %}<span class="goods-tag">{% if good.activity_status==1 and has_activity>0 %}秒杀{% elif good.activity_status==2 and has_activity>0 %}限时折扣{% elif good.tag>1 %}{% if good.tag==2 %}限时折扣{% elif good.tag==3 %}热销水果{% elif good.tag==4 %}今日特价{% else %}新品上架{% end %}{% end %}</span>{% end %}
             {% if good.buy_limit>0 %}<span class="goods-tag">{% if good.buy_limit==1 %}限新用户{% elif good.buy_limit==2 %}限老用户{% else %}限充值用户{% end %}</span>{% end %}
         </p>
         <p class="goods-num">
@@ -39,7 +39,7 @@
             <span>&nbsp;销量 {{good.saled or 0}}</span>
         </p>
         <p class="goods-info">{{good.intro or ''}}</p>
-        <p class="f12 mt10 {% if has_activity>0 and charge['is_seckill']==1 and good.activity_status==1 %}{%else%}hide{%end%}" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
+        <p class="f12 mt10 {% if has_activity==0 %}hide{%end%}" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
     </div>
     <ul class="wrap-choose-goods">
             {% for charge in charge_types %}
