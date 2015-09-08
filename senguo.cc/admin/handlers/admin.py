@@ -1559,7 +1559,6 @@ class Order(AdminBaseHandler):
 		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
 				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0,
 				 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0,
-
 				 }
 		try:
 			orders = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).all()
@@ -1836,8 +1835,6 @@ class Order(AdminBaseHandler):
 						old_balance_history.is_cancel = 1
 						self.session.flush()
 
-
-
 					#恢复用户账户余额，同时产生一条记录
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = order.customer_id,\
 						shop_id = order.shop_id).first()
@@ -1922,7 +1919,6 @@ class Order(AdminBaseHandler):
 		else:
 			return self.send_error(404)
 		return self.send_success()
-
 
 # 商品管理（老）
 class Shelf(AdminBaseHandler):
@@ -3442,7 +3438,6 @@ class Config(AdminBaseHandler):
 			return self.render("admin/shop-notice-set.html", notices=config.notices,token=token,context=dict(subpage='market_set',shopSubPage='notice_set'))
 		else:
 			return self.send_error(404)
-
 
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data")
@@ -5672,7 +5667,7 @@ class Discount(AdminBaseHandler):
 
 
 # added by jyj 2015-8-12
-# seckill
+# 秒杀
 class MarketingSeckill(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action:str","status?:int","activity_id?:int","page?:int")
