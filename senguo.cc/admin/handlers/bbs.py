@@ -370,8 +370,16 @@ class DetailEdit(FruitzoneBaseHandler):
 			return self.write("没有该文章的任何信息")
 		if article[0].account_id != self.current_user.id:
 			return self.redirect(self.reverse_url("BbsMain"))
+		public_time = article[0].public_time
+		year = public_time.strftime("%Y")
+		month = public_time.strftime("%m")
+		day = public_time.strftime("%d")
+		hour = public_time.strftime("%H")
+		minute = public_time.strftime("%M")
+		seconds = public_time.strftime("%S")
 		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,"type":self.article_type(article[0].classify)\
-		,"type_id":article[0].classify,"public":article[0].no_public,"private":article[0].comment_private,"public_time":article[0].public_time}
+		,"type_id":article[0].classify,"public":article[0].no_public,"private":article[0].comment_private,"status":article[0].status,\
+		"year":year,"month":month,"day":day,"hour":hour,"minute":minute,"seconds":seconds}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
@@ -582,10 +590,15 @@ class Profile(FruitzoneBaseHandler):
 			for article in article_list:
 				public_time = article[8]
 				time_now = datetime.datetime.now()
-				status = 1
+				article_status = 1
 				if public_time > time_now:
-					status = 2
-				datalist.append({"id":article[0],"title":article[1],"time":article[2].strftime("%Y/%m/%d %H:%M"),"article":article[3],"commentnum":article[4],"greatnum":article[5],"type":self.article_type(article[6]),"status":status})
+					article_status = 2
+				time = ""
+				if status == 1:
+					time = public_time.strftime("%Y/%m/%d %H:%M")
+				else:
+					time = article[2].strftime("%Y/%m/%d %H:%M")
+				datalist.append({"id":article[0],"title":article[1],"time":time,"article":article[3],"commentnum":article[4],"greatnum":article[5],"type":self.article_type(article[6]),"status":article_status})
 		return datalist,nomore
 
 	def getArticleData(self,article):
