@@ -163,30 +163,13 @@ a,input,button{ outline:none; }
 .black-bg{background-color: #1b1b1b;}
 .cyan-bg{background-color: #99cae8;}
 .purple-bg{background-color: #ac95c2;}
-.trait-list{padding: 30px 100px 20px 100px;}
-.trait-list>li{position:relative;display:block;font-size: 14px;color: #333;height: 100px;border: 1px solid #888;line-height: 100px;}
-.trait-list>li .roll{position: absolute;border-radius: 50%;width: 70px;height:70px;line-height:70px;font-size: 16px;color: #fff;text-align: center;display: block;top: 15px;}
-.trait-list>li .l-roll{left: -35px;}
-.trait-list>li .r-roll{right: -35px;}
-.trait-list .first{border-right:none;border-bottom-left-radius: 20px;border-top: none;margin-top: -1px;padding-left: 70px;}
-.trait-list .second{border-left:none;border-bottom-right-radius: 20px;border-top-right-radius: 20px;margin-top:-1px;text-align: right;padding-right: 70px;}
-.trait-list .third{border-right:none;border-top-left-radius: 20px;border-bottom-left-radius: 20px;margin-top:-1px;padding-left: 70px;}
-.trait-list .four{border-left:none;border-bottom-right-radius: 20px;border-top-right-radius: 20px;margin-top:-1px;text-align: right;padding-right: 70px;}
-.trait-list .five{border-bottom: none;border-right:none;border-top-left-radius: 20px;margin-top: -1px;padding-left: 70px;}
-.trait-list .mobg{position: absolute;background: #fff;display: block;width: 15px;height: 5px;}
-.trait-list .rb-bg{right: 0;bottom:-1px;}
-.trait-list .lt-bg{left: 0;top:-1px;}
-.trait-list .lb-bg{left: 0;bottom:-1px;}
-.trait-list .rt-bg{right: 0;top:-1px;}
-.trait-list .first-lt{left: -1px;height: 16px;}
-.trait-list .five-lb{left: -1px;height: 15px;}
 .wrap-step{padding: 20px 50px;}
 .step-list{padding-top: 40px;}
 .step-list>li{float: left;width: 30%;}
 .step-list .roll-step{width: 100px;height:100px;border-radius:50%;border:1px solid #fff;text-align: center;margin: 0 auto;color: #fff;font-size: 34px;padding-top: 38px;line-height: 16px;}
 .step-list .first-title{font-size: 16px;font-weight: bold;text-align: center;color: #fff;margin-top: 30px;}
 .step-list .second-title{font-size: 14px;text-align: center;color: #fff;margin-top: 10px;}
-.step-list .wp5{width: 5%;height:98px;background: url("/static/images/arr-right.png") center center no-repeat;}
+.step-list .wp5{width: 5%;height:98px;background: url("/static/images/for-right.png") center center no-repeat;}
 .business-bg{width: 100%;background-color: #58d0a6;}
 .yellow-bg{background-color: #e69519;}
 .blue-bg{background-color: #1c8ce4;}
@@ -230,15 +213,178 @@ a,input,button{ outline:none; }
 .aq-bg{width: 100%;background-color: #f0f4f0;}
 .wrap-qa{padding-top: 20px;}
 .wrap-qa>p{color: #000;}
-.o2o-lists{width: 100%;padding: 0 40px;position: relative;}
-.o2o-lists .right-triangle,.o2o-lists .left-triangle{position: absolute;top:37px;width: 0;height: 0;border-top: 15px solid transparent;border-bottom: 15px solid transparent;}
-.o2o-lists .right-triangle{left: 485px;border-right: 15px solid #fff;}
-.o2o-lists .left-triangle{left: 500px;border-left: 15px solid #fff;}
-.intro_list .item{width: 460px;height: 210px;background-color: #fff;}
-.intro_list .item .intro{position: relative;}
-.intro_list .item .intro .o2o-right-title,.intro_list .item .intro .o2o-left-title{position: absolute;top:-45px;font-size: 22px;font-weight: bold;}
-.intro_list .item .intro .o2o-right-title{left: -110px;color: #58d0a6;}
-.intro_list .item .intro .o2o-left-title{right: -110px;color: #fff;}
-.intro_list .item .intro .o2o-item-title{margin-top: 90px;}
-.o2o-lists .o2o-left-bg{background-color: #58d0a6;}
-.o2o-lists .o2o-left-bg p{color: #fff;}
+
+.o2o-lists{
+	position: relative;
+	width: 100%;
+	padding: 0 40px;
+}
+.o2o-lists .right-triangle,
+.o2o-lists .left-triangle{
+	position: absolute;
+	top:37px;
+	width: 0;
+	height: 0;
+	border-top: 15px solid transparent;
+	border-bottom: 15px solid transparent;
+}
+.o2o-lists .right-triangle{
+	left: 485px;
+	border-right: 15px solid #fff;
+}
+.o2o-lists .left-triangle{
+	left: 500px;
+	border-left: 15px solid #fff;
+}
+.intro_list .item{
+	width: 460px;
+	height: 210px;
+	background-color: #fff;
+}
+.intro_list .item .intro{
+	position: relative;
+}
+.intro_list .item .intro .o2o-right-title,
+.intro_list .item .intro .o2o-left-title{
+	position: absolute;
+	top:-45px;
+	font-size: 22px;
+	font-weight: bold;
+}
+.intro_list .item .intro .o2o-right-title{
+	left: -110px;
+	color: #58d0a6;
+}
+.intro_list .item .intro .o2o-left-title{
+	right: -110px;
+	color: #fff;
+}
+.intro_list .item .intro .o2o-item-title{
+	margin-top: 90px;
+}
+.o2o-lists .o2o-left-bg{
+	background-color: #58d0a6;
+}
+.o2o-lists .o2o-left-bg p{
+	color: #fff;
+}
+.online-bg .online-business{
+	width: 100%;
+	height: 520px;
+}
+.online-bg .online-business .trend,
+.online-bg .online-business .professional,
+.online-bg .online-business .experience,
+.online-bg .online-business .peer,
+.online-bg .online-business .chains{
+	position: relative;
+}
+
+/*线上买水果，森果更懂你*/
+.online-bg .online-business .online-trend,
+.online-bg .online-business .online-professional,
+.online-bg .online-business .online-experience,
+.online-bg .online-business .online-peer,
+.online-bg .online-business .online-chains{
+	position: absolute;
+	display: inline-block;
+	font-size: 20px;
+	line-height: 235px;
+	text-align: center;
+	font-weight: bold;
+	color: #58d0a6;
+}
+.online-bg .online-business .trend:hover .online-trend,
+.online-bg .online-business .professional:hover .online-professional,
+.online-bg .online-business .experience:hover .online-experience,
+.online-bg .online-business .peer:hover .online-peer,
+.online-bg .online-business .chains:hover .online-chains{
+	opacity: 0;
+}
+.online-bg .online-business .trend:hover .online-trend-content,
+.online-bg .online-business .professional:hover .online-professional-content,
+.online-bg .online-business .experience:hover .online-experience-content,
+.online-bg .online-business .peer:hover .online-peer-content,
+.online-bg .online-business .chains:hover .online-chains-content{
+	opacity: 1;
+}
+/**/
+.online-bg .online-business .online-trend-content,
+.online-bg .online-business .online-professional-content,
+.online-bg .online-business .online-experience-content,
+.online-bg .online-business .online-peer-content,
+.online-bg .online-business .online-chains-content{
+	position: absolute;
+	display: inline-block;
+	opacity: 0;
+}
+/*潮流*/
+.online-bg .online-business .online-trend,
+.online-bg .online-business .online-trend-content{
+	left:284px;
+	top:77px;
+	width: 204px;
+	height: 235px;
+}
+.online-bg .online-business .online-trend{
+	background:url("../official_img/trend.png");
+}
+.online-bg .online-business .online-trend-content{
+	background:url("../official_img/trend-content.png");
+}
+/*专业*/
+.online-bg .online-business .online-professional,
+.online-bg .online-business .online-professional-content{
+	left:494px;
+	top:77px;
+	width: 204px;
+	height: 235px;
+}
+.online-bg .online-business .online-professional{
+	background:url("../official_img/professional.png");
+}
+.online-bg .online-business .online-professional-content{
+	background:url("../official_img/professional-content.png");
+}
+/*经验*/
+.online-bg .online-business .online-experience,
+.online-bg .online-business .online-experience-content{
+	left:170px;
+	top:260px;
+	width: 204px;
+	height: 235px;
+}
+.online-bg .online-business .online-experience{
+	background:url("../official_img/experience.png");
+}
+.online-bg .online-business .online-experience-content{
+	background:url("../official_img/experience-content.png");
+}
+/*同行*/
+.online-bg .online-business .online-peer,
+.online-bg .online-business .online-peer-content{
+	left:380px;
+	top:260px;
+	width: 204px;
+	height: 235px;
+}
+.online-bg .online-business .online-peer{
+	background:url("../official_img/peer.png");
+}
+.online-bg .online-business .online-peer-content{
+	background:url("../official_img/peer-content.png");
+}
+/*供应链*/
+.online-bg .online-business .online-chains,
+.online-bg .online-business .online-chains-content{
+	left:590px;
+	top:260px;
+	width: 204px;
+	height: 235px;
+}
+.online-bg .online-business .online-chains{
+	background:url("../official_img/chains.png");
+}
+.online-bg .online-business .online-chains-content{
+	background:url("../official_img/chains-content.png");
+}

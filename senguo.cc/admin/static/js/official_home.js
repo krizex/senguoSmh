@@ -6,6 +6,7 @@ $(document).ready(function(){
         grabCursor: true,
         pagination: '.pagination',
         autoplay:"3000",
+        slidesPerView: 1,
         speed:'600',
         autoplayDisableOnInteraction:false,
         paginaClickable:true
