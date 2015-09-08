@@ -81,6 +81,7 @@ div,span,p,li{-webkit-user-select:none;}
 .icon_tz{background-position: 0 -22px;}
 .icon_sc{background-position: 0 -44px;}
 .icon_draft{background-position: 0 -70px;}
+.icon_quit{background-position: 0 -92px;}
 .post-cont img{max-width: 100% !important;}
 .go-login{border: 1px solid #fff;border-radius: 4px; width: 60px;height: 28px;line-height: 28px;display: inline-block;text-align: center;color: #fff;font-size: 14px;}
 /*底部*/

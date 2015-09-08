@@ -37,6 +37,10 @@ $(document).ready(function(){
 }).on("click","#scrollUp",function(){
     $('html,body').animate({scrollTop: '0px'}, 300);
 }).on("click",".wrap-user-pro li",function(){
-    var index = $(this).index();
-    window.location.href="/bbs/profile?id="+index;
+    if($(this).hasClass("quit")){
+        window.location.href="/customer/logout";
+    }else{
+        var index = $(this).index();
+        window.location.href="/bbs/profile?id="+index;
+    }
 });
