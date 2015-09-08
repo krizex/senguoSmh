@@ -87,7 +87,7 @@ handlers = [
 	(r"/customer/profile", handlers.customer.CustomerProfile, {}, "customerProfile"),
 	(r"/customer/wxauth", handlers.customer.WxBind, {"action":"wx_auth"}, "customerwxAuth"),
 	(r"/customer/wxBind", handlers.customer.WxBind, {"action":"wx_bind"}, "customerwxBind"),
-	# (r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
+	(r"/customer/test",handlers.customer.InsertData,{},"InsertData"),
 	(r"/customer/discover/(\w+)",handlers.customer.Discover,{},"customerDiscover"),
 	(r"/customer/storagechange",handlers.customer.StorageChange),
 	(r"/customer/qrwxpay",handlers.customer.QrWxpay,{},"customerQrWxpay"),
@@ -109,6 +109,8 @@ handlers = [
 	(r"/product",handlers.official.Product,{},"OfficialProduct"),
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
+	#微信退款
+	(r"/customer/online/refundwxpay",handlers.onlinePay.RefundWxpay,{},"refundWxpay"),
 
 	#支付宝在线支付
 	(r"/customer/online/aliPaycallback",handlers.onlinePay.OnlineAliPay,{'action':'AliPayCallback'},

@@ -260,7 +260,7 @@ function commentItem(data,_type){
     var type=data['type'];
     var nickname=data['nickname'];
     var great_num=data['great_num'];
-    var reply_num=data['reply_num'] || 10;
+    var reply_num=data['reply_num'] || 0;
     var nick_name=data['nick_name'];
     var comment=data['comment'];
     var imgurl=data['imgurl'] || '/static/images/person.png';

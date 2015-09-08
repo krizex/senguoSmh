@@ -1723,6 +1723,15 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		customer_list=customer_list[0:5]
 		return customer_list
 
+	@property
+	def getBbsPath(self):
+		file_name = ""
+		if self.is_pc_browser():
+			file_name = "bbs"
+		else:
+			file_name = "mbbs"
+		return file_name
+
 # 店铺管理后台基类方法
 class AdminBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.ShopAdmin

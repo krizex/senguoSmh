@@ -48,11 +48,7 @@ class Main(FruitzoneBaseHandler):
 			return self.send_success(datalist=datalist,nomore=nomore)
 
 		if_admin = self.if_super()
-
-		if self.is_pc_browser():
-			return self.render("bbs/main.html",if_admin=if_admin)
-		else:
-			return self.render("bbs/main.html",if_admin=if_admin)
+		return self.render("{0}/main.html".format(self.getBbsPath),if_admin=if_admin)
 
 # 社区 - 文章详情
 class Detail(FruitzoneBaseHandler):
@@ -100,7 +96,7 @@ class Detail(FruitzoneBaseHandler):
 		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].public_time,"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"nickname":article[1],"imgurl":article[3],\
 						"great_num":article[0].great_num,"comment_num":article[0].comment_num,\
-						"scan_num":article[0].scan_num,"great_if":great_if,"collect_if":collect_if}
+						"scan_num":article[0].scan_num,"collect_num":article[0].collect_num,"great_if":great_if,"collect_if":collect_if}
 		if "action" in self.args and self.args["action"] == "comment":
 			if self.args["page"]==[]:
 				page = 0
@@ -112,10 +108,11 @@ class Detail(FruitzoneBaseHandler):
 			try:
 				comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
 					.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
-					.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1).order_by(models.ArticleComment.create_time.desc())
+					.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1)\
+					.order_by(models.ArticleComment.create_time.desc())
 			except:
 				comments = None
-
+			
 			if comments:
 				if page >= comments.count()//page_size:
 					nomore = True
@@ -125,7 +122,7 @@ class Detail(FruitzoneBaseHandler):
 				return self.send_success(data=comments_list,nomore=nomore)
 		if_admin = self.if_super()
 		self.session.commit()
-		return self.render("bbs/artical-detail.html",article=article_data,author_if=author_if,if_admin=if_admin)
+		return self.render("{0}/artical-detail.html".format(self.getBbsPath),article=article_data,author_if=author_if,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:str","data?")
@@ -142,6 +139,7 @@ class Detail(FruitzoneBaseHandler):
 				record = None
 
 			num_1 = 1
+			num_2 = 1
 			if record:
 				if action == "article_great":
 					if record.great == 0:
@@ -150,7 +148,11 @@ class Detail(FruitzoneBaseHandler):
 						num_1 = -1
 						record.great = 0
 				elif action == "collect":
-					record.collect = 1 if record.collect ==0 else 0
+					if record.collect ==0 :
+						record.collect = 1
+					else:
+						num_2 = -1
+						record.collect = 0
 			else:
 				if action == "article_great":
 					great = models.ArticleGreat(
@@ -166,14 +168,16 @@ class Detail(FruitzoneBaseHandler):
 					)
 				self.session.add(great)
 
-			if action == "article_great":
-				try:
-					article = self.session.query(models.Article).filter_by( id = _id).first()
-				except:
-					return self.send_fail("[BbsDetail]no such article")
-				if article:
+			try:
+				article = self.session.query(models.Article).filter_by( id = _id).first()
+			except:
+				return self.send_fail("[BbsDetail]no such article")
+			if article:
+				if action == "article_great":
 					article.great_num = article.great_num +num_1
 					article.if_scan = 0
+				elif action == "collect":
+					article.collect_num = article.collect_num +num_2
 			self.session.commit()
 			return self.send_success()
 
@@ -276,7 +280,7 @@ class Publish(FruitzoneBaseHandler):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
-		return self.render("bbs/publish.html",token=qiniuToken,edit=False,if_admin=if_admin)
+		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=False,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
@@ -351,7 +355,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
-		return self.render("bbs/publish.html",token=qiniuToken,edit=True,article_data=article_data,if_admin=if_admin)
+		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=True,article_data=article_data,if_admin=if_admin)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
