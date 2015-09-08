@@ -156,4 +156,24 @@ div,span,p,li{-webkit-user-select:none;}
 .com-area{width: 100%;height: 80px;background-color: #f2f2f2;-webkit-box-sizing: border-box;padding: 6px;line-height: 18px;color: #999;font-size: 14px;border-radius: 4px;}
 .psh-commit{display: inline-block;width: 90px;height: 36px;line-height:36px;-webkit-box-sizing: border-box;font-size: 16px;text-align: center;border-radius: 4px;background-color: #47AE9C;color: #fff;}
 .comment-list{padding-top: 20px;border-top:1px solid #e7e7e7;margin-top: 20px;}
+.wrap-share-box{padding-top: 20px;border-top: 1px solid #e7e7e7;position: relative;}
+.zan_btn{display: inline-block;width: 63px;height: 62px;color: #fff;margin-right:10px;background: url('../img/bbs_zan.png') no-repeat;font-size: 14px;text-align: center;line-height: 98px;}
+.great-active{background-position: 0 0;}
+.great{background-position: 0 -74px;}
+.store-active{background-position: 0 -145px;}
+.store{background-position: 0 -220px;}
+.share-box{position: absolute;right: 0;height: 41px;line-height:41px;top: 10px;}
+.share-wx{display: inline-block;width: 41px;height: 41px;background: url('../img/bbs_share.png');background-position: 0 0;position: relative;}
+.share-wx:hover .wrap-share-code{display: block;}
+.wrap-share-code{position: absolute;left: -50px;top: -140px;background-color: #fff;width: 300px;display: none;}
+.code2-box{width: 131px;height: 131px;padding: 10px;-webkit-box-sizing: border-box;}
+.slogo{width: 24px;height: 24px;position: absolute;left: 54px;top: 54px;border-radius: 4px;background-color: #fff;}
+.code-txt-box{width: 150px;height: 131px;-webkit-box-sizing: border-box;border: 1px solid #ccd0cc;}
+.code-txt{margin-top: 40px;line-height: 20px;padding: 0 6px;}
+.shareto{height: 41px;line-height: 41px;margin-right: 20px;float: left;}
+
+
+
+
+
 
