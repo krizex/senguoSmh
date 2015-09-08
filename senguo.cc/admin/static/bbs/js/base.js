@@ -43,4 +43,7 @@ $(document).ready(function(){
         var index = $(this).index();
         window.location.href="/bbs/profile?id="+index;
     }
+}).on("click",".nav-list a",function(){
+    var type = $(this).attr("data-id");
+    window.location.href="/bbs?id="+type;
 });
