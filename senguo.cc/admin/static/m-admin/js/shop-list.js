@@ -34,7 +34,7 @@ $(document).ready(function(){
         width : 300,
         height : 300,
         colorDark : "#433943"
-    }).makeCode($("#shop_list_link").html());
+    }).makeCode($("#shop_list_link").attr("url"));
 }).on("click","#qa",function(){
     $(this).addClass("hide");
     $(".pop-qa").removeClass("hide");
