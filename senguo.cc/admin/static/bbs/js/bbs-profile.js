@@ -33,6 +33,7 @@ $(document).ready(function(){
         $("#topic_list").removeClass("hide");
     }
     articleList(0);
+    window.history.replaceState( {} , 'profile', '/bbs/profile?id='+index );
 }).on("click",".topic-list li",function(e){
     var id = $(this).attr("data-id");
     if($(e.target).hasClass("del_topic")){//删除
@@ -56,6 +57,7 @@ function scrollLoading(){
             finished=false;
             page++;
             articleList(page);
+            switch_flag = false;
         }
         else if(nomore==true){
             $('.more-btn').html("~ 没有更多了 ~").show();
@@ -123,7 +125,7 @@ function articleList(page){
         }
     })
 };
-var cur_time = "";
+var cur_time = [];
 function insertProfile(data){
     if(_type==0 || _type==2){
         for(var key in data){
@@ -177,15 +179,15 @@ function insertProfile(data){
                     detail:detail,
                     com_type:com_type
                 });
-                if(cur_time != kdate){
+                if(cur_time.indexOf(kdate)==-1){
                     $li.append(list_item);
                 }else{
                     $("#inform_list").children().last().append(list_item);
                 }
             }
-            if(cur_time != kdate){
+            if(cur_time.indexOf(kdate)==-1){
                 $("#inform_list").append($li);
-                cur_time==kdate;
+                cur_time.push(kdate);
             }
         }
     }
