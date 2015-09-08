@@ -44,6 +44,23 @@
             <div class="detail-cont mt10">
                 {% raw article["article"] %}
             </div>
+            <div class="wrap-share-box">
+                <a href="javascript:;" class="zan_btn great">5</a>
+                <a href="javascript:;" class="zan_btn store">5</a>
+                <div class="share-box">
+                    <span class="c999 shareto">分享到</span>
+                    <a href="javascript:;" title="分享到微信" class="share-wx">
+                        <div class="wrap-share-code group">
+                            <img src="/static/images/sg.png" alt="logo" class="slogo"/>
+                            <div class="code2-box fl" id="code2">
+                            </div>
+                            <div class="code-txt-box fl">
+                                <p class="c666 code-txt">打开微信"扫一扫"，将本文章分享到朋友圈</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
         </div>
         <div class="topic-detail box-border mt10">
             <p class="c333">文章评论(3)</p>
@@ -58,26 +75,6 @@
                 </span>
             </p>
             <ul class="comment-list" id="comment_list">
-                <!--<li>
-                    <dl class="dl">
-                        <dd>
-                            <img src="/static/images/person.png" alt="用户头像"/>
-                        </dd>
-                        <dt>
-                            <p class="f14 c666 clip">等待晴天<span class="ml10 c999">2015-09-01 12:33</span></p>
-                            <p class="c333 mt12">
-                                这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容
-                                这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容这是的内容
-                            </p>
-                        </dt>
-                    </dl>
-                    <div class="wrap-topic-attr">
-                        <div class="fr">
-                            <a href="javascript:;" class="icon-topic dianzan comment-great">赞</a>
-                            <a href="javascript:;" class="icon-topic reply comment-reply">回复</a>
-                        </div>
-                    </div>
-                </li>-->
             </ul>
         </div>
     </div>
@@ -110,5 +107,6 @@
 </div>
 {% end %}
 {% block bottom %}
+<script src="/static/js/third/qrcode.min.js"></script>
 <script src="{{static_url('bbs/js/bbs-artical-detail.js')}}"></script>
 {% end %}

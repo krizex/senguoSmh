@@ -18,6 +18,10 @@ $(document).ready(function(){
     });
     commentList(0);
     scrollLoading();
+    new QRCode($("#code2")[0], {
+        width : 110,//设置宽高
+        height : 110
+    }).makeCode(window.location.href);
 }).on("click",".del-comment",function(){  
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
@@ -29,7 +33,6 @@ $(document).ready(function(){
     $(".del-sure").attr("data-id",id);
     comment_item=$this.parents("li");
     $(".com-atical .num").text(parseInt($(".com-atical .num").text())-1);
-
 }).on("click",".del-sure",function(){
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
@@ -151,7 +154,7 @@ var item='<li>'+
             '</dl>'+
             '<div class="wrap-topic-attr">'+
                 '<div class="fr">'+
-                    '<a href="javascript:;" class="icon-topic dianzan comment-great" data-id="{{id}}">(<span class="great_num">{{great_num}}</span>)</a>'+
+                    '<a href="javascript:;" class="icon-topic dianzan comment-great {{if great_if=="true"}}dianzan-active{{/if}}" data-id="{{id}}">(<span class="great_num">{{great_num}}</span>)</a>'+
                     '<a href="javascript:;" class="icon-topic reply comment-reply" data-id="{{id}}" data-name="{{nickname}}">(<span class="reply_num">{{reply_num}}</span>)</a>'+
                 '</div>'+
             '</div>'+
