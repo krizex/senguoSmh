@@ -109,6 +109,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 
 
 /*限时折扣添加样式*/
+.charge-btn{width: 90px;display:inline-block;margin-left:15px;font-size: 12px;color: #000;text-align: center;height: 28px;line-height: 26px;border-radius: 2px;background-color: #ddd;}
 .week-btn{width: 50px;display:inline-block;margin-left:15px;font-size: 14px;background-color: #fff;color: #000;text-align: center;height: 28px;line-height: 28px;border-radius: 2px;}
 .back_green{background-color: #52b43f;}
 .back_gray{background-color: #f4f5f9;}
@@ -130,7 +131,6 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .time-btn-width{width: 45px}
 .text-below{vertical-align: 6px}
 .discount-tip{margin-left: 150px;margin-bottom: 10px}
-.charge-btn{width: 90px;display:inline-block;margin-left:15px;font-size: 12px;color: #000;text-align: center;height: 28px;line-height: 26px;border-radius: 2px;}
 .mode-cm{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:30px;font-size:14px;top:-45px;}
 .mode-cm .circle{display:inline-block;width:28px;height:28px;background:#fff;border-radius:50%;position:absolute;top:2px;}
 .discount_close{margin-left: 420px;}
@@ -153,8 +153,8 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .discount_rate{width: 100px !important;}
 .scroll-bar{overflow: hidden;overflow-y: auto;}
 /**/
-.add-link{float:left !important;color:#33CC66;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
-.delete-link{float: right !important;color:#ff0000;margin-right: 50px;margin-bottom: 10px;font-size: 18px;margin-top: 15px;}
+.add-link{float:left !important;color:#33CC66;margin-bottom: 10px;font-size: 14px;margin-top: 10px;}
+.delete-link{float: right !important;color:#ff0000;margin-right: 50px;margin-bottom: 10px;font-size: 14px;margin-top: 10px;}
 
 .send-day .btn{padding:5px 10px;font-size:12px;margin-right:5px;}
 .send-day .active{background:#44b549;color:#fff;border: none;}

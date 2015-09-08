@@ -627,6 +627,7 @@ function createSeckill(action){
 				var flag = res.flag;
 				if (flag == 0){
 					stop_flag = true;
+					console.log("$$$$$$$$$$$");
 					Tip(goods_name + '已经参与所选时间段内的其他秒杀活动，请选择其他商品！');
 					
 				}
@@ -729,7 +730,8 @@ function createSeckill(action){
 				former_price : former_price,
 				seckill_price : seckill_price,
 				storage_piece : storage_piece,
-				activity_piece : activity_piece
+				activity_piece : activity_piece,
+				seckill_charge_type_id:$(".seckill-charge-type-id").attr("data-id")
 			};
 			
 		}

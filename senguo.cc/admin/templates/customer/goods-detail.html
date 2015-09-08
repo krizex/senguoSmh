@@ -37,7 +37,7 @@
         </p>
         <p class="goods-num">
             <span id="dianzan" data-flag="{{good.favour_today}}" data-id="{{good.id}}"><span class="zan {% if good.favour_today %}zaned{% end %}"></span><span class="num">{{good.favour or 0}}</span></span>
-            <span>&nbsp;销量 {{good.saled or 0}}</span>
+            <span>&nbsp;销量 {{int(good.saled) or 0}}</span>
         </p>
         <p class="goods-info">{{good.intro or ''}}</p>
         <p class="f12 mt10 {% if has_activity==0 or good.activity_status==0 %}hide{%end%}" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
