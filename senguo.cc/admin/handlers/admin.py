@@ -2704,7 +2704,7 @@ class Goods(AdminBaseHandler):
 							#q_charge = self.session.query(models.ChargeType).filter_by(id=charge_type['id']).one()
 						except:
 							q_charge = None
-						print(q_charge)
+						# print(q_charge)
 						if q_charge:
 							q_charge.update(session=self.session,price=price,
 												  unit=charge_type["unit"],
@@ -5152,7 +5152,7 @@ class Discount(AdminBaseHandler):
 	def judgetimeright(self,q,start_date,end_date,f_time,t_time,discount_way,weeks):
 		current_shop_id=self.current_shop.id
 		now_date=int(time.time())
-		print(q,'@@@@@@@@1')
+		# print(q,'@@@@@@@@1')
 		can_choose=True
 		ygroup=q
 		if ygroup.discount_way==0 and discount_way==0:
@@ -5301,7 +5301,7 @@ class Discount(AdminBaseHandler):
 					use_goods=q1.name
 				discount={"id":x.inner_id,"use_goods_group":x.use_goods_group,"use_goods":x.use_goods,"use_goods_group_text":use_goods_group,"use_goods_text":use_goods,"status":x.status,"discount_rate":x.discount_rate,"charges":eval(x.charge_type)}
 				discount_items.append(discount)
-			print(discount_items,'44444')
+			# print(discount_items,'44444')
 			return self.render("admin/discount-edit.html",discount_items=discount_items,output_data=data,data1=data1,chargetype=chargetype,common_info=common_info,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="details":
 			discount_id=int(self.args["discount_id"])
@@ -5340,14 +5340,13 @@ class Discount(AdminBaseHandler):
 		if action=="close_all":
 			q=self.session.query(models.Marketing).filter_by(id=current_shop_id).with_lockmode('update').first()
 			discount_active_cm=q.discount_active
-			print(discount_active_cm)
+			# print(discount_active_cm)
 			if discount_active_cm==0:
 				q.update(self.session,discount_active=1)
 				self.off_activity_notice(self.session,"discount",current_shop_id)
 			else:
 				q.update(self.session,discount_active=0)
 				self.add_activity_notice(self.session,"discount",self.current_shop.shop_code,current_shop_id)
-			
 
 			qq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id).filter(models.DiscountShopGroup.status<2).with_lockmode('update').all()
 			for x in qq:
@@ -5364,7 +5363,7 @@ class Discount(AdminBaseHandler):
 					#考虑如果有所有商品和所有分组的情况
 					if y.use_goods_group==-2:
 						q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,activity_status=2).with_lockmode('update').all()
-						print(q_fruit,'@@@@@@@@@@@1')
+						# print(q_fruit,'@@@@@@@@@@@1')
 						for m in q_fruit:
 							q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id,activity_type=2).with_lockmode('update').all()
 							for n in q_charge:
@@ -5373,7 +5372,7 @@ class Discount(AdminBaseHandler):
 
 					elif y.use_goods==-1:
 						q_fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,activity_status=2,group_id=y.use_goods_group).with_lockmode('update').all()
-						print(q_fruit,'@@@@@@@@@@@2')
+						# print(q_fruit,'@@@@@@@@@@@2')
 						for m in q_fruit:
 							q_charge=self.session.query(models.ChargeType).filter_by(fruit_id=m.id,activity_type=2).with_lockmode('update').all()
 							for n in q_charge:
@@ -5464,8 +5463,8 @@ class Discount(AdminBaseHandler):
 						q_group_single=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2).first()
 						if q_group_single:
 							if not self.judgetimeright(q_group_single,start_date,end_date,f_time,t_time,discount_way,weeks):
-								print(x["use_goods_group"],'#####################')
-								print(x["use_goods"],'#####################')
+								# print(x["use_goods_group"],'#####################')
+								# print(x["use_goods"],'#####################')
 								return self.send_fail("商品"+str(discount_goods.index(x)+1)+"所选择的商品在选择时间段已经有了折扣活动，请重新选择")
 					
 					if not self.judge_seckill(current_shop_id,x["use_goods"],discount_way,start_date,end_date,f_time,t_time,weeks):
@@ -5498,7 +5497,7 @@ class Discount(AdminBaseHandler):
 			weeks=data["weeks"]
 			discount_goods=data["discount_goods"]
 			discount_close=data["discount_close"]
-			print(discount_close,'@@@@@@---')
+			# print(discount_close,'@@@@@@---')
 			if q.status==0:
 				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,start_date=start_date,end_date=end_date,discount_way=discount_way,weeks=str(weeks),f_time=f_time,t_time=t_time)
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
@@ -5521,7 +5520,7 @@ class Discount(AdminBaseHandler):
 						q_goods_part=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,use_goods_group=x.use_goods_group,use_goods=-1).filter(models.DiscountShop.status<2,models.DiscountShop.discount_id!=discount_id).all()
 						for m in q_goods_part:
 							q_group_all=self.session.query(models.DiscountShopGroup).filter_by(shop_id=current_shop_id,discount_id=m.discount_id).filter(models.DiscountShopGroup.status<2,models.DiscountShopGroup.discount_id!=discount_id).first()
-							print(q_group_all,"gggggg")
+							# print(q_group_all,"gggggg")
 							if q_group_all:
 								if not self.judgetimeright(q_group_all,start_date,end_date,f_time,t_time,discount_way,weeks):
 									return self.send_fail("商品"+str(qq.index(x)+1)+"所选择的分组在选择时间段已经有了折扣活动，请重新选择")
@@ -5549,7 +5548,7 @@ class Discount(AdminBaseHandler):
 						if not self.judge_seckill(current_shop_id,x.use_goods,discount_way,start_date,end_date,f_time,t_time,weeks):
 							return("商品"+str(qq.index(x)+1)+"所选择的商品在选择时间段已经有了其它活动，请检查并重新选择")
 					_index=qq.index(x)
-					print(discount_close,'ffffff')
+					# print(discount_close,'ffffff')
 					discount_good=discount_goods[_index]
 					if x.status==0:
 						if  discount_close[_index]==3:
@@ -5558,7 +5557,7 @@ class Discount(AdminBaseHandler):
 							status=x.status
 						x.update(self.session,shop_id=current_shop_id,discount_id=discount_id,use_goods_group=discount_good["use_goods_group"],\
 							use_goods=discount_good["use_goods"],discount_rate=discount_good["discount_rate"],charge_type=str(discount_good["charges"]),status=status)
-						print(x.status,'#####')	
+						# print(x.status,'#####')	
 			elif q.status==1:
 				q.update(self.session,shop_id=current_shop_id,discount_id=discount_id,end_date=end_date,t_time=t_time)
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=discount_id).order_by(models.DiscountShop.inner_id).with_lockmode("update").all()
