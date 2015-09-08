@@ -174,10 +174,16 @@ class Detail(FruitzoneBaseHandler):
 				return self.send_fail("[BbsDetail]no such article")
 			if article:
 				if action == "article_great":
-					article.great_num = article.great_num +num_1
+					if article.great_num>=0:
+						article.great_num = article.great_num +num_1
+					else:
+						article.great_num = 0
 					article.if_scan = 0
 				elif action == "collect":
-					article.collect_num = article.collect_num +num_2
+					if article.collect_num>=0:
+						article.collect_num = article.collect_num +num_2
+					else:
+						article.collect_num = 0
 			self.session.commit()
 			return self.send_success()
 
