@@ -32,6 +32,9 @@
         <div class="topic-detail box-border">
             <h3 class="topic-title">{{article["title"]}}</h3>
             <p class="detail-user mt10">
+                {% if if_admin %}
+                <a href="javascript:;" class="del-article fr" id="del-atical" data-id="{{article['id']}}">删除</a>
+                {% end %}
                 <span class="topic-class">{{article["type"]}}</span>
                 <span>
                     <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像" class="detail-img"/>

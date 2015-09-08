@@ -159,10 +159,10 @@ div,span,p,li{-webkit-user-select:none;}
 .comment-list{padding-top: 20px;border-top:1px solid #e7e7e7;margin-top: 20px;}
 .wrap-share-box{padding-top: 20px;border-top: 1px solid #e7e7e7;position: relative;}
 .zan_btn{display: inline-block;width: 63px;height: 62px;color: #fff;margin-right:10px;background: url('../img/bbs_zan.png') no-repeat;font-size: 14px;text-align: center;line-height: 98px;}
-.great-active{background-position: 0 0;}
 .great{background-position: 0 -74px;}
-.store-active{background-position: 0 -145px;}
+.great-active{background-position: 0 0;}
 .store{background-position: 0 -220px;}
+.store-active{background-position: 0 -145px;}
 .share-box{position: absolute;right: 0;height: 41px;line-height:41px;top: 28px;}
 .share-wx{display: inline-block;width: 41px;height: 41px;background: url('../img/bbs_share.png');background-position: 0 0;position: relative;}
 .share-wx:hover .wrap-share-code{display: block;}
