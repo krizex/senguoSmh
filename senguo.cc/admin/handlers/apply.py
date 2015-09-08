@@ -275,12 +275,19 @@ class WxMessage(CustomerBaseHandler):
 					#admin.accountinfo = account_info
 					#self.session.add(admin)
 					self.session.commit()
+
+			# 用户关注微信服务号
 			if event == 'subscribe':
+				# 根据场景值统计扫码关注服务号的用户数量
 				if scene_id:
-					if scene_id == 1:
-						scenestatic = self.session.query(models.SceneStatic).filter_by(scene_id=1).first()
-						scenestatic.times += 1
-						self.session.commit()
+					scene_static = self.session.query(models.SceneStatic).filter_by(scene_id=scene_id).first()
+					if scene_static:
+						scene_static.times += 1
+					else:
+						scene_static = models.SceneStatic(scene_id=scene_id,times=1)
+						self.session.add(scene_static)
+					self.session.commit()
+				# 用户关注后自动发送消息
 				ToUserName = data.get('ToUserName',None) #开发者微信号
 				FromUserName = data.get('FromUserName',None) # 发送方openid
 				CreateTime  = data.get('CreateTime',None) #接受消息时间
@@ -290,8 +297,6 @@ class WxMessage(CustomerBaseHandler):
 				reply = ET.tostring(reply,encoding='utf8',method='xml')
 				# print("[ApplyWxMessage]reply:",reply)
 				self.write(reply)
-
-				
 
 	@classmethod
 	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content=None):
