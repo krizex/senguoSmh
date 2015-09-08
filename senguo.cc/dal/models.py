@@ -968,7 +968,7 @@ class BalanceHistory(MapBase,_CommonApi):
 
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
 	balance_type = Column(TINYINT,nullable=False,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
-												# 6:余额消费完成 ，可提现额度变化 7:在线支付订单完成，可提现额度变化
+												# 6:余额消费完成 ，可提现额度变化 7:在线支付订单完成，可提现额度变化,-1:错误记录，然后被删掉的
 	balance_value  = Column(Float,nullable=False,default=0)
 	create_time    = Column(DateTime,nullable=False,default = func.now())
 	shop_totalPrice = Column(Float,nullable=False,default = 0)
