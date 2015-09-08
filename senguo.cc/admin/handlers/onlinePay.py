@@ -185,11 +185,11 @@ class OnlineWxPay(CustomerBaseHandler):
 		order_num = order.num
 		totalPrice = order.new_totalprice
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
-		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
+		# shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		wxPrice =int(totalPrice * 100)
 		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
+		unifiedOrder.setParameter("body",'Order No. '+str(order_num))
 		unifiedOrder.setParameter("notify_url",url)
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
