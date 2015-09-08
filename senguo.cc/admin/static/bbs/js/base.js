@@ -38,7 +38,7 @@ $(document).ready(function(){
     $('html,body').animate({scrollTop: '0px'}, 300);
 }).on("click",".wrap-user-pro li",function(){
     if($(this).hasClass("quit")){
-        window.location.href="/customer/logout";
+        window.location.href="/customer/logout?next=/bbs";
     }else{
         var index = $(this).index();
         window.location.href="/bbs/profile?id="+index;

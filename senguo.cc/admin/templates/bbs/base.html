@@ -31,7 +31,7 @@
                         <img src="{{handler.current_user.accountinfo.headimgurl_small or '/static/images/person.png'}}" alt="{{handler.current_user.accountinfo.nickname}}"/>
                         <span class="name-text ml5">{{handler.current_user.accountinfo.nickname}}</span>
                         {% else %}
-                        <a href="/customer/login" class="go-login">登录</a>
+                        <a href="{{reverse_url('customerLogin')}}?next=/bbs" class="go-login">登录</a>
                         {% end %}
                     </div>
                     {% if if_login %}
