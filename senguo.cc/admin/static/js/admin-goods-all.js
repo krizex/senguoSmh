@@ -471,22 +471,25 @@ $(document).ready(function(){
 }).on("click","#add-img-box",function(){
     pictureType="goods";
     $(".pop-picture-library").show();
-}).on("click",".picture-list li",function(){
-     if($("#item-img-lst").children(".img-bo").size()<5){
-        var src = $(this).find("img").attr("url");
-        var index = $("#item-img-lst").children(".img-bo").size();
-        var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" url="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
-        $("#add-img-box").before(item);
-        //$(this).prev(".img-selected").show();
-        //$(this).addClass("selected-img");
-        if($("#item-img-lst").children(".img-bo").size()==5){
+}).on("click",".picture-list li",function(e){
+    if($(e.target).closest(".del-pic-img").size()==0){
+        if($("#item-img-lst").children(".img-bo").size()<5){
+            var src = $(this).find("img").attr("url");
+            var index = $("#item-img-lst").children(".img-bo").size();
+            var item = '<li class="img-bo" data-index="'+index+'" data-rel="'+index+'"><img src="'+src+'" url="'+src+'" class="img"><a class="del-img" href="javascript:;">x</a></li>';
+            $("#add-img-box").before(item);
+            //$(this).prev(".img-selected").show();
+            //$(this).addClass("selected-img");
+            if($("#item-img-lst").children(".img-bo").size()==5){
+                $("#item-img-lst").children(".add-img-box").addClass("hidden");
+            }
+        }else{
+            Tip("商品图片最多只能添加5张");
             $("#item-img-lst").children(".add-img-box").addClass("hidden");
         }
-    }else{
-        Tip("商品图片最多只能添加5张");
-        $("#item-img-lst").children(".add-img-box").addClass("hidden");
+        $(".pop-picture-library").hide();
     }
-    $(".pop-picture-library").hide();
+     
 }).on("click","#upload-picture",function(){
     $(".pop-picture-library").hide();
 });
@@ -1093,7 +1096,7 @@ $(document).ready(function(){
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
         browse_button: 'upload-picture',
-        container: 'add-img-box',
+        container: 'upload-area',
         max_file_size: '4mb',
         filters : {
             max_file_size : '4mb',//限制图片大小

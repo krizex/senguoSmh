@@ -1,4 +1,5 @@
 var NoticeEdit,imgIndex;
+pictureType = "notice";
 $(document).ready(function(){
     //添加公告
     $('.add-new-notice').on('click',function(){
@@ -117,7 +118,7 @@ $(document).ready(function(){
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
         browse_button: 'upload-picture',
-        container: 'wrap-legal-img',
+        container: 'upload-area',
         max_file_size: '4mb',
         filters : {
             max_file_size : '4mb',//限制图片大小
@@ -167,17 +168,20 @@ $(document).ready(function(){
             }
         }
     });
-}).on("click",".picture-list li",function(){
-    var action=$(".pop-picture-library").attr("action");
-    var img_url=$(this).find("img").attr("url");
-    if(action=="edit"){
-        $(".set-list-item").eq(imgIndex-1).find("img").attr({"src":img_url});
-        $(".set-list-item").eq(imgIndex-1).find(".preview-img").attr({"url":img_url});
-    }else{
-        $("#add-img").attr({"url":img_url,"src":img_url}).removeClass("hide");
+}).on("click",".picture-list li",function(e){
+    if($(e.target).closest(".del-pic-img").size()==0){
+        var action=$(".pop-picture-library").attr("action");
+        var img_url=$(this).find("img").attr("url");
+        if(action=="edit"){
+            $(".set-list-item").eq(imgIndex-1).find("img").attr({"src":img_url});
+            $(".set-list-item").eq(imgIndex-1).find(".preview-img").attr({"url":img_url});
+        }else{
+            $("#add-img").attr({"url":img_url,"src":img_url}).removeClass("hide");
+        }
+        
+        $(".pop-picture-library").hide(); 
     }
-    
-    $(".pop-picture-library").hide();
+   
 }).on("click","#upload-picture",function(){
     $(".pop-picture-library").hide();
 });

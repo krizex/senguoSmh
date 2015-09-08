@@ -221,7 +221,185 @@ $(document).ready(function(){
     delGoods($("#finish_btn").attr("data-id"));
 }).on("click",".b-close",function(){
     $(this).closest(".pop-bwin").addClass("hide");
+}).on("click","#add-img",function(){
+    getPicture(pictureType,0);
+    $(".pop-picture-library").removeClass("hide");
+    var uploader = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'upload-picture',
+        container: 'upload-area',
+        max_file_size: '4mb',
+        filters : {
+            max_file_size : '4mb',//限制图片大小
+            mime_types: [
+                {title : "image type", extensions : "jpg,jpeg,png"}
+            ]
+        },
+        flash_swf_url: 'static/js/plupload/Moxie.swf',
+        dragdrop: false,
+        chunk_size: '4mb',
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
+        uptoken: $("#token").val(),
+        unique_names: false,
+        save_key: false,
+        auto_start: true,
+        init: {
+            'FilesAdded': function (up, files) {
+                var file = files[0];
+                var isOri = "";
+                EXIF.getData(file.getNative(), function() {
+                    var orientation = file.getNative().exifdata.Orientation;
+                    if(orientation && orientation>1){//ios 横拍为3，竖排为6
+                        if(orientation==3){
+                            isOri = "rotate-img2";
+                        }else if(orientation == 6){
+                            isOri = "rotate-img";
+                        }
+                    }
+                });
+                var w = width+10;
+                var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><div style="width:'+width+'px;height:'+width+'px;" class="img-cover2 wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="商品图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></li>');
+                $("#add-img").closest("li").before($item);
+                if ($("#img_list").children("li").size() == 6) {
+                    $("#img-lst").addClass("hide");
+                    $(".moxie-shim").addClass("hide");
+                }
+                !function(){
+                    previewImage(file,function(imgsrc){
+                        $("#"+file.id).attr("src",imgsrc);
+                    })
+                }();
+            },
+            'UploadProgress': function (up, file) {
+            },
+            'FileUploaded': function (up, file, info) {
+                $("#" + file.id).prev(".img-cover2").addClass("hide");
+                $("#" + file.id).next("a").removeClass("hide");
+                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                $(".pop-picture-library").hide();
+            },
+            'Error': function (up, err, errTip) {
+                if (err.code == -600) {
+                    Tip("图片大小不能超过4M哦");
+                } else if (err.code == -601) {
+                    Tip("图片格式不对哦，只能上传png、jpg格式图片");
+                } else if (err.code == -200) {
+                    Tip("当前页面过期，请刷新页面");
+                } else {
+                    Tip(err.code + ": " + err.message);
+                }
+                up.removeFile(err.file.id);
+                $("#"+err.file.id).closest("li").remove();
+                if($("#"+err.file.id).closest("li").index()==4){
+                    $("#img-lst").removeClass("hide");
+                    $(".moxie-shim").removeClass("hide");
+                }
+            },
+            'Key': function (up, file) {
+                var key = file.id;
+                return key;
+            }
+        }
+    });
+    setTimeout(function(){
+        $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
+    },800);
+}).on("click",".picture-list li",function(e){
+    var imgurl=$(this).find("img").attr("src");
+    var _url=$(this).find("img").attr("url");
+    var w = width+10;
+    if($(e.target).closest(".del-pic-img").size()==0){
+        var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img class="image" style="width:'+width+'px;height:'+width+'px;" id="" src="" alt="商品图片"/><a href="javascript:;" class="icon-del"></a></li>');
+        if ($("#img_list").children("li").size() == 6) {
+            $("#img-lst").addClass("hide");
+            $(".moxie-shim").addClass("hide");
+        }else{
+            if ($("#img_list").children("li").size() == 5){
+                $("#img-lst").addClass("hide");
+                $(".moxie-shim").addClass("hide");
+            }
+            $item.find("img").attr({"src":imgurl,"url":_url});
+            $("#add-img").closest("li").before($item);
+        }
+        $(".pop-picture-library").addClass("hide");
+    }
+}).on("click",".pop-picture-library .cancel-btn",function(){
+    $(this).closest(".pop-picture-library").addClass("hide");
+}).on("click",".del-pic-img",function(){
+    if(confirm("是否将该图片从图片库删除？")){
+        var $this=$(this);
+        var id=$this.parents(".picture-list-item").attr("data-id");
+        var url = "/admin/picture";
+        var args={
+            action:"del",
+            data:{
+                id:id
+            }
+        }
+         $.postJson(url,args,function(res) {
+            if (res.success) {
+               $this.parents(".picture-list-item").remove();
+            }else{
+                Tip(res.error_text);
+            }
+        },function(){
+            return Tip('您的网络暂时不通畅，请稍候再试');
+        });
+    }
+   
 });
+
+$(document).ready(function(){
+     
+});
+
+var pictureType="goods",_page = 0,nomore=false,_finished=true;
+function getPicture(action,page){
+     $.ajax({
+        url:'/admin/picture?action='+action+'&page='+page,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.datalist;
+                var total = res.total_page;
+                if(total==page+1){
+                    nomore=true;
+                }
+                var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
+                        '<a href="javascript:;" class="del-pic-img">x</a>'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/80/h/80" url="{{imgurl}}" alt="商品图片"/>'+
+                    '</li>';
+                for(var key in data){
+                    var render = template.compile(item);
+                    var html = render({
+                        imgurl:data[key]['imgurl'],
+                        id:data[key]['id']
+                    });
+                    $('.picture-list').append(html);
+                }
+                _finished = true;
+            }
+        }
+    });
+};
+
+
+$(window).scroll(function(){
+    var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+    var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+    var totalheight = 0;
+    var main = $('.picture-library');              //主体元素
+    totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+    if(_finished&&(main.height()-range) <= totalheight  && nomore==false) {
+        _finished=false;
+        _page = _page+1;
+        getPicture(pictureType,_page);
+    }
+});
+
+
+
 //删除商品
 function delGoods(id){
     var url="/admin/goods/all";
@@ -482,85 +660,7 @@ function simpleUnitSwitch(price_unit,cur_unit,id){
     cur_price.find(".second-num").html(second);
 }
 $(document).ready(function(){
-    var uploader = Qiniu.uploader({
-        runtimes: 'html5,flash,html4',
-        browse_button: 'add-img',
-        container: 'img-lst',
-        max_file_size: '4mb',
-        filters : {
-            max_file_size : '4mb',//限制图片大小
-            mime_types: [
-                {title : "image type", extensions : "jpg,jpeg,png"}
-            ]
-        },
-        flash_swf_url: 'static/js/plupload/Moxie.swf',
-        dragdrop: false,
-        chunk_size: '4mb',
-        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
-        uptoken: $("#token").val(),
-        unique_names: false,
-        save_key: false,
-        auto_start: true,
-        init: {
-            'FilesAdded': function (up, files) {
-                var file = files[0];
-                var isOri = "";
-                EXIF.getData(file.getNative(), function() {
-                    var orientation = file.getNative().exifdata.Orientation;
-                    if(orientation && orientation>1){//ios 横拍为3，竖排为6
-                        if(orientation==3){
-                            isOri = "rotate-img2";
-                        }else if(orientation == 6){
-                            isOri = "rotate-img";
-                        }
-                    }
-                });
-                var w = width+10;
-                var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><div style="width:'+width+'px;height:'+width+'px;" class="img-cover2 wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="商品图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></li>');
-                $("#add-img").closest("li").before($item);
-                if ($("#img_list").children("li").size() == 6) {
-                    $("#img-lst").addClass("hide");
-                    $(".moxie-shim").addClass("hide");
-                }
-                !function(){
-                    previewImage(file,function(imgsrc){
-                        $("#"+file.id).attr("src",imgsrc);
-                    })
-                }();
-            },
-            'UploadProgress': function (up, file) {
-            },
-            'FileUploaded': function (up, file, info) {
-                $("#" + file.id).prev(".img-cover2").addClass("hide");
-                $("#" + file.id).next("a").removeClass("hide");
-                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
-            },
-            'Error': function (up, err, errTip) {
-                if (err.code == -600) {
-                    Tip("图片大小不能超过4M哦");
-                } else if (err.code == -601) {
-                    Tip("图片格式不对哦，只能上传png、jpg格式图片");
-                } else if (err.code == -200) {
-                    Tip("当前页面过期，请刷新页面");
-                } else {
-                    Tip(err.code + ": " + err.message);
-                }
-                up.removeFile(err.file.id);
-                $("#"+err.file.id).closest("li").remove();
-                if($("#"+err.file.id).closest("li").index()==4){
-                    $("#img-lst").removeClass("hide");
-                    $(".moxie-shim").removeClass("hide");
-                }
-            },
-            'Key': function (up, file) {
-                var key = file.id;
-                return key;
-            }
-        }
-    });
-    setTimeout(function(){
-        $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
-    },500);
+
 })
 //获取cookie
 function getCookie(key){

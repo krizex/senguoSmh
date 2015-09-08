@@ -4993,3 +4993,5 @@ class GetPicture(AdminBaseHandler):
 				picture.status = 0
 				self.session.commit()
 			return self.send_success()
+		else:
+			return self.send_fail("403")

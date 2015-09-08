@@ -113,6 +113,28 @@ $(document).ready(function(){
    
 }).on("click",".pop-picture-library .cancel-btn",function(){
     $(this).closest(".pop-win").hide();
+}).on("click",".del-pic-img",function(){
+    if(confirm("是否将该图片从图片库删除？")){
+        var $this=$(this);
+        var id=$this.parents(".picture-list-item").attr("data-id");
+        var url = "/admin/picture";
+        var args={
+            action:"del",
+            data:{
+                id:id
+            }
+        }
+         $.postJson(url,args,function(res) {
+            if (res.success) {
+               $this.parents(".picture-list-item").remove();
+            }else{
+                Tip(res.error_text);
+            }
+        },function(){
+            return Tip('您的网络暂时不通畅，请稍候再试');
+        });
+    }
+   
 });
 
 var pictureType="goods";
@@ -137,7 +159,8 @@ function getPicture(action,page){
                     $(".picture-pagination").hide();
                 }
                 $('.picture-list').empty();
-                var item='<li class="img-bo" data-id="{{id}}">'+
+                var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
+                        '<a href="javascript:;" class="del-pic-img">x</a>'+
                         '<div class="img-selected">已选</div>'+
                         '<img src="{{imgurl}}?imageView2/1/w/80/h/80" url="{{imgurl}}" alt="商品图片"/>'+
                     '</li>';
