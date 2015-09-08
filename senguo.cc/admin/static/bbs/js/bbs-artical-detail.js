@@ -55,11 +55,20 @@ $(document).ready(function(){
        $('.pop-login').removeClass("hide");
        return false; 
     }
+    var $this = $(this);
     var url="";
     var args={action:"collect",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
-            Tip("收藏成功");
+            var num = parseInt($this.html());
+            if($this.hasClass('store-active')){
+                $this.removeClass("store-active");
+                num--;
+            }else{
+                $this.addClass("store-active");
+                num++;
+            }
+            $this.html(num);
         }else{
             Tip(res.error_text);
         }
@@ -113,9 +122,18 @@ $(document).ready(function(){
     }
     var url="";
     var args={action:"article_great",data:""};
+    var $this = $(this);
     $.postJson(url,args,function(res){
         if(res.success){
-            Tip("点赞成功");
+            var num = parseInt($this.html());
+            if($this.hasClass('great-active')){
+                $this.removeClass("great-active");
+                num--;
+            }else{
+                $this.addClass("great-active");
+                num++;
+            }
+            $this.html(num);
         }else{
             Tip(res.error_text);
         }
@@ -127,10 +145,6 @@ $(document).ready(function(){
     }
     admireAtical(tid,"comment",$(this));
 }).on("click","#del-atical",function(){//删除
-    if(if_login=='False'){
-       $('.pop-login').removeClass("hide");
-       return false; 
-    }
     if(confirm("确认删除？")){
         var id = $(this).attr("data-id");
         delAtical(id);
