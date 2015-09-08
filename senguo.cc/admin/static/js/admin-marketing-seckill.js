@@ -386,15 +386,12 @@ $(document).ready(function(){
 
 
 }).on('blur','.seckill-price-input',function(){
+	var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
 	var $this = $(this);
-	var input_text = $this.val();
-	if (input_text.length != 0 && isNaN(input_text)){
+	var input_text = $this.val().trim();
+	if (!testMoney.test(input_text) || parseFloat(input_text) < 0.01){
 		$this.val('');
-		Tip('秒杀价必须是正数，请重新输入！');
-	}
-	if (input_text.length != 0 && !isNaN(input_text) && parseFloat(input_text) < 0.01){
-		$this.val('');
-		Tip('秒杀价必须是大于或等于0.01元的正数，请重新输入！');
+		Tip('请填写正确的秒杀价，最多保留2位小数');
 	}
 	
 }).on('click','.sec-pre-page',function(){
@@ -650,7 +647,7 @@ function createSeckill(action){
 	$('.activity-store-input').each(function(){
 		var $this = $(this);
 		var goods_num = '商品' + $this.closest(".new-seckill-item").find('.goods-num').text();
-		var input_text = $this.val();
+		var input_text = $this.val().trim();
 		var reg = /^[1-9]\d*$/;
 		if (input_text.length != 0 && !reg.test(input_text)){
 			$this.val('');
