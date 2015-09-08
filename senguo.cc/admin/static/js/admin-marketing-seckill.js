@@ -561,16 +561,16 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
-    if(!$(".cur-goods-group").attr("data-id") && !$(".cur-goods-group").hasClass("clone-flag")){
-        Tip('请选择商品分组！');
-        create_seckill_lock = "off";
-        return false;
-    }
-    if(!$(".cur-goods").attr("data-id") && !$(".cur-goods").hasClass("clone-flag")){
-        Tip('请选择商品名称！');
-        create_seckill_lock = "off";
-        return false;
-    }
+	    if(!$(".cur-goods-group").attr("data-id") && !$(".cur-goods-group").hasClass("clone-flag")){
+	        Tip('请选择商品分组！');
+	        create_seckill_lock = "off";
+	        return false;
+	    }
+	    if(!$(".cur-goods").attr("data-id") && !$(".cur-goods").hasClass("clone-flag")){
+	        Tip('请选择商品名称！');
+	        create_seckill_lock = "off";
+	        return false;
+	    }
 	if($('.choose-hour').attr('data-id').length == 0 || $('.choose-minute').attr('data-id').length == 0 || $('.choose-second').attr('data-id').length == 0){
 		Tip('持续时间未设置！');
 		create_seckill_lock = "off";
@@ -581,6 +581,7 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
+	var cur_action = $.getUrlParam("action");
 	$('.new-seckill-item').each(function(){
 		var $this = $(this);
 		var goods_name = '商品'+$this.find('.goods-num').text();
@@ -604,9 +605,17 @@ function createSeckill(action){
 		if ($.getUrlParam("activity_id")){
 			activity_id = $.getUrlParam("activity_id")
 		}
+
+		if (cur_action == "seckill_edit"){
+			var action_status = "edit";
+		}
+		else{
+			var action_status = "new";
+		}
 		var args = {
 			data:data,
-			action:'check_fruit',
+			action:"check_fruit",
+			status:action_status,
 			activity_id:activity_id
 		};
 

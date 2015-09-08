@@ -444,29 +444,30 @@ class customerGoods(CustomerBaseHandler):
 						charge['is_seckill'] = 1
 						has_activity = 1
 						seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).first()
-						seckill_former_charge_type_id.append(seckill_goods.charge_type_id)
-						customer_query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop.id,seckill_goods_id=seckill_goods.id).all()
-						if customer_query:
-							if customer_query[0].status in [1,2]:
-								seckill_is_bought = 1
+						if seckill_goods:
+							seckill_former_charge_type_id.append(seckill_goods.charge_type_id)
+							customer_query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop.id,seckill_goods_id=seckill_goods.id).all()
+							if customer_query:
+								if customer_query[0].status in [1,2]:
+									seckill_is_bought = 1
 
-						seckill_activity_id = seckill_goods.activity_id
-						seckill_goods_id = seckill_goods.id
+							seckill_activity_id = seckill_goods.activity_id
+							seckill_goods_id = seckill_goods.id
 
-						time_query = self.session.query(models.SeckillActivity).join(models.SeckillGoods,models.SeckillGoods.activity_id == models.SeckillActivity.id).filter(models.SeckillGoods.id == seckill_goods.id).first()
-						seckill_start_time = time_query.start_time
+							time_query = self.session.query(models.SeckillActivity).join(models.SeckillGoods,models.SeckillGoods.activity_id == models.SeckillActivity.id).filter(models.SeckillGoods.id == seckill_goods.id).first()
+							seckill_start_time = time_query.start_time
 
-						end_time = time_query.end_time
+							end_time = time_query.end_time
 
-						seckill_price_dif = round(float(seckill_goods.former_price - seckill_goods.seckill_price),2)
-						if seckill_goods.activity_piece - seckill_goods.ordered > 0:
-							seckill_activity_piece= seckill_goods.activity_piece - seckill_goods.ordered
+							seckill_price_dif = round(float(seckill_goods.former_price - seckill_goods.seckill_price),2)
+							if seckill_goods.activity_piece - seckill_goods.ordered > 0:
+								seckill_activity_piece= seckill_goods.activity_piece - seckill_goods.ordered
 
-						if seckill_start_time > int(time.time()):
-							has_activity = 0
-							seckill_not_start = 1
-							former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
-							unit = self.getUnit(former_charge_type.unit)
+							if seckill_start_time > int(time.time()):
+								has_activity = 0
+								seckill_not_start = 1
+								former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
+								unit = self.getUnit(former_charge_type.unit)
 				charge_types.append({'id':former_charge_type.id if seckill_not_start else charge_type.id,'price':round(former_charge_type.price,2) if seckill_not_start else round(charge_type.price*discount_rate/10,2),\
 					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,\
 					'market_price':former_charge_type.market_price if seckill_not_start else charge_type.market_price,'relate':former_charge_type.relate if seckill_not_start else charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
@@ -512,7 +513,7 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		
+		print("#####",charge)
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
 								seckill_goods_ids=seckill_goods_ids,charge=charge)
 
