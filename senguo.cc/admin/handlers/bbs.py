@@ -419,7 +419,7 @@ class DetailEdit(FruitzoneBaseHandler):
 								public_time = time_now
 						else:
 							public_time=time_now
-					elif int(data["type"]) == 1:
+					else:
 						public_time=time_now
 					status=int(data["type"])
 			except:
