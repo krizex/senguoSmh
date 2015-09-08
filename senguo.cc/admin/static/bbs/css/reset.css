@@ -110,7 +110,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pop-content .button-box button{background:#48b6a4;color:#fff;border-radius:20px;width:35%;height:30px;}
 .pop-content .btn{display:inline-block;background:#48b6a4;color:#fff;border-radius:20px;width:35%;height:30px;line-height:30px;text-align:center;margin:0 auto;}
 .pop-content .title{font-size:16px;color:#666;text-align:left;}
-.pop-content .close-btn{position:absolute;right:10px;top:10px;font-size:16px;color:#48b6a4;font-weight:bold;}
+.pop-content .close-btn{position:absolute;right:10px;top:10px;font-size:16px;color:#48b6a4;font-weight:bold;cursor: pointer;}
 .wrap-btns{text-align: center;padding-top: 10px;}
 .wrap-btns a{display: inline-block;margin: 0 5px;width: 60px;border-radius: 4px;height: 26px;line-height: 26px;text-align: center;border: 1px solid #f0f4f0;}
 .wrap-btns .ok-btn{color: #fff;background-color: #48b6a4;}

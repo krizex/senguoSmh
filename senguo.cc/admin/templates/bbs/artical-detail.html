@@ -32,8 +32,6 @@
         <div class="topic-detail box-border">
             <h3 class="topic-title">{{article["title"]}}</h3>
             <p class="detail-user mt10">
-                <a href="javascript:;" class="fr" id="store-atical">收藏</a>
-                <a href="javascript:;" class="fr add-great">赞赞</a>
                 <span class="topic-class">{{article["type"]}}</span>
                 <span>
                     <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像" class="detail-img"/>
@@ -45,8 +43,8 @@
                 {% raw article["article"] %}
             </div>
             <div class="wrap-share-box">
-                <a href="javascript:;" class="zan_btn great">5</a>
-                <a href="javascript:;" class="zan_btn store">5</a>
+                <a href="javascript:;" class="zan_btn great add-great {% if article['great_if'] == True %}great-active{% end %}">{{article["great_num"]}}</a>
+                <a href="javascript:;" class="zan_btn store {% if article['collect_if'] == True %}store-active{% end %}" id="store-atical">{{article["collect_num"]}}</a>
                 <div class="share-box">
                     <span class="c999 shareto">分享到</span>
                     <a href="javascript:;" title="分享到微信" class="share-wx">
@@ -70,8 +68,10 @@
             <p class="mt10 publish-row group">
                 <a href="javascript:;" class="fr psh-commit" id="comment">发表评论</a>
                 <span class="c999 wrap-psh-img">
+                    {% if if_login%}
                     <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像"/>
                     <span>{{article["nickname"]}}</span>
+                    {% end %}
                 </span>
             </p>
             <ul class="comment-list" id="comment_list">
@@ -90,6 +90,7 @@
         </div>
     </div>
 </div>
+        {% set ss = <>%}
 <div class="pop-win pop-login hide" data-id="{{if_login}}">
     <div class="pop-content">
         <div class="login-box">
@@ -99,7 +100,7 @@
                 {% if handler.is_wexin_browser() %}
                 <a href="{{handler.get_weixin_login_url()}}" class="btn">登录</a>
                 {% else %}
-                <a href="{{reverse_url('customerLogin')}}?next=/bbs" class="btn">登录</a>
+                <a href="{{reverse_url('customerLogin')}}?next="window.location.href"" class="btn">登录</a>
                 {% end %}
             </div>
         </div>

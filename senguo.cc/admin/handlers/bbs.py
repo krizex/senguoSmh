@@ -37,7 +37,6 @@ class Main(FruitzoneBaseHandler):
 					.distinct(models.Article.id).order_by(models.Article.public_time.desc())
 			except:
 				article_lsit = None
-
 			if _type<100:
 					article_lsit=article_lsit.filter(models.Article.classify==_type)
 			if article_lsit:

@@ -31,29 +31,13 @@ $(document).ready(function(){
     if($(e.target).closest(".dianzan").size()==0){
         window.location.href="/bbs/detail/"+id;
     }
-}).on("click",".atical-attr .dianzan",function(){
+}).on("click",".atical-attr .dianzan",function(e){
+
+}).on("click","#go_publish",function(){
     if(if_login=='False'){
         $('.pop-login').removeClass("hide");
-        return false; 
+        return false;
     }
-	var $this=$(this);
-	var id=$this.parents("li").attr("data-id");
-	var url="/bbs/detail/"+id;
-    var args={action:"article_great",data:""};
-    $.postJson(url,args,function(res){
-        if(res.success){
-            var num_1=1;
-            if($this.children("i").hasClass('icon-dz-active')){
-                num_1=-1;
-            }
-            var num = parseInt($this.text())+num_1;
-        	$this.children("span").html(num);
-            $this.children("i").toggleClass('icon-dz-active');
-        }else{
-            Tip(res.error_text);
-        }
-    });
-}).on("click","#go_publish",function(){
     var url = $(this).attr("url");
     window.location.href=url;
 }).on("click",".cancel-pop,.close-win",function(){
@@ -95,9 +79,35 @@ $(document).ready(function(){
     }else{
         articleSearch(0,key);
     }
-}).on("click","#topic_list li",function(){
-    var id = $(this).attr("data-id");
-    window.location.href="/bbs/detail/"+id;
+}).on("click","#topic_list li",function(e){
+    if($(e.target).hasClass("dianzan")){//点赞
+        if(if_login=='False'){
+            $('.pop-login').removeClass("hide");
+            return false;
+        }
+        var $this=$(e.target);
+        var id=$this.parents("li").attr("data-id");
+        var url="/bbs/detail/"+id;
+        var args={action:"article_great",data:""};
+        $.postJson(url,args,function(res){
+            if(res.success){
+                var num = parseInt($this.html());
+                if($this.hasClass('dianzan-active')){
+                    $this.removeClass("dianzan-active");
+                    num--;
+                }else{
+                    $this.addClass("dianzan-active");
+                    num++;
+                }
+                $this.html(num);
+            }else{
+                Tip(res.error_text);
+            }
+        });
+    }else{
+        var id = $(this).attr("data-id");
+        window.location.href="/bbs/detail/"+id;
+    }
 });
 var finished=true;
 var nomore =false;

@@ -26,10 +26,15 @@
         <div class="bbs-top">
             <div class="bbx-top-box w980">
                 <div class="wrap-userinfo fr">
-                    <a href="javascript:;">
-                        <img src="/static/images/person.png" alt="张三的头像"/>
-                        <span class="name-text ml5">用户名</span>
-                    </a>
+                    <div>
+                        {% if if_login %}
+                        <img src="{{handler.current_user.accountinfo.headimgurl_small or '/static/images/person.png'}}" alt="{{handler.current_user.accountinfo.nickname}}"/>
+                        <span class="name-text ml5">{{handler.current_user.accountinfo.nickname}}</span>
+                        {% else %}
+                        <a href="/customer/login" class="go-login">登录</a>
+                        {% end %}
+                    </div>
+                    {% if if_login %}
                     <ul class="wrap-user-pro">
                         <li>
                             <span class="icon-inform icon_psh">我的发布</span>
@@ -44,6 +49,7 @@
                             <span class="icon-inform icon_draft">我的草稿</span>
                         </li>
                     </ul>
+                    {% end %}
                 </div>
                 <a href="/bbs" class="logo-sg"></a>
                 <div class="wrap-search">
