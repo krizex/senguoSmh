@@ -276,6 +276,11 @@ class WxMessage(CustomerBaseHandler):
 					#self.session.add(admin)
 					self.session.commit()
 			if event == 'subscribe':
+				if scene_id:
+					if scene_id == 1:
+						scenestatic = self.session.query(models.SceneStatic).filter_by(scene_id=1).first()
+						scenestatic.times += 1
+						self.session.commit()
 				ToUserName = data.get('ToUserName',None) #开发者微信号
 				FromUserName = data.get('FromUserName',None) # 发送方openid
 				CreateTime  = data.get('CreateTime',None) #接受消息时间

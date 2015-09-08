@@ -1879,6 +1879,13 @@ class Scene_Openid(MapBase,_CommonApi):
 	scene_id = Column(Integer)
 	openid   = Column(String(64))
 
+# 二维码扫码统计
+class SceneStatic(MapBase,_CommonApi):
+	__tablename__ = 'scene_static'
+	id = Column(Integer,primary_key=True,nullable=False,autoincrement=True)
+	scene_id = Column(Integer,nullable=False,default=0)
+	times = Column(Integer,nullable=False,default=0)
+
 # add by cm 2015.6.15
 # 商家优惠券
 class CouponsShop(MapBase, _CommonApi):
