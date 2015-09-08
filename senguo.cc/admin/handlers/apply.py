@@ -222,21 +222,19 @@ class WxMessage(CustomerBaseHandler):
 			elif Content == '报名':
 				#利用客服接口发送两条消息
 				access_token = WxOauth2.get_client_access_token()
-				content = '欢迎报名参加森果商学院~~~\n\n1.请扫描下方弹出的二维码关注客服微信。\n\n2.将报名图文分享在朋友圈，\
-				并加上“报名参加”等字样的文字。\n\n3.分享后截图给客服MM！\n\n报名成功的小伙伴将在周四上\
-				午统一邀请入群~\n按要求报名的小伙伴都会拉群的，请不要急，也不要多次骚扰客服MM。'
+				reply_message = '欢迎报名参加森果商学院~~~\n\n1.请扫描下方弹出的二维码关注客服微信。\n\n2.将报名图文分享在朋友圈，并加上“报名参加”等字样的文字。\n\n3.分享后截图给客服MM！\n\n报名成功的小伙伴将在周四上午统一邀请入群~\n按要求报名的小伙伴都会拉群的，请不要急，也不要多次骚扰客服MM。'
 				url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}'.format(access_token)
-				data = {
-					"touser":FromUserName,
-					"msgtype":"text",
-					"text":
-					{
-						"content":content
-					}
-				}
-				r = requests.post(url,data = json.dumps(data))
-				if r.status_code == 200:
-					print('message send success')
+				# data = {
+				# 	"touser":FromUserName,
+				# 	"msgtype":"text",
+				# 	"text":
+				# 	{
+				# 		"content":content
+				# 	}
+				# }
+				# r = requests.post(url,data = json.dumps(data))
+				# if r.status_code == 200:
+				# 	print('message send success')
 				pic_data = {
 					"touser":FromUserName,
 					"msgtype":"image",
@@ -247,7 +245,7 @@ class WxMessage(CustomerBaseHandler):
 				r = requests.post(url,data=json.dumps(pic_data))
 				if r.status_code == 200:
 					print("picture send success")
-				return self.write('')
+				# return self.write('')
 			else:
 				#MsgType = 'transfer_customer_service'
 				#reply_message = None
