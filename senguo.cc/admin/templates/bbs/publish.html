@@ -101,7 +101,7 @@
             <div class="choose-time-box">
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span class="time-tt" id="year">2015</span>
+                    <span class="time-tt" id="year">{% if article_data['status'] == 2%}{{article_data['year']}}{% else %}2015{% end %}</span>
                     <ul class="time-list">
                         <li>2015</li>
                         <li>2016</li>
@@ -111,7 +111,7 @@
                 <span>年</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="month">10</span>
+                    <span id="month">{% if article_data['status'] == 2%}{{article_data['month']}}{% else %}10{% end %}</span>
                     <ul class="time-list">
                         <li>01</li>
                         <li>02</li>
@@ -130,7 +130,7 @@
                 <span>月</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="day">10</span>
+                    <span id="day">{% if article_data['status'] == 2%}{{article_data['day']}}{% else %}10{% end %}</span>
                     <ul class="time-list">
                         <li>01</li>
                         <li>02</li>
@@ -168,7 +168,7 @@
                 <span>日</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="hour">10</span>
+                    <span id="hour">{% if article_data['status'] == 2%}{{article_data['hour']}}{% else %}10{% end %}</span>
                     <ul class="time-list">
                         <li>00</li>
                         <li>01</li>
@@ -199,7 +199,7 @@
                 <span>时</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="minute">30</span>
+                    <span id="minute">{% if article_data['status'] == 2%}{{article_data['minute']}}{% else %}30{% end %}</span>
                     <ul class="time-list">
                         <li>00</li>
                         <li>05</li>

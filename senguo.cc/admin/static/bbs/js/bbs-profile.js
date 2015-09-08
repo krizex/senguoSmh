@@ -43,7 +43,7 @@ $(document).ready(function(){
     }else if($(e.target).hasClass("edit_topic")){//编辑
         window.location.href="/bbs/detailEdit/"+id;
     }else{//详情
-        if($(this).hasClass("draft-item")){
+        if($(this).hasClass("draft-item")|| $(this).hasClass("ontime-item")){
             window.location.href="/bbs/detailEdit/"+id;
         }else{
             window.location.href="/bbs/detail/"+id;
@@ -143,8 +143,9 @@ function insertProfile(data){
             if(_type==2){
                 $item.find(".edit_topic").remove();
             }
-            if(_type==1&&data[key].status==2){
+            if(_type==0&&data[key].status==2){
                 $item.find(".topic-title").append("<span class='topic-tag'>定时发布</span>");
+                $item.addClass("ontime-item");
             }
             $("#topic_list").append($item);
         }
