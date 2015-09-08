@@ -1586,7 +1586,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def make_scene_id():
 		session = models.DBSession()
 		while True:
-			scene_id = random.randint(1,2**20)
+			scene_id = random.randint(100000000,999999999)
 			scene_openid = session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
 			if not scene_openid:
 				break
