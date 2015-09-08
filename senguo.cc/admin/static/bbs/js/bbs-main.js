@@ -69,7 +69,8 @@ $(document).ready(function(){
         if(key==""){
             return Tip("请输入关键字");
         }else{
-            articleSearch(0,key);
+            page = 0;
+            articleSearch(0,key,true);
         }
     }
 }).on("click","#search_btn",function(){
@@ -77,7 +78,8 @@ $(document).ready(function(){
     if(key==""){
         return Tip("请输入关键字");
     }else{
-        articleSearch(0,key);
+        page = 0;
+        articleSearch(0,key,true);
     }
 }).on("click","#topic_list li",function(e){
     if($(e.target).hasClass("dianzan")){//点赞
@@ -136,7 +138,7 @@ function scrollLoading(){
             finished=false;
             page++;
             if(_search){
-                articleSearch(page,key);
+                articleSearch(page,key,false);
             }else{
                 articleList(page,false);
             }
@@ -194,7 +196,7 @@ function articleList(page,flag){
         }
     })
 };
-function articleSearch(page,search){
+function articleSearch(page,search,flag){
     _search=true;
     var url="/bbs/search";
     var args={page:page,data:search};
@@ -202,7 +204,9 @@ function articleSearch(page,search){
         if(res.success){
             var datalist=res.datalist;
             nomore=res.nomore;
-            $("#topic_list").empty();
+            if(flag){
+                 $("#topic_list").empty();
+            }
             if(nomore==true){
                 $('.more-btn').html("~ 没有更多了 ~");
                 if(page==0&&datalist.length==0){
@@ -275,7 +279,7 @@ function publishAtical(target,type){
         public = 1;
     }
     var private = 0;
-    if($(".if_bbs").hasClass("checked")){
+    if($(".if_my").hasClass("checked")){
         private = 1;
     }
     var publictime="";

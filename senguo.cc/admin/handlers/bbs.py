@@ -95,34 +95,48 @@ class Detail(FruitzoneBaseHandler):
 			author_if = True
 		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].public_time,"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"nickname":article[1],"imgurl":article[3],\
-						"great_num":article[0].great_num,"comment_num":article[0].comment_num,\
+						"great_num":article[0].great_num,"comment_num":article[0].comment_num,"private":article[0].comment_private,\
 						"scan_num":article[0].scan_num,"collect_num":article[0].collect_num,"great_if":great_if,"collect_if":collect_if}
 		if "action" in self.args and self.args["action"] == "comment":
 			if self.args["page"]==[]:
 				page = 0
 			else:
 				page = int(self.args["page"])
-			page_size = 20
 			nomore = False
+			page_size = 20
 			comments_list = []
-			try:
-				comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
-					.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
-					.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1)\
-					.order_by(models.ArticleComment.create_time.desc())
-			except:
-				comments = None
-			
-			if comments:
-				if page >= comments.count()//page_size:
+			_comments_ = self.DetailArticleComment(_id,page,page_size)
+			if article[0].comment_private == 0:
+				comments_list = _comments_[0]
+				nomore = _comments_[1]
+			else:
+				if article[0].account_id == self.current_user.id:
+					comments_list = _comments_[0]
+					nomore = _comments_[1]
+				else:
 					nomore = True
-				comments = comments.offset(page*page_size).limit(page_size).all()
-				for comment in comments:
-					comments_list.append(self.getArticleComment(comment))
-				return self.send_success(data=comments_list,nomore=nomore)
+			return self.send_success(data=comments_list,nomore=nomore)
 		if_admin = self.if_super()
 		self.session.commit()
 		return self.render("{0}/artical-detail.html".format(self.getBbsPath),article=article_data,author_if=author_if,if_admin=if_admin)
+
+	def DetailArticleComment(self,_id,page,page_size):
+		comments_list = []
+		nomore = False
+		try:
+			comments = self.session.query(models.ArticleComment,models.Accountinfo.nickname)\
+				.outerjoin(models.Accountinfo,models.ArticleComment.comment_author_id==models.Accountinfo.id)\
+				.filter(models.ArticleComment.article_id==_id,models.ArticleComment.status==1)\
+				.order_by(models.ArticleComment.create_time.desc())
+		except:
+			comments = None
+		if comments:
+			if page >= comments.count()//page_size:
+				nomore = True
+			comments = comments.offset(page*page_size).limit(page_size).all()
+			for comment in comments:
+				comments_list.append(self.getArticleComment(comment))
+		return comments_list,nomore
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("action:str","data?")
@@ -441,10 +455,12 @@ class Search(FruitzoneBaseHandler):
 		page_size = 10
 		nomore = False
 		datalist = []
+		time_now = datetime.datetime.now()
 		try:
 			article_lsit = self.session.query(models.Article,models.Accountinfo.nickname)\
 				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id)\
-				.filter(models.Article.status==1,models.Article.title.like("%%%s%%" % data))\
+				.filter(models.Article.status>=1,models.Article.title.like("%%%s%%" % data),\
+					models.Article.public_time<=time_now,models.Article.no_public==0)\
 				.order_by(models.Article.create_time.desc()).distinct(models.Article.id)
 		except:
 			nomore = True
@@ -494,7 +510,7 @@ class Profile(FruitzoneBaseHandler):
 				if if_comment:
 					for info in if_comment:
 						datalist.append(self.getChangeList(_id,title,"comment",info))
-			
+			_datalist = {}
 			if datalist:
 				if page >= len(datalist)//page_size:
 					nomore = True
