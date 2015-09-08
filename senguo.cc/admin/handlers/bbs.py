@@ -583,7 +583,7 @@ class Profile(FruitzoneBaseHandler):
 		if _type == "comment":
 			comment = info[3]
 		try:
-			date = info[2].strftime("%m月 %d日")
+			date = info[2].strftime("%m-%d")
 		except:
 			date = ""
 		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,"time":info[2].strftime("%H:%M"),\

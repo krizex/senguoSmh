@@ -292,10 +292,22 @@ function publishAtical(target,type){
     $.postJson(url,args,function(res){
         target.attr("data-statu", "0");
         if(res.success){
-            Tip("发布成功");
-            setTimeout(function(){
-                window.location.href="/bbs";
-            },2000);
+            if(type==-1){
+                Tip("已存到草稿箱");
+                setTimeout(function(){
+                    window.location.href="/bbs/profile?id=3";
+                },2000);
+            }else if(type==2){
+                Tip("定时发布设置成功");
+                setTimeout(function(){
+                    window.location.href="/bbs/profile?id=0";
+                },2000);
+            }else{
+                Tip("发布成功");
+                setTimeout(function(){
+                    window.location.href="/bbs";
+                },2000);
+            }
         }else{
             Tip(res.error_text);
         }

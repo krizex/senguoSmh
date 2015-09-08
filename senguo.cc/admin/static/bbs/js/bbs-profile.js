@@ -43,7 +43,11 @@ $(document).ready(function(){
     }else if($(e.target).hasClass("edit_topic")){//编辑
         window.location.href="/bbs/detailEdit/"+id;
     }else{//详情
-        window.location.href="/bbs/detail/"+id;
+        if($(this).hasClass("draft-item")){
+            window.location.href="/bbs/detailEdit/"+id;
+        }else{
+            window.location.href="/bbs/detail/"+id;
+        }
     }
 });
 function scrollLoading(){
@@ -136,12 +140,18 @@ function insertProfile(data){
             $item.find(".reply").html(data[key].greatnum);
             $item.find(".topic-class").html(data[key].type);
             $item.find(".topic-tm").html(data[key].time);
+            if(_type==2){
+                $item.find(".edit_topic").remove();
+            }
+            if(_type==1&&data[key].status==2){
+                $item.find(".topic-title").append("<span class='topic-tag'>定时发布</span>");
+            }
             $("#topic_list").append($item);
         }
     }else if(_type==3){
         for(var key in data){
             var $item = $("#item2").children("li").clone();
-            $item.attr("data-id",data[key].id);
+            $item.attr("data-id",data[key].id).addClass("draft-item");
             $item.find(".topic-title").attr("title",data[key].title);
             $item.find(".topic-tt").html(data[key].title);
             $item.find(".topic-tm").html(data[key].time);
@@ -151,7 +161,9 @@ function insertProfile(data){
         for(var key in data){
             var kdate = key;
             var items = data[key];
-            var $li = $('<li><span class="li-roll"></span><span class="inform-time">'+kdate+'</span></li>');
+            var ttime = kdate.split("-");
+            var ztime = ttime[0]+"月"+ttime[1]+"日";
+            var $li = $('<li><span class="li-roll"></span><span class="inform-time">'+ztime+'</span></li>');
             for(var o in items){
                 var render = template.compile(notice);
                 var id=items[o]['id'];
