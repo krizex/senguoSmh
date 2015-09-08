@@ -4,7 +4,7 @@ $(document).ready(function(){
     var end_time = parseInt($("#shop_code").attr("end_time"));
     var has_discount_activity = parseInt($("#shop_code").attr("has_discount_activity"));
     var is_activity = parseInt($("#shop_code").attr("is_activity"));
-    if(is_activity>0 && has_discount_activity==1){
+    if(is_activity>0 && has_discount_activity>0){
         countTime($("#time_box"));
     }
     var _url='/'+_shop_code;
