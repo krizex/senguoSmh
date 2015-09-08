@@ -309,12 +309,12 @@ $(document).ready(function () {
     if($(this).hasClass("forbidden-btn")){
         return false;
     }
-   if($(this).hasClass("back_green")){
-    $(this).removeClass("back_green");
-   }
-   else{
-    $(this).addClass("back_green").removeClass("back_gray1");
-   }
+    if($(this).hasClass("back_green")){
+        $(this).removeClass("back_green");
+    }
+    else{
+        $(this).addClass("back_green").removeClass("back_gray1");
+    }
 }).on('click','.f-discount-hour-items li .item',function(){
     $('.f-hour').text($(this).text()).attr("data-id",$(this).text());
 }).on('click','.f-discount-minute-items li .item',function(){
@@ -423,31 +423,29 @@ function getinfo(){
     var discount_items=$('.discount_item .new_tbody');
     var discount_goods=[]
     var discount_close=[]
+    var testDiscount = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1})?))$/;
     for (var i = 1; i <=goods_number ; i++) {
-         var use_goods_group=parseInt($(discount_items[i-1]).find('.use_goods_group').attr("data-id"));
-         var use_goods=parseInt($(discount_items[i-1]).find('.use_goods').attr("data-id"));
+        var use_goods_group=parseInt($(discount_items[i-1]).find('.use_goods_group').attr("data-id"));
+        var use_goods=parseInt($(discount_items[i-1]).find('.use_goods').attr("data-id"));
         
-         discount_close[i-1]=parseInt($(discount_items[i-1]).find('.discount_close').attr('data-id'));
-         var charges=[];
-         if(use_goods!=-1){
+        discount_close[i-1]=parseInt($(discount_items[i-1]).find('.discount_close').attr('data-id'));
+        var charges=[];
+        if(use_goods!=-1){
             var selected=$(discount_items[i-1]).find('.charge_list button.back_green');
             for (var j = 0; j <selected.length; j++){
                 charges[j]=parseInt($(selected[j]).attr("charge_id"));
-             }
-         }
-         if (charges.length==0 && use_goods!=-1){
+            }
+        }
+        if (charges.length==0 && use_goods!=-1){
             return Tip("商品"+i+"的原价至少选择一种");
-         }
-         var discount_rate=$(discount_items[i-1]).find('.discount_rate').val();
-         if(isNaN(discount_rate) ||discount_rate==''||parseInt(discount_rate)==0){
-            return Tip("商品"+i+"的折扣应该不为空且为数字");
-            }
-        if(parseInt(discount_rate)<=0||parseInt(discount_rate)>=10){
-            return Tip("商品"+i+"的折扣应该介于０－１０之间");
-            }
+        }
+        var discount_rate=$(discount_items[i-1]).find('.discount_rate').val().trim();
+        if(!testDiscount.test(discount_rate)||parseFloat(discount_rate)<0.1||parseFloat(discount_rate)>=10){
+            return Tip("商品"+i+"的折扣应该介于0-10之间，且最多1位小数");
+        }
         if(i!=1&&use_goods_group==-2){
-                return Tip("商品"+i+"不能面向所有分组所有商品，和前面的商品活动冲突");
-            }
+            return Tip("商品"+i+"不能面向所有分组所有商品，和前面的商品活动冲突");
+        }
         for (var k=0;k<discount_goods.length;k++){
             tmp_goods=discount_goods[k];
             if (tmp_goods["use_goods_group"]==-2 &&i>1 &&k==0){
@@ -521,7 +519,7 @@ function editdiscount(){
             if(res.success){
                 Tip('编辑限时折扣成功!');
                 setTimeout(function(){
-                     window.location.href="/admin/discount?action=discount";
+                    window.location.href="/admin/discount?action=discount";
                 },1500);
             }else{
                 Tip(res.error_text);
@@ -530,7 +528,7 @@ function editdiscount(){
         function(){
             Tip('网络好像不给力呢~ ( >O< ) ~');
         });
-   }
+    }
 }
 
 function todate(str_time){
@@ -579,7 +577,7 @@ function getCharge(index1,index2,$obj){
     var charges=charge_list[index1][index2];
     var lis='';
     for(var i=0; i<charges.length; i++){
-        lis+=' <button class=" charge-btn mt6 mr10" charge_id='+charges[i].charge_id+'>'+charges[i].charge+'</button>';
+        lis+=' <button class="charge-btn mr10" charge_id='+charges[i].charge_id+'>'+charges[i].charge+'</button>';
     }
     $obj.append(lis);
 }

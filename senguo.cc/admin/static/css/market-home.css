@@ -125,13 +125,13 @@
 .status-goods{position: absolute;width: 46px;height: 46px;display: inline-block;background-repeat: no-repeat;background-size: 46px;top: 2px;left: 2px;}
 .status-seckill{background-image: url('/static/images/status_seckill.png');}
 .status-discount{background-image: url('/static/images/status_discount.png');}
-.seckill-btn{width: 60px;height: 28px;line-height: 28px;float:right;cursor:pointer;text-align: center;color: #fff;font-weight: bold;border-radius: 4px;background-color: #FF9800;}
+.seckill-btn{width: 60px;height: 28px;line-height: 28px;float:right;cursor:pointer;text-align: center;color: #fff;font-weight: bold;border-radius: 4px;background-color: #FF9800;margin-right: 7px;}
 .seckill-btn-yes{background-color: #ddd !important;}
 .price-bo{color: #59D5AA;margin-right: 4px;cursor: pointer;}
 .price-tip{display: inline-block;color: #FF9800;cursor: pointer;padding: 0 4px;border-radius: 12px;border: 1px solid #ff9800;font-size: 12px;height: 18px;line-height: 16px;margin-left: 4px;vertical-align: 1px;transform: scale(0.9);-webkit-transform: scale(0.9);}
 .price-dif{-webkit-transform:scale(0.9);}
 .wrap-seckill-price{position: absolute;top: 4px;right: -20px;}
-.wrap-seckill-price-box{position: absolute;top: 70px;right: 10px;}
+.wrap-seckill-price-box{position: absolute;top: 67px;right: 10px;}
 /*swiper*/
 .img-list{width: 100%;height: 0;padding-bottom: 40%;position: relative;background-color: #fff;}
 .swiper-container{width: 100%;height: 0;padding-bottom: 40%;overflow: hidden;position: relative;}
@@ -198,5 +198,5 @@
 .seckill-goods{background-color: #FF9800 !important;}
 
 .buylimit{display:inline-block;font-size: 12px;color: #72D6B3;width:66px;height: 16px;line-height: 14px;text-align: center;border-radius: 4px;margin-right: 4px;border: 1px solid #72D6B3;}
-.buylimit-box{margin-top:8px;min-height:30px;}
+.buylimit-box{margin-top:8px;min-height:24px;}
 .goods-list-item .buylimit{color:#fec306;border-color:#fec306;}
