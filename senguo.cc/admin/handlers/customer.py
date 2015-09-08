@@ -1725,7 +1725,7 @@ class Market(CustomerBaseHandler):
 
 				charge_types.sort(key=lambda item:item['discount_rate'],reverse=False)
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
-				saled = fruit.saled if fruit.saled else 0
+				saled = int(fruit.saled) if fruit.saled else 0
 				# print("[CustomerMarket]w_getdata:",fruit.name,fruit.len(fruit.img_url.split(";")),fruit.detail_describe)
 				if img_url == None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
 					detail_no = True
