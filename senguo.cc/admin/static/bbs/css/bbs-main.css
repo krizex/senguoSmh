@@ -2,6 +2,7 @@ html,body{height: 100%;}
 body{background-color: #f0f4f0;padding-top: 120px;}
 .w980{width: 980px;position: relative;left: 50%;margin-left: -490px;}
 div,span,p,li{-webkit-user-select:none;}
+/*.edui-container{z-index:998 !important;}*/
 /*右下角*/
 .scrollUpf{position: fixed; z-index: 9999; display: block;width: 48px;bottom:90px;right: 50px;display: none;}
 .scrollUpf a{display: block;width:48px;height: 48px;margin:5px auto;position:relative;}
@@ -24,7 +25,7 @@ div,span,p,li{-webkit-user-select:none;}
 .fi-kf-show .wx-threeR{bottom:5px;}
 .fi-kf-show .wx-threeRs{bottom:8px;}
 /*首页*/
-.wrap-bbst{position: fixed;left: 0;top: 0;z-index:9999;width: 100%;}
+.wrap-bbst{position: fixed;left: 0;top: 0;z-index:999;width: 100%;}
 .bbs-top{background-color: #48b6a4;height: 60px;}
 .wrap-userinfo{height: 60px;line-height: 60px;position: relative;right: -20px;}
 .wrap-userinfo:hover .wrap-user-pro{display: block;}
