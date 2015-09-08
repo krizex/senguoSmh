@@ -386,15 +386,12 @@ $(document).ready(function(){
 
 
 }).on('blur','.seckill-price-input',function(){
+	var testMoney = /^(([0-9]|([1-9][0-9]{0,9}))((\.[0-9]{1,2})?))$/;
 	var $this = $(this);
-	var input_text = $this.val();
-	if (input_text.length != 0 && isNaN(input_text)){
+	var input_text = $this.val().trim();
+	if (!testMoney.test(input_text) || parseFloat(input_text) < 0.01){
 		$this.val('');
-		Tip('秒杀价必须是正数，请重新输入！');
-	}
-	if (input_text.length != 0 && !isNaN(input_text) && parseFloat(input_text) < 0.01){
-		$this.val('');
-		Tip('秒杀价必须是大于或等于0.01元的正数，请重新输入！');
+		Tip('请填写正确的秒杀价，最多保留2位小数');
 	}
 	
 }).on('click','.sec-pre-page',function(){
@@ -564,16 +561,16 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
-    if(!$(".cur-goods-group").attr("data-id")){
-        Tip('请选择商品分组！');
-        create_seckill_lock = "off";
-        return false;
-    }
-    if(!$(".cur-goods").attr("data-id")){
-        Tip('请选择商品名称！');
-        create_seckill_lock = "off";
-        return false;
-    }
+	    if(!$(".cur-goods-group").attr("data-id") && !$(".cur-goods-group").hasClass("clone-flag")){
+	        Tip('请选择商品分组！');
+	        create_seckill_lock = "off";
+	        return false;
+	    }
+	    if(!$(".cur-goods").attr("data-id") && !$(".cur-goods").hasClass("clone-flag")){
+	        Tip('请选择商品名称！');
+	        create_seckill_lock = "off";
+	        return false;
+	    }
 	if($('.choose-hour').attr('data-id').length == 0 || $('.choose-minute').attr('data-id').length == 0 || $('.choose-second').attr('data-id').length == 0){
 		Tip('持续时间未设置！');
 		create_seckill_lock = "off";
@@ -584,6 +581,7 @@ function createSeckill(action){
 		create_seckill_lock = "off";
 		return false;
 	}
+	var cur_action = $.getUrlParam("action");
 	$('.new-seckill-item').each(function(){
 		var $this = $(this);
 		var goods_name = '商品'+$this.find('.goods-num').text();
@@ -603,9 +601,22 @@ function createSeckill(action){
 			choose_fruit_id:choose_fruit_id,
 			goods_name:goods_name
 		};
+		var activity_id = 0;
+		if ($.getUrlParam("activity_id")){
+			activity_id = $.getUrlParam("activity_id")
+		}
+
+		if (cur_action == "seckill_edit"){
+			var action_status = "edit";
+		}
+		else{
+			var action_status = "new";
+		}
 		var args = {
 			data:data,
-			action:'check_fruit'
+			action:"check_fruit",
+			status:action_status,
+			activity_id:activity_id
 		};
 
 		$.ajaxSetup({
@@ -645,7 +656,7 @@ function createSeckill(action){
 	$('.activity-store-input').each(function(){
 		var $this = $(this);
 		var goods_num = '商品' + $this.closest(".new-seckill-item").find('.goods-num').text();
-		var input_text = $this.val();
+		var input_text = $this.val().trim();
 		var reg = /^[1-9]\d*$/;
 		if (input_text.length != 0 && !reg.test(input_text)){
 			$this.val('');

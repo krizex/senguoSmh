@@ -4,7 +4,7 @@ $(document).ready(function(){
     var end_time = parseInt($("#shop_code").attr("end_time"));
     var has_discount_activity = parseInt($("#shop_code").attr("has_discount_activity"));
     var is_activity = parseInt($("#shop_code").attr("is_activity"));
-    if(is_activity>0 && has_discount_activity==1){
+    if(is_activity>0 && has_discount_activity>0){
         countTime($("#time_box"));
     }
     var _url='/'+_shop_code;
@@ -203,6 +203,9 @@ $(document).ready(function(){
     SetCookie("fromdetail","")
     addCart(link);
 }).on("click",".seckill-buy",function(){
+    if($(this).hasClass("seckill-buy-yes")){
+        return false;
+    }
     var buy_limit=parseInt($(".wrap-goods-detail").attr("data-buylimit"));
     var user_limit=parseInt($(".wrap-goods-detail").attr("data-userlimit"));
     if(buy_limit!=user_limit&&buy_limit!=0){
@@ -221,7 +224,7 @@ $(document).ready(function(){
     var cart_now=parseInt($("#cart-now-num").html());
     $("#cart-now-num").html(cart_now+1);
     seckill_goods_ids.push(s_goods_id);
-    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
+    noticeBox("已添加到购物篮，请在秒杀结束前支付，否则会恢复原价哦！");
 });
 //点赞
 function great(id,$this){

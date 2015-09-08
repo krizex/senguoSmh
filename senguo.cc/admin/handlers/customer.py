@@ -355,6 +355,8 @@ class customerGoods(CustomerBaseHandler):
 		else:
 			charge_type_activity_type = [-2,0,2]
 		seckill_former_charge_type_id = []
+		charge={}
+		charge['is_seckill'] = 0
 		good_charge_type = good.charge_types
 		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
 		for charge_type in good_charge_type:
@@ -435,35 +437,48 @@ class customerGoods(CustomerBaseHandler):
 				seckill_price_dif = 0
 				seckill_activity_piece = 0
 				is_seckill = 0
+				former_charge_type = None
+				seckill_not_start = 0
 
 				if has_discount_activity == 0:
 					self.update_seckill()
 					if charge_type.activity_type == 1:
+
 						is_seckill = 1
+						charge['is_seckill'] = 1
 						has_activity = 1
 						seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).first()
-						seckill_former_charge_type_id.append(seckill_goods.charge_type_id)
-						customer_query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop.id,seckill_goods_id=seckill_goods.id).all()
-						if customer_query:
-							if customer_query[0].status in [1,2]:
-								seckill_is_bought = 1
+						if seckill_goods:
+							seckill_former_charge_type_id.append(seckill_goods.charge_type_id)
+							customer_query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop.id,seckill_goods_id=seckill_goods.id).all()
+							if customer_query:
+								if customer_query[0].status in [1,2]:
+									seckill_is_bought = 1
 
-						seckill_activity_id = seckill_goods.activity_id
-						seckill_goods_id = seckill_goods.id
+							seckill_activity_id = seckill_goods.activity_id
+							seckill_goods_id = seckill_goods.id
 
-						time_query = self.session.query(models.SeckillActivity).join(models.SeckillGoods,models.SeckillGoods.activity_id == models.SeckillActivity.id).filter(models.SeckillGoods.id == seckill_goods.id).first()
-						seckill_start_time = time_query.start_time
-						end_time = time_query.end_time
+							time_query = self.session.query(models.SeckillActivity).join(models.SeckillGoods,models.SeckillGoods.activity_id == models.SeckillActivity.id).filter(models.SeckillGoods.id == seckill_goods.id).first()
+							seckill_start_time = time_query.start_time
 
-						seckill_price_dif = round(float(seckill_goods.former_price - seckill_goods.seckill_price),2)
-						if seckill_goods.activity_piece - seckill_goods.ordered > 0:
-							seckill_activity_piece= seckill_goods.activity_piece - seckill_goods.ordered
+							end_time = time_query.end_time
 
-				charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'num':charge_type.num, 'unit':unit,\
-					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
+							seckill_price_dif = round(float(seckill_goods.former_price - seckill_goods.seckill_price),2)
+							if seckill_goods.activity_piece - seckill_goods.ordered > 0:
+								seckill_activity_piece= seckill_goods.activity_piece - seckill_goods.ordered
+
+							if seckill_start_time > int(time.time()):
+								has_activity = 0
+								seckill_not_start = 1
+								former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
+								unit = self.getUnit(former_charge_type.unit)
+				charge_types.append({'id':former_charge_type.id if seckill_not_start else charge_type.id,'price':round(former_charge_type.price,2) if seckill_not_start else round(charge_type.price*discount_rate/10,2),\
+					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,\
+					'market_price':former_charge_type.market_price if seckill_not_start else charge_type.market_price,'relate':former_charge_type.relate if seckill_not_start else charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
 					"has_activity":has_activity,"discount_rate":discount_rate,"is_seckill":is_seckill,\
 					"seckill_is_bought":seckill_is_bought,"seckill_activity_id":seckill_activity_id,"seckill_goods_id":seckill_goods_id,\
 					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece})
+				
 		# added by jyj 9.3
 		seckill_goods_ids = []
 		
@@ -502,9 +517,9 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		print("###charge_types",charge_types)
+		print("#####",charge)
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
-								seckill_goods_ids=seckill_goods_ids)
+								seckill_goods_ids=seckill_goods_ids,charge=charge)
 
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
@@ -536,7 +551,7 @@ class RegistByPhone(CustomerBaseHandler):
 		else:
 			return self.send_fail(resault)
 
-	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	@CustomerBaseHandler.check_arguments("action:str","phone?:str","password?:str")
 	def post(self):
 		action = self.args['action']
 		if action == "get_code":
@@ -1715,7 +1730,7 @@ class Market(CustomerBaseHandler):
 
 				charge_types.sort(key=lambda item:item['discount_rate'],reverse=False)
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
-				saled = fruit.saled if fruit.saled else 0
+				saled = int(fruit.saled) if fruit.saled else 0
 				# print("[CustomerMarket]w_getdata:",fruit.name,fruit.len(fruit.img_url.split(";")),fruit.detail_describe)
 				if img_url == None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
 					detail_no = True
@@ -2359,7 +2374,7 @@ class Cart(CustomerBaseHandler):
 					self.session.flush()
 		
 					if discount_flag==1:
-						totalPrice+=singlemoney*(q_price.discount_rate/10)
+						totalPrice += round(singlemoney*(q_price.discount_rate/10),2)
 						discount_rate=q_price.discount_rate/10
 					else:
 						totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价

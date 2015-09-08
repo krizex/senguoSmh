@@ -1,19 +1,16 @@
 var ueditor = null,_type = 100,_search=false,key="";
 $(document).ready(function(){
-    if($(".publish-box-bk").size()>0){//发布
+    if($(".publish-box-bk").size()>0){//发布&编辑
         initEditor();
     }else{
+        if($.getUrlParam("id")){
+            _type = parseInt($.getUrlParam("id"));
+            $(".nav-list a").removeClass("active");
+            $(".nav-list").find("a[data-id='"+_type+"']").addClass("active");
+        }
         articleList(0,true);
         scrollLoading();
     }
-}).on("click",".nav-list a",function(){
-    if($(this).attr("data-id")=="100"){
-        window.location.href="/bbs";
-    }
-    $(".nav-list a").removeClass("active");
-    $(this).addClass("active");
-    _type = $(this).attr("data-id");
-    articleList(0,true);
 }).on("mouseover",".wrap-choose-type",function(){
     $(".classify_type").show();
 }).on("mouseout",".wrap-choose-type",function(){
@@ -31,8 +28,6 @@ $(document).ready(function(){
     if($(e.target).closest(".dianzan").size()==0){
         window.location.href="/bbs/detail/"+id;
     }
-}).on("click",".atical-attr .dianzan",function(e){
-
 }).on("click","#go_publish",function(){
     if(if_login=='False'){
         $('.pop-login').removeClass("hide");

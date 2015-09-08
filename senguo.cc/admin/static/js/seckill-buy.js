@@ -133,7 +133,7 @@ $(document).ready(function(){
     $(this).closest("li").find(".seckill-btn-more").removeClass("hide");
     var num = parseInt($(".cart-num").html());
     $(".cart-num").html(num+1).removeClass("hide");
-    Tip("请在秒杀结束前支付,否则将按原价付款哦!");
+    Tip("已添加到购物篮，请在秒杀结束前支付，否则会恢复原价哦！");
     setTimeout(function(){
         $(".cart-num").removeClass("origin-cart");
     },20);

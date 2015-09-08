@@ -282,7 +282,7 @@ $(document).ready(function(){
     window.dataObj.cart_count++;
     $(".cart_num").removeClass("hidden").html(window.dataObj.cart_count);
     seckill_goods_ids.push(s_goods_id);
-    noticeBox("请在秒杀结束前支付,否则将按原价付款哦!");
+    noticeBox("已添加到购物篮，请在秒杀结束前支付，否则会恢复原价哦！");
 }).on('click','.number-minus',function(){
     //商品数量操作
     var $this=$(this);
@@ -507,7 +507,7 @@ var fruitItem=function(box,fruits,type){
     if(!img_url){
         ori_img='/static/design_img/'+code+'.png';
     }else{
-        ori_img=img_url+'?imageView2/1/w/120/h/120';
+        ori_img=img_url+'?imageView2/1/w/170/h/170';
     }
     if(tag==2){
         tag='limit_tag';

@@ -254,9 +254,15 @@ function admireAtical(id,action,target){
         target.attr("data-statu", "0");
         if(res.success){
             if(action=="reply"){//回复评论
+                var num = parseInt(target.closest('.wrap-comment-box').prev(".wrap-topic-attr").find(".reply_num").html())+1;
+                target.closest('.wrap-comment-box').prev(".wrap-topic-attr").find(".reply_num").html(num);
+                var num = parseInt($("#com_num").html())+1;
+                $("#com_num").html(num);
                 target.closest('.wrap-comment-box').remove();
             }else{//文章评论
                 $(".detail-area").val("");
+                var num = parseInt($("#com_num").html())+1;
+                $("#com_num").html(num);
             }
             var data=res.data;
             commentItem(data,"new");
