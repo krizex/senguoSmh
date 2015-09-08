@@ -730,7 +730,8 @@ function createSeckill(action){
 				former_price : former_price,
 				seckill_price : seckill_price,
 				storage_piece : storage_piece,
-				activity_piece : activity_piece
+				activity_piece : activity_piece,
+				seckill_charge_type_id:$(".seckill-charge-type-id").attr("data-id")
 			};
 			
 		}

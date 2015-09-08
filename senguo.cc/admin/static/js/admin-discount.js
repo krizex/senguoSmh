@@ -91,8 +91,6 @@ $(document).ready(function () {
                 Tip('网络好像不给力呢~ ( >O< ) ~');
             }
         );
-
-
     }
 }).on('click', '.close_one', function(e){
         e.stopPropagation();
@@ -110,7 +108,7 @@ $(document).ready(function () {
                 var tmp_this=$this.closest('tr').addClass('dis-coupon').clone();
                 $('.tab4').find('tbody').append(tmp_this);
                 $this.closest('tr').remove();
-                Tip("成功关闭限时折扣!");
+                Tip("成功关闭限时折扣");
             }
             else {
                 Tip(res.error_text);
@@ -187,7 +185,6 @@ $(document).ready(function () {
     }
     else $(this).addClass("back_green");
 }).on('click','.coupon-items .item',function(){ //dd
-   
     var selected_status=$(this).attr("data-id");
     $(".use_goods_group").text($(this).text());
     var page_total=parseInt($(this).attr("data-num"));
@@ -240,16 +237,16 @@ $(document).ready(function () {
         // insertcoupon(selected_status,pagenow-1);
     }
 }).on('click','.next-page-detail',function(){
-     var pagenow=parseInt($('.page-now').text());
-     var pagetotal=parseInt($('.page-total').text());
-     var select_rule=$(".use_goods_group").attr("data-id");
-     if (pagenow==pagetotal){
+    var pagenow=parseInt($('.page-now').text());
+    var pagetotal=parseInt($('.page-total').text());
+    var select_rule=$(".use_goods_group").attr("data-id");
+    if (pagenow==pagetotal){
         Tip("当前已经是最后一页，不能再向后翻页");
-     }
-     else{
+    }
+    else{
         $('.page-now').text(pagenow+1);
         // insertcoupon(select_rule,pagenow+1);
-     }
+    }
 }).on("click",".jmp-detail",function(){
     var inputpage=parseInt($(".input-page").val())
     var pagetotal=parseInt($('.page-total').text());
@@ -273,17 +270,17 @@ $(document).ready(function () {
         insertcoupon(selected_status,pagenow-1);
     }
 }).on('click','.next-page-main',function(){
-     var pagenow=parseInt($('.page-now').text());
-     var pagetotal=parseInt($('.page-total').text());
-      var selected_status=current_tab;
-     if (pagenow==pagetotal){
+    var pagenow=parseInt($('.page-now').text());
+    var pagetotal=parseInt($('.page-total').text());
+    var selected_status=current_tab;
+    if (pagenow==pagetotal){
         Tip("当前已经是最后一页，不能再向后翻页");
-     }
-     else{
+    }
+    else{
         $('.page-now').text(pagenow+1);
         page_begin[current_tab]=page_begin[current_tab]+1;
         insertcoupon(selected_status,pagenow+1);
-     }
+    }
 }).on("click",".jmp-main",function(){
     var inputpage=parseInt($(".input-page").val())
     var pagetotal=parseInt($('.page-total').text());
@@ -329,7 +326,7 @@ $(document).ready(function () {
     $('.t-second').text($(this).text()).attr("data-id",$(this).text());
 }).on("click",".detail-tr",function(e){//点击看详情
     if($(e.target).closest(".sw-er-tip").size()>0){
-         return false;
+        return false;
     }
     var id = $(this).attr("data-id");
     var status=parseInt($('.furit-type-discount').find('.active').attr('data-id'));
@@ -482,7 +479,7 @@ function adddiscount(){
     if(data==undefined){
         return false;
     }
-   if(confirm("你确定添加该批限时折扣吗？")){
+    if(confirm("你确定添加该批限时折扣吗？")){
     var action="newdiscount";
     var args={action:action,data:data};
     var url='';
@@ -490,7 +487,7 @@ function adddiscount(){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                Tip('新建限时折扣成功!');
+                Tip('新建限时折扣成功');
                 setTimeout(function(){
                     window.location.href="/admin/discount?action=discount";
                 },1500);
@@ -509,7 +506,7 @@ function editdiscount(){
     if(data==undefined){
         return false;
     }
-   if(confirm("你确定添加该批限时折扣吗？")){
+    if(confirm("你确定添加该批限时折扣吗？")){
     var action="editdiscount";
     var args={action:action,data:data};
     var url='';
@@ -517,7 +514,7 @@ function editdiscount(){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                Tip('编辑限时折扣成功!');
+                Tip('编辑限时折扣成功');
                 setTimeout(function(){
                     window.location.href="/admin/discount?action=discount";
                 },1500);

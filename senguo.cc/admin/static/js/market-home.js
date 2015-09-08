@@ -466,7 +466,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                 '</li>';
 
 var fruitItem=function(box,fruits,type){
-    console.log(fruits);
+    //console.log(fruits);
     var id=fruits['id'];
     var storage=fruits['storage'];
     var code=fruits['code'];

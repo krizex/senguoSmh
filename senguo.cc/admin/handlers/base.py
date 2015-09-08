@@ -1586,7 +1586,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def make_scene_id():
 		session = models.DBSession()
 		while True:
-			scene_id = random.randint(1,2**20)
+			scene_id = random.randint(100000000,999999999)
 			scene_openid = session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
 			if not scene_openid:
 				break
@@ -2051,8 +2051,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
 		q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=tmp_charge.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()	
 		q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id,status=1).with_lockmode('update').first()
-		print(q_all,"@@@@@1")
-		print(q_goods,"@@@@@2")
+		# print(q_all,"@@@@@1")
+		# print(q_goods,"@@@@@2")
 		key=charge_type_id
 		if d:
 			if inc == 2:#加1
@@ -2064,9 +2064,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
 					qqq.incart_num+=1
 				elif q_part:
-					print(q_part.incart_num,"@@@@@3")	
+					# print(q_part.incart_num,"@@@@@3")	
 					q_part.incart_num+=1
-					print(q_part.incart_num,"@@@@@4")
+					# print(q_part.incart_num,"@@@@@4")
 					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
 					qqq.incart_num+=1
 					
@@ -2745,8 +2745,8 @@ class WxOauth2:
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 			if not template_id:
 				return False
-			else:
-				print('template_id get success',template_id)
+			# else:
+			# 	print('template_id get success',template_id)
 		else:
 			template_id = '5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg'
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\
