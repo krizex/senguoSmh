@@ -371,7 +371,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		if article[0].account_id != self.current_user.id:
 			return self.redirect(self.reverse_url("BbsMain"))
 		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,"type":self.article_type(article[0].classify)\
-		,"type_id":article[0].classify,"public":article[0].no_public,"private":article[0].comment_private}
+		,"type_id":article[0].classify,"public":article[0].no_public,"private":article[0].comment_private,"public_time":article[0].public_time}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
@@ -572,7 +572,7 @@ class Profile(FruitzoneBaseHandler):
 			status_range = (-1,)
 		elif status == 1:
 			status_range = (1,2)
-		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article,models.Article.comment_num,models.Article.great_num,models.Article.classify)\
+		article_list = self.session.query(models.Article.id,models.Article.title,models.Article.create_time,models.Article.article,models.Article.comment_num,models.Article.great_num,models.Article.classify,models.Article.status,models.Article.public_time)\
 		.filter(models.Article.account_id==self.current_user.id).filter(models.Article.status.in_(status_range)).order_by(models.Article.create_time.desc())
 		if article_list:
 			if page >= article_list.count()//page_size:
@@ -580,7 +580,12 @@ class Profile(FruitzoneBaseHandler):
 			article_list = article_list.offset(page*page_size).limit(page_size).all()
 		if article_list:
 			for article in article_list:
-				datalist.append({"id":article[0],"title":article[1],"time":article[2].strftime("%Y/%m/%d %H:%M"),"article":article[3],"commentnum":article[4],"greatnum":article[5],"type":self.article_type(article[6])})
+				public_time = article[8]
+				time_now = datetime.datetime.now()
+				status = 1
+				if public_time > time_now:
+					status = 2
+				datalist.append({"id":article[0],"title":article[1],"time":article[2].strftime("%Y/%m/%d %H:%M"),"article":article[3],"commentnum":article[4],"greatnum":article[5],"type":self.article_type(article[6]),"status":status})
 		return datalist,nomore
 
 	def getArticleData(self,article):
