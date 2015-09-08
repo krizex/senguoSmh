@@ -1726,6 +1726,7 @@ class Article(MapBase, _CommonApi):
 	classify = Column(TINYINT,nullable=False,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
 	comment_num = Column(Integer,nullable=False,default = 0)#评论数
+	collect_num = Column(Integer,nullable=False,default = 0)#收藏数
 	scan_num = Column(Integer,nullable=False,default = 0) #0:浏览数
 	if_scan = Column(TINYINT,nullable=False,default = 0) #0:是否浏览
 	status = Column(TINYINT,nullable=False,default = 1) # -1:草稿 0:删除 1:正常 2:定时发布
