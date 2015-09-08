@@ -14,7 +14,7 @@ import json
 import libs.xmltodict as xmltodict
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
-
+import re
 class QrWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('order_id?:str')
@@ -39,13 +39,14 @@ class RefundWxpay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
+		transaction_id = order.transaction_id
 		refund_pub = Refund_pub()
 		refund_pub.setParameter("out_trade_no",transaction_id)
 		refund_pub.setParameter("out_refund_no",transaction_id)
 		refund_pub.setParameter("total_fee",totalPrice)
 		refund_pub.setParameter('refund_fee',totalPrice)
 		refund_pub.setParameter('op_user_id','1223121101')
-		res = refund_pub.postXml()
+		res = refund_pub.postXmlSSL()
 		if isinstance(res,bytes):
 			bianma = chardet.detect(res)['encoding']
 			res    = res.decode(bianma)

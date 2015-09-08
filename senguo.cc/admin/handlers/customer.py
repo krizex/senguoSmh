@@ -3140,8 +3140,36 @@ class wxChargeCallBack(CustomerBaseHandler):
 # 插入爬取店铺数据（访问路由：/customer/test）
 class InsertData(CustomerBaseHandler):
 	#对账检验
+	@CustomerBaseHandler.check_arguments('action','day','month')
 	def get(self):
+		action = self.args['action']
+		if len(action)  > 0:
+			day = int(self.args['day'])
+			month = int(self.args['month'])
+			wx_sum = 0
+			ali_sum = 0
+
+			first_create_time = datetime.datetime(2015,month,day,0,0,0)
+			first_end_time    = datetime.datetime(2015,month,day,23,59,59)
+			print(first_create_time.strftime("%Y-%m-%d"),first_end_time.strftime('%Y-%m-%d'))
+			current_day_ali = self.session.query(models.BalanceHistory.id, models.BalanceHistory.balance_type,models.BalanceHistory.balance_value,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time,models.BalanceHistory.balance_record.like('%支付宝%'))).all()
+			print('支付宝支付记录')
+			for item in current_day_ali:
+				ali_sum += item[2]
+				print(item[0],item[1],item[2],item[3][12:])
+			current_day_wx = self.session.query(models.BalanceHistory.id, models.BalanceHistory.balance_type,models.BalanceHistory.balance_value,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time),models.BalanceHistory.balance_record.like('%微信%')).all()
+			print('微信支付记录')
+			for item in current_day_wx:
+				wx_sum += item[2]
+				print(item[0],item[1],item[2],item[3][11:])
+			# return self.send_success()
+			print(ali_sum,wx_sum)
+			print('-------------------------------------------------------------------')
+
 		list = []
+		s = ''
 		first_create_time = datetime.datetime(2015,5,2,0,0,0)
 		first_end_time    = datetime.datetime(2015,5,2,23,59,59)
 		sum = 0
@@ -3151,12 +3179,66 @@ class InsertData(CustomerBaseHandler):
 			current_day = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
 				models.BalanceHistory.create_time>=first_create_time)).all()
 			# current_day = format(current_day,'.2f') if current_day else None
-			list.append({first_create_time.strftime('%Y-%m-%d'):current_day})
-			if current_day[0][0]:
-				sum += current_day[0][0]
+			current_day_wx = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time,models.BalanceHistory.balance_record.like('%支付宝%'))).all()
+			
+			list.append({first_create_time.strftime('%Y-%m-%d'):current_day_wx})
+			if current_day_wx[0][0]:
+				sum += current_day_wx[0][0]
+				current_day_wx = format(current_day_wx[0][0],'.2f')
+			print(first_create_time.strftime("%Y-%m-%d") ,current_day_wx)
+			# s += first_create_time.strftime("%Y-%m-%d") +':' + format(current_day_wx[0][0],'.2f') + '                                     '
+		# self.write(s)
+		# for item in current_day_wx:
+		# 	print(item[0],item[1],item[2],item[3])
 
-		return self.send_success(current_day=list,sum=sum)
+		return self.send_success(s=s,sum=sum)
 
+	@CustomerBaseHandler.check_arguments('balance_id')
+	def post(self):
+		balance_id = self.args['balance_id']
+		if not balance_id or len(balance_id) == 0:
+			return self.send_fail('balance_id empty!!!')
+		balance_history = self.session.query(models.BalanceHistory).filter_by(id=balance_id).first()
+		if not balance_history:
+			return self.send_fail('balance_history not found')
+		#将balance_type 置为-1,表示删除状态
+		shop_id = balance_history.shop_id
+		customer_id = balance_history.customer_id
+		balance_value = balance_history.balance_value
+		balance_type = balance_history.balance_type
+
+		shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
+		if not shop_follow:
+			return self.send_fail('')
+
+		#若删除的是在线支付记录，则只需要改变店铺总额
+		if balance_type == 3:
+			before_shop_balance = shop.shop_balance
+			shop.shop_balance -= balance_value
+			after_shop_balance = shop.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='在线记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		#若删除的是余额充值记录，则需要将customer_shop_follow表里的余额还原
+		elif balance_type == 0:
+			before_shop_balance  = shop_follow.shop_balance
+			shop_follow.shop_balance -= balance_value
+			after_shop_balance   = shop_follow.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='余额充值记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		#若删除的是余额消费记录，则需要还原顾客的余额
+		elif balance_type == 1:
+			before_shop_balance = shop_follow.shop_balance
+			shop_follow.shop_balance += balance_value
+			after_shop_balance  = shop_follow.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='余额消费记录删除成功',before=before_shop_balance,after=after_shop_balance)
 
 
 class Overtime(CustomerBaseHandler):
