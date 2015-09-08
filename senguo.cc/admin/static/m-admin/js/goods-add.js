@@ -514,7 +514,7 @@ $(document).ready(function(){
         auto_start: true,
         init: {
             'FilesAdded': function (up, files) {
-                console.log(typeof files[0]);
+                //console.log(typeof files[0]);
                 var file = files[0];
                 var isOri = "";
                 EXIF.getData(file.getNative(), function() {
