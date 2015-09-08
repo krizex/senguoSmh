@@ -356,7 +356,19 @@ class customerGoods(CustomerBaseHandler):
 		good_charge_type = good.charge_types
 		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
 		for charge_type in good_charge_type:
-			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type and charge_type.id not in seckill_former_charge_type_id:
+			seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).all()
+			seckill_kill_goods_flag = 1
+			if seckill_goods:
+				seckill_goods = seckill_goods[0]
+				seckill_kill_goods_flag = seckill_goods.status
+				if seckill_goods.id == -1:
+					seckill_kill_goods_flag = 0
+				seckill_activity = self.session.query(models.SeckillActivity).filter_by(id = seckill_goods.activity_id).first()
+				print("#############",seckill_activity.activity_status)
+				if seckill_activity.activity_status != 2:
+					seckill_kill_goods_flag = 0
+			print("@@@@@@@",seckill_kill_goods_flag,charge_type.activity_type)
+			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type and charge_type.id not in seckill_former_charge_type_id and seckill_kill_goods_flag == 1:
 				unit  = charge_type.unit
 				unit =self.getUnit(unit)
 				limit_today = False

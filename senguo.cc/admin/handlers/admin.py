@@ -6225,6 +6225,9 @@ class MarketingSeckill(AdminBaseHandler):
 				sec_fruit.activity_status = 0
 				sec_fruit.seckill_charge_type = 0
 
+				charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.seckill_charge_type_id).first()
+				charge_type.activity_type = -1
+
 				self.session.commit()
 		elif action == 'seckill_edit':
 			data_array = self.args["data"]
@@ -6263,7 +6266,10 @@ class MarketingSeckill(AdminBaseHandler):
 				ordered = 0
 				deleted = 0
 
-				pre_charge_type = self.session.query(models.ChargeType).filter_by(id = charge_type_id).first()
+				pre_charge_type = self.session.query(models.ChargeType).filter_by(id = charge_type_id).with_lockmode('update').first()
+				pre_charge_type.activity_type = -1
+				self.session.flush()
+				
 				cur_fruit_id = fruit_id
 				cur_price = seckill_price
 				cur_unit = 3
@@ -6364,9 +6370,11 @@ class MarketingSeckill(AdminBaseHandler):
 				if cur_fruit_activity_status:
 					cur_fruit_activity_status = cur_fruit_activity_status.activity_status
 					if cur_fruit_activity_status != 0:
+						print("@@@@@@")
 						return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			if not self.judge_discount(choose_fruit_id,choose_start_time,choose_end_time):
+				print("#######")
 				return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			activity_query = self.session.query(models.SeckillActivity.start_time,models.SeckillActivity.end_time,models.SeckillActivity.id).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()

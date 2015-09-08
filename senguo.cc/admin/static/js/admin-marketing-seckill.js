@@ -627,6 +627,7 @@ function createSeckill(action){
 				var flag = res.flag;
 				if (flag == 0){
 					stop_flag = true;
+					console.log("$$$$$$$$$$$");
 					Tip(goods_name + '已经参与所选时间段内的其他秒杀活动，请选择其他商品！');
 					
 				}
