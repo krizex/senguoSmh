@@ -64,16 +64,16 @@
             </div>
         </div>
         <div class="topic-detail box-border mt10">
-            <p class="c333">文章评论(<span id="com_num">{{article["comment_num"]}}</span>)</p>
+            <p class="c333">文章评论(<span id="com_num">{{article["comment_num"]}}</span>){%if article["private"] == 1 %}<span class="c999 ml10">(评论仅作者可见)</span>{% end %}</p>
             <div class="wrap-textarea mt10">
                 <textarea class="detail-area" placeholder="你怎么看？"></textarea>
             </div>
             <p class="mt10 publish-row group">
                 <a href="javascript:;" class="fr psh-commit" id="comment">发表评论</a>
                 <span class="c999 wrap-psh-img">
-                    {% if if_login%}
-                    <img src="{{article['imgurl'] or '/static/images/person.png'}}" alt="用户头像"/>
-                    <span>{{article["nickname"]}}</span>
+                    {% if if_login %}
+                    <img src="{{handler.current_user.accountinfo.headimgurl_small or '/static/images/person.png'}}" alt="用户头像"/>
+                    <span>{{handler.current_user.accountinfo.nickname}}</span>
                     {% end %}
                 </span>
             </p>

@@ -661,7 +661,7 @@ class GlobalBaseHandler(BaseHandler):
 
 	# 将森果社区文章类型编码转换为文字
 	def article_type(self,_type):
-		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求','森果前沿']
+		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求','森果前沿','用户交流']
 		return types[_type]
 
 	# 获取商品信息
