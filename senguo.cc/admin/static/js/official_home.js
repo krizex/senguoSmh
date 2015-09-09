@@ -1,24 +1,4 @@
-var swiper = null;
-$(document).ready(function(){
-    swiper = new Swiper('#swiper-container',{
-        mode: 'horizontal',
-        loop:true,
-        initialSlide :2,
-        grabCursor: true,
-        pagination: '.pagination',
-        paginationClickable :true,
-        autoplay:"3000",
-        slidesPerView: 1,
-        speed:'600',
-        autoplayDisableOnInteraction:false,
-        paginaClickable:true
-    });
-}).on("mouseover",".swiper-container",function(){
-    swiper.stopAutoplay();
-}).on("mouseout",".swiper-container",function(){
-    swiper.startAutoplay();
-});
-/*var length = 3,timer=null;
+var length = 3,timer=null;
 $(document).ready(function(){
     $(".swiper-wrapper li").each(function(i){
         var $this = $(this);
@@ -58,4 +38,4 @@ function slide_images(type){
             }
         }
     });
-}*/
+}
