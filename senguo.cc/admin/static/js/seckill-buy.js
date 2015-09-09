@@ -240,6 +240,7 @@ function countTime(time,start_time,type,$obj){
                     var $this = $(this);
                     if($(this).attr("is_bought")=="0"){
                         $this.find(".seckill-btn").removeClass("hide");
+                        $this.find(".seckill-btn-first").addClass("hide");
                     }else{
                         $this.find(".seckill-btn").addClass("hide");
                         $this.find(".seckill-btn-more").removeClass("hide");
