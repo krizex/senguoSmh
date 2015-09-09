@@ -5797,8 +5797,8 @@ class MarketingSeckill(AdminBaseHandler):
 				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
 				storage = list(storage)
 				storage[1] = self.getUnit(storage[1])
-				if storage[0] == 0:
-					continue
+				# if storage[0] == 0:
+				# 	continue
 				fruit_id_storage[str(fruit_id)] = storage
 
 			fruit_id_usable_list = list(fruit_id_storage.keys())
@@ -5888,8 +5888,8 @@ class MarketingSeckill(AdminBaseHandler):
 				storage = self.session.query(models.Fruit.storage,models.Fruit.unit).filter_by(id = fruit_id).first()
 				storage = list(storage)
 				storage[1] = self.getUnit(storage[1])
-				if storage[0] == 0:
-					continue
+				# if storage[0] == 0:
+				# 	continue
 				fruit_id_storage[str(fruit_id)] = storage
 
 			fruit_id_usable_list = list(fruit_id_storage.keys())
