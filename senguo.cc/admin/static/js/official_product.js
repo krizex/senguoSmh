@@ -1,8 +1,8 @@
-var timer = null,index =0;
+/*var timer = null,index =0;
 $(document).ready(function(){
     initSlide();
-});
-
+});*/
+/*
 function initSlide(){
     timer = setInterval(function(){
         index++;
@@ -23,4 +23,4 @@ function initSlide(){
             $("#slide-list").children("li").css("left",0+"px");
         }
     },2500);
-}
+}*/

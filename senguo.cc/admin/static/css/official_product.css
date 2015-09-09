@@ -1,38 +1,10 @@
-.wrap-content{width: 1000px;margin: 0 auto;}
+body{padding: 0}
+.wrap-content{width: 100%;}
+.w1000{width: 1000px;;}
+.w1024{width: 1070px;margin: 0 auto;overflow: hidden;position: relative;top: -500px;}
 .f16{font-size: 16px !important;}
-.wrap-slide{padding: 60px 0 10px 87px;position: relative;}
-.slide-box{width: 575px;height: 375px;overflow: hidden;}
-.slide-text{position: absolute;top: 150px;right: 80px;width: 240px;font-size: 14px;color: #999;line-height: 18px;}
-.slide-list{font-size: 0;width: 1212px;}
-.anima{-webkit-transition:all .3s ease-in-out;transition:all .3s ease-in-out;-ms-transition:all .3s ease-in-out;}
-.slide-list>li{padding-right: 40px;float: left;position: relative;left: 0;}
-.phonebg{position: absolute;z-index:1;background: url("/static/official_img/phone.png") no-repeat;width: 180px;height: 374px;top: 4px;left: 279px;}
-.wrap-computer{background-color: #666;height: 410px;position: relative;}
-.wrap-cimg{position: absolute;top: 15px;right: 50px;}
-.wrap-data-text{position: absolute;left: 100px;top: 150px;width: 250px;}
-.wrap-data-text>p{color: #fff;font-size: 14px;line-height: 18px;}
-.wrap-paytype{position: relative;padding: 60px 0 40px 0;}
-.phone-bg{position: relative;z-index:10;background: url("/static/official_img/phone.png") no-repeat;width: 180px;height: 374px;}
-.wrap-paytype .phone-bg{margin-left: 360px;}
-.phone-bg img{position: absolute;top: 55px;left: 10px;}
-.phone-bg2{top: 43px !important;}
-.roll-box{position: absolute;z-index:5;top: 100px;left: 180px;width: 300px;height: 300px;}
-.roll-box>i{display: block;width: 80px;height: 80px;position: absolute;background-size: contain;}
-.roll-box .ali{background-image: url('/static/images/alipay_l.png');top: -70px;left: 76px;}
-.roll-box .wx{background-image: url('/static/images/wx_l.png');top: -20px;left: -20px;}
-.roll-box .weibo{background-image: url('/static/images/wb_l.png');top: 68px;left: -72px;}
-.roll-box .qq{background-image: url('/static/images/qq_l.png');top: 168px;left: -76px;}
-.big-roll{border-radius: 50%;width: 300px;height: 300px;position: absolute;top: 18px;left: 15px;}
 .s-roll{position: absolute;border-radius: 50%;-webkit-box-sizing:content-box;box-sizing:content-box;-ms-box-sizing:content-box;width: 240px;height: 240px;background-color: #d4d8d8;top: 50%;left: 50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);border: 30px solid #e9ebe7;}
-.login-text{color: #999;position: absolute;right: 130px;top: 200px;}
-.login-text>p{font-size: 14px;width: 250px;line-height: 18px;}
-.wrap-play{background-color: #888c8c;padding: 30px 0;position: relative;}
-.wrap-play .phone-bg{margin-left: 490px;background-image: url('/static/official_img/phone_white.png');}
-.wrap-play>i{display: block;width: 70px;height: 70px;position: absolute;background-size: contain;}
-.wrap-play .r1{background-image: url('/static/official_img/icon1.png');top: 65px;right: 150px;}
-.wrap-play .r2{background-image: url('/static/official_img/icon2.png');top: 148px;right: 102px;}
-.wrap-play .r3{background-image: url('/static/official_img/icon3.png');top: 244px;right: 102px;}
-.wrap-play .r4{background-image: url('/static/official_img/icon4.png');top: 324px;right: 150px;}
+
 .wrap-feature{padding: 50px 100px 0 100px;}
 .feature-list>li{width: 50%;float: left;}
 .feature-item{padding-left: 130px;padding-top:32px;margin-bottom: 40px;height: 134px;background-repeat: no-repeat;background-position: left top;}
@@ -58,18 +30,43 @@
     animation:border 2s ease-in-out infinite;
     -ms-animation:border 2s ease-in-out infinite;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+/*产品介绍*/
+.mall-bg{width: 100%;height: 500px;position: relative;overflow: hidden;}
+.mall-bg>img {width: 100%;height: 500px;position: relative;z-index: 0;}
+.wrap-slide{width: 100%;height: 500px;overflow: hidden;}
+.slide-text{width: 436px;height: 500px;float: left;margin-left: 35px;}
+.mall {position: relative;float: right;width: 564px;height: 500px;margin-right: 13px;}
+.mall-one{position: absolute;left: 137px;top: 73px;z-index: 3;}
+.mall-one .bg-shadow-one{display: inline-block;width: 250px;height: 351px;position: absolute;left: 0;top: 75px;z-index: 1;box-shadow: 0px 50px 80px #666;}
+.mall-two .bg-shadow-two{display: inline-block;width: 250px;height: 400px;position: absolute;left: 0;top: 2px;box-shadow: 0px 50px 40px #757575;}
+.mall-three .bg-shadow-three{display: inline-block;width: 250px;height: 420px;position: absolute;left: -4px;top: -10px;box-shadow: 0px 50px 30px #757575;}
+.mall-two{position: absolute;left: -27px;top: 110px;z-index: 2;}
+.mall-three{position: absolute;right: 23px;top: 124px;z-index: 2;}
+.mall-title{font-size: 44px;font-weight: bold;margin-top: 220px;}
+.mall-content{font-size: 20px;margin-top: 30px;line-height: 24px;}
+.data-bg{width: 100%;background-color: #58d0a6;height: 446px;}
+.data-width{height: 446px;position: relative;overflow: visible;}
+.wrap-cimg{position: relative;top: 0;right:397px;height: 446px;width: 100%;overflow: hidden;}
+.wrap-data-text{position: absolute;left: calc(50% - 113px);top: 0;width: 613px;height: 446px;}
+.wrap-data-text .data-title{font-size: 44px;font-weight: bold;color: #fff;margin-left: 120px;margin-top: 50px;}
+.wrap-data-text .data-content{font-size: 20px;margin-top: 30px;margin-left: 120px;line-height: 24px;color: #fff;}
+.wrap-data-text>img{position: absolute;left: 0;bottom: 0;}
+.login-bg{width: 100%;position: relative;height: 552px;}
+.login-bg >img{position: absolute;left: 0;width: 100%;height: 552px;}
+.login-width{height: 552px;margin: 0 auto;position: relative;}
+.login-text{position: absolute;left: 0;}
+.login-title{font-size: 44px;font-weight: bold;margin-top: 220px;}
+.login-content{font-size: 20px;margin-top: 30px;line-height: 24px;}
+.wrap-paytype{position: relative;padding: 60px 0 40px 0;}
+.roll-box{position: absolute;z-index:5;top: 100px;left: 180px;width: 300px;height: 300px;}
+.roll-box>i{display: block;width: 121px;height: 121px;position: absolute;background-size: contain;}
+.roll-box .alipay{background-image: url('/static/official_img/alipay_logo.png');top: 100px;left: 540px;}
+.roll-box .wechat{background-image: url('/static/official_img/wechat_logo.png');top: 100px;left: 260px;}
+.roll-box .sina{background-image: url('/static/official_img/sina_logo.png');top: 100px;left: 680px;}
+.roll-box .qq{background-image: url('/static/official_img/qq_logo.png');top: 100px;left: 400px;}
+.phone-bg>img{position: absolute;top: -197px;right: 70px;}
+.marketing-bg{width: 100%;height: 547px;background:-webkit-gradient(linear, 0 0, 100% 100%, from(#58d0a6), to(#65cec5));FILTER: progid:DXImageTransform.Microsoft.Gradient(gradientType=1,startColorStr=#58d0a6,endColorStr=#65cec5);}
+.marketing-width{margin: 0 auto;height: 547px;}
+.marketing-box{position: relative;}
+.marketing-title{height: 80px;padding-top: 30px;font-size: 44px;font-weight: bold;text-align: center;color: #fff;}
+.marketing-content{font-size: 20px;color: #fff;text-align: center;}

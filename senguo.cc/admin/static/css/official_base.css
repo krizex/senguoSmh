@@ -81,7 +81,7 @@ a:hover{text-decoration:underline;}
 .notice_box{width:280px;background:rgba(0,0,0,0.5);padding:20px 10px;border-radius:4px;margin:0 auto;}
 button:focus{outline:0;}
 #warn{position:absolute;padding:5px 20px 5px 0;}
-body{padding-top: 80px;}
+body{padding-top: 76px;}
 /*---public----*/
 .new-font-color{color:#58d0a6;}
 .text-green{color:#6CCA86;}
@@ -223,21 +223,8 @@ a,input,button{ outline:none; }
 .aq-bg{width: 100%;background-color: #f0f4f0;}
 .wrap-qa{padding-top: 42px;}
 .wrap-qa>p{color: #000;}
-
-.o2o-lists{
-	position: relative;
-	width: 100%;
-	padding: 0;
-}
-.o2o-lists .right-triangle,
-.o2o-lists .left-triangle{
-	position: absolute;
-	top:37px;
-	width: 0;
-	height: 0;
-	border-top: 15px solid transparent;
-	border-bottom: 15px solid transparent;
-}
+.o2o-lists{position: relative;width: 100%;padding: 0;}
+.o2o-lists .right-triangle,.o2o-lists .left-triangle{position: absolute;top:37px;width: 0;height: 0;border-top: 15px solid transparent;border-bottom: 15px solid transparent;}
 .o2o-lists .right-triangle{
 	left: 485px;
 	border-right: 15px solid #fff;
@@ -255,20 +242,9 @@ a,input,button{ outline:none; }
 	position: relative;
 }
 .intro_list .item .intro .o2o-right-title,
-.intro_list .item .intro .o2o-left-title{
-	position: absolute;
-	top:-49px;
-	font-size: 30px;
-	font-weight: bold;
-}
-.intro_list .item .intro .o2o-right-title{
-	left: -111px;
-	color: #58d0a6;
-}
-.intro_list .item .intro .o2o-left-title{
-	right: -110px;
-	color: #fff;
-}
+.intro_list .item .intro .o2o-left-title{position: absolute;top:-49px;font-size: 30px;font-weight: bold;}
+.intro_list .item .intro .o2o-right-title{left: -111px;color: #58d0a6;}
+.intro_list .item .intro .o2o-left-title{right: -110px;color: #fff;}
 .intro_list .item .intro .o2o-item-title{
 	margin-top: 90px;
 }
