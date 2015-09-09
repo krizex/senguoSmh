@@ -46,4 +46,20 @@ $(document).ready(function(){
 }).on("click",".nav-list a",function(){
     var type = $(this).attr("data-id");
     window.location.href="/bbs?id="+type;
+}).on("keydown","#search_bbs",function(e){
+    if(e.keyCode==13){
+        var key = $.trim($("#search_bbs").val());
+        if(key==""){
+            return Tip("请输入关键字");
+        }else{
+            window.location.href="/bbs?search="+key;
+        }
+    }
+}).on("click","#search_btn",function(){
+    var key = $.trim($("#search_bbs").val());
+    if(key==""){
+        return Tip("请输入关键字");
+    }else{
+        window.location.href="/bbs?search="+key;
+    }
 });
