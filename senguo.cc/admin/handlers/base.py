@@ -1694,34 +1694,6 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
 		return self._shop_id
 
-	def getHotArticle(self):
-		session  = models.DBSession()
-		datalist = []
-		try:
-			article_list = session.query(models.Article.id,models.Article.title,models.Article.scan_num,models.Accountinfo.nickname)\
-				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.status==1)\
-				.distinct(models.Article.id).order_by(models.Article.scan_num.desc()).limit(5).all()
-		except:
-			article_list = None
-		for article in article_list:
-			datalist.append({"id":article[0],"title":article[1],"scan_num":article[2],"nickname":article[3]})
-		return datalist
-
-	def getHotCustomer(self):
-		session  = models.DBSession()
-		customers =session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small)\
-		.outerjoin(models.Article,models.Accountinfo.id==models.Article.account_id)\
-		.outerjoin(models.ArticleComment,models.Accountinfo.id==models.ArticleComment.account_id)\
-		.distinct(models.Article.id,models.ArticleComment.id).all()
-		customer_list = []
-		for customer in customers:
-			article_num=session.query(models.Article).filter_by(account_id=customer[0]).filter(models.Article.status>0).count()
-			comment_num=session.query(models.ArticleComment).filter_by(account_id=customer[0],status=1).count()
-			if article_num !=0 or comment_num !=0 :
-				customer_list.append({"nickname":customer[1],"imgurl":customer[2],"article_num":article_num,"comment_num":comment_num})
-		customer_list.sort(key=lambda x:(x["article_num"],x["comment_num"]),reverse=True)
-		customer_list=customer_list[0:5]
-		return customer_list
 
 	@property
 	def getBbsPath(self):
