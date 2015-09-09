@@ -43,12 +43,6 @@ class getHotInfo(FruitzoneBaseHandler):
 		id_list = []
 		for item in new_list:
 			id_list.append(item[0])
-			# print(item.account_id)
-		# customers = session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small)\
-		# .outerjoin(models.Article,models.Accountinfo.id==models.Article.account_id)\
-		# .outerjoin(models.ArticleComment,models.Accountinfo.id==models.ArticleComment.account_id)\
-		# .distinct(models.Article.id,models.ArticleComment.id).all()
-		# for customer in customers:
 		for account_id in id_list:
 			customer = session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small).filter_by(id=account_id).first()
 			article_num=session.query(models.Article).filter_by(account_id=account_id).filter(models.Article.status>0).count()
