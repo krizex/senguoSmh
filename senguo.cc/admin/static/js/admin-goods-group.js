@@ -240,7 +240,7 @@ function drag(obj){
 }
 //获取元素位置
 function getPos($obj){
-    return $obj.position();
+    return {left:Math.round($obj.position().left),top:Math.round($obj.position().top)};
 }
 //获取两个元素的距离
 function getDis($a,$b){
