@@ -356,6 +356,7 @@ class customerGoods(CustomerBaseHandler):
 		good_charge_type = good.charge_types
 		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
 		for charge_type in good_charge_type:
+			print('++++++++++++++++++++++',charge_type.price)
 			seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).all()
 			seckill_kill_goods_flag = 1
 			if seckill_goods:
@@ -483,7 +484,7 @@ class customerGoods(CustomerBaseHandler):
 					'market_price':former_charge_type.market_price if seckill_not_start else charge_type.market_price,'relate':former_charge_type.relate if seckill_not_start else charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
 					"has_activity":has_activity,"discount_rate":discount_rate,"is_seckill":is_seckill,\
 					"seckill_is_bought":seckill_is_bought,"seckill_activity_id":seckill_activity_id,"seckill_goods_id":seckill_goods_id,\
-					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece})
+					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece,"src_price":charge_type.price})
 				
 		# added by jyj 9.3
 		seckill_goods_ids = []
@@ -1731,7 +1732,7 @@ class Market(CustomerBaseHandler):
 									now=datetime.datetime.now()
 									now2=datetime.datetime(now.year,now.month,now.day)
 									end_time1=q_price_group.t_time+time.mktime(now2.timetuple())
-						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'num':charge_type.num, 'unit':unit,\
+						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'src_price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
 

@@ -423,7 +423,6 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                 '<span class="pull-right text-grey sale font12 {{if is_activity==1 }}hidden{{/if}}">销量: <span class="color number">{{saled}}</span></span>'+
                                 '<span class="pull-right text-grey sale font12 {{if is_activity!=1 }}hidden{{/if}}">库存: <span class="color number">{{activity_piece}}</span>份</span>'+
                             '</p>'+
-
                             '<p class="buylimit-box font12">'+
                                 '{{if buylimit >0 }}<span class="buylimit">{{buylimit_txt}}</span>{{/if}}'+
                                 '<span class="{{if is_activity==0 }}hidden{{/if}}">距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>'+
@@ -432,7 +431,8 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                 '{{if is_activity==1 && activity_piece>0 }}'+
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
-                                    '<span class="price-bo">{{charge_type_text}}</span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
+                                    '<span class="price-bo">{{sk_price}}<span class="src-txt">{{src_price}}元{{price_unit}}</span></span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
+                                    '<span class="src-price-txt hidden">{{src_txt}}</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box wrap-seckill-price-box">'+
                                         '<span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}">抢!</span>'+
@@ -443,7 +443,7 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                 '{{each charge_types as key}}'+
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{key["id"]}}" data-relate="{{key["relate"]}}" data-buy="{{key["limit_today"]}}" data-allow="{{key["allow_num"]}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
-                                        '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
+                                        '<span class="price">{{key["price"]}}</span>元&nbsp;<span class="unit"><span class="market">{{if is_activity==2}}<span class="market-price">{{key["src_price"]}}元</span>{{else}}{{if key["market_price"]>0 }}<span class="market-price">{{key["market_price"]}}元</span>{{/if}}{{/if}}</span>/<span class="num">{{key["num"]}}</span><span class="chargeUnit">{{key["unit"]}}</span></span>'+
                                         '<span class="price-tip {{if key["has_discount_activity"]==0 }}hidden{{/if}}"><span class="price-dif">{{key["discount_rate"]}}</span>折</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box">'+
@@ -524,6 +524,12 @@ var fruitItem=function(box,fruits,type){
     }else if(buylimit==3){
         buylimit_txt="限充值用户";
     }
+    if(is_activity==1){
+        var temp_prices = charge_type_text.split("元");
+        var sk_price = temp_prices[0]+"元";
+        var src_price = parseFloat(temp_prices[0])+parseFloat(price_dif);
+        var price_unit = temp_prices[1];
+    }
     var render=template.compile(goods_item);
     var html=render({
         code:code,
@@ -544,7 +550,9 @@ var fruitItem=function(box,fruits,type){
         is_activity:is_activity,
         price_dif:price_dif,
         activity_piece:activity_piece,//库存
-        charge_type_text:charge_type_text,
+        sk_price:sk_price,
+        src_price:src_price,
+        price_unit:price_unit,
         charge_type_id:charge_type_id,
         seckill_id:seckill_id,
         is_bought:is_bought,

@@ -13,6 +13,7 @@
 </script>
 <input type="hidden" id="shop_code" value="{{shop_code}}"/>
 <div class="wrap-seckill pm80">
+    {% if output_data %}
     {% for item in output_data %}
     <div class="discount-item-box">
         <div class="show-time-box no-seckill-time txt-al" data-time="{{item['end_time']}}">
@@ -45,6 +46,9 @@
             {% end %}
         </ul>
     </div>
+    {% end %}
+    {% else %}
+    <p class="no-result mt40">限时折扣活动还未开始，请耐心等待哦~</p>
     {% end %}
     <p class="no-result mt10 hide">加载中...</p>
 </div>

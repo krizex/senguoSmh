@@ -5817,7 +5817,10 @@ class MarketingSeckill(AdminBaseHandler):
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
-					storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					try:
+						storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					except:
+						storage_piece = 0
 					query_list[i].append(storage_piece)
 				fruit_id_charge_type[str(fruit_id)] = query_list
 			
@@ -5908,7 +5911,10 @@ class MarketingSeckill(AdminBaseHandler):
 				for i in range(len(query_list)):
 					query_list[i] = list(query_list[i])
 					query_list[i][2] = self.getUnit(query_list[i][2])
-					storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					try:
+						storage_piece = int(fruit_id_storage[str(fruit_id)][0]/query_list[i][3]/query_list[i][1])
+					except:
+						storage_piece = 0
 					query_list[i].append(storage_piece)
 				fruit_id_charge_type[str(fruit_id)] = query_list
 
