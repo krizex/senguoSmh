@@ -11,7 +11,7 @@ var current_sort_way1 = 1;  //当前的排列方式  1:按日排,2:按周排,3:�
 
 $(document).ready(function(){
     initCharts();
-}).on('click','.sell-change-list1 li',function(){
+}).on('click','.amount-change-list1 li',function(){
     liveInit();
     $(".year1").text(current_year);
     $(".month1").text(current_month);
@@ -111,7 +111,7 @@ function initCharts(){
     $(".month1").text(current_month);
 
     //页面加载时默认选中按天
-    $(".sell-change-list1").each(function(){
+    $(".amount-change-list1").each(function(){
         $(".choose-change1").removeClass("hidden");
         current_sort_way1 = 1;
         $(".year-span1").show();
@@ -303,23 +303,24 @@ function getCount(action,type,current_year,current_month,options,myChart){
     $('.detail-count').find('.item').remove();
     count(action,type,current_year,current_month,myChart);
     //解析返回的data，将其存储到前台的数组里面
-    for(var i=0;i<data.length;i++){
+    for(var i=data.length-1;i>-1;i--){
+    //for(var i=0;i<data.length;i++){
         //按天
         var j=i+1;
         var date='';
         var time='';
         if(type==1){
-            date=j+'号';
-            time=current_year+'-'+current_month+'-'+j;
+            date=resolve(j)+'号';
+            time=current_year+'-'+current_month+'-'+resolve(j);
         }
         //按周
         else if(type==2){
-            date='第'+j+'周';
+            date='第'+resolve(j)+'周';
             time=getWeekRange(j);
         }
         else{
-            date=j+'月';
-            time=current_year+'-'+j;
+            date=resolve(j)+'月';
+            time=current_year+'-'+resolve(j);
         }
 
         var totalAmount=data[i]['total'];
@@ -334,10 +335,10 @@ function getCount(action,type,current_year,current_month,options,myChart){
         $item.find('.amount_wechat').text(commafy(wechatAmount));
         $('.detail-count').append($item);
         
-        options.xAxis[0].data.push(date);
-        options.series[0].data.push(totalAmount);
-        options.series[1].data.push(alipayAmount);
-        options.series[2].data.push(wechatAmount);
+        options.xAxis[0].data.unshift(date);
+        options.series[0].data.unshift(totalAmount);
+        options.series[1].data.unshift(alipayAmount);
+        options.series[2].data.unshift(wechatAmount);
     }
     myChart.refresh();
     myChart.setOption(options);
@@ -373,9 +374,18 @@ function getWeekRange(indexOfWeek){
     var eYear=endOfWeek.getFullYear();
     var eMonth=endOfWeek.getMonth()+1;
     var eDay=endOfWeek.getDate();
-    var sReturn=sYear+'-'+sMonth+'-'+sDay+'～'+eYear+'-'+eMonth+'-'+eDay;
+    var sReturn=sYear+'-'+resolve(sMonth)+'-'+resolve(sDay)+'～'+eYear+'-'+resolve(eMonth)+'-'+resolve(eDay);
     return sReturn;
 }
+
+//小于10的前面加个0
+function resolve(i){
+    if(i<10){
+        return '0'+i;
+    }
+    return i;
+}
+
 
 
 // 获取当前日期的前后N天日期(返回值为Date类型)(N<=28):

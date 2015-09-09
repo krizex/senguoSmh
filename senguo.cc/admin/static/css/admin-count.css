@@ -115,3 +115,16 @@
 .amount_alipay{text-align: right;}
 .amount_wechat{text-align: right;}
 
+
+/*add by sunmh 2015年09月03日*/
+.amount-change-list1{margin-left:60px;margin-top: 10px;}
+.amount-change-list1 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.amount-change-list1 li.active{border-color:#44b549;}
+.amount-change-list1 li.active a{color:#44b549;}
+
+
+/*add by sunmh 2015年09月03日*/
+.user-change-list1{margin-left:60px;margin-top: 10px;}
+.user-change-list1 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.user-change-list1 li.active{border-color:#44b549;}
+.user-change-list1 li.active a{color:#44b549;}
