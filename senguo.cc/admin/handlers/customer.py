@@ -445,7 +445,7 @@ class customerGoods(CustomerBaseHandler):
 				is_seckill = 0
 				former_charge_type = None
 				seckill_not_start = 0
-
+				seckill_goods = None
 				if has_discount_activity == 0:
 					self.update_seckill()
 					if charge_type.activity_type == 1:
@@ -478,12 +478,16 @@ class customerGoods(CustomerBaseHandler):
 								seckill_not_start = 1
 								former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
 								unit = self.getUnit(former_charge_type.unit)
+				if is_seckill == 1:
+					src_prices = seckill_goods.former_price
+				else:
+					src_prices = charge_type.price
 				charge_types.append({'id':former_charge_type.id if seckill_not_start else charge_type.id,'price':round(former_charge_type.price,2) if seckill_not_start else round(charge_type.price*discount_rate/10,2),\
 					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,\
 					'market_price':former_charge_type.market_price if seckill_not_start else charge_type.market_price,'relate':former_charge_type.relate if seckill_not_start else charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
 					"has_activity":has_activity,"discount_rate":discount_rate,"is_seckill":is_seckill,\
 					"seckill_is_bought":seckill_is_bought,"seckill_activity_id":seckill_activity_id,"seckill_goods_id":seckill_goods_id,\
-					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece,"src_price":charge_type.price})
+					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece,"src_price": src_prices})
 				
 		# added by jyj 9.3
 		seckill_goods_ids = []
@@ -1814,7 +1818,7 @@ class Market(CustomerBaseHandler):
 						charge_types = []
 					else:
 						charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.seckill_charge_type_id).first()
-						data_item1['charge_types'] = [{'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':self.getUnit(charge_type.unit),\
+						data_item1['charge_types'] = [{'id':charge_type.id,'price':charge_type.price,'src_price':seckill_info.former_price,'num':charge_type.num, 'unit':self.getUnit(charge_type.unit),\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(False),\
 							'allow_num':1,"discount_rate":None,"has_discount_activity":0,'activity_type':charge_type.activity_type}]
 						charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] != 1]

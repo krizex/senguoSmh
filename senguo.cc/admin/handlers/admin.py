@@ -5245,6 +5245,9 @@ class Discount(AdminBaseHandler):
 				#跳出双层循环
 				if can_new_discount==1:
 					break
+			counts = [0,0,0,0]
+			for i in range(4):
+				counts[i] = self.session.query(models.DiscountShopGroup).filter_by(shop_id = current_shop_id,status = i).count()
 			# 下面四个data对应于４种状态的限时折扣
 			data=[]
 			for x in range(0,4):
@@ -5252,7 +5255,7 @@ class Discount(AdminBaseHandler):
 				self.getdiscount(data_tmp,x,max_item,page_end,page)
 				data.append(data_tmp)
 			discount_active_cm=self.session.query(models.Marketing).filter_by(id=current_shop_id).first().discount_active
-			return self.render("admin/discount-main.html",discount_active_cm=discount_active_cm,output_data=data,page_end=page_end,can_new_discount=can_new_discount,context=dict(subpage='marketing',subpage2='discount_active'))
+			return self.render("admin/discount-main.html",discount_active_cm=discount_active_cm,output_data=data,counts=counts,page_end=page_end,can_new_discount=can_new_discount,context=dict(subpage='marketing',subpage2='discount_active'))
 		elif action=="newdiscountpage":
 			data=[]
 			data1=[]
@@ -5702,6 +5705,10 @@ class MarketingSeckill(AdminBaseHandler):
 				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(models.SeckillActivity.start_time).offset(page*page_size).limit(page_size).all()
 			else:
 				query_list = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status).order_by(desc(models.SeckillActivity.start_time)).offset(page*page_size).limit(page_size).all()
+			counts = [0,0,0,0]
+			status_range = [1,2,0,-1]
+			for i in range(len(status_range)):
+				counts[i] = self.session.query(models.SeckillActivity).filter_by(shop_id = current_shop_id,activity_status = status_range[i]).count()
 			for item in query_list:
 				activity_item = {}
 				activity_item['shop_code'] = current_shop.shop_code
@@ -5766,7 +5773,7 @@ class MarketingSeckill(AdminBaseHandler):
 
 				output_data.append(activity_item)
 
-			return self.render("admin/seckill.html",action=action,seckill_active2 = seckill_active,page_sum=page_sum,output_data=output_data,status=status,context=dict(subpage='marketing',subpage2='seckill'))
+			return self.render("admin/seckill.html",action=action,seckill_active2 = seckill_active,page_sum=page_sum,output_data=output_data,status=status,counts=counts,context=dict(subpage='marketing',subpage2='seckill'))
 		elif action == 'seckill_new':
 			goods_group_id_name = self.session.query(models.GroupPriority.group_id,models.GoodsGroup.name).join(models.GoodsGroup,models.GroupPriority.group_id == models.GoodsGroup.id).\
 								      filter(models.GoodsGroup.shop_id == current_shop_id,models.GoodsGroup.status != 0).all()
@@ -6375,11 +6382,9 @@ class MarketingSeckill(AdminBaseHandler):
 				if cur_fruit_activity_status:
 					cur_fruit_activity_status = cur_fruit_activity_status.activity_status
 					if cur_fruit_activity_status != 0:
-						print("@@@@@@")
 						return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			if not self.judge_discount(choose_fruit_id,choose_start_time,choose_end_time):
-				print("#######")
 				return self.send_fail(goods_name + '在当前选择的时间段已经参与其他活动，请选择其他商品！')
 
 			activity_query = self.session.query(models.SeckillActivity.start_time,models.SeckillActivity.end_time,models.SeckillActivity.id).filter(models.SeckillActivity.shop_id == current_shop_id,models.SeckillActivity.activity_status.in_([1,2])).all()

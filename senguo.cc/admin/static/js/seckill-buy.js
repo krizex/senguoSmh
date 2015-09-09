@@ -207,18 +207,19 @@ function insertGoods(data){
             $item.find(".nm-name").html(data[key].goods_name);
             $item.find(".price-bo").html(data[key].charge_type_text);
             $item.find(".price-dif").html(data[key].price_dif);
+            $item.find(".seckill-src-txt").html(data[key].charge_src_txt);
             if(data[key].activity_piece==0){
                 $item.find(".cover-img").removeClass("hide");
                 $item.find(".goods-price-row").addClass("no-goods");
-                $item.find(".seckill-btns").addClass("hide");
+                $item.find(".seckill-btn").addClass("hide");
                 $item.find(".seckill-btn-more").removeClass("hide");
             }
             if($(".seckill-ing").hasClass("hide")){//未开始
-                $item.find(".seckill-btns").addClass("hide");
+                $item.find(".seckill-btn").addClass("hide");
                 $item.find(".seckill-btn-first").removeClass("hide");
             }
             if(data[key].is_bought==1){
-                $item.find(".seckill-btns").addClass("hide");
+                $item.find(".seckill-btn").addClass("hide");
                 $item.find(".seckill-btn-more").removeClass("hide");
             }
             $("#seckill_list").append($item);
@@ -234,12 +235,13 @@ function countTime(time,start_time,type,$obj){
             $(".no-seckill-time").addClass("hide");
             $(".seckill-ing").removeClass("hide");
             if($(".no-seckill-time").hasClass("hide")){
-                $(".seckill-btns").addClass("hide");
+                //$(".seckill-btns").addClass("hide");
                 $("#seckill_list").children("li").each(function(){
                     var $this = $(this);
                     if($(this).attr("is_bought")=="0"){
                         $this.find(".seckill-btn").removeClass("hide");
                     }else{
+                        $this.find(".seckill-btn").addClass("hide");
                         $this.find(".seckill-btn-more").removeClass("hide");
                     }
                 });
@@ -281,7 +283,7 @@ function countTime(time,start_time,type,$obj){
     }else{
         //Tip("这场秒杀结束啦~~");
         setTimeout(function(){
-            //window.location.reload(true);
+            window.location.reload(true);
         },1000);
     }
 }

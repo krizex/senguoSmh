@@ -24,10 +24,10 @@
             <a href="{{reverse_url('adminMarketingSeckill')}}?action=seckill_new" class="newbtn add-btn mt6 mr10 new-seckill">+新建秒杀</a>
         </div>
         <ul class="status-choose subnav chinav furit-type pull-left">
-            <li class="txt-center active nostart" data-type="nostart"><a href="javascript:;">未开始</a></li>
-            <li class="txt-center killing" data-type="killing"><a href="javascript:;">进行中</a></li>
-            <li class="txt-center finished" data-type="finished"><a href="javascript:;">已结束</a></li>
-            <li class="txt-center stoped" data-type="stoped"><a href="javascript:;">已停用</a></li>
+            <li class="txt-center active nostart" data-type="nostart"><a href="javascript:;">未开始(<span id="num1">{{counts[0]}}</span>)</a></li>
+            <li class="txt-center killing" data-type="killing"><a href="javascript:;">进行中(<span id="num2">{{counts[1]}}</span>)</a></li>
+            <li class="txt-center finished" data-type="finished"><a href="javascript:;">已结束(<span id="num3">{{counts[2]}}</span>)</a></li>
+            <li class="txt-center stoped" data-type="stoped"><a href="javascript:;">已停用(<span id="num4">{{counts[3]}}</span>)</a></li>
         </ul>
     </div>
     <div class="wrap-tb mt10">

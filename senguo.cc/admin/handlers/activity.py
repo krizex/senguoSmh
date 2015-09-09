@@ -853,6 +853,7 @@ class Seckill(CustomerBaseHandler,UserLimit):
 			else:
 				cur_charge_type_num = cur_charge_type.num
 			goods_item['charge_type_text'] = str(goods.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+			goods_item['charge_src_txt'] = str(goods.former_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
 			goods_item['price_dif'] = round(float(goods.former_price - goods.seckill_price),2)
 			if goods.activity_piece  - goods.ordered > 0:
 				goods_item['activity_piece'] = goods.activity_piece  - goods.ordered
@@ -958,9 +959,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 									count=fruits[charge.id]
 								else:
 									count=0
-								x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元',"src_price":charge.price+"元","charge_unit":'/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
-								#x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元/'+str(charge.num)+self.getUnit(charge.unit),\
-								#"former_charge":str(round(charge.price,2))+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
+								x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元',"src_price":str(charge.price)+"元","charge_unit":'/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
 								chargesingle.append(x_charge)
 						if fruit.img_url:
 							img_url = fruit.img_url.split(';')[0]

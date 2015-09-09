@@ -432,7 +432,6 @@ var goods_item=' <li class="goods-list-item font10 text-grey9 {{code}}" is_activ
                                 '<li class="border-color set-w100-fle charge-item" data-id="{{charge_type_id}}" seckill_goods_id="{{seckill_id}}">'+
                                     '<span class="pull-left text-bgcolor p0 charge-type forbid_click">'+
                                     '<span class="price-bo">{{sk_price}}<span class="src-txt">{{src_price}}元{{price_unit}}</span></span><span class="price-tip">省<span class="price-dif">{{price_dif}}</span>元</span>'+
-                                    '<span class="src-price-txt hidden">{{src_txt}}</span>'+
                                     '</span>'+
                                     '<span class="forbid_click pull-right num_box wrap-seckill-price-box">'+
                                         '<span class="seckill-btn seckill-goods add_cart_num {{if is_bought==1}}hidden{{/if}}" data-storage="{{activity_piece}}">抢!</span>'+

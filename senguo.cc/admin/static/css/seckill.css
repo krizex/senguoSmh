@@ -15,7 +15,7 @@ body{background-color: #f5f5f5;}
 .cur-time{display: inline-block;}
 .stime-list .active{color: #59D5AA;border-bottom: 1px solid #59D5AA;}
 .stime-list .active .c-time{display: inline-block;background-position: -1px 0px;}
-.show-time-box{font-size: 12px;height: 28px;line-height: 28px;text-align: center;color: #FF9800;padding: 0 10px;}
+.show-time-box{font-size: 14px;height: 28px;line-height: 28px;text-align: center;color: #FF9800;padding: 0 10px;}
 .no-seckill-time{color: #59D5AA;}
 .time-status{display: inline-block;color: #fff;height: 16px;line-height:16px;padding: 0 4px;border-radius: 6px;background-color: #FF9800;}
 .no-seckill-time .time-status{background-color: #59D5AA;}
@@ -80,8 +80,8 @@ body{background-color: #f5f5f5;}
 @media screen and (min-width: 801px) {
     .go-cart{right: 50%;margin-right: -350px;}
 }
-
-
+.src-txt{display: inline-block;color: #999;font-size: 12px;text-decoration: line-through;}
+.seckill-src-txt{position: absolute;left: 80px;top: 30px;}
 
 
 

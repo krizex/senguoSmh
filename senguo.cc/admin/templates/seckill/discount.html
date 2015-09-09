@@ -31,7 +31,7 @@
                         <p class="c333 clip nm-name pt0">{{goods['goods_name']}}</p>
                         {% for charge in goods['charge_types']%}
                         <div class="wrap-discount-item {% if goods['storage']==0 %}no-goods{% end %}" data-id="{{charge['charge_id']}}">
-                            <span class="price-bo">{{charge['charge']}}</span>
+                            <span class="price-bo">{{charge['charge']}}<span class="src-txt">{{charge['src_price']}}</span>{{charge['charge_unit']}}</span>
                             <span class="price-tip">{{goods['discount_rate']}}折</span>
                             <div class="wrap-operate" data-num="{{charge['count']}}" data-id="{{charge['charge_id']}}" data-storage="{{goods['storage']}}" charge-storage="{{charge['charge_storage']}}">
                                 <span class="roll-btn minus-btn {% if charge['count']==0 %}hide{% end %}">-</span>

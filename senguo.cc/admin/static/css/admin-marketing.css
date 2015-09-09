@@ -109,7 +109,7 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 
 
 /*限时折扣添加样式*/
-.charge-btn{width: 90px;display:inline-block;margin-left:15px;font-size: 12px;color: #000;text-align: center;height: 28px;line-height: 26px;border-radius: 2px;background-color: #ddd;}
+.charge-btn{width: 90px;display:inline-block;margin-left:15px;font-size: 12px;color: #000;text-align: center;height: 28px;line-height: 26px;border-radius: 2px;background-color: #ddd;white-space: nowrap;}
 .week-btn{width: 50px;display:inline-block;margin-left:15px;font-size: 14px;background-color: #fff;color: #000;text-align: center;height: 28px;line-height: 28px;border-radius: 2px;}
 .back_green{background-color: #52b43f;}
 .back_gray{background-color: #f4f5f9;}

@@ -368,6 +368,7 @@ var __item='<li class="goods_item_item {{code}}" data-id="{{id}}" is_activity="{
                 '<div class="wrap-src-price">'+
                     '<p class="src-price {{if is_activity>0 }}hidden{{/if}}"><span class="f12 rmb">￥</span><span class="src-price-num">{{src_price}}</span></p>'+
                     '<p class="text-grey9 f12 {{if is_activity==0 }}hidden{{/if}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>'+
+                    '{{if is_activity>0 }}<span class="src-price bg-price"><span class="rmb">￥</span>{{src_prices}}</span>{{/if}}'+
                     '<p class="cur-price color"><span class="f12 rmb">￥</span>' +
                     '<span class="cur-price-num">{{cur_price}}</span>{{if is_activity==2 }}<span class="price-tip {{if has_discount_activity==0 }}hidden{{/if}}">{{discount_rate}}折</span>' +
                     '{{else if is_activity==1 }}<span class="price-tip">省{{price_dif}}元</span>{{/if}}</span></p>'+
@@ -621,6 +622,10 @@ var fruitItem=function(box,fruits,type){
         discount_rate = charge_type.discount_rate;
         has_discount_activity = charge_type.has_discount_activity;
     }
+    var src_prices = "";
+    if(is_activity>0){
+        src_prices = charge_type.src_price+"元/"+charge_type.num+charge_type.unit;
+    }
     if(storage<=0){
         sold_out="";
         desaturate="desaturate";
@@ -659,6 +664,7 @@ var fruitItem=function(box,fruits,type){
         is_bought:is_bought,
         end_time:end_time,
         discount_rate:discount_rate,
+        src_prices:src_prices,
         has_discount_activity:has_discount_activity,
         buylimit:buylimit,
         buylimit_txt:buylimit_txt,
