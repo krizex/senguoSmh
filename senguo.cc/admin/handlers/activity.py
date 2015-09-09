@@ -958,7 +958,8 @@ class Discount(CustomerBaseHandler,UserLimit):
 									count=fruits[charge.id]
 								else:
 									count=0
-								x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
+								x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元/'+str(charge.num)+self.getUnit(charge.unit),\
+								"former_charge":str(round(charge.price,2))+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
 								chargesingle.append(x_charge)
 						if fruit.img_url:
 							img_url = fruit.img_url.split(';')[0]

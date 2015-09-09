@@ -479,7 +479,7 @@ class customerGoods(CustomerBaseHandler):
 								former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
 								unit = self.getUnit(former_charge_type.unit)
 				charge_types.append({'id':former_charge_type.id if seckill_not_start else charge_type.id,'price':round(former_charge_type.price,2) if seckill_not_start else round(charge_type.price*discount_rate/10,2),\
-					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,\
+					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,'former_price':round(charge_type.price,2),\
 					'market_price':former_charge_type.market_price if seckill_not_start else charge_type.market_price,'relate':former_charge_type.relate if seckill_not_start else charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
 					"has_activity":has_activity,"discount_rate":discount_rate,"is_seckill":is_seckill,\
 					"seckill_is_bought":seckill_is_bought,"seckill_activity_id":seckill_activity_id,"seckill_goods_id":seckill_goods_id,\
@@ -1731,7 +1731,7 @@ class Market(CustomerBaseHandler):
 									now=datetime.datetime.now()
 									now2=datetime.datetime(now.year,now.month,now.day)
 									end_time1=q_price_group.t_time+time.mktime(now2.timetuple())
-						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'num':charge_type.num, 'unit':unit,\
+						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'former_price':round(charge_type.price,2),'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
 
