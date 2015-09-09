@@ -92,7 +92,7 @@ var notice = '<div class="wrap-item-box pm20">'+
                         '<img src="{{imgurl}}" alt="用户头像" class="inform-img"/>'+
                         '<span class="c333 ml10">{{name}}</span>'+
                         '<span class="ml10 c999">{{com_type}}了您的</span>'+
-                        '<a href="/bbs/detail/{{id}}" class="dgreen f14">{{title}}</a>'+
+                        '<a href="/bbs/detail/{{id}}" class="dgreen f14 fb">{{title}}</a>'+
                     '</div>'+
                     '<p class="c333 inform-txt">{{detail}}</p>'+
                 '</div>';
