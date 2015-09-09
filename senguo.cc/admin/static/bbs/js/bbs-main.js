@@ -4,6 +4,12 @@ $(document).ready(function(){
     getHotInfo("customer");
     if($(".publish-box-bk").size()>0){//发布&编辑
         initEditor();
+    }
+    if($.getUrlParam("search")){
+        var key = $.getUrlParam("search");
+        _search = true;
+        page = 0;
+        articleSearch(0,key,true);
     }else{
         if($.getUrlParam("id")){
             _type = parseInt($.getUrlParam("id"));

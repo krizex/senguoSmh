@@ -25,7 +25,7 @@ div,span,p,li{-webkit-user-select:none;}
 .fi-kf-show .wx-threeR{bottom:5px;}
 .fi-kf-show .wx-threeRs{bottom:8px;}
 /*首页*/
-.wrap-bbst{position: fixed;left: 0;top: 0;z-index:999;width: 100%;}
+.wrap-bbst{position: fixed;left: 0;top: 0;z-index:1001;width: 100%;}
 .bbs-top{height: 60px;
     background: -webkit-linear-gradient(left,#56CFA4 0%,#48B6A4 100%);
     background: -ms-linear-gradient(left,#56CFA4 0%,#48B6A4 100%);
@@ -98,14 +98,14 @@ div,span,p,li{-webkit-user-select:none;}
 .ft .links_item a {color: #f1f1f1;}
 /*个人中心*/
 .topic-opt{color: #4ab89e;margin-left: 10px;}
-.profile-top{background-color: #fff;padding: 20px 20px 0 20px;}
+.profile-top{background-color: #fff;padding-top: 20px;}
 .profile-user{text-align: center;padding-bottom: 20px;}
 .pro-img{border-radius: 50%;width: 104px;height: 104px;}
 .profile-name{text-align: center;color: #333;font-size: 18px;font-weight: bold;}
-.nav-profle{border-top: 1px solid #e7e7e7;}
+.nav-profle{border-top: 1px solid #e7e7e7;padding: 0 20px;background-color: #f9fbf8;}
 .nav-profle>li{float: left;width:25%;height: 50px;line-height: 50px;text-align: center;color: #999;font-size: 16px;cursor: pointer;}
-.nav-profle>li:hover{color: #4ab89e;font-weight: bold;}
-.nav-profle .active{color: #4ab89e;font-weight: bold;}
+.nav-profle>li:hover{color: #4ab89e;font-weight: bold;background-color: #fff;}
+.nav-profle .active{color: #4ab89e;font-weight: bold;background-color: #fff;}
 .pro-txt{line-height: 22px;max-height: 46px;overflow: hidden;}
 .normal{font-weight: normal;}
 .inform-list{padding: 0 20px 0 114px;background-color: #fff;}
@@ -114,7 +114,7 @@ div,span,p,li{-webkit-user-select:none;}
 .inform-list>li:last-child .wrap-item-box:last-child{border-bottom: none;}
 .inform-item{height: 40px;line-height: 40px;}
 .inform-img{border-radius: 50%;width: 40px;height: 40px;}
-.inform-txt{line-height: 20px;}
+.inform-txt{line-height: 20px;padding-left: 50px;}
 .inform-time{position: absolute;white-space: nowrap;right:100%;margin-right:20px;top:34px;color: #4ab89e;display: inline-block;}
 .li-roll{display: inline-block;position: absolute;width: 9px;height: 9px;border-radius: 9px;background-color: #4ab89e;left: -6px;top: 36px;}
 /*发布*/
@@ -149,6 +149,7 @@ div,span,p,li{-webkit-user-select:none;}
 .wrap-bttns>a{font-size: 16px;display: inline-block;width: 40px;height: 20px;line-height: 20px;text-align: center;color: #4ab89e;}
 .wrap-bttns .cancel-pop{color: #033333;}
 .now-content{padding: 0;border-radius: 4px;max-width: 600px;}
+.edui-modal{top:17% !important;}
 /*详情*/
 .topic-detail{background-color: #fff;padding: 20px;}
 .detail-user{height: 26px;line-height: 26px;color: #999;}

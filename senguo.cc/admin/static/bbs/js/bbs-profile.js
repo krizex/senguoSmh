@@ -26,7 +26,7 @@ $(document).ready(function(){
     if(index==1){
         $("#inform_list").removeClass("hide");
         $("#topic_list").addClass("hide");
-        switch_flag = false;
+        switch_flag = true;
     }else{
         switch_flag = true;
         $("#inform_list").addClass("hide");
@@ -90,7 +90,7 @@ var notice = '<div class="wrap-item-box pm20">'+
                     '<div class="inform-item">'+
                         '<span class="fr c999">{{time}}</span>'+
                         '<img src="{{imgurl}}" alt="用户头像" class="inform-img"/>'+
-                        '<span class="c333">{{name}}</span>'+
+                        '<span class="c333 ml10">{{name}}</span>'+
                         '<span class="ml10 c999">{{com_type}}了您的</span>'+
                         '<a href="/bbs/detail/{{id}}" class="dgreen f14">{{title}}</a>'+
                     '</div>'+
@@ -118,7 +118,12 @@ function articleList(page){
                     $('.more-btn').html("~ 没有更多了 ~");
                 }
                 if(switch_flag){
-                    $("#topic_list").empty();
+                    if(_type==1){
+                        $("#inform_list").empty();
+                        cur_time = [];
+                    }else{
+                        $("#topic_list").empty();
+                    }
                 }
                 insertProfile(datalist);
                 finished=true;
@@ -186,7 +191,7 @@ function insertProfile(data){
                     title:title,
                     time:time,
                     type:type,
-                    nickname:nickname,
+                    name:nickname,
                     date:date,
                     imgurl:imgurl,
                     detail:detail,
