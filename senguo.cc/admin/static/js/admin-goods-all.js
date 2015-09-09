@@ -372,6 +372,9 @@ $(document).ready(function(){
 }).on('click','.fruit-search',function(){
     var con=$('#search-classify').val();
     getData2(con);
+}).on("keyup","#search-classify",function(){
+    var con=$('#search-classify').val();
+    getData2(con);
 }).on("click",".del-all-item",function(){//删除商品
     if(confirm("确认删除该商品？")){
         var $obj = $(this).closest(".goods-all-item");
