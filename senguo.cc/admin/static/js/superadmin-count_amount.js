@@ -11,7 +11,7 @@ var current_sort_way1 = 1;  //当前的排列方式  1:按日排,2:按周排,3:�
 
 $(document).ready(function(){
     initCharts();
-}).on('click','.sell-change-list1 li',function(){
+}).on('click','.amount-change-list1 li',function(){
     liveInit();
     $(".year1").text(current_year);
     $(".month1").text(current_month);
@@ -111,7 +111,7 @@ function initCharts(){
     $(".month1").text(current_month);
 
     //页面加载时默认选中按天
-    $(".sell-change-list1").each(function(){
+    $(".amount-change-list1").each(function(){
         $(".choose-change1").removeClass("hidden");
         current_sort_way1 = 1;
         $(".year-span1").show();
@@ -169,7 +169,7 @@ function show_chart(action,type,current_year,current_month){
                     trigger: 'axis'
                 },
                 legend: {
-                    data:['新增总余额','支付宝','微信']
+                    data:['总流入','支付宝','微信']
                 },
                 toolbox: {
                     show : true,
@@ -200,7 +200,7 @@ function show_chart(action,type,current_year,current_month){
                 ],
                 series : [
                     {
-                        name:'新增总余额',
+                        name:'总流入',
                         type:'line',
                         data:[],
                         markPoint : {
@@ -253,7 +253,7 @@ function show_chart(action,type,current_year,current_month){
                     '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
                     '#59678c','#c9ab00','#7eb00a','#6f5553','#c14089']
             };
-            getCount(action,type,current_year,current_month,ChartOptions,myChart);
+            getCount(action,type,current_year,current_month<10?"0"+current_month:current_month,ChartOptions,myChart);
             //myChart.hideLoading
         });
 }
@@ -300,30 +300,218 @@ function getCount(action,type,current_year,current_month,options,myChart){
     options.series[1].data=[];
     options.series[2].data=[];
     myChart.clear();
+    $('.detail-count').find('.item').remove();
     count(action,type,current_year,current_month,myChart);
     //解析返回的data，将其存储到前台的数组里面
-    for(var i=0;i<data.length;i++){
+    for(var i=data.length-1;i>-1;i--){
+    //for(var i=0;i<data.length;i++){
         //按天
-        j=i+1
+        var j=i+1;
+        var date='';
+        var time='';
         if(type==1){
-            options.xAxis[0].data.push(j+'号');
+            date=resolve(j)+'号';
+            time=current_year+'-'+current_month+'-'+resolve(j);
         }
         //按周
         else if(type==2){
-            options.xAxis[0].data.push('第'+j+'周');
+            date='第'+resolve(j)+'周';
+            time=getWeekRange(j);
         }
         else{
-            options.xAxis[0].data.push(j+'月');
+            date=resolve(j)+'月';
+            time=current_year+'-'+resolve(j);
         }
 
         var totalAmount=data[i]['total'];
         var alipayAmount=data[i]['alipay'];
         var wechatAmount=data[i]['wechat'];
 
-        options.series[0].data.push(totalAmount);
-        options.series[1].data.push(alipayAmount);
-        options.series[2].data.push(wechatAmount);
+        var $item=$('<tr class="item"><td class="date"></td><td class="amount_total"></td><td class="amount_alipay"></td><td class="amount_wechat"></td></tr>');
+        
+        $item.find('.date').text(time);
+        $item.find('.amount_total').text(commafy(totalAmount));
+        $item.find('.amount_alipay').text(commafy(alipayAmount));
+        $item.find('.amount_wechat').text(commafy(wechatAmount));
+        $('.detail-count').append($item);
+        
+        options.xAxis[0].data.unshift(date);
+        options.series[0].data.unshift(totalAmount);
+        options.series[1].data.unshift(alipayAmount);
+        options.series[2].data.unshift(wechatAmount);
     }
     myChart.refresh();
     myChart.setOption(options);
+}
+
+
+/*根据周数得到该年这一周的起止日期。
+  如果第一周或最后一周不满七天，这一周的起始日期就只算这几天*/
+function getWeekRange(indexOfWeek){
+    var firstDay = new Date(ChooseDate1.getFullYear(),0,1);
+    var weekOfFirstDay = firstDay.getDay();
+    var endOfWeek;
+    var startOfWeek;
+    //如果第一天是周日的话
+    if(weekOfFirstDay==0){
+        endOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7);
+        startOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7-6);
+    }
+    else{
+        endOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7+(7-weekOfFirstDay));
+        startOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7+(1-weekOfFirstDay));
+    }
+    //如果得到的该周的第一天不是今年，取第一天
+    if(startOfWeek.getFullYear()!=ChooseDate1.getFullYear()){
+        startOfWeek=new Date(ChooseDate1.getFullYear(),0,1);
+    }
+    if(endOfWeek.getFullYear()!=ChooseDate1.getFullYear()){
+        endOfWeek=new Date(ChooseDate1.getFullYear(),11,31);
+    }
+    var sYear=startOfWeek.getFullYear();
+    var sMonth=startOfWeek.getMonth()+1;
+    var sDay=startOfWeek.getDate();
+    var eYear=endOfWeek.getFullYear();
+    var eMonth=endOfWeek.getMonth()+1;
+    var eDay=endOfWeek.getDate();
+    var sReturn=sYear+'-'+resolve(sMonth)+'-'+resolve(sDay)+'～'+eYear+'-'+resolve(eMonth)+'-'+resolve(eDay);
+    return sReturn;
+}
+
+//小于10的前面加个0
+function resolve(i){
+    if(i<10){
+        return '0'+i;
+    }
+    return i;
+}
+
+
+
+// 获取当前日期的前后N天日期(返回值为Date类型)(N<=28):
+function GetDateN(date,AddDayCount)
+{
+    var dd = new Date(2015,1,1);
+
+    // add by jyj 2015-7-14
+    var date_year = date.getFullYear();
+    var date_month = date.getMonth()+1;
+    var date_date = date.getDate();
+
+    dd.setDate(date_date);
+    dd.setMonth(date_month - 1);
+    dd.setFullYear(date_year);
+
+    var n_flag;
+    var is_leap;
+
+    if(AddDayCount >= 0){
+        n_flag = 1;
+    }
+    else{
+        n_flag = 0;
+    }
+
+    if((date_year % 4 == 0 && date_year % 100 != 0) || (date_year % 400 == 0)){
+        is_leap = 1;
+    }
+    else{
+        is_leap = 0;
+    }
+
+    switch(n_flag){
+        case 1:
+            if (date_month == 2){
+                switch(is_leap){
+                    case 1:
+                        if(date_date + AddDayCount > 29){
+                            dd.setMonth(date_month);
+                            dd.setDate(date_date+AddDayCount - 29);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+                    break;
+
+                    case 0:
+                        if(date_date + AddDayCount > 28){
+                            dd.setMonth(date_month);
+                            dd.setDate(date_date+AddDayCount - 28);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+
+                    break;
+                }
+            }
+            else if ((date_month == 1 || date_month == 3 || date_month == 5 || date_month == 7 || date_month == 8 || date_month == 10 ) && date_date + AddDayCount > 31){
+                dd.setMonth(date_month);
+                dd.setDate(date_date+AddDayCount - 31);
+            }
+            else if(date_month == 12 && date_date + AddDayCount > 31){
+                dd.setDate(date_date+AddDayCount - 31);
+                dd.setMonth(0);
+                dd.setFullYear(date_year + 1);
+            }
+            else if ((date_month == 4|| date_month == 6 || date_month == 9 || date_month == 11) && date_date + AddDayCount > 30){
+                dd.setMonth(date_month);
+                dd.setDate(date_date+AddDayCount - 30);
+            }
+            else{
+                dd.setDate(date_date + AddDayCount);
+            }
+        break;
+        case 0:
+            if ((date_month == 3) && date_date + AddDayCount <= 0){
+                switch(is_leap){
+                    case 1:
+                        if(date_date + AddDayCount <= 0){
+                            dd.setMonth(date_month - 2);
+                            dd.setDate(date_date + 29 + AddDayCount);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+                    break;
+
+                    case 0:
+                        if(date_date + AddDayCount <= 0){
+                            dd.setMonth(date_month - 2);
+                            dd.setDate(date_date + 28 + AddDayCount);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+
+                    break;
+                }
+            }
+            else if ((date_month == 2 || date_month == 4 || date_month == 6 || date_month == 8 || date_month == 9 || date_month == 11 ) && date_date + AddDayCount <= 0){
+                dd.setMonth(date_month - 2);
+                dd.setDate(date_date + 31 + AddDayCount);
+            }
+            else if(date_month == 1 && date_date + AddDayCount <= 0){
+                dd.setFullYear(date_year - 1);
+                dd.setMonth(11);
+                dd.setDate(date_date + 31 + AddDayCount);
+            }
+            else if ((date_month == 5|| date_month == 7 || date_month == 10 || date_month == 12) && date_date + AddDayCount <= 0){
+                dd.setMonth(date_month - 2);
+                dd.setDate(date_date + 30 + AddDayCount);
+            }
+            else{
+                dd.setDate(date_date + AddDayCount);
+            }
+        break;
+    }
+
+    //
+    var y = dd.getFullYear();
+    var m = (dd.getMonth()+1)<10?"0"+(dd.getMonth()+1):(dd.getMonth()+1);//获取当前月份的日期，不足10补0
+    var d = dd.getDate()<10?"0"+dd.getDate():dd.getDate(); //获取当前几号，不足10补0
+    var str = y+"-"+m+"-"+d+" 00:00:00";
+    str = str.replace(/-/g,"/");
+    var new_date = new Date(str);
+    return new_date;
 }
