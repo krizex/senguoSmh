@@ -18,7 +18,8 @@ class getHotInfo(FruitzoneBaseHandler):
 			return self.send_success(datalist=self.getHotArticle)
 		elif action == "customer":
 			return self.send_success(datalist=self.getHotCustomer)
-			
+
+
 	@property
 	def getHotArticle(self):
 		datalist = []
@@ -34,14 +35,17 @@ class getHotInfo(FruitzoneBaseHandler):
 
 	@property
 	def getHotCustomer(self):
-		customers = self.session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small)\
+		session = self.session
+		customers = session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small)\
 		.outerjoin(models.Article,models.Accountinfo.id==models.Article.account_id)\
 		.outerjoin(models.ArticleComment,models.Accountinfo.id==models.ArticleComment.account_id)\
 		.distinct(models.Article.id,models.ArticleComment.id).all()
 		customer_list = []
+		print(233333)
 		for customer in customers:
-			article_num=self.session.query(models.Article).filter_by(account_id=customer[0]).filter(models.Article.status>0).count()
-			comment_num=self.session.query(models.ArticleComment).filter_by(account_id=customer[0],status=1).count()
+			print(66666)
+			article_num=session.query(models.Article).filter_by(account_id=customer[0]).filter(models.Article.status>0).count()
+			comment_num=session.query(models.ArticleComment).filter_by(account_id=customer[0],status=1).count()
 			if article_num !=0 or comment_num !=0 :
 				customer_list.append({"nickname":customer[1],"imgurl":customer[2],"article_num":article_num,"comment_num":comment_num})
 		customer_list.sort(key=lambda x:(x["article_num"],x["comment_num"]),reverse=True)
