@@ -16,6 +16,7 @@ $(document).ready(function(){
         $('.reply-btn').attr("id","comment").attr("data-id",id);
         $(".reply-ipt").focus();
     });
+    getHotInfo("article");
     commentList(0);
     scrollLoading();
     new QRCode($("#code2")[0], {

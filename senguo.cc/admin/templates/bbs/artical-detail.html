@@ -11,20 +11,8 @@
     <div class="wrap-right fr">
         <div class="aside-box box-border">
             <p class="aside-title"><span>热门文章</span></p>
-            <ul class="aside-list">
-                {% for topic in handler.getHotArticle%}
-                <li data-id="{{topic['id']}}">
-                    <a href="/bbs/detail/{{topic['id']}}">
-                        <p class="clip c333">{{topic['title']}}</p>
-                        <div class="wrap-topic-attr">
-                            <div class="fr">
-                                <span class="icon-topic viewr">{{topic['scan_num']}}</span>
-                            </div>
-                            <span>{{topic['nickname']}}</span>
-                        </div>
-                    </a>
-                </li>
-                {% end %}
+            <ul class="aside-list hot-artilce-list">
+              
             </ul>
         </div>
     </div>

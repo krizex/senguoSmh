@@ -9,41 +9,14 @@
     <div class="wrap-right fr">
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>热门文章</span></p>
-            <ul class="aside-list">
-                {% for topic in handler.getHotArticle%}
-                <li data-id="{{topic['id']}}">
-                    <a href="/bbs/detail/{{topic['id']}}">
-                        <p class="clip c333">{{topic['title']}}</p>
-                        <div class="wrap-topic-attr">
-                            <div class="fr">
-                                <span class="icon-topic viewr">{{topic['scan_num']}}</span>
-                            </div>
-                            <span>{{topic['nickname']}}</span>
-                        </div>
-                    </a>
-                </li>
-                {% end %}
+            <ul class="aside-list hot-artilce-list">
+              
             </ul>
         </div>
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>活跃用户</span></p>
-            <ul class="aside-list">
-                {% for user in handler.getHotCustomer%}
-                <li>
-                    <dl class="dl">
-                        <dd>
-                            <img src="{{user['imgurl'] or '/static/images/person.png'}}" alt="用户头像"/>
-                        </dd>
-                        <dt>
-                        <p class="f14 c333 clip">{{user['nickname']}}</p>
-                        <p class="c999 f12 mt12">
-                            <span class="num-txt">发布:{{user['article_num']}}篇</span>
-                            <span>评论:{{user['comment_num']}}条</span>
-                        </p>
-                        </dt>
-                    </dl>
-                </li>
-                {% end %}
+            <ul class="aside-list hot-customer-list">
+               
             </ul>
         </div>
     </div>
@@ -101,7 +74,7 @@
             <div class="choose-time-box">
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span class="time-tt" id="year">{% if article_data['status'] == 2%}{{article_data['year']}}{% else %}2015{% end %}</span>
+                    <span class="time-tt" id="year">{% if edit %}{% if article_data['status'] == 2%}{{article_data['year']}}{% else %}2015{% end %}{% end %}</span>
                     <ul class="time-list">
                         <li>2015</li>
                         <li>2016</li>
@@ -111,7 +84,7 @@
                 <span>年</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="month">{% if article_data['status'] == 2%}{{article_data['month']}}{% else %}10{% end %}</span>
+                    <span id="month">{% if edit %}{% if article_data['status'] == 2%}{{article_data['month']}}{% else %}10{% end %}{% end %}</span>
                     <ul class="time-list">
                         <li>01</li>
                         <li>02</li>
@@ -130,7 +103,7 @@
                 <span>月</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="day">{% if article_data['status'] == 2%}{{article_data['day']}}{% else %}10{% end %}</span>
+                    <span id="day">{% if edit %}{% if article_data['status'] == 2%}{{article_data['day']}}{% else %}10{% end %}{% end %}</span>
                     <ul class="time-list">
                         <li>01</li>
                         <li>02</li>
@@ -168,7 +141,7 @@
                 <span>日</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="hour">{% if article_data['status'] == 2%}{{article_data['hour']}}{% else %}10{% end %}</span>
+                    <span id="hour">{% if edit %}{% if article_data['status'] == 2%}{{article_data['hour']}}{% else %}10{% end %}{% end %}</span>
                     <ul class="time-list">
                         <li>00</li>
                         <li>01</li>
@@ -199,7 +172,7 @@
                 <span>时</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="minute">{% if article_data['status'] == 2%}{{article_data['minute']}}{% else %}30{% end %}</span>
+                    <span id="minute">{% if edit %}{% if article_data['status'] == 2%}{{article_data['minute']}}{% else %}30{% end %}{% end %}</span>
                     <ul class="time-list">
                         <li>00</li>
                         <li>05</li>

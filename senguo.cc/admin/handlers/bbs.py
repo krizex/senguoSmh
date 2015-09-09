@@ -10,6 +10,48 @@ import base64
 import json
 from collections import OrderedDict
 
+class getHotInfo(FruitzoneBaseHandler):
+	@FruitzoneBaseHandler.check_arguments("action")
+	def get(self):
+		action = self.args["action"]
+		if action == "article":
+			return self.send_success(datalist=self.getHotArticle)
+		elif action == "customer":
+			return self.send_success(datalist=self.getHotCustomer)
+
+
+	@property
+	def getHotArticle(self):
+		datalist = []
+		try:
+			article_list = self.session.query(models.Article.id,models.Article.title,models.Article.scan_num,models.Accountinfo.nickname)\
+				.join(models.Accountinfo,models.Article.account_id==models.Accountinfo.id).filter(models.Article.status==1)\
+				.distinct(models.Article.id).order_by(models.Article.scan_num.desc()).limit(5).all()
+		except:
+			article_list = None
+		for article in article_list:
+			datalist.append({"id":article[0],"title":article[1],"scan_num":article[2],"nickname":article[3]})
+		return datalist
+
+	@property
+	def getHotCustomer(self):
+		session = self.session
+		articles = session.query(models.Article.account_id).group_by(models.Article.account_id).limit(5).all()
+		comments = session.query(models.ArticleComment.account_id).group_by(models.ArticleComment.account_id).limit(5).all()
+		id_list =list(set(articles).union(set(comments)))
+		customer_list = []
+		for id_item in id_list:
+			account_id = id_item[0]
+			customer = session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small).filter_by(id=account_id).first()
+			article_num=session.query(models.Article).filter_by(account_id=account_id).filter(models.Article.status>0).count()
+			comment_num=session.query(models.ArticleComment).filter_by(account_id=account_id,status=1).count()
+			if article_num !=0 or comment_num !=0 :
+				customer_list.append({"nickname":customer[1],"imgurl":customer[2],"article_num":article_num,"comment_num":comment_num})
+		customer_list.sort(key=lambda x:(x["article_num"],x["comment_num"]),reverse=True)
+		customer_list=customer_list[0:5]
+		return customer_list
+
+
 
 class Main(FruitzoneBaseHandler):
 	# @tornado.web.authenticated

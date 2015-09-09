@@ -1,5 +1,7 @@
 var ueditor = null,_type = 100,_search=false,key="";
 $(document).ready(function(){
+    getHotInfo("article");
+    getHotInfo("customer");
     if($(".publish-box-bk").size()>0){//发布&编辑
         initEditor();
     }else{
