@@ -9,7 +9,7 @@
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>热门文章</span></p>
             <ul class="aside-list">
-                {% for topic in handler.getHotArticle%}
+                {% for topic in handler.getHotArticle()%}
                 <li data-id="{{topic['id']}}">
                     <a href="/bbs/detail/{{topic['id']}}">
                         <p class="clip c333">{{topic['title']}}</p>
@@ -27,7 +27,7 @@
         <div class="aside-box box-border mt10">
             <p class="aside-title"><span>活跃用户</span></p>
             <ul class="aside-list">
-                {% for user in handler.getHotCustomer%}
+                {% for user in handler.getHotCustomer()%}
                 <li>
                     <dl class="dl">
                         <dd>

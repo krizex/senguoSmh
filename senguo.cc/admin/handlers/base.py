@@ -1694,7 +1694,6 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
 		return self._shop_id
 
-	@property
 	def getHotArticle(self):
 		datalist = []
 		try:
@@ -1707,7 +1706,6 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			datalist.append({"id":article[0],"title":article[1],"scan_num":article[2],"nickname":article[3]})
 		return datalist
 
-	@property
 	def getHotCustomer(self):
 		customers = self.session.query(models.Accountinfo.id,models.Accountinfo.nickname,models.Accountinfo.headimgurl_small)\
 		.outerjoin(models.Article,models.Accountinfo.id==models.Article.account_id)\
