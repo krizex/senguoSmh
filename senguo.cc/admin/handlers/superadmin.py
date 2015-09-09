@@ -734,15 +734,15 @@ class User(SuperBaseHandler):
 		sum = {}
 		if level == 0:
 			q = self.session.query(models.Accountinfo)
-			sum["admin"] = self.session.query(models.SuperAdmin).count()
-			sum['customer'] = self.session.query(models.Customer).count()
+			sum["admin"] = self.session.query(models.Shop.admin_id).distinct(models.Shop.admin_id).count()
+			sum['customer'] = self.session.query(models.Customer.id).count()
 		elif level == 1:
 			shop_province = self.code_to_text('province',shop_province)
 			shop_province = shop_province[0:len(shop_province)-1]
 			q = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
-			sum["admin"] = self.session.query(models.ShopAdmin).join(models.Accountinfo,models.ShopAdmin.id==models.Accountinfo.id).filter(
-				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.ShopAdmin.id).count()
-			sum["customer"] = self.session.query(models.Customer).filter(models.Customer,models.Accountinfo.id==models.Customer.id).filter(
+			sum["admin"] = self.session.query(models.Shop.admin_id).join(models.Accountinfo,models.Shop.admin_id==models.Accountinfo.id).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.Shop.admin_id).count()
+			sum["customer"] = self.session.query(models.Customer.id).join(models.Accountinfo,models.Accountinfo.id==models.Customer.id).filter(
 				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.Customer.id).count()
 		else:
 			return self.send_fail('level error')

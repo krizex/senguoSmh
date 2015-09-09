@@ -356,7 +356,6 @@ class customerGoods(CustomerBaseHandler):
 		good_charge_type = good.charge_types
 		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
 		for charge_type in good_charge_type:
-			print('++++++++++++++++++++++',charge_type.price)
 			seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).all()
 			seckill_kill_goods_flag = 1
 			if seckill_goods:
@@ -524,8 +523,6 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-
-		print("@@@@@@@",charge_types)
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
 								seckill_goods_ids=seckill_goods_ids,charge=charge)
 
