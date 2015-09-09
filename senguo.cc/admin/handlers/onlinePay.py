@@ -14,7 +14,7 @@ import json
 import libs.xmltodict as xmltodict
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
-
+import re
 class QrWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('order_id?:str')
@@ -24,11 +24,40 @@ class QrWxpay(CustomerBaseHandler):
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
 
-# class RefundWxpay(CustomerBaseHandler):
-# 	@tornado.web.authenticated
-# 	def get(self):
-# 		refund_pub = Refund_pub()
-# 		refund_pub.setParameter('')
+class RefundWxpay(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		pass
+
+	@CustomerBaseHandler.check_arguments('order_id?:str')
+	def post(self):
+			# def wx_refund_pub(self,order_id):
+		order_id = self.args['order_id']
+		if len(order_id) == 0:
+			return self.send_fail('order_id error')
+		order = self.session.query(models.Order).filter_by(id=order_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		totalPrice = order.totalPrice
+		transaction_id = order.transaction_id
+		refund_pub = Refund_pub()
+		refund_pub.setParameter("out_trade_no",transaction_id)
+		refund_pub.setParameter("out_refund_no",transaction_id)
+		refund_pub.setParameter("total_fee",totalPrice)
+		refund_pub.setParameter('refund_fee',totalPrice)
+		refund_pub.setParameter('op_user_id','1223121101')
+		res = refund_pub.postXmlSSL()
+		if isinstance(res,bytes):
+			bianma = chardet.detect(res)['encoding']
+			res    = res.decode(bianma)
+		else:
+			print("[weixin Refund_pub] endong error")
+		res_dict = refund_pub.xmlToArray(res)
+		return_code = res_dict.get('return_code',None)
+		if return_code == 'success':
+			return True
+		else:
+			return False
 
 
 
@@ -112,8 +141,10 @@ class OnlineWxPay(CustomerBaseHandler):
 			# totalPrice = self.args['totalPrice']
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[WeixinPay]totalPrice:",totalPrice)
-			unifiedOrder.setParameter("body",str(order_num))
-			unifiedOrder.setParameter("notify_url",'http://auth.senguo.cc/customer/onlinewxpay')
+			shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
+			unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
+			url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
+			unifiedOrder.setParameter("notify_url",url)
 			unifiedOrder.setParameter("openid",openid)
 			unifiedOrder.setParameter("out_trade_no",order_num)
 			# orderPriceSplite = (order.price) * 100
@@ -155,10 +186,12 @@ class OnlineWxPay(CustomerBaseHandler):
 		order_num = order.num
 		totalPrice = order.new_totalprice
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
+		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		wxPrice =int(totalPrice * 100)
+		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",str(order_num))
-		unifiedOrder.setParameter("notify_url",'http://auth.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
+		unifiedOrder.setParameter("notify_url",url)
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
@@ -174,9 +207,6 @@ class OnlineWxPay(CustomerBaseHandler):
 		else:
 			qr_url = ""
 		return qr_url
-
-	def refund_pub(self,order_id):
-		pass
 
 	@CustomerBaseHandler.check_arguments('totalPrice?:float','action?:str')
 	def post(self):
@@ -194,6 +224,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
+			total_fee    = float(int(xmlArray['total_fee'])/100)
 			order_num    = str(xmlArray['out_trade_no'])
 			order_num    = order_num.split('a')[0]
 			print("[WeixinPay]Callback order_num:",order_num)
@@ -209,47 +240,83 @@ class OnlineWxPay(CustomerBaseHandler):
 
 			order = self.session.query(models.Order).filter_by(num = order_num).first()
 			if not order:
-				return self.send_fail('order not found')
+				# return self.send_fail('order not found')
+				#如果没找到订单，也要生成一条余额记录
+				#因为customer_id和shop_id 是外键，不能为空，所以给它们赋一个特定的值
+				balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(微信)异常：空订单'+order_num,
+					balance_type=3,transaction_id = transaction_id)
+				self.session.add(balance_history)
+				self.session.commit()
+				print("[WeixinPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+				return self.write('success')
+
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
 			totalPrice  = order.new_totalprice
 
+			create_date = order.create_date.timestamp()
+			now         = datetime.datetime.now().timestamp()
+			time_difference = now - create_date
+			if time_difference > 60 * 60 * 24 * 7:
+				balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+					balance_record='在线支付(微信)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
+				self.session.add(balance_history)
+				self.session.commit()
+				print("[WeixinPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+				return self.write('success')
+
 			order.status = 1  #修改订单状态
+			order.transaction_id = transaction_id 
+			self.session.flush()
 			print("[WeixinPay]Callback order_num:",order_num,"change order.status to:",order.status)
+
+			# 修改店铺总余额
+			# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			# if not shop:
+			# 	return self.send_fail('shop not found')
+			shop = order.shop
+			shop.shop_balance += totalPrice
+			self.session.flush()
 
 			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
 				return self.write('success')
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-				shop_id = shop_id).first()
-			if not shop_follow:
-				return self.send_fail('shop_follow not found')
-
-			# 修改店铺总余额
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			if not shop:
-				return self.send_fail('shop not found')
-			shop.shop_balance += totalPrice
-			self.session.flush()
-			# print("[WeixinPay]shop_balance:",shop.shop_balance)
-
-			# 支付成功后  生成一条余额支付记录
 			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 			if customer:
 				name = customer.accountinfo.nickname
 			else:
-				return self.send_fail('customer not found')
-			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
-				shop_province=shop.shop_province,shop_name=shop.shop_name)
-			self.session.add(balance_history)
-			# print("[WeixinPay]balance_history:",balance_history)
-			self.session.commit()
-			print("[WeixinPay]handle WeixinPay Callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+				name = None
+			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+				shop_id = shop_id).first()
+			if not shop_follow:
+				# return self.send_fail('shop_follow not found')
+				#没有关注店铺也要生成余额记录
+				balance_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,balance_value=totalPrice,
+					balance_record='在线支付(微信)异常：用户未关注，订单'+ order.num,name = name,balance_type=3,shop_totalPrice=shop.shop_balance,
+					transaction_id=transaction_id,shop_province=shop.shop_province,shop_name=shop.shop_name)
+				self.session.add(balance_history)
+				self.session.commit()
+				print("[WeixinPay]No CustomerShopFollow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			# print("[WeixinPay]shop_balance:",shop.shop_balance)
+			else:
+				# 支付成功后  生成一条余额支付记录
+				balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
+					balance_value = totalPrice,balance_record = '在线支付(微信)：订单'+ order.num, name = name , balance_type = 3,\
+					shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
+					shop_province=shop.shop_province,shop_name=shop.shop_name)
+				self.session.add(balance_history)
+				# print("[WeixinPay]balance_history:",balance_history)
+				self.session.commit()
+				print("[WeixinPay]handle WeixinPay Callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			# 发送订单模版消息给管理员/自动打印订单
-			self.send_admin_message(self.session,order)
+			if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+				# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+				access_token = self.get_other_accessToken(self.session,shop.admin.id)
+				# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+			else:
+				access_token = None
+			self.send_admin_message(self.session,order,access_token)
 
 			return self.write('success')
 
@@ -262,9 +329,10 @@ class wxpayCallBack(CustomerBaseHandler):
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
 		wxPrice =int(totalPrice * 100)
+		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",str(order_num))
-		unifiedOrder.setParameter("notify_url",'http://zone.senguo.cc/customer/onlinewxpay')
+		unifiedOrder.setParameter("notify_url",url)
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
@@ -411,9 +479,10 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	def create_alipay_url(self,price,order_num,shop_name):
 		# print("[AliPay]login create_alipay_url:",price,order_id)
+		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_num),
-			subject      = shop_name + '订单号：' + str(order_num),
+			subject      = shop_name + '-订单号：' + str(order_num),
 			total_fee    = float(price),
 			#defaultbank  = CMB,
 			seller_account_name = ALIPAY_SELLER_ACCOUNT,
@@ -430,7 +499,7 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("service","v","sec_id","sign","notify_data")
 	def handle_onAlipay_notify(self):
-		print("handle_onAlipay_notify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		print("[AliPay]handle_onAlipay_notify!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		sign = self.args.pop('sign')
 		signmethod = self._alipay.getSignMethod(**self.args)
 		# print("[AliPay]Callback success")
@@ -439,7 +508,9 @@ class OnlineAliPay(CustomerBaseHandler):
 		# print("[AliPay]Callback data:",self.args['notify_data'])
 		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
 		order_num = notify_data["out_trade_no"]
+		print("[AliPay]Callback order_num:",order_num)
 		ali_trade_no=notify_data["trade_no"]
+		total_fee  = float(notify_data["total_fee"])
 		# print("[AliPay]ali_trade_no:",ali_trade_no)
 		old_balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id = ali_trade_no).first()
 		if old_balance_history:
@@ -447,7 +518,13 @@ class OnlineAliPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		# order = models.Order.get_by_id(self.session,orderId)
 		if not order:
-			return self.send_fail(error_text = '抱歉，此订单不存在！')
+			# return self.send_fail(error_text = '抱歉，此订单不存在！')
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单'+order_num,
+				balance_type=3,transaction_id = transaction_id)
+			self.session.add(balance_history)
+			self.session.commit()
+			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return self.write('success')
 		##############################################################
 		# 在线支付成功回调业务处理
 		# 修改订单状态 :支付订单刚生成时 状态为-1.完成支付后状态变为1
@@ -459,45 +536,71 @@ class OnlineAliPay(CustomerBaseHandler):
 		shop_id     = order.shop_id
 		totalPrice  = order.new_totalprice
 
+		create_date = order.create_date.timestamp()
+		now         = datetime.datetime.now().timestamp()
+		time_difference = now - create_date
+		if time_difference > 60 * 60 * 24 * 7:
+			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+				balance_record='在线支付(支付宝)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
+			self.session.add(balance_history)
+			self.session.commit()
+			print("[AliPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return self.write('success')
+
 		order.status = 1  #修改订单状态
+		order.transaction_id = ali_trade_no
 		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
-		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-			shop_id = shop_id).first()
-		if not shop_follow:
-			return self.send_fail('shop_follow not found')
 
 		# 修改店铺总余额
-		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_fail('shop not found')
+		# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		# if not shop:
+		# 	return self.send_fail('shop not found')
+		shop = order.shop
 		shop.shop_balance += totalPrice
 		self.session.flush()
 		# print("[AliPay]shop_balance:",shop.shop_balance)
-
-		# 支付成功后  生成一条余额支付记录
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 		if customer:
 			name = customer.accountinfo.nickname
 		else:
-			return self.send_fail('customer not found')
-		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no,
-			shop_province = shop.shop_province,shop_name=shop.shop_name)
-		self.session.add(balance_history)
-		# print("[AliPay]balance_history:",balance_history)
-		self.session.commit()
+			# return self.send_fail('customer not found')
+			name = None
 
-		print("handle_onAlipay_notify SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		if not shop_follow:
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
+				balance_value = totalPrice,balance_record = '在线支付(支付宝)异常：用户未关注，订单'+ order.num, name = name , balance_type = 3,
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = 0,transaction_id=ali_trade_no,
+				shop_province = shop.shop_province,shop_name=shop.shop_name)
+			self.session.add(balance_history)
+			# print("[AliPay]balance_history:",balance_history)
+			self.session.commit()
+			print("[AliPay]No CustomerShopFollow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		else:
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
+				balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id= ali_trade_no,
+				shop_province = shop.shop_province,shop_name=shop.shop_name)
+			self.session.add(balance_history)
+			# print("[AliPay]balance_history:",balance_history)
+			self.session.commit()
+			print("[AliPay]handle_onAlipay_notify SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 		# 发送订单模版消息给管理员/自动打印订单
-		self.send_admin_message(self.session,order)
-		
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+		else:
+			access_token = None
+		self.send_admin_message(self.session,order,access_token)
 		return self.write('success')
 
 	@CustomerBaseHandler.check_arguments("sign","result","out_trade_no","trade_no","request_token")
 	def handle_onAlipay_callback(self):
-		print("handle_onAlipay_callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		print("[AliPay]handle_onAlipay_callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 		sign = self.args.pop("sign")
 		signmethod = self._alipay.getSignMethod()
 		if signmethod(self.args) != sign:
@@ -511,7 +614,13 @@ class OnlineAliPay(CustomerBaseHandler):
 		# order = models.Order.get_by_id(self.session,orderId)
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
-			return self.send_fail(error_text = '抱歉，此订单不存在！')
+			# return self.send_fail(error_text = '抱歉，此订单不存在！')
+			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=0,balance_record='在线支付(支付宝)异常：空订单'+order_num,
+				balance_type=3,transaction_id = ali_trade_no)
+			self.session.add(balance_history)
+			self.session.commit()
+			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return self.write('success')
 		##############################################################
 		# 在线支付成功回调业务处理
 		# 修改订单状态 :支付订单刚生成时 状态为-1.完成支付后状态变为1
@@ -523,37 +632,65 @@ class OnlineAliPay(CustomerBaseHandler):
 		shop_id     = order.shop_id
 		totalPrice  = order.new_totalprice
 
+		create_date = order.create_date.timestamp()
+		now         = datetime.datetime.now().timestamp()
+		time_difference = now - create_date
+		if time_difference > 60 * 60 * 24 * 7:
+			balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,balance_value=totalPrice,
+				balance_record='在线支付(支付宝)异常：一星期以前的订单，很可能是线下测试回调到线上的',balance_type=3,transaction_id=transaction_id)
+			self.session.add(balance_history)
+			self.session.commit()
+			print("[AliPay]Order Time Wrong!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			return self.write('success')
+
 		order.status = 1  #修改订单状态
+		order.transaction_id = ali_trade_no
 		print("[AliPay]Callback order.num:",order.num,"change order.status to:",order.status)
-		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-			shop_id = shop_id).first()
-		if not shop_follow:
-			return self.send_fail('shop_follow not found')
 
 		# 修改店铺总余额
-		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-		if not shop:
-			return self.send_fail('shop not found')
+		# shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+		# if not shop:
+		# 	return self.send_fail('shop not found')
+		shop = order.shop
 		shop.shop_balance += totalPrice
 		self.session.flush()
 		# print("[AliPay]shop_balance:",shop.shop_balance)
 
-		# 支付成功后  生成一条余额支付记录
 		customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
 		if customer:
 			name = customer.accountinfo.nickname
 		else:
-			return self.send_fail('customer not found')
-		balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-			balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
-			shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no,
-			shop_province = shop.shop_province,shop_name=shop.shop_name)
-		self.session.add(balance_history)
-		# print("[AliPay]balance_history:",balance_history)
-		self.session.commit()
-		print("handle_onAlipay_callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+			# return self.send_fail('customer not found')
+			name = None
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
+			shop_id = shop_id).first()
+		if not shop_follow:
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
+				balance_value = totalPrice,balance_record = '在线支付(支付宝)异常：用户未关注，订单'+ order.num, name = name , balance_type = 3,
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = 0,transaction_id=ali_trade_no,
+				shop_province = shop.shop_province,shop_name=shop.shop_name)
+			self.session.add(balance_history)
+			# print("[AliPay]balance_history:",balance_history)
+			self.session.commit()
+			print("[AliPay]No CustomerShopFollow!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		else:
+			# 支付成功后  生成一条余额支付记录
+			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
+				balance_value = totalPrice,balance_record = '在线支付(支付宝)：订单'+ order.num, name = name , balance_type = 3,\
+				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=ali_trade_no,
+				shop_province = shop.shop_province,shop_name=shop.shop_name)
+			self.session.add(balance_history)
+			# print("[AliPay]balance_history:",balance_history)
+			self.session.commit()
+			print("[AliPay]handle_onAlipay_callback SUCCESS!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 
 		# 发送订单模版消息给管理员/自动打印订单
-		self.send_admin_message(self.session,order)
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+		else:
+			access_token = None
+		self.send_admin_message(self.session,order,access_token)
 
 		return self.redirect(self.reverse_url("noticeSuccess"))

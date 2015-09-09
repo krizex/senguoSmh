@@ -104,7 +104,7 @@
 .tie-popbox .tie-info .phone-number .get-code{width:30%;color:#fff;padding:0.5em 0;text-align:center;}
 .tie-popbox  .concel-btn{background:#A0A0A0;color:#fff;width:45%;border-radius:1px;}
 .tie-popbox  .tie-btn{;color:#fff;}
-.first_notice{border:none;background:none;color:#4D91E4;}
+.first_notice{border:none;background:none;color:red}
 .a-cz{color: #33CC66;margin: 0 10px;display: inline-block;}
 .wrap-online-lst{margin-top: -1px;position: relative;}
 .check-lst{padding: 5px 0;border:1px solid #f0f4f0;border-top:none;border-left:2px solid #33cc66;background-color: #f0f4f0;}

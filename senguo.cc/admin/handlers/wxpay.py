@@ -47,20 +47,22 @@ try:
 except ImportError:
     pycurl = None
 
+from settings import MP_APPID, MP_APPSECRET
 
 class WxPayConf_pub(object):
     """配置账号信息"""
 
     #=======【基本信息设置】=====================================
     #微信公众号身份的唯一标识。审核通过后，在微信发送的邮件中查看
-    APPID = "wx0ed17cdc9020a96e"
+    APPID = MP_APPID #   "wx0ed17cdc9020a96e"
     #JSAPI接口中获取openid，审核后在公众平台开启开发模式后可查看
-    APPSECRET = "cef2c4c6a59e6d0ae8b5a3f741a9c788"
+    APPSECRET = MP_APPSECRET  # "cef2c4c6a59e6d0ae8b5a3f741a9c788"
     #受理商ID，身份标识
     MCHID = "10023430"
     #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
     KEY = "af8164b968911db7567f98b73122dbc3"
-   
+
+    #商户号:1223121101
 
     #=======【异步通知url设置】===================================
     #异步通知url，商户根据实际开发过程设定
@@ -147,7 +149,7 @@ class CurlClient(object):
         #post提交方式
         if post:
             self.curl.setopt(pycurl.POST, True)
-            self.curl.setopt(pycurl.POSTFIELDS, xml)
+            self.curl.setopt(pycurl.POSTFIELDS, xml.encode('utf-8'))
         buff = StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, buff.write)
 
@@ -377,7 +379,7 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        # print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
+        #print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
         prepay_id = self.result["prepay_id"]
         return prepay_id
 

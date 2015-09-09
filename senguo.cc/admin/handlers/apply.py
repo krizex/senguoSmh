@@ -16,6 +16,7 @@ from random import Random
 from libs.utils import Logger
 import hashlib
 import chardet
+from handlers.base import WxOauth2
 
 #from handlers.WXBizMsgCrypt import WXBizMsgCrypt
 
@@ -218,6 +219,33 @@ class WxMessage(CustomerBaseHandler):
 				reply_message = 'senguo.cc/bbs/detail/18'
 			elif Content == '打印机':
 				reply_message = 'senguo.cc/bbs/detail/8'
+			elif Content == '报名':
+				#利用客服接口发送两条消息
+				access_token = WxOauth2.get_client_access_token()
+				reply_message = '欢迎报名参加森果商学院~~~\n\n1.请将报名图文分享在朋友圈，并加上“报名参加”等字样的文字。\n\n2.分享后截图给客服MM就成功报名啦~\n\n3.如果是尚未添加客服MM的小伙伴，可以长按下方弹出的二维码关注。\n\n报名成功的小伙伴将在周四上午统一邀请入群~\n按要求报名的小伙伴都会拉群的，请不要急，也不要多次骚扰客服MM。'
+				url = 'https://api.weixin.qq.com/cgi-bin/message/custom/send?access_token={0}'.format(access_token)
+				# data = {
+				# 	"touser":FromUserName,
+				# 	"msgtype":"text",
+				# 	"text":
+				# 	{
+				# 		"content":content
+				# 	}
+				# }
+				# r = requests.post(url,data = json.dumps(data))
+				# if r.status_code == 200:
+				# 	print('message send success')
+				pic_data = {
+					"touser":FromUserName,
+					"msgtype":"image",
+					"image":{
+						"media_id":"LqIof0sxyEHrCWJaeBky26cla89Rvx8ekiOydXuk6WoyUGxeSH7HE33um6EYPjpO"
+					}
+				}
+				r = requests.post(url,data=json.dumps(pic_data))
+				if r.status_code == 200:
+					print("picture send success")
+				# return self.write('')
 			else:
 				#MsgType = 'transfer_customer_service'
 				#reply_message = None
@@ -275,7 +303,19 @@ class WxMessage(CustomerBaseHandler):
 					#admin.accountinfo = account_info
 					#self.session.add(admin)
 					self.session.commit()
+
+			# 用户关注微信服务号
 			if event == 'subscribe':
+				# 根据场景值统计扫码关注服务号的用户数量
+				if scene_id:
+					scene_static = self.session.query(models.SceneStatic).filter_by(scene_id=scene_id).first()
+					if scene_static:
+						scene_static.times += 1
+					else:
+						scene_static = models.SceneStatic(scene_id=scene_id,times=1)
+						self.session.add(scene_static)
+					self.session.commit()
+				# 用户关注后自动发送消息
 				ToUserName = data.get('ToUserName',None) #开发者微信号
 				FromUserName = data.get('FromUserName',None) # 发送方openid
 				CreateTime  = data.get('CreateTime',None) #接受消息时间
@@ -285,8 +325,6 @@ class WxMessage(CustomerBaseHandler):
 				reply = ET.tostring(reply,encoding='utf8',method='xml')
 				# print("[ApplyWxMessage]reply:",reply)
 				self.write(reply)
-
-				
 
 	@classmethod
 	def make_xml(self,ToUserName,FromUserName,CreateTime,MsgType,Content=None):

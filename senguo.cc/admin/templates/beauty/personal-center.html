@@ -24,7 +24,7 @@
     </div>-->
     <div class="m-b10 clearfix font14 box-style property">
         <div class="w50 pull-left text-left title2 left"><a href="{{reverse_url('customerPoints')}}" class="text-grey9 bk">积分&nbsp;&nbsp;{{shop_point}}</a></div>
-        <div class="w50 pull-left text-right title2 right"><a href="{{reverse_url('customerBalance')}}" class="text-grey9 bk user-balance" data-auth="{{show_balance}}" data-status="{{balance_on}}">余额&nbsp;&nbsp;{{shop_balance}}</a></div>
+        <div class="w50 pull-left text-right title2 right"><a href="{{reverse_url('customerBalance')}}?shop_id={{shop_id}}" class="text-grey9 bk user-balance" data-auth="{{show_balance}}" data-status="{{balance_on}}">余额&nbsp;&nbsp;{{shop_balance}}</a></div>
     </div>
     <div class="bg-white m-b10 clearfix pb0">
         <p class="title clearfix box-style">

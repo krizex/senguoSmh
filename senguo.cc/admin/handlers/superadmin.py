@@ -413,7 +413,7 @@ class ShopManage(SuperBaseHandler):
 				shop_service = 0
 				if orders:
 					q = self.session.query(func.avg(models.Order.commodity_quality),\
-						func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+						func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
 					if q[0][0]:
 						commodity_quality = int(q[0][0])
 					if q[0][1]:
@@ -731,18 +731,24 @@ class User(SuperBaseHandler):
 		level = self.current_user.level
 		shop_province = self.current_user.province
 		# print("[SuperUser]shop_province:",shop_province)
+		sum = {}
 		if level == 0:
 			q = self.session.query(models.Accountinfo)
+			sum["admin"] = self.session.query(models.SuperAdmin).count()
+			sum['customer'] = self.session.query(models.Customer).count()
 		elif level == 1:
 			shop_province = self.code_to_text('province',shop_province)
 			shop_province = shop_province[0:len(shop_province)-1]
 			q = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			sum["admin"] = self.session.query(models.ShopAdmin).join(models.Accountinfo,models.ShopAdmin.id==models.Accountinfo.id).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.ShopAdmin.id).count()
+			sum["customer"] = self.session.query(models.Customer).filter(models.Customer,models.Accountinfo.id==models.Customer.id).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.Customer.id).count()
 		else:
 			return self.send_fail('level error')
-		sum = {}
 		sum["all"] = q.count()
-		sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
-		sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
+		# sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
+		# sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
 		sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
 		return self.render("superAdmin/user.html", sum=sum,level=level, context=dict(subpage='user'))
 

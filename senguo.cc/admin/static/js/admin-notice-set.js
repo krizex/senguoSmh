@@ -34,62 +34,65 @@ $(document).ready(function(){
     window.onunloadcancel = function(){
         clearTimeout(zb_t);
     }
-   var uploader1 = Qiniu.uploader({
-    runtimes: 'html5,flash,html4',
-    browse_button: 'upload-add',
-    container: 'wrap-legal-img',
-    max_file_size: '4mb',
-    filters : {
-        max_file_size : '4mb',//限制图片大小
-        mime_types: [
-            {title : "image type", extensions : "jpg,jpeg,png"}
-        ]
-    },
-    flash_swf_url: 'static/js/plupload/Moxie.swf',
-    dragdrop: false,
-    chunk_size: '4mb',
-    domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
-    uptoken: $('#data').val(),
-    unique_names: false,
-    save_key: false,
-    auto_start: true,
-    init: {
-        'FilesAdded': function (up, files) {
-            var file = files[0];
-            !function(){
-                previewImage(file,function(imgsrc){
-                    $("#add-img").attr("src",imgsrc);
-                })
-            }();
-        },
-        'UploadProgress': function (up, file) {
-        },
-        'FileUploaded': function (up, file, info) {
-            $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
-        },
-        'Error': function (up, err, errTip) {
-            if (err.code == -600) {
-                alert("图片大小不能超过4M哦");
-            } else if (err.code == -601) {
-                alert("图片格式不对哦");
-            } else if (err.code == -200) {
-                alert("当前页面过期，请刷新页面再上传");
-            } else {
-                alert(err.code + ": " + err.message);
-            }
-            up.removeFile(err.file.id);
-        },
-        'Key': function (up, file) {
-            var key = file.id;
-            return key;
-        }
-    }
-});
 }).on("click",".add-new-address1",function(){
     if(NoticeEdit){
         return Tip("请先完成正在编辑的公告");
     }
     $("#noticeBox").modal("show");
+    zb_timer = setTimeout(function(){
+        var uploader1 = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'upload-add',
+        container: 'wrap-legal-img',
+        max_file_size: '4mb',
+        filters : {
+            max_file_size : '4mb',//限制图片大小
+            mime_types: [
+                {title : "image type", extensions : "jpg,jpeg,png"}
+            ]
+        },
+        flash_swf_url: 'static/js/plupload/Moxie.swf',
+        dragdrop: false,
+        chunk_size: '4mb',
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
+        uptoken: $('#data').val(),
+        unique_names: false,
+        save_key: false,
+        auto_start: true,
+        init: {
+            'FilesAdded': function (up, files) {
+                var file = files[0];
+                !function(){
+                    previewImage(file,function(imgsrc){
+                        $("#add-img").attr("src",imgsrc);
+                    })
+                }();
+            },
+            'UploadProgress': function (up, file) {
+            },
+            'FileUploaded': function (up, file, info) {
+                $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
+            },
+            'Error': function (up, err, errTip) {
+                if (err.code == -600) {
+                    alert("图片大小不能超过4M哦");
+                } else if (err.code == -601) {
+                    alert("图片格式不对哦");
+                } else if (err.code == -200) {
+                    alert("当前页面过期，请刷新页面再上传");
+                } else {
+                    alert(err.code + ": " + err.message);
+                }
+                up.removeFile(err.file.id);
+            },
+            'Key': function (up, file) {
+                var key = file.id;
+                return key;
+            }
+        }
+    });
+    },500);
+    
 }).on('click','.notice-edit',function(){
     if(NoticeEdit){
         Tip("请先完成正在编辑的公告");
@@ -168,6 +171,8 @@ function noticeAdd(){
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('请输入摘要！')}
     if(!detail){return Tip('请输入详情！')}
+    if($('.add-new-notice').attr("data-flag")=="off") return false;
+    $('.add-new-notice').attr("data-flag","off");
     var data={
         summary:summary,
         detail:detail,
@@ -181,11 +186,12 @@ function noticeAdd(){
         function(res){
             if(res.success){
                 $('#noticeBox').modal('hide');
-		window.location.reload();
-            }
-            else return Tip(res.error_text);
-        },
-        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
+		          window.location.reload();
+            }else{
+                $('.add-new-notice').attr("data-flag","on");
+                return Tip(res.error_text);
+            } 
+        });
 }
 function noticeEdit(target){
     var url=link;
@@ -199,6 +205,8 @@ function noticeEdit(target){
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('摘要不能为空！')}
     if(!detail){return Tip('详情不能为空！')}
+    if(target.attr("data-flag")=="off") return false;
+    target.attr("data-flag","off");
     var data={
         notice_id:notice_id,
         summary:summary,
@@ -219,10 +227,12 @@ function noticeEdit(target){
                 parent.find('.address-edit').hide();
                 parent.find('.address-show').show();
                 NoticeEdit=false;
+                target.attr("data-flag","on");
+            }else{
+                target.attr("data-flag","on");
+                return Tip(res.error_text);
             }
-            else return Tip(res.error_text);
-        },
-        function(){Tip('网络好像不给力呢~ ( >O< ) ~')});
+        });
 }
 
 function noticeActive(target){

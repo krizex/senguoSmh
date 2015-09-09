@@ -259,7 +259,7 @@ class customerGoods(CustomerBaseHandler):
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			# w_follow = False
 			shop.fans_count = shop.fans_count + 1
-			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
@@ -526,7 +526,7 @@ class Home(CustomerBaseHandler):
 		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,context=dict(subpage='center'))
+			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,shop_id=shop_id,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
@@ -808,10 +808,10 @@ class ShopProfile(CustomerBaseHandler):
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
-		satisfy = 0
-		commodity_quality = 0
-		send_speed        = 0
-		satisfy           = 0
+		satisfy = format(1,'.0%')
+		commodity_quality = 1
+		send_speed        = 1
+		shop_service      = 1
 		#是否关注判断
 		follow = True
 		shop_follow =self.session.query(models.CustomerShopFollow).filter_by(customer_id=self.current_user.id, \
@@ -821,7 +821,7 @@ class ShopProfile(CustomerBaseHandler):
 		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
 		if orders:
 			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
 			if q[0][0]:
 				commodity_quality = int(q[0][0])
 			if q[0][1]:
@@ -1024,8 +1024,8 @@ class Comment(CustomerBaseHandler):
 		except:
 			comment_active = 0
 		if orders:
-			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+			q = self.session.query(func.avg(models.Order.commodity_quality),func.avg(models.Order.send_speed),
+				func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
 			if q[0][0]:
 				commodity_quality = int(q[0][0])
 			if q[0][1]:
@@ -1117,7 +1117,7 @@ class Market(CustomerBaseHandler):
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
 		if  len(self.args.get('action')) < 1: 
 			if shop.admin.has_mp:
-				print('[CustomerMarket]login shop.admin.has_mp')
+				# print('[CustomerMarket]login shop.admin.has_mp')
 				appid = shop.admin.mp_appid
 				appsecret = shop.admin.mp_appsecret
 				customer_id = self.current_user.id
@@ -1185,7 +1185,7 @@ class Market(CustomerBaseHandler):
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
 			shop.fans_count = shop.fans_count + 1
-			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0)
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
 			if shop_follow:
 				if shop_follow.shop_point is not None:
 					shop_follow.shop_point += 10
@@ -1598,7 +1598,6 @@ class GoodsSearch(CustomerBaseHandler):
 class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code):
-
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 		self.updatecoupon(customer_id)
@@ -1708,7 +1707,7 @@ class Cart(CustomerBaseHandler):
 				self_address_list=None
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
-						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,\
+						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list\
 						   ,context=dict(subpage='cart'))
 
@@ -1716,9 +1715,11 @@ class Cart(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
 										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int")
-	def post(self,shop_code):#提交订单
+
+	# 提交订单
+	def post(self,shop_code):
 		# print("[CustomerCart]pay_type:",self.args['pay_type'])
-		#print(self.args)
+		# print(self.args)
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
@@ -1747,7 +1748,7 @@ class Cart(CustomerBaseHandler):
 		elif len(fruits) < 1:
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
-			return self.send_fail("你的购物篮太满啦！请不要一次性下单超过20种商品")
+			return self.send_fail("您的购物篮太满啦！请不要一次性下单超过20种商品")
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:"今天价",13:"明天价"}
 		f_d={}
 		totalPrice=0
@@ -1767,7 +1768,7 @@ class Cart(CustomerBaseHandler):
 				singlemoney=charge_type.price*fruits[str(charge_type.id)] 
 				fruit=charge_type.fruit
 
-
+				# 购买限制
 				buy_limit = fruit.buy_limit
 				userlimit = 0
 				if buy_limit !=0:
@@ -1808,16 +1809,13 @@ class Cart(CustomerBaseHandler):
 							m_price.append(singlemoney)
 							break
 
-				###使用优惠券
-
-
 				#fruits[str(charge_type.id)] 该计价方式对应的个数,比如售价2元/3斤的苹果买了1份，此时该值为1
 				#charge_type.num 该计价方式的单位数量，比如售价 2元/3斤，此时charge_type.num为3
 				#charge_type.relate，一份选择单位对应的库存单位的数量，比如库存单位为kg，所选单位为斤，则relate为0.5
 				num = fruits[str(charge_type.id)]*charge_type.relate*charge_type.num  #转换为库存单位对应的个数
+				# print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
 
-				print(num,charge_type.relate,charge_type.num, fruits[str(charge_type.id)],charge_type.id)
-
+				# 商品限购
 				limit_num = charge_type.fruit.limit_num
 				buy_num = int(fruits[str(charge_type.id)])
 
@@ -1867,10 +1865,10 @@ class Cart(CustomerBaseHandler):
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
 									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
-		#如果订单为空，则不能提交
+		# 如果订单为空，则不能提交
 		if len(f_d) == 0:
-			return self.send_fail("订单内容不能为空，请重新下单！")
-		#按时达/立即送 的时间段处理
+			return self.send_fail("您的订单未能成功保存，请确保网络通畅，重新下单")
+		# 按时达/立即送 的时间段处理
 		start_time = 0
 		end_time = 0
 		freight = 0
@@ -1948,8 +1946,7 @@ class Cart(CustomerBaseHandler):
 		else:
 			_order_address = address.address_text
 		
-		##########
-		
+		# 优惠券是否可用的检查
 		if qshop:
 			if qshop.use_goods_group==-2  and qshop.use_goods==-1 and totalPrice>=qshop.use_rule :
 				can_use_coupon=1
@@ -1965,7 +1962,6 @@ class Cart(CustomerBaseHandler):
 						group_money+=m_price[x]
 			if group_money>=qshop.use_rule:
 				can_use_coupon=1
-		 	
 		if can_use_coupon==0 and coupon_key!='None':
 			return self.send_fail("对不起，你使用的优惠券不满足使用条件，请重新选择")
 		if can_use_coupon:
@@ -1998,8 +1994,15 @@ class Cart(CustomerBaseHandler):
 				return self.send_fail("账户余额小于订单总额，请及时充值或选择其它支付方式")
 			self.session.flush()
 
+		# 生成订单号
 		count = self.session.query(models.Order).filter_by(shop_id=shop_id).count()
 		num = str(shop_id) + '%06d' % count
+		# num = '271000358'
+		old_order = self.session.query(models.Order).filter_by(num=num).first()
+		while old_order:
+			num  = str(int(num) + 1)
+			old_order = self.session.query(models.Order).filter_by(num=num).first()
+
 		########################################################################
 		# add default sender
 		# 3.11
@@ -2015,7 +2018,9 @@ class Cart(CustomerBaseHandler):
 			w_SH2_id =default_staff.staff_id
 		else:
 			if w_admin is not None:
-					w_SH2_id = w_admin.admin.id
+				w_SH2_id = w_admin.admin.id
+		
+		# 如果为在线支付订单，则先将订单状态置为 -1（未支付），否则置为 1（已下单）
 		if self.args['pay_type'] == 3:
 			if current_shop.shop_auth == 0:
 				return self.send_fail('当前店铺未认证，在线支付不可用')
@@ -2023,8 +2028,7 @@ class Cart(CustomerBaseHandler):
 			online_type = self.args['online_type']
 		else:
 			order_status = 1
-
-
+		# 生成订单
 		order = models.Order(customer_id=self.current_user.id,
 							 shop_id=shop_id,
 							 num=num,
@@ -2057,7 +2061,8 @@ class Cart(CustomerBaseHandler):
 			self.session.flush()
 		except:
 			return self.send_fail("您的订单提交失败，请保证网络通畅，重新提交")
-		#使用优惠券
+
+		# 订单生成后，优惠券状态更新
 		coupon_key=order.coupon_key
 		if coupon_key!='None':
 			use_date=int(time.time())
@@ -2068,12 +2073,14 @@ class Cart(CustomerBaseHandler):
 			qq.update(self.session,use_number=use_number)
 			self.session.flush()
 
+		# 订单生成后，清空购物车
 		cart = next((x for x in self.current_user.carts if x.shop_id == int(shop_id)), None)
-		cart.update(session=self.session, fruits='{}')#清空购物车
-		print('[CustomerCart]Order commit success, order ID:',order.id)
-		# 如果提交订单是在线支付 ，则 将订单号存入 cookie
+		cart.update(session=self.session, fruits='{}')
+		# print('[CustomerCart]Order commit success, order.id & order.num:',order.id,order.num)
+
+		# 如果提交订单是在线支付 ，则将订单号存入 cookie，进入支付前的页面
 		if self.args['pay_type'] == 3:
-			print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
+			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
 			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
@@ -2094,7 +2101,6 @@ class Cart(CustomerBaseHandler):
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
-		print(order.id)
 		self.cart_callback(self.session,order.id)
 		return self.send_success(order_id = order.id)
 
@@ -2121,18 +2127,6 @@ class Cart(CustomerBaseHandler):
 		# address = next((x for x in self.current_user.addresses if x.id == self.args["address_id"]), None)
 		# if not address:
 		# 	return self.send_fail("没找到地址", 404)
-		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
-			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
-			access_token = self.get_other_accessToken(self.session,shop.admin.id)
-			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
-		else:
-			access_token = None
-
-
-		# 如果非在线支付订单，则发送模版消息（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
-		if order.pay_type != 3:
-			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(session,order,access_token)
 
 		####################################################
 		# 订单提交成功后 ，用户余额减少，
@@ -2157,13 +2151,27 @@ class Cart(CustomerBaseHandler):
 			session.add(balance_history)
 			session.flush()
 		session.commit()
+
+		# 订单生成全部处理完成后，根据是否有第三方服务号来选择性发送模版消息
+		if shop.admin.mp_name and shop.admin.mp_appid and shop.admin.mp_appsecret and shop.admin.has_mp:
+			# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+			access_token = self.get_other_accessToken(self.session,shop.admin.id)
+			# print(shop.admin.mp_name,shop.admin.mp_appid,shop.admin.mp_appsecret,access_token)
+		else:
+			access_token = None
+
+		# 如果非在线支付订单，则发送模版消息、自动打印订单、订单消息推送给app（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
+		if order.pay_type != 3:
+			# print("[CustomerCart]cart_callback: access_token:",access_token)
+			self.send_admin_message(session,order,access_token)
+
 		return True
 
 	@classmethod
 	def order_cancel_auto(self,session,order_id):
-		print("[CustomerCart]Order auto cancel: order ID:",order_id)
+		# print("[CustomerCart]Order auto cancel: order ID:",order_id)
 		order = session.query(models.Order).filter_by(id = order_id).first()
-		print("[CustomerCart]Order auto cancel: order.status:",order.num,order.status)
+		# print("[CustomerCart]Order auto cancel: order.status:",order.num,order.status)
 		if not order:
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
@@ -2369,7 +2377,10 @@ class Order(CustomerBaseHandler):
 			# woody
 			# 3.27
 			session = self.session
-			order.get_num(session,order.id) #当订单取消后，库存增加，销量不变，在售减少
+
+			#当订单取消后，库存增加，销量不变，在售减少
+			order.get_num(session,order.id)
+
 			########################################################################################
 			#订单取消后，如果订单 支付类型是 余额支付时， 余额返回到 用户账户
 			#同时产生一条余额记录
@@ -2401,8 +2412,7 @@ class Order(CustomerBaseHandler):
 				if not shop:
 					return self.send_fail('[Order]Order cancel: shop not found')
 
-				#将 该订单 对应的 余额记录取出来 ，置为 不可用
-
+				#将 该订单 对应的 余额记录取出来，置为 不可用
 				balance_record = ("%{0}%").format(order.num)
 				# print("[CustomerOrder]balance_record:",balance_record)
 
@@ -2554,7 +2564,10 @@ class Order(CustomerBaseHandler):
 				push.notification = jpush.notification(alert="您的店铺『"+order.shop.shop_name+"』收到了新的订单评价，点击查看详情", android=android_msg, ios=ios_msg)
 				push.platform = jpush.all_
 				push.options = {"time_to_live":86400, "sendno":12345,"apns_production":True}
-				push.send()
+				try:
+					push.send()
+				except:
+					print("Jpush Error")
 			###
 
 			return self.send_success(notice=notice)
@@ -2637,42 +2650,62 @@ class OrderDetail(CustomerBaseHandler):
 # 我的 - 余额详情
 class Balance(CustomerBaseHandler):
 	@tornado.web.authenticated
+	@CustomerBaseHandler.check_arguments('shop_id')
 	def get(self):
 		customer_id = self.current_user.id
-		shop_id     = self.shop_id
+		# shop_id     = self.shop_id
+		shop_id     = self.args['shop_id']
 		shop_balance= 0
 		history     = []
-		try:
-			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
-			shop_id = shop_id).first()
-		except:
-			print('[CustomerBalance]shop_follow none')
-		try:
-			shop=self.session.query(models.Shop).filter_by(id = shop_id).first()
-		except:
-			print('[CustomerBalance]shop none')
-		if shop:
+		if len(shop_id)==0:
+			return self.send_fail('shop_id empty!!!')
+		shop=self.session.query(models.Shop).filter_by(id = shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		else:
 			shop_name=shop.shop_name
 			shop_logo=shop.shop_trademark_url
-		if not shop_follow:
-			print('[CustomerBalance]shop_follow not fount')
+
+		if not self.session.query(models.CustomerShopFollow).filter_by(
+				customer_id=self.current_user.id, shop_id=shop.id).first():
+			w_follow = False
+			shop.fans_count = shop.fans_count + 1
+			shop_follow = models.CustomerShopFollow(customer_id = self.current_user.id ,shop_id = shop.id,shop_point = 0,bing_add_point = 0)
+			if shop_follow:
+				if shop_follow.shop_point is not None:
+					shop_follow.shop_point += 10
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add follow point:",now,shop_follow.shop_point)
+				else:
+					shop_follow.shop_point = 10
+			if shop_follow.bing_add_point == 0:
+				if self.current_user.accountinfo.phone != None:
+					shop_follow.shop_point += 10
+					shop_follow.bing_add_point = 1
+					now = datetime.datetime.now()
+					# print("[CustomerMarket]add phone point:",now,shop_follow.shop_point,'phone')
+
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,
+			shop_id = shop_id).first()
 		if shop_follow:
 			if shop_follow.shop_balance:
 				shop_balance = shop_follow.shop_balance
 				shop_balance = format(shop_balance,'.2f')
 			else:
 				shop_balance = 0.00
-
-		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name, shop_logo=shop_logo)
+		return self.render("customer/balance.html",shop_balance = shop_balance , shop_name=shop_name, shop_logo=shop_logo,shop_id=shop_id)
 
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments("page:int")
+	@CustomerBaseHandler.check_arguments("page:int","shop_id?")
 	def post(self):
 		page_size = 20
 		page = int(self.args["page"])
 		offset = (page-1) * page_size
 		customer_id = self.current_user.id
-		shop_id  = self.shop_id
+		# shop_id  = self.shop_id
+		shop_id    = self.args['shop_id']
+		if not shop_id or len(shop_id)==0:
+			return self.send_fail('shop_id empty !!!!')
 		history   = []
 		data = []
 		pages = 0
@@ -2778,13 +2811,16 @@ class Points(CustomerBaseHandler):
 # 余额充值
 class Recharge(CustomerBaseHandler):
 	@tornado.web.authenticated
-	@CustomerBaseHandler.check_arguments('code?:str','action?:str')
+	@CustomerBaseHandler.check_arguments('code?:str','action?:str','shop_id')
 	def get(self):
 		code = ''
 		url=''
 		action = self.args['action']
 		next_url = self.get_argument('next', '')
-		current_shop_id=self.get_cookie("market_shop_id")
+		# current_shop_id=self.get_cookie("market_shop_id")
+		current_shop_id = self.args['shop_id']
+		if not current_shop_id or len(current_shop_id)==0:
+			return self.send_fail('shop_id empty !!!')
 		current_customer_id=self.current_user.id
 		self.updatecoupon(current_customer_id)
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule).all()
@@ -2967,9 +3003,6 @@ class payTest(CustomerBaseHandler):
 
 			# code = self.args['code']
 			# path_url = self.request.full_url()
-
-
-
 			# totalPrice =float( self.get_cookie('money'))
 			# print("[WxCharge]customer_id:",customer_id,", shop_id:",shop_id,", totalPrice:",totalPrice)
 			#########################################################
@@ -2978,38 +3011,56 @@ class payTest(CustomerBaseHandler):
 			# 应放在 支付成功的回调里
 			#########################################################
 			# 支付成功后，用户对应店铺 余额 增加
-			#判断是否已经回调过，如果记录在表中，则不执行接下来操作
+			# 判断是否已经回调过，如果记录在表中，则不执行接下来操作
 			old_balance_history=self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if old_balance_history:
 				return self.write('success')
+			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
+			if customer:
+				name = customer.accountinfo.nickname
+			else:
+				name = None
+
+			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+			if not shop:
+				# return self.send_fail('[WxCharge]shop not found')
+				shop_totalPrice = 0
+				shop_province   = None
+				shop_name       = None
+			else:
+				shop.shop_balance += totalPrice
+				self.session.flush()
+
+				shop_totalPrice = shop.shop_balance
+				shop_province=shop.shop_province
+				shop_name=shop.shop_name
+
 			shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,\
 				shop_id = shop_id).first()
 			# print("[WxCharge]customer_id:",customer_id,", shop_id:",shop_id)
 			if not shop_follow:
-				return self.send_fail('[WxCharge]shop_follow not found')
-			shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
-			self.session.flush()
-
-			shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-			if not shop:
-				return self.send_fail('[WxCharge]shop not found')
-			shop.shop_balance += totalPrice
-			self.session.flush()
-			# print("[WxCharge]shop_balance after charge:",shop.shop_balance)
-
-			# 支付成功后  生成一条余额支付记录
-			customer = self.session.query(models.Customer).filter_by(id = customer_id).first()
-			if customer:
-				name = customer.accountinfo.nickname
-			#name = self.current_user.accountinfo.nickname
-			balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,\
-				balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name  , name = name , balance_type = 0,\
-				shop_totalPrice = shop.shop_balance,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
-				shop_province=shop.shop_province,shop_name=shop.shop_name)
-			self.session.add(balance_history)
-			# print("[WxCharge]balance_history:",balance_history)
-			self.session.commit()
-			
+				# return self.send_fail('[WxCharge]shop_follow not found')
+				balance_history = models.BalanceHistory(customer_id = customer_id,shop_id = shop_id,
+					balance_value=totalPrice,balance_record = '余额充值(微信)失败：用户未关注店铺',name=name,balance_type = 0,
+					shop_totalPrice=shop_totalPrice,customer_totalPrice = 0,transaction_id=transaction_id,
+					shop_province=shop_province,shop_name=shop_name)
+				self.session.add(balance_history)
+				self.session.commit()
+				# return self.write('success')
+			else:
+				shop_follow.shop_balance += totalPrice     #充值成功，余额增加，单位为元
+				self.session.flush()
+				# print("[WxCharge]shop_balance after charge:",shop.shop_balance)
+				# 支付成功后  生成一条余额支付记录
+				#name = self.current_user.accountinfo.nickname
+				balance_history = models.BalanceHistory(customer_id =customer_id ,shop_id = shop_id,
+					balance_value = totalPrice,balance_record = '余额充值(微信)：用户 '+ name ,name = name,balance_type = 0,
+					shop_totalPrice = shop_totalPrice,customer_totalPrice = shop_follow.shop_balance,transaction_id=transaction_id,
+					shop_province=shop_province,shop_name=shop_name)
+				self.session.add(balance_history)
+				# print("[WxCharge]balance_history:",balance_history)
+				self.session.commit()
+				
 			# 充值送优惠券
 			self.updatecoupon(customer_id)
 			CouponsShops=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=1,closed=0).order_by(models.CouponsShop.get_rule.desc()).with_lockmode('update').all()
@@ -3088,136 +3139,108 @@ class wxChargeCallBack(CustomerBaseHandler):
 
 # 插入爬取店铺数据（访问路由：/customer/test）
 class InsertData(CustomerBaseHandler):
-	pass
-# 	# @tornado.web.authenticated
-# 	# @CustomerBaseHandler.check_arguments("code?:str")
-# 	# @tornado.web.asynchronous
-# 	def get(self):
-# 		import requests
-# 		import json
-# 		shop_list , good_list = self.get_data()
-# 		# print(shop_list)
-# 		# for shop in shop_list:
-# 		# 	try:
-# 		# 		link_exist = self.session.query(models.Spider_Shop).filter_by(shop_link=shop['shop_link']).first()
-# 		# 	except:
-# 		# 		link_exist = None
-# 		# 	if not link_exist:
-# 		# 		temp_shop = models.Spider_Shop(shop_id = shop['shop_id'],shop_address = shop['shop_address'],
-# 		# 			shop_logo = shop['shop_logo'],delivery_freight = shop['delivery_freight'] , shop_link = shop['shop_link'],
-# 		# 			delivery_time = shop['delivery_time'],shop_phone = shop['shop_phone'],delivery_mincharge = shop['delivery_mincharge'],
-# 		# 			delivery_area = shop['delivery_area'],shop_name = shop['shop_name'],shop_notice = shop['shop_notice'],lat = shop['lat'],\
-# 		# 			lon = shop['lon'],shop_province = 420000,shop_city = 420100)
-# 		# 		self.session.add(temp_shop)
-# 		# self.session.flush()
+	#对账检验
+	@CustomerBaseHandler.check_arguments('action','day','month')
+	def get(self):
+		action = self.args['action']
+		if len(action)  > 0:
+			day = int(self.args['day'])
+			month = int(self.args['month'])
+			wx_sum = 0
+			ali_sum = 0
 
-# 		# for good in good_list:
-# 		# 	temp_good = models.Spider_Good(goods_price = good['goods_price'],good_img_url = good['good_img_url'],shop_id = good['shop_id'],
-# 		# 		sales = good['sales'],goods_name = good['goods_name'])
-# 		# 	self.session.add(temp_good)
-# 		# self.session.commit()
-# 		shop = self.session.query(models.Shop).filter(models.Shop.shop_name.like('%%%s%%' % '')).count()
-# 		print(shop)
-# 		shop_all = self.session.query(models.Shop).count()
-# 		print(shop_all)
+			first_create_time = datetime.datetime(2015,month,day,0,0,0)
+			first_end_time    = datetime.datetime(2015,month,day,23,59,59)
+			print(first_create_time.strftime("%Y-%m-%d"),first_end_time.strftime('%Y-%m-%d'))
+			current_day_ali = self.session.query(models.BalanceHistory.id, models.BalanceHistory.balance_type,models.BalanceHistory.balance_value,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time,models.BalanceHistory.balance_record.like('%支付宝%'))).all()
+			print('支付宝支付记录')
+			for item in current_day_ali:
+				ali_sum += item[2]
+				print(item[0],item[1],item[2],item[3][12:])
+			current_day_wx = self.session.query(models.BalanceHistory.id, models.BalanceHistory.balance_type,models.BalanceHistory.balance_value,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time),models.BalanceHistory.balance_record.like('%微信%')).all()
+			print('微信支付记录')
+			for item in current_day_wx:
+				wx_sum += item[2]
+				print(item[0],item[1],item[2],item[3][11:])
+			# return self.send_success()
+			print(ali_sum,wx_sum)
+			print('-------------------------------------------------------------------')
 
-# 		# session = DBSession()
+		list = []
+		s = ''
+		first_create_time = datetime.datetime(2015,5,2,0,0,0)
+		first_end_time    = datetime.datetime(2015,5,2,23,59,59)
+		sum = 0
+		for i in range(0,128):
+			first_create_time = first_create_time + datetime.timedelta(1)
+			first_end_time    = first_end_time   + datetime.timedelta(1)
+			current_day = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time)).all()
+			# current_day = format(current_day,'.2f') if current_day else None
+			current_day_wx = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time,models.BalanceHistory.balance_record.like('%支付宝%'))).all()
+			
+			list.append({first_create_time.strftime('%Y-%m-%d'):current_day_wx})
+			if current_day_wx[0][0]:
+				sum += current_day_wx[0][0]
+				current_day_wx = format(current_day_wx[0][0],'.2f')
+			print(first_create_time.strftime("%Y-%m-%d") ,current_day_wx)
+			# s += first_create_time.strftime("%Y-%m-%d") +':' + format(current_day_wx[0][0],'.2f') + '                                     '
+		# self.write(s)
+		# for item in current_day_wx:
+		# 	print(item[0],item[1],item[2],item[3])
 
-# 		# shop = session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-# 		# print(shop.shop_balance)
-# 		# shop.shop_balance += 100
-# 		# session.commit()
+		return self.send_success(s=s,sum=sum)
 
-# 		# session2 = DBSession()
-# 		# shop2 = session2.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-# 		# print(shop2.shop_balance)
-# 		# shop2.shop_balance += 100
-# 		# session2.commit()
+	@CustomerBaseHandler.check_arguments('balance_id')
+	def post(self):
+		balance_id = self.args['balance_id']
+		if not balance_id or len(balance_id) == 0:
+			return self.send_fail('balance_id empty!!!')
+		balance_history = self.session.query(models.BalanceHistory).filter_by(id=balance_id).first()
+		if not balance_history:
+			return self.send_fail('balance_history not found')
+		#将balance_type 置为-1,表示删除状态
+		shop_id = balance_history.shop_id
+		customer_id = balance_history.customer_id
+		balance_value = balance_history.balance_value
+		balance_type = balance_history.balance_type
 
-# 		# shop3 = self.session.query(models.Shop).with_lockmode('update').filter_by(shop_code='woody').first()
-# 		# print(shop3.shop_balance)
+		shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
+		if not shop_follow:
+			return self.send_fail('')
+
+		#若删除的是在线支付记录，则只需要改变店铺总额
+		if balance_type == 3:
+			before_shop_balance = shop.shop_balance
+			shop.shop_balance -= balance_value
+			after_shop_balance = shop.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='在线记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		#若删除的是余额充值记录，则需要将customer_shop_follow表里的余额还原
+		elif balance_type == 0:
+			before_shop_balance  = shop_follow.shop_balance
+			shop_follow.shop_balance -= balance_value
+			after_shop_balance   = shop_follow.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='余额充值记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		#若删除的是余额消费记录，则需要还原顾客的余额
+		elif balance_type == 1:
+			before_shop_balance = shop_follow.shop_balance
+			shop_follow.shop_balance += balance_value
+			after_shop_balance  = shop_follow.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='余额消费记录删除成功',before=before_shop_balance,after=after_shop_balance)
 
 
-# 		return self.send_success(shop=shop,shop_all=shop_all)
-# 		# import multiprocessing
-# 		# from multiprocessing import Process
-# 		# import datetime
-# 		# from sqlalchemy import create_engine, func, ForeignKey, Column
-# 		# session = self.session
-# 		# from handlers.base import UrlShorten
-# 		# short = UrlShorten.get_short_url('http://www.baidu.com/haha/hehe/gaga/memeda')
-# 		# print(short,type(short))
-# 		# print(UrlShorten.get_long_url(short))
-# 		# try:
-# 		# 	shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-# 		# except:
-# 		# 	return self.send_fail('shop not found')
-# 		# # self.shop_auth_msg(shop,False)
-# 		# # shop_auth_fail_msg('13163263783','woody','woody')
-# 		# self.render('customer/storage-change.html')
-# 		# def async_task():
-# 		#   try:
-# 		# 		shop = self.session.query(models.Shop).filter_by(shop_code = 'woody').first()
-# 		# 	except:
-# 		# 		return self.send_fail('shop not found')
-# 		# 	# self.shop_auth_msg(shop,False)
-# 		# 	# shop_auth_fail_msg('13163263783','woody','woody')
-# 		# 	self.render('customer/storage-change.html')
-# 		# gevent.spawn(async_task)
-
-# 	def get_data(self):
-# 		import requests
-# 		shop_list = []
-# 		good_list = []
-# 		import os
-# 		f = open(os.path.dirname(__file__)+'/shopData.txt',encoding = 'utf-8')
-# 		c = f.read()
-# 		s = eval(c)
-# 		# print(type(s))
-# 		i = self.session.query(models.Spider_Shop).count()-1
-# 		for key in s:
-# 				temp = s.get(key,None)
-# 				if temp:
-# 						shop = {}
-# 						shop['shop_id']            = i
-# 						shop['shop_address']       = temp.get('shop_address',None)
-# 						shop['shop_logo']          = temp.get('shop_logo',None)
-# 						shop['delivery_freight']   = temp.get('delivery_freight',None)
-# 						shop['shop_link']          = temp.get('shop_link',None)
-# 						shop['delivery_time']      = temp.get('delivery_time',None)
-# 						shop['shop_phone']         = temp.get('shop_phone',None)
-# 						shop['delivery_mincharge'] = temp.get('delivery_mincharge',None)
-# 						shop['delivery_area']      = temp.get('delivery_area',None)
-# 						shop['shop_name']          = temp.get('shop_name',None)
-# 						shop['shop_notice']        = temp.get('shop_notice',None)
-# 						url = "http://api.map.baidu.com/geocoder/v2/?address="+temp.get('shop_address',None)+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
-# 						r = requests.get(url)
-# 						result = json.loads(r.text)
-# 						if result["status"] == 0:
-# 							shop['lat']  = float(result["result"]["location"]["lat"])
-# 							shop['lon'] = float(result["result"]["location"]["lng"])
-# 						else:
-# 							shop['lat'] = 0
-# 							shop['lon'] = 0
-# 						shop_list.append(shop)
-# 						temp_goods                 = temp.get('goods_list',None)
-# 						for temp_good in temp_goods:
-# 								good = {}
-# 								good['goods_price']  = temp_good.get('goods_price',None)
-# 								good['good_img_url'] = temp_good.get('good_img_url',None)
-# 								good['shop_id']      = i
-# 								good['sales']       = temp_good.get('sales',None)
-# 								good['goods_name']  = temp_good.get('goods_name',None)
-# 								good_list.append(good)
-# 				i += 1
-# 		# print(shop_list)
-# 		# print(i)
-# 		return shop_list,good_list
-
-# 支付超时判断
-# 返回：
-# 		0 - 不超时
-# 		1 - 超时
 class Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("order_id?:str")
