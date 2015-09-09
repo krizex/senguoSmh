@@ -2946,7 +2946,7 @@ class GoodsImport(AdminBaseHandler):
 					shop_id=self.current_shop.id,
 					fruit_type_id=fruit.fruit_type_id,
 					name=fruit.name,
-					storage=0,
+					storage=100,
 					unit=fruit.unit,
 					tag=fruit.tag,
 					img_url=fruit.img_url,
