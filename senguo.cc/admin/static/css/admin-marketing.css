@@ -5,7 +5,7 @@
 .stop-mode{text-indent:44px;}
 .stop-mode .circle{left:2px;}
 .c999{color: #999!important;}
-.top-box{line-height:20px;margin-bottom:20px;position:relative;padding:15px;background:#f4f5f9;}
+.top-box{background-color:#f4f5f9;padding: 15px 20px;margin: 0 0 20px;}
 .top-box .action-btn{position:absolute;right:10px;top:18px;}
 .pr20{padding-right: 20px!important;}
 table{width:100%;border-collapse:collapse;table-layout: fixed;}
@@ -131,8 +131,9 @@ table{width:100%;border-collapse:collapse;table-layout: fixed;}
 .time-btn-width{width: 45px}
 .text-below{vertical-align: 6px}
 .discount-tip{margin-left: 150px;margin-bottom: 10px}
-.mode-cm{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:30px;font-size:14px;top:-45px;}
+.mode-cm{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:30px;font-size:14px;top:-40px;}
 .mode-cm .circle{display:inline-block;width:28px;height:28px;background:#fff;border-radius:50%;position:absolute;top:2px;}
+.mode-jyj{top:-57px;}
 .discount_close{margin-left: 420px;}
 .w50{width: 60px !important;}
 /*added by jyj for seckill*/

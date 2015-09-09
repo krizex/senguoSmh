@@ -64,7 +64,7 @@ $(document).ready(function () {
         tip_info="开启限时折扣即可使用限时折扣功能，你确定要开启限时折扣吗？";
     }
     else{
-        tip_info="限时折扣一旦关闭将不能重新开启,你确定要关闭所有限时折扣吗？";
+        tip_info="关闭限时折扣后，所有限时折扣商品将恢复原价，你确定要关闭所有限时折扣吗？";
     }
     if(confirm(tip_info)){
             var $this = $(this);
