@@ -269,7 +269,7 @@
     </div>
     <div class="pay-bill">
         {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
-        <button  class="first_notice sure_btn  text-center  pull-left ml10" id="phoneNumber">绑定手机号?</button>
+        <button  class="first_notice sure_btn  text-center  pull-left ml10" id="phoneNumber">请绑定手机号!</button>
         {% end %}
         <span class="pull-left coupon-text hidden">已优惠 <span id="coupon-money"></span>元</span>
         <span class="yellow-text">总计：<span class="yellow-text"><span class="final_price yellow-text" id="total_price"></span></span> 元</span>
