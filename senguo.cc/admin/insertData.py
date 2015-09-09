@@ -151,12 +151,16 @@ def getPicture():
 		goods = session.query(models.Fruit).filter_by(shop_id=shop.id).all()
 		if len(goods) >0 :
 			for good in goods:
+				try:
+					code = good.fruit_type.code
+				except:
+					code = "TDSG"
 				imgs = []
 				if good.img_url:
 					imgs = good.img_url.split(";")
 				if len(imgs)>0:
 					for img in imgs:
-						session.add(models.PictureLibrary(_type="goods",shop_id=shop.id,img_url=img))
+						session.add(models.PictureLibrary(_type="goods",shop_id=shop.id,img_url=img,code=code))
 						session.flush()
 				if good.detail_describe:
 					res_detail = BeautifulSoup(good.detail_describe,"lxml")

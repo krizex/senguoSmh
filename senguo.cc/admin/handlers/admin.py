@@ -4958,17 +4958,25 @@ class WirelessPrint(AdminBaseHandler):
 
 class GetPicture(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str","page:int")
+	@AdminBaseHandler.check_arguments("action:str","page:int","code?")
 	def get(self):
 		action = self.args["action"]
 		page = int(self.args["page"])
+		if "code" in self.args and self.args["code"] !=[] and self.args["code"] !="":
+			code = self.args["code"]
+		else:
+			code = "TDSG"
+		print(code)
 		datalist = []
 		page_size = 12
 		if not action:
 			return self.send_fail("no action")
 		if not page:
 			page = 0
-		picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1).order_by(models.PictureLibrary.create_time.desc())
+		if code == "undefined":
+			picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1).order_by(models.PictureLibrary.create_time.desc())
+		else:
+			picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1,code=code).order_by(models.PictureLibrary.create_time.desc())
 		pictures = picture_list.offset(page*page_size).limit(page_size).all()
 		for picture in pictures:
 			datalist.append({"imgurl":picture.img_url,"id":picture.id})

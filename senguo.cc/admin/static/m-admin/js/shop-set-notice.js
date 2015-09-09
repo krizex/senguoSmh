@@ -20,76 +20,56 @@ $(document).ready(function(){
         var id = $(this).attr("data-id");
         noticeEdit(id);
     }
-});
-var link = "/admin/config";
-function noticeAdd(){
-    var url=link;
-    var action="add_notice";
-    var summary= $.trim($('.new-notice-title').val());
-    var detail=$.trim($('.new-notice-detail').val());
-    var img_url=$("#notice_img").attr("url");
-    if(summary.length>15){return Tip('摘要请不要超过15个字！')}
-    if(detail.length>200){return Tip('详情请不要超过200个字！')}
-    if(!summary){return Tip('请输入摘要！')}
-    if(!detail){return Tip('请输入详情！')}
-    var data={
-        summary:summary,
-        detail:detail,
-        img_url:img_url
-    };
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,
-        function(res){
-            if(res.success){
-                Tip("公告添加成功");
-                setTimeout(function(){
-                    window.location.href="/madmin/shopattr?action=notice"
-                },2000);
+}).on("click",".upload-pic-list li",function(e){
+    var imgurl=$(this).find("img").attr("src");
+    var _url=$(this).find("img").attr("url");
+    var w = width+10;
+    if($(e.target).closest(".del-pic-img").size()==0){
+        var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img class="image" style="width:'+width+'px;height:'+width+'px;" id="" src="" alt="商品图片"/><a href="javascript:;" class="icon-del"></a></li>');
+        if ($("#img_list").children("li").size() == 6) {
+            $("#img-lst").addClass("hide");
+            $(".moxie-shim").addClass("hide");
+        }else{
+            if ($("#img_list").children("li").size() == 5){
+                $("#img-lst").addClass("hide");
+                $(".moxie-shim").addClass("hide");
             }
-            else return Tip(res.error_text);
-        });
-}
-function noticeEdit(id){
-    var url=link;
-    var action="edit_notice";
-    var notice_id=id;
-    var summary=$('.new-notice-title').val();
-    var detail=$('.new-notice-detail').val();
-    var img_url=$("#notice_img").attr("url");
-    if(summary.length>15){return Tip('摘要请不要超过15个字！')}
-    if(detail.length>200){return Tip('详情请不要超过200个字！')}
-    if(!summary){return Tip('摘要不能为空！')}
-    if(!detail){return Tip('详情不能为空！')}
-    var data={
-        notice_id:notice_id,
-        summary:summary,
-        detail:detail,
-        img_url:img_url
-    };
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,
-        function(res){
-            if(res.success){
-                Tip("公告编辑成功");
-                setTimeout(function(){
-                    window.location.href="/madmin/shopattr?action=notice"
-                },2000);
+            $item.find("img").attr({"src":imgurl,"url":_url});
+            $("#add-img").closest("li").before($item);
+        }
+        $(".pop-picture-library").addClass("hide");
+    }
+}).on("click",".pop-picture-library .cancel-btn",function(){
+    $(this).closest(".pop-picture-library").addClass("hide");
+}).on("click",".del-pic-img",function(){
+    if(confirm("是否将该图片从图片库删除？")){
+        var $this=$(this);
+        var id=$this.parents(".picture-list-item").attr("data-id");
+        var url = "/admin/picture";
+        var args={
+            action:"del",
+            data:{
+                id:id
             }
-            else return Tip(res.error_text);
+        }
+         $.postJson(url,args,function(res) {
+            if (res.success) {
+               $this.parents(".picture-list-item").remove();
+            }else{
+                Tip(res.error_text);
+            }
+        },function(){
+            return Tip('您的网络暂时不通畅，请稍候再试');
         });
-}
-var isOri = "";
-$(document).ready(function(){
+    }
+   
+}).on("click","#add-notice-img",function(){
+    getPicture(pictureType,0);
+    $(".pop-picture-library").removeClass("hide");
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
-        browse_button: 'add-notice-img',
-        container: 'wrap-shop-address',
+        browse_button: 'upload-picture',
+        container: 'upload-area',
         max_file_size: '4mb',
         filters : {
             max_file_size : '4mb',//限制图片大小
@@ -163,6 +143,119 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
     },500);
+});
+
+
+var pictureType="notice",_page = 0,nomore=false,_finished=true;
+function getPicture(action,page){
+     $.ajax({
+        url:'/admin/picture?action='+action+'&page='+page,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.datalist;
+                var total = res.total_page;
+                if(total<=page){
+                    nomore=true;
+                }
+                var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
+                        '<a href="javascript:;" class="del-pic-img">x</a>'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/80/h/80" url="{{imgurl}}" alt="商品图片"/>'+
+                    '</li>';
+                for(var key in data){
+                    var render = template.compile(item);
+                    var html = render({
+                        imgurl:data[key]['imgurl'],
+                        id:data[key]['id']
+                    });
+                    $('.upload-pic-list').append(html);
+                }
+                _finished = true;
+            }
+        }
+    });
+};
+
+
+$(window).scroll(function(){
+    var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+    var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+    var totalheight = 0;
+    var main = $('.picture-library');              //主体元素
+    totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+    if(_finished&&(main.height()-range) <= totalheight  && nomore==false) {
+        _finished=false;
+        _page = _page+1;
+        getPicture(pictureType,_page);
+    }
+});
+var link = "/admin/config";
+function noticeAdd(){
+    var url=link;
+    var action="add_notice";
+    var summary= $.trim($('.new-notice-title').val());
+    var detail=$.trim($('.new-notice-detail').val());
+    var img_url=$("#notice_img").attr("url");
+    if(summary.length>15){return Tip('摘要请不要超过15个字！')}
+    if(detail.length>200){return Tip('详情请不要超过200个字！')}
+    if(!summary){return Tip('请输入摘要！')}
+    if(!detail){return Tip('请输入详情！')}
+    var data={
+        summary:summary,
+        detail:detail,
+        img_url:img_url
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                Tip("公告添加成功");
+                setTimeout(function(){
+                    window.location.href="/madmin/shopattr?action=notice"
+                },2000);
+            }
+            else return Tip(res.error_text);
+        });
+}
+function noticeEdit(id){
+    var url=link;
+    var action="edit_notice";
+    var notice_id=id;
+    var summary=$('.new-notice-title').val();
+    var detail=$('.new-notice-detail').val();
+    var img_url=$("#notice_img").attr("url");
+    if(summary.length>15){return Tip('摘要请不要超过15个字！')}
+    if(detail.length>200){return Tip('详情请不要超过200个字！')}
+    if(!summary){return Tip('摘要不能为空！')}
+    if(!detail){return Tip('详情不能为空！')}
+    var data={
+        notice_id:notice_id,
+        summary:summary,
+        detail:detail,
+        img_url:img_url
+    };
+    var args={
+        action:action,
+        data:data
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                Tip("公告编辑成功");
+                setTimeout(function(){
+                    window.location.href="/madmin/shopattr?action=notice"
+                },2000);
+            }
+            else return Tip(res.error_text);
+        });
+}
+var isOri = "";
+$(document).ready(function(){
+    
 });
 /*转化图片为base64*/
 function previewImage(file,callback){//file为plupload事件监听函数参数中的file对象,callback为预览图片准备完成的回调函数

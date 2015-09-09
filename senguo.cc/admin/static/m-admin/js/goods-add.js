@@ -16,7 +16,11 @@ $(document).ready(function(){
             colorDark : "#433943"
         }).makeCode( $("#shop_url").html());
     }
-
+    cur_code =$(".choose_classify").attr("data-code");
+    if($(".choose_classify").text()!=""){
+       $(".pic-classify").text($(".choose_classify").text()); 
+    }
+    
 }).on("click",".gogoods",function(){
     if(confirm("当前编辑未完成，确定返回吗？")){
         window.location.href="/madmin/goods";
@@ -129,8 +133,11 @@ $(document).ready(function(){
     $("#finish_btn").addClass("hide");
     $(".wrap-add-class").addClass("hide");
     $(".wrap-classify").removeClass("hide");
+    $('.upload-pic-list').empty();
 }).on("click",".class-lst li",function(){
-    $(".choose_classify").html($(this).find(".class_name").html()).attr("data-id",$(this).attr("data-id"));
+    $(".choose_classify").html($(this).find(".class_name").html()).attr({"data-id":$(this).attr("data-id"),"data-code":$(this).attr("data-code")});
+    cur_code = $(this).attr("data-code");
+    $(".pic-classify").text($(this).find(".class_name").html());
     if($("#img_list").children("li").size()==6 && $("#img-lst").hasClass("hide")){
     }else{
         if($("#img_list").children("li").size()>4){
@@ -222,7 +229,7 @@ $(document).ready(function(){
 }).on("click",".b-close",function(){
     $(this).closest(".pop-bwin").addClass("hide");
 }).on("click","#add-img",function(){
-    getPicture(pictureType,0);
+    getPicture(pictureType,0,cur_code);
     $(".pop-picture-library").removeClass("hide");
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
@@ -304,7 +311,7 @@ $(document).ready(function(){
     setTimeout(function(){
         $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
     },800);
-}).on("click",".picture-list li",function(e){
+}).on("click",".upload-pic-list li",function(e){
     var imgurl=$(this).find("img").attr("src");
     var _url=$(this).find("img").attr("url");
     var w = width+10;
@@ -325,6 +332,9 @@ $(document).ready(function(){
     }
 }).on("click",".pop-picture-library .cancel-btn",function(){
     $(this).closest(".pop-picture-library").addClass("hide");
+    $(".default-pic-list").addClass("hide");
+    $(".upload-pic-list").removeClass("hide");
+    $(".show-upload-list").addClass("active").siblings("li").removeClass("active");
 }).on("click",".del-pic-img",function(){
     if(confirm("是否将该图片从图片库删除？")){
         var $this=$(this);
@@ -347,22 +357,47 @@ $(document).ready(function(){
         });
     }
    
+}).on("click",".show-upload-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").removeClass("hide");
+    $(".picture-pagination").removeClass("hide");
+    $(".default-pic-list").addClass("hide");
+}).on("click",".show-default-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").addClass("hide");
+    $(".picture-pagination").addClass("hide");
+    $(".default-pic-list").removeClass("hide");
+    $("#demo-img").find("img").attr({"src":"/static/design_img/"+cur_code+".png","url":"/static/design_img/"+cur_code+".png"})
+}).on("click","#demo-img",function(){
+    var imgurl=$(this).find("img").attr("src");
+    var _url=$(this).find("img").attr("url");
+    var w = width+10;
+    var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img class="image" style="width:'+width+'px;height:'+width+'px;" id="" src="" alt="商品图片"/><a href="javascript:;" class="icon-del"></a></li>');
+    if ($("#img_list").children("li").size() == 6) {
+        $("#img-lst").addClass("hide");
+        $(".moxie-shim").addClass("hide");
+    }else{
+        if ($("#img_list").children("li").size() == 5){
+            $("#img-lst").addClass("hide");
+            $(".moxie-shim").addClass("hide");
+        }
+        $item.find("img").attr({"src":imgurl,"url":_url});
+        $("#add-img").closest("li").before($item);
+    }
+    $(".pop-picture-library").addClass("hide");
 });
 
-$(document).ready(function(){
-     
-});
 
-var pictureType="goods",_page = 0,nomore=false,_finished=true;
-function getPicture(action,page){
+var pictureType="goods",_page = 0,nomore=false,_finished=true,cur_code="";
+function getPicture(action,page,code){
      $.ajax({
-        url:'/admin/picture?action='+action+'&page='+page,
+        url:'/admin/picture?action='+action+'&page='+page+'&code='+code,
         type:"get",
         success:function(res){
             if(res.success){
                 var data = res.datalist;
                 var total = res.total_page;
-                if(total==page+1){
+                if(total<=page){
                     nomore=true;
                 }
                 var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
@@ -376,7 +411,7 @@ function getPicture(action,page){
                         imgurl:data[key]['imgurl'],
                         id:data[key]['id']
                     });
-                    $('.picture-list').append(html);
+                    $('.upload-pic-list').append(html);
                 }
                 _finished = true;
             }
@@ -394,7 +429,7 @@ $(window).scroll(function(){
     if(_finished&&(main.height()-range) <= totalheight  && nomore==false) {
         _finished=false;
         _page = _page+1;
-        getPicture(pictureType,_page);
+        getPicture(pictureType,_page,cur_code);
     }
 });
 

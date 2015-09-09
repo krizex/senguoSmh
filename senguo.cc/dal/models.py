@@ -1765,6 +1765,7 @@ class PictureLibrary(MapBase,_CommonApi):
 	shop_id  = Column(Integer,nullable = False)
 	status = Column(TINYINT,nullable=False,default = 1) #0:delete 1:normal
 	create_time = Column(DateTime,nullable=False,default = func.now())
+	code = Column(String(128), nullable=False, default="")
 
 # 数据库初始化
 def init_db_data():

@@ -32,9 +32,29 @@
 {% block fix %}
 {% end %}
 {% block bottom %}
+<div class="pop-picture-library hide">
+    <div class="wrap-sty-box">
+         <ul class="picture-title wrap-sty">
+            <li class="active">图片库</li>
+            <li>系统默认图片</li>
+        </ul>
+        <div class="picture-title2" id="upload-area">
+            <span class="fl">点击图片即选中</span>
+            <button id="upload-picture" class="btn fr">本地上传</button>
+        </div>
+         <div class="picture-library">
+           <ul class="group picture-list upload-pic-list">
+            </ul>
+        </div>
+         <div class="wrap-sty">
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
+    </div>
+</div>
 <script src="/static/js/exif.min.js"></script>
 <script src="/static/js/plupload/plupload.full.min.js"></script>
 <script src="/static/js/plupload/i18n/zh_CN.js"></script>
 <script src="/static/js/qiniu.min.js"></script>
+<script src="/static/js/template.js"></script>
 <script type="text/javascript" src="{{static_url('m-admin/js/shop-set-notice.js')}}"></script>
 {% end %}

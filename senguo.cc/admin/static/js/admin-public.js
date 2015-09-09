@@ -77,7 +77,7 @@ $(document).ready(function(){
 }).on("click",".picture-pre-page",function(){
     var page_now=parseInt($(".picture-now").text());
     if(page_now>1){
-        getPicture(pictureType,page_now-1);
+        getPicture(pictureType,page_now-1,_cur_code);
         $(".picture-now").text(parseInt(page_now-1));
     }
     $(".picture-next-page").show();
@@ -88,7 +88,7 @@ $(document).ready(function(){
         $(".picture-next-page").hide();
     }
     if(page_now<=page_toatal){
-        getPicture(pictureType,page_now+1);
+        getPicture(pictureType,page_now+1,_cur_code);
         $(".picture-now").text(parseInt(page_now+1));
     }
     console.log(page_toatal);
@@ -107,12 +107,15 @@ $(document).ready(function(){
         $(".picture-next-page").show();
     }
     if(1<=page<=page_toatal){
-        getPicture(pictureType,page);
+        getPicture(pictureType,page,_cur_code);
         $(".picture-now").text(parseInt(page));
     }
    
 }).on("click",".pop-picture-library .cancel-btn",function(){
     $(this).closest(".pop-win").hide();
+    $(".default-pic-list").addClass("hide");
+    $(".upload-pic-list").removeClass("hide");
+    $(".show-upload-list").addClass("active").siblings("li").removeClass("active");
 }).on("click",".del-pic-img",function(){
     if(confirm("是否将该图片从图片库删除？")){
         var $this=$(this);
@@ -137,18 +140,19 @@ $(document).ready(function(){
    
 });
 
-var pictureType="goods";
-function getPicture(action,page){
+var pictureType="goods",_cur_code="";
+function getPicture(action,page,code){
     if(page>=1){
         page=page-1;
     }
      $.ajax({
-        url:'/admin/picture?action='+action+'&page='+page,
+        url:'/admin/picture?action='+action+'&page='+page+'&code='+code,
         type:"get",
         success:function(res){
             if(res.success){
                 var data = res.datalist;
                 var total = res.total_page+1;
+                $('.upload-pic-list').empty();
                 if(parseInt(page)==0){
                     $(".picture-total").text(total);
                     $(".picture-pre-page").hide();
@@ -158,7 +162,7 @@ function getPicture(action,page){
                 if(total==1){
                     $(".picture-pagination").hide();
                 }
-                $('.picture-list').empty();
+                $('.upload-pic-list').empty();
                 var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
                         '<a href="javascript:;" class="del-pic-img">x</a>'+
                         '<div class="img-selected">已选</div>'+
@@ -170,7 +174,7 @@ function getPicture(action,page){
                         imgurl:data[key]['imgurl'],
                         id:data[key]['id']
                     });
-                    $('.picture-list').append(html);
+                    $('.upload-pic-list').append(html);
                 }
             }
         }

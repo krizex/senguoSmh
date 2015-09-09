@@ -168,7 +168,7 @@ $(document).ready(function(){
             }
         }
     });
-}).on("click",".picture-list li",function(e){
+}).on("click",".upload-pic-list li",function(e){
     if($(e.target).closest(".del-pic-img").size()==0){
         var action=$(".pop-picture-library").attr("action");
         var img_url=$(this).find("img").attr("url");
