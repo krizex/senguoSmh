@@ -1,4 +1,5 @@
 <li class="order-list-item list-item set-width-float bg-greyf4 font14" data-id="" data-type="">
+    <span class="arrow"></span>
     <a href="javascript:;" class="check order-check"></a>
     <div class="list-title">
         <span class="code pull-left">
@@ -38,23 +39,23 @@
                 <div class="status-inner bg-green status_send hidden" style="width:50%;"></div>
                 <div class="status-inner bg-green status_finish hidden" style="width:100%;"></div>
                 <div class="status-inner bg-green status_comment hidden" style="width:100%;"></div>
-                <div class="status-circle status_unpaid status-item status-unpaid bg-green hidden" style="left:0%;"></div>
+                <div class="status-circle status_unpaid status-item status-unpaid bg-green hidden" style="left:0%;"><img src="/static/images/TDSG.png"/></div></div>
                 <div class="status-info status_unpaid status-item text-green hidden" style="left:0%;">
                     <span class="status">未支付</span>
                 </div>
-                <div class="status-circle status_order status-item status-order bg-green hidden" style="left:0%;"></div>
-                <div class="status-info status_order status-item text-green hidden" style="left:0%;">
-                    <span class="status">未处理</span>
+                <div class="status-circle status_order status-item status-order bg-green hidden" style="left:0%;"><img src="/static/images/TDSG.png"/></div>
+                <div class="status-info status_order status-item text-blue hidden" style="left:0%;">
+                    <span class="status to-staff-choose forbid_click">选择员工</span>
                 </div>
-                <div class="status-circle status_send status-item status-send bg-green hidden" style="left:50%;"></div>
-                <div class="status-info status_send status-item text-green hidden" style="left:50%;">
-                    <span class="status">配送中</span>
+                <div class="status-circle status_send status-item status-send bg-green hidden" style="left:50%;"><img src="/static/images/TDSG.png"/></div>
+                <div class="status-info status_send status-item text-blue hidden" style="left:50%;">
+                    <span class="status  to-staff-choose to-staff-send forbid_click">配送中</span>
                 </div>
-                <div class="status-circle status_finish status-item status-finish bg-green hidden" style="left:100%;"></div>
+                <div class="status-circle status_finish status-item status-finish bg-green hidden" style="left:100%;"><img src="/static/images/TDSG.png"/></div>
                 <div class="status-info status_finish status-item text-green hidden" style="left:100%;">
                     <span class="status">已送达</span>
                 </div>
-                <div class="status-circle status_comment status-item status-comment bg-green hidden" style="left:100%;"></div>
+                <div class="status-circle status_comment status-item status-comment bg-green hidden" style="left:100%;"><img src="/static/images/TDSG.png"/></div>
                 <div class="status-info status_comment status-item text-green hidden" style="left:100%;">
                     <span class="status">已评价</span>
                 </div>
@@ -69,8 +70,9 @@
         <!--order-status-end-->
     </div>
     <!--order-content-end-->
-    <div class="custom-order list-item-body set-width-float" style="display:none">
-    	<div class="address-adapt mb-15">
+    <div class="custom-order list-item-body set-width-float" style="display:none" data-staff="">
+        <ul class="send_person_list send-staff-list hide"></ul>
+    	<!-- <div class="address-adapt mb-15">
             <p class="text-grey9">配送员选择</p>
             <div class="current_sender unable_edit_sender clearfix" style="display:none">
                 #<span class="sender-code w50 set-inl-blo"></span>||
@@ -89,7 +91,7 @@
     		<ul class="dropdown-menu send_person_list" role="menu">
     		</ul>
             </div>
-    	</div>
+    	</div> -->
         <p class="con-title mb-0 clearfix">订单详情</p>
         <div class="custom-order-title clearfix mb-15">
            <span class="text-grey9">收货人：</span><span class="w200 receiver"></span>
