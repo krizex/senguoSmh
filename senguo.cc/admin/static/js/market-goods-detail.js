@@ -112,7 +112,6 @@ $(document).ready(function(){
             }else if(buy_limit==3){
                 return noticeBox("该商品仅限充值用户购买");
             }
-            
         }
         if(buy_today=='True'&&num>=allow_num){
             return noticeBox('您该商品的限购数量已达上限啦！┑(￣▽ ￣)┍ ');
