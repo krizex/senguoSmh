@@ -71,8 +71,8 @@ body{padding: 0}
 .market-icons .market-four{top:155px;left:560px;background:url('/static/official_img/market_4.png') no-repeat;}
 .market-icons .market-five{top:250px;left:660px;background:url('/static/official_img/market_5.png') no-repeat;}
 .market-icons .market-six{top:180px;left:770px;background:url('/static/official_img/market_6.png') no-repeat;}
-.store-bg{position: relative;max-height: 692px;min-height: 600px;}
-.store-bg>img{width: 100%;max-height: 692px;min-height: 600px;}
+.store-bg{position: relative;height: 692px;max-width: 1920px;margin: 0 auto;}
+.store-bg>img{min-height: 600px;min-width: 1500px;}
 .wrap-feature{position: absolute;top:160px;width: 1000px;height: 364px;}
 .feature-list>li{width: 50%;float: left;}
 .feature-item>img{float: left;margin-right: 30px;}
