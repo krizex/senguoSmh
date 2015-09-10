@@ -423,7 +423,6 @@ function todayChoose(){
     if($send_item.length>0){
         stop_range=Int($send_item.siblings('.stop-range').val().trim());
     }
-    
     if(_type=="ontime"){
         if(today==1){
             if(ontime_on!=undefined){
@@ -432,13 +431,9 @@ function todayChoose(){
                     var intime_startHour=Int($this.find('.time_startHour').val());
                     var intime_startMin=Int($this.find('.time_startMin').val());
                     var time;
-                    if(intime_startMin==0){
-                        intime_startHour=intime_startHour-1;
-                    }
                     if(stop_range<=intime_startMin){
                         time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-                    }
-                   else{
+                    }else{
                         n = parseInt(stop_range/60)
                         time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
                     }
