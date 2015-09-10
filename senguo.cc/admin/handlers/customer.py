@@ -62,6 +62,7 @@ class Access(CustomerBaseHandler):
 			else:
 				return self.render("login/m_login.html",context=dict(next_url=next_url))
 		elif self._action == "logout":
+
 			try:
 				user_type=int(self.args["user_type"])
 				jpush_id=self.args["jpush_id"]
@@ -192,6 +193,7 @@ class Third(CustomerBaseHandler):
 			nickname=str(self.args["nickname"])
 			sex=int(self.args["sex"])
 			jpush_id=self.args["jpush_id"]
+
 			userinfo={"openid":openid,"unionid":unionid,"country":country,"province":province,"city":city,"headimgurl":headimgurl,"nickname":nickname,"sex":sex}
 			q=self.session.query(models.Accountinfo).filter_by(wx_unionid=unionid).first()
 			qq=self.session.query(models.Jpushinfo).filter_by(user_id=q.id,user_type=1).first()
@@ -253,6 +255,7 @@ class customerGoods(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self,shop_code,goods_id):
 		shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).first()
+
 		if not shop:
 			return self.send_fail('shop not found')
 		if not self.session.query(models.CustomerShopFollow).filter_by(
@@ -334,8 +337,36 @@ class customerGoods(CustomerBaseHandler):
 				else:
 					good.userlimit = 0
 		charge_types= []
-		for charge_type in good.charge_types:
-			if charge_type.active != 0:
+		seckill_active = shop.marketing.seckill_active
+		charge_type_activity_type = []
+		end_time=0
+		has_activity=0
+		if seckill_active == 1:
+			self.update_seckill()			
+			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop.id,activity_status = 2).all()
+			if activity_query:
+				charge_type_activity_type = [-2,0,1,2]
+			else:
+				charge_type_activity_type = [-2,0,2]
+		else:
+			charge_type_activity_type = [-2,0,2]
+		seckill_former_charge_type_id = []
+		charge={}
+		charge['is_seckill'] = 0
+		good_charge_type = good.charge_types
+		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
+		for charge_type in good_charge_type:
+			seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).all()
+			seckill_kill_goods_flag = 1
+			if seckill_goods:
+				seckill_goods = seckill_goods[0]
+				seckill_kill_goods_flag = seckill_goods.status
+				if seckill_goods.id == -1:
+					seckill_kill_goods_flag = 0
+				seckill_activity = self.session.query(models.SeckillActivity).filter_by(id = seckill_goods.activity_id).first()
+				if seckill_activity.activity_status != 2:
+					seckill_kill_goods_flag = 0
+			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type and charge_type.id not in seckill_former_charge_type_id and seckill_kill_goods_flag == 1:
 				unit  = charge_type.unit
 				unit =self.getUnit(unit)
 				limit_today = False
@@ -354,8 +385,134 @@ class customerGoods(CustomerBaseHandler):
 							allow_num = limit_if.allow_num
 						else:
 							allow_num = good.limit_num - limit_if.buy_num
-				charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-					'market_price':charge_type.market_price,'relate':charge_type.relate,"limit_today":limit_today,"allow_num":allow_num})
+
+				# 查询是否有限时折扣活动
+				self.updatediscount()
+				discount_rate=10
+				has_discount_activity=0
+				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,status=1,use_goods_group=-2).first()
+				if q_all:
+					has_discount_activity=1
+					has_activity=2
+					discount_rate = q_all.discount_rate
+					x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=q_all.discount_id).first()
+					if x.discount_way==0:
+						end_time=x.end_date
+					else:
+						now=datetime.datetime.now()
+						now2=datetime.datetime(now.year,now.month,now.day)
+						end_time=x.t_time+time.mktime(now2.timetuple())
+						if end_time<0:
+							end_time=0
+				else:
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=-1,status=1).first()
+					if q_part:
+						has_discount_activity=1
+						has_activity=2
+						discount_rate = q_part.discount_rate
+						x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=q_part.discount_id).first()
+						if x.discount_way==0:
+							end_time=x.end_date
+						else:
+							now=datetime.datetime.now()
+							now2=datetime.datetime(now.year,now.month,now.day)
+							end_time=x.t_time+time.mktime(now2.timetuple())
+							if end_time<0:
+								end_time=0
+					else:
+						qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop.id,use_goods_group=good.group_id,use_goods=good.id,status=1).first()
+						if qq:
+							if charge_type.id in eval(qq.charge_type):
+								has_discount_activity=1
+								has_activity=2
+								discount_rate = qq.discount_rate
+								x=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop.id,discount_id=qq.discount_id).first()
+								if x.discount_way==0:
+									end_time=x.end_date
+								else:
+									now=datetime.datetime.now()
+									now2=datetime.datetime(now.year,now.month,now.day)
+									end_time=x.t_time+time.mktime(now2.timetuple())
+									if end_time<0:
+										end_time=0	
+				# added by jyj 9.3
+				seckill_is_bought = 0
+				seckill_activity_id = -1
+				seckill_goods_id = -1
+				seckill_start_time = 0
+				seckill_price_dif = 0
+				seckill_activity_piece = 0
+				is_seckill = 0
+				former_charge_type = None
+				seckill_not_start = 0
+				seckill_goods = None
+				if has_discount_activity == 0:
+					self.update_seckill()
+					if charge_type.activity_type == 1:
+
+						is_seckill = 1
+						charge['is_seckill'] = 1
+						has_activity = 1
+						seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).first()
+						if seckill_goods:
+							seckill_former_charge_type_id.append(seckill_goods.charge_type_id)
+							customer_query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop.id,seckill_goods_id=seckill_goods.id).all()
+							if customer_query:
+								if customer_query[0].status in [1,2]:
+									seckill_is_bought = 1
+
+							seckill_activity_id = seckill_goods.activity_id
+							seckill_goods_id = seckill_goods.id
+
+							time_query = self.session.query(models.SeckillActivity).join(models.SeckillGoods,models.SeckillGoods.activity_id == models.SeckillActivity.id).filter(models.SeckillGoods.id == seckill_goods.id).first()
+							seckill_start_time = time_query.start_time
+
+							end_time = time_query.end_time
+
+							seckill_price_dif = round(float(seckill_goods.former_price - seckill_goods.seckill_price),2)
+							if seckill_goods.activity_piece - seckill_goods.ordered > 0:
+								seckill_activity_piece= seckill_goods.activity_piece - seckill_goods.ordered
+
+							if seckill_start_time > int(time.time()):
+								has_activity = 0
+								seckill_not_start = 1
+								former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
+								unit = self.getUnit(former_charge_type.unit)
+				if is_seckill == 1:
+					src_prices = seckill_goods.former_price
+				else:
+					src_prices = charge_type.price
+				charge_types.append({'id':former_charge_type.id if seckill_not_start else charge_type.id,'price':round(former_charge_type.price,2) if seckill_not_start else round(charge_type.price*discount_rate/10,2),\
+					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,\
+					'market_price':former_charge_type.market_price if seckill_not_start else charge_type.market_price,'relate':former_charge_type.relate if seckill_not_start else charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
+					"has_activity":has_activity,"discount_rate":discount_rate,"is_seckill":is_seckill,\
+					"seckill_is_bought":seckill_is_bought,"seckill_activity_id":seckill_activity_id,"seckill_goods_id":seckill_goods_id,\
+					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece,"src_price": src_prices})
+				
+		# added by jyj 9.3
+		seckill_goods_ids = []
+		
+		seckill_active = self.session.query(models.Marketing).filter_by(id = shop.id).all()
+		if seckill_active:
+			seckill_active = seckill_active[0].seckill_active
+		else:
+			seckill_active = 0
+		if seckill_active == 1:
+
+			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop.id,activity_status = 2).all()
+			if activity_query:
+				seckill_activity = []
+				for item in activity_query:
+					seckill_activity.append(item.id)
+				
+				customer_id=self.current_user.id
+				seckill_goods_query = self.session.query(models.SeckillGoods).join(models.CustomerSeckillGoods,models.CustomerSeckillGoods.seckill_goods_id == models.SeckillGoods.id).\
+									filter(models.SeckillGoods.activity_id.in_(seckill_activity),models.SeckillGoods.status != 0,models.CustomerSeckillGoods.status == 1).all()
+				for item in seckill_goods_query:
+					seckill_goods_ids.append(item.id)
+
+		##
+
 		if not self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop.id).first():
 			self.session.add(models.Cart(id=self.current_user.id, shop_id=shop.id))  # 如果没有购物车，就增加一个
 			self.session.commit()
@@ -370,7 +527,8 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		return self.render('customer/goods-detail.html',good=good,img_url=img_url,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs)
+		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
+								seckill_goods_ids=seckill_goods_ids,charge=charge)
 
 # 手机注册
 class RegistByPhone(CustomerBaseHandler):
@@ -402,7 +560,7 @@ class RegistByPhone(CustomerBaseHandler):
 		else:
 			return self.send_fail(resault)
 
-	@CustomerBaseHandler.check_arguments( "action:str",  "phone?:str","password?:str")
+	@CustomerBaseHandler.check_arguments("action:str","phone?:str","password?:str")
 	def post(self):
 		action = self.args['action']
 		if action == "get_code":
@@ -578,9 +736,13 @@ class Discover(CustomerBaseHandler):
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
 			confess_count = 0
+		current_customer_id=self.current_user.id
+		shop_id = shop.id
+		# 优惠券发现
 		q=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0,coupon_type=0).all()
 		a=0
 		now_date=int(time.time())
+		self.updatecoupon(current_customer_id)
 		for x in q :
 			if now_date>=x.from_get_date and now_date<=x.to_get_date:
 				a+=1
@@ -593,8 +755,70 @@ class Discover(CustomerBaseHandler):
 				if qq!=None:
 					b+=1
 		coupon_active=self.session.query(models.Marketing).filter_by(id=shop.id).first().coupon_active
+
+		#限时折扣发现 显示提示和数量
+		self.updatediscount()
+		discount_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().discount_active
+		q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).all()
+		discount_count=0
+		for x in q_discount_goods:
+			if x.use_goods_group==-2:
+				discount_count=self.session.query(models.Fruit).filter_by(shop_id=shop_id,active=1,activity_status=2).count()
+				break
+			elif x.use_goods==-1:
+				discount_count+=self.session.query(models.Fruit).filter_by(shop_id=shop_id,active=1,activity_status=2,group_id=x.use_goods_group).count()
+			else:
+				discount_count+=1
+		discount_text=''
+		discount_display_flag = 0
+		if discount_count:
+			discount_text=str(discount_count)+'种商品惊喜价大放送'
+			discount_display_flag=1
+		else:
+			discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=0).count()
+			if discount_count:
+				discount_text=str(discount_count)+'种商品惊即将闪亮登场'
+				discount_display_flag=1
+		# added by jyj 2015-8-18 for seckill
+		self.update_seckill()
+		seckill_active = self.session.query(models.Marketing).filter_by(id=shop_id).first().seckill_active
+		seckill_text = ''
+		seckill_display_flag = 0
+		goods_count = 0
+		if seckill_active == 1:
+			now_time = int(time.time())
+			# seckill_count = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status.in_([1,2]),models.SeckillActivity.shop_id == shop_id).order_by(models.SeckillActivity.start_time).count()
+			query1 = self.session.query(models.SeckillActivity.id).filter(models.SeckillActivity.activity_status == 2,models.SeckillActivity.shop_id == shop_id).order_by(models.SeckillActivity.start_time).all()
+			if query1:
+				activity_id = query1[0][0]
+				goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
+				seckill_text = str(goods_count) + '种商品正在火热秒杀中'
+				seckill_display_flag = 1
+			else:
+				one_day_time = 24*60*60
+				now_time = int(time.time())
+				continue_time = int(time.time()) + one_day_time
+				query2 = self.session.query(models.SeckillActivity).filter(models.SeckillActivity.activity_status == 1,models.SeckillActivity.start_time > now_time,models.SeckillActivity.start_time < continue_time).\
+								order_by(models.SeckillActivity.start_time).all()
+				if query2:
+					activity_id = query2[0].id
+					goods_count = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.activity_id == activity_id,models.SeckillGoods.status != 0).count()
+					seckill_time = time.strftime('%H:%M:%S',time.localtime(query2[0].start_time))
+					hh = int(seckill_time[0:2])
+					hour = time.strftime('%H:%M:%S',time.localtime(now_time))
+					hour = int(hour[0:2])
+					if hour <= hh:
+						day = '今天'
+					else:
+						day = '明天'
+					seckill_text = str(goods_count) + '种商品' + day + seckill_time +'大开杀戒'
+					seckill_display_flag = 1
+		# print(discount_count)
+		# print(discount_text)
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
-			confess_active=confess_active,confess_count=confess_count,a=a,b=b)
+			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
+			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
+			seckill_count=goods_count)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -1115,7 +1339,8 @@ class Market(CustomerBaseHandler):
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
-		if  len(self.args.get('action')) < 1: 
+
+		if len(self.args.get('action')) < 1: 
 			if shop.admin.has_mp:
 				# print('[CustomerMarket]login shop.admin.has_mp')
 				appid = shop.admin.mp_appid
@@ -1171,16 +1396,32 @@ class Market(CustomerBaseHandler):
 			if coupon_have==0:
 				coupon_active=0
 			else :
-				coupon_active=marketing.coupon_active
+				coupon_active=shop.marketing.coupon_active
+
+			# added by jyj 2015-8-21
+			seckill_active = shop.marketing.seckill_active
+			discount_active=shop.marketing.discount_active
+			##
 		else:
 			shop_marketing = 0
 			coupon_active=1
+
+			# added by jyj 2015-8-21
+			seckill_active = 0
+			discount_active=1
+			##
+
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
 		self.set_cookie("coupon_active", str(coupon_active))
+		# added by jyj 2015-8-21
+		self.set_cookie("seckill_active", str(seckill_active))
+		self.set_cookie("discount_active",str(discount_active))
+		##
+
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			w_follow = False
@@ -1218,13 +1459,11 @@ class Market(CustomerBaseHandler):
 			self.session.commit()
 		cart_f = self.read_cart(shop.id)
 		cart_count = len(cart_f)
-
 		cart_fs = [(key, cart_f[key]['num']) for key in cart_f]  if cart_count > 0 else []
 		# print("[CustomerMarket]cart_fs:",cart_fs)
-		notices = [(x.summary, x.detail,x.img_url) for x in shop.config.notices if x.active == 1]
+		
 		self.set_cookie("cart_count", str(cart_count))
 		# print("[CustomerMarket]notices:",notices)
-
 		group_list=[]
 
 		# try:
@@ -1260,7 +1499,6 @@ class Market(CustomerBaseHandler):
 			models.Fruit.shop_id == shop.id,models.Fruit.active == 1).order_by(models.GroupPriority.priority).distinct(models.Fruit.id)
 		except:
 			goods = None
-
 		if goods:
 			for temp in goods:
 				# print("[CustomerMarket]temp:",temp)
@@ -1278,9 +1516,52 @@ class Market(CustomerBaseHandler):
 					_group = self.session.query(models.GoodsGroup).filter_by(id=temp.group_id,shop_id = shop.id,status = 1).first()
 					if _group:
 						group_list.append({'id':_group.id,'name':_group.name})
+		# added by cm 2015-8-24
+		has_seckill_activity = 0
+		has_discount_activity=0
+		notices = []
+		shop_id = shop.id
+
+		if discount_active==0:
+			self.updatediscount()
+			activity_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).all()
+			if activity_query:
+				has_discount_activity=1
+
+		# added by jyj 2015-8-21
+		seckill_goods_ids = []
+		
+		if seckill_active == 1:
+			self.update_seckill()			
+			activity_query = self.session.query(models.SeckillActivity).filter_by(shop_id = shop_id,activity_status = 2).all()
+			if activity_query:
+				has_seckill_activity = 1
+
+				seckill_activity = []
+				for item in activity_query:
+					seckill_activity.append(item.id)
+
+				customer_id=self.current_user.id
+				seckill_goods_query = self.session.query(models.SeckillGoods).join(models.CustomerSeckillGoods,models.CustomerSeckillGoods.seckill_goods_id == models.SeckillGoods.id).\
+									filter(models.SeckillGoods.activity_id.in_(seckill_activity),models.SeckillGoods.status != 0,models.CustomerSeckillGoods.status == 1).all()
+				for item in seckill_goods_query:
+					seckill_goods_ids.append(item.id)
+
+				activity_query = activity_query[0]
+		
+				
+		for x in shop.config.notices:
+			if x.active == 1:
+				if not x._type:
+					x._type = 0
+				notices.append((x.summary, x.detail,x.img_url,x.link,x.click_type,x._type))
+
+		notices.sort(key=lambda x:x[5],reverse=True)
+
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
-							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list))
+							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
+							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity,seckill_goods_ids=seckill_goods_ids))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -1306,6 +1587,8 @@ class Market(CustomerBaseHandler):
 	#action(2: +1，1: -1, 0: delete, 3: 赞+1, 4:商城首页打包发送的购物车)；
 	def post(self, shop_code):
 		action = self.args["action"]
+		self.update_seckill()
+		self.updatediscount()
 		if action == 3:
 			return self.favour()
 		elif action == 4:
@@ -1324,9 +1607,40 @@ class Market(CustomerBaseHandler):
 			return self.search_list()
 	# @classmethod
 	def w_getdata(self,session,m,customer_id,shop_id):
+			self.update_seckill()
+			self.updatediscount()
 			data = []
 			w_tag = ''
 			# print("[CustomerMarket]customer_id:",customer_id)
+
+			# added by jyj 2015-8-21
+			if not m:
+				return []
+				
+			shop_id = m[0].shop_id
+			shop = session.query(models.Shop).filter_by(id = shop_id).first()
+			if shop:
+				shop_tpl = shop.shop_tpl
+			else:
+				shop_tpl = 0
+
+			killing_activity_id = []
+			killing_fruit_id = []
+			fruit_seckill_list = {}
+			fruit_charge_type = {}
+			query_list = session.query(models.SeckillActivity.id).filter_by(shop_id = shop_id,activity_status = 2).all()
+			if query_list:
+				for item in query_list:
+					killing_activity_id.append(item[0])
+				
+			query_goods = session.query(models.SeckillGoods.fruit_id,models.SeckillGoods.id,models.SeckillGoods.charge_type_id).filter(models.SeckillGoods.activity_id.in_(killing_activity_id)).all()
+			if query_goods:
+				for item in query_goods:
+					killing_fruit_id.append(item[0])
+					fruit_seckill_list[str(item[0])] = item[1]
+					fruit_charge_type[str(item[0])] = item[2]
+			
+			##
 			for fruit in m:
 				try:
 					# print('[CustomerMarket]fruit id:',fruit.id)
@@ -1343,8 +1657,29 @@ class Market(CustomerBaseHandler):
 				# print('[CustomerMarket]favour_today:',favour_today)
 
 				charge_types= []
+				has_discount_activity=0  #标记该商品是否参与限时折扣
+				end_time1=0
+				q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=-2).first() # 查询是否有所有商品都打折的情况
+
+				# 限购：仅新用户/仅老用户/仅充值用户
+				buy_limit = fruit.buy_limit
+				userlimit = 0
+				if buy_limit !=0:
+					if buy_limit in [1,2]:
+						try:
+							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
+						except:
+							userlimit = 0
+					elif buy_limit == 3:
+						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
+						
+						if if_charge:
+							userlimit = 3
+						else:
+							userlimit = 0
+
 				for charge_type in fruit.charge_types:
-					if charge_type.active !=0:
+					if charge_type.active !=0 and charge_type.activity_type in [0,-2,2]:
 						unit  = charge_type.unit
 						unit =self.getUnit(unit)
 
@@ -1364,35 +1699,158 @@ class Market(CustomerBaseHandler):
 									allow_num = limit_if.allow_num
 								else:
 									allow_num = fruit.limit_num - limit_if.buy_num
-						charge_types.append({'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':unit,\
-							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),'allow_num':allow_num})
+						#判断商品是否参加了限时折扣活动 还不知道需不需要加上
+						has_discount_activity1=0 # 标记是否有活动
+						discount_rate=10  #标记折扣
+						q_price=None
 
+						if q_all:
+							has_discount_activity1=1
+							has_discount_activity=1
+							q_price=q_all
+						else:
+							q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=fruit.group_id,use_goods=-1).first() # 查询是否有所有商品都打折的情况
+							if q_part:
+								has_discount_activity1=1
+								has_discount_activity=1
+								q_price=q_part
+							else:
+								q_query=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1,use_goods_group=fruit.group_id,use_goods=fruit.id).first()
+								q_discount=[]
+								if q_query:
+									q_discount=eval(q_query.charge_type)
+								if charge_type.id in q_discount:
+									has_discount_activity1=1
+									has_discount_activity=1
+									q_price=q_query
+						if has_discount_activity:
+							if q_price:
+								q_price_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_price.discount_id).first()
+								discount_rate=q_price.discount_rate
+								if q_price_group.discount_way==0:
+									end_time1=q_price_group.end_date
+								else:
+									now=datetime.datetime.now()
+									now2=datetime.datetime(now.year,now.month,now.day)
+									end_time1=q_price_group.t_time+time.mktime(now2.timetuple())
+						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'src_price':charge_type.price,'num':charge_type.num, 'unit':unit,\
+							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
+							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
+
+				charge_types.sort(key=lambda item:item['discount_rate'],reverse=False)
 				img_url = fruit.img_url.split(";")[0] if fruit.img_url else None
-				saled = fruit.saled if fruit.saled else 0
+				saled = int(fruit.saled) if fruit.saled else 0
 				# print("[CustomerMarket]w_getdata:",fruit.name,fruit.len(fruit.img_url.split(";")),fruit.detail_describe)
 				if img_url == None or len(fruit.img_url.split(";"))==1 and fruit.detail_describe ==None:
 					detail_no = True
 				else:
 					detail_no = False
-				buy_limit = fruit.buy_limit
-				userlimit = 0
-				if buy_limit !=0:
-					if buy_limit in [1,2]:
-						try:
-							userlimit = self.session.query(models.CustomerShopFollow.shop_new).filter_by(customer_id=customer_id,shop_id=shop_id).first()[0]+1
-						except:
-							userlimit = 0
-					elif buy_limit == 3:
-						if_charge = self.session.query(models.BalanceHistory).filter_by(customer_id=customer_id,shop_id=shop_id,balance_type=0).first()
-						
-						if if_charge:
-							userlimit = 3
-						else:
-							userlimit = 0
-				data.append({'id':fruit.id,'shop_id':fruit.shop_id,'active':fruit.active,'code':fruit.fruit_type.code,'charge_types':charge_types,\
-					'storage':fruit.storage,'tag':fruit.tag,'img_url':img_url,'intro':fruit.intro,'name':fruit.name,'saled':saled,'favour':fruit.favour,\
-					'favour_today':str(favour_today),'group_id':fruit.group_id,'limit_num':fruit.limit_num,'detail_no':str(detail_no),\
-					'buylimit':buy_limit,'userlimit':userlimit})
+
+				# added by jyj 2015-8-21
+				data_item1 = {}
+				data_item2 = {}
+
+				data_item1['id'] = fruit.id
+				data_item1['shop_id'] = fruit.shop_id
+				data_item1['active'] = fruit.active
+				data_item1['code'] = fruit.fruit_type.code
+				data_item1['tag'] = fruit.tag
+				data_item1['img_url'] = img_url
+				data_item1['intro'] = fruit.intro
+				data_item1['name'] = fruit.name
+				data_item1['favour_today'] = str(favour_today)
+				data_item1['group_id'] = fruit.group_id
+				data_item1['detail_no'] = str(detail_no)
+				data_item1['is_activity'] = 0
+				data_item1['buylimit'] = buy_limit
+				data_item1['userlimit'] = userlimit
+
+				data_item2['id'] = fruit.id
+				data_item2['shop_id'] = fruit.shop_id
+				data_item2['active'] = fruit.active
+				data_item2['code'] = fruit.fruit_type.code
+				data_item2['tag'] = fruit.tag
+				data_item2['img_url'] = img_url
+				data_item2['intro'] = fruit.intro
+				data_item2['name'] = fruit.name
+				data_item2['favour_today'] = str(favour_today)
+				data_item2['group_id'] = fruit.group_id
+				data_item2['detail_no'] = str(detail_no)
+				data_item2['buylimit'] = buy_limit
+				data_item2['userlimit'] = userlimit
+
+				fruit_id = fruit.id
+				bought_customer_list = []
+				if fruit_id in killing_fruit_id:
+					seckill_goods_id = fruit_seckill_list[str(fruit_id)]
+					customer_query = session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.seckill_goods_id == seckill_goods_id,models.CustomerSeckillGoods.status != 0).all()
+					for item in customer_query:
+						bought_customer_list.append(item.customer_id)
+
+				if fruit_id in killing_fruit_id:
+					if customer_id in bought_customer_list:
+						data_item1['is_bought'] = 1
+					else:
+						data_item1['is_bought'] = 0
+
+					seckill_info = session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
+								     filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.fruit_id == fruit_id).first()
+					charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] in [2,0,-2] and e['id'] != seckill_info.charge_type_id]
+					data_item1['is_activity'] = 1
+					data_item1['activity_id'] = seckill_info.activity_id
+					data_item1['seckill_goods_id'] = seckill_info.id
+					data_item1['charge_type_id'] = seckill_info.seckill_charge_type_id
+
+					end_time = session.query(models.SeckillActivity).join(models.SeckillGoods,models.SeckillGoods.activity_id == models.SeckillActivity.id).filter(models.SeckillGoods.id == seckill_info.id).first().end_time
+					data_item1['end_time'] = end_time
+
+					cur_charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.charge_type_id).first()
+					if int(cur_charge_type.num) == cur_charge_type.num:
+						cur_charge_type_num = int(cur_charge_type.num)
+					else:
+						cur_charge_type_num = cur_charge_type.num
+					data_item1['charge_types'] = []
+					if shop_tpl == 0:
+						data_item1['charge_type_text'] = str(seckill_info.seckill_price) + '元' + '/' + str(cur_charge_type_num) + self.getUnit(cur_charge_type.unit)
+						charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] != 1]
+						for e in charge_types:
+							data_item1['charge_types'].append(e)
+						charge_types = []
+					else:
+						charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.seckill_charge_type_id).first()
+						data_item1['charge_types'] = [{'id':charge_type.id,'price':charge_type.price,'src_price':seckill_info.former_price,'num':charge_type.num, 'unit':self.getUnit(charge_type.unit),\
+							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(False),\
+							'allow_num':1,"discount_rate":None,"has_discount_activity":0,'activity_type':charge_type.activity_type}]
+						charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] != 1]
+						for e in charge_types:
+							data_item1['charge_types'].append(e)
+						charge_types = []
+					
+
+					data_item1['price_dif'] = round(float(seckill_info.former_price - seckill_info.seckill_price),2)
+					if seckill_info.activity_piece - seckill_info.ordered > 0:
+						data_item1['activity_piece'] = seckill_info.activity_piece - seckill_info.ordered
+						data_item1['storage'] = seckill_info.activity_piece - seckill_info.ordered
+					else:
+						data_item1['activity_piece'] = 0
+						data_item1['storage'] = 0
+					data.append(data_item1)
+				if charge_types:
+					if has_discount_activity==1:
+						data_item2['is_activity'] = 2
+					else:
+						data_item2['is_activity'] = 0
+					if data_item1['is_activity'] == 1 and shop_tpl != 0:
+						pass
+					else:
+						data_item2['charge_types'] = [x for x in charge_types if x['activity_type'] in [-2,0,2]]
+						data_item2['storage'] = fruit.storage
+						data_item2['saled'] = saled
+						data_item2['favour'] = fruit.favour
+						data_item2['limit_num'] = fruit.limit_num
+						data_item2['end_time'] = end_time1
+						data.append(data_item2)
+				
 			return data
 
 	@CustomerBaseHandler.check_arguments("page?:int","group_id?:int")
@@ -1543,10 +2001,10 @@ class Market(CustomerBaseHandler):
 		self.session.commit()
 		return self.send_success(notice='点赞成功，积分+1')
 
-	@CustomerBaseHandler.check_arguments("fruits")
+	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_ids")
 	def cart_list(self):
-		fruits = self.args["fruits"]
 		shop_id = int(self.get_cookie('market_shop_id'))
+		fruits = self.args["fruits"]
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
 		try:
@@ -1555,17 +2013,101 @@ class Market(CustomerBaseHandler):
 			self.session.add(models.Cart(id=self.current_user.id,shop_id=shop_id))  # 如果没有购物车，就增加一个
 			self.session.commit()
 			cart = self.session.query(models.Cart).filter_by(id=self.current_user.id, shop_id=shop_id).one()
+		if 'seckill_goods_ids' in self.args:
+			seckill_goods_ids = self.args['seckill_goods_ids']
+			if seckill_goods_ids:
+				for seckill_goods_id in seckill_goods_ids:
+					query = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
+					if query:
+						if query.status == 0:
+							seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+							seckill_goods.not_pick -= 1
+							seckill_goods.picked += 1
+							self.session.flush()
+							query.status = 1
+							self.session.flush()
+					else:
+						customer_seckill_goods = models.CustomerSeckillGoods(customer_id=self.current_user.id,shop_id=shop_id,seckill_goods_id=seckill_goods_id,status=1)
+						self.session.add(customer_seckill_goods)
+						seckill_goods = self.session.query(models.SeckillGoods).filter_by(id = seckill_goods_id).with_lockmode('update').first()
+						seckill_goods.not_pick -= 1
+						seckill_goods.picked += 1
+						self.session.flush()
+
+		#筛选初当前进行的限时折扣
+		m_fruits=eval(cart.fruits)
 		fruits2 = {}
+		q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
 		for key in fruits:
 			fruits2[int(key)] = fruits[key]
+			q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+			q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=q.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()	
+			if q_all:
+				if int(key) in m_fruits:
+					q_all.incart_num+=fruits[key]-m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]-m_fruits[int(key)]
+				else:
+					q_all.incart_num+=fruits[key]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]
+			elif q_part:
+				if int(key) in m_fruits:
+					q_part.incart_num+=fruits[key]-m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]-m_fruits[int(key)]
+				else:
+					q_part.incart_num+=fruits[key]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+					qqq.incart_num+=fruits[key]
+			else:
+				qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
+				if qq:
+					if int(key) in eval(qq.charge_type):
+						if int(key) in m_fruits:
+							qq.incart_num+=fruits[key]-m_fruits[int(key)]
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq.incart_num+=fruits[key]-m_fruits[int(key)]
+						else:
+							qq.incart_num+=fruits[key]
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq.incart_num+=fruits[key]
+			self.session.flush()					
+
+		for key in m_fruits:
+			if str(key) not in fruits:
+				q=self.session.query(models.ChargeType).filter_by(id=int(key)).first()
+				q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=q.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()
+				
+				if q_all:
+					q_all.incart_num-=m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+					qqq.incart_num-=m_fruits[int(key)]
+				elif q_part:
+					q_part.incart_num-=m_fruits[int(key)]
+					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+					qqq.incart_num-=m_fruits[int(key)]
+				else:
+					qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=q.fruit.id,status=1).with_lockmode('update').first()
+					if qq:
+						if int(key) in eval(qq.charge_type):
+							qq.incart_num-=m_fruits[int(key)]
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+							qqq.incart_num-=m_fruits[int(key)]
+		
 		cart.fruits = str(fruits2)
 		self.session.commit()
 		return self.send_success()
 
-	@CustomerBaseHandler.check_arguments("charge_type_id:int")
+	@CustomerBaseHandler.check_arguments("charge_type_id:int","activity_type?:int")
 	def cart(self, action):
 		charge_type_id = self.args["charge_type_id"]
-		self.save_cart(charge_type_id, self.shop_id, action)
+		if 'activity_type' in self.args:
+			activity_type = self.args['activity_type']
+		else:
+			activity_type = 0
+
+		self.save_cart(charge_type_id, self.shop_id, action,activity_type)
 		return self.send_success()
 
 # 商品 - 商品搜索
@@ -1601,6 +2143,8 @@ class Cart(CustomerBaseHandler):
 		customer_id = self.current_user.id
 		phone = self.get_phone(customer_id)
 		self.updatecoupon(customer_id)
+		self.update_seckill()
+		self.updatediscount()
 		show_balance = False
 		balance_value = 0
 		storages = {}
@@ -1714,7 +2258,7 @@ class Cart(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
 										 "address_id:int", "message:str", "type:int", "tip?:int",
-										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int")
+										 "today:int",'online_type?:str',"coupon_key?:str","self_address_id?:int","discount_ids?")
 
 	# 提交订单
 	def post(self,shop_code):
@@ -1723,8 +2267,15 @@ class Cart(CustomerBaseHandler):
 		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		fruits = self.args["fruits"]
+		#标记商品是否为限时折扣的
+		try:
+			discount_ids=self.args["discount_ids"]
+		except:
+			discount_ids=[]
 		# print("[CustomerCart]json.dumps(self.args):",json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
+		self.updatecoupon(customer_id)
+		self.updatediscount()
 		online_type = ''
 		shop_status = current_shop.status
 		can_use_coupon=0  #标记能否使用优惠券
@@ -1749,14 +2300,48 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
 			return self.send_fail("您的购物篮太满啦！请不要一次性下单超过20种商品")
+
+		# added by jyj 2015-8-26
+		#fruits 为一个字典，形式：{'12647': 2, '12667': 6},表示计价方式和数量的键值对字典；
+		#设置一个overdue变量，初始化为0，然后遍历fruits列表的计价方式判断有没有商品的活动过期，如果有商品的活动过则置overdue为1,直接self.send_success(overdue=overdue)
+		# 前台根据overdue的值重定向到当前购物车页面，并给用户发出提示，刷新购物车页面，重新进行处理。
+		overdue = 0
+		charge_type_id_list = list(fruits.keys())
+		self.update_seckill()
+
+		charge_type_list = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type_id_list)).all()
+		
+		for item in charge_type_list:
+			##添加判断是否期间有商品过期
+			if item.activity_type == -1:
+				overdue = 1
+				return self.send_success(overdue=overdue)
+			elif item.activity_type != 2 and item.id in discount_ids:
+				overdue = 1
+				return self.send_success(overdue=overdue)
+		
+		seckill_charge_type_list = []
+		for item in charge_type_list:	
+			if item.activity_type == 1:
+				seckill_charge_type_list.append(item.id)
+
+		killing_goods_list = []
+		if seckill_charge_type_list:
+			killing_goods_list = self.session.query(models.SeckillGoods).join(models.SeckillActivity,models.SeckillActivity.id == models.SeckillGoods.activity_id).\
+									filter(models.SeckillActivity.activity_status == 2,models.SeckillGoods.status != 0,models.SeckillGoods.seckill_charge_type_id.in_(seckill_charge_type_list)).\
+									with_lockmode('update').all()
+
+		#为order表新增字段activity_type，类型为键值对字符串，键是计价方式，值是计价方式对应的活动名称，用于存储该订单中每种计价方式id对应的水果参与的活动名称
+		# 如果值为空字符串，则表示未参与任何活动；如果值为非空，则表示参与了值字符串所表示的活动。
+		activity_name = {0:'',1:'秒杀',2:'折扣'}
 		unit = {1:"个", 2:"斤", 3:"份",4:"kg",5:"克",6:"升",7:"箱",8:"盒",9:"件",10:"筐",11:"包",12:"今天价",13:"明天价"}
+
 		f_d={}
 		totalPrice=0
 		new_totalprice=0
 		m_fruit_group=[]
 		m_fruit_goods=[]
 		m_price=[]
-
 		if fruits:
 			if type(fruits) == str:
 				fruits = json.loads(fruits)
@@ -1764,8 +2349,47 @@ class Cart(CustomerBaseHandler):
 			for charge_type in charge_types:
 				if fruits[str(charge_type.id)] in [0,None]:  # 有可能num为0，直接忽略掉
 					continue
-				totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				singlemoney=charge_type.price*fruits[str(charge_type.id)] 
+				
+				discount_rate=1
+				#进行折扣优惠处理
+				if charge_type.activity_type==2 and charge_type.id in discount_ids:
+					q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
+					q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=charge_type.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()	
+					discount_flag=0
+					q_price=None
+					if q_all:
+						discount_flag=1
+						q_price=q_all
+						q_all.ordered_num+=int(fruits[str(charge_type.id)])
+						q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+						q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
+					elif q_part:
+						discount_flag=1
+						q_price=q_part
+						q_part.ordered_num+=int(fruits[str(charge_type.id)])
+						q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+						q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
+					else:	
+						q_discount_goods=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=charge_type.fruit.id,status=1).with_lockmode('update').first()
+						if q_discount_goods:
+							if charge_type.id in eval(q_discount_goods.charge_type):
+								discount_flag=1
+								q_price=q_discount_goods
+								q_discount_goods.ordered_num+=int(fruits[str(charge_type.id)])
+								q_discount_group=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_discount_goods.discount_id).with_lockmode('update').first()
+								if q_discount_group:
+									q_discount_group.ordered_num+=int(fruits[str(charge_type.id)])
+					self.session.flush()
+		
+					if discount_flag==1:
+						totalPrice += round(singlemoney*(q_price.discount_rate/10),2)
+						discount_rate=q_price.discount_rate/10
+					else:
+						totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
+						discount_rate=1
+				else:
+					totalPrice += charge_type.price*fruits[str(charge_type.id)] #计算订单总价
 				fruit=charge_type.fruit
 
 				# 购买限制
@@ -1864,11 +2488,14 @@ class Cart(CustomerBaseHandler):
 				# print("[CustomerCart]charge_type.price:",charge_type.price)
 
 				f_d[charge_type.id]={"fruit_name":charge_type.fruit.name, "num":fruits[str(charge_type.id)],
-									 "charge":"%.2f元/%.2f%s" % (charge_type.price, charge_type.num, unit[charge_type.unit])}
-		# 如果订单为空，则不能提交
+									 "charge":"%.2f元/%.2f%s" % (charge_type.price*discount_rate, charge_type.num, unit[charge_type.unit]),"activity_name":activity_name[charge_type.activity_type],\
+									 "discount_rate":discount_rate}
+
+		#如果订单为空，则不能提交
 		if len(f_d) == 0:
 			return self.send_fail("您的订单未能成功保存，请确保网络通畅，重新下单")
-		# 按时达/立即送 的时间段处理
+
+		#按时达/立即送 的时间段处理
 		start_time = 0
 		end_time = 0
 		freight = 0
@@ -2056,6 +2683,19 @@ class Cart(CustomerBaseHandler):
 							 self_address_id=self_address_id
 							 )
 
+		if killing_goods_list and self.args['pay_type'] != 3:
+			killing_goods_id_list = [x.id for x in killing_goods_list]
+
+			customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == shop_id,models.CustomerSeckillGoods.customer_id == self.current_user.id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(killing_goods_id_list)).with_lockmode('update').all()
+			if customer_seckill_goods:
+				for item in customer_seckill_goods:
+					item.status = 2
+				self.session.flush()
+			for item in killing_goods_list:
+				item.ordered += 1
+				item.storage_piece -= 1
+			self.session.flush()
 		try:
 			self.session.add(order)
 			self.session.flush()
@@ -2097,7 +2737,7 @@ class Cart(CustomerBaseHandler):
 			else:
 				print("[CustomerCart]online_type error")
 			# print("[CustomerCart]online_type:",online_type,', success_url:',success_url)
-			return self.send_success(success_url=success_url,order_id = order.id)
+			return self.send_success(success_url=success_url,order_id = order.id,overdue=overdue)
 
 		# 执行后续的记录修改
 		# print('[CustomerCart]before callback')
@@ -2148,8 +2788,8 @@ class Cart(CustomerBaseHandler):
 				shop_id = shop_id ,name = self.current_user.accountinfo.nickname,balance_value = totalPrice ,\
 				balance_record = balance_record,shop_totalPrice = shop.shop_balance,shop_province=shop.shop_province,
 				customer_totalPrice = shop_follow.shop_balance,shop_name=shop.shop_name)
-			session.add(balance_history)
-			session.flush()
+			self.session.add(balance_history)
+			self.session.flush()
 		session.commit()
 
 		# 订单生成全部处理完成后，根据是否有第三方服务号来选择性发送模版消息
@@ -2198,6 +2838,22 @@ class Cart(CustomerBaseHandler):
 				qq=session.query(models.CouponsShop).filter_by(shop_id=order.shop_id,coupon_id=q.coupon_id).with_lockmode("update").first()
 				use_number=qq.use_number-1
 				qq.update(session,use_number=use_number)
+			session.flush()
+
+			#订单删除，CustomerSeckillGoods表对应的状态恢复为0
+			fruits = eval(order.fruits)
+			charge_type_list = list(fruits.keys())
+			seckill_goods = session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+			if seckill_goods:
+				seckill_goods_id = []
+				for item in seckill_goods:
+					seckill_goods_id.append(item.id)
+				customer_seckill_goods = session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+				if customer_seckill_goods:
+					for item in customer_seckill_goods:
+						item.status = 0
+					session.flush()
 			session.commit()
 			
 			print("[CustomerCart]Order auto cancel success: order.num:",order.num)
@@ -2438,6 +3094,26 @@ class Order(CustomerBaseHandler):
 				use_number=qq.use_number-1
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
+
+			#订单删除，CustomerSeckillGoods表对应的状态恢复为0,SeckillGoods表也做相应变化
+			charge_type_list = list(fruits.keys())
+			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
+			if seckill_goods:
+				seckill_goods_id = []
+				for item in seckill_goods:
+					seckill_goods_id.append(item.id)
+				customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter(models.CustomerSeckillGoods.shop_id == order.shop_id,models.CustomerSeckillGoods.customer_id == order.customer_id,\
+									models.CustomerSeckillGoods.seckill_goods_id.in_(seckill_goods_id)).with_lockmode('update').all()
+				if customer_seckill_goods:
+					for item in customer_seckill_goods:
+						item.status = 0
+					self.session.flush()
+				if order.pay_type in [1,2]:
+					for item in seckill_goods:
+						item.storage_piece += 1
+						item.ordered -= 1
+					self.session.flush()
+			self.session.commit()
 
 			# 发送订单取消模版消息
 			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')

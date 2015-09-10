@@ -144,3 +144,6 @@
 .area-icon{width:14px;height:22px;background:url('../svg/icon_list-2.png') 0 -48px;background-size:140px 180px;position: relative;top:8px;margin:6px 5px 0 0;}
 
 .send-self{margin-bottom:0px;}
+.status-goods{position: absolute;width: 40px;height: 40px;display: inline-block;background-repeat: no-repeat;background-size: 40px;top: 5px;left: 5px;}
+.status-seckill{background-image: url('/static/images/status_seckill.png');}
+.status-discount{background-image: url('/static/images/status_discount.png');}

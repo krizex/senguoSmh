@@ -72,7 +72,7 @@ $(document).ready(function(){
             $this.addClass('active').siblings('.nav_item').removeClass('active');
             getContent(action,0);
         }
-        console.log(action);
+        //console.log(action);
 }).on('click','#PrePage',function(){
      if(input_info.length == 0){
             if(page>0){

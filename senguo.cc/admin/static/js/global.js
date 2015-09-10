@@ -60,7 +60,6 @@ $.getItem = function(url, success) {
         }
     });
 };
-
 (function ($) {
     $.getNum=function(text) {
         var value = text.replace(/[^0-9]/ig, "");
