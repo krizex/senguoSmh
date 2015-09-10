@@ -223,12 +223,12 @@ var order_link='/admin/order';
 var _page=0;
 var _page_total;
 function getOrder(){
-    $.getItem('/static/items/admin/order-item.html?v=20150724',function(data){
+    $.getItem('/static/items/admin/order-item.html?v=20150728',function(data){
             $list_item=data;
             //商品列表item
     	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150713');
     	    //员工列表item
-    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150720');
+    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150722');
         }
     );
 }
@@ -511,10 +511,10 @@ function orderItem(page){
                     var $sender=$send_change.find('.send_person');
                     var CurrentStaff=function(target,val){
                       target.attr({'data-id':val['id']});
-                      target.find('.id').text(val['id']);
-                      target.find('.name').text(val['nickname']);
-                      target.find('.img').attr("src",val['headimgurl']);
-                      target.find('.phone').text(val['phone']);
+                      target.find('.sub-id').text(val['id']);
+                      target.find('.sub-name').text(val['nickname']);
+                      target.find('.sub-img').attr("src",val['headimgurl']);
+                      target.find('.sub-phone').text(val['phone']);
                 };
                 if(SH2s.length>0){
                     if(!SH2){
