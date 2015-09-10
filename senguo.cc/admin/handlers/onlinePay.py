@@ -15,6 +15,7 @@ import libs.xmltodict as xmltodict
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import re
+import chardet
 class QrWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('order_id?:str')
@@ -39,25 +40,44 @@ class RefundWxpay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
+		num = order.num
+		totalPrice = int(100 * totalPrice)
 		transaction_id = order.transaction_id
 		refund_pub = Refund_pub()
-		refund_pub.setParameter("out_trade_no",transaction_id)
+		refund_pub.setParameter("out_trade_no",num)
 		refund_pub.setParameter("out_refund_no",transaction_id)
 		refund_pub.setParameter("total_fee",totalPrice)
 		refund_pub.setParameter('refund_fee',totalPrice)
 		refund_pub.setParameter('op_user_id','1223121101')
 		res = refund_pub.postXmlSSL()
+		print(res)
 		if isinstance(res,bytes):
-			bianma = chardet.detect(res)['encoding']
-			res    = res.decode(bianma)
+			res    = res.decode('utf-8')
 		else:
-			print("[weixin Refund_pub] endong error")
+			print("[weixin Refund_pub] encoding error")
+		#print('decode success')
 		res_dict = refund_pub.xmlToArray(res)
+		#print(res_dict)
 		return_code = res_dict.get('return_code',None)
-		if return_code == 'success':
-			return True
+		print('refund',return_code)
+		if return_code == 'SUCCESS' or return_code == 'success':
+			#如果退款成功，则将这笔在线支付记录类型置为-1,同时将店铺余额减去订单总额
+			balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+			if not balance_history:
+				return self.send_fail('余额记录没有找到')
+			shop_id = balance_history.shop_id
+			balance_value = balance_history.balance_value
+			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+			if not shop:
+				return self.send_fail("shop not found")
+			#该店铺余额减去订单总额
+			shop.shop_balance -= balance_value
+			#将这条余额记录作废
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success()
 		else:
-			return False
+			return self.send_fail('fail')
 
 
 
@@ -192,7 +212,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",'Order No. '+str(order_num))
 		unifiedOrder.setParameter("notify_url",url)
-		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
+		unifiedOrder.setParameter("out_trade_no",str(order.num)+'a')
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml()
@@ -352,7 +372,7 @@ class wxpayCallBack(CustomerBaseHandler):
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",str(order_num))
 		unifiedOrder.setParameter("notify_url",url)
-		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
+		unifiedOrder.setParameter("out_trade_no",str(order.num))
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
