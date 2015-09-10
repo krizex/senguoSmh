@@ -203,7 +203,12 @@ $(document).ready(function(){
     if(!_staff_id){
         return Tip("请选择员工!");
     }
-    orderEdit($(".order-status").eq(staff_index+1),'edit_SH2',_staff_id);
+    if(window.location.href.indexOf("searchorder")!=-1){
+        staff_index = staff_index;
+    }else{
+        staff_index = staff_index+1;
+    }
+    orderEdit($(".order-status").eq(staff_index),'edit_SH2',_staff_id);
     $(".order-staff-box").modal("hide");  
     $this.attr({"data-flag":""});
 });
