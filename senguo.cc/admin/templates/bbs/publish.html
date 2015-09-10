@@ -74,7 +74,7 @@
             <div class="choose-time-box">
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span class="time-tt" id="year">{% if edit %}{% if article_data['status'] == 2%}{{article_data['year']}}{% else %}2015{% end %}{% end %}</span>
+                    <span class="time-tt" id="year">{{article_data["year"]}}</span>
                     <ul class="time-list">
                         <li>2015</li>
                         <li>2016</li>
@@ -84,7 +84,7 @@
                 <span>年</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="month">{% if edit %}{% if article_data['status'] == 2%}{{article_data['month']}}{% else %}10{% end %}{% end %}</span>
+                    <span id="month">{{article_data['month']}}</span>
                     <ul class="time-list">
                         <li>01</li>
                         <li>02</li>
@@ -103,7 +103,7 @@
                 <span>月</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="day">{% if edit %}{% if article_data['status'] == 2%}{{article_data['day']}}{% else %}10{% end %}{% end %}</span>
+                    <span id="day">{{article_data['day']}}</span>
                     <ul class="time-list">
                         <li>01</li>
                         <li>02</li>
@@ -141,7 +141,7 @@
                 <span>日</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="hour">{% if edit %}{% if article_data['status'] == 2%}{{article_data['hour']}}{% else %}10{% end %}{% end %}</span>
+                    <span id="hour">{{article_data['hour']}}</span>
                     <ul class="time-list">
                         <li>00</li>
                         <li>01</li>
@@ -172,7 +172,7 @@
                 <span>时</span>
                 <div class="wrap-choose-time">
                     <i class="icon-ctime"></i>
-                    <span id="minute">{% if edit %}{% if article_data['status'] == 2%}{{article_data['minute']}}{% else %}30{% end %}{% end %}</span>
+                    <span id="minute">{{article_data['minute']}}</span>
                     <ul class="time-list">
                         <li>00</li>
                         <li>05</li>

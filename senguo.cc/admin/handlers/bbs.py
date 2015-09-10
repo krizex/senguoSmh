@@ -339,10 +339,18 @@ class Detail(FruitzoneBaseHandler):
 class Publish(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		time_now=datetime.datetime.now()
+		year = time_now.strftime("%Y")
+		month = time_now.strftime("%m")
+		day = time_now.strftime("%d")
+		hour = time_now.strftime("%H")
+		minute = time_now.strftime("%M")
+		seconds = time_now.strftime("%S")
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
-		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=False,if_admin=if_admin)
+		article_data={"year":year,"month":month,"day":day,"hour":hour,"minute":minute,"seconds":seconds}
+		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=False,if_admin=if_admin,article_data=article_data)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
