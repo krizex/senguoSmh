@@ -191,6 +191,11 @@ $(document).ready(function(){
     var $this=$(this);
     $this.addClass("active").siblings("li").removeClass("active");
 }).on("click",".choose-staff-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false
+    }
+    $this.attr({"data-flag":"1"});
     var $item=$('.choose-staff-list .active');
     _staff_id=$item.attr("data-id");
     _staff_name=$item.find(".name").text();
@@ -200,6 +205,7 @@ $(document).ready(function(){
     }
     orderEdit($(".order-status").eq(staff_index+1),'edit_SH2',_staff_id);
     $(".order-staff-box").modal("hide");  
+    $this.attr({"data-flag":""});
 });
 
 var cur_address = null,edit_flag=false,is_drag = false,staff_index,_staff_id,_staff_name,_staff_img;
