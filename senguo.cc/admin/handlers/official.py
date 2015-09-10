@@ -30,6 +30,11 @@ class About(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("official/about.html",context=dict(subpage="about"))
 
+# 官网 - APP下载
+class Appdownload(FruitzoneBaseHandler):
+	def get(self):
+		return self.render("official/appdownload.html",context=dict(subpage="appdownload"))
+
 # 官网 - 产品介绍
 class Product(FruitzoneBaseHandler):
 	def get(self):

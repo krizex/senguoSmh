@@ -225,212 +225,74 @@ a,input,button{ outline:none; }
 .wrap-qa>p{color: #000;}
 .o2o-lists{position: relative;width: 100%;padding: 0;}
 .o2o-lists .right-triangle,.o2o-lists .left-triangle{position: absolute;top:37px;width: 0;height: 0;border-top: 15px solid transparent;border-bottom: 15px solid transparent;}
-.o2o-lists .right-triangle{
-	left: 485px;
-	border-right: 15px solid #fff;
-}
-.o2o-lists .left-triangle{
-	left: 500px;
-	border-left: 15px solid #58d0a6;
-}
-.intro_list .item{
-	width: 500px;
-	height: 300px;
-	background-color: #fff;
-}
-.intro_list .item .intro{
-	position: relative;
-}
+.o2o-lists .right-triangle{left: 485px;border-right: 15px solid #fff;}
+.o2o-lists .left-triangle{left: 500px;border-left: 15px solid #58d0a6;}
+.intro_list .item{width: 500px;height: 300px;background-color: #fff;}
+.intro_list .item .intro{position: relative;}
 .intro_list .item .intro .o2o-right-title,
 .intro_list .item .intro .o2o-left-title{position: absolute;top:-49px;font-size: 30px;font-weight: bold;}
 .intro_list .item .intro .o2o-right-title{left: -111px;color: #58d0a6;}
 .intro_list .item .intro .o2o-left-title{right: -110px;color: #fff;}
-.intro_list .item .intro .o2o-item-title{
-	margin-top: 90px;
-}
-.o2o-lists .o2o-left-bg{
-	background-color: #58d0a6;
-}
-.o2o-lists .o2o-left-bg p{
-	color: #fff;
-}
-.online-bg .online-business{
-	width: 100%;
-	height: 520px;
-}
+.intro_list .item .intro .o2o-item-title{margin-top: 90px;}
+.o2o-lists .o2o-left-bg{background-color: #58d0a6;}
+.o2o-lists .o2o-left-bg p{color: #fff;}
+.online-bg .online-business{width: 100%;height: 520px;}
 .online-bg .online-business .trend,
 .online-bg .online-business .professional,
 .online-bg .online-business .experience,
 .online-bg .online-business .peer,
-.online-bg .online-business .chains{
-	position: relative;
-}
+.online-bg .online-business .chains{position: relative;}
 
 /*线上买水果，森果更懂你*/
 .online-bg .online-business .online-trend,
 .online-bg .online-business .online-professional,
 .online-bg .online-business .online-experience,
 .online-bg .online-business .online-peer,
-.online-bg .online-business .online-chains{
-	position: absolute;
-	display: inline-block;
-	font-size: 30px;
-	line-height: 235px;
-	text-align: center;
-	font-weight: bold;
-	color: #58d0a6;
-	transition: all .5s;
-	-moz-transition: all .5s; 
-	-webkit-transition: all .5s;
-	-o-transition: all .5s; 
-}
+.online-bg .online-business .online-chains{position: absolute;display: inline-block;font-size: 30px;line-height: 235px;text-align: center;font-weight: bold;color: #58d0a6;transition: all .5s;-moz-transition: all .5s; -webkit-transition: all .5s;-o-transition: all .5s; }
 .online-bg .online-business .trend:hover .online-trend,
 .online-bg .online-business .professional:hover .online-professional,
 .online-bg .online-business .experience:hover .online-experience,
 .online-bg .online-business .peer:hover .online-peer,
-.online-bg .online-business .chains:hover .online-chains{
-	opacity: .6;
-}
+.online-bg .online-business .chains:hover .online-chains{opacity: .6;}
 .online-bg .online-business .trend:hover .online-trend-content,
 .online-bg .online-business .professional:hover .online-professional-content,
 .online-bg .online-business .experience:hover .online-experience-content,
 .online-bg .online-business .peer:hover .online-peer-content,
-.online-bg .online-business .chains:hover .online-chains-content{
-	opacity: 1;
-}
-/**/
+.online-bg .online-business .chains:hover .online-chains-content{opacity: 1;}
 .online-bg .online-business .online-trend-content,
 .online-bg .online-business .online-professional-content,
 .online-bg .online-business .online-experience-content,
 .online-bg .online-business .online-peer-content,
-.online-bg .online-business .online-chains-content{
-	position: absolute;
-	display: inline-block;
-	opacity: 0;
-	transition: all .5s;
-	-moz-transition: all .5s; 
-	-webkit-transition: all .5s;
-	-o-transition: all .5s; 
-}
+.online-bg .online-business .online-chains-content{position: absolute;display: inline-block;opacity: 0;transition: all .5s;-moz-transition: all .5s; -webkit-transition: all .5s;-o-transition: all .5s; }
 /*潮流*/
 .online-bg .online-business .online-trend,
-.online-bg .online-business .online-trend-content{
-	left:284px;
-	top:77px;
-	width: 204px;
-	height: 235px;
-}
-.online-bg .online-business .online-trend{
-	background:url("../official_img/trend.png");
-}
-.online-bg .online-business .online-trend-content{
-	background:url("../official_img/trend-content.png");
-}
+.online-bg .online-business .online-trend-content{left:284px;top:77px;width: 204px;height: 235px;}
+.online-bg .online-business .online-trend{background:url("../official_img/trend.png");}
+.online-bg .online-business .online-trend-content{background:url("../official_img/trend-content.png");}
 /*专业*/
 .online-bg .online-business .online-professional,
-.online-bg .online-business .online-professional-content{
-	left:494px;
-	top:77px;
-	width: 204px;
-	height: 235px;
-}
-.online-bg .online-business .online-professional{
-	background:url("../official_img/professional.png");
-}
-.online-bg .online-business .online-professional-content{
-	background:url("../official_img/professional-content.png");
-}
+.online-bg .online-business .online-professional-content{left:494px;top:77px;width: 204px;height: 235px;}
+.online-bg .online-business .online-professional{background:url("../official_img/professional.png");}
+.online-bg .online-business .online-professional-content{background:url("../official_img/professional-content.png");}
 /*经验*/
 .online-bg .online-business .online-experience,
-.online-bg .online-business .online-experience-content{
-	left:170px;
-	top:260px;
-	width: 204px;
-	height: 235px;
-}
-.online-bg .online-business .online-experience{
-	background:url("../official_img/experience.png");
-}
-.online-bg .online-business .online-experience-content{
-	background:url("../official_img/experience-content.png");
-}
+.online-bg .online-business .online-experience-content{left:170px;top:260px;width: 204px;height: 235px;}
+.online-bg .online-business .online-experience{background:url("../official_img/experience.png");}
+.online-bg .online-business .online-experience-content{background:url("../official_img/experience-content.png");}
 /*同行*/
 .online-bg .online-business .online-peer,
-.online-bg .online-business .online-peer-content{
-	left:380px;
-	top:260px;
-	width: 204px;
-	height: 235px;
-}
-.online-bg .online-business .online-peer{
-	background:url("../official_img/peer.png");
-}
-.online-bg .online-business .online-peer-content{
-	background:url("../official_img/peer-content.png");
-}
+.online-bg .online-business .online-peer-content{left:380px;top:260px;width: 204px;height: 235px;}
+.online-bg .online-business .online-peer{background:url("../official_img/peer.png");}
+.online-bg .online-business .online-peer-content{background:url("../official_img/peer-content.png");}
 /*供应链*/
 .online-bg .online-business .online-chains,
-.online-bg .online-business .online-chains-content{
-	left:590px;
-	top:260px;
-	width: 204px;
-	height: 235px;
-}
-.online-bg .online-business .online-chains{
-	background:url("../official_img/chains.png");
-}
-.online-bg .online-business .online-chains-content{
-	background:url("../official_img/chains-content.png");
-}
+.online-bg .online-business .online-chains-content{left:590px;top:260px;width: 204px;height: 235px;}
+.online-bg .online-business .online-chains{background:url("../official_img/chains.png");}
+.online-bg .online-business .online-chains-content{background:url("../official_img/chains-content.png");}
 /*底部背景图片*/
-.footer-bg-img {
-	position: relative;
-	width: 100%;
-	text-align: center;
-	background-color: #f0f4f0;
-}
-.footer-bg-img  img {
-	width: 100%;
-	margin-top: 70px;
-}
-.apply-bottom {
-	position: absolute;
-	top: 45%;
-	left: 50%;
-	width: 1000px;
-	height: 200px;
-	margin-left: -500px;
-	text-align: center;
-}
-.apply-bottom a {
-	position: absolute;
-	left: 50%;
-	margin-left: -70px;
-	margin-top: 40px;
-	display: block;
-	width: 140px;
-	height: 40px;
-	line-height: 40px;
-	border-radius: 3px;
-	font-size: 18px;
-	font-weight: bold;
-	text-align: center;
-	background-color: #58d0a6;
-	color: #fff;
-	-webkit-transition: all .2s ease-in-out;
-	transition: all .2s ease-in-out;
-}
-.apply-bottom a:hover {
-	background-color: rgba(255,255,255,0);
-	color: #58d0a6;
-	border: 2px solid #58d0a6;
-	border-radius: 3px;
-	text-decoration: none;
-}
-.apply-bottom>span {
-	display: inline-block;
-	height: 40px;
-	font-weight: bold;
-	font-size: 36px;
-	color: #fff;
-}
+.footer-bg-img {position: relative;width: 100%;text-align: center;background-color: #f0f4f0;}
+.footer-bg-img  img {width: 100%;margin-top: 70px;}
+.apply-bottom {position: absolute;top: 45%;left: 50%;width: 1000px;height: 200px;margin-left: -500px;text-align: center;}
+.apply-bottom a {position: absolute;left: 50%;margin-left: -70px;margin-top: 40px;display: block;width: 140px;height: 40px;line-height: 40px;border-radius: 3px;font-size: 18px;font-weight: bold;text-align: center;background-color: #58d0a6;color: #fff;-webkit-transition: all .2s ease-in-out;transition: all .2s ease-in-out;}
+.apply-bottom a:hover {background-color: rgba(255,255,255,0);color: #58d0a6;border: 2px solid #58d0a6;border-radius: 3px;text-decoration: none;}
+.apply-bottom>span {display: inline-block;height: 40px;font-weight: bold;font-size: 36px;color: #fff;}
