@@ -23,6 +23,118 @@ $(document).ready(function(){
             parent.location.href = location.href;
         }
     }
+    if($(".scrollUpf").size()>0){
+        $(window).scroll(function(){
+            if($(window).scrollTop()>150){
+                $(".scrollUpf").fadeIn(200);
+            }else{
+                $(".scrollUpf").fadeOut(200);
+            }
+        });
+    }
 }).on("click",".cancel-btn",function(){
     $(".pop-win").addClass("hide");
+}).on("click","#scrollUp",function(){
+    $('html,body').animate({scrollTop: '0px'}, 300);
+}).on("click",".wrap-user-pro li",function(){
+    if($(this).hasClass("quit")){
+        window.location.href="/customer/logout?next=/bbs";
+    }else{
+        var index = $(this).index();
+        window.location.href="/bbs/profile?id="+index;
+    }
+}).on("click",".nav-list a",function(){
+    var type = $(this).attr("data-id");
+    window.location.href="/bbs?id="+type;
+}).on("keydown","#search_bbs",function(e){
+    if(e.keyCode==13){
+        var key = $.trim($("#search_bbs").val());
+        if(key==""){
+            return Tip("请输入关键字");
+        }else{
+            window.location.href="/bbs?search="+key;
+        }
+    }
+}).on("click","#search_btn",function(){
+    var key = $.trim($("#search_bbs").val());
+    if(key==""){
+        return Tip("请输入关键字");
+    }else{
+        window.location.href="/bbs?search="+key;
+    }
 });
+
+var hotaticle_item = '<li data-id="{{id}}">'+
+                    '<a href="/bbs/detail/{{id}}">'+
+                       ' <p class="clip c333">{{title}}</p>'+
+                        '<div class="wrap-topic-attr">'+
+                            '<div class="fr">'+
+                                '<span class="icon-topic viewr">{{scan_num}}</span>'+
+                           ' </div>'+
+                            '<span>{{nickname}}</span>'+
+                        '</div>'+
+                    '</a>'+
+                '</li>';
+var hotcustomer_item = ' <li>'+
+                    '<dl class="dl">'+
+                        '<dd>'+
+                            '<img src="{{imgurl}}" alt="用户头像"/>'+
+                        '</dd>'+
+                        '<dt>'+
+                            '<p class="f14 c333 clip">{{nickname}}</p>'+
+                            '<p class="c999 f12 mt12">'+
+                                '<span class="num-txt">发布 {{article_num}}篇</span>'+
+                                '<span>评论 {{comment_num}}条</span>'+
+                            '</p>'+
+                        '</dt>'+
+                    '</dl>'+
+                '</li>';
+function getHotInfo(action){
+    $.ajax({
+        url:'/bbs/hot?action='+action,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var datalist=res.datalist;
+                if(action=="article"){
+                    for(var i in datalist){
+                        var render = template.compile(hotaticle_item);
+                        var id=datalist[i]['id'];
+                        var title=datalist[i]['title'];
+                        var scan_num=datalist[i]['scan_num'];
+                        var nickname=datalist[i]['nickname'];
+                        var list_item =render({
+                            id:id,
+                            title:title,
+                            scan_num:scan_num,
+                            nickname:nickname
+                        });
+                        $(".hot-artilce-list").append(list_item);
+                   }
+                }else if(action=="customer"){
+                     for(var i in datalist){
+                        var render = template.compile(hotcustomer_item);
+                        var imgurl=datalist[i]['imgurl'];
+                        var nickname=datalist[i]['nickname'];
+                        var article_num=datalist[i]['article_num'];
+                        var comment_num=datalist[i]['comment_num'];
+                        if(!imgurl){
+                            imgurl='/static/images/person.png';
+                        }
+                        
+                        var list_item =render({
+                            imgurl:imgurl,
+                            article_num:article_num,
+                            comment_num:comment_num,
+                            nickname:nickname
+                        });
+                        $(".hot-customer-list").append(list_item);
+                   }
+                }
+            }
+            else {
+                return Tip(res.error_text);
+            }
+        }
+    })
+};

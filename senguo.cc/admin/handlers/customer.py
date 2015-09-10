@@ -74,7 +74,11 @@ class Access(CustomerBaseHandler):
 					self.session.delete(q)
 					self.session.commit()
 			self.clear_current_user()
-			return self.redirect(self.reverse_url("customerLogin"))
+			next_url = self.get_argument("next", "")
+			if next_url == "/bbs":
+				return self.redirect(self.reverse_url("BbsMain"))
+			else:
+				return self.redirect(self.reverse_url("customerLogin"))
 		elif self._action == "oauth":
 			self.handle_oauth(next_url)
 		elif self._action == "weixin":

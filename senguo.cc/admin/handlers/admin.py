@@ -103,6 +103,8 @@ class Home(AdminBaseHandler):
 		#     self.current_shop=self.current_user.shops[0]
 		#     self.set_secure_cookie("shop_id", str(self.current_shop.id), domain=ROOT_HOST_NAME)
 
+		if not self.current_shop:
+			return self.redirect(self.reverse_url("switchshop"))
 		# 用于标识是否显示  店铺 余额
 		show_balance = False
 

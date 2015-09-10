@@ -143,6 +143,14 @@ session = models.DBSession()
 	# session.commit()
 	# return self.send_success()
 
-g = multiprocessing.Process(name='getsomeshop',target=getsomeshop)
+def getArticle():
+	artilces = session.query(models.Article).all()
+	for article in artilces:
+		article.public_time=article.create_time
+		record = session.query(models.ArticleGreat).filter_by(article_id=article.id,collect=1).distinct(models.Article.id).count()
+		article.collect_num  = record
+	session.commit()
+
+g = multiprocessing.Process(name='getArticle',target=getArticle)
 g.start()
 g.join()

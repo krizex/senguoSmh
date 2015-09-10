@@ -1427,7 +1427,6 @@ class Fruit(MapBase, _CommonApi):
 	seckill_charge_type = Column(Integer,nullable=False,default=0) #秒杀活动中该商品所使用的计价方式id
 	##
 	buy_limit = Column(TINYINT,nullable=False, default=0) #0:all 1:only new user 2:only old user 3:only charge user
-
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
@@ -1726,11 +1725,18 @@ class Article(MapBase, _CommonApi):
 	classify = Column(TINYINT,nullable=False,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
 	comment_num = Column(Integer,nullable=False,default = 0)#评论数
+	collect_num = Column(Integer,nullable=False,default = 0)#收藏数
 	scan_num = Column(Integer,nullable=False,default = 0) #0:浏览数
 	if_scan = Column(TINYINT,nullable=False,default = 0) #0:是否浏览
-	status = Column(TINYINT,nullable=False,default = 1) #0:删除 1:正常
+	status = Column(TINYINT,nullable=False,default = 1) # -1:草稿 0:删除 1:正常 2:定时发布
 	del_reason = Column(String(100)) #删除原因
-	create_time = Column(DateTime,nullable=False,default = func.now())
+	create_time = Column(DateTime,default = func.now())
+	
+	#9.3
+	public_time = Column(DateTime,default = func.now())
+	no_public = Column(Boolean,default = 0) #0:发表至论坛 1:不发表至论坛
+	comment_private = Column(Boolean,default = 0) #0:评论所有人可见 1:评论仅作者可见
+	if_admin = Column(Boolean,default = False) #是否是管理员发布
 
 # 文章评论
 class ArticleComment(MapBase, _CommonApi):
@@ -1743,6 +1749,7 @@ class ArticleComment(MapBase, _CommonApi):
 	create_time = Column(DateTime,nullable=False,default = func.now())
 	_type = Column(TINYINT,nullable=False,default = 0) #0: 评论  1:回复
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
+	reply_num = Column(Integer,nullable=False,default = 0) #评论回复数
 	if_scan = Column(TINYINT,nullable=False,default = 0) #0:是否浏览
 	status = Column(TINYINT,nullable=False,default = 1) #0:删除 1:正常
 
@@ -2026,3 +2033,4 @@ class CustomerSeckillGoods(MapBase, _CommonApi):
 	shop_id = Column(Integer,ForeignKey(Shop.id),nullable=False)
 	seckill_goods_id = Column(Integer,ForeignKey(SeckillGoods.id),nullable=False)
 	status = Column(TINYINT,nullable=False,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
+
