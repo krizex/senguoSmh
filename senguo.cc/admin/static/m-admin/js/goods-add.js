@@ -283,7 +283,7 @@ $(document).ready(function(){
                 $("#" + file.id).prev(".img-cover2").addClass("hide");
                 $("#" + file.id).next("a").removeClass("hide");
                 $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
-                $(".pop-picture-library").hide();
+                $(".pop-picture-library").addClass("hide");
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -388,17 +388,21 @@ $(document).ready(function(){
 });
 
 
-var pictureType="goods",_page = 0,nomore=false,_finished=true,cur_code="";
+var pictureType="goods",_page = 0,nomore=false,_finished=true,cur_code="",_total;
 function getPicture(action,page,code){
      $.ajax({
         url:'/admin/picture?action='+action+'&page='+page+'&code='+code,
         type:"get",
         success:function(res){
             if(res.success){
-                $('.upload-pic-list').empty();
                 var data = res.datalist;
-                var total = res.total_page;
-                if(total<=page){
+                if(page==0){
+                   _total = res.total_page; 
+                   $('.upload-pic-list').empty();
+                   nomore=false;
+                   _page = 0;
+                }
+                if(_total<=page){
                     nomore=true;
                 }
                 var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
@@ -421,7 +425,7 @@ function getPicture(action,page,code){
 };
 
 
-$(window).scroll(function(){
+$('.picture-library').scroll(function(){
     var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
     var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
     var totalheight = 0;
@@ -837,4 +841,5 @@ function uploadImgForAndroid(url){
         $("#img-lst").addClass("hide");
         $(".moxie-shim").addClass("hide");
     }
+    $(".pop-picture-library").addClass("hide");
 }

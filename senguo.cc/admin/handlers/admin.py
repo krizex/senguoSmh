@@ -4977,11 +4977,10 @@ class GetPicture(AdminBaseHandler):
 			return self.send_fail("no action")
 		if not page:
 			page = 0
-		if code == "undefined":
-			picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1).order_by(models.PictureLibrary.create_time.desc())
-		else:
-			picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1,code=code).order_by(models.PictureLibrary.create_time.desc())
-		pictures = picture_list.offset(page*page_size).limit(page_size).all()
+		picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1)
+		if action == "goods" and code != "undefined":
+			picture_list = picture_list.filter_by(code=code)
+		pictures = picture_list.order_by(models.PictureLibrary.create_time.desc()).offset(page*page_size).limit(page_size).all()
 		for picture in pictures:
 			status = 0
 			if "id" in self.args and self.args["id"] !=[]:

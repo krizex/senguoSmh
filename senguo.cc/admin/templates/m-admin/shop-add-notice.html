@@ -34,18 +34,41 @@
 {% block bottom %}
 <div class="pop-picture-library hide">
     <div class="wrap-sty-box">
-         <ul class="picture-title wrap-sty">
-            <li class="active">图片库</li>
-            <li>系统默认图片</li>
-        </ul>
-        <div class="picture-title2" id="upload-area">
-            <span class="fl">点击图片即选中</span>
-            <button id="upload-picture" class="btn fr">本地上传</button>
-        </div>
-         <div class="picture-library">
-           <ul class="group picture-list upload-pic-list">
+          <ul class="picture-title wrap-sty">
+                <li class="active show-upload-list">图片库</li>
+                <li class="show-default-list">系统默认图片</li>
             </ul>
-        </div>
+             <div class="picture-title2" id="upload-area">
+                <span class="fl">点击图片即选中</span>
+                <button id="upload-picture" class="btn fr">本地上传</button>
+            </div>
+             <div class="picture-library">
+                <ul class="group picture-list upload-pic-list">
+                   
+                </ul>
+                <ul class="group picture-list default-pic-list hide">
+                    <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="/static/images/banner.png" url="/static/images/banner.png" alt="商品图片"/>
+                    </li>
+                    <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="/static/images/holder_fruit.jpg"  url="/static/images/holder_fruit.jpg" alt="商品图片"/>
+                    </li>
+                     <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp?imageView2/1/w/100/h/100" url="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp" alt="商品图片"/>
+                    </li>
+                     <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d?imageView2/1/w/100/h/100" url="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d" alt="商品图片"/>
+                    </li>
+                </ul>
+            </div>
          <div class="wrap-sty">
             <a href="javascript:;" class="cancel-btn">取消</a>
         </div>

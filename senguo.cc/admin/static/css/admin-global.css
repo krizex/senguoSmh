@@ -401,6 +401,7 @@ input{color:#333;text-indent:5px;}
 .picture-library{padding:20px;margin:10px 0;clear:both;}
 .picture-title{border-bottom:1px solid #ddd;height:50px;}
 .picture-title li{width:100px;text-align:center;float:left;color:#333;}
+.picture-title li:hover{cursor:pointer;}
 .picture-title li.active{color:#44b549;}
 .picture-list{clear:both;width:105%;}
 .picture-list li{float:left;margin:0 26px 15px 0;position:relative;}

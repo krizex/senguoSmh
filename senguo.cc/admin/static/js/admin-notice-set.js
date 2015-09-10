@@ -71,6 +71,7 @@ $(document).ready(function(){
             },
             'FileUploaded': function (up, file, info) {
                 $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
+                $(".pop-picture-library").hide();
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -148,6 +149,7 @@ $(document).ready(function(){
             },
             'FileUploaded': function (up, file, info) {
                 parent.find(".preview-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                $(".pop-picture-library").hide();
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -168,7 +170,7 @@ $(document).ready(function(){
             }
         }
     });
-}).on("click",".upload-pic-list li",function(e){
+}).on("click",".picture-list li",function(e){
     if($(e.target).closest(".del-pic-img").size()==0){
         var action=$(".pop-picture-library").attr("action");
         var img_url=$(this).find("img").attr("url");
@@ -181,9 +183,16 @@ $(document).ready(function(){
         
         $(".pop-picture-library").hide(); 
     }
-   
-}).on("click","#upload-picture",function(){
-    $(".pop-picture-library").hide();
+}).on("click",".show-upload-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").removeClass("hide");
+    $(".picture-pagination").removeClass("hide");
+    $(".default-pic-list").addClass("hide");
+}).on("click",".show-default-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").addClass("hide");
+    $(".picture-pagination").addClass("hide");
+    $(".default-pic-list").removeClass("hide");
 });
 function noticeAdd(){
     var url=link;

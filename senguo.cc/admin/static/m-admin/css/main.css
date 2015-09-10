@@ -314,7 +314,7 @@
 .notice-img>img{height: 60px;width: auto;max-width: 250px;}
 .notive-temp-img{height: 80px;display: inline-block;position: relative;left: 50%;-webkit-transform:translate(-50%,0);top: -50px;}
 .notive-temp-img .del-img{position: absolute;width:20px;height:20px;right: -10px;top: -10px;background-image: url('/static/images/comment_delimg.png');background-size: 20px;}
-.notive-temp-img>img{height: 80px;max-width: 250px;}
+.notive-temp-img>img{height: 80px;max-width: 180px;}
 .notice-item{padding: 10px;background-color: #fff;}
 .notice-area{width: 100%;height: 56px;overflow: auto;line-height: 18px;color: #333;}
 /*支付*/

@@ -20,25 +20,28 @@ $(document).ready(function(){
         var id = $(this).attr("data-id");
         noticeEdit(id);
     }
-}).on("click",".upload-pic-list li",function(e){
+}).on("click",".picture-list li",function(e){
     var imgurl=$(this).find("img").attr("src");
     var _url=$(this).find("img").attr("url");
-    var w = width+10;
     if($(e.target).closest(".del-pic-img").size()==0){
-        var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img class="image" style="width:'+width+'px;height:'+width+'px;" id="" src="" alt="商品图片"/><a href="javascript:;" class="icon-del"></a></li>');
-        if ($("#img_list").children("li").size() == 6) {
-            $("#img-lst").addClass("hide");
-            $(".moxie-shim").addClass("hide");
-        }else{
-            if ($("#img_list").children("li").size() == 5){
-                $("#img-lst").addClass("hide");
-                $(".moxie-shim").addClass("hide");
-            }
-            $item.find("img").attr({"src":imgurl,"url":_url});
-            $("#add-img").closest("li").before($item);
-        }
+        $("#notice_img").attr({"url":_url,"src":_url+"?imageView2/1/w/180/h/80"});
+        $(".img-cover").addClass("hide");
+        $(".del-img").removeClass("hide");
+        $(".moxie-shim").addClass("hide");
         $(".pop-picture-library").addClass("hide");
+        $(".notive-temp-img").removeClass("hidden");
+        $("#add-notice-img").addClass("hidden");
     }
+}).on("click",".show-upload-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").removeClass("hide");
+    $(".picture-pagination").removeClass("hide");
+    $(".default-pic-list").addClass("hide");
+}).on("click",".show-default-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").addClass("hide");
+    $(".picture-pagination").addClass("hide");
+    $(".default-pic-list").removeClass("hide");
 }).on("click",".pop-picture-library .cancel-btn",function(){
     $(this).closest(".pop-picture-library").addClass("hide");
 }).on("click",".del-pic-img",function(){
@@ -115,6 +118,7 @@ $(document).ready(function(){
                 $(".img-cover").addClass("hide");
                 $(".del-img").removeClass("hide");
                 $(".moxie-shim").addClass("hide");
+                $(".pop-picture-library").addClass("hide");
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -146,7 +150,7 @@ $(document).ready(function(){
 });
 
 
-var pictureType="notice",_page = 0,nomore=false,_finished=true;
+var pictureType="notice",_page = 0,nomore=false,_finished=true,_total;
 function getPicture(action,page){
      $.ajax({
         url:'/admin/picture?action='+action+'&page='+page,
@@ -154,9 +158,16 @@ function getPicture(action,page){
         success:function(res){
             if(res.success){
                 var data = res.datalist;
-                var total = res.total_page;
-                if(total<=page){
+                if(page==0){
+                   _total = res.total_page; 
+                   nomore=false;
+                   _page = 0;
+                }
+                if(_total<=page){
                     nomore=true;
+                }
+                if(page==0){
+                    $('.upload-pic-list').empty();
                 }
                 var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
                         '<a href="javascript:;" class="del-pic-img">x</a>'+
@@ -178,12 +189,15 @@ function getPicture(action,page){
 };
 
 
-$(window).scroll(function(){
+$('.picture-library').scroll(function(){
     var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
     var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
     var totalheight = 0;
     var main = $('.picture-library');              //主体元素
     totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+    console.log(_finished);
+    console.log((main.height()-range) <= totalheight);
+    console.log(nomore);
     if(_finished&&(main.height()-range) <= totalheight  && nomore==false) {
         _finished=false;
         _page = _page+1;
@@ -286,4 +300,5 @@ function uploadImgForAndroid(url){
     $(".img-cover").addClass("hide");
     $(".del-img").removeClass("hide");
     $(".moxie-shim").addClass("hide");
+    $(".pop-picture-library").addClass("hide");
 }
