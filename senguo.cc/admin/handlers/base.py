@@ -32,7 +32,6 @@ import jpush as jpush
 from libs.phonepush.jpush.push import core,payload,audience
 from libs.phonepush.conf import app_key, master_secret
 
-
 # 非阻塞
 EXECUTOR = ThreadPoolExecutor(max_workers=4)
 
@@ -662,7 +661,7 @@ class GlobalBaseHandler(BaseHandler):
 
 	# 将森果社区文章类型编码转换为文字
 	def article_type(self,_type):
-		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求','森果前沿']
+		types=['官方公告','产品更新','运营干货','水果百科','使用教程','水果供求','森果前沿','用户交流']
 		return types[_type]
 
 	# 获取商品信息
@@ -728,9 +727,9 @@ class GlobalBaseHandler(BaseHandler):
 			article_great=None
 		if article_great and article_great.great == 1:
 			great_if=True
-		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].create_time),\
+		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].public_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
-			"comment_num":article[0].comment_num,"great_if":great_if}
+			"comment_num":article[0].comment_num,"great_if":great_if,"admin_if":article[0].if_admin}
 		return data
 
 	# 获取森果社区文章评论
@@ -746,8 +745,9 @@ class GlobalBaseHandler(BaseHandler):
 		if self.current_user and new_comment[0].account_id == self.current_user.id:
 			comment_author = True
 		data={"id":new_comment[0].id,"nickname":new_comment[0].accountinfo.nickname,"imgurl":new_comment[0].accountinfo.headimgurl_small,\
-				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,"nick_name":new_comment[1],
-				"type":new_comment[0]._type,"great_if":great_if,"comment_author":comment_author}
+				"comment":new_comment[0].comment,"time":self.timedelta(new_comment[0].create_time),"great_num":new_comment[0].great_num,\
+				"nick_name":new_comment[1],"type":new_comment[0]._type,"great_if":great_if,\
+				"comment_author":comment_author,"reply_num":new_comment[0].reply_num}
 		return data
 
 class FrontBaseHandler(GlobalBaseHandler):
@@ -1693,6 +1693,16 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		#         customer_id=self.current_user.id, shop_id=shop_id).first():
 		#     return self.redirect("/customer/market/1")  #todo 这里应该重定向到商铺列表
 		return self._shop_id
+
+
+	@property
+	def getBbsPath(self):
+		file_name = ""
+		if self.is_pc_browser():
+			file_name = "bbs"
+		else:
+			file_name = "mbbs"
+		return file_name
 
 # 店铺管理后台基类方法
 class AdminBaseHandler(_AccountBaseHandler):

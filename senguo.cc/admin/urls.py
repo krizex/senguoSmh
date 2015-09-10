@@ -44,6 +44,7 @@ handlers = [
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
+	(r"/bbs/hot", handlers.bbs.getHotInfo, {}, "BbsHot"),
 
 	#市场推广
 	(r"/market/home", handlers.market.Home, {}, "MarketHome"),
