@@ -198,8 +198,8 @@ $(document).ready(function(){
     $this.attr({"data-flag":"1"});
     var $item=$('.choose-staff-list .active');
     _staff_id=$item.attr("data-id");
-    _staff_name=$item.find(".name").text();
-    _staff_img=$item.find(".img").attr("src");
+    _staff_name=$item.find(".sub-name").text();
+    _staff_img=$item.find(".sub-img").attr("src");
     if(!_staff_id){
         return Tip("请选择员工!");
     }
