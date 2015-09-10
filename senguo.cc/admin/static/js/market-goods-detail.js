@@ -8,13 +8,6 @@ $(document).ready(function(){
         countTime($("#time_box"));
     }
     var _url='/'+_shop_code;
-    setTimeout(function(){
-        window.addEventListener('pagehide', onPopState);
-    },1000);
-    function onPopState(){
-        SetCookie("fromdetail",1);
-        return addCart(_url);
-    }
     var mWidth = $(window).width();
     var width = $("#swiper-container").width();
     if(mWidth>800){

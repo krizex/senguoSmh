@@ -40,13 +40,13 @@
             <span>&nbsp;销量 {{int(good.saled) or 0}}</span>
         </p>
         <p class="goods-info">{{good.intro or ''}}</p>
-        <p class="f12 mt10 {% if has_activity==0 %}hide{%end%}" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
+        <p class="f12 mt10 {% if has_activity==0 or good.activity_status==0 %}hide{%end%}" id="time_box" end_time="{{end_time}}"><span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span></p>
     </div>
     <ul class="wrap-choose-goods">
             {% for charge in charge_types %}
             <li data-buy="{{charge['limit_today']}}" data-id="{{charge['id']}}" data-allow="{{charge['allow_num']}}" seckill_goods_id="{{charge['seckill_goods_id']}}">
                 <span class="now-price">{{charge['price']}}元</span>
-                <span class="old-price">{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
+                <span class="old-price"> {% if good.activity_status>0 and has_activity>0 %}<span class="market-price">{{charge['src_price']}}元</span>{% else %}{% if charge['market_price'] and charge['market_price']>0 %}<span class="market-price">{{charge['market_price']}}元</span>{% end %}{% end %}/<span class="number">{{charge['num']}}</span>{{charge['unit']}}</span>
                 {% if charge['has_activity']>0 and good.activity_status==2 and charge['discount_rate']<10 %}<span class="goods-tag activity-tag">{{charge['discount_rate']}}折</span>{% end %}
                 {% if has_activity>0 and charge['is_seckill']==1 and good.activity_status==1 %}
                 <span class="goods-tag activity-tag">省{{charge['seckill_price_dif']}}元</span>

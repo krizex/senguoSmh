@@ -37,7 +37,7 @@ body{font-size: 14px;}
 .fruit-list>li img{width: 100%;padding-right:120px;}
 .fruit-right{position: absolute;right: 0;top: 0;width: 150px;height: 100%;padding-left: 10px;background-color: #fff;border-bottom-right-radius: 26%;}
 .fruit-right .name{color: #999;font-size: 14px;margin-top: 12px;padding-right: 12px;white-space: nowrap;text-overflow: ellipsis;overflow: hidden;}
-.fruit-right .price{color: #f6b564;font-size: 12px;margin-top: 10px;}
+.fruit-right .price{color: #f6b564;font-size: 12px;margin-top: 10px;white-space: nowrap;}
 .wrap-furit-opera{position: absolute;bottom: 0;left:0;width: 150px;text-align: center;height: 36px;border-bottom-right-radius: 34px;}
 .furit-opera{display: inline-block;position: relative;max-width: 90px;margin-top: 4px;height:28px;}
 .wrap-furit-opera .center{left:31px;right: auto;}
@@ -60,7 +60,6 @@ body{font-size: 14px;}
 .desaturate .bg-color{background-color:#ccc !important;}
 .desaturate .color{color:#ccc !important;}
 .desaturate .price{color:#ccc !important;}
-
 .status-tip{position:absolute;width:45px;height:45px;top:12px;left:12px;background-size: 45px;background-repeat: no-repeat;background-position:center center;border-radius: 4px;}
 .tag2{background-image: url("/static/images/tag2.png");}
 .tag3{background-image: url("/static/images/tag3.png");}
@@ -71,10 +70,10 @@ body{font-size: 14px;}
 .seckill-btn{width: 80px;height: 28px;line-height: 28px;display: inline-block;cursor:pointer;text-align: center;color: #fff;font-weight: bold;border-radius: 4px;border: 1px solid #fff;}
 .seckill-btn-yes{border-color: #eee;background-color:#eee;color: #999;}
 .price-tip{display: inline-block;color: #FFF;cursor: pointer;padding: 0 4px;border-radius: 12px;border: 1px solid #fff;font-size: 12px;height: 18px;line-height: 16px;-webkit-transform:scale(0.9);}
-.price-tip2{display: inline-block;cursor: pointer;padding: 0 4px;border-radius: 12px;border: 1px solid;font-size: 12px;height: 18px;line-height: 16px;-webkit-transform:scale(0.9);}
+.price-tip2{display: inline-block;cursor: pointer;padding: 0 2px;border-radius: 12px;border: 1px solid;font-size: 12px;height: 16px;line-height: 16px;-webkit-transform:scale(0.9);}
 .p-row{white-space: nowrap;font-size: 12px;}
 .nowrap{white-space: nowrap;}
-
+.src-txt{display: inline-block;color: #999;font-size: 12px;text-decoration: line-through;}
 
 
 

@@ -4,15 +4,11 @@
 {% set action = action%}
 {% block setcontent %}
 <div class="action-div hidden" data-value="{{action}}"></div>
-<div class="clearfix top-box">
-    <div class="col-sm-9 col-md-9">
-        <p>商品秒杀是给商家提供的一个店铺营销工具，适用于新品上市、水果促销、节假日活动等场合。</p>
-        <p>可以更好地招徕用户、提高品牌影响力。</p>
-        <p class="mt20"><a href="/bbs/detail/88" target="_blank" class="font14">点击查看使用教程</a></p>
-    </div>
-    <div class="col-sm-3 col-md-3">
-        <a class="mode  pull-right mt10 open-switch" data-flag="off" title="点击切换状态" data-status="{{seckill_active2}}"><span class="tit"></span><span class="circle"></span></a>
-    </div>
+<div class="top-box">
+    <p class="c333 f14 seckill-show-txt">已<span>{%if seckill_active2==0 %}停用{% else %}启用{%end%}</span>商品秒杀<a href="{{reverse_url('BbsDetail',106)}}" class="ml10 f14 show-detail">查看详情</a></p>
+    <p class="mt6">商品秒杀是给商家提供的一个店铺营销工具，适用于新品上市、水果促销、节假日活动等场合。</p>
+    <p>可以更好地招徕用户、提高品牌影响力。</p>
+    <a class="mode pull-right mt10 open-switch mode-jyj" data-flag="off" title="点击切换状态" data-status="{{seckill_active2}}"><span class="tit"></span><span class="circle"></span></a>
 </div>
 <div class="category-list mt10 seckill-manage">
     <div>
@@ -24,10 +20,10 @@
             <a href="{{reverse_url('adminMarketingSeckill')}}?action=seckill_new" class="newbtn add-btn mt6 mr10 new-seckill">+新建秒杀</a>
         </div>
         <ul class="status-choose subnav chinav furit-type pull-left">
-            <li class="txt-center active nostart" data-type="nostart"><a href="javascript:;">未开始</a></li>
-            <li class="txt-center killing" data-type="killing"><a href="javascript:;">进行中</a></li>
-            <li class="txt-center finished" data-type="finished"><a href="javascript:;">已结束</a></li>
-            <li class="txt-center stoped" data-type="stoped"><a href="javascript:;">已停用</a></li>
+            <li class="txt-center active nostart" data-type="nostart"><a href="javascript:;">未开始&nbsp;<span class="text-pink">{{counts[0]}}</span></a></li>
+            <li class="txt-center killing" data-type="killing"><a href="javascript:;">进行中&nbsp;<span class="text-pink">{{counts[1]}}</span></a></li>
+            <li class="txt-center finished" data-type="finished"><a href="javascript:;">已结束&nbsp;<span class="text-pink">{{counts[2]}}</span></a></li>
+            <li class="txt-center stoped" data-type="stoped"><a href="javascript:;">已停用&nbsp;<span class="text-pink">{{counts[3]}}</span></a></li>
         </ul>
     </div>
     <div class="wrap-tb mt10">

@@ -1,53 +1,138 @@
+var current_date=new Date();
+var current_year=current_date.getFullYear();
+var current_month=current_date.getMonth()+1;
+
+var ChooseDate1 = current_date;
+var choose_year1 = current_year;
+var choose_month1 = current_month;
+var current_sort_way1 = 1;  //当前的排列方式  1:按日排,2:按周排,3:按月排
+
+
 $(document).ready(function(){
-    //获取当前日期
-    $('.year').text(current_year);
-    $('.month').text(current_month);
-    //详细数据统计
-    if(n==0){$('.pre-page').hide();}
-    if((n+1)==page_sum){
-        $('.next-page').hide();
-        $('.input-page').hide();
-        $('.jump-to').hide();
+    initCharts();
+}).on('click','.user-change-list1 li',function(){
+    liveInit();
+    $(".year1").text(current_year);
+    $(".month1").text(current_month);
+
+    var $this = $(this);
+    $this.addClass('active').siblings('li').removeClass('active');
+}).on('click','.sort-date1',function(){
+    $(".choose-change1").removeClass("hidden");
+    current_sort_way1 = 1;
+    liveInit();
+    ChooseDate1 = CurrentDate;
+
+    $(".year-span1").show();
+    $(".month-span1").show();
+
+    show_chart("user_trend",1,ChooseDate1.getFullYear(),ChooseDate1.getMonth()+1);
+}).on('click','.sort-week1',function(){
+    $(".choose-change1").removeClass("hidden");
+    current_sort_way1 = 2;
+    liveInit();
+    ChooseDate1 = CurrentDate;
+
+    $(".month-span1").hide();
+    $(".year-span1").show();
+
+    show_chart("user_trend",2,ChooseDate1.getFullYear(),ChooseDate1.getMonth()+1);
+}).on('click','.sort-month1',function(){
+    $(".choose-change1").removeClass("hidden");
+    current_sort_way1 = 3;
+    liveInit();
+    ChooseDate1 = CurrentDate;
+
+    $(".year-span1").show();
+    $(".month-span1").hide();
+
+    show_chart("user_trend",3,ChooseDate1.getFullYear(),ChooseDate1.getMonth()+1);
+}).on("click",".pre-item1",function(){
+    switch(current_sort_way1){
+        case 1:
+            ChooseDate1 = new Date(ChooseDate1.getFullYear(),ChooseDate1.getMonth()-1,ChooseDate1.getDate());
+            choose_year1=ChooseDate1.getFullYear();
+            choose_month1=ChooseDate1.getMonth()+1;
+
+            $(".year1").text(choose_year1);
+            $(".month1").text(choose_month1);
+
+            show_chart("user_trend",1,choose_year1,choose_month1);
+            break;
+        case 2:
+            choose_year1=ChooseDate1.getFullYear()-1;
+            ChooseDate1 = new Date(choose_year1,ChooseDate1.getMonth(),ChooseDate1.getDate());
+            $(".year1").text(choose_year1);
+            show_chart("user_trend",2,ChooseDate1.getFullYear(),ChooseDate1.getMonth());
+            break;
+        case 3:
+            choose_year1=ChooseDate1.getFullYear()-1
+            ChooseDate1 = new Date(choose_year1,ChooseDate1.getMonth(),ChooseDate1.getDate());
+            $(".year1").text(choose_year1);
+            
+            show_chart("user_trend",3,ChooseDate1.getFullYear(),ChooseDate1.getMonth());
+
+            break;
     }
-    $('.pre-page').on('click',function(){
-        n=n-1;
-        if(n==0){
-            $('.pre-page').hide();
-        }
-        if(n>-1) {
-            $('.next-page').show();
-            $('.page-now').text(n+1);
-            gettable(-n);
-        }
+}).on("click",".next-item1",function(){
+    switch(current_sort_way1){
+        case 1:
+            ChooseDate1 = new Date(ChooseDate1.getFullYear(),ChooseDate1.getMonth()+1,ChooseDate1.getDate());
+            choose_year1=ChooseDate1.getFullYear();
+            choose_month1=ChooseDate1.getMonth()+1;
+            
+            $(".year1").text(choose_year1);
+            $(".month1").text(choose_month1);
+            
+            show_chart("user_trend",1,choose_year1,choose_month1);
+            break;
+        case 2:
+            choose_year1=ChooseDate1.getFullYear()+1;
+            ChooseDate1 = new Date(choose_year1,ChooseDate1.getMonth(),ChooseDate1.getDate());
 
-    });
-    $('.next-page').on('click',function(){
-        if(n<page_sum) {
-            n = n + 1;
-            if (n != page_sum) {
-                $('.pre-page').show();
-                $('.page-now').text(n + 1);
-                gettable(-n);
-            }
-            if (n == page_sum - 1) {
-                $('.next-page').hide();
-            }
-        }
+            $(".year1").text(choose_year1); 
+            
+            show_chart("user_trend",2,ChooseDate1.getFullYear(),ChooseDate1.getMonth()+1);
+            break;
+        case 3:
+            choose_year1=ChooseDate1.getFullYear()+1;
+            ChooseDate1 = new Date(choose_year1,ChooseDate1.getMonth(),ChooseDate1.getDate());
 
+            $(".year1").text(choose_year1); 
+            
+            show_chart("user_trend",3,ChooseDate1.getFullYear(),ChooseDate1.getMonth()+1);
+            break;
+    }
+})
+
+function initCharts(){
+    $(".year1").text(current_year);
+    $(".month1").text(current_month);
+
+    //页面加载时默认选中按天
+    $(".user-change-list1").each(function(){
+        $(".choose-change1").removeClass("hidden");
+        current_sort_way1 = 1;
+        $(".year-span1").show();
+        $(".month-span1").show();
+        var $this = $(this);
+        $this.find("li").eq(0).click();
     });
-    $('.jump-to').on('click',function(){
-        var page=Int($('.input-page').val());
-        if(page>0){
-            if(page_sum>page-1>0){
-                n=page-1;
-                $('.pre-page').show();
-                $('.page-now').text(page);
-                gettable(-n);
-            }
-            if(page==page_sum) $('.next-page').hide();
-            if(page==1) $('.pre-page').hide();
-        }
-    });
+    //图表展示也是默认展示按天统计
+    show_chart("user_trend",1,current_year,current_month);
+}
+
+// 实时更新函数
+function liveInit(){
+    CurrentDate=new Date();
+    current_year=CurrentDate.getFullYear();
+    current_month=CurrentDate.getMonth()+1;
+    current_date = CurrentDate.getDate();
+}
+
+
+//展示图表
+function show_chart(action,type,current_year,current_month){  
     //新增用户统计
     require.config({
         paths: {
@@ -62,7 +147,7 @@ $(document).ready(function(){
             'echarts/chart/pie'
         ],
         function (ec) {
-            var myChart = ec.init(document.getElementById('user_trend'));
+            var myChart = ec.init(document.getElementById(action));
             myChart.showLoading({
                 text: '正在努力的读取数据中...'
             });
@@ -183,67 +268,49 @@ $(document).ready(function(){
                 }
             };
 
-            getcurve(0,options,myChart);
-            //月份切换
-            $('.pre_month').on('click',function(){
-                i=i-1;
-                getcurve(i,options,myChart);
-                var year=Int($('.year').text());
-                var month=Int($('.month').text());
-                if(month==1)
-                {
-
-                    $('.year').text(year-1);
-                    $('.month').text(12);
-                }
-                else $('.month').text(month-1);
-            });
-            $('.next_month').on('click',function(){
-                i=i+1;
-                getcurve(i,options,myChart);
-                var year=Int($('.year').text());
-                var month=Int($('.month').text());
-                if(month==12)
-                {
-                    $('.year').text(year+1);
-                    $('.month').text(1);
-                }
-                else $('.month').text(month+1);
-            });
+            getcurve(action,type,current_year,current_month<10?"0"+current_month:current_month,options,myChart);
         }
-
     );
-});
-var data;
-var page_sum;
-var i=0;
-var n=0;
-var current_date=new Date();
-var current_year=current_date.getFullYear();
-var current_month=current_date.getMonth()+1;
+};
 
-function count(action,page){
-    var args={
-        action:action,
-        page:page
-    };
+var data;
+function count(action,type,current_year,current_month,myChart){
     var url='';
+    var args = {};
+    //按天来查看的时候需要传月份到后台去进行查询
+    if(type==1){
+        args={
+            action:action,
+            type:type,
+            current_year : current_year,
+            current_month : current_month
+        }
+    }
+    //按周和按月进行查看的时候都只需要把年份传进去
+    else{
+        args={
+            action:action,
+            type:type,
+            current_year : current_year
+        }
+    }
+
     $.ajaxSetup({async:false});
     $.postJson(url,args,function(res){
             if(res.success){
                 data=res.data;
-                page_sum=res.page_sum;
-
+                myChart.hideLoading();
             }
-            else return alert(res.error_text);
+            else return Tip(res.error_text);
         },
         function(){
-            return alert('您的网络暂时不通畅，请稍候再试');
+            return Tip('网络好像不给力呢~ ( >O< ) ~！');
         });
 }
 
 
-function getcurve(i,options,myChart){
+
+function getcurve(action,type,current_year,current_month,options,myChart){
     options.xAxis[0].data=[];
     options.series[0].data=[];
     options.series[1].data=[];
@@ -251,53 +318,219 @@ function getcurve(i,options,myChart){
     options.series[3].data=[];
     myChart.clear();
     $('.detail-count').find('.item').remove();
-    count('curve',i);
-    for(var i=0;i<data.length;i++){
+    count(action,type,current_year,current_month,myChart);
+    //for(var i=0;i<data.length;i++){
+    for(var i=data.length-1;i>-1;i--){
         var d=data[i];
-        var day_total_user=d[2];
-        var shop_user=d[3];
-        var saler=d[4];
-        var tie_phone=d[5];
-        var total_user=d[6];
-        var date=d[0];
-        var $item=$('<tr class="item"><td class="time"></td><td class="shop_user"></td><td class="saler"></td><td class="tie_phone"></td><td class="day_total_user"></td><td class="total_user"></td></tr>');
-        $item.find('.time').text(date);
-        $item.find('.day_total_user').text(day_total_user);
-        $item.find('.shop_user').text(shop_user);
-        $item.find('.saler').text(saler);
-        $item.find('.tie_phone').text(tie_phone);
-        $item.find('.total_user').text(total_user);
+        var admin=d['admin'];
+        var customer=d['customer'];
+        var phone=d['phone'];
+        var all=d['all'];
+        var addup=d['addup'];
+        
+        var j=i+1;
+        var date='';
+        var time='';
+        if(type==1){
+            date=resolve(j)+'号';
+            time=current_year+'-'+current_month+'-'+resolve(j);
+        }
+        //按周
+        else if(type==2){
+            date='第'+resolve(j)+'周';
+            time=getWeekRange(j);
+        }
+        else{
+            date=resolve(j)+'月';
+            time=current_year+'-'+resolve(j);
+        }
+
+        var $item=$('<tr class="item"><td class="time"></td><td class="admin"></td><td class="customer"></td><td class="phone"></td><td class="all"></td><td class="addup"></td></tr>');
+        $item.find('.time').text(time);
+        $item.find('.admin').text(admin);
+        $item.find('.customer').text(customer);
+        $item.find('.phone').text(phone);
+        $item.find('.all').text(all);
+        $item.find('.addup').text(addup);
         $('.detail-count').append($item);
-        options.xAxis[0].data.unshift(d[1]+'号');
-        options.series[0].data.unshift(day_total_user);
-        options.series[1].data.unshift(shop_user);
-        options.series[2].data.unshift(saler);
-        options.series[3].data.unshift(tie_phone);
+
+        options.xAxis[0].data.unshift(date);
+        options.series[0].data.unshift(all);
+        options.series[1].data.unshift(admin);
+        options.series[2].data.unshift(customer);
+        options.series[3].data.unshift(phone);
     }
     myChart.refresh();
     myChart.setOption(options);
-    $('.page-now').text(n+1);
-    $('.page-total').text(page_sum);
 }
 
-function gettable(page){
-    $('.detail-count').find('.item').remove();
-    count('curve',page);
-    for(var i=0;i<data.length;i++){
-        var d=data[i];
-        var day_total_user=d[2];
-        var shop_user=d[3];
-        var saler=d[4];
-        var tie_phone=d[5];
-        var total_user=d[6];
-        var date=d[0];
-        var $item=$('<tr class="item"><td class="time"></td><td class="shop_user"></td><td class="saler"></td><td class="tie_phone"></td><td class="day_total_user"></td><td class="total_user"></td></tr>');
-        $item.find('.time').text(date);
-        $item.find('.day_total_user').text(day_total_user);
-        $item.find('.shop_user').text(shop_user);
-        $item.find('.saler').text(saler);
-        $item.find('.tie_phone').text(tie_phone);
-        $item.find('.total_user').text(total_user);
-        $('.detail-count').append($item);
+
+
+/*根据周数得到该年这一周的起止日期。
+  如果第一周或最后一周不满七天，这一周的起始日期就只算这几天*/
+function getWeekRange(indexOfWeek){
+    var firstDay = new Date(ChooseDate1.getFullYear(),0,1);
+    var weekOfFirstDay = firstDay.getDay();
+    var endOfWeek;
+    var startOfWeek;
+    //如果第一天是周日的话
+    if(weekOfFirstDay==0){
+        endOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7);
+        startOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7-6);
     }
+    else{
+        endOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7+(7-weekOfFirstDay));
+        startOfWeek=GetDateN(firstDay,(indexOfWeek-1)*7+(1-weekOfFirstDay));
+    }
+    //如果得到的该周的第一天不是今年，取第一天
+    if(startOfWeek.getFullYear()!=ChooseDate1.getFullYear()){
+        startOfWeek=new Date(ChooseDate1.getFullYear(),0,1);
+    }
+    if(endOfWeek.getFullYear()!=ChooseDate1.getFullYear()){
+        endOfWeek=new Date(ChooseDate1.getFullYear(),11,31);
+    }
+    var sYear=startOfWeek.getFullYear();
+    var sMonth=startOfWeek.getMonth()+1;
+    var sDay=startOfWeek.getDate();
+    var eYear=endOfWeek.getFullYear();
+    var eMonth=endOfWeek.getMonth()+1;
+    var eDay=endOfWeek.getDate();
+    var sReturn=sYear+'-'+resolve(sMonth)+'-'+resolve(sDay)+'～'+eYear+'-'+resolve(eMonth)+'-'+resolve(eDay);
+    return sReturn;
+}
+
+//小于10的前面加个0
+function resolve(i){
+    if(i<10){
+        return '0'+i;
+    }
+    return i;
+}
+
+// 获取当前日期的前后N天日期(返回值为Date类型)(N<=28):
+function GetDateN(date,AddDayCount)
+{
+    var dd = new Date(2015,1,1);
+
+    // add by jyj 2015-7-14
+    var date_year = date.getFullYear();
+    var date_month = date.getMonth()+1;
+    var date_date = date.getDate();
+
+    dd.setDate(date_date);
+    dd.setMonth(date_month - 1);
+    dd.setFullYear(date_year);
+
+    var n_flag;
+    var is_leap;
+
+    if(AddDayCount >= 0){
+        n_flag = 1;
+    }
+    else{
+        n_flag = 0;
+    }
+
+    if((date_year % 4 == 0 && date_year % 100 != 0) || (date_year % 400 == 0)){
+        is_leap = 1;
+    }
+    else{
+        is_leap = 0;
+    }
+
+    switch(n_flag){
+        case 1:
+            if (date_month == 2){
+                switch(is_leap){
+                    case 1:
+                        if(date_date + AddDayCount > 29){
+                            dd.setMonth(date_month);
+                            dd.setDate(date_date+AddDayCount - 29);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+                    break;
+
+                    case 0:
+                        if(date_date + AddDayCount > 28){
+                            dd.setMonth(date_month);
+                            dd.setDate(date_date+AddDayCount - 28);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+
+                    break;
+                }
+            }
+            else if ((date_month == 1 || date_month == 3 || date_month == 5 || date_month == 7 || date_month == 8 || date_month == 10 ) && date_date + AddDayCount > 31){
+                dd.setMonth(date_month);
+                dd.setDate(date_date+AddDayCount - 31);
+            }
+            else if(date_month == 12 && date_date + AddDayCount > 31){
+                dd.setDate(date_date+AddDayCount - 31);
+                dd.setMonth(0);
+                dd.setFullYear(date_year + 1);
+            }
+            else if ((date_month == 4|| date_month == 6 || date_month == 9 || date_month == 11) && date_date + AddDayCount > 30){
+                dd.setMonth(date_month);
+                dd.setDate(date_date+AddDayCount - 30);
+            }
+            else{
+                dd.setDate(date_date + AddDayCount);
+            }
+        break;
+        case 0:
+            if ((date_month == 3) && date_date + AddDayCount <= 0){
+                switch(is_leap){
+                    case 1:
+                        if(date_date + AddDayCount <= 0){
+                            dd.setMonth(date_month - 2);
+                            dd.setDate(date_date + 29 + AddDayCount);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+                    break;
+
+                    case 0:
+                        if(date_date + AddDayCount <= 0){
+                            dd.setMonth(date_month - 2);
+                            dd.setDate(date_date + 28 + AddDayCount);
+                        }
+                        else{
+                            dd.setDate(date_date + AddDayCount);
+                        }
+
+                    break;
+                }
+            }
+            else if ((date_month == 2 || date_month == 4 || date_month == 6 || date_month == 8 || date_month == 9 || date_month == 11 ) && date_date + AddDayCount <= 0){
+                dd.setMonth(date_month - 2);
+                dd.setDate(date_date + 31 + AddDayCount);
+            }
+            else if(date_month == 1 && date_date + AddDayCount <= 0){
+                dd.setFullYear(date_year - 1);
+                dd.setMonth(11);
+                dd.setDate(date_date + 31 + AddDayCount);
+            }
+            else if ((date_month == 5|| date_month == 7 || date_month == 10 || date_month == 12) && date_date + AddDayCount <= 0){
+                dd.setMonth(date_month - 2);
+                dd.setDate(date_date + 30 + AddDayCount);
+            }
+            else{
+                dd.setDate(date_date + AddDayCount);
+            }
+        break;
+    }
+
+    //
+    var y = dd.getFullYear();
+    var m = (dd.getMonth()+1)<10?"0"+(dd.getMonth()+1):(dd.getMonth()+1);//获取当前月份的日期，不足10补0
+    var d = dd.getDate()<10?"0"+dd.getDate():dd.getDate(); //获取当前几号，不足10补0
+    var str = y+"-"+m+"-"+d+" 00:00:00";
+    str = str.replace(/-/g,"/");
+    var new_date = new Date(str);
+    return new_date;
 }

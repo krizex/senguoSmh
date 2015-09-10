@@ -1468,16 +1468,14 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_id           = order.shop_id
 		totalprice        = order.new_totalprice
 
-		self.order_done_msg(session,order,other_access_token)
-
 		order.shop.is_balance = 1
 		order.shop.order_count += 1  #店铺订单数加1
 
-		#add by jyj 2015-6-15
+		# add by jyj 2015-6-15
 		order.shop.shop_property += totalprice
 		# print("[_AccountBaseHandler]order_done: order.shop.shop_property:",order.shop.shop_property)
 
-		#订单完成，库存不变，在售减少，销量增加
+		# 订单完成，库存不变，在售减少，销量增加
 		fruits = eval(order.fruits)
 		if fruits:
 			# print("[_AccountBaseHandler]order_done: fruits.keys():",fruits.keys())
@@ -1507,7 +1505,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			order_count = session.query(models.Order).filter_by(customer_id = customer_id,shop_id = shop_id).count()
 		except:
 			self.send_fail("[_AccountBaseHandler]order_done: find order by customer_id and shop_id error")
-		#首单 积分 加5 ,woody
+		# 首单 积分 加5 ,woody
 		if order_count==1:
 			if shop_follow.shop_point == None:
 				shop_follow.shop_point =0
@@ -1552,7 +1550,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				available_balance=order.shop.available_balance,balance_type = 7,shop_province=order.shop.shop_province,shop_name=order.shop.shop_name)
 			session.add(balance_history)
 
-		#增 与订单总额相等的积分
+		# 增 与订单总额相等的积分
 		if shop_follow.shop_point == None:
 			shop_follow.shop_point = 0
 			shop_follow.shop_point += totalprice
@@ -1566,6 +1564,8 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				point_history.each_point = totalprice
 				session.add(point_history)
 		session.commit()
+		# 订单处理完成，发送订单完成消息
+		self.order_done_msg(session,order,other_access_token)
 
 	# woody 7.23
 	# 生成是否关注微信公众号的二维码
@@ -1586,7 +1586,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 	def make_scene_id():
 		session = models.DBSession()
 		while True:
-			scene_id = random.randint(1,2**20)
+			scene_id = random.randint(100000000,999999999)
 			scene_openid = session.query(models.Scene_Openid).filter_by(scene_id=scene_id).first()
 			if not scene_openid:
 				break
@@ -2061,8 +2061,8 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		q_all=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=-2,status=1).with_lockmode('update').first()
 		q_part=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods_group=tmp_charge.fruit.group_id,use_goods=-1,status=1).with_lockmode('update').first()	
 		q_goods=self.session.query(models.DiscountShop).filter_by(shop_id=cart.shop_id,use_goods=tmp_charge.fruit.id,status=1).with_lockmode('update').first()
-		print(q_all,"@@@@@1")
-		print(q_goods,"@@@@@2")
+		# print(q_all,"@@@@@1")
+		# print(q_goods,"@@@@@2")
 		key=charge_type_id
 		if d:
 			if inc == 2:#加1
@@ -2074,9 +2074,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
 					qqq.incart_num+=1
 				elif q_part:
-					print(q_part.incart_num,"@@@@@3")	
+					# print(q_part.incart_num,"@@@@@3")	
 					q_part.incart_num+=1
-					print(q_part.incart_num,"@@@@@4")
+					# print(q_part.incart_num,"@@@@@4")
 					qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
 					qqq.incart_num+=1
 					
@@ -2755,8 +2755,8 @@ class WxOauth2:
 			template_id = cls.get_template_id(admin_id,template_id_short,access_token)
 			if not template_id:
 				return False
-			else:
-				print('template_id get success',template_id)
+			# else:
+			# 	print('template_id get success',template_id)
 		else:
 			template_id = '5s1KVOPNTPeAOY9svFpg67iKAz8ABl9xOfljVml6dRg'
 		remark = "订单总价：" + str(order_totalPrice)+ '\n'\

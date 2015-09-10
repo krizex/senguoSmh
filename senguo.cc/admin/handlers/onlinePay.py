@@ -39,13 +39,14 @@ class RefundWxpay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.totalPrice
+		transaction_id = order.transaction_id
 		refund_pub = Refund_pub()
 		refund_pub.setParameter("out_trade_no",transaction_id)
 		refund_pub.setParameter("out_refund_no",transaction_id)
 		refund_pub.setParameter("total_fee",totalPrice)
 		refund_pub.setParameter('refund_fee',totalPrice)
 		refund_pub.setParameter('op_user_id','1223121101')
-		res = refund_pub.postXml()
+		res = refund_pub.postXmlSSL()
 		if isinstance(res,bytes):
 			bianma = chardet.detect(res)['encoding']
 			res    = res.decode(bianma)
@@ -185,11 +186,11 @@ class OnlineWxPay(CustomerBaseHandler):
 		order_num = order.num
 		totalPrice = order.new_totalprice
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
-		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
+		# shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		wxPrice =int(totalPrice * 100)
 		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
+		unifiedOrder.setParameter("body",'Order No. '+str(order_num))
 		unifiedOrder.setParameter("notify_url",url)
 		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
 		unifiedOrder.setParameter('total_fee',wxPrice)

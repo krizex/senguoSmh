@@ -3,7 +3,7 @@ import dal.models as models
 import tornado.web
 import time, datetime
 from settings import ROOT_HOST_NAME
-from sqlalchemy import exists, func, extract, DATE, desc,or_
+from sqlalchemy import exists, func, extract, DATE, desc,or_,distinct
 from dal.dis_dict import dis_dict
 from libs.msgverify import check_msg_token,get_access_token,user_subscribe,shop_auth_msg,shop_auth_fail_msg
 
@@ -734,15 +734,15 @@ class User(SuperBaseHandler):
 		sum = {}
 		if level == 0:
 			q = self.session.query(models.Accountinfo)
-			sum["admin"] = self.session.query(models.SuperAdmin).count()
-			sum['customer'] = self.session.query(models.Customer).count()
+			sum["admin"] = self.session.query(models.Shop.admin_id).distinct(models.Shop.admin_id).count()
+			sum['customer'] = self.session.query(models.Customer.id).count()
 		elif level == 1:
 			shop_province = self.code_to_text('province',shop_province)
 			shop_province = shop_province[0:len(shop_province)-1]
 			q = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
-			sum["admin"] = self.session.query(models.ShopAdmin).join(models.Accountinfo,models.ShopAdmin.id==models.Accountinfo.id).filter(
-				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.ShopAdmin.id).count()
-			sum["customer"] = self.session.query(models.Customer).filter(models.Customer,models.Accountinfo.id==models.Customer.id).filter(
+			sum["admin"] = self.session.query(models.Shop.admin_id).join(models.Accountinfo,models.Shop.admin_id==models.Accountinfo.id).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.Shop.admin_id).count()
+			sum["customer"] = self.session.query(models.Customer.id).join(models.Accountinfo,models.Accountinfo.id==models.Customer.id).filter(
 				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.Customer.id).count()
 		else:
 			return self.send_fail('level error')
@@ -819,6 +819,7 @@ class User(SuperBaseHandler):
 		return self.send_success(data=users)
 
 # 统计 - 用户增长
+# modified by sunmh 2015年09月04日19:36:03
 class IncStatic(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
@@ -830,91 +831,156 @@ class IncStatic(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("action:str")
 	def post(self):
 		action = self.args["action"]
-		if action == "curve":
-			return self.curve()
+		if action == "user_trend":
+			return self.user_trend()
 		else:
 			return self.error(404)
 
-	@SuperBaseHandler.check_arguments("page:int")
-	def curve(self):
-		page = self.args["page"]
-		
-		if page == 0:
-			now = datetime.datetime.now()
-			start_date = datetime.datetime(now.year, now.month, 1)
-			end_date =datetime.datetime(now.year,now.month,now.day,23,59,59)
-			# print("[SuperIncStatic]end_date:",end_date)
-		else:
-			date = self.monthdelta(datetime.datetime.now(), page)
-			start_date = datetime.datetime(date.year, date.month, 1)
-			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
-			# print("[SuperIncStatic]end_date:",end_date)
-
-		# woody 8.4
+	@SuperBaseHandler.check_arguments("action:str","type:int","current_year?:str","current_month?:str")
+	def user_trend(self):
 		level = self.current_user.level
+		if level != 0 and level != 1:
+			return self.send_fail('level error')
+
 		shop_province = self.current_user.province
-		# level = 1
-		# shop_province = 420000
 		if shop_province:
 			shop_province = self.code_to_text('province',shop_province)
 			shop_province = shop_province[0:len(shop_province)-1]
-		if level == 0:
-			q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
-				filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
-					   models.Accountinfo.create_date_timestamp < end_date.timestamp())
-		elif level == 1:
-			q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
-				filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)),models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
-					   models.Accountinfo.create_date_timestamp < end_date.timestamp())
+		# level = 1
+		# shop_province = 420000
+
+		type = self.args["type"]
+		current_year = self.args['current_year']
+		#type=1表示按天来进行排序,只取当前月份的
+		if type == 1:
+			#先初始化要用的变量
+			current_month = self.args['current_month']
+			#1.定义query和join部分
+			q_all=self.session.query(func.count(distinct(models.Accountinfo.id)),func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_admin=q_all.join(models.Shop,models.Accountinfo.id == models.Shop.admin_id)
+			q_customer=q_all.join(models.Customer,models.Accountinfo.id == models.Customer.id)
+			q_range=self.session.query(func.day(func.now()))
+			#2.定义filter部分
+			q_all=q_all.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y-%m')==current_year+'-'+current_month)
+			q_admin=q_admin.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y-%m')==current_year+'-'+current_month)
+			q_customer=q_customer.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y-%m')==current_year+'-'+current_month)
+			if level==1:
+				q_all=q_all.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_admin=q_admin.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_customer=q_customer.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			q_phone=q_all.filter(models.Accountinfo.phone != '')
+			#3.定义group部分
+			q_all=q_all.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_admin=q_admin.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_customer=q_customer.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_phone=q_phone.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+		#type=2表示按周来进行排序，取全年的所有周的数据
+		elif type==2:	
+			#1.定义query和join部分
+			q_all=self.session.query(func.count(distinct(models.Accountinfo.id)),func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_admin=q_all.join(models.Shop,models.Accountinfo.id == models.Shop.admin_id)
+			q_customer=q_all.join(models.Customer,models.Accountinfo.id == models.Customer.id)
+			q_range=self.session.query(func.week(func.now(),1))
+			#2.定义filter部分
+			q_all=q_all.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_admin=q_admin.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_customer=q_customer.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			if level==1:
+				q_all=q_all.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_admin=q_admin.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_customer=q_customer.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			q_phone=q_all.filter(models.Accountinfo.phone != '')
+			#3.定义group部分
+			q_all=q_all.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_admin=q_admin.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_customer=q_customer.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_phone=q_phone.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+		#type=3表示按月来进行排序，取全年的所有月份的数据
+		elif type==3:
+			#1.定义query和join部分
+			q_all=self.session.query(func.count(distinct(models.Accountinfo.id)),func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_admin=q_all.join(models.Shop,models.Accountinfo.id == models.Shop.admin_id)
+			q_customer=q_all.join(models.Customer,models.Accountinfo.id == models.Customer.id)
+			q_range=self.session.query(func.month(func.now()))
+			#2.定义filter部分
+			q_all=q_all.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_admin=q_admin.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_customer=q_customer.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			if level==1:
+				q_all=q_all.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_admin=q_admin.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_customer=q_customer.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			q_phone=q_all.filter(models.Accountinfo.phone != '')
+			#3.定义group部分
+			q_all=q_all.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_admin=q_admin.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_customer=q_customer.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_phone=q_phone.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
 		else:
-			return self.send_fail('level error')
-			
-		all_infos = q.all()
-		admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
-		customer_infos = q.filter(exists().where(models.Accountinfo.id == models.Customer.id)).all()
-		phone_infos = q.filter(models.Accountinfo.phone != '').all()
+			return self.send_error(404)
 
-		data = {}
-		for x in range(1, end_date.day+1):  # 初始化数据
-			data[x] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+		data = []
+		now=datetime.datetime.now()
+		#数组的大小
+		if type==1 and int(current_year) == now.year and int(current_month) == now.month:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif type==1:
+			if current_month in ('01','03','05','07','08','10','12'):
+				rangeOfArray=31
+			elif current_month in ('04','06','09','11'):
+				rangeOfArray=30
+			elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
+				rangeOfArray=29
+			else:
+				rangeOfArray=28
+		elif (type==2 or type==3) and int(current_year) == now.year:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif type==2:
+			rangeOfArray=52
+		else:
+			rangeOfArray=12
 
-		def count(infos, i):
-			for info in infos:
-				day = datetime.datetime.fromtimestamp(info[1]).day
-				data[day][i] += 1
+		#初始化返回的数组
+		for x in range(0, rangeOfArray):
+			data.append({'admin': 0, 'customer': 0, 'phone': 0,'all':0,'addup':0})
 
-		count(all_infos, 1)		#计算增加的所有用户的数量
-		count(admin_infos, 2)	#计算增加的商家的数量
-		count(customer_infos, 3)#计算增加的顾客的数量
-		count(phone_infos, 4)	#计算增加的有留电话的用户数量
+		#组装数组
+		def assembleArray(s_type,q_infos):
+			for info in q_infos:
+				index = int(info[1])-1
+				value = info[0]
+				data[index][s_type] = value
+		
+		assembleArray('admin',q_admin.all())
+		assembleArray('customer',q_customer.all())
+		assembleArray('phone',q_phone.all())
+		assembleArray('all',q_all.all())
+
 		#modified by sunmh 计算total时，需要加上过滤条件
+		#表中包含时间戳为0的数据，不统计这些数据 sunmh 
+		begin_date=datetime.datetime(1970,1,1,8,0,0)
 		if level == 0:
+			if type==1:
+				end_date=datetime.datetime(int(current_year),int(current_month),rangeOfArray,23,59,59)
+			else:
+				end_date=datetime.datetime(int(current_year),12,31,23,59,59)
 			total = self.session.query(models.Accountinfo).\
-					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).count()
+					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).filter(models.Accountinfo.create_date_timestamp > begin_date.timestamp()).count()
 		elif level == 1:
+			if type==1:
+				end_date=datetime.datetime(int(current_year),int(current_month),rangeOfArray,23,59,59)
+			else:
+				end_date=datetime.datetime(int(current_year),12,31,23,59,59)
 			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).\
-					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).count()
+					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).filter(models.Accountinfo.create_date_timestamp > begin_date.timestamp()).count()
 		else:
 			return self.send_fail('level error')
+		#计算累计用户数
+		for x in range(0, rangeOfArray)[::-1]:
+			data[x]['addup'] = total
+			total -= data[x]['all']
 
-		#计算每日的累计用户数
-		for x in range(1, end_date.day+1)[::-1]:
-			data[x][5] = total
-			total -= data[x][1]
-		l = []
-		for key in data:
-			l.append((end_date.strftime('%Y-%m-') + str(key), key, data[key][1],
-					  data[key][2], data[key][3], data[key][4], data[key][5]))
-		if level == 0:
-			first_info = self.session.query(models.Accountinfo).first()
-		elif level == 1:
-			first_info = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).first()
-		else:
-			return self.send_fail('level error')
-
-		page_sum = (datetime.datetime.now() - datetime.datetime.
-					fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
-		return self.send_success(data=l[::-1], page_sum=page_sum)
+		return self.send_success(data=data)
 
 # 统计 - 余额统计
 # add by sunmh 2015年09月01日11:26:57
@@ -955,17 +1021,17 @@ class AmountStatic(SuperBaseHandler):
 			q_wechat=q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
 			# 按天分组，获取所有的从支付宝进入平台的金额
 			q_alipay=q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
-			# 获取当前月份的所有记录中日期数最大的记录，便于确定返回的数组的大小
-			q_range=self.session.query(func.max(func.day(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month)
+			q_range=self.session.query(func.day(func.now()))
 			#print(q_range.all()[0][0])
 		elif type==2:	#type=2表示按周来进行排序，取全年的所有周的数据
+			#修改，每周是按照周一到周日来算的，所以要给week的第二个参数赋值 sunmh 2015年09月03日14:52:14
 			current_year = self.args['current_year']
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time)).\
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time))
-			q_range=self.session.query(func.max(func.week(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year)
+			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_range=self.session.query(func.week(func.now(),1))
 			#print(q_range.all())
 		elif type==3:	#type=3表示按月来进行排序，取全年的所有月份的数据
 			current_year = self.args['current_year']
@@ -974,44 +1040,47 @@ class AmountStatic(SuperBaseHandler):
 			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
 			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
 			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
-			q_range = self.session.query(func.max(func.month(models.BalanceHistory.create_time))).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year)
+			q_range=self.session.query(func.month(func.now()))
 			#print(q_range.all())
 		else:
 			return self.send_error(404)
 
 		data = []
+		now=datetime.datetime.now()
 		#数组的大小
-		if q_range.all()[0][0] is not None:
+		if type==1 and int(current_year) == now.year and int(current_month) == now.month:
 			rangeOfArray=int(q_range.all()[0][0])
-			for x in range(1, rangeOfArray+1):
-				data.append({'total': 0, 'wechat': 0, 'alipay': 0})
-			#组装数组
-			def assembleArray(s_type,q_infos):
-				for info in q_infos:
-					index = info[1]-1
-					value = round(info[0],2)
-					data[index][s_type] = value
-			
-			assembleArray('total',q_total.all())
-			assembleArray('wechat',q_wechat.all())
-			assembleArray('alipay',q_alipay.all())
-		else:
-			if type==1:
-				if current_month in ('01','03','05','07','08','10','12'):
-					rangeOfArray=31
-				elif current_month in ('04','06','09','11'):
-					rangeOfArray=30
-				elif int(current_year)%4==0:
-					rangeOfArray=29
-				else:
-					rangeOfArray=28
-			elif type==2:
-				rangeOfArray=52
+		elif type==1:
+			if current_month in ('01','03','05','07','08','10','12'):
+				rangeOfArray=31
+			elif current_month in ('04','06','09','11'):
+				rangeOfArray=30
+			elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
+				rangeOfArray=29
 			else:
-				rangeOfArray=12
-			for x in range(1, rangeOfArray+1):
-				data.append({'total': 0, 'wechat': 0, 'alipay': 0})
-		#print(data)
+				rangeOfArray=28
+		elif (type==2 or type==3) and int(current_year) == now.year:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif type==2:
+			rangeOfArray=52
+		else:
+			rangeOfArray=12
+
+		#初始化返回的数组
+		for x in range(0, rangeOfArray):
+			data.append({'total': 0, 'wechat': 0, 'alipay': 0})
+
+		#组装数组
+		def assembleArray(s_type,q_infos):
+			for info in q_infos:
+				index = info[1]-1
+				value = round(info[0],2)
+				data[index][s_type] = value
+		
+		assembleArray('total',q_total.all())
+		assembleArray('wechat',q_wechat.all())
+		assembleArray('alipay',q_alipay.all())
+		
 		return self.send_success(data=data)
 
 
