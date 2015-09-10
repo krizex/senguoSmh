@@ -1,5 +1,6 @@
 body{background-color:#f5f5f7;}
-.map_box{background:url('/static/official_img/slide_bg.jpg') no-repeat;height:882px;background-size:130%;padding-top:60px;}
+.map_box{position:relative;height:882px;background:#304864;padding-top:60px;overflow: hidden;}
+.shop_listbg{position: absolute;z-index:0;top: 0;left: 0;width: 100%;}
 .map_box .box{width:800px;margin:0 auto;}
 .map{width:100%;height:700px;}
 .list_box{width:100%;}
