@@ -2506,7 +2506,9 @@ class Goods(AdminBaseHandler):
 						return self.send_fail('该商品分组不存在或已被删除')
 				else:
 					args["group_id"] =group_id
-
+			code = "TDSG"
+			if "code" in data and data["code"]:
+				code = data["code"]
 			if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 				index_list = data["img_url"]["index"]
 				img_list = data["img_url"]["src"]
@@ -2517,9 +2519,9 @@ class Goods(AdminBaseHandler):
 						if val == i:
 							imgurl = img_list[index]
 							img_urls.append(imgurl)
-							picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl).first()
+							picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code).first()
 							if not picture:
-								self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl))
+								self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code))
 						args["img_url"] = ";".join(img_urls)  if img_urls else None
 
 			if "priority" in data:
@@ -2625,6 +2627,9 @@ class Goods(AdminBaseHandler):
 							group_id = group_id
 						else:
 							return self.send_fail('该商品分组不存在或已被删除')
+				code = "TDSG"
+				if "code" in data and data["code"]:
+					code = data["code"]
 				if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 					index_list = data["img_url"]["index"]
 					img_list = data["img_url"]["src"]
@@ -2636,9 +2641,9 @@ class Goods(AdminBaseHandler):
 							if val == i:
 								imgurl = img_list[index]
 								img_urls.append(imgurl)
-								picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl).first()
+								picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code).first()
 								if not picture:
-									self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl))
+									self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code))
 							if img_urls:
 								_img_urls = ";".join(img_urls)
 							else:
@@ -4958,7 +4963,7 @@ class WirelessPrint(AdminBaseHandler):
 
 class GetPicture(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("action:str","page:int","code?")
+	@AdminBaseHandler.check_arguments("action:str","page:int","code?","id?:int")
 	def get(self):
 		action = self.args["action"]
 		page = int(self.args["page"])
@@ -4966,7 +4971,6 @@ class GetPicture(AdminBaseHandler):
 			code = self.args["code"]
 		else:
 			code = "TDSG"
-		print(code)
 		datalist = []
 		page_size = 12
 		if not action:
@@ -4979,7 +4983,16 @@ class GetPicture(AdminBaseHandler):
 			picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1,code=code).order_by(models.PictureLibrary.create_time.desc())
 		pictures = picture_list.offset(page*page_size).limit(page_size).all()
 		for picture in pictures:
-			datalist.append({"imgurl":picture.img_url,"id":picture.id})
+			status = 0
+			if "id" in self.args and self.args["id"] !=[]:
+				_id =int(self.args["id"])
+				fruit = self.session.query(models.Fruit).filter_by(id=_id).filter("active"!=0).first()
+				if fruit and fruit.img_url:
+					imgs = fruit.img_url.split(";")
+					if picture.img_url in imgs:
+						status = 1
+
+			datalist.append({"imgurl":picture.img_url,"id":picture.id,"status":status})
 		if page == 0:
 			total_page = picture_list.count()//page_size
 			return self.send_success(datalist=datalist,total_page=total_page)

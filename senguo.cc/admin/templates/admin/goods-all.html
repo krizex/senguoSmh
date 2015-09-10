@@ -342,7 +342,7 @@
         </div>
     </li>
 </ul>
-<div class="pop-win pop-img-win">
+<!-- <div class="pop-win pop-img-win">
     <div class="pop-up-img" data-index="">
         <div class="pop-img-top">
             <p><span class="c333">本地图片 : </span>最多上传5张</p>
@@ -351,21 +351,21 @@
                     <a href="javascript:;" class="add-item-list" id="add-img-btn">+</a>
                 </li>
             </ul>
-        <!--     <p class="group mt10"><span class="c333">森果图片库 : </span><span class="red-txt goods-classify-txt">苹果</span></p>
+            <p class="group mt10"><span class="c333">森果图片库 : </span><span class="red-txt goods-classify-txt">苹果</span></p>
             <ul class="item-img-lst group sg-img-list">
                 <li class="img-bo" id="demo-img">
                     <div class="img-selected">已选</div>
                     <img src="" alt="商品图片"/>
                     <a class="show-bigimg" data-src="" href="javascript:;">预览大图</a>
                 </li>
-            </ul> -->
+            </ul>
         </div>
         <div class="wrap-pop-btn">
             <a href="javascript:;" class="ok-btn" id="upload-img">确认上传</a>
             <a href="javascript:;" class="cancel-btn">取消</a>
         </div>
     </div>
-</div>
+</div> -->
 <div class="pop-win pop-picture-library">
     <div class="wrap-sty-box">
          <ul class="picture-title wrap-sty">
@@ -385,7 +385,11 @@
                 </li>
             </ul>
             <ul class="group picture-list default-pic-list hide">
-                <li class="" id="demo-img"><img src="" alt="商品图片"/></li>
+                <li class="picture-list-item" id="demo-img">
+                    <a href="javascript:;" class="del-pic-img">x</a>
+                    <div class="img-selected">已选</div>
+                    <img src="" alt="商品图片"/>
+                </li>
             </ul>
             <div class="picture-pagination list-pagination group pull-right mt0">
                 <ul>
@@ -399,7 +403,12 @@
                 </ul>
             </div>
         </div>
+        <p class="picture-title3">预览</p>
+        <ul class="choosed-list">
+
+        </ul>
          <div class="wrap-sty">
+            <a href="javascript:;" class="ok-btn" id="upload-img">确认</a>
             <a href="javascript:;" class="cancel-btn">取消</a>
         </div>
     </div>

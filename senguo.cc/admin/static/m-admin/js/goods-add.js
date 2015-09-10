@@ -395,6 +395,7 @@ function getPicture(action,page,code){
         type:"get",
         success:function(res){
             if(res.success){
+                $('.upload-pic-list').empty();
                 var data = res.datalist;
                 var total = res.total_page;
                 if(total<=page){
@@ -493,6 +494,7 @@ function finishGoods(){
     var unit = $(".current-unit").attr("data-id");
     var tag =$(".wrap-tag").find(".active").attr("data-id");
     var buylimit =$(".wrap-buylimit").find(".active").attr("data-id");
+    var code=$(".choose_classify").attr("data-code");
     if(name.length>25 || name==""){
         return Tip("商品名称不能为空且不能超过25个字");
     }
@@ -608,7 +610,8 @@ function finishGoods(){
         intro: info,//商品简介,
         name: name,//商品名称,
         tag:tag,
-        buylimit:buylimit
+        buylimit:buylimit,
+        code:code
     };
     if(type == "edit"){
         data.goods_id=goods_id;

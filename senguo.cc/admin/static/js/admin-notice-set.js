@@ -173,7 +173,7 @@ $(document).ready(function(){
         var action=$(".pop-picture-library").attr("action");
         var img_url=$(this).find("img").attr("url");
         if(action=="edit"){
-            $(".set-list-item").eq(imgIndex-1).find("img").attr({"src":img_url});
+            $(".set-list-item").eq(imgIndex-1).find("img").attr({"src":img_url+"?imageView2/1/w/180/h/100"});
             $(".set-list-item").eq(imgIndex-1).find(".preview-img").attr({"url":img_url});
         }else{
             $("#add-img").attr({"url":img_url,"src":img_url}).removeClass("hide");

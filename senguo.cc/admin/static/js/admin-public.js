@@ -91,16 +91,10 @@ $(document).ready(function(){
         getPicture(pictureType,page_now+1,_cur_code);
         $(".picture-now").text(parseInt(page_now+1));
     }
-    console.log(page_toatal);
-     console.log(page_now);
-   
 }).on("click",".picture-jump-to",function(){
     var page_now=parseInt($(".picture-now").text());
     var page_toatal=parseInt($(".picture-total").text());
     var page=parseInt($(".picture-page").val().trim());
-    console.log(page_toatal);
-    console.log(page);
-    console.log(page_toatal==page);
     if(page_toatal==page){
         $(".picture-next-page").hide();
     }else{
@@ -163,16 +157,17 @@ function getPicture(action,page,code){
                     $(".picture-pagination").hide();
                 }
                 $('.upload-pic-list').empty();
-                var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
+                var item='<li class="img-bo picture-list-item {{ if status ==1 }} active{{/if}}" data-id="{{id}}">'+
                         '<a href="javascript:;" class="del-pic-img">x</a>'+
                         '<div class="img-selected">已选</div>'+
-                        '<img src="{{imgurl}}?imageView2/1/w/80/h/80" url="{{imgurl}}" alt="商品图片"/>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/100/h/100" url="{{imgurl}}" alt="商品图片"/>'+
                     '</li>';
                 for(var key in data){
                     var render = template.compile(item);
                     var html = render({
                         imgurl:data[key]['imgurl'],
-                        id:data[key]['id']
+                        id:data[key]['id'],
+                        status:data[key]['status']
                     });
                     $('.upload-pic-list').append(html);
                 }
