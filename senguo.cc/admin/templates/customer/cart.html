@@ -16,23 +16,26 @@
                     {% else %}
                     <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png"/>
                     {% end %}
+                    <span class="status-goods {% if cart_f[key]['activity_type']==1 %}status-seckill{% elif cart_f[key]['activity_type']==2 %}status-discount{% else %}hidden{% end %}"></span>
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
                             <span class="name pull-left color">{{cart_f[key]['charge_type'].fruit.name}}</span>
                             <span class="price pull-left">￥<span class="item_total_price"></span></span>
                         </div>
                     <span class="p0 charge-type pull-left color" data-id="{{cart_f[key]['charge_type'].id}}">
-                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>元/{{cart_f[key]['charge_type'].num}}<span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                        <span class="item_price">{{round(cart_f[key]['charge_type'].price*cart_f[key]['discount_rate'],2)}}</span>元/{{cart_f[key]['charge_type'].num}}<span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
                     </span>
                     </div>
                     <div class="action-box font14">
-                    <span class="pull-left number-change set-inl-blo">
-                        <button class="minus-plus text-green  number-plus text-center font18 bg_change"></button>
-                        <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
-                        <button class="minus-plus text-green  number-minus text-center font18 bg_change"></button>
-                    </span>
+                        {% if cart_f[key]['activity_type']!=1 %}
+                        <span class="pull-left number-change set-inl-blo">
+                            <button class="minus-plus text-green  number-plus text-center font18 bg_change"></button>
+                            <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
+                            <button class="minus-plus text-green  number-minus text-center font18 bg_change"></button>
+                        </span>
+                        {% end %}
                         <div class="pull-right delete-btn">
-                            <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
+                            <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey" activity_type="{{cart_f[key]['activity_type']}}">x</a>
                         </div>
                     </div>
                 </div>
@@ -77,7 +80,7 @@
                         {% end %}
                         <ul class="now-period-choose">
                             {% if config.now_on == True%}<!--立即送-->
-                             <li  class="list-group-item available seth-50 item send-now text-grey" data-config="{{config.now_on}}">
+                             <li class="list-group-item available seth-50 item send-now text-grey" data-config="{{config.now_on}}">
                                 <a href="javascript:;" class="pull-right checkbox-btn"></a>
                                 <span class="pull-left set-inl-blo">{{config.intime_period or 0}}分钟内送达<span class="font12 text-greyc ml10">( {{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}} )</span></span>
                                 <input type="hidden" class="now_startHour" value="{{config.start_time_now}}"/>
@@ -205,7 +208,7 @@
                     <span class="pull-right ">余额：{{balance_value}}元&nbsp;&nbsp;<a href="{{reverse_url('customerBalance')}}?shop_id={{shop_id}}" class="a-cz" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">+充值</a></span>
                 </p>
                 <ul id="payType" class="pay_type list-group font12" data-shop="{{shop_status}}">
-                   <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-type="wx" data-auth="{{show_balance}}" data-status="{{config.online_on_active}}">
+                    <li data-id="3" class="list-group-item clearfix line50 height50 item" id="online-pay" data-type="wx" data-auth="{{show_balance}}" data-status="{{config.online_on_active}}">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">在线支付</span>
                             <span class="pull-left text-grey9" style="max-width: 60%;">下单的同时完成付款</span>
@@ -229,7 +232,7 @@
                             </ul>
                         </div>
                     </li>
-                   <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
+                    <li data-id="2" class="list-group-item clearfix line50 height50 item" id="balance-pay" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">
                         <a href="javascript:;" class="text-grey">
                             <span class="text-grey3 pull-left title set-inl-blo font14">余额支付</span>
                             <span class="pull-left text-grey9" style="max-width: 60%;">使用充值的余额极速下单</span>
@@ -269,7 +272,7 @@
     </div>
     <div class="pay-bill">
         {% if config.text_message_active  == 1 and shop_new !=1 and current_user.accountinfo.phone == None %}
-        <button  class="first_notice sure_btn  text-center  pull-left ml10" id="phoneNumber">请绑定手机号!</button>
+        <button  class="first_notice sure_btn  text-center  pull-left ml10" id="phoneNumber">请先绑定手机号！</button>
         {% end %}
         <span class="pull-left coupon-text hidden">已优惠 <span id="coupon-money"></span>元</span>
         <span class="yellow-text">总计：<span class="yellow-text"><span class="final_price yellow-text" id="total_price"></span></span> 元</span>

@@ -1,5 +1,5 @@
 {% extends 'count-base.html' %}
-{% block title%}余额统计{% end %}
+{% block title%}资金流入统计{% end %}
 {% block head %}<link rel="stylesheet" href="{{static_url('css/admin-count.css')}}"/>{% end %}
 {% block count %}
 <div class="box admin-right pull-right">
@@ -13,27 +13,24 @@
                  <a href="javascript:;" class="next-item1 text-grey2"> > </a>
     </div>
     <div class="change-box mb55">　　
-        <ul id="sell_way_change" class="sell-change-list1 pull-left">
+        <ul id="amount_way_change" class="amount-change-list1 pull-left">
                     <li><a href="javascript:;" class="sort-date1 text-grey3">按天排</a></li>
                     <li><a href="javascript:;" class="sort-week1 text-grey3">按周排</a></li>
                     <li><a href="javascript:;" class="sort-month1 text-grey3">按月排</a></li>
         </ul>
     </div>
     <div id="amount_trend" style="height:400px"></div>
-    <!-- <p class="text-center">新增用户数</p>
     <hr/>
-    <p class="tit font16">详细数据</p>
+    <p class="tit font16">详细数据 </p>
     <table class="detail-count text-center table-count">
         <tr class="bg-grey2 title">
             <td>时间</td>
-            <td>卖家数</td>
-            <td>商城用户</td>
-            <td>已绑定手机</td>
-            <td>总用户</td>
-            <td>用户累计</td>
+            <td>总流入</td>
+            <td>支付宝</td>
+            <td>微信</td>
         </tr>
     </table>
-    <div class="users-pagination list-pagination clearfix">
+   <!--  <div class="users-pagination list-pagination clearfix">
         <ul>
             <li><a href="javascript:;" class="page-btn pre-page">&nbsp;</a></li>
             <li>
@@ -49,4 +46,5 @@
 {% block bottom %}
 <script src="/static/js/echarts.js"></script>
 <script src="{{static_url('js/superadmin-count_amount.js')}}"></script>
+<script src="{{static_url('js/superadmin-public.js')}}"></script>
 {% end %}

@@ -57,6 +57,7 @@ $(document).ready(function(){
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
     $("html,body").removeClass("flow-hidden");
+    document.body.scrollTop = 0;
 }).on("click",".current-unit",function(){//库存单位
     if(confirm("修改库存单位后现有的售价方式会被修改成库存单位，确认修改？")){
         price_type = 0;
@@ -481,6 +482,16 @@ function simpleUnitSwitch(price_unit,cur_unit,id){
     cur_price.find(".first-num").html(first);
     cur_price.find(".second-num").html(second);
 }
+//android端上传图片
+function uploadImgForAndroid(url){
+    var w = width+10;
+    var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img src="'+url+'?imageView2/1/w/100/h/100" url="'+url+'" alt="商品图片" class="image"/><a href="javascript:;" class="icon-del"></a></li>');
+    $("#add-img").closest("li").before($item);
+    if ($("#img_list").children("li").size() == 6) {
+        $("#img-lst").addClass("hide");
+        $(".moxie-shim").addClass("hide");
+    }
+}
 $(document).ready(function(){
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
@@ -503,6 +514,7 @@ $(document).ready(function(){
         auto_start: true,
         init: {
             'FilesAdded': function (up, files) {
+                //console.log(typeof files[0]);
                 var file = files[0];
                 var isOri = "";
                 EXIF.getData(file.getNative(), function() {
@@ -595,6 +607,18 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
         preloader.load( file.getSource() );
     }
 }
+
+//android端上传图片
+function uploadImgForAndroid(url){
+    var w = width+10;
+    var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img src="'+url+'?imageView2/1/w/100/h/100" url="'+url+'" alt="商品图片" class="image"/><a href="javascript:;" class="icon-del"></a></li>');
+    $("#add-img").closest("li").before($item);
+    if ($("#img_list").children("li").size() == 6) {
+        $("#img-lst").addClass("hide");
+        $(".moxie-shim").addClass("hide");
+    }
+}
+
 /*水果分类*/
 function getData(type,sub_type){
     $.ajax({

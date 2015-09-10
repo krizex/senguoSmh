@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}添加公告{% end %}
+{% block title %}{% if notice %}编辑公告{% else %}添加公告{% end %}{% end %}
 {% block head %}
 {% end %}
 {% block header %}
 <input type="hidden" id="token" value="{{token}}"/>
 <div class="header">
     <a href="javascript:;" class="back backset">返回</a>
-    <span>添加公告</span>
+    <span>{% if notice %}编辑公告{% else %}添加公告{% end %}</span>
     <a href="javascript:;" class="head-right finish-btn" id="finish_btn" data-action="{% if notice %}edit{% else %}add{% end %}" data-id="{% if notice %}{{notice.id}}{% end %}">完成</a>
 </div>
 {% end %}
@@ -14,12 +14,23 @@
 <div class="wrap-shop-address" id="wrap-shop-address">
     <p class="list-title pt10">摘要</p>
     <div class="address-item">
-        <input type="text" class="address-ipt new-notice-title" placeholder="请输入公告摘要" autofocus="true" value="{% if notice %}{{notice.summary}}{% end %}"/>
+        <input type="text" class="address-ipt new-notice-title" placeholder="请输入公告摘要" autofocus="true" value="{% if notice and notice.summary %}{{notice.summary.strip()}}{% end %}"/>
     </div>
+    {% if notice and notice._type==0 or not notice%}
     <p class="list-title pt10">详情</p>
     <div class="notice-item">
-        <textarea class="notice-area new-notice-detail" placeholder="请输入公告详情"/>{% if notice %}{{notice.detail}}{% end %}</textarea>
+        <textarea class="notice-area new-notice-detail" placeholder="请输入公告详情"/>{% if notice and notice.detail%}{{notice.detail.strip()}}{% end %}</textarea>
     </div>
+    {% end %}
+    <p class="list-title pt10">链接</p>
+    <div class="address-item">
+        <input type="text" class="address-ipt new-notice-link" placeholder="请输入公告摘要" autofocus="true" value="{% if notice and notice.link %}{{notice.link.strip() or ''}}{% end %}"/>
+    </div>
+    <p class="list-title pt10">点击公告背景跳转</p>
+    <ul class="link-type">
+        <li class="{%if notice and notice.click_type == 0 or not notice%}active{% end %} fl" data-id="0">详情</li>
+        <li class="{%if notice and notice.click_type == 1 %}active{% end %} fr" data-id="1">链接</li>
+    </ul>
     <p class="list-title pt10">图片</p>
     <a href="javascript:;" class="create-btn add-notice-img {% if notice %}hidden{% end %}" id="add-notice-img">+添加图片</a>
     <div class="notive-temp-img {% if notice %}{% else %}hidden{% end %}" id="notice-temp-img">
