@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
     //订单数据
     getOrder();
     orderItem(0);
@@ -42,12 +43,6 @@ $(document).ready(function(){
     if(confirm('是否完成该订单？')){
        orderEdit($this,'edit_status',5); 
     }
-}).on('click','.send_person_list li',function(){
-    var $this=$(this);
-    var val=$this.data('id');
-    if(confirm('是否选择该员工进行配送？')){
-        orderEdit($this,'edit_SH2',val);
-    }//员工修改
 }).on('click','.order_mark',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
@@ -179,9 +174,35 @@ $(document).ready(function(){
     $(this).find(".wrap-operate").removeClass("hide");
 }).on("mouseout",".self-address-list",function(){
     $(".self-address-list").find(".wrap-operate").addClass("hide");
+}).on("click",".order-list-item",function(e){
+    var $this=$(this);
+    var forbid_click=$this.find('.forbid_click');
+    if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+        $this.find(".arrow").toggleClass("hidden"); 
+    }
+}).on("click",".to-staff-choose",function(){
+    var $this=$(this);
+    var staffs=$this.parents(".order-list-item").find(".send_person_list li").clone();
+    staff_index = $this.parents(".order-list-item").index();
+    console.log(staff_index);
+    $(".choose-staff-list").empty().append(staffs);
+    $(".order-staff-box").modal("show");
+}).on('click','.choose-staff-list li',function(){
+    var $this=$(this);
+    $this.addClass("active").siblings("li").removeClass("active");
+}).on("click",".choose-staff-sure",function(){
+    var $item=$('.choose-staff-list .active');
+    _staff_id=$item.attr("data-id");
+    _staff_name=$item.find(".name").text();
+    _staff_img=$item.find(".img").attr("src");
+    if(!_staff_id){
+        return Tip("请选择员工!");
+    }
+    orderEdit($(".order-status").eq(staff_index+1),'edit_SH2',_staff_id);
+    $(".order-staff-box").modal("hide");  
 });
 
-var cur_address = null,edit_flag=false,is_drag = false;
+var cur_address = null,edit_flag=false,is_drag = false,staff_index,_staff_id,_staff_name,_staff_img;
 var num_arr = ["一","二","三","四","五","六","七","八","九","十"];
 var orders=window.dataObj.order;
 var $list_item;
@@ -191,12 +212,12 @@ var order_link='/admin/order';
 var _page=0;
 var _page_total;
 function getOrder(){
-    $.getItem('/static/items/admin/order-item.html?v=20150713',function(data){
+    $.getItem('/static/items/admin/order-item.html?v=20150720',function(data){
             $list_item=data;
             //商品列表item
-    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150613');
+    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150713');
     	    //员工列表item
-    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150613');
+    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150720');
         }
     );
 }
@@ -410,8 +431,9 @@ function orderItem(page){
                         if(_type==3){
                             $item.find('.status_send').children('.status').text('等待自取');
                         }else{
-                            $item.find('.status_send').children('.status').text('配送中');
+                            $item.find('.status_send').children('.status').text(SH2['nickname']+'配送中');
                         }
+                        $item.find('.status-send').find("img").attr({"src":SH2['headimgurl']});
                         $item.find('.status_send').removeClass('hidden');
                         $item.find('.able_edit_order').show();
                         $item.find('.able_edit_sender').show();
@@ -421,20 +443,22 @@ function orderItem(page){
                         if(_type==3){
                             $item.find('.status_finish').children('.status').text('自取完成');
                         }else{
-                            $item.find('.status_finish').children('.status').text('已送达');
+                            $item.find('.status_finish').children('.status').text(SH2['nickname']+'已送达');
                         }
+                        $item.find('.status-finish').find("img").attr({"src":SH2['headimgurl']});
                         $item.find('.status_finish').removeClass('hidden');
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
                     }
                     else if(status==6) {
                         $item.find('.status_comment').removeClass('hidden');
-                        $item.find('.status-comment').show();
+                        $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
                     }
                     else if(status==7) {
                         $item.find('.status_comment').removeClass('hidden');
+                        $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
                         $item.find('.status-autocomment').show();
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
@@ -476,9 +500,10 @@ function orderItem(page){
                     var $sender=$send_change.find('.send_person');
                     var CurrentStaff=function(target,val){
                       target.attr({'data-id':val['id']});
-                      target.find('.sender-code').text(val['id']);
-                      target.find('.sender-name').text(val['nickname']);
-                      target.find('.sender-phone').text(val['phone']);
+                      target.find('.id').text(val['id']);
+                      target.find('.name').text(val['nickname']);
+                      target.find('.img').attr("src",val['headimgurl']);
+                      target.find('.phone').text(val['phone']);
                 };
                 if(SH2s.length>0){
                     if(!SH2){
@@ -494,7 +519,7 @@ function orderItem(page){
                         CurrentStaff($current_sender,SH2);
                         for(var key in SH2s){
                             var $staff=$($staff_item);
-                            if(SH2s[key]['id']==SH2['id']) $staff.addClass('bg-blue');
+                            if(SH2s[key]['id']==SH2['id']) $staff.addClass('active');
                             CurrentStaff($staff,SH2s[key]);
                             $item.find('.send_person_list').append($staff);
                         }
@@ -762,28 +787,23 @@ function orderEdit(target,action,content){
              	    $remark_box.show().find('.order_remark').text(content);
                     $('.order-list-item').eq(index).find('.saler-remark').val(content);
                 }else if(action=='edit_SH2'){
-                    var code=target.find('.sender-code').text();
-                    var name=target.find('.sender-name').text();
-                    var phone=target.find('.sender-phone').text();
-                    var $sender=parent.find('.order-sender');
                     var order_status=Int($('.order-status').find('.active').first().attr('data-id'));
                     if(order_status==1){
                         if(_type==3){
                             parent.find('.to-send').attr({'disabled':true}).text('等待自取');
                         }else{
                             parent.find('.to-send').attr({'disabled':true}).text('配送中');
+
                         }
                     }
-                    $sender.find('.sender-code').text(code);
-                    $sender.find('.sender-name').text(name);
-                    $sender.find('.sender-phone').text(phone);
+                    parent.find('.status-send').find("img").attr({"src":_staff_img});
                     parent.find('.status_send').removeClass('hidden');
                     parent.find('.status_order').addClass('hidden');
                     parent.find('.status_finish').addClass('hidden');
                     if(_type==3){
-                        parent.find('.status_word').text('等待自取');
+                        parent.find('.to-staff-send').text('等待自取');
                     }else{
-                        parent.find('.status_word').text('配送中');
+                        parent.find('.to-staff-send').text(_staff_name+'配送中');
                     }
                     parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');
                 }else if(action=='edit_status'){
@@ -801,37 +821,45 @@ function orderEdit(target,action,content){
                         }else{
                             parent.find('.status_send').children('.status').text('配送中');
                         }
+                        var send_name=parent.find(".send_person_list li").first().find(".name").text();
+                        var send_img=parent.find(".send_person_list li").first().find(".img").attr("src");
                         parent.find('.status_send').removeClass('hidden');
                         parent.find('.status_order').addClass('hidden');
                         parent.find('.status_finish').addClass('hidden');
                         if(_type==3){
                             target.attr({'disabled':true}).text('等待自取');
                         }else{
-                            target.attr({'disabled':true}).text('配送中');
+                            target.attr({'disabled':true}).text(send_name+'配送中');
                         }
+                        parent.find('.status-send').find("img").attr({"src":send_img});
                         parent.find('.check').removeClass('order-check');
                     }
                     else if(content==5) {
+                        var send_name=parent.find(".to-staff-send").text().replace("配送中","");
+                        var send_img=parent.find(".status-send").find("img").attr("src");
                         if(_type==3){
                             parent.find('.status_finish').children('.status').text('自取完成');
                         }else{
-                            parent.find('.status_finish').children('.status').text('已送达');
+                            parent.find('.status_finish').children('.status').text(send_name+'已送达');
                         }
             			parent.find('.status_finish').removeClass('hidden');
                         parent.find('.status_order').addClass('hidden');
                         parent.find('.status_send').addClass('hidden');
                         target.attr({'disabled':true}).text('已完成');
                         parent.find('.check').removeClass('order-check');
+                        parent.find('.status-finish').find("img").attr({"src":send_img});
                     }
                 }else if(action=='batch_edit_status'){
                     if(content==4) {
                         $('.order-checked').each(function(){
                             var $this=$(this);
                             var $item =$this.parents('.order-list-item');
+                            var send_name=$item.find(".send_person_list li").first().find(".name").text();
+                            var send_img=$item.find(".send_person_list li").first().find(".img").attr("src");
                             if(_type==3){
                                 $item.find('.status_send').children('.status').text('等待自取');
                             }else{
-                                $item.find('.status_send').children('.status').text('配送中');
+                                $item.find('.status_send').children('.status').text(send_name+'配送中');
                             }
                             $item.find('.status_send').removeClass('hidden');
                             $item.find('.status_order').addClass('hidden');
@@ -841,16 +869,21 @@ function orderEdit(target,action,content){
                             }else{
                                 $item.find('.to-send').attr({'disabled':true}).text('配送中');
                             }
+                            $item.find('.status-send').find("img").attr({"src":send_img});
                         });
                     }
                     else if(content==5) {
                         $('.order-checked').each(function(){
                             var $this=$(this);
                             var $item =$this.parents('.order-list-item');
-                            $item.find('.status_finish').removeClass('hidden');
+                            var send_name=$item.find(".to-staff-send").text().replace("配送中","");
+                            var send_img=$item.find(".status-send").find("img").attr("src");
+                            $item.find('.status_finish').text().removeClass('hidden');
                             $item.find('.status_order').addClass('hidden');
                             $item.find('.status_send').addClass('hidden');
-                            $item.find('.to-finish').attr({'disabled':true}).text('已完成');
+                            $item.find('.to-finish').attr({'disabled':true}).text(send_name+'已完成');
+                            $item.find('.status-finish')
+                            $item.find('.status-finish').find("img").attr({"src":send_img});
                         });
                     }
                 }else if(action=='edit_totalPrice'){

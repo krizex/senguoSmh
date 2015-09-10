@@ -14,6 +14,8 @@
 .order-list-item:hover{background:#eee;cursor:pointer;border-color:#eee;}
 .order-list-item:hover .custom-order{background:#fff;}
 
+.order-list-item .arrow{position:absolute;bottom:0;right:0;width:0;height:0;border-style: solid;border-width: 0 0 20px 20px;border-color: transparent transparent #44b549 transparent;}
+
 .order-list-item .list-title{height:28px;line-height:28px;padding:0 24px;padding-left:30px;}
 .order-list-item .list-title .select{margin-top:7px;margin-right:5px;}
 .order-list-item .list-title label{font-weight:normal;}
@@ -45,11 +47,12 @@
 .order-list-item .saler-remark{margin-bottom:4px;}
 .order-list-item .order-message .message-img{width:17px;height:15px;background:url("../images/container-icon.gif") no-repeat 0 -199px;}
 
-.order-list-item .order-status{display:inline-block;min-height:50px;}
-.order-list-item .order-status .status-bar{width:80%;max-width:650px;height:6px;position:relative;margin-top:10px;border-radius:5px;}
+.order-list-item .order-status{display:inline-block;min-height:70px;position:relative;width:650px;}
+.order-list-item .order-status .status-bar{width:100%;height:6px;position:relative;margin-top:10px;border-radius:5px;}
 .order-list-item .order-status .status-bar .status-inner{height:6px;position:absolute;top:0;border-radius:5px;}
-.order-list-item .order-status .status-circle{width:12px;height:12px;border-radius:50%;position:absolute;top:-3px;margin-left:-5px;}
-.order-list-item .order-status .status-info{position:absolute;top:12px;width:150px;margin-left:-5px;}
+.order-list-item .order-status .status-circle{width:40px;height:40px;border-radius:50%;position:absolute;top:-3px;margin-left:-5px;}
+.order-list-item .order-status .status-circle img{width:100%;border-radius:50%;}
+.order-list-item .order-status .status-info{position:absolute;top:40px;width:150px;margin-left:-8px;}
 .order-list-item .order-status-dealing .status-bar .status-inner{background:#45b549;}
 .order-list-item .order-status-dealing .status-bar .status-circle{background-position:0 0;}
 .order-list-item .order-status-dealing .status-bar .status-info{margin-left:-25px;}
@@ -158,10 +161,17 @@
 .w120{width:120px;}
 .w200{width:200px;}
 .w100{width:100px;}
+.pl10{padding-left:10px;}
 .height30{height:30px;line-height:30px;}
 
 .sender_img{width:14px;height:14px;border-radius:50%;}
-.send_person_list{width:80%;max-width:650px;}
+.send-staff-list{width:100%;max-width:650px;clear:both;}
+.send-staff-list li{border:1px solid #fff;width:100%;clear:both;padding:5px 10px;height:50px;line-height:40px;}
+.send-staff-list li.active{border:1px solid #44b549;}
+.send-staff-list li .img{width:40px;height:40px;border-radius:50%;float:left}
+.send-staff-list .info{float:left;}
+.send-staff-list .choosed{display:none;color:#44b549;float:right;}
+.send-staff-list li.active .choosed{display:block;}
 .new{display:inline-block;width:20px;height:20px;border:1px solid #7AD218;color:#7AD218;line-height:19px;text-align:center;margin-left:-25px;margin-right:5px;background-color:#fff;}
 
 .add-new-time{margin:10px 0;clear:both;display:inline-block;}
