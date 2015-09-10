@@ -90,6 +90,8 @@ class Alipay(object):
         self._check_params(kw, names)
         url = self._build_url('create_partner_trade_by_buyer', **kw)
         return url
+    def create_refund_url(self,**kw):
+        url = self._build_url('refund_fastpay_by_platform_pwd',**kw)
 
     def trade_create_by_buyer_url(self, **kw):
         '''标准双接口'''

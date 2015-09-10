@@ -16,6 +16,7 @@ from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import re
 import chardet
+import datetime
 class QrWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('order_id?:str')
@@ -29,56 +30,84 @@ class RefundWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		pass
+	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
-	@CustomerBaseHandler.check_arguments('order_id?:str')
+	@CustomerBaseHandler.check_arguments('order_id?:str','action')
 	def post(self):
 			# def wx_refund_pub(self,order_id):
+
 		order_id = self.args['order_id']
+		action   = self.args['action']
 		if len(order_id) == 0:
-			return self.send_fail('order_id error')
+				return self.send_fail('order_id error')
 		order = self.session.query(models.Order).filter_by(id=order_id).first()
 		if not order:
-			return self.send_fail('order not found')
-		totalPrice = order.totalPrice
+				return self.send_fail('order not found')
+		totalPrice = order.totalPrice	
 		num = order.num
-		totalPrice = int(100 * totalPrice)
 		transaction_id = order.transaction_id
-		refund_pub = Refund_pub()
-		refund_pub.setParameter("out_trade_no",num)
-		refund_pub.setParameter("out_refund_no",transaction_id)
-		refund_pub.setParameter("total_fee",totalPrice)
-		refund_pub.setParameter('refund_fee',totalPrice)
-		refund_pub.setParameter('op_user_id','1223121101')
-		res = refund_pub.postXmlSSL()
-		print(res)
-		if isinstance(res,bytes):
-			res    = res.decode('utf-8')
+		if action == 'wx':
+			wx_price = int(100 * totalPrice)
+			refund_pub = Refund_pub()
+			refund_pub.setParameter("out_trade_no",num)
+			refund_pub.setParameter("out_refund_no",transaction_id)
+			refund_pub.setParameter("total_fee",wx_price)
+			refund_pub.setParameter('refund_fee',wx_price)
+			refund_pub.setParameter('op_user_id','1223121101')
+			res = refund_pub.postXmlSSL()
+			print(res)
+			if isinstance(res,bytes):
+				res    = res.decode('utf-8')
+			else:
+				print("[weixin Refund_pub] encoding error")
+			#print('decode success')
+			res_dict = refund_pub.xmlToArray(res)
+			#print(res_dict)
+			return_code = res_dict.get('return_code',None)
+			print('refund',return_code)
+			if return_code == 'SUCCESS' or return_code == 'success':
+				#如果退款成功，则将这笔在线支付记录类型置为-1,同时将店铺余额减去订单总额
+				balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+				if not balance_history:
+					return self.send_fail('余额记录没有找到')
+				shop_id = balance_history.shop_id
+				balance_value = balance_history.balance_value
+				shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+				if not shop:
+					return self.send_fail("shop not found")
+				#该店铺余额减去订单总额
+				shop.shop_balance -= balance_value
+				#将这条余额记录作废
+				balance_history.balance_type = -1
+				self.session.commit()
+				return self.send_success()
+			else:
+				return self.send_fail('fail')
+		elif action == 'alipay':
+			now = datetime.datetime.now()
+			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
+			batch_no = now.strftime("%Y%m%d") + num
+			detail_data = transaction_id +'^' + format(totalPrice,'.2f') + '^协商退款'  
+			params = {
+				"service":'refund_fastpay_by_platform_pwd',
+				"partner":ALIPAY_PID,
+				"_input_charset":"utf-8",
+				# "sign":sign,
+				# "sign_type":sign_type,
+				"refund_date":refund_date,
+				"seller_user_id":ALIPAY_PID,
+				"batch_no":batch_no,
+				"batch_num":1,
+				"detail_data":detail_data,
+			}
+			refund_url = self._alipay.create_refund_url(service='refund_fastpay_by_platform_pwd',partner=ALIPAY_PID,_input_charset='utf-8',
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num=batch_num,detail_data=detail_data)
+			alipay_response = requests.post(refund_url,data=params)
+			alipay_page     = alipay_response.text
+			print(alipay_page)
+			return self.write(alipay_page)
 		else:
-			print("[weixin Refund_pub] encoding error")
-		#print('decode success')
-		res_dict = refund_pub.xmlToArray(res)
-		#print(res_dict)
-		return_code = res_dict.get('return_code',None)
-		print('refund',return_code)
-		if return_code == 'SUCCESS' or return_code == 'success':
-			#如果退款成功，则将这笔在线支付记录类型置为-1,同时将店铺余额减去订单总额
-			balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
-			if not balance_history:
-				return self.send_fail('余额记录没有找到')
-			shop_id = balance_history.shop_id
-			balance_value = balance_history.balance_value
-			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
-			if not shop:
-				return self.send_fail("shop not found")
-			#该店铺余额减去订单总额
-			shop.shop_balance -= balance_value
-			#将这条余额记录作废
-			balance_history.balance_type = -1
-			self.session.commit()
-			return self.send_success()
-		else:
-			return self.send_fail('fail')
-
+			return self.send_fail('action error')
 
 
 class OnlineWxPay(CustomerBaseHandler):
