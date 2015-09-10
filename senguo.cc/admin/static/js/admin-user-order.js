@@ -832,8 +832,8 @@ function orderEdit(target,action,content){
                         }else{
                             parent.find('.status_send').children('.status').text('配送中');
                         }
-                        var send_name=parent.find(".send_person_list li").first().find(".name").text();
-                        var send_img=parent.find(".send_person_list li").first().find(".img").attr("src");
+                        var send_name=parent.find(".send_person_list li").first().find(".sub-name").text();
+                        var send_img=parent.find(".send_person_list li").first().find(".sub-img").attr("src");
                         parent.find('.status_send').removeClass('hidden');
                         parent.find('.status_order').addClass('hidden');
                         parent.find('.status_finish').addClass('hidden');
@@ -865,8 +865,8 @@ function orderEdit(target,action,content){
                         $('.order-checked').each(function(){
                             var $this=$(this);
                             var $item =$this.parents('.order-list-item');
-                            var send_name=$item.find(".send_person_list li").first().find(".name").text();
-                            var send_img=$item.find(".send_person_list li").first().find(".img").attr("src");
+                            var send_name=$item.find(".send_person_list li").first().find(".sub-name").text();
+                            var send_img=$item.find(".send_person_list li").first().find(".sub-img").attr("src");
                             if(_type==3){
                                 $item.find('.status_send').children('.status').text('等待自取');
                             }else{
