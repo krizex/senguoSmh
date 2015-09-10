@@ -175,13 +175,14 @@ div,span,p,li{-webkit-user-select:none;}
 .share-box{position: absolute;right: 0;height: 41px;line-height:41px;top: 28px;}
 .share-wx{display: inline-block;width: 41px;height: 41px;background: url('../img/bbs_share.png');background-position: 0 0;position: relative;}
 .share-wx:hover .wrap-share-code{display: block;}
-.wrap-share-code{position: absolute;left: -50px;top: -140px;background-color: #fff;width: 300px;display: none;}
+.wrap-share-code{position: absolute;left: -50px;top: -148px;background-color: #fff;width: 264px;border: 1px solid #ccd0cc;display: none;}
 .code2-box{width: 131px;height: 131px;padding: 10px;-webkit-box-sizing: border-box;}
 .slogo{width: 24px;height: 24px;position: absolute;left: 54px;top: 54px;border-radius: 4px;background-color: #fff;}
-.code-txt-box{width: 150px;height: 131px;-webkit-box-sizing: border-box;border: 1px solid #ccd0cc;}
-.code-txt{margin-top: 40px;line-height: 20px;padding: 0 6px;}
+.code-txt-box{width: 131px;height: 131px;-webkit-box-sizing: border-box;}
+.code-txt{margin-top: 36px;line-height: 20px;padding: 0 6px;font-size: 16px;}
 .shareto{height: 41px;line-height: 41px;margin-right: 20px;float: left;}
-
+.cpt-o{display: inline-block;position: absolute;left: 60px;bottom: -21px;border: 10px solid transparent;border-top-color: #ccd0cc;}
+.cpt-i{display: inline-block;position: absolute;left: -10px;bottom: -9px;border: 10px solid transparent;border-top-color: #fff;}
 
 
 
