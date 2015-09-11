@@ -33,7 +33,7 @@
 {% end %}
 <input type="hidden" id="receipt-type" value="{{current_shop.config.receipt_type}}" />
 <input type="hidden" id="console-type" value="{{current_shop.config.wireless_type}}" />
-<span class="right-title" id="order-title-manage">订单管理</span>
+<span class="right-title" id="order-title-manage">订单管理<a href="javascript:;" class="order-export pull-right font12">订单导出</a></span>
 <div class="subnav-box clearfix">
     <ul class="subnav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{now_active}}">
@@ -234,6 +234,101 @@
         </ul>
     </div>
     <input type="hidden" value="{{current_shop.config.receipt_msg}}" class="shop-receipt-info" data-img="{{current_shop.config.receipt_img}}"  data-active="{{current_shop.config.receipt_img_active}}"/>
+</div>
+<div class="order-export-box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header set-width-float">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body set-width-float bg-white">
+                <ul class="order-export-con">
+                    <li><span class="tit">当前店铺:</span>{{current_shop.shop_name}}</li>
+                    <li><span class="tit">下单时间:</span><input type="text" class="export-date1"/> 到 <input type="text" class="export-date2"/></li>
+                    <li><span class="tit">订单类型:</span>
+                        <div class="dropdown slide-down-select w130">
+                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu6" data-toggle="dropdown">
+                                <em class="pull-left export-type" data-id="9">所有</em>
+                                <span class="caret pull-right no-margin-left rotate0"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu6" id="currentShopChange4">
+                                <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                                </li>
+                                <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="1">立即送 </a>
+                                </li>
+                                <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="2">按时达</a>
+                                </li>
+                                 <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="3">自提</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="tit">订单状态:</span>
+                        <div class="dropdown slide-down-select w130">
+                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu7" data-toggle="dropdown">
+                                <em class="pull-left export-status" data-id="5">所有</em>
+                                <span class="caret pull-right no-margin-left rotate0"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right w130 export-status" role="menu" aria-labelledby="dropdownMenu7" id="currentShopChange4">
+                                 <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="5">所有</a>
+                                </li>
+                                <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="1">未处理 </a>
+                                </li>
+                                <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="2">配送中</a>
+                                </li>
+                                 <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="3">已完成</a>
+                                </li>
+                                 <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="3">售后/退款</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                         <span class="tit">支付方式:</span>
+                         <div class="dropdown slide-down-select w130">
+                            <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
+                                <em class="pull-left export-pay" data-id="9">所有</em>
+                                <span class="caret pull-right no-margin-left rotate0"></span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+                                <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="9">所有</a>
+                                </li>
+                                <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="3">在线支付</a>
+                                </li>
+                                 <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="2">余额支付</a>
+                                </li>
+                                 <li role="presentation">
+                                    <a class="item" href="javascript:;" data-id="1">货到付款</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="tit">订单金额:</span>
+                        <input type="text" class="export-money1"/> 到 <input type="text" class="export-money2"/>
+                    </li>
+                    <li>
+                        <span class="tit">&nbsp;</span>
+                        <button class="order-export-sure modal-sure-btn">导出</button>
+                        <a href="javascript:;" class="ml10">展开高级选项</a>
+                    </li>
+                </ul>
+            </div>
+       </div>
+    </div>
 </div>
 <div class="order-staff-box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">

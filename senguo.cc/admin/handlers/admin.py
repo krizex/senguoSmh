@@ -1379,7 +1379,8 @@ class Comment(AdminBaseHandler):
 
 class OrderExport(AdminBaseHandler):
 	@tornado.web.authenticated
-	def get(self):
+	@AdminBaseHandler.check_arguments("data")
+	def post(self):
 		import openpyxl
 		from openpyxl import Workbook
 		import xlwt
@@ -1388,6 +1389,83 @@ class OrderExport(AdminBaseHandler):
 		# except ImportError:
 		# 	from io import StringIO
 		import io
+		data = self.args["data"]
+		try:
+			order_type = int(data["order_type"])
+		except:
+			order_type = 9
+		try:
+			order_status = int(data["order_status"])
+		except:
+			order_status = 5
+		try:
+			order_pay = int(data["order_pay"])
+		except:
+			order_pay = 9
+		try:
+			date1 = data["date1"]
+		except:
+			date1 = datetime.datetime.now().strftime("%Y-%m-%d")
+		try:
+			date2 = data["date2"]
+		except:
+			date2 = datetime.datetime.now().strftime("%Y-%m-%d")
+		try:
+			money1 = data["money1"]
+		except:
+			money1 = 0
+		try:
+			money2 = data["money2"]
+		except:
+			money2 = 0
+
+		orders = []
+		if self.current_shop.orders:
+			order_list = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id)
+		else:
+			order_list = None
+		if not order_list:
+			return self.send_fail("您的店铺没有任何订单")
+
+		if order_type != 9:
+			order_list.filter_by(type=order_type)
+		else:
+			pass
+
+		if order_status == 1:#filter order_status
+			order_list = order_list.filter(models.Order.status==1)
+		elif order_status == 2:#unfinish
+			order_list = order_list.filter(models.Order.status.in_(2,3,4))
+		elif order_status == 3:
+			order_list = order_list.filter(models.Order.status.in_(5,6,7))
+		elif order_status == 4:
+			pass
+		elif order_status == 5:#all
+			pass
+		else:
+			return self.send.send_error(404)
+
+		if order_pay != 9:
+			order_list = order_list.filter_by(pay_type=order_pay)
+		else:
+			pass
+
+		if money1 and money2:
+			if money1 == money2:
+				order_list = order_list.filter(models.Order.totalPrice == float(money1))
+			else:
+				order_list = order_list.filter(models.Order.totalPrice.in_([money1,money2]))
+
+		orders = order_list.all()
+		if date1 and date2:
+			if date1 == date2:
+				print(date1)
+				orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") == date1]
+			else:
+				orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") in ([date1,date2])] 
+		print(orders)
+		for order in orders:
+			print(order.num)
 
 		# self.set_header('Content-type','application/vnd.ms-excel')
 		# self.set_header('Transfer-Encoding','chunked')
@@ -1400,7 +1478,7 @@ class OrderExport(AdminBaseHandler):
 		# sio=io.StringIO()
 		# wb.save(sio)
 		# return sio.getvalue()
-
+		return self.send_success()
 		# response = HttpResponse(mimetype='application/vnd.ms-excel')
 		# response['Content-Disposition'] = 'attachment;filename=member.xls'
 		self.set_header('mimetype','application/vnd.ms-excel')

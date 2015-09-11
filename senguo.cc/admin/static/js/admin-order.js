@@ -235,6 +235,37 @@ $(document).ready(function(){
         }
         else return Tip(res.error_text);
     });
+}).on("click",".order-export",function(){
+    $(".order-export-box").modal("show");
+}).on("click",".order-export-sure",function(){
+    var url="/admin/orderExport";
+    var status=$(".export-status").attr("data-id");
+    var type=$(".export-type").attr("data-id");
+    var pay=$(".export-pay").attr("data-id");
+    var date1=$(".export-date1").val().trim();
+    var date2=$(".export-date2").val().trim();
+    var money1=$(".export-money1").val().trim();
+    var money2=$(".export-money2").val().trim();
+    var data={
+        order_type:type,
+        order_status:status,
+        order_pay:pay,
+        date1:date1,
+        date2:date2,
+        money1:money1,
+        money2:money2
+    };
+    var args={
+        data:data
+    };
+    $.postJson(url,args,function(res){
+            if(res.success){
+                
+            }
+            else return Tip(res.error_text);
+        },
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
+    )
 });
 
 var link='/admin/order';
