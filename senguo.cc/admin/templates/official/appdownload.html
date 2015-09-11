@@ -2,37 +2,49 @@
 {% block head-css%}<link href="{{static_url('css/official_appdownload.css')}}" rel="stylesheet">{% end %}
 {% block content%}
 <div class="wrap-content">
-    <div class="app-bg">
-        <div class="app-bg-img">
-            <img src="{{static_url('official_img/appdownload_bg.png')}}" />
-        </div>
-       <!--  <div class="w1000">
-            <div class="wrap-slide">
-                <div class="slide-text">
-                    <p class="mall-title">丰富的商城模版</p>
-                    <p class="mall-content">界面即能勾起食欲，从设计上吸引<br />用户购买</p>
-                </div>
-                <div class="mall">
-                    <ul>
-                        <li class="mall-one">
-                            <img src="{{static_url('official_img/mall_1.png')}}" alt=""/>
-                            <span class="bg-shadow-one"></span>
-                        </li>
-                        <li class="mall-two">
-                            <img src="{{static_url('official_img/mall_2.png')}}" alt=""/>
-                            <span class="bg-shadow-two"></span>
-                        </li>
-                        <li class="mall-three">
-                            <img src="{{static_url('official_img/mall_3.png')}}" alt=""/>
-                            <span class="bg-shadow-three"></span>
-                        </li>
-                    </ul>
-                </div>
+    <div class="app-bg-img">
+        <img src="{{static_url('official_img/appdownload_bg.png')}}" />
+    </div>
+    <div class="appdownload-width">
+        <div class="download-text">
+            <h1>森果，免费的水果微商城</h1>
+            <div class="download-method">
+                <ul>
+                    <li class="mall-one">多种商城模式，自由切换</li>
+                    <li class="mall-two">多种营销玩法，自由组合</li>
+                    <li class="mall-three">多种支付方式，自由选择</li>
+                </ul>
             </div>
-        </div> -->
+            <div class="appdownload-imgs">
+                <div class="android-box">
+                    <span class="android-img"></span>
+                    <div class="hover-wechat">
+                        <p>使用微信扫码，直接安装</p>
+                        <img src="{{static_url('official_img/wechat_download.png')}}">
+                        <span class="down-triangle"></span>
+                    </div>
+                </div>
+                <div class="apple-box">
+                    <span class="apple-img"></span>
+                    <div class="hover-wechat">
+                        <p>使用微信扫码，直接安装</p>
+                        <img src="{{static_url('official_img/wechat_download.png')}}">
+                        <span class="down-triangle"></span>
+                    </div>
+                </div>
+                <!-- <div class="hover-wechat">
+                    <p>使用微信扫码，直接安装</p>
+                    <img src="{{static_url('official_img/wechat_download.png')}}">
+                    <span class="down-triangle"></span>
+                </div> -->
+            </div>
+        </div>
+        <div class="right-img">
+            <img src="{{static_url('official_img/app_phone.png')}}">
+        </div>
     </div>
 </div>
 {% end %}
 {% block bottom-js%}
-<script src="{{static_url('js/official_appdownload.js')}}"></script>
+<!-- <script src="{{static_url('js/official_appdownload.js')}}"></script> -->
 {% end %}
