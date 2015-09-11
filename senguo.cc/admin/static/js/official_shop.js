@@ -159,73 +159,80 @@
         $('.pagenation li').removeClass('active').eq(id-1).addClass('active');
     });
 });
-var shopTotal=function(){
-    var total_count=$('#total_count').val().toString();
-    var n_length=total_count.length;
-    var num_1=0;
-    var num_2=0;
-    var num_3=0;
-    var num_4=0;
-    if(n_length==1){
-        num_1=0;
-        num_2=0;
-        num_3=0;
-        num_4=total_count;
-    }else if(n_length==2){
-        num_1=0;
-        num_2=0;
-        num_3=Int(total_count.substring(0,1));
-        num_4=Int(total_count.substring(1,2));
-    }else if(n_length==3){
-        num_1=0;
-        num_2=Int(total_count.substring(0,1));
-        num_3=Int(total_count.substring(1,2));
-        num_4=Int(total_count.substring(2,3));
-    }else if(n_length==4){
-        num_1=Int(total_count.substring(0,1));
-        num_2=Int(total_count.substring(1,2));
-        num_3=Int(total_count.substring(2,3));
-        num_4=Int(total_count.substring(3,4));
-    }else{
-        num_1=9;
-        num_2=9;
-        num_3=9;
-        num_4=9;
+var shopTotal=function() {
+    var total_count = $('#total_count').val().toString();
+    var n_length = total_count.length;
+    var num_1 = 0;
+    var num_2 = 0;
+    var num_3 = 0;
+    var num_4 = 0;
+    if (n_length == 1) {
+        num_1 = 0;
+        num_2 = 0;
+        num_3 = 0;
+        num_4 = total_count;
+    } else if (n_length == 2) {
+        num_1 = 0;
+        num_2 = 0;
+        num_3 = Int(total_count.substring(0, 1));
+        num_4 = Int(total_count.substring(1, 2));
+    } else if (n_length == 3) {
+        num_1 = 0;
+        num_2 = Int(total_count.substring(0, 1));
+        num_3 = Int(total_count.substring(1, 2));
+        num_4 = Int(total_count.substring(2, 3));
+    } else if (n_length == 4) {
+        num_1 = Int(total_count.substring(0, 1));
+        num_2 = Int(total_count.substring(1, 2));
+        num_3 = Int(total_count.substring(2, 3));
+        num_4 = Int(total_count.substring(3, 4));
+    } else {
+        num_1 = 9;
+        num_2 = 9;
+        num_3 = 9;
+        num_4 = 9;
     }
-    var number=[num_1,num_2,num_3,num_4];
-    number=bubbleSort(number);
-    window.dataObj.time=number+1;  
-    var n4=0;
-    var n3=0;
-    var n2=0;
-    var n1=0;
-    var count=function(time,num_4,num_3,num_2,num_1) {
-            if (window.dataObj.time == 0) {
-                window.dataObj.time =time;
-            }
+    var number = [num_1, num_2, num_3, num_4];
+    number = bubbleSort(number);
+    window.dataObj.time = number + 1;
+    var n4 = 0;
+    var n3 = 0;
+    var n2 = 0;
+    var n1 = 0;
+    var count = function (time, num_4, num_3, num_2, num_1) {
+        if (window.dataObj.time == 0) {
+            window.dataObj.time = time;
+        }
+        else {
+            window.dataObj.time--;
+            var num4 = $('.num4').text();
+            var num3 = $('.num3').text();
+            var num2 = $('.num2').text();
+            var num1 = $('.num1').text();
+            if (num4 != num_4) $('.num4').text(n4++);
             else {
-                window.dataObj.time--;
-                var num4=$('.num4').text();
-                var num3=$('.num3').text();
-                var num2=$('.num2').text();
-                var num1=$('.num1').text();
-                if(num4!=num_4) $('.num4').text(n4++);
-                else {$('.num4').text(num_4)}
-                if(num3!=num_3) $('.num3').text(n3++);
-                else {$('.num3').text(num_3)}
-                if(num2!=num_2) $('.num2').text(n2++);
-                else {$('.num2').text(num_2)}
-                if(num1!=num_1) $('.num1').text(n1++);
-                else {$('.num1').text(num_1)}
-                setTimeout(function() {
-                        count(time,num_4,num_3,num_2,num_1)
-                    },
-                    50)
+                $('.num4').text(num_4)
             }
-    }    
-    count(number+1,num_4,num_3,num_2,num_1);
+            if (num3 != num_3) $('.num3').text(n3++);
+            else {
+                $('.num3').text(num_3)
+            }
+            if (num2 != num_2) $('.num2').text(n2++);
+            else {
+                $('.num2').text(num_2)
+            }
+            if (num1 != num_1) $('.num1').text(n1++);
+            else {
+                $('.num1').text(num_1)
+            }
+            setTimeout(function () {
+                    count(time, num_4, num_3, num_2, num_1)
+                },
+                50)
+        }
+    }
+    count(number + 1, num_4, num_3, num_2, num_1);
 }
-
 var page = 0;
 var getData=function(action,page,type,data){
     var url='';

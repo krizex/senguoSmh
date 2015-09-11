@@ -144,8 +144,17 @@ session = models.DBSession()
 	# session.commit()
 	# return self.send_success()
 
-def getPicture():
-	
+# # 新版森果社区初始化
+# def getArticle():
+# 	artilces = session.query(models.Article).all()
+# 	for article in artilces:
+# 		article.public_time=article.create_time
+# 		record = session.query(models.ArticleGreat).filter_by(article_id=article.id,collect=1).distinct(models.Article.id).count()
+# 		article.collect_num  = record
+# 	session.commit()
+
+# 图片库初始化
+def getPicture():	
 	shops = session.query(models.Shop).all()
 	for shop in shops:
 		goods = session.query(models.Fruit).filter_by(shop_id=shop.id).all()
@@ -181,8 +190,7 @@ def getPicture():
 			session.flush()
 	session.commit()
 
-
-
 g = multiprocessing.Process(name='getPicture',target=getPicture)
+
 g.start()
 g.join()

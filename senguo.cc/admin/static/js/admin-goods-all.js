@@ -334,7 +334,7 @@ $(document).ready(function(){
 }).on("click",".show-txtimg",function(){
     var isEditor = $(this).attr("data-flag");
     var sHtml = $(this).attr("data-text");
-    if(isEditor=="true"){
+    if(isEditor){
         if(editor){
             $("#ueditor").css("width","100%");
             editor.body.innerHTML=$(this).attr("data-text")||"";
@@ -655,7 +655,6 @@ function dealGoods($item,type){
                 img_flag = true;
                 return false;
             }
-            
         });
         imgList.index = arr1;
         imgList.src = arr2;
@@ -676,12 +675,10 @@ function dealGoods($item,type){
     }else{
         price_type.each(function(){
             var id = $(this).attr("data-id");
-            //var unit_num = $(this).attr("data-first");
             var unit_num = $(this).find(".first-num").html();
             var unit = $(this).find(".price-unit").attr("data-id");
             var unit_name = $(this).find(".price-unit").html();
             var num = $(this).find(".price-num").val().trim();
-            //var select_num = $(this).attr("data-second");
             var select_num = $(this).find(".second-num").html();
             var price = $(this).find(".current-price").val().trim();
             var market_price = $(this).find(".market-price").val().trim();

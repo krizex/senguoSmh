@@ -65,7 +65,9 @@ $(document).ready(function(){
             return Tip('您的网络暂时不通畅，请稍候再试');
         });
     }
-   
+}).on("click",".link-type li",function(){
+    var $this=$(this);
+    $this.addClass("active").siblings("li").removeClass("active");
 }).on("click","#add-notice-img",function(){
     getPicture(pictureType,0);
     $(".pop-picture-library").removeClass("hide");
@@ -211,14 +213,19 @@ function noticeAdd(){
     var summary= $.trim($('.new-notice-title').val());
     var detail=$.trim($('.new-notice-detail').val());
     var img_url=$("#notice_img").attr("url");
+    var _link=$(".new-notice-link").val().trim();
+    var link_type=parseInt($(".link-type .active").attr("data-id"));
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('请输入摘要！')}
-    if(!detail){return Tip('请输入详情！')}
+    if(!detail&&!_link){return Tip('请填入详情或链接！')}
+    if(link.length>50){return Tip('链接请不要超过50个字！')}
     var data={
         summary:summary,
         detail:detail,
-        img_url:img_url
+        img_url:img_url,
+        link:_link,
+        link_type:link_type
     };
     var args={
         action:action,
@@ -242,15 +249,20 @@ function noticeEdit(id){
     var summary=$('.new-notice-title').val();
     var detail=$('.new-notice-detail').val();
     var img_url=$("#notice_img").attr("url");
+    var _link=$(".new-notice-link").val().trim();
+    var link_type=parseInt($(".link-type .active").attr("data-id"));
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
-    if(detail.length>200){return Tip('详情请不要超过200个字！')}
+    if(detail && detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('摘要不能为空！')}
-    if(!detail){return Tip('详情不能为空！')}
+    if(!detail&&!_link){return Tip('请填入详情或链接！')}
+    if(link.length>50){return Tip('链接请不要超过50个字！')}
     var data={
         notice_id:notice_id,
         summary:summary,
         detail:detail,
-        img_url:img_url
+        img_url:img_url,
+        link:_link,
+        link_type:link_type
     };
     var args={
         action:action,
@@ -267,6 +279,7 @@ function noticeEdit(id){
             else return Tip(res.error_text);
         });
 }
+
 var isOri = "";
 $(document).ready(function(){
     
