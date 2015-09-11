@@ -1,6 +1,5 @@
-body{padding: 0}
 .wrap-content{width: 100%;}
-.w1000{width: 1000px;;}
+.w1000{width: 1000px;}
 .w1024{width: 1070px;margin: 0 auto;overflow: hidden;position: relative;top: -500px;}
 .f16{font-size: 16px !important;}
 .s-roll{position: absolute;border-radius: 50%;-webkit-box-sizing:content-box;box-sizing:content-box;-ms-box-sizing:content-box;width: 240px;height: 240px;background-color: #d4d8d8;top: 50%;left: 50%;-webkit-transform:translate(-50%,-50%);transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);border: 30px solid #e9ebe7;}
@@ -71,8 +70,8 @@ body{padding: 0}
 .market-icons .market-four{top:155px;left:560px;background:url('/static/official_img/market_4.png') no-repeat;}
 .market-icons .market-five{top:250px;left:660px;background:url('/static/official_img/market_5.png') no-repeat;}
 .market-icons .market-six{top:180px;left:770px;background:url('/static/official_img/market_6.png') no-repeat;}
-.store-bg{position: relative;max-height: 692px;min-height: 600px;}
-.store-bg>img{width: 100%;max-height: 692px;min-height: 600px;}
+.store-bg{position: relative;height: 692px;max-width: 1920px;margin: 0 auto;}
+.store-bg>img{min-height: 600px;min-width: 1500px;}
 .wrap-feature{position: absolute;top:160px;width: 1000px;height: 364px;}
 .feature-list>li{width: 50%;float: left;}
 .feature-item>img{float: left;margin-right: 30px;}

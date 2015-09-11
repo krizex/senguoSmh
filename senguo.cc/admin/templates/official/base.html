@@ -35,7 +35,7 @@
 {% set appdownload_active='active'%}
 {% end %}
 <body>
-	<header class="clearfix head">
+	<div class="clearfix head">
 		<div class="w1000 nav-box group">
 			<div class="senguo-header pull-left">
 				<div class="logo_box pull-left">
@@ -69,8 +69,8 @@
 			</div>
 		</div>
 	{%block header-extends%}{%end%}
-	</header>
-	<main class="container clearfix mt76">
+	</div>
+	<main class="container clearfix">
 		{% block content%} {% end%}
 	</main>
     <div class="scrollUpf">
