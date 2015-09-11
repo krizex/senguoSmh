@@ -17,6 +17,7 @@ from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_N
 import re
 import chardet
 import datetime
+import requests
 class QrWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('order_id?:str')
@@ -27,13 +28,13 @@ class QrWxpay(CustomerBaseHandler):
 		totalPrice = order.new_totalprice
 
 class RefundWxpay(CustomerBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		pass
+	# @tornado.web.authenticated
+	# def get(self):
+	# 	pass
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	@CustomerBaseHandler.check_arguments('order_id?:str','action')
-	def post(self):
+	def get(self):
 			# def wx_refund_pub(self,order_id):
 
 		order_id = self.args['order_id']
@@ -77,8 +78,24 @@ class RefundWxpay(CustomerBaseHandler):
 					return self.send_fail("shop not found")
 				#该店铺余额减去订单总额
 				shop.shop_balance -= balance_value
+				balance_history.is_cancel = 1
 				#将这条余额记录作废
 				balance_history.balance_type = -1
+				customer_id = balance_history.customer_id
+				name        = balance_history.name
+				shop_province = balance_history.shop_province
+				shop_name     = balance_history.shop_name
+				balance_record = balance_history.balance_record + '--退款'
+				create_time   = datetime.datetime.now()
+				shop_totalPrice = shop.shop_balance
+				customer_totalPrice = balance_history.customer_totalPrice
+				transaction_id   = balance_history.transaction_id
+				available_balance = balance_history.available_balance
+				#同时生成一条退款记录
+				refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+					balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
+					transaction_id=transaction_id,balance_type=8,balance_value=balance_value)
+				self.session.add(refund_history)
 				self.session.commit()
 				return self.send_success()
 			else:
@@ -100,9 +117,10 @@ class RefundWxpay(CustomerBaseHandler):
 				"batch_num":1,
 				"detail_data":detail_data,
 			}
-			refund_url = self._alipay.create_refund_url(service='refund_fastpay_by_platform_pwd',partner=ALIPAY_PID,_input_charset='utf-8',
-				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num=batch_num,detail_data=detail_data)
-			alipay_response = requests.post(refund_url,data=params)
+			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num=1,detail_data=detail_data)
+			print(refund_url,'退款地址')
+			alipay_response = requests.get(refund_url)
 			alipay_page     = alipay_response.text
 			print(alipay_page)
 			return self.write(alipay_page)

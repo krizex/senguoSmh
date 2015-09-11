@@ -58,16 +58,24 @@ class Alipay(object):
 
     def _build_url(self, service, **kw):
         params = self.default_params.copy()
+        print(params)
         params['service'] = service
         params.update(kw)
+        print(kw)
         signkey, signvalue, signdescription = self.getSignTuple()
+        print(signkey,signvalue,signdescription)
         signmethod = getattr(self, '_generate_%s_sign' %(signdescription.lower()))
+        print(signmethod)
         if signmethod == None:
             raise NotImplementedError("This type '%s' of sign is not implemented yet." %(signdescription))
         if self.signKey():
             params.update({signkey: signvalue})
         params.update({signkey: signvalue,
                        'sign': signmethod(params)})
+        if service == 'refund_fastpay_by_platform_pwd':
+            return '%s?%s' % ('https://mapi.alipay.com/gateway.do', urlencode(encode_dict(params)))
+        print(params)
+        print('%s?%s' % (self.GATEWAY_URL, urlencode(encode_dict(params))))
 
         return '%s?%s' % (self.GATEWAY_URL, urlencode(encode_dict(params)))
 
@@ -92,6 +100,7 @@ class Alipay(object):
         return url
     def create_refund_url(self,**kw):
         url = self._build_url('refund_fastpay_by_platform_pwd',**kw)
+        return url
 
     def trade_create_by_buyer_url(self, **kw):
         '''标准双接口'''
