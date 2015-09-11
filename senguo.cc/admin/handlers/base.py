@@ -1902,7 +1902,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		
 	def getYouzan(self,action,appid,appsecret):
 		if action == "goods":
-			method = "kdt.items.get"
+			method = "kdt.items.onsale.get"
 		elif action == "shop":
 			method = "kdt.shop.basic.get"
 		AppID = appid
