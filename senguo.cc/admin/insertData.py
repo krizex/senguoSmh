@@ -4,7 +4,7 @@ import json
 import multiprocessing
 from multiprocessing import Process
 from dal.dis_dict import dis_dict
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 session = models.DBSession()
 
 # def code_to_text(column_name, code):
@@ -171,12 +171,12 @@ def getPicture():
 					for img in imgs:
 						session.add(models.PictureLibrary(_type="goods",shop_id=shop.id,img_url=img,code=code))
 						session.flush()
-				if good.detail_describe:
-					res_detail = BeautifulSoup(good.detail_describe,"lxml")
-					res_img = res_detail.findAll("img")
-					for img in res_img:
-						session.add(models.PictureLibrary(_type="detail",shop_id=shop.id,img_url=img["src"]))
-						session.flush()
+				# if good.detail_describe:
+				# 	res_detail = BeautifulSoup(good.detail_describe,"lxml")
+				# 	res_img = res_detail.findAll("img")
+				# 	for img in res_img:
+				# 		session.add(models.PictureLibrary(_type="detail",shop_id=shop.id,img_url=img["src"]))
+				# 		session.flush()
 
 		notices = session.query(models.Notice).filter_by(config_id=shop.id).all()
 		if len(notices) >0:
