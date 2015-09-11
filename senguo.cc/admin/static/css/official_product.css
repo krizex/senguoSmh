@@ -30,8 +30,8 @@
 .mall-one .bg-shadow-one{display: inline-block;width: 250px;height: 351px;position: absolute;left: 0;top: 75px;z-index: 1;box-shadow: 0px 50px 80px #666;}
 .mall-two .bg-shadow-two{display: inline-block;width: 250px;height: 400px;position: absolute;left: 0;top: 2px;box-shadow: 0px 50px 40px #757575;}
 .mall-three .bg-shadow-three{display: inline-block;width: 250px;height: 420px;position: absolute;left: -4px;top: -10px;box-shadow: 0px 50px 30px #757575;}
-.mall-two{position: absolute;left: -27px;top: 110px;z-index: 2;}
-.mall-three{position: absolute;right: 23px;top: 124px;z-index: 2;}
+.mall-two{opacity: 0.3;position: absolute;left: 80px;top: 110px;z-index: 2;}
+.mall-three{opacity: 0.3;position: absolute;right: 120px;top: 124px;z-index: 2;}
 .mall-title{font-size: 44px;font-weight: bold;margin-top: 220px;}
 .mall-content{font-size: 20px;margin-top: 30px;line-height: 24px;}
 .data-bg{width: 100%;background-color: #58d0a6;height: 446px;}
@@ -78,3 +78,6 @@
 .feature-item{padding-left: 60px;padding-top:32px;margin-bottom: 40px;height: 134px;background-repeat: no-repeat;background-position: left top;}
 .store-title{font-size: 28px;font-weight: bold;color: #fff;margin-bottom: 10px;margin-top: 30px;}
 .feature-item .store-content{font-size: 18px;color: #fff;line-height: 24px;}
+.graph-line{display: inline-block;width: 600px;height: 290px;position: absolute;bottom: 0;left: -113px;background-color: #58d0a6;}
+.graph-up{display: inline-block;width: 5px;height: 0px;background-color: #fff;opacity: 0.6;position: absolute;bottom: 0;left: 181px;}
+.graph-circle{width: 26px;height: 25px;opacity: 0;position: absolute;bottom: 260px;left: 170px;background:url('/static/official_img/circle.png') no-repeat;}

@@ -2,11 +2,13 @@
 .app-bg-img{max-width: 1920px;height: 487px;margin: 0 auto;overflow: hidden;position: relative;}
 .app-bg-img>img{min-height: 400px;position: absolute;left: 0;}
 .appdownload-width{width: 1000px;position: absolute;top: 0;left: 50%;margin-left: -500px;}
-.download-text{width: 500px;position: absolute;left: 90px;margin-top: 76px;}
-.download-text>h1{font-size: 36px;font-weight: bold;color: #fff;margin-top: 100px;}
-.download-method>ul>li{width: 220px;float: left;list-style:disc;font-size: 16px;color: #fff;line-height: 26px;}
-.appdownload-imgs{position: absolute;top: 300px;height: 60px;width: 500px;}
+.download-text{width: 550px;position: absolute;left: 90px;margin-top: 80px;}
+.download-text>h1{font-size: 48px;font-weight: bold;color: #fff;margin-top: 100px;}
+.download-method{margin-top: 40px;}
+.download-method>ul>li{width: 240px;float: left;list-style:disc;font-size: 20px;color: #fff;line-height: 26px;}
+.appdownload-imgs{position: absolute;top: 280px;height: 60px;width: 500px;}
 .android-box,.apple-box{width: 220px;height: 60px;float: left;}
+.apple-box{margin-left: -15px;}
 .android-box .android-img,.apple-box .apple-img{cursor: pointer;display: inline-block;width: 200px;height: 60px;}
 .android-box .android-img{transition: all 0.5s;background:url('../official_img/android_normal.png') no-repeat;}
 .android-box:hover  .android-img{background:url('../official_img/android_hover.png') no-repeat;}

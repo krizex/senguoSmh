@@ -20,7 +20,79 @@
                 text: '正在努力的读取数据中...'
             });
             myChart.hideLoading();
-            var options={
+            var options = {
+                tooltip : {
+                    trigger: 'item'
+                },
+                dataRange: {
+                    show:false,
+                    min: 0,
+                    max: 200,
+                    x: 'left',
+                    y: 'bottom',
+                    text:['100以上','0'],           // 文本，默认为数值文本
+                    calculable : true,
+                    color:['#2c6853','#429c7c','#58d0a6','#92e0c5','#cdf1e4','#f3f3f3'],
+                },
+                series : [
+                    {
+                        name: '',
+                        type: 'map',
+                        mapType: 'china',
+                        roam: false,
+                        itemStyle:{
+                            normal:{label:{show:true}},
+                            emphasis:{label:{show:true}}
+                        },
+                        data:[
+                           
+                        ]
+                    }
+                ]
+            };
+            var ecConfig = require('echarts/config');
+            var zrEvent = require('zrender/tool/event');
+            myChart.on(ecConfig.EVENT.MAP_SELECTED, function (param){
+                var selected = param.selected;
+                var str;
+                var pro_code;
+                var area=window.dataObj.area;
+                for (var p in selected) {
+                    if (selected[p]) {
+                        str = p;
+                        for(var key in area){
+                            var province=area[key]['name'].substring(0,2);
+                            var province_long=area[key]['name'].substring(0,3);
+                            if(province==str||province_long==str){
+                                pro_code=Int(key);
+                            }
+                        }
+                        window.dataObj.province_code=pro_code;
+                        $('.province_name').text(str);
+                        getData('filter',1,'province',pro_code);
+                        $('body','html').animate({scrollTop:'1000px'});
+                    }
+                }
+            });
+            options.series[0].data=[];
+            var area=window.dataObj.area;
+            for(var key in area){
+                var province=area[key]['name'];
+                var pro_count=window.dataObj.province_count;
+                var num=0;
+                province=province.substring(0,2);
+                if(province=='黑龙') {province='黑龙江'}
+                if(province=='内蒙') {province='内蒙古'}
+                for(var i in pro_count){
+                    if(key==pro_count[i][0]){num=pro_count[i][1]}
+                }
+                options.series[0].data.push({name:province,value:num});
+            }
+            myChart.refresh();
+            myChart.setOption(options);
+        })
+
+       /*     var options={
                 dataRange: {
                 show:false,
             min: 0,
@@ -116,7 +188,7 @@
     }
     myChart.refresh();
     myChart.setOption(options);
-    }); 
+    });*/ 
     //page
     $(document).on('click','.pagenation li',function(){
         var $this=$(this);
