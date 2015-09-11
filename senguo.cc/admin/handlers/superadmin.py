@@ -464,13 +464,21 @@ class ShopManage(SuperBaseHandler):
 				count=count))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action")
+	@SuperBaseHandler.check_arguments("action","code?")
 	def post(self):
 		action = self.args["action"]
 		if action == "updateShopStatus":
 			self.handle_updateStatus()
 		elif action == "shopclose":
 			self.handle_shopclose()
+		elif action == "getin":
+			print(self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0])
+			try:
+				shop_id=self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0]
+			except:
+				return self.send_error(403)
+			self.set_secure_cookie("shop_id", str(shop_id))
+			return self.send_success()
 		else:
 			return self.send(400)
 
