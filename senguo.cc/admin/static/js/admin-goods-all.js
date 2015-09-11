@@ -507,20 +507,23 @@ $(document).ready(function(){
     }
 }).on("click",".picture-list li",function(e){
     var $this=$(this);
-    if($(".choosed-list li").length==5){
-        return Tip("最多能选择五张图片");
+    if($(e.target).closest(".del-pic-img").size()==0){
+        if($(".choosed-list li").length==5){
+            return Tip("最多能选择五张图片");
+        }
+        var _item='<li class="img-bo picture-list-item">'+
+                        '<a href="javascript:;" class="del-choose-img">x</a>'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/100/h/100" url="{{imgurl}}" alt="商品图片"/>'+
+                '</li>';
+        var img=$this.find("img").attr("url");
+        var render = template.compile(_item);
+        var html = render({
+            imgurl:img
+        });
+        $(".choosed-list").append(html);
     }
-    var _item='<li class="img-bo picture-list-item">'+
-                    '<a href="javascript:;" class="del-choose-img">x</a>'+
-                    '<div class="img-selected">已选</div>'+
-                    '<img src="{{imgurl}}?imageView2/1/w/100/h/100" url="{{imgurl}}" alt="商品图片"/>'+
-            '</li>';
-    var img=$this.find("img").attr("url");
-    var render = template.compile(_item);
-    var html = render({
-        imgurl:img
-    });
-    $(".choosed-list").append(html);
+    
     // if($(e.target).closest(".del-pic-img").size()==0){
     //     if($("#item-img-lst").children(".img-bo").size()<5){
     //         var src = $(this).find("img").attr("url");
