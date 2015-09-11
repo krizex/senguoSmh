@@ -141,8 +141,8 @@ function insertProfile(data){
             var $item = $("#item1").children("li").clone();
             $item.attr("data-id",data[key].id);
             $item.find(".topic-title").html(data[key].title).attr("title",data[key].title);
-            $item.find(".dianzan").html(data[key].commentnum);
-            $item.find(".reply").html(data[key].greatnum);
+            $item.find(".dianzan").html(data[key].greatnum);
+            $item.find(".reply").html(data[key].commentnum);
             $item.find(".topic-class").html(data[key].type);
             $item.find(".topic-tm").html(data[key].time);
             if(_type==2){
