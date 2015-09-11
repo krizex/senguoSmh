@@ -1380,67 +1380,7 @@ class Comment(AdminBaseHandler):
 class OrderExport(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		import openpyxl
-		from openpyxl import Workbook
-		import xlwt
-		# try:
-		# 	from StringIO import StringIO
-		# except ImportError:
-		# 	from io import StringIO
-		import io
-
-		# self.set_header('Content-type','application/vnd.ms-excel')
-		# self.set_header('Transfer-Encoding','chunked')
-		# self.set_header('Content-Disposition','attachment;filename="export.xls"')
-		# wb = Workbook()
-		# ws = wb.active
-		# ws.append(["aaa","bbb"])
-		# # wb.save("shopdata11.xlsx")
-		# wb.encoding='gbk'
-		# sio=io.StringIO()
-		# wb.save(sio)
-		# return sio.getvalue()
-
-		# response = HttpResponse(mimetype='application/vnd.ms-excel')
-		# response['Content-Disposition'] = 'attachment;filename=member.xls'
-		self.set_header('mimetype','application/vnd.ms-excel')
-		self.set_header('Content-Disposition','attachment;filename="export.xls"')
-		wb = Workbook(encoding = 'utf-8')
-		ws = wb.active
-		ws.append(["aaa","bbb"])
-		# wb = xlwt.Workbook(encoding = 'utf-8')
-		# sheet = wb.add_sheet(u'会员名单')
-		# #1st line 
-		# sheet.write(0,0,'会员编号')
-		# sheet.write(0,1,'会员名')
-		# sheet.write(0,2,'会员性别')
-		# sheet.write(0,3,'学校')
-		# sheet.write(0,4,'电话')
-		# sheet.write(0,5,'年级')
-		# sheet.write(0,6,'专业')
-		# sheet.write(0,7,'生日')
-		# sheet.write(0,8,'邮箱')
-		# sheet.write(0,9,'积分')
-
-		# row = 1
-		# memberlist = Member.objects.all()
-		# for member in memberlist:
-		# 	sheet.write(row,0,member.uid)
-		# 	sheet.write(row,1,member.name)
-		# 	sheet.write(row,2,member.sex)
-		# 	sheet.write(row,3,member.school)
-		# 	sheet.write(row,4,member.phone)
-		# 	sheet.write(row,5,member.grade)
-		# 	sheet.write(row,6,member.profession)
-		# 	sheet.write(row,7,member.birthday)
-		# 	sheet.write(row,8,member.email)
-		# 	sheet.write(row,9,member.integral)
-		# 	row = row + 1
-
-		output = io.StringIO()
-		wb.save(output)
-		output.seek(0)
-		return self.write(output.getvalue())
+		pass
 
 # 订单管理
 class Order(AdminBaseHandler):
