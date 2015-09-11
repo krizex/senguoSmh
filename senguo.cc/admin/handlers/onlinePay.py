@@ -105,24 +105,26 @@ class RefundWxpay(CustomerBaseHandler):
 			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
 			batch_no = now.strftime("%Y%m%d") + num
 			detail_data = transaction_id +'^' + format(totalPrice,'.2f') + '^协商退款'  
-			params = {
-				"service":'refund_fastpay_by_platform_pwd',
-				"partner":ALIPAY_PID,
-				"_input_charset":"utf-8",
-				# "sign":sign,
-				# "sign_type":sign_type,
-				"refund_date":refund_date,
-				"seller_user_id":ALIPAY_PID,
-				"batch_no":batch_no,
-				"batch_num":1,
-				"detail_data":detail_data,
-			}
+			notify_url = 'http://i.senguo.cc/alipaycallback'
+
+			# params = {
+			# 	"service":'refund_fastpay_by_platform_pwd',
+			# 	"partner":ALIPAY_PID,
+			# 	"_input_charset":"GBK",
+			# 	# "sign":sign,
+			# 	# "sign_type":sign_type,
+			# 	"refund_date":refund_date,
+			# 	"seller_user_id":ALIPAY_PID,
+			# 	"batch_no":batch_no,
+			# 	"batch_num":1,
+			# 	"detail_data":detail_data,
+			# }
 			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
-				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num=1,detail_data=detail_data)
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data,seller_email="senguo@senguo.cc")
 			print(refund_url,'退款地址')
 			alipay_response = requests.get(refund_url)
 			alipay_page     = alipay_response.text
-			print(alipay_page)
+			# print(alipay_page)
 			return self.write(alipay_page)
 		else:
 			return self.send_fail('action error')
