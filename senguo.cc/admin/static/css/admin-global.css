@@ -107,7 +107,8 @@ img{border:none;}
 .red-tip{color: #fff;font-weight:normal;font-size: 12px;background-color: #ff6666;padding: 0 6px;border-radius: 20px;position: absolute;right: 38px;line-height: 20px;height: 20px;text-indent: 0;-webkit-transform:translate(55%,0);min-width: 20px;text-align: center;}
 .on_sum{color: #fff !important;font-size:12px !important;font-weight:normal !important;display:inline-block;background-color: #ff6666;padding: 0 6px;border-radius: 20px;right: 20px;line-height: 20px;height: 20px;min-width: 20px;}
 .red-toll{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;right: 34px;top:15px;}
-.red-toll1{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;left: 175px;top:15px;}
+.red-toll1{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;left: 256px;top:10px;}
+.red-toll2{position: absolute;width: 6px;height: 6px;border-radius: 6px;background-color: #ff6666;left: 345px;top:10px;}
 
 /*右侧公共样式*/
 .container-right{width:82.5%;max-width:990px;padding:26px 20px 20px;border-left:1px solid #e7e7eb;min-height:750px;}
@@ -115,8 +116,8 @@ img{border:none;}
 .mode-lock{background:#f4f5f9;width:100%;float:left;padding:10px 0;height:77px;}
 
 .subnav-box{position:relative;height:40px;border-bottom:1px solid #e7e7eb;width:100%;overflow:hidden;}
-.subnav li{float:left;width:90px;height:40px;text-align:center;line-height:42px;}
-.subnav li a{color:#333;font-size:14px;display:block;}
+.subnav li{float:left;width:90px;height:40px;font-size:14px;text-align:center;line-height:42px;border-bottom:-3px solid #fff;margin-top:-1px;}
+.subnav li a{color:#333;display:block;}
 .subnav li:hover{border-bottom:3px solid #a0a3ab;margin-top:-1px;}
 .subnav .active{border-bottom:3px solid #52b43f;margin-top:-1px;}
 .subnav .active:hover{border-bottom:3px solid #52b43f;margin-top:-1px;}
@@ -167,7 +168,7 @@ img{border:none;}
 
 /*分页样式*/
 .list-pagination{margin-top:20px;margin-bottom:10px;}
-.list-pagination ul{float:right;margin-right:20px;}
+.list-pagination ul{float:right;}
 .list-pagination li{float:left;margin-left:5px;line-height:28px;}
 .list-pagination .page-btn{display:inline-block;width:26px;height:26px;border:1px solid #ccc;border-radius:1px;background:url("../images/container-icon.gif") no-repeat;}
 .list-pagination .pre-page{background-position:-34px -207px;}
@@ -196,6 +197,7 @@ img{border:none;}
 .text-orange{color:#E07D14;}
 .text-orange2{color:#ec6b10}
 .text-black{color:#222;}
+.text-blue{color:#428bca;}
 .text-center{text-align:center;text-indent:0;}
 .text-link{color:#6ba4ef!important;}
 .name-link{color:#6ba4ef!important;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
@@ -398,9 +400,9 @@ input{color:#333;text-indent:5px;}
 .auth-box iframe{border:none;margin-top:20px;}
 
 .pop-win{position: fixed;width: 100%;height: 100%;background-color: rgba(0,0,0,.4);z-index: 1055;top: 0;left:0;display: none;}
-.picture-library{padding:20px;margin:10px 0;clear:both;}
-.picture-title{border-bottom:1px solid #ddd;height:50px;}
-.picture-title li{width:100px;text-align:center;float:left;color:#333;}
+.picture-library{padding: 15px 20px 0;margin:10px 0;clear:both;}
+.picture-title{border-bottom:1px solid #ddd;height:50px;line-height: 30px;font-size: 14px;}
+.picture-title li{width:115px;text-align:center;float:left;color:#333;}
 .picture-title li:hover{cursor:pointer;}
 .picture-title li.active{color:#44b549;}
 .picture-list{clear:both;width:105%;}
@@ -409,7 +411,7 @@ input{color:#333;text-indent:5px;}
 .picture-list li:hover{cursor:pointer;}
 .picture-list .img-selected{position: absolute;left: 0;top: 0;width:80px;height:80px;background-color: rgba(0,0,0,.5);color: #fff;text-align: center;line-height:80px;font-size: 12px;display: none;z-index:100;}
 .picture-list img{width:80px;height:80px;}
-.picture-title3{height:30px;line-height:30px;border-bottom:1px solid #ddd;padding-left:20px;}
+.picture-title3{height:30px;line-height:30px;border-bottom:1px solid #ddd;padding-left:20px;font-size: 14px;}
 .choosed-list{clear:both;width:105%;padding:20px;}
 .choosed-list li{float:left;margin:0 26px 15px 0;position:relative;}
 .choosed-list .active .img-selected{display:block;}

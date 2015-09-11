@@ -1,17 +1,41 @@
-var swiper = null;
+var length = 3,timer=null;
 $(document).ready(function(){
-    swiper = new Swiper('#swiper-container',{
-        mode: 'horizontal',
-        loop:true,
-        grabCursor: true,
-        pagination: '.pagination',
-        autoplay:"3000",
-        speed:'600',
-        autoplayDisableOnInteraction:false,
-        paginaClickable:true
+    $(".swiper-wrapper li").each(function(i){
+        var $this = $(this);
+        $this.css({position:"absolute",top:"0",left:i*1000+"px"});
     });
-}).on("mouseover",".swiper-container",function(){
-    swiper.stopAutoplay();
-}).on("mouseout",".swiper-container",function(){
-    swiper.startAutoplay();
+    timer=setInterval(function(){
+        slide_images("next");
+    },4000);
+}).on("click","#prev",function(){
+    slide_images("prev");
+}).on("click","#next",function(){
+    slide_images("next");
+}).on("mouseover",".swiper-wrapper",function(){
+    clearInterval(timer);
+}).on("mouseout",".swiper-wrapper",function(){
+    timer=setInterval(function(){
+        slide_images("next");
+    },4000);
 });
+function slide_images(type){
+    $(".swiper-wrapper li").each(function(){
+        var $this = $(this);
+        var index = parseInt($this.attr("data-index"));
+        if(type=="next"){
+            if(index==0){
+                $this.css("left",3000+"px").attr("data-index",length-1);
+                $this.animate({left:"2000px"},"slow");
+            }else{
+                $this.attr("data-index",index-1).animate({left:(index-1)*1000+"px"},"slow");
+            }
+        }else{
+            if(index==2){
+                $this.css("left",-1000+"px").attr("data-index",0);
+                $this.animate({left:0},"slow");
+            }else{
+                $this.attr("data-index",index+1).animate({left:(index+1)*1000+"px"},"slow");
+            }
+        }
+    });
+}

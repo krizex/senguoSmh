@@ -5,11 +5,10 @@
 .stop-mode{text-indent:44px;}
 .stop-mode .circle{left:2px;}
 .c999{color: #999!important;}
-.top-box{line-height:20px;margin-bottom:20px;position:relative;padding:15px;background:#f4f5f9;}
+.top-box{background-color:#f4f5f9;padding: 15px 20px;margin: 0 0 20px;}
 .top-box .action-btn{position:absolute;right:10px;top:18px;}
-
+.pr20{padding-right: 20px!important;}
 table{width:100%;border-collapse:collapse;table-layout: fixed;}
-tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px solid #eee;}
 .wrap-coupontb tr{border:none;}
 .set-box td{padding:10px;border-top:solid 1px #eee;}
 .set-box textarea{width:100%;padding:2px;border:#eee solid 1px;}
@@ -69,6 +68,7 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .pop-bm>a{display:inline-block;background-color: #41b546;color: #fff;width: 86px;height: 28px;font-size:12px;line-height: 28px;text-align: center;border-radius: 2px;margin: 0 20px;}
 .coupon-active{margin-top: 13px;}
 .furit-type{padding-left: 100px;}
+.furit-type-discount{padding-left: 40px;}
 .chinav li{width: 120px;}
 .chinav li:hover{border-width:3px;}
 .chinav .active{border-width:3px;}
@@ -83,16 +83,16 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .tb-enty .dis-coupon a{display: none;}
 .operate .stop{display: none;}
 .operate{position: relative;}
-.all-position{top: 100%;right: -40px;left:auto;margin-top: 10px;border-color: #eee;}
+.all-position{top: 100%;right: -18px;left:auto;margin-top: 16px;border-color: #eee;}
 .tb-enty .dis-coupon span{display: inline;}
 .wrap-coupontb{background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;height:610px;}
 .coupon-prview{width: 20%;border: 1px solid #e7e7eb;border-left:none;height: 610px;}
 .coupon-tb input{width: 170px;border:1px solid #e7e7eb;height: 28px;background-color: #fff;}
 .coupon-tb td{padding: 10px 0;border:none;vertical-align: middle;}
-.cancel-add-goods{display: inline-block;background-size: 18px;background-image: url('/static/images/admin_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
+.cancel-add-goods{display: inline-block;background-size: 18px;background-image: url('/static/images/admin_back.png') !important;background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
 .wrap-pop-btn{background-color: #fbfbfb;border:1px solid #eee;border-top:none;padding: 10px 0;text-align: center;}
 .wrap-pop-btn>a{display: inline-block;width: 90px;text-align: center;font-size: 14px;height: 28px;line-height: 28px;border-radius: 2px;border: 1px solid #e7e7eb;}
-.ok-btn{background-color: #33CC66;color: #fff;margin-right: 20px;}
+.ok-btn{background-color: #52b43f;color: #fff;margin-right: 20px;}
 .cancel-btn{background-color: #fff;color: #333;}
 .coupon-row{height: 28px;vertical-align: middle;line-height: 28px;}
 .ver7{vertical-align: 7px;}
@@ -107,6 +107,75 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .wrap-coupontitle{font-size: 14px;}
 .category-list{font-size: 14px;}
 
+
+/*限时折扣添加样式*/
+.charge-btn{width: 90px;display:inline-block;margin-left:15px;font-size: 12px;color: #000;text-align: center;height: 28px;line-height: 26px;border-radius: 2px;background-color: #ddd;white-space: nowrap;}
+.week-btn{width: 50px;display:inline-block;margin-left:15px;font-size: 14px;background-color: #fff;color: #000;text-align: center;height: 28px;line-height: 28px;border-radius: 2px;}
+.back_green{background-color: #52b43f;}
+.back_gray{background-color: #f4f5f9;}
+.back_red{background-color: #ff6666;}
+.text_red{color: #ff6666;}
+.text_green{color: #52b43f;}
+.text_gray{color: #8d8d8d}
+.back_gray1{background: #ccc;color: #000}
+.discount_delete{margin-left: 420px;}
+.wrap-discounttb{background-color: #f4f5f9;-webkit-box-sizing: border-box;padding: 15px 0 20px 20px;}
+/*.discount-detail{width: 700px;margin-left: 100px;}*/
+.no_border{background-color: #fff;border: none;}
+.wrap-white{padding-left: 10px !important;border: 1px solid #999;}
+.discount_rate{margin-left: 25px}
+.use_group{margin-left: 10px}
+.charge-type{border: none;}
+.send-day .btn{padding:5px 10px;font-size:12px;margin-right:5px;}
+.send-day .active{background:#44b549;color:#fff;}
+.time-btn-width{width: 45px}
+.text-below{vertical-align: 6px}
+.discount-tip{margin-left: 150px;margin-bottom: 10px}
+.mode-cm{display:inline-block;border-radius:30px;width:120px;height:32px;position:relative;line-height:30px;font-size:14px;top:-40px;}
+.mode-cm .circle{display:inline-block;width:28px;height:28px;background:#fff;border-radius:50%;position:absolute;top:2px;}
+.mode-jyj{top:-57px;}
+.discount_close{margin-left: 420px;}
+.w50{width: 60px !important;}
+/*added by jyj for seckill*/
+.font14{font-size: 14px !important;}
+.mt20{margin-top: 20px !important;}
+.mt50{margin-top: 50px;}
+.pull-left{float: left !important;}
+.pull-right{float: right !important;}
+.mt10{margin-top: 10px !important;}
+.ml10{margin-left: 10px;}
+.ml20{margin-left: 20px !important;}
+.input-width{width: 40px !important;}
+.seckill-new-div{margin-top: 10px;margin-right: 50px;margin-bottom: 0px;padding: 15px;background-color:#FFF;border-radius: 1px;border:1px solid #eee;}
+.mb30{margin-bottom: 30px !important;}
+.w130{width: 130px !important;}
+.scroll-bar-discount{overflow: hidden;max-height: 200px;overflow-y: auto;}
+.invisiable{visibility: hidden;}
+.discount_rate{width: 100px !important;}
+.scroll-bar{overflow: hidden;overflow-y: auto;}
+/**/
+.add-link{float:left !important;color:#33CC66;margin-bottom: 10px;font-size: 14px;margin-top: 10px;}
+.delete-link{float: right !important;color:#ff0000;margin-right: 50px;margin-bottom: 10px;font-size: 14px;margin-top: 10px;}
+
+.send-day .btn{padding:5px 10px;font-size:12px;margin-right:5px;}
+.send-day .active{background:#44b549;color:#fff;border: none;}
+.send-day:active{border:none;}
+.send-day:hover{border:none;}
+.send-day:focus{border:none;}
+.send-day .btn:active{border: none;}
+.send-day .btn:hover{border: none;}
+.send-day .btn:focus{border: none;}
+.send-day .btn-default:active{border: none;}
+.send-day .btn-default:hover{border: none;}
+.send-day .btn-default:focus{border: none;}
+.ver-8 {vertical-align: 8px;}
+.w110{width: 110px;}
+.edit-activity{z-index: 2999;font-size: 14px;}
+.spread-activity{z-index: 2999;font-size: 14px;}
+.stop-activity{z-index: 2999;font-size: 14px;}
+.ver-10{vertical-align: 10px !important;}
+.dis-seckill>td{color: #999;}
+.spread-position{top: 100%;right: -15px;left:auto;margin-top: 15px;border-color: #eee;}
 .edit-box{background-color: #f4f5f9;padding: 15px 20px;margin:0 0 20px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
 .edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
@@ -114,3 +183,4 @@ tr{border-left:1px solid #eee;border-right:1px solid #eee;border-bottom:1px soli
 .edit-box .work-mode .circle{right:2px;}
 .edit-box .stop-mode{text-indent:44px;}
 .edit-box .stop-mode .circle{left:2px;}
+.operate>a{font-size: 14px;}

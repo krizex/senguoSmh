@@ -60,7 +60,7 @@
                 </a>
             </li>
             <li class="w25 pull-left prl0 m-b8">
-                <a href="#">
+                <a href="javascript:;">
                     <em class="order4-icon set-inl-blo bg_change"></em>
                     {% if count[6] != 0 %}
                     <span class="order-num bg-pink text-white">{{count[6]}}</span>
@@ -70,11 +70,44 @@
             </li>
         </ul>
     </div>
+    <div class="bg-white m-b10 clearfix pb0 hidden">
+        <a href="{{reverse_url('customerOrder')}}?action=all">
+            <p class="title clearfix box-style">
+                <span class="pull-left font14 c333"><em class="presell-icon set-inl-blo pull-left bg_change"></em>我的预售</span>
+                <span class="text-grey9 pull-right font14"><i class="arr-right pull-right"></i></span>
+            </p>
+        </a>
+        <ul class="center-nav row text-center m-b0 clearfix font12 center-block box-style">
+            <li class="w33 pull-left prl0 m-b8">
+                <a href="{{reverse_url('customerOrder')}}?action=unhandled">
+                    <em class="order1-icon set-inl-blo bg_change"></em>
+                    {% if count[3] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[3]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">未处理</p>
+                </a>
+            </li>
+            <li class="w33 pull-left prl0 m-b8">
+                <a href="{{reverse_url('customerOrder')}}?action=waiting">
+                    <em class="order2-icon set-inl-blo bg_change"></em>
+                    {% if count[4] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[4]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">待收货</p>
+                </a>
+            </li>
+            <li class="w33 pull-left prl0 m-b8">
+                <a href="{{reverse_url('customerOrder')}}?action=finish">
+                    <em class="order3-icon set-inl-blo bg_change"></em>
+                    {% if count[5] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[5]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">到货</p>
+                </a>
+            </li>
+        </ul>
+    </div>
     <div class="box-style bg-white pb0 m-b10 clearfix pr0">
-        <!--<div class="title clearfix">
-            <span class="pull-left font14"><em class="collect-icon set-inl-blo pull-left bg_change"></em>我的收藏</span>
-        </div>
-        <hr/>-->
         <button class="title clearfix address-manage">
             <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
             <a href="javascript:;" class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none">+添加收货地址</a>

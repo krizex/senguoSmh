@@ -4,7 +4,7 @@ import json
 import multiprocessing
 from multiprocessing import Process
 from dal.dis_dict import dis_dict
-from bs4 import BeautifulSoup
+# from bs4 import BeautifulSoup
 session = models.DBSession()
 
 # def code_to_text(column_name, code):
@@ -144,8 +144,17 @@ session = models.DBSession()
 	# session.commit()
 	# return self.send_success()
 
-def getPicture():
-	
+# # 新版森果社区初始化
+# def getArticle():
+# 	artilces = session.query(models.Article).all()
+# 	for article in artilces:
+# 		article.public_time=article.create_time
+# 		record = session.query(models.ArticleGreat).filter_by(article_id=article.id,collect=1).distinct(models.Article.id).count()
+# 		article.collect_num  = record
+# 	session.commit()
+
+# 图片库初始化
+def getPicture():	
 	shops = session.query(models.Shop).all()
 	for shop in shops:
 		goods = session.query(models.Fruit).filter_by(shop_id=shop.id).all()
@@ -162,12 +171,12 @@ def getPicture():
 					for img in imgs:
 						session.add(models.PictureLibrary(_type="goods",shop_id=shop.id,img_url=img,code=code))
 						session.flush()
-				if good.detail_describe:
-					res_detail = BeautifulSoup(good.detail_describe,"lxml")
-					res_img = res_detail.findAll("img")
-					for img in res_img:
-						session.add(models.PictureLibrary(_type="detail",shop_id=shop.id,img_url=img["src"]))
-						session.flush()
+				# if good.detail_describe:
+				# 	res_detail = BeautifulSoup(good.detail_describe,"lxml")
+				# 	res_img = res_detail.findAll("img")
+				# 	for img in res_img:
+				# 		session.add(models.PictureLibrary(_type="detail",shop_id=shop.id,img_url=img["src"]))
+				# 		session.flush()
 
 		notices = session.query(models.Notice).filter_by(config_id=shop.id).all()
 		if len(notices) >0:
@@ -181,8 +190,7 @@ def getPicture():
 			session.flush()
 	session.commit()
 
-
-
 g = multiprocessing.Process(name='getPicture',target=getPicture)
+
 g.start()
 g.join()
