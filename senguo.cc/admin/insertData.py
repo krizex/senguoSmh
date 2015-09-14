@@ -4,6 +4,7 @@ import json
 import multiprocessing
 from multiprocessing import Process
 from dal.dis_dict import dis_dict
+# from bs4 import BeautifulSoup
 session = models.DBSession()
 
 # def code_to_text(column_name, code):
@@ -143,12 +144,50 @@ session = models.DBSession()
 	# session.commit()
 	# return self.send_success()
 
-def getArticle():
-	artilces = session.query(models.Article).all()
-	for article in artilces:
-		article.public_time=article.create_time
-		record = session.query(models.ArticleGreat).filter_by(article_id=article.id,collect=1).distinct(models.Article.id).count()
-		article.collect_num  = record
+# # 新版森果社区初始化
+# def getArticle():
+# 	artilces = session.query(models.Article).all()
+# 	for article in artilces:
+# 		article.public_time=article.create_time
+# 		record = session.query(models.ArticleGreat).filter_by(article_id=article.id,collect=1).distinct(models.Article.id).count()
+# 		article.collect_num  = record
+# 	session.commit()
+
+# 图片库初始化
+def getPicture():	
+	shops = session.query(models.Shop).all()
+	for shop in shops:
+		goods = session.query(models.Fruit).filter_by(shop_id=shop.id).all()
+		if len(goods) >0 :
+			for good in goods:
+				try:
+					code = good.fruit_type.code
+				except:
+					code = "TDSG"
+				imgs = []
+				if good.img_url:
+					imgs = good.img_url.split(";")
+				if len(imgs)>0:
+					for img in imgs:
+						session.add(models.PictureLibrary(_type="goods",shop_id=shop.id,img_url=img,code=code))
+						session.flush()
+				# if good.detail_describe:
+				# 	res_detail = BeautifulSoup(good.detail_describe,"lxml")
+				# 	res_img = res_detail.findAll("img")
+				# 	for img in res_img:
+				# 		session.add(models.PictureLibrary(_type="detail",shop_id=shop.id,img_url=img["src"]))
+				# 		session.flush()
+
+		notices = session.query(models.Notice).filter_by(config_id=shop.id).all()
+		if len(notices) >0:
+			for notice in notices:
+				if notice.img_url:
+					session.add(models.PictureLibrary(_type="notice",shop_id=shop.id,img_url=notice.img_url))
+					session.flush()
+
+		if shop.shop_trademark_url:
+			session.add(models.PictureLibrary(_type="logo",shop_id=shop.id,img_url=shop.shop_trademark_url))
+			session.flush()
 	session.commit()
 
 #为每个店铺添加一个默认员工
@@ -165,6 +204,10 @@ def add_staff():
 				session.flush()
 	session.commit()
 
-g = multiprocessing.Process(name='getArticle',target=add_staff)
+# g = multiprocessing.Process(name='getArticle',target=add_staff)
+
+g = multiprocessing.Process(name='getPicture',target=getPicture)
+
+
 g.start()
 g.join()

@@ -2540,7 +2540,9 @@ class Goods(AdminBaseHandler):
 						return self.send_fail('该商品分组不存在或已被删除')
 				else:
 					args["group_id"] =group_id
-
+			code = "TDSG"
+			if "code" in data and data["code"]:
+				code = data["code"]
 			if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 				index_list = data["img_url"]["index"]
 				img_list = data["img_url"]["src"]
@@ -2551,6 +2553,9 @@ class Goods(AdminBaseHandler):
 						if val == i:
 							imgurl = img_list[index]
 							img_urls.append(imgurl)
+							picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code).first()
+							if not picture:
+								self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code))
 						args["img_url"] = ";".join(img_urls)  if img_urls else None
 
 			if "priority" in data:
@@ -2659,6 +2664,9 @@ class Goods(AdminBaseHandler):
 							group_id = group_id
 						else:
 							return self.send_fail('该商品分组不存在或已被删除')
+				code = "TDSG"
+				if "code" in data and data["code"]:
+					code = data["code"]
 				if "img_url" in data:  # 前端可能上传图片不成功，发来一个空的，所以要判断
 					index_list = data["img_url"]["index"]
 					img_list = data["img_url"]["src"]
@@ -2670,6 +2678,9 @@ class Goods(AdminBaseHandler):
 							if val == i:
 								imgurl = img_list[index]
 								img_urls.append(imgurl)
+								picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code).first()
+								if not picture:
+									self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="goods",img_url=imgurl,code=code))
 							if img_urls:
 								_img_urls = ";".join(img_urls)
 							else:
@@ -3482,6 +3493,9 @@ class Config(AdminBaseHandler):
 					click_type=link_type,
 					img_url=img_url)
 				self.current_shop.config.notices.append(notice)
+				picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="notice",img_url=img_url).first()
+				if not picture:
+					self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="notice",img_url=img_url))
 				self.session.commit()
 			elif action == "edit_receipt": #小票设置
 				self.current_shop.config.update(session=self.session,
@@ -3516,9 +3530,12 @@ class Config(AdminBaseHandler):
 					notice.detail = data["detail"]
 				if "link" in data:
 					notice.link = data["link"]
-				if "link_type" in data and data["link_type"]:
+				if "link_type" in data:
 					notice.click_type = data["link_type"]
 				notice.img_url=img_url
+				picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type="notice",img_url=img_url).first()
+				if not picture:
+					self.session.add(models.PictureLibrary(shop_id=self.current_shop.id,_type="notice",img_url=img_url))
 			self.session.commit()
 		elif action == "edit_recipe_img":
 			return self.send_qiniu_token("receipt", self.current_shop.id)
@@ -5010,6 +5027,61 @@ class WirelessPrint(AdminBaseHandler):
 				# print(r.status_code)
 				# print(r.text)
 
+# 图片库
+class GetPicture(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","page:int","code?","id?:int")
+	def get(self):
+		action = self.args["action"]
+		page = int(self.args["page"])
+		if "code" in self.args and self.args["code"] !=[] and self.args["code"] !="":
+			code = self.args["code"]
+		else:
+			code = "TDSG"
+		datalist = []
+		page_size = 12
+		if not action:
+			return self.send_fail("no action")
+		if not page:
+			page = 0
+		picture_list = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,_type=action,status=1)
+		if action == "goods" and code != "undefined":
+			picture_list = picture_list.filter_by(code=code)
+		pictures = picture_list.order_by(models.PictureLibrary.create_time.desc()).offset(page*page_size).limit(page_size).all()
+		for picture in pictures:
+			status = 0
+			if "id" in self.args and self.args["id"] !=[]:
+				_id =int(self.args["id"])
+				fruit = self.session.query(models.Fruit).filter_by(id=_id).filter("active"!=0).first()
+				if fruit and fruit.img_url:
+					imgs = fruit.img_url.split(";")
+					if picture.img_url in imgs:
+						status = 1
+
+			datalist.append({"imgurl":picture.img_url,"id":picture.id,"status":status})
+		if page == 0:
+			total_page = picture_list.count()//page_size
+			return self.send_success(datalist=datalist,total_page=total_page)
+		else:
+			return self.send_success(datalist=datalist)
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action:str","data")
+	def post(self):
+		action = self.args["action"]
+		data = self.args["data"]
+		if action == "del":
+			pic_id=int(data["id"])
+			try:
+				picture = self.session.query(models.PictureLibrary).filter_by(shop_id=self.current_shop.id,id=pic_id,status=1).one()
+			except:
+				return self.send_fail("no such picture")
+			if picture:
+				picture.status = 0
+				self.session.commit()
+			return self.send_success()
+		else:
+			return self.send_fail("403")
 
 # 限时折扣
 class Discount(AdminBaseHandler):
