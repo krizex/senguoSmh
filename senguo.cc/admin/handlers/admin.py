@@ -1379,8 +1379,8 @@ class Comment(AdminBaseHandler):
 
 class OrderExport(AdminBaseHandler):
 	@tornado.web.authenticated
-	@AdminBaseHandler.check_arguments("data")
-	def post(self):
+	@AdminBaseHandler.check_arguments("order_type","order_status","order_pay","date1","date2","money1","money2")
+	def get(self):
 		import openpyxl
 		from openpyxl import Workbook
 		import xlwt
@@ -1389,7 +1389,7 @@ class OrderExport(AdminBaseHandler):
 		# except ImportError:
 		# 	from io import StringIO
 		import io
-		data = self.args["data"]
+		data = self.args
 		try:
 			order_type = int(data["order_type"])
 		except:
@@ -1463,10 +1463,9 @@ class OrderExport(AdminBaseHandler):
 				orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") == date1]
 			else:
 				orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") in ([date1,date2])] 
-		print(orders)
+		# print(orders)
 		for order in orders:
-			print(order.num)
-
+			pass
 		# self.set_header('Content-type','application/vnd.ms-excel')
 		# self.set_header('Transfer-Encoding','chunked')
 		# self.set_header('Content-Disposition','attachment;filename="export.xls"')
@@ -1478,10 +1477,11 @@ class OrderExport(AdminBaseHandler):
 		# sio=io.StringIO()
 		# wb.save(sio)
 		# return sio.getvalue()
-		return self.send_success()
+		# return self.send_success()
 		# response = HttpResponse(mimetype='application/vnd.ms-excel')
 		# response['Content-Disposition'] = 'attachment;filename=member.xls'
-		self.set_header('mimetype','application/vnd.ms-excel')
+		self.set_header('Content-Type','application/octet-stream')
+		# self.set_header('Transfer-Encoding','chunked')
 		self.set_header('Content-Disposition','attachment;filename="export.xls"')
 		wb = Workbook(encoding = 'utf-8')
 		ws = wb.active
@@ -1515,10 +1515,13 @@ class OrderExport(AdminBaseHandler):
 		# 	sheet.write(row,9,member.integral)
 		# 	row = row + 1
 
-		output = io.StringIO()
+		output = io.BytesIO()
+		# output = output.decode()
 		wb.save(output)
 		output.seek(0)
-		return self.write(output.getvalue())
+		# print(output.getvalue())
+		self.write(output.getvalue())
+		self.finish()
 
 # 订单管理
 class Order(AdminBaseHandler):
@@ -1528,6 +1531,8 @@ class Order(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
+		if not self.current_shop:
+			return self.redirect(self.reverse_url("switchshop"))
 		order_type = self.args["order_type"]
 		
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口

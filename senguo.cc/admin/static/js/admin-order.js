@@ -238,7 +238,6 @@ $(document).ready(function(){
 }).on("click",".order-export",function(){
     $(".order-export-box").modal("show");
 }).on("click",".order-export-sure",function(){
-    var url="/admin/orderExport";
     var status=$(".export-status").attr("data-id");
     var type=$(".export-type").attr("data-id");
     var pay=$(".export-pay").attr("data-id");
@@ -246,6 +245,9 @@ $(document).ready(function(){
     var date2=$(".export-date2").val().trim();
     var money1=$(".export-money1").val().trim();
     var money2=$(".export-money2").val().trim();
+    if(!type){
+        type = 9
+    }
     var data={
         order_type:type,
         order_status:status,
@@ -258,14 +260,20 @@ $(document).ready(function(){
     var args={
         data:data
     };
-    $.postJson(url,args,function(res){
+    var url="/admin/orderExport?order_type="+type+"&order_status="+status+"&order_pay="+pay+"&date1="+date1+"&date2="+date2+"&money1="+money1+"&money2="+money2;
+    // var url="/admin/orderExport?data="+data;
+    $.ajax({
+        url:url,
+        type:"get",
+        success:function(res){
             if(res.success){
-                
+                var index = $(".order-type").children(".active").index();
+                $("#atonce").text(res.atonce);
+                $("#ontime").text(res.ontime);
+                $("#selfPoint").text(res.selfPoint);
             }
-            else return Tip(res.error_text);
-        },
-        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
-    )
+        }
+    })
 });
 
 var link='/admin/order';
