@@ -421,7 +421,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		seconds = public_time.strftime("%S")
 		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,"type":self.article_type(article[0].classify)\
 		,"type_id":article[0].classify,"public":article[0].no_public,"private":article[0].comment_private,"status":article[0].status,\
-		"year":year,"month":month,"day":day,"hour":hour,"minute":minute,"seconds":seconds}
+		"year":year,"month":month,"day":day,"hour":hour,"minute":minute,"seconds":seconds,'time':article[0].public_time}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
@@ -592,7 +592,7 @@ class Profile(FruitzoneBaseHandler):
 			datalist = self.getListData(-1,page)[0]
 			nomore = self.getListData(-1,page)[1]
 			return self.send_success(datalist=datalist,nomore=nomore)
-		return self.render("bbs/profile.html")
+		return self.render("{0}/profile.html".format(self.getBbsPath))
 
 
 	@tornado.web.authenticated

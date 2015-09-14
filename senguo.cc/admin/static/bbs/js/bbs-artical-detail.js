@@ -105,6 +105,9 @@ $(document).ready(function(){
        return false; 
     }
     var $this = $(this);
+    if($this.closest("li").children(".wrap-comment-box").size()>0){
+        return false;
+    }
     var $div = $('<div class="wrap-comment-box mt6"><div class="wrap-tarea">'+
                 '<textarea class="com-area com_area" placeholder="@'+$this.attr("data-name")+'"></textarea></div><div class="comm-btns">'+
                 '<a href="javascript:;" class="comment-cancel">取消</a>'+

@@ -2,9 +2,6 @@ var ueditor = null,_type = 100,_search=false,key="";
 $(document).ready(function(){
     getHotInfo("article");
     getHotInfo("customer");
-    if($(".publish-box-bk").size()>0){//发布&编辑
-        initEditor();
-    }
     if($.getUrlParam("search")){
         var key = $.getUrlParam("search");
         _search = true;
@@ -18,6 +15,10 @@ $(document).ready(function(){
         }
         articleList(0,true);
         scrollLoading();
+    }
+    if($(".publish-box-bk").size()>0){//发布&编辑
+        initEditor();
+        setFullScreen();
     }
 }).on("mouseover",".wrap-choose-type",function(){
     $(".classify_type").show();
@@ -248,10 +249,7 @@ function articleSearch(page,search,flag){
     });
 };
 function initEditor(){
-    ueditor = UM.getEditor('ueditor',{toolbars: [
-        ['fullscreen', 'source', 'undo', 'redo'],
-        ['simpleupload', 'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc']
-    ]});
+    ueditor = UM.getEditor('ueditor');
     QINIU_TOKEN=$("#token").val();
     QINIU_BUCKET_DOMAIN="7rf3aw.com2.z0.glb.qiniucdn.com/";
 
@@ -324,4 +322,19 @@ function publishAtical(target,type){
             Tip(res.error_text);
         }
     });
+}
+function setFullScreen(){
+    var flag = true;
+    setInterval(function(){
+        if($(".edui-container").css("position")=="fixed"){
+            $(".edui-container").css("top","110px");
+            if(flag==true){
+                $(".edui-body-container").height($(".edui-body-container").height()-110);
+            }
+            flag = false;
+        }else{
+            $(".edui-container").css("top","0");
+            flag = true;
+        }
+    },50);
 }

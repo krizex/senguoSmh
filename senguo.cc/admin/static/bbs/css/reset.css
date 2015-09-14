@@ -74,6 +74,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pt15{padding-top:15px!important;}
 .pm8{padding-bottom: 8px;}
 .pt5{padding-top: 5px;}
+.pm10{padding-bottom: 10px;}
 .pm20{padding-bottom: 20px;}
 .ptm6{padding: 6px 0;}
 .pt10{padding-top: 10px !important;}
@@ -90,6 +91,8 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .mt12{margin-top: 12px;}
 .mt30{margin-top: 30px;}
 .ml10{margin-left: 10px;}
+.ml0{margin-left: 0!important;}
+.ml4{margin-left: 4px;}
 .ml5{margin-left: 5px;}
 .mr10{margin-right: 10px;}
 .mt-100{margin-top: -100px;}
