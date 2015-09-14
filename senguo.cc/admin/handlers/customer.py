@@ -2707,7 +2707,7 @@ class Cart(CustomerBaseHandler):
 		# 如果提交订单是在线支付 ，则将订单号存入 cookie，进入支付前的页面
 		if self.args['pay_type'] == 3:
 			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
-			Timer(60*6,self.order_cancel_auto,(self.session,order.id,)).start()
+			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
