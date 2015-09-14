@@ -3136,6 +3136,7 @@ class Order(CustomerBaseHandler):
 		# 店铺评分
 		elif action == "comment_point":
 			data = self.args["data"]
+			print(data)
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			order.commodity_quality = int(data["commodity_quality"])
 			order.send_speed        = int(data["send_speed"])
@@ -3191,8 +3192,8 @@ class Order(CustomerBaseHandler):
 			# print(order,'i am order')
 			if not order:return self.send_error(404)
 			# print(order.id,'i am ')
-			if order.status != 5:
-				self.send_fail("只有已送达并且没有评价过的订单才能评价哦！")
+			if order.status not in [5,6]:
+				self.send_fail("只有已送达的订单才能评价哦！")
 			comment = order.comment
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
