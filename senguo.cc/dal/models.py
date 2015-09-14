@@ -1307,7 +1307,7 @@ class Order(MapBase, _CommonApi):
 	active = Column(TINYINT, default=1)  # 0删除
 	isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
 
-	fruits = Column(String(2000))
+	fruits = Column(String(4000))
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
 	send_time=Column(String(45))
@@ -1318,6 +1318,7 @@ class Order(MapBase, _CommonApi):
 	shop_service      = Column(Integer)
 
 	online_type       = Column(String(8)) #wx alipay
+	is_qrwxpay        = Column(Integer,default=0) #只有当订单类型为微信支付时才有意义，1表示扫码支付，0表示非扫码支付
 	send_admin_id =Column(Integer,nullable=False,default=0) #记录处理订单配送的管理员id #5.25
 	finish_admin_id =Column(Integer,nullable=False,default=0) #记录处理订单完成的管理员id #5.25
 
@@ -1418,7 +1419,7 @@ class Fruit(MapBase, _CommonApi):
 	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
 	group_id =  Column(Integer,nullable=False, default=0) #商品分组, 0:默认分组 -1:推荐分组 >0:自定义分组 #5.27
-	classify  = Column(TINYINT,nullable=False, default=0)  #0:水果 1:干果 3:其他
+	classify  = Column(TINYINT,nullable=False, default=0) #0:水果 1:干果 3:其他
 	temp_mgoods_id =  Column(Integer,nullable=False, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
 
@@ -1439,9 +1440,9 @@ class ChargeType(MapBase, _CommonApi):
 	price = Column(Float,nullable=False,default=0)#售价
 	unit = Column(TINYINT,nullable=False,default=4)#库存单位, 1:个 2:斤 3:份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:筐 11:包 12:今天价 13:明天价
 	num = Column(Float,nullable=False,default=1)#计价数量
-	unit_num = Column(Float,nullable=False, default=1)#单位换算
 	active = Column(TINYINT,nullable=False, default=1)#0删除，1:上架，2:下架
 	market_price =  Column(Float)#市场价 #5.27
+	unit_num = Column(Float,nullable=False, default=1)#单位换算
 	select_num = Column(Integer,nullable=False, default=1) #6.4
 	relate = Column(Float,nullable=False, default=1) # 库存换算关系
 
@@ -1464,7 +1465,7 @@ class GoodsGroup(MapBase, _CommonApi):
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	name =  Column(String(50),nullable=False)
-	status = Column(TINYINT,nullable=False,default = 1) #0:been deleted 1:normal
+	status = Column(TINYINT,nullable=False,default = 1) #0:已删除 1:正常
 	intro = Column(String(100))
 	create_time = Column(DateTime,nullable=False, default=func.now())
 
@@ -1538,7 +1539,7 @@ class Cart(MapBase, _CommonApi):
 	__tablename__ = "cart"
 	id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	fruits = Column(String(2000),nullable=False, default='{}')
+	fruits = Column(String(4000),nullable=False, default='{}')
 	mgoods = Column(String(1000),nullable=False, default='{}')
 
 # 店铺设置
@@ -1603,7 +1604,7 @@ class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	confess_active = Column(TINYINT,nullable=False,default = 1) #1:告白墙开启 0:告白墙关闭
-	coupon_active=Column(TINYINT,nullable=False,default=0)  #0:开启 1:关闭
+	coupon_active=Column(TINYINT,nullable=False,default=0)  #0:关闭 1:开启
 	discount_active=Column(TINYINT,nullable=False,default=1)  #0:开启 1:关闭
 	confess_notice = Column(String(500))
 	confess_type = Column(TINYINT,nullable=False,default = 1) #1:告白模式 0:非告白模式
@@ -1755,6 +1756,7 @@ class ArticleComment(MapBase, _CommonApi):
 
 	accountinfo = relationship(Accountinfo)
 
+
 # 文章点赞
 class ArticleGreat(MapBase, _CommonApi):#文章点赞 收藏 浏览
 	__tablename__ = 'article_great'
@@ -1780,6 +1782,16 @@ class ShortUrl(MapBase,_CommonApi):
 	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
 	short_url = Column(String(32),nullable = False)
 	long_url  = Column(String(64),nullable = False)
+
+class PictureLibrary(MapBase,_CommonApi):
+	__tablename__ = 'picture_library'
+	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
+	_type = Column(String(32),nullable = False) #goods,goods_detail,logo,notice
+	img_url = Column(String(100),nullable = False)
+	shop_id  = Column(Integer,nullable = False)
+	status = Column(TINYINT,nullable=False,default = 1) #0:delete 1:normal
+	create_time = Column(DateTime,nullable=False,default = func.now())
+	code = Column(String(128), nullable=False, default="")
 
 # 数据库初始化
 def init_db_data():

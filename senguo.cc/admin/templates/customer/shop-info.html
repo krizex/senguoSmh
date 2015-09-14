@@ -78,8 +78,8 @@
 </div>
 <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
     <li class="w25 pull-left">
-        <p class="text-grey9 text-center">运营时间</p>
-        <p class="mt3 text-center">{{operate_days or 0}}天</p>
+        <p class="text-grey9 text-center">{% if shop.config.comment_active == 1 %}店铺评价{% else %}运营时间{% end %}</p>
+        <p class="mt3 text-center">{% if shop.config.comment_active == 1 %}{{comment_sum}}条{% else %}{{operate_days or 0}}天{% end %}</p>
     </li>
     <li class="w25 pull-left">
         <p class="text-grey9 text-center">粉丝</p>

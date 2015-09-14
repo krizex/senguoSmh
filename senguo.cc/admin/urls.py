@@ -284,6 +284,7 @@ handlers = [
 	(r"/admin/MessageManage", handlers.admin.MessageManage, {}, "adminMessageManage"),
 	(r"/admin/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
 	(r"/admin/import", handlers.admin.GoodsImport, {}, "GoodsImport"),
+	(r"/admin/picture", handlers.admin.GetPicture, {}, "GetPicture"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
