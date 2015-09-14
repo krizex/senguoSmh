@@ -346,6 +346,7 @@ function orderItem(page){
                     var shop_new=data[i]['shop_new'];
                     var del_reason=data[i]['del_reason'];
                     var nickname=data[i]['nickname'];
+                    // console.log(nickname)
                     var customer_id=data[i]['customer_id'];
                     var _type=data[i]['type'];
                     var online_type=data[i]['online_type'];
@@ -442,7 +443,9 @@ function orderItem(page){
                         if(_type==3){
                             $item.find('.status_send').children('.status').text('等待自取');
                         }else{
+                            if(SH2){
                             $item.find('.status_send').children('.status').text(SH2['nickname']+'配送中');
+                            }
                         }
                         $item.find('.status-send').find("img").attr({"src":SH2['headimgurl']});
                         $item.find('.status_send').removeClass('hidden');
@@ -454,22 +457,30 @@ function orderItem(page){
                         if(_type==3){
                             $item.find('.status_finish').children('.status').text('自取完成');
                         }else{
+                            if (SH2){
                             $item.find('.status_finish').children('.status').text(SH2['nickname']+'已送达');
+                            }
                         }
+                        if(SH2){
                         $item.find('.status-finish').find("img").attr({"src":SH2['headimgurl']});
+                            }
                         $item.find('.status_finish').removeClass('hidden');
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
                     }
                     else if(status==6) {
                         $item.find('.status_comment').removeClass('hidden');
+                        if(SH2){
                         $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
+                            }
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
                     }
                     else if(status==7) {
                         $item.find('.status_comment').removeClass('hidden');
+                        if(SH2){
                         $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
+                            }
                         $item.find('.status-autocomment').show();
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
