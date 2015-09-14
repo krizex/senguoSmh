@@ -1377,6 +1377,10 @@ class Comment(AdminBaseHandler):
 
 		return self.send_success()
 
+class OrderExport(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		pass
 
 # 订单管理
 class Order(AdminBaseHandler):
@@ -1495,6 +1499,7 @@ class Order(AdminBaseHandler):
 			# print("[AdminOrder]current_shop:",self.current_shop)
 
 			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
+
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminOrder"))
 

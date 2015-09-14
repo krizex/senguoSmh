@@ -11,7 +11,7 @@ import tornado.escape
 from dal.dis_dict import dis_dict
 import time
 import tornado.web
-from sqlalchemy import desc,or_,and_
+from sqlalchemy import desc,or_,and_,func
 from sqlalchemy.orm.exc import NoResultFound
 import datetime
 import qiniu
@@ -1703,6 +1703,20 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 		else:
 			file_name = "mbbs"
 		return file_name
+
+	@property
+	def getNoticeNumber(self):
+		article_id = self.session.query(models.Article.id).filter_by(account_id=self.current_user.id).filter(models.Article.status>0).all()
+		comment = 0
+		great = 0
+		for article in article_id:
+			_id = article[0]
+			comment = comment+self.session.query(models.ArticleComment).filter_by(article_id=_id,if_scan=0,status=1,_type=0).count()
+			great = great+self.session.query(models.ArticleGreat).filter_by(article_id=_id,scan=0).count()
+		data = comment+great
+		return data
+
+	
 
 # 店铺管理后台基类方法
 class AdminBaseHandler(_AccountBaseHandler):

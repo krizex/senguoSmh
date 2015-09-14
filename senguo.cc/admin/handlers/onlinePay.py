@@ -105,24 +105,26 @@ class RefundWxpay(CustomerBaseHandler):
 			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
 			batch_no = now.strftime("%Y%m%d") + num
 			detail_data = transaction_id +'^' + format(totalPrice,'.2f') + '^协商退款'  
-			params = {
-				"service":'refund_fastpay_by_platform_pwd',
-				"partner":ALIPAY_PID,
-				"_input_charset":"utf-8",
-				# "sign":sign,
-				# "sign_type":sign_type,
-				"refund_date":refund_date,
-				"seller_user_id":ALIPAY_PID,
-				"batch_no":batch_no,
-				"batch_num":1,
-				"detail_data":detail_data,
-			}
+			notify_url = 'http://i.senguo.cc/alipaycallback'
+
+			# params = {
+			# 	"service":'refund_fastpay_by_platform_pwd',
+			# 	"partner":ALIPAY_PID,
+			# 	"_input_charset":"GBK",
+			# 	# "sign":sign,
+			# 	# "sign_type":sign_type,
+			# 	"refund_date":refund_date,
+			# 	"seller_user_id":ALIPAY_PID,
+			# 	"batch_no":batch_no,
+			# 	"batch_num":1,
+			# 	"detail_data":detail_data,
+			# }
 			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
-				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num=1,detail_data=detail_data)
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data,seller_email="senguo@senguo.cc")
 			print(refund_url,'退款地址')
 			alipay_response = requests.get(refund_url)
 			alipay_page     = alipay_response.text
-			print(alipay_page)
+			# print(alipay_page)
 			return self.write(alipay_page)
 		else:
 			return self.send_fail('action error')
@@ -470,7 +472,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.handle_onAlipay_callback()
 		# 在线支付提交订单
 		elif self._action == "AliPay":
-			# print("[AliPay]login AliPay")
+			print("[AliPay]login AliPay")
 			order_id = int(self.get_cookie("order_id"))
 			# print("[AliPay]order_id:",order_id)
 			#self.order_num = order_num
@@ -482,8 +484,8 @@ class OnlineAliPay(CustomerBaseHandler):
 			totalPrice = order.new_totalprice
 			alipayUrl =  self.handle_onAlipay(order.num,order.shop.shop_name)
 			self.order_num = order.num
-			# print("[AliPay]alipayUrl:",alipayUrl)
-			# print("[AliPay]order_num:",self.order_num)
+			#print("[AliPay]alipayUrl:",alipayUrl)
+			print("[AliPay]order_num:",self.order_num)
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 			# mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
@@ -539,17 +541,17 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
 	def handle_onAlipay(self,order_num,shop_name):
-		# print("[AliPay]login handle_onAlipay")
-		# order_num = self.order_num if self.order_num else 'NULL'
-		# print("[AliPay]order_num:",order_num)
-		# order = models.Order.get_by_id(self.session,int(self.args['order_id']))
+		#print("[AliPay]login handle_onAlipay")
+		#order_num = self.order_num if self.order_num else 'NULL'
+		#print("[_onAliPay]order_num:",order_num)
+		#order = models.Order.get_by_id(self.session,int(self.args['order_id']))
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
-			# print("[AliPay]order not found")
+			print("[AliPay]order not found")
 			return self.send_fail(error_text="抱歉，此订单不存在")
 		#跳转到支付页
-		#else:
-		#	print("[AliPay]order:",order)
+		else:
+			print("[AliPay]order:",order)
 		order_id = order.id
 		price    = order.new_totalprice
 
@@ -558,13 +560,13 @@ class OnlineAliPay(CustomerBaseHandler):
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙，请稍后再试')
 		# return self.redirect(url)
-		# print("[AliPay]redirect url:",url)
+		#print("[AliPay]redirect url:",url)
 		return url
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	def create_alipay_url(self,price,order_num,shop_name):
-		# print("[AliPay]login create_alipay_url:",price,order_id)
+		#print("[AliPay]login create_alipay_url:",price,order_num)
 		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_num),
@@ -575,7 +577,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("noticeSuccess")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
-		# print("[AliPay]authed_url:",authed_url)
+		#print("[AliPay]authed_url:",authed_url)
 		return authed_url
 
 	def check_xsrf_cookie(self):

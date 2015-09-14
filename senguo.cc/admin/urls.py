@@ -255,6 +255,7 @@ handlers = [
 	(r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
 	(r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
 	(r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
+	(r"/admin/orderExport", handlers.admin.OrderExport, {}, "adminOrderExport"),
 	(r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
 	# (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
 	(r"/admin/follower", handlers.admin.Follower, {}, "adminStaffFollower"),
