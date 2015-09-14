@@ -447,7 +447,9 @@ function orderItem(page){
                             $item.find('.status_send').children('.status').text(SH2['nickname']+'配送中');
                             }
                         }
+                        if(SH2){
                         $item.find('.status-send').find("img").attr({"src":SH2['headimgurl']});
+                            }
                         $item.find('.status_send').removeClass('hidden');
                         $item.find('.able_edit_order').show();
                         $item.find('.able_edit_sender').show();
