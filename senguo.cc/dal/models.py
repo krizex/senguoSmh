@@ -1307,7 +1307,7 @@ class Order(MapBase, _CommonApi):
 	active = Column(TINYINT, default=1)  # 0删除
 	isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
 
-	fruits = Column(String(2000))
+	fruits = Column(String(4000))
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
 	send_time=Column(String(45))
@@ -1538,7 +1538,7 @@ class Cart(MapBase, _CommonApi):
 	__tablename__ = "cart"
 	id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	fruits = Column(String(2000),nullable=False, default='{}')
+	fruits = Column(String(4000),nullable=False, default='{}')
 	mgoods = Column(String(1000),nullable=False, default='{}')
 
 # 店铺设置
