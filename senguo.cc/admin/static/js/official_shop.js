@@ -1,3 +1,4 @@
+ var temppage = 2;//更多店家页码数
  $(document).ready(function(){ 
     shopTotal();//shop total number
     getData('top');//get top8
@@ -56,8 +57,8 @@
             var zrEvent = require('zrender/tool/event');
             /*点击地图中省份，加载店家*/
             myChart.on(ecConfig.EVENT.CLICK, function (param){
+                temppage = 2;
                 $('.shoplist').empty();
-                $(".now-page-number").data('page',1);
                 var province = param.name;
                 var pro_code;
                 var area=window.dataObj.area;
@@ -197,11 +198,15 @@ function initShop(res){
     var shops=res.shoplist;
     window.dataObj.page_total=res.page_total;
     var page_total=window.dataObj.page_total;
-    var pages = $(".now-page-number").data('page');
-    if(pages == 1) {
+    if(temppage == 2) {
         $('.shoplist').empty();
     }
+    if(shops.length < 8) {
+        $('.add-more-page').addClass('hide');
+        $('.no-more').removeClass('hide');
+    }
     if(shops.length>0) {
+        $('.no-more').addClass('hide');
         for(var i in shops){
             var $item=$(window.dataObj.shop_item);
             var shop_code=shops[i]['shop_code'];
@@ -229,9 +234,6 @@ function initShop(res){
             $item.find('.shop_intro').text(shop_intro);
             $('.shoplist').append($item);
         }
-    }else{
-        $('.add-more-page').remove();
-        $('.no-more').removeClass('hide');
     }
 }
 
@@ -241,29 +243,25 @@ $(window).scroll(function() {
     if(province == '全国') {
         $('.add-more-page').remove();
     }
-    if($(".list_box").find('h4').hasClass('hide')) {
-        var pro_code; 
-        var getmorepage = Int($(".now-page-number").data('page')) + 1;
-        console.log(getmorepage);
-        if($(document).scrollTop() == $(document).height()-$(window).height()) {
-            setTimeout(function() {
-                $('.add-more-page').removeClass('hide');
-                var area=window.dataObj.area;
-                for (var key in area) {
-                    if(province=='黑龙江') {province='黑龙'}
-                    if(province=='内蒙古') {province='内蒙'}
-                    if (province == area[key]['name'].substring(0,2)) {
-                        pro_code=Int(key);
-                        window.dataObj.province_code=pro_code;
-                        getData('filter',getmorepage,'province',pro_code);
-                        $(".now-page-number").data('page',getmorepage);
-                    }
+    /*判断滚动条到底部*/
+    if($(document).scrollTop() >= $(document).height()-$(window).height()) {
+        $('.add-more-page').removeClass('hide');
+        /*判断是否重复加载*/
+        setTimeout(function() {
+            var area=window.dataObj.area;
+            for (var key in area) {
+                if(province=='黑龙江') {province='黑龙'}
+                if(province=='内蒙古') {province='内蒙'}
+                if (province == area[key]['name'].substring(0,2)) {
+                    var pro_code; 
+                    pro_code=Int(key);
+                    window.dataObj.province_code=pro_code;
+                    getData('filter',temppage,'province',pro_code);
+                    temppage++;
                 }
-            },1000)
-        } 
-        $('.add-more-page').addClass('hide');
-    } else {
-        $('.add-more-page').remove();
+            }
+            $('.add-more-page').addClass('hide'); 
+        },1000);
+        
     }
-    
 });

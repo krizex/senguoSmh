@@ -9,7 +9,6 @@
 </script>
 <div class="map_box">
     <img src="/static/official_img/slide_bg.jpg" alt="" class="shop_listbg"/>
-	<a href="{{reverse_url('fruitzoneShopList')}}" class="more-list" target="_blank">查看所有店铺</a>
 	<div class="text-white number_box font36">
 		<span class="pull-left mr20 ptxt">全国已有</span>
 		<div class="num pull-left text-center"><span class="n num1">0</span></div>
@@ -19,6 +18,9 @@
 		<span class="pull-left ml20 ptxt">家水果店接入</span>
 		<input type="hidden" value="{{context['shop_count']}}" id="total_count">
 	</div>
+	<div class="look_all">
+    	<a href="{{reverse_url('fruitzoneShopList')}}" target="_blank">查看所有店铺</a>
+    </div>
 	<div class="box"><div class="map text-center" id="map"><img src="/static/images/loading.gif" class="loading"/></div></div>
 </div>
 <div class="shop_list w1000 clearfix">
@@ -33,17 +35,11 @@
 		<h4 class="font16 no-more text-center hide">没有更多了...</h4>
 	</div>
 	<div class="add-more-bg" id="more">
-		<div class="text-center add-more-page loading2 hide">
+		<div class="text-center add-more-page loading2">
 			<img src="/static/images/loading.gif" class=""/>
 			<p class="text-center text-grey6">~努力加载中~</p>
 		</div>
 	</div>
-	<div class="now-page-number hide" data-page="1"></div>
-	<!-- <div class="page_box hidden text-grey6">
-		<a href="javascript:;" class="next_page  pull-right next_pre text-center" style="display:none" data-id="2">下一页</a>
-		<ul class="pagenation pull-right"></ul>
-		<a href="javascript:;" class="pre_page  pull-right next_pre text-center" style="display:none">上一页</a>
-	</div> -->
 </div>
 {% end%}
 {% block bottom-js%}

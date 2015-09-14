@@ -1,7 +1,7 @@
 .app-bg{width: 100%;height: 487px;overflow:hidden;}
 .app-bg-img{max-width: 1920px;min-width: 1024px;height: 487px;margin: 0 auto;overflow: hidden;position: relative;}
 .app-bg-img>img{min-height: 400px;position: absolute;left: 0;}
-.appdownload-width{width: 1000px;overflow: hidden;height: 487px;position: absolute;top: 0;left: 50%;margin-left: -500px;}
+.appdownload-width{width: 1000px;height: 487px;position: absolute;top: 0;left: 50%;margin-left: -500px;}
 .download-text{width: 550px;position: absolute;left: 90px;margin-top: 80px;}
 .download-text>h1{font-size: 48px;font-weight: bold;color: #fff;margin-top: 100px;}
 .download-method{margin-top: 40px;}
@@ -14,8 +14,7 @@
 .android-box:hover  .android-img{background:url('../official_img/android_hover.png') no-repeat;}
 .apple-box .apple-img{transition: all 0.5s;background:url('../official_img/apple_normal.png') no-repeat;margin-left: 10px;}
 .apple-box:hover  .apple-img{background:url('../official_img/apple_hover.png') no-repeat;}
-.right-img{position: absolute;top: 0;right: 0;width: 500px;}
-.right-img>img{position: absolute;right: 50px;top:130px;}
+.appdownload-width>img{position: absolute;right: 50px;top:130px;height: 512px;}
 .hover-wechat{transition: all 0.5s;opacity: 0;z-index: -1;width: 200px;height: 233px;background-color: #fff;position: relative;top: -310px;}
 .hover-wechat>p{text-align: center;font-size: 16px;padding-top: 12px;}
 .apple-box .hover-wechat{left: 10px;}
