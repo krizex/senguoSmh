@@ -38,7 +38,6 @@ class Alipay(object):
     def _generate_md5_sign(self, params):
         src = '&'.join(['%s=%s' % (key, value) for key,
                         value in sorted(params.items())]) + self.key
-        print('sorted',src)
         return md5(src.encode('utf-8')).hexdigest()
 
     def _check_params(self, params, names):
@@ -59,34 +58,16 @@ class Alipay(object):
 
     def _build_url(self, service, **kw):
         params = self.default_params.copy()
-        print(params)
         params['service'] = service
         params.update(kw)
-        print(kw)
-        if service == 'refund_fastpay_by_platform_pwd':
-            params.pop('format')
-            params.pop('v')
-        print('start to make sign')
-        print(params)
         signkey, signvalue, signdescription = self.getSignTuple()
-        print(signkey,signvalue,signdescription)
         signmethod = getattr(self, '_generate_%s_sign' %(signdescription.lower()))
-        print(signmethod)
         if signmethod == None:
             raise NotImplementedError("This type '%s' of sign is not implemented yet." %(signdescription))
-        if service == 'refund_fastpay_by_platform_pwd':
-            signkey = 'sign_type'
-        # if self.signKey():
-        #     params.update({signkey: signvalue})
-        sign = signmethod(params)
-        params['refund_date'].replace(' ','')  
+        if self.signKey():
+            params.update({signkey:signvalue})
         params.update({signkey: signvalue,
-                       'sign': sign})
-        print('after sign',params)
-        if service == 'refund_fastpay_by_platform_pwd':
-            return '%s?%s' % ('https://mapi.alipay.com/gateway.do', urlencode(encode_dict(params)))
-        print('%s?%s' % (self.GATEWAY_URL, urlencode(encode_dict(params))))
-
+                       'sign': signmethod(params)})
         return '%s?%s' % (self.GATEWAY_URL, urlencode(encode_dict(params)))
 
     def create_direct_pay_by_user_url(self, **kw):
