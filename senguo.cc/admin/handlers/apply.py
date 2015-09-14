@@ -308,6 +308,8 @@ class WxMessage(CustomerBaseHandler):
 			if event == 'subscribe':
 				# 根据场景值统计扫码关注服务号的用户数量
 				if scene_id:
+					if scene_id >= 100000000:
+						scene_id = 999999999
 					scene_static = self.session.query(models.SceneStatic).filter_by(scene_id=scene_id).first()
 					if scene_static:
 						scene_static.times += 1

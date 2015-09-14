@@ -1307,7 +1307,7 @@ class Order(MapBase, _CommonApi):
 	active = Column(TINYINT, default=1)  # 0删除
 	isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
 
-	fruits = Column(String(2000))
+	fruits = Column(String(4000))
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
 	send_time=Column(String(45))
@@ -1418,7 +1418,7 @@ class Fruit(MapBase, _CommonApi):
 	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
 	group_id =  Column(Integer,nullable=False, default=0) #商品分组, 0:默认分组 -1:推荐分组 >0:自定义分组 #5.27
-	classify  = Column(TINYINT,nullable=False, default=0)  #0:水果 1:干果 3:其他
+	classify  = Column(TINYINT,nullable=False, default=0) #0:水果 1:干果 3:其他
 	temp_mgoods_id =  Column(Integer,nullable=False, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
 
@@ -1439,9 +1439,9 @@ class ChargeType(MapBase, _CommonApi):
 	price = Column(Float,nullable=False,default=0)#售价
 	unit = Column(TINYINT,nullable=False,default=4)#库存单位, 1:个 2:斤 3:份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:筐 11:包 12:今天价 13:明天价
 	num = Column(Float,nullable=False,default=1)#计价数量
-	unit_num = Column(Float,nullable=False, default=1)#单位换算
 	active = Column(TINYINT,nullable=False, default=1)#0删除，1:上架，2:下架
 	market_price =  Column(Float)#市场价 #5.27
+	unit_num = Column(Float,nullable=False, default=1)#单位换算
 	select_num = Column(Integer,nullable=False, default=1) #6.4
 	relate = Column(Float,nullable=False, default=1) # 库存换算关系
 
@@ -1464,7 +1464,7 @@ class GoodsGroup(MapBase, _CommonApi):
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	name =  Column(String(50),nullable=False)
-	status = Column(TINYINT,nullable=False,default = 1) #0:been deleted 1:normal
+	status = Column(TINYINT,nullable=False,default = 1) #0:已删除 1:正常
 	intro = Column(String(100))
 	create_time = Column(DateTime,nullable=False, default=func.now())
 
@@ -1538,7 +1538,7 @@ class Cart(MapBase, _CommonApi):
 	__tablename__ = "cart"
 	id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	fruits = Column(String(2000),nullable=False, default='{}')
+	fruits = Column(String(4000),nullable=False, default='{}')
 	mgoods = Column(String(1000),nullable=False, default='{}')
 
 # 店铺设置
