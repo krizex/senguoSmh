@@ -1782,6 +1782,16 @@ class ShortUrl(MapBase,_CommonApi):
 	short_url = Column(String(32),nullable = False)
 	long_url  = Column(String(64),nullable = False)
 
+class PictureLibrary(MapBase,_CommonApi):
+	__tablename__ = 'picture_library'
+	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
+	_type = Column(String(32),nullable = False) #goods,goods_detail,logo,notice
+	img_url = Column(String(100),nullable = False)
+	shop_id  = Column(Integer,nullable = False)
+	status = Column(TINYINT,nullable=False,default = 1) #0:delete 1:normal
+	create_time = Column(DateTime,nullable=False,default = func.now())
+	code = Column(String(128), nullable=False, default="")
+
 # 数据库初始化
 def init_db_data():
 	MapBase.metadata.create_all()
