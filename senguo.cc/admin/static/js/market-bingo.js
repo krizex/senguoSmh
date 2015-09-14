@@ -221,7 +221,7 @@ $(document).ready(function(){
     }
     var group_id=Number($this.attr("data-id"));
     if(!$this.hasClass("active")){
-        if(group_id==-2){
+        if(group_id==-2){//所有分组
             $(".bingo-list").removeClass("hidden");
         }else{
             $(".bingo-list").addClass("hidden");
