@@ -3136,7 +3136,6 @@ class Order(CustomerBaseHandler):
 		# 店铺评分
 		elif action == "comment_point":
 			data = self.args["data"]
-			print(data)
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
 			order.commodity_quality = int(data["commodity_quality"])
 			order.send_speed        = int(data["send_speed"])
