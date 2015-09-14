@@ -39,12 +39,9 @@
 		<div class="w1000 nav-box group">
 			<div class="senguo-header pull-left">
 				<div class="logo_box pull-left">
-					<!-- <h1 class="pull-left text-green logo">森果</h1>
-					<div class="pull-left ml5 text-center">
-						<p class="mt2 font20 text-grey">水果o2o领跑者</p>
-						<p class="font20 text-green">www.senguo.cc</p>
-					</div> -->
-                    <a href="{{reverse_url('OfficialHome')}}"><img src="{{static_url('official_img/new_logo.png')}}" class="logo"/></a>
+                    <a href="{{reverse_url('OfficialHome')}}">
+                        <img src="{{static_url('official_img/new_logo.png')}}" class="logo"/>
+                    </a>
 				</div>
 			</div>
 			<div class="senguo-nav font16">
@@ -58,8 +55,6 @@
                     <div class="admin-box">
                         <div class="login-box hidden-xs">
                             <ul class="text-grey header-top" id="header-top">
-                                <!--<li class="loggedout"><a href="#" id="headertop-signup">注册</a></li>
-                                <li class="loggedout"><a href="#" id="headertop-signin" class="text-grey  head-btn border-none  head-btn">登录</a></li>-->
                                 <li><a href="{{reverse_url('switchshop')}}" class="new-font-color">管理后台</a></li>
                                 <li><a href="{{reverse_url('ApplyHome')}}" class="new-font-color">申请接入</a></li>
                             </ul>
