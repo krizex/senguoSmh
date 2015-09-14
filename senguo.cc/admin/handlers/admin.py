@@ -1433,11 +1433,14 @@ class OrderExport(AdminBaseHandler):
 		elif order_status == 3:
 			order_list = order_list.filter(models.Order.status.in_(5,6,7))
 		elif order_status == 4:
-			pass
+			order_list = order_list.filter_by(status=0,del_reason="refund")
 		elif order_status == 5:#all
+			order_list = order_list.filter_by(status=0,del_reason=None)
+		elif order_status == 9:
 			pass
 		else:
 			return self.send.send_error(404)
+
 
 		if order_pay != 9:
 			order_list = order_list.filter_by(pay_type=order_pay)
@@ -1495,6 +1498,10 @@ class OrderExport(AdminBaseHandler):
 				order_status = "未付款"
 			elif order.status == 0:
 				order_status = "已删除"
+				if order.del_reason == None:
+					order_status = "用户已取消"
+				elif order.del_reason == "refund":
+					order_status = "已退款"
 			elif order.status == 1:
 				order_status = "未处理"
 			elif order.status == 2:
@@ -1502,9 +1509,7 @@ class OrderExport(AdminBaseHandler):
 			elif order.status == 3:
 				order_status = "SH1"
 			elif order.status == 4:
-				order_status = "配送中"
-				if _type == 3:
-					order_status = "等待自取"
+				order_status = "处理中"
 			elif order.status > 5:
 				order_status = "已完成"
 			try:
