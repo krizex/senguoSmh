@@ -1,5 +1,5 @@
 from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
-from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub,CloseOrder_pub
 import dal.models as models
 import tornado.web
 from settings import *
@@ -2815,6 +2815,29 @@ class Cart(CustomerBaseHandler):
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
 		if order.status == -1:
+			#如果是微信支付，关闭支付接口
+			if order.online_type == 'wx':
+				print('close order')
+				num = order.num
+				transaction_id = order.transaction_id
+				if order.is_qrwxpay ==1:
+					out_trade_no = num + 'a'
+				else:
+					out_trade_no = num
+				# print(out_trade_no,'out_trade_no')
+				colse_order = CloseOrder_pub()
+				colse_order.setParameter("out_trade_no",out_trade_no)
+				# colse_order.setParameter("transaction_id",transaction_id)
+				res = colse_order.postXml()
+				# print(res)
+				if isinstance(res,bytes):
+					res = res.decode('utf-8')
+				res_dict = colse_order.xmlToArray(res)
+				return_code = res_dict.get('return_code',None)
+				if return_code == 'SUCCESS':
+					print('order closed success')
+				else:
+					print('order closed failed')
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
@@ -3181,8 +3204,8 @@ class Order(CustomerBaseHandler):
 			# print(order,'i am order')
 			if not order:return self.send_error(404)
 			# print(order.id,'i am ')
-			if order.status != 5:
-				self.send_fail("只有已送达并且没有评价过的订单才能评价哦！")
+			if order.status not in [5,6]:
+				self.send_fail("只有已送达的订单才能评价哦！")
 			comment = order.comment
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
