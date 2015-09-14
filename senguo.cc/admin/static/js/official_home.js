@@ -40,7 +40,7 @@ function slide_images(type){
         }else{
             if(index==2){
                 $this.css("left",-1000+"px").attr("data-index",0);
-                $this.animate({left:0},"slow");flag = 0;
+                $this.animate({left:0},"slow");
             }else{
                 $this.attr("data-index",index+1).animate({left:(index+1)*1000+"px"},"slow");
             }
