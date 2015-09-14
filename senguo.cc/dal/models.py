@@ -1755,6 +1755,7 @@ class ArticleComment(MapBase, _CommonApi):
 
 	accountinfo = relationship(Accountinfo)
 
+
 # 文章点赞
 class ArticleGreat(MapBase, _CommonApi):#文章点赞 收藏 浏览
 	__tablename__ = 'article_great'
