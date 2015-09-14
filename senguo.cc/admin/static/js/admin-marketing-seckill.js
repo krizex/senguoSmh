@@ -297,7 +297,7 @@ $(document).ready(function(){
 		var charge_type_text = charge_type_item[0] + '元/' +  charge_type_item[1] + charge_type_item[2];
 		var storage_piece = charge_type_item[5];
 		var charge_type_id = charge_type_item[4];
-		if (charge_type_list.length == 1){
+		if (i == 0){
 			var list_item = '<button class="btn btn-default active" data-id="'+storage_piece+ '"' + ' charge_type_id="' +charge_type_id +  '">'+charge_type_text+'</button>';
 		}
 		else{
@@ -305,7 +305,7 @@ $(document).ready(function(){
 		}
 		$this.closest(".new-seckill-item").find(".choose-charge-type").append(list_item);
 
-		if (charge_type_list.length == 1){
+		if (i== 0){
 			if (storage_piece == 0){
 				Tip('当前计价方式对应的剩余库存为0份，请选择其他商品！');
 				return;
@@ -628,7 +628,6 @@ function createSeckill(action){
 				if (flag == 0){
 					stop_flag = true;
 					Tip(goods_name + '已经参与所选时间段内的其他秒杀活动，请选择其他商品！');
-					
 				}
 			}
 			else{
@@ -729,7 +728,8 @@ function createSeckill(action){
 				former_price : former_price,
 				seckill_price : seckill_price,
 				storage_piece : storage_piece,
-				activity_piece : activity_piece
+				activity_piece : activity_piece,
+				seckill_charge_type_id:$(".seckill-charge-type-id").attr("data-id")
 			};
 			
 		}
@@ -842,7 +842,6 @@ function getActivityItem(action,status,page,cutover){
 			}
 			for (var i = 0;i < output_data.length;i++){
 				var data = output_data[i];
-
 				var tr_item = "";
 				switch(status){
 					case '1':

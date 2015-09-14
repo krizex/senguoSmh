@@ -207,7 +207,7 @@
                                         </tr>
                                         <tr>
                                             <td class="ver-top"><span class="ver-5">秒杀价</span></td>
-                                            <td class="ver-top seckill-charge-price">
+                                            <td class="ver-top seckill-charge-price seckill-charge-type-id" data-id="{{goods_item['seckill_charge_type_id']}}">
                                                 <input type="text" class="w130 seckill-price-input" placeholder="最多2位小数" {% if status==2 %}disabled="true" title="正在进行活动中的秒杀商品不能编辑秒杀价" {% end %} value="{{goods_item['cur_seckill_price']}}" /><span class="ml10 cur-charge-type">{{goods_item['cur_seckill_text']}}</span>
                                             </td>
                                         </tr>

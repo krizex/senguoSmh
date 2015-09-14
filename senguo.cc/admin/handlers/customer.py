@@ -360,7 +360,17 @@ class customerGoods(CustomerBaseHandler):
 		good_charge_type = good.charge_types
 		good_charge_type.sort(key=lambda item:item.activity_type,reverse=True)
 		for charge_type in good_charge_type:
-			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type and charge_type.id not in seckill_former_charge_type_id:
+			seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type.id).all()
+			seckill_kill_goods_flag = 1
+			if seckill_goods:
+				seckill_goods = seckill_goods[0]
+				seckill_kill_goods_flag = seckill_goods.status
+				if seckill_goods.id == -1:
+					seckill_kill_goods_flag = 0
+				seckill_activity = self.session.query(models.SeckillActivity).filter_by(id = seckill_goods.activity_id).first()
+				if seckill_activity.activity_status != 2:
+					seckill_kill_goods_flag = 0
+			if charge_type.active != 0 and charge_type.activity_type in charge_type_activity_type and charge_type.id not in seckill_former_charge_type_id and seckill_kill_goods_flag == 1:
 				unit  = charge_type.unit
 				unit =self.getUnit(unit)
 				limit_today = False
@@ -439,7 +449,7 @@ class customerGoods(CustomerBaseHandler):
 				is_seckill = 0
 				former_charge_type = None
 				seckill_not_start = 0
-
+				seckill_goods = None
 				if has_discount_activity == 0:
 					self.update_seckill()
 					if charge_type.activity_type == 1:
@@ -472,12 +482,16 @@ class customerGoods(CustomerBaseHandler):
 								seckill_not_start = 1
 								former_charge_type = self.session.query(models.ChargeType).filter_by(id = seckill_goods.charge_type_id).first()
 								unit = self.getUnit(former_charge_type.unit)
+				if is_seckill == 1:
+					src_prices = seckill_goods.former_price
+				else:
+					src_prices = charge_type.price
 				charge_types.append({'id':former_charge_type.id if seckill_not_start else charge_type.id,'price':round(former_charge_type.price,2) if seckill_not_start else round(charge_type.price*discount_rate/10,2),\
 					'num':former_charge_type.num if seckill_not_start else charge_type.num, 'unit':unit,\
 					'market_price':former_charge_type.market_price if seckill_not_start else charge_type.market_price,'relate':former_charge_type.relate if seckill_not_start else charge_type.relate,"limit_today":limit_today,"allow_num":allow_num,\
 					"has_activity":has_activity,"discount_rate":discount_rate,"is_seckill":is_seckill,\
 					"seckill_is_bought":seckill_is_bought,"seckill_activity_id":seckill_activity_id,"seckill_goods_id":seckill_goods_id,\
-					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece})
+					"seckill_price_dif":seckill_price_dif,"seckill_activity_piece":seckill_activity_piece,"src_price": src_prices})
 				
 		# added by jyj 9.3
 		seckill_goods_ids = []
@@ -517,7 +531,6 @@ class customerGoods(CustomerBaseHandler):
 			cart_fs = [(key, cart_f[key]['num']) for key in cart_f if key not in key_allow]
 		cart_count = len(cart_f)
 		self.set_cookie("cart_count", str(cart_count))
-		print("#####",charge)
 		return self.render('customer/goods-detail.html',good=good,img_url=img_url,has_activity=has_activity,end_time=end_time,shop_name=shop_name,charge_types=charge_types,cart_fs=cart_fs,\
 								seckill_goods_ids=seckill_goods_ids,charge=charge)
 
@@ -633,10 +646,6 @@ class Home(CustomerBaseHandler):
 			shop_logo = shop.shop_trademark_url
 			balance_on = shop.config.balance_on_active
 			shop_auth = shop.shop_auth
-			if shop.marketing:
-				shop_marketing = shop.marketing.confess_active
-			else:
-				shop_marketing = 0
 			if shop_auth !=0:
 				show_balance = True
 		else:
@@ -646,7 +655,6 @@ class Home(CustomerBaseHandler):
 		self.set_cookie("market_shop_id",str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
-		self.set_cookie("shop_marketing",str(shop_marketing))
 		self.set_cookie("shop_auth",str(shop_auth))
 		shop_point = 0
 		shop_balance = 0
@@ -808,7 +816,8 @@ class Discover(CustomerBaseHandler):
 		# print(discount_text)
 		return self.render('customer/discover.html',context=dict(subpage='discover'),coupon_active_cm=coupon_active,shop_code=shop_code,\
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
-			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
+			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,\
+			discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
 			seckill_count=goods_count)
 
 # 店铺 - 店铺地图
@@ -1013,15 +1022,10 @@ class ShopProfile(CustomerBaseHandler):
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
 		shop_auth = shop.shop_auth
-		if shop.marketing:
-			shop_marketing = shop.marketing.confess_active
-		else:
-			shop_marketing = 0
 
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
-		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
 		satisfy = format(1,'.0%')
 		commodity_quality = 1
@@ -1066,7 +1070,6 @@ class ShopProfile(CustomerBaseHandler):
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
-		session.commit()
 		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
@@ -1382,7 +1385,6 @@ class Market(CustomerBaseHandler):
 		shop_auth = shop.shop_auth
 		marketing = self.session.query(models.Marketing).filter_by(id = shop.id).first()
 		if marketing:
-			shop_marketing = marketing.confess_active
 			coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
 			if coupon_have==0:
 				coupon_active=0
@@ -1394,8 +1396,7 @@ class Market(CustomerBaseHandler):
 			discount_active=shop.marketing.discount_active
 			##
 		else:
-			shop_marketing = 0
-			coupon_active=1
+			coupon_active=0
 
 			# added by jyj 2015-8-21
 			seckill_active = 0
@@ -1405,7 +1406,6 @@ class Market(CustomerBaseHandler):
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
 		self.set_cookie("market_shop_code",str(shop.shop_code))
-		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
 		self.set_cookie("coupon_active", str(coupon_active))
 		# added by jyj 2015-8-21
@@ -1724,7 +1724,7 @@ class Market(CustomerBaseHandler):
 									now=datetime.datetime.now()
 									now2=datetime.datetime(now.year,now.month,now.day)
 									end_time1=q_price_group.t_time+time.mktime(now2.timetuple())
-						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'num':charge_type.num, 'unit':unit,\
+						charge_types.append({'id':charge_type.id,'price':round(charge_type.price*discount_rate/10,2),'src_price':charge_type.price,'num':charge_type.num, 'unit':unit,\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(limit_today),\
 							'allow_num':allow_num,"discount_rate":discount_rate,"has_discount_activity":has_discount_activity1,'activity_type':charge_type.activity_type})
 
@@ -1809,7 +1809,7 @@ class Market(CustomerBaseHandler):
 						charge_types = []
 					else:
 						charge_type = session.query(models.ChargeType).filter_by(id = seckill_info.seckill_charge_type_id).first()
-						data_item1['charge_types'] = [{'id':charge_type.id,'price':charge_type.price,'num':charge_type.num, 'unit':self.getUnit(charge_type.unit),\
+						data_item1['charge_types'] = [{'id':charge_type.id,'price':charge_type.price,'src_price':seckill_info.former_price,'num':charge_type.num, 'unit':self.getUnit(charge_type.unit),\
 							'market_price':charge_type.market_price,'relate':charge_type.relate,'limit_today':str(False),\
 							'allow_num':1,"discount_rate":None,"has_discount_activity":0,'activity_type':charge_type.activity_type}]
 						charge_types = [e for e in charge_types if e['id'] != seckill_info.seckill_charge_type_id and e['activity_type'] != 1]
@@ -2160,10 +2160,6 @@ class Cart(CustomerBaseHandler):
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
 		shop_auth = shop.shop_auth
-		if shop.marketing:
-			shop_marketing = shop.marketing.confess_active
-		else:
-			shop_marketing = 0
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -2175,7 +2171,6 @@ class Cart(CustomerBaseHandler):
 			shop_new = customer_follow.shop_new
 		self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 		self._shop_code = shop.shop_code
-		self.set_cookie("shop_marketing", str(shop_marketing))
 		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
@@ -3807,8 +3802,36 @@ class wxChargeCallBack(CustomerBaseHandler):
 # 插入爬取店铺数据（访问路由：/customer/test）
 class InsertData(CustomerBaseHandler):
 	#对账检验
+	@CustomerBaseHandler.check_arguments('action','day','month')
 	def get(self):
+		action = self.args['action']
+		if len(action)  > 0:
+			day = int(self.args['day'])
+			month = int(self.args['month'])
+			wx_sum = 0
+			ali_sum = 0
+
+			first_create_time = datetime.datetime(2015,month,day,0,0,0)
+			first_end_time    = datetime.datetime(2015,month,day,23,59,59)
+			print(first_create_time.strftime("%Y-%m-%d"),first_end_time.strftime('%Y-%m-%d'))
+			current_day_ali = self.session.query(models.BalanceHistory.id, models.BalanceHistory.balance_type,models.BalanceHistory.balance_value,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time,models.BalanceHistory.balance_record.like('%支付宝%'))).all()
+			print('支付宝支付记录')
+			for item in current_day_ali:
+				ali_sum += item[2]
+				print(item[0],item[1],item[2],item[3][12:])
+			current_day_wx = self.session.query(models.BalanceHistory.id, models.BalanceHistory.balance_type,models.BalanceHistory.balance_value,models.BalanceHistory.balance_record).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time),models.BalanceHistory.balance_record.like('%微信%')).all()
+			print('微信支付记录')
+			for item in current_day_wx:
+				wx_sum += item[2]
+				print(item[0],item[1],item[2],item[3][11:])
+			# return self.send_success()
+			print(ali_sum,wx_sum)
+			print('-------------------------------------------------------------------')
+
 		list = []
+		s = ''
 		first_create_time = datetime.datetime(2015,5,2,0,0,0)
 		first_end_time    = datetime.datetime(2015,5,2,23,59,59)
 		sum = 0
@@ -3818,12 +3841,66 @@ class InsertData(CustomerBaseHandler):
 			current_day = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
 				models.BalanceHistory.create_time>=first_create_time)).all()
 			# current_day = format(current_day,'.2f') if current_day else None
-			list.append({first_create_time.strftime('%Y-%m-%d'):current_day})
-			if current_day[0][0]:
-				sum += current_day[0][0]
+			current_day_wx = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(models.BalanceHistory.balance_type.in_([0,3]),and_(models.BalanceHistory.create_time<=first_end_time,
+				models.BalanceHistory.create_time>=first_create_time,models.BalanceHistory.balance_record.like('%支付宝%'))).all()
+			
+			list.append({first_create_time.strftime('%Y-%m-%d'):current_day_wx})
+			if current_day_wx[0][0]:
+				sum += current_day_wx[0][0]
+				current_day_wx = format(current_day_wx[0][0],'.2f')
+			print(first_create_time.strftime("%Y-%m-%d") ,current_day_wx)
+			# s += first_create_time.strftime("%Y-%m-%d") +':' + format(current_day_wx[0][0],'.2f') + '                                     '
+		# self.write(s)
+		# for item in current_day_wx:
+		# 	print(item[0],item[1],item[2],item[3])
 
-		return self.send_success(current_day=list,sum=sum)
+		return self.send_success(s=s,sum=sum)
 
+	@CustomerBaseHandler.check_arguments('balance_id')
+	def post(self):
+		balance_id = self.args['balance_id']
+		if not balance_id or len(balance_id) == 0:
+			return self.send_fail('balance_id empty!!!')
+		balance_history = self.session.query(models.BalanceHistory).filter_by(id=balance_id).first()
+		if not balance_history:
+			return self.send_fail('balance_history not found')
+		#将balance_type 置为-1,表示删除状态
+		shop_id = balance_history.shop_id
+		customer_id = balance_history.customer_id
+		balance_value = balance_history.balance_value
+		balance_type = balance_history.balance_type
+
+		shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+		if not shop:
+			return self.send_fail('shop not found')
+		shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id=customer_id,shop_id=shop_id).first()
+		if not shop_follow:
+			return self.send_fail('')
+
+		#若删除的是在线支付记录，则只需要改变店铺总额
+		if balance_type == 3:
+			before_shop_balance = shop.shop_balance
+			shop.shop_balance -= balance_value
+			after_shop_balance = shop.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='在线记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		#若删除的是余额充值记录，则需要将customer_shop_follow表里的余额还原
+		elif balance_type == 0:
+			before_shop_balance  = shop_follow.shop_balance
+			shop_follow.shop_balance -= balance_value
+			after_shop_balance   = shop_follow.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='余额充值记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		#若删除的是余额消费记录，则需要还原顾客的余额
+		elif balance_type == 1:
+			before_shop_balance = shop_follow.shop_balance
+			shop_follow.shop_balance += balance_value
+			after_shop_balance  = shop_follow.shop_balance
+			balance_history.balance_type = -1
+			self.session.commit()
+			return self.send_success(text='余额消费记录删除成功',before=before_shop_balance,after=after_shop_balance)
 
 
 class Overtime(CustomerBaseHandler):

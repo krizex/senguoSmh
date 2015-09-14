@@ -1,4 +1,4 @@
-var curGroup = null,aLis=[],aPos=[],zIndex=1;
+var curGroup = null,aLis=[],aPos=[],zIndex=1,sLeft=0;
 $(document).ready(function(){
     $(document).on("click",function(e){
         if($(e.target).closest(".sw-er-tip").size()==0){
@@ -7,12 +7,13 @@ $(document).ready(function(){
     });
     //初始化组
     var groupList = $(".group-lst").children(".self-group");
+    sLeft = Math.round($(".group-lst").children().first().position().left);
     for(var i=0; i<groupList.size(); i++){
         var obj = groupList[i];
         obj.zIndex = 1;
         obj.index = i;
+        $(obj).css({left:sLeft+"px",top:$(obj).position().top+"px",zIndex:"1"});
         var pos = getPos($(obj));
-        $(obj).css({left:pos.left+"px",top:pos.top+"px",zIndex:"1"});
         aPos.push(pos);
         aLis.push(obj);
         drag(obj);
@@ -240,7 +241,7 @@ function drag(obj){
 }
 //获取元素位置
 function getPos($obj){
-    return {left:Math.round($obj.position().left),top:Math.round($obj.position().top)};
+    return {left:parseInt($obj.css("left")),top:parseInt($obj.css("top"))};
 }
 //获取两个元素的距离
 function getDis($a,$b){

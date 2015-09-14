@@ -165,7 +165,7 @@ var item='<li>'+
                 '</dd>'+
                 '<dt>'+
                     '<p class="f14 c666 clip">{{nickname}}<span class="ml10 c999">{{time}}</span></p>'+
-                    '<p class="c333 mt12">'+
+                    '<p class="c333 mt6">'+
                     '{{ if type==1 }}@{{nick_name}}{{/if}} {{comment}}'+
                     '</p>'+
                 '</dt>'+

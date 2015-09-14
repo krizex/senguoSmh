@@ -26,9 +26,9 @@ $(document).ready(function(){
     if($(".scrollUpf").size()>0){
         $(window).scroll(function(){
             if($(window).scrollTop()>150){
-                $(".scrollUpf").show();
+                $(".scrollUpf").fadeIn(200);
             }else{
-                $(".scrollUpf").hide();
+                $(".scrollUpf").fadeOut(200);
             }
         });
     }
@@ -83,8 +83,8 @@ var hotcustomer_item = ' <li>'+
                         '<dt>'+
                             '<p class="f14 c333 clip">{{nickname}}</p>'+
                             '<p class="c999 f12 mt12">'+
-                                '<span class="num-txt">发布:{{article_num}}篇</span>'+
-                                '<span>评论:{{comment_num}}条</span>'+
+                                '<span class="num-txt">发布 {{article_num}}篇</span>'+
+                                '<span>评论 {{comment_num}}条</span>'+
                             '</p>'+
                         '</dt>'+
                     '</dl>'+

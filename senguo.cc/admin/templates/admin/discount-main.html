@@ -4,8 +4,8 @@
 {% if shop_code and shop_code!='not set' %}
 <input class="hidden can_new_discount" value={{can_new_discount}}>
 <input id="page_end" class="hidden" value="{{page_end}}">
-<div class="clearfix top-box">
-    <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="/bbs/detail/88" class="ml10 f14 show-detail">查看详情</a></p>
+<div class="top-box">
+    <p class="c333 f14 discount-show-txt">已<span>{%if discount_active_cm==1 %}停用{% else %}启用{%end%}</span>限时折扣<a href="{{reverse_url('BbsDetail',106)}}" class="ml10 f14 show-detail">查看详情</a></p>
     <p class="mt6">限时折扣是给商家提供的一个店铺营销工具。适用于周年庆、每周会员日、节假日活动等应用场景,</p>
      <a class="mode-cm pull-right mt10 close_all {%if discount_active_cm==0%}work-mode{%else%}stop-mode{%end%}" data-flag="on" title="点击切换状态" data-status="{{discount_active_cm}}" ><span class="tit">{%if discount_active_cm==0%}已启用{%else%}已停用{%end%}</span><span class="circle"></span></a>
     <p>可以更好、更快捷地帮助商家增加用户粘度、提升品牌效力。</p>
@@ -23,10 +23,10 @@
     <div class="c999">限时折扣<span class="c333"> / 管理</span></div>
     <div class="subnav-box group mt20">
         <ul class="subnav chinav pull-left furit-type-discount">
-            <li class="txt-center active" data-id=0><a href="javascript:;">未开始</a></li>
-            <li class="txt-center" data-id=1><a href="javascript:;">进行中</a></li>
-            <li class="txt-center" data-id=2><a href="javascript:;">已结束</a></li>
-            <li class="txt-center" data-id=3><a href="javascript:;">已停用</a></li>
+            <li class="txt-center active" data-id=0><a href="javascript:;">未开始&nbsp;<span class="text-pink">{{counts[0]}}</span></a></li>
+            <li class="txt-center" data-id=1><a href="javascript:;">进行中&nbsp;<span class="text-pink">{{counts[1]}}</span></a></li>
+            <li class="txt-center" data-id=2><a href="javascript:;">已结束&nbsp;<span class="text-pink">{{counts[2]}}</span></a></li>
+            <li class="txt-center" data-id=3><a href="javascript:;">已停用&nbsp;<span class="text-pink">{{counts[3]}}</span></a></li>
         </ul>
         <div class="wrap-newbtn fr">
             <a href="javascript:;" class="newbtn add-btn mt6 mr10 cm_new_discout">+新建折扣</a>

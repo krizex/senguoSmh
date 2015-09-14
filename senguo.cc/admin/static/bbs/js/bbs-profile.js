@@ -91,7 +91,7 @@ var notice = '<div class="wrap-item-box pm20">'+
                         '<span class="fr c999">{{time}}</span>'+
                         '<img src="{{imgurl}}" alt="用户头像" class="inform-img"/>'+
                         '<span class="c333 ml10">{{name}}</span>'+
-                        '<span class="ml10 c999">{{com_type}}了您的</span>'+
+                        '<span class="ml10 c999">{{com_type}}了您的 </span>'+
                         '<a href="/bbs/detail/{{id}}" class="dgreen f14 fb">{{title}}</a>'+
                     '</div>'+
                     '<p class="c333 inform-txt">{{detail}}</p>'+
@@ -141,15 +141,20 @@ function insertProfile(data){
             var $item = $("#item1").children("li").clone();
             $item.attr("data-id",data[key].id);
             $item.find(".topic-title").html(data[key].title).attr("title",data[key].title);
-            $item.find(".dianzan").html(data[key].commentnum);
-            $item.find(".reply").html(data[key].greatnum);
+            if(_type == 0){
+                $item.find(".dianzan").html(data[key].greatnum);
+                $item.find(".reply").html(data[key].commentnum);
+            }else{
+                $item.find(".dianzan").html(data[key].great_num);
+                $item.find(".reply").html(data[key].comment_num);
+            }
             $item.find(".topic-class").html(data[key].type);
             $item.find(".topic-tm").html(data[key].time);
             if(_type==2){
                 $item.find(".edit_topic").remove();
             }
             if(_type==0&&data[key].status==2){
-                $item.find(".topic-title").append("<span class='topic-tag'>定时发布</span>");
+                $item.find(".topic-title").prepend("<span class='topic-tag'>定时发布</span>");
                 $item.addClass("ontime-item");
             }
             $("#topic_list").append($item);

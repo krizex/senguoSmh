@@ -122,13 +122,13 @@ var _type=100;
 var item='<li data-id="{{id}}">'+
             '<h4 class="topic-title clip" title="{{title}}">{{title}}</h4>'+
             '<div class="wrap-topic-attr">'+
-                ' <div class="fr">'+
+                '<div class="fr">'+
                     '<a href="javascript:;" class="icon-topic dianzan {{great_if}}">{{great_num}}</a>'+
                     '<a href="javascript:;" class="icon-topic reply">{{comment_num}}</a>'+
                 '</div>'+
-                '<span class="topic-class">{{type}}</span>'+
-                '<span>{{nickname}}</span>'+
-                '<span>{{time}}</span>'+
+                '<span class="topic-class mr5">{{type}}</span>'+
+                ' • <span class="ml5 mr5">{{nickname}}</span>'+
+                ' • <span class="ml5">{{time}}</span>'+
             '</div>'+
         '</li>';
 function scrollLoading(){  

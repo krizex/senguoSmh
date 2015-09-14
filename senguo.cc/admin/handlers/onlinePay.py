@@ -15,6 +15,9 @@ import libs.xmltodict as xmltodict
 from libs.msgverify import gen_msg_token,check_msg_token
 from settings import APP_OAUTH_CALLBACK_URL, MP_APPID, MP_APPSECRET, ROOT_HOST_NAME
 import re
+import chardet
+import datetime
+import requests
 class QrWxpay(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('order_id?:str')
@@ -25,39 +28,106 @@ class QrWxpay(CustomerBaseHandler):
 		totalPrice = order.new_totalprice
 
 class RefundWxpay(CustomerBaseHandler):
-	@tornado.web.authenticated
-	def get(self):
-		pass
+	# @tornado.web.authenticated
+	# def get(self):
+	# 	pass
+	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
-	@CustomerBaseHandler.check_arguments('order_id?:str')
-	def post(self):
+	@CustomerBaseHandler.check_arguments('order_id?:str','action')
+	def get(self):
 			# def wx_refund_pub(self,order_id):
+
 		order_id = self.args['order_id']
+		action   = self.args['action']
 		if len(order_id) == 0:
-			return self.send_fail('order_id error')
+				return self.send_fail('order_id error')
 		order = self.session.query(models.Order).filter_by(id=order_id).first()
 		if not order:
-			return self.send_fail('order not found')
-		totalPrice = order.totalPrice
-		refund_pub = Refund_pub()
-		refund_pub.setParameter("out_trade_no",transaction_id)
-		refund_pub.setParameter("out_refund_no",transaction_id)
-		refund_pub.setParameter("total_fee",totalPrice)
-		refund_pub.setParameter('refund_fee',totalPrice)
-		refund_pub.setParameter('op_user_id','1223121101')
-		res = refund_pub.postXml()
-		if isinstance(res,bytes):
-			bianma = chardet.detect(res)['encoding']
-			res    = res.decode(bianma)
-		else:
-			print("[weixin Refund_pub] endong error")
-		res_dict = refund_pub.xmlToArray(res)
-		return_code = res_dict.get('return_code',None)
-		if return_code == 'success':
-			return True
-		else:
-			return False
+				return self.send_fail('order not found')
+		totalPrice = order.totalPrice	
+		num = order.num
+		transaction_id = order.transaction_id
+		if action == 'wx':
+			wx_price = int(100 * totalPrice)
+			refund_pub = Refund_pub()
+			refund_pub.setParameter("out_trade_no",num)
+			refund_pub.setParameter("out_refund_no",transaction_id)
+			refund_pub.setParameter("total_fee",wx_price)
+			refund_pub.setParameter('refund_fee',wx_price)
+			refund_pub.setParameter('op_user_id','1223121101')
+			res = refund_pub.postXmlSSL()
+			print(res)
+			if isinstance(res,bytes):
+				res    = res.decode('utf-8')
+			else:
+				print("[weixin Refund_pub] encoding error")
+			#print('decode success')
+			res_dict = refund_pub.xmlToArray(res)
+			#print(res_dict)
+			return_code = res_dict.get('return_code',None)
+			print('refund',return_code)
+			if return_code == 'SUCCESS' or return_code == 'success':
+				#如果退款成功，则将这笔在线支付记录类型置为-1,同时将店铺余额减去订单总额
+				balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+				if not balance_history:
+					return self.send_fail('余额记录没有找到')
+				shop_id = balance_history.shop_id
+				balance_value = balance_history.balance_value
+				shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
+				if not shop:
+					return self.send_fail("shop not found")
+				#该店铺余额减去订单总额
+				shop.shop_balance -= balance_value
+				balance_history.is_cancel = 1
+				#将这条余额记录作废
+				balance_history.balance_type = -1
+				customer_id = balance_history.customer_id
+				name        = balance_history.name
+				shop_province = balance_history.shop_province
+				shop_name     = balance_history.shop_name
+				balance_record = balance_history.balance_record + '--退款'
+				create_time   = datetime.datetime.now()
+				shop_totalPrice = shop.shop_balance
+				customer_totalPrice = balance_history.customer_totalPrice
+				transaction_id   = balance_history.transaction_id
+				available_balance = balance_history.available_balance
+				#同时生成一条退款记录
+				refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+					balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
+					transaction_id=transaction_id,balance_type=8,balance_value=balance_value)
+				self.session.add(refund_history)
+				self.session.commit()
+				return self.send_success()
+			else:
+				return self.send_fail('fail')
+		elif action == 'alipay':
+			now = datetime.datetime.now()
+			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
+			batch_no = now.strftime("%Y%m%d") + num
+			detail_data = transaction_id +'^' + format(totalPrice,'.2f') + '^协商退款'  
+			notify_url = 'http://i.senguo.cc/alipaycallback'
 
+			# params = {
+			# 	"service":'refund_fastpay_by_platform_pwd',
+			# 	"partner":ALIPAY_PID,
+			# 	"_input_charset":"GBK",
+			# 	# "sign":sign,
+			# 	# "sign_type":sign_type,
+			# 	"refund_date":refund_date,
+			# 	"seller_user_id":ALIPAY_PID,
+			# 	"batch_no":batch_no,
+			# 	"batch_num":1,
+			# 	"detail_data":detail_data,
+			# }
+			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data,seller_email="senguo@senguo.cc")
+			print(refund_url,'退款地址')
+			alipay_response = requests.get(refund_url)
+			alipay_page     = alipay_response.text
+			# print(alipay_page)
+			return self.write(alipay_page)
+		else:
+			return self.send_fail('action error')
 
 
 class OnlineWxPay(CustomerBaseHandler):
@@ -185,13 +255,13 @@ class OnlineWxPay(CustomerBaseHandler):
 		order_num = order.num
 		totalPrice = order.new_totalprice
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
-		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
+		# shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		wxPrice =int(totalPrice * 100)
 		url = APP_OAUTH_CALLBACK_URL + '/customer/onlinewxpay'
 		unifiedOrder =  UnifiedOrder_pub()
-		unifiedOrder.setParameter("body",shop_name + '-订单号-'+str(order_num))
+		unifiedOrder.setParameter("body",'Order No. '+str(order_num))
 		unifiedOrder.setParameter("notify_url",url)
-		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
+		unifiedOrder.setParameter("out_trade_no",str(order.num)+'a')
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml()
@@ -351,7 +421,7 @@ class wxpayCallBack(CustomerBaseHandler):
 		unifiedOrder =  UnifiedOrder_pub()
 		unifiedOrder.setParameter("body",str(order_num))
 		unifiedOrder.setParameter("notify_url",url)
-		unifiedOrder.setParameter("out_trade_no",str(order.num) + 'a' )
+		unifiedOrder.setParameter("out_trade_no",str(order.num))
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml().decode('utf-8')
@@ -402,7 +472,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.handle_onAlipay_callback()
 		# 在线支付提交订单
 		elif self._action == "AliPay":
-			# print("[AliPay]login AliPay")
+			print("[AliPay]login AliPay")
 			order_id = int(self.get_cookie("order_id"))
 			# print("[AliPay]order_id:",order_id)
 			#self.order_num = order_num
@@ -414,8 +484,8 @@ class OnlineAliPay(CustomerBaseHandler):
 			totalPrice = order.new_totalprice
 			alipayUrl =  self.handle_onAlipay(order.num,order.shop.shop_name)
 			self.order_num = order.num
-			# print("[AliPay]alipayUrl:",alipayUrl)
-			# print("[AliPay]order_num:",self.order_num)
+			#print("[AliPay]alipayUrl:",alipayUrl)
+			print("[AliPay]order_num:",self.order_num)
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 			# mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
@@ -471,17 +541,17 @@ class OnlineAliPay(CustomerBaseHandler):
 
 	# @CustomerBaseHandler.check_arguments("order_id:str","price?:float")
 	def handle_onAlipay(self,order_num,shop_name):
-		# print("[AliPay]login handle_onAlipay")
-		# order_num = self.order_num if self.order_num else 'NULL'
-		# print("[AliPay]order_num:",order_num)
-		# order = models.Order.get_by_id(self.session,int(self.args['order_id']))
+		#print("[AliPay]login handle_onAlipay")
+		#order_num = self.order_num if self.order_num else 'NULL'
+		#print("[_onAliPay]order_num:",order_num)
+		#order = models.Order.get_by_id(self.session,int(self.args['order_id']))
 		order = self.session.query(models.Order).filter_by(num = str(order_num)).first()
 		if not order:
-			# print("[AliPay]order not found")
+			print("[AliPay]order not found")
 			return self.send_fail(error_text="抱歉，此订单不存在")
 		#跳转到支付页
-		#else:
-		#	print("[AliPay]order:",order)
+		else:
+			print("[AliPay]order:",order)
 		order_id = order.id
 		price    = order.new_totalprice
 
@@ -490,13 +560,13 @@ class OnlineAliPay(CustomerBaseHandler):
 		except Exception as e:
 			return self.send_fail(error_text = '系统繁忙，请稍后再试')
 		# return self.redirect(url)
-		# print("[AliPay]redirect url:",url)
+		#print("[AliPay]redirect url:",url)
 		return url
 
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	def create_alipay_url(self,price,order_num,shop_name):
-		# print("[AliPay]login create_alipay_url:",price,order_id)
+		#print("[AliPay]login create_alipay_url:",price,order_num)
 		shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		authed_url = self._alipay.create_direct_pay_by_user_url(
 			out_trade_no = str(order_num),
@@ -507,7 +577,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			call_back_url = "%s%s"%(ALIPAY_HANDLE_HOST,self.reverse_url("noticeSuccess")),
 			notify_url="%s%s"%(ALIPAY_HANDLE_HOST, self.reverse_url("onlineAliNotify")),
 			)
-		# print("[AliPay]authed_url:",authed_url)
+		#print("[AliPay]authed_url:",authed_url)
 		return authed_url
 
 	def check_xsrf_cookie(self):

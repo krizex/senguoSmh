@@ -339,10 +339,18 @@ class Detail(FruitzoneBaseHandler):
 class Publish(FruitzoneBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
+		time_now=datetime.datetime.now()
+		year = time_now.strftime("%Y")
+		month = time_now.strftime("%m")
+		day = time_now.strftime("%d")
+		hour = time_now.strftime("%H")
+		minute = time_now.strftime("%M")
+		seconds = time_now.strftime("%S")
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
-		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=False,if_admin=if_admin)
+		article_data={"year":year,"month":month,"day":day,"hour":hour,"minute":minute,"seconds":seconds}
+		return self.render("{0}/publish.html".format(self.getBbsPath),token=qiniuToken,edit=False,if_admin=if_admin,article_data=article_data)
 
 	@tornado.web.authenticated
 	@FruitzoneBaseHandler.check_arguments("data")
@@ -543,23 +551,29 @@ class Profile(FruitzoneBaseHandler):
 			return self.send_success(datalist=datalist,nomore=nomore)
 		elif action == "notice":
 			articles=self.session.query(models.Article.id,models.Article.title).filter(models.Article.account_id==self.current_user.id).all()
+
 			for item in articles:
 				_id = item[0]
 				title = item[1]
-				if_great = self.session.query(models.Accountinfo.nickname,models.Accountinfo.headimgurl_small,models.ArticleGreat.create_time)\
+				if_great = self.session.query(models.Accountinfo.nickname,models.Accountinfo.headimgurl_small,models.ArticleGreat)\
 				.join(models.ArticleGreat,models.Accountinfo.id==models.ArticleGreat.account_id)\
 				.filter(models.ArticleGreat.article_id==_id,models.ArticleGreat.great==1).all()
 				if if_great:
 					for info in if_great:
+						info[2].scan= 1
+						self.session.flush()
 						datalist.append(self.getChangeList(_id,title,"great",info))
 
 				if_comment = self.session.query(models.Accountinfo.nickname,models.Accountinfo.headimgurl_small,\
-					models.ArticleComment.create_time,models.ArticleComment.comment)\
+					models.ArticleComment)\
 				.join(models.ArticleComment,models.Accountinfo.id==models.ArticleComment.account_id)\
 				.filter(models.ArticleComment.article_id==_id,models.ArticleComment._type==0).all()
 				if if_comment:
 					for info in if_comment:
+						info[2].if_scan = 1
+						self.session.flush()
 						datalist.append(self.getChangeList(_id,title,"comment",info))
+			self.session.commit()
 			_datalist = {}
 			if datalist:
 				if page >= len(datalist)//page_size:
@@ -657,10 +671,18 @@ class Profile(FruitzoneBaseHandler):
 	def getChangeList(self,_id,title,_type,info):
 		comment = ""
 		if _type == "comment":
-			comment = info[3]
+			comment = info[2].comment
 		try:
-			date = info[2].strftime("%m-%d")
+			date = info[2].create_time.strftime("%m-%d")
 		except:
 			date = ""
-		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,"time":info[2].strftime("%H:%M"),\
-		"date":date,"comment":comment,"wholetime":info[2].strftime("%Y-%m-%d %H:%M:%S")}
+		try:
+			time = info[2].create_time.strftime("%H:%M")
+		except:
+			time = ""
+		try:
+			wholetime = info[2].create_time.strftime("%Y-%m-%d %H:%M:%S")
+		except:
+			wholetime = ""
+		return {"id":_id,"title":title,"nickname":info[0],"imgurl":info[1],"type":_type,"time":time,\
+		"date":date,"comment":comment,"wholetime":wholetime}
