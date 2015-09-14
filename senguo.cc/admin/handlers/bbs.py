@@ -200,6 +200,7 @@ class Detail(FruitzoneBaseHandler):
 				if action == "article_great":
 					if record.great == 0:
 						record.great = 1
+						record.scan = 0
 					else:
 						num_1 = -1
 						record.great = 0

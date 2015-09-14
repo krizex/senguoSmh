@@ -6,7 +6,7 @@
 <span id="title">森果社区</span>
 <a href="javascript:;" url="/bbs/publish" class="right-icons publish-article"></a>
 <a href="javascript:;" url="/bbs/profile" class="right-icons profile-center">
-    <i class="stat-tip">{% if handler.getNoticeNumber>0 %}{{handler.getNoticeNumber}}{% end %}</i>
+    {% if handler.getNoticeNumber>0 %}<i class="stat-tip">{{handler.getNoticeNumber}}</i>{% end %}
 </a>
 {% end %}
 {% block content %}
