@@ -56,9 +56,11 @@
                         {% end %}
                         <span id="cur_group">{{context['group_list'][1]['name'][0:5]}}</span>
                         <ul class="more-group hidden">
-                            <li data-id="-2">所有商品</li>
-                            {% for group in context['group_list'] %}
+                            <!-- <li data-id="-2">所有商品</li> -->
+                            {% for index,group in enumerate(context['group_list']) %}
+                            {% if index > 1 %}
                             <li data-id="{{group['id']}}">{{group['name'][0:5]}}</li>
+                            {% end %}
                             {% end %}
                         </ul>
                     </li>
