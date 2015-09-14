@@ -238,6 +238,11 @@ $(document).ready(function(){
 }).on("click",".order-export",function(){
     $(".order-export-box").modal("show");
 }).on("click",".order-export-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false
+    }
+    $this.attr({"data-flag":"1"});
     var status=$(".export-status").attr("data-id");
     var type=$(".export-type").attr("data-id");
     var pay=$(".export-pay").attr("data-id");
@@ -245,8 +250,24 @@ $(document).ready(function(){
     var date2=$(".export-date2").val().trim();
     var money1=$(".export-money1").val().trim();
     var money2=$(".export-money2").val().trim();
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
     if(!type){
         type = 9
+    }
+    if(!date1){
+        return Tip("请选择起始时间");
+    }
+    if(!date2){
+        return Tip("请选择截止时间");
+    }
+    if(date1>date2){
+        return Tip("截止时间不能大于起始时间");
+    }
+    if(money1&&!testNum.test(money1)){
+        return Tip("其实金额只能为数字");
+    }
+    if(money2&&!testNum.test(money2)){
+        return Tip("截止金额只能为数字");
     }
     var data={
         order_type:type,
@@ -261,20 +282,30 @@ $(document).ready(function(){
         data:data
     };
     var url="/admin/orderExport?order_type="+type+"&order_status="+status+"&order_pay="+pay+"&date1="+date1+"&date2="+date2+"&money1="+money1+"&money2="+money2;
-    // var url="/admin/orderExport?data="+data;
-    $.ajax({
-        url:url,
-        type:"get",
-        success:function(res){
-            if(res.success){
-                var index = $(".order-type").children(".active").index();
-                $("#atonce").text(res.atonce);
-                $("#ontime").text(res.ontime);
-                $("#selfPoint").text(res.selfPoint);
-            }
-        }
-    })
+    window.open(url)
+    $this.attr({"data-flag":""});
+}).on('click','.condition-list2 li',function(){
+    $(this).closest("ul").prev("button").children("em").html($(this).text()).attr("data-id",$(this).find('a').attr("data-id"));
+}).on("click",".export-notice",function(){
+    var $this=$(this);
+     if($this.attr("data-flag")=="1"){
+        $(".export-box").addClass("hide");
+        $this.attr({"data-flag":""}).text("展开高级选项");
+    }else{
+        $(".export-box").removeClass("hide");
+        $this.attr({"data-flag":"1"}).text("隐藏高级选项");
+    } 
 });
+function downloadFile(fileName, content){
+    var aLink = document.createElement('a');
+    var blob = new Blob([content]);
+    var evt = document.createEvent("HTMLEvents");
+    evt.initEvent("click", false, false);
+    aLink.download = fileName;
+    aLink.href = URL.createObjectURL(blob);
+    aLink.dispatchEvent(evt);
+}
+
 
 var link='/admin/order';
 var self_type = parseInt($.getUrlParam("order_type"));//自提判断

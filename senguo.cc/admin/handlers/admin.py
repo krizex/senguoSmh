@@ -1383,7 +1383,7 @@ class OrderExport(AdminBaseHandler):
 	def get(self):
 		import openpyxl
 		from openpyxl import Workbook
-		import xlwt
+		# import xlwt
 		# try:
 		# 	from StringIO import StringIO
 		# except ImportError:
@@ -1426,11 +1426,10 @@ class OrderExport(AdminBaseHandler):
 			order_list = None
 		if not order_list:
 			return self.send_fail("您的店铺没有任何订单")
-
-		if order_type != 9:
-			order_list.filter_by(type=order_type)
-		else:
+		if order_type == 9:
 			pass
+		else:
+			order_list = order_list.filter_by(type=order_type)
 
 		if order_status == 1:#filter order_status
 			order_list = order_list.filter(models.Order.status==1)
@@ -1454,74 +1453,101 @@ class OrderExport(AdminBaseHandler):
 			if money1 == money2:
 				order_list = order_list.filter(models.Order.totalPrice == float(money1))
 			else:
-				order_list = order_list.filter(models.Order.totalPrice.in_([money1,money2]))
+				order_list = order_list.filter(models.Order.totalPrice>money1,models.Order.totalPrice<money2)
 
 		orders = order_list.all()
 		if date1 and date2:
 			if date1 == date2:
-				print(date1)
 				orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") == date1]
 			else:
-				orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") in ([date1,date2])] 
+				# orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") in ([date1,date2])] 
+				orders = [x for x in orders if date1< x.create_date.strftime("%Y-%m-%d") <date2] 
 		# print(orders)
-		for order in orders:
-			pass
-		# self.set_header('Content-type','application/vnd.ms-excel')
-		# self.set_header('Transfer-Encoding','chunked')
-		# self.set_header('Content-Disposition','attachment;filename="export.xls"')
-		# wb = Workbook()
-		# ws = wb.active
-		# ws.append(["aaa","bbb"])
-		# # wb.save("shopdata11.xlsx")
-		# wb.encoding='gbk'
-		# sio=io.StringIO()
-		# wb.save(sio)
-		# return sio.getvalue()
-		# return self.send_success()
-		# response = HttpResponse(mimetype='application/vnd.ms-excel')
-		# response['Content-Disposition'] = 'attachment;filename=member.xls'
-		self.set_header('Content-Type','application/octet-stream')
-		# self.set_header('Transfer-Encoding','chunked')
-		self.set_header('Content-Disposition','attachment;filename="export.xls"')
+		self.set_header ('Content-Type', 'application/vnd.ms-excel;charset=UTF-8')
+		self.set_header ('Content-Disposition', 'attachment; filename="export.xls"')
 		wb = Workbook(encoding = 'utf-8')
 		ws = wb.active
-		ws.append(["aaa","bbb"])
-		# wb = xlwt.Workbook(encoding = 'utf-8')
-		# sheet = wb.add_sheet(u'会员名单')
-		# #1st line 
-		# sheet.write(0,0,'会员编号')
-		# sheet.write(0,1,'会员名')
-		# sheet.write(0,2,'会员性别')
-		# sheet.write(0,3,'学校')
-		# sheet.write(0,4,'电话')
-		# sheet.write(0,5,'年级')
-		# sheet.write(0,6,'专业')
-		# sheet.write(0,7,'生日')
-		# sheet.write(0,8,'邮箱')
-		# sheet.write(0,9,'积分')
-
-		# row = 1
-		# memberlist = Member.objects.all()
-		# for member in memberlist:
-		# 	sheet.write(row,0,member.uid)
-		# 	sheet.write(row,1,member.name)
-		# 	sheet.write(row,2,member.sex)
-		# 	sheet.write(row,3,member.school)
-		# 	sheet.write(row,4,member.phone)
-		# 	sheet.write(row,5,member.grade)
-		# 	sheet.write(row,6,member.profession)
-		# 	sheet.write(row,7,member.birthday)
-		# 	sheet.write(row,8,member.email)
-		# 	sheet.write(row,9,member.integral)
-		# 	row = row + 1
-
+		ws.append(["店铺名称","订单模式","订单号","下单时间","配送时间/自提时间","总金额",\
+			"配送费","支付信息","订单状态","用户昵称","用户类型","收货人姓名","收货人电话","收货人地址","商品件数","商品总价","商品详情","订单留言"])
+		for order in orders:
+			try:
+				shop_name = self.session.query(models.Shop.shop_name).filter_by(id=order.shop_id).first()[0]
+			except:
+				shop_name = ""
+			_type = ""
+			if order.type == 1:
+				_type = "立即送"
+			elif order.type == 2:
+				_type = "按时达"
+			else:
+				_type = "自提"
+			order_num = order.num
+			order_time = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
+			send_time = order.send_time
+			totalPrice = order.totalPrice
+			freight =  order.freight
+			if order.pay_type == 1:
+				pay_type = "货到付款"
+			elif order.pay_type == 2:
+				pay_type = "余额"
+			elif order.pay_type == 3:
+				if order.online_type == "wx":
+					pay_type = "在线支付-微信"
+				else:
+					pay_type = "在线支付-支付宝"
+			else:
+				pay_type = ""
+			if order.status == -1:
+				order_status = "未付款"
+			elif order.status == 0:
+				order_status = "已删除"
+			elif order.status == 1:
+				order_status = "未处理"
+			elif order.status == 2:
+				order_status = "JH"
+			elif order.status == 3:
+				order_status = "SH1"
+			elif order.status == 4:
+				order_status = "配送中"
+				if _type == 3:
+					order_status = "等待自取"
+			elif order.status > 5:
+				order_status = "已完成"
+			try:
+				nickname = self.session.query(models.Accountinfo.nickname).filter_by(id=order.customer_id).first()[0]
+			except:
+				nickname = ""
+			try:
+				follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+					models.CustomerShopFollow.customer_id == order.customer_id).first()
+				if follow:
+					if follow.shop_new == 0:
+						shop_new ="新用户"
+					else:
+						shop_new ="老用户"
+			except:
+				shop_new = ""
+			receiver = order.receiver
+			phone = order.phone
+			address = order.address_text
+			goods_num = 0
+			goods_price = totalPrice - freight
+			goods_detail = []
+			message = order.message
+			fruits = eval(order.fruits)
+			i = 1
+			for key in fruits:
+				goods_num = goods_num+fruits[key]['num']
+				con = "商品名称:"+str(fruits[key]['fruit_name'])+",价格:"+str(fruits[key]['charge'])+",数量:"+str(fruits[key]['num'])
+				goods_detail.append(con)
+				i = i+1
+			goods_detail = str(goods_detail)
+			ws.append([shop_name,_type,order_num,order_time,send_time,totalPrice,freight,pay_type,order_status,nickname,\
+				shop_new,receiver,phone,address,goods_num,goods_price,goods_detail,message])
 		output = io.BytesIO()
-		# output = output.decode()
 		wb.save(output)
 		output.seek(0)
-		# print(output.getvalue())
-		self.write(output.getvalue())
-		self.finish()
+		return self.write(output.getvalue())
 
 # 订单管理
 class Order(AdminBaseHandler):
