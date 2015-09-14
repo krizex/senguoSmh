@@ -37,17 +37,23 @@
 	</div>
 </div>
 <div class="video">
-	<embed src="http://player.youku.com/player.php/sid/XNzUyMjYzNDYw/v.swf" allowFullScreen="true" quality="high" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash"></embed>
+	<embed src="http://player.youku.com/player.php/sid/XNzUyMjYzNDYw/v.swf" allowFullScreen="true" quality="high" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash">
+	</embed>
 </div>
 <div class="video-bg">
 	<div class="w1000 video-width">
 		<div class="video-text">
 			<h1>媒体报道</h1>
-			<p class="text-center font14">一年多以来森果受到了全社会的关注，<br />十多家纸媒，36Kr，
-		武汉电视台<br />等都针对我们进行了深度的专<br />题报道</p>
+			<p class="text-center font14">一年多以来森果受到了全社会的关注，<br />
+										十多家纸媒，36Kr，武汉电视台<br />
+										等都针对我们进行了深度的专<br />
+										题报道
+			</p>
 		</div>
 	</div>
 	<div class="video-img">
+		<embed src="http://player.youku.com/player.php/sid/XNzUyMjYzNDYw/v.swf" allowFullScreen="true" quality="high" align="middle" allowScriptAccess="always" type="application/x-shockwave-flash">
+		</embed>
 		<img src="{{static_url('official_img/video-img.png')}}">
 		<img class="play-icon" src="{{static_url('official_img/play_normal.png')}}" title="播放视频">
 		<img class="play-hover-icon" src="{{static_url('official_img/play_hover.png')}}" title="播放视频">
@@ -81,20 +87,18 @@
 		</div>
 	</div>
 </div>
-<div class="w1000 clearfix">
-	
-	<p class="more clearfix">还有更多:</p>
-	<div class="new_list2 clearfix">
+<div class="more-news-bg">
+	<div class="w1000 clearfix">
 		<div class="pull-left box">
-			<a href="http://hb.qq.com/a/20130506/000330.htm" target="_blank">《华科两学生校内“微信”卖水果 仓库租在宿舍旁》大楚网</a>
-			<a href="http://edu.qq.com/a/20130506/000114.htm" target="_blank">《大学生开微信水果店 两天获400多个关注》武汉晚报</a>
-			<a href="http://ctdsb.cnhubei.com/html/ctdsb/20130904/ctdsb2140953.html" target="_blank">《大学创业团队用微信卖水果》楚天都市报</a>
-			<a href="http://inews.cjn.cn/jrzb/201403/t2439127.htm" target="_blank">《华科男生花5000元为整栋女寝送水果》长江网</a>
+			<a href="http://hb.qq.com/a/20130506/000330.htm" target="_blank">《华科两学生校内“微信”卖水果 仓库租在宿舍旁》<span>大楚网</span></a>
+			<a href="http://edu.qq.com/a/20130506/000114.htm" target="_blank">《大学生开微信水果店 两天获400多个关注》<span>武汉晚报</span></a>
+			<a href="http://ctdsb.cnhubei.com/html/ctdsb/20130904/ctdsb2140953.html" target="_blank">《大学创业团队用微信卖水果》<span>楚天都市报</span></a>
+			<a href="http://inews.cjn.cn/jrzb/201403/t2439127.htm" target="_blank">《华科男生花5000元为整栋女寝送水果》<span>长江网</span></a>
 		</div>
 		<div class="pull-right box">
-			<a href="http://inews.cjn.cn/xyxw/201305/t2262001.htm" target="_blank">《华科学子微信卖水果 点对点销售吸引百人关注》长江网</a>
-			<a href="http://www.agronet.com.cn/News/844565.html" target="_blank">《华科大“we信水果帮”销售水果每斤低0.5元》阿里巴巴农业资讯</a>
-			<a href="http://www.51ecom.cn/news_show.php?md5id=41b7d25069" target="_blank">《创业项目PK创意与运营--大学生电商创业项目路演》武汉科技报</a>
+			<a href="http://inews.cjn.cn/xyxw/201305/t2262001.htm" target="_blank">《华科学子微信卖水果 点对点销售吸引百人关注》<span>长江网</span></a>
+			<a href="http://www.agronet.com.cn/News/844565.html" target="_blank">《华科大“we信水果帮”销售水果每斤低0.5元》<span>阿里巴巴农业资讯</span></a>
+			<a href="http://www.51ecom.cn/news_show.php?md5id=41b7d25069" target="_blank">《创业项目PK创意与运营--大学生电商创业项目路演》<span>武汉科技报</span></a>
 		</div>
 	</div>
 </div>
@@ -128,4 +132,7 @@
     <p class="">鄂ICP备14012961号-1&nbsp;&nbsp;Copyright&copy;2014-2015 senguo.cc版权所有</p>
 </div>
 <a href="http://www.lagou.com/gongsi/28807.html" target="_blank" class="join_us"><img src="{{static_url('official_img/join.png')}}"></a>
+{% end %}
+{% block bottom-js%}
+<script src="{{static_url('js/official_about.js')}}"></script>
 {% end %}

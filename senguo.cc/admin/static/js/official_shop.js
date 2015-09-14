@@ -1,8 +1,7 @@
- $(document).ready(function(){
-    //shop total number
-    shopTotal();
-    //get top8
-    getData('top');
+ $(document).ready(function(){ 
+    shopTotal();//shop total number
+    getData('top');//get top8
+    var maxnum = 200;//获取省店家最多的数量
     //map data
     require.config({
         paths: {
@@ -27,23 +26,26 @@
                 dataRange: {
                     show:false,
                     min: 0,
-                    max: 200,
+                    max: maxnum,
                     x: 'left',
                     y: 'bottom',
-                    text:['100以上','0'],           // 文本，默认为数值文本
+                    //text:["maxnum以上",'0'],           // 文本，默认为数值文本
                     calculable : true,
                     color:['#2c6853','#429c7c','#58d0a6','#92e0c5','#cdf1e4','#f3f3f3'],
                 },
                 series : [
                     {
-                        name: '',
+                        name: '同行数量',
                         type: 'map',
                         mapType: 'china',
-                        roam: false,
+                        roam: false,//地图缩放
                         itemStyle:{
-                            normal:{label:{show:true}},
+                            normal:{
+                                label:{
+                                    show:true},
+                                },
                             emphasis:{label:{show:true}}
-                        },
+                        }, 
                         data:[
                            
                         ]
@@ -52,23 +54,22 @@
             };
             var ecConfig = require('echarts/config');
             var zrEvent = require('zrender/tool/event');
-            myChart.on(ecConfig.EVENT.MAP_SELECTED, function (param){
-                var selected = param.selected;
-                var str;
+            /*点击地图中省份，加载店家*/
+            myChart.on(ecConfig.EVENT.CLICK, function (param){
+                $('.shoplist').empty();
+                $(".now-page-number").data('page',1);
+                var province = param.name;
                 var pro_code;
                 var area=window.dataObj.area;
-                for (var p in selected) {
-                    if (selected[p]) {
-                        str = p;
-                        for(var key in area){
-                            var province=area[key]['name'].substring(0,2);
-                            var province_long=area[key]['name'].substring(0,3);
-                            if(province==str||province_long==str){
-                                pro_code=Int(key);
-                            }
-                        }
+                if(province=='黑龙江') {province='黑龙'}
+                if(province=='内蒙古') {province='内蒙'}
+                for (var key in area) {
+                    if (province == area[key]['name'].substring(0,2)) {
+                        pro_code=Int(key);
                         window.dataObj.province_code=pro_code;
-                        $('.province_name').text(str);
+                        if(province=='黑龙') {province='黑龙江'}
+                        if(province=='内蒙') {province='内蒙古'}
+                        $('.province_name').text(province);
                         getData('filter',1,'province',pro_code);
                         $('body','html').animate({scrollTop:'1000px'});
                     }
@@ -90,147 +91,11 @@
             }
             myChart.refresh();
             myChart.setOption(options);
-        })
-
-       /*     var options={
-                dataRange: {
-                show:false,
-            min: 0,
-            max: 2500,
-            x: 'left',
-            y: 'bottom',
-            text:['高','低'],           // 文本，默认为数值文本
-            calculable : true,
-            color:['#fe6666','#fe6666'],
-            textStyle:{color: '#fff'}
-        },
-        tooltip : {
-            trigger: 'item'
-        },
-        series : [
-            {
-                dataRangeHoverLink:true,
-                name: '同行数量',
-                type: 'map',
-                mapType: 'china',
-                roam: false,
-                selectedMode : 'single',
-                itemStyle:{
-                    normal:{label:{show:true}},
-                    emphasis:{label:{show:true}}
-                },
-            itemStyle: {
-                normal: {
-                    borderWidth: 2,
-                    borderColor: '#fff',
-                    color: '#fe6666',
-                    label: {
-                        show: true,
-                        textStyle: {
-                            color: '#fff'
-                        }
-                    }
-                },
-                emphasis: { // 也是选中样式
-                    borderWidth: 2,
-                    borderColor: '#fff',
-                    color: '#FF5252',
-                    label: {
-                        show: true,
-                        textStyle: {
-                            color: '#fff'
-                        }
-                    }
-                }
-            },
-            data:[ 
-            ]
-            }
-        ]
-        };
-        var ecConfig = require('echarts/config');
-        var zrEvent = require('zrender/tool/event');
-        myChart.on(ecConfig.EVENT.MAP_SELECTED, function (param){
-        var selected = param.selected;
-        var str;
-        var pro_code;
-        var area=window.dataObj.area;
-        for (var p in selected) {
-            if (selected[p]) {
-                str = p;
-                for(var key in area){
-                    var province=area[key]['name'].substring(0,2);
-                    var province_long=area[key]['name'].substring(0,3);
-                    if(province==str||province_long==str){
-                        pro_code=Int(key);
-                    }
-                }
-                window.dataObj.province_code=pro_code;
-                $('.province_name').text(str);
-                getData('filter',1,'province',pro_code);
-                $('body','html').animate({scrollTop:'1000px'});
-            }
         }
-    });
-    options.series[0].data=[];
-    var area=window.dataObj.area;
-    for(var key in area){
-        var province=area[key]['name'];
-        var pro_count=window.dataObj.province_count;
-        var num=0;
-        province=province.substring(0,2);
-        if(province=='黑龙') {province='黑龙江'}
-        if(province=='内蒙') {province='内蒙古'}
-        for(var i in pro_count){
-            if(key==pro_count[i][0]){num=pro_count[i][1]}
-        }
-        options.series[0].data.push({name:province,value:num});
-    }
-    myChart.refresh();
-    myChart.setOption(options);
-    });*/ 
-    //page
-    $(document).on('click','.pagenation li',function(){
-        var $this=$(this);
-        var id=Int($this.attr('data-id'));
-        var page_total=window.dataObj.page_total;
-        var province_code=window.dataObj.province_code;
-        $('.pagenation li').removeClass('active').eq(id-1).addClass('active');
-        if(id==1){
-            $('.pre_page').hide();
-            $('.next_page').show().attr({'data-id':id+1});;
-        }
-        else if(id==page_total){
-            $('.next_page').hide();
-            $('.pre_page').show().attr({'data-id':id-1});;
-        }
-        else if(1<id<page_total){
-            $('.pre_page').show().attr({'data-id':id-1});
-            $('.next_page').show().attr({'data-id':id+1});
-        }
-        getData('filter',id,'province',province_code);
-    });
-    $(document).on('click','.pre_page',function(){
-        var $this=$(this);
-        var id=Int($this.attr('data-id'));
-        var province_code=window.dataObj.province_code;
-        $('.next_page').show();
-        getData('filter',id,'province',province_code);
-        $this.attr({'data-id':id-1});
-        $('.next_page').show().attr({'data-id':id+1});
-        $('.pagenation li').removeClass('active').eq(id-1).addClass('active');
-    });
-    $(document).on('click','.next_page',function(){
-        var $this=$(this);
-        var id=Int($this.attr('data-id'));
-        var province_code=window.dataObj.province_code;
-        $('.pre_page').show();
-        getData('filter',id,'province',province_code);
-        $this.attr({'data-id':id+1});
-        $('.pre_page').show().attr({'data-id':id-1});
-        $('.pagenation li').removeClass('active').eq(id-1).addClass('active');
-    });
+    )
 });
+
+
 var shopTotal=function(){
     var total_count=$('#total_count').val().toString();
     var n_length=total_count.length;
@@ -321,19 +186,21 @@ var getData=function(action,page,type,data){
         }
     }else {
         $(".shop_list").css("display","none");
-        //return $.noticeBox(res.error_text);
     }
     },function(){
             $(".shop_list").css("display","none");
-           // return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')
         }
     );
 }
+
 function initShop(res){
     var shops=res.shoplist;
     window.dataObj.page_total=res.page_total;
     var page_total=window.dataObj.page_total;
-    $('.shoplist').empty();
+    var pages = $(".now-page-number").data('page');
+    if(pages == 1) {
+        $('.shoplist').empty();
+    }
     if(shops.length>0) {
         for(var i in shops){
             var $item=$(window.dataObj.shop_item);
@@ -363,25 +230,40 @@ function initShop(res){
             $('.shoplist').append($item);
         }
     }else{
-        $('.shoplist').empty().append('<h4 class="font16 text-center"> 无结果</h4>')
+        $('.add-more-page').remove();
+        $('.no-more').removeClass('hide');
     }
-    if(page_total>1&&page!=page_total) {
-        $('.pagenation').empty();
-        $('.page_box').removeClass('hidden');
-        for(var i=1;i<=page_total;i++){
-            $item=$('<li class="item"><a href="javascript:;"></a></li>');
-            $item.attr({'data-id':i});
-            $item.find('a').text(i);
-            $('.pagenation').append($item);
-        }
-        $('.next_page').show();
-    }
-    if(page_total==1) {
-        $('.page_box').addClass('hidden');
-    }
-    if(page<=1){
-        $('.pre_page').hide().attr({'data-id':1});
-        $('.next_page').attr({'data-id':2});
-    }
-    if(page>=page_total){$('.next_page').hide();}
 }
+
+//鼠标滚动加载更多店家
+$(window).scroll(function() {
+    var province =  $('.province_name').text();
+    if(province == '全国') {
+        $('.add-more-page').remove();
+    }
+    if($(".list_box").find('h4').hasClass('hide')) {
+        var pro_code; 
+        var getmorepage = Int($(".now-page-number").data('page')) + 1;
+        console.log(getmorepage);
+        if($(document).scrollTop() == $(document).height()-$(window).height()) {
+            setTimeout(function() {
+                $('.add-more-page').removeClass('hide');
+                var area=window.dataObj.area;
+                for (var key in area) {
+                    if(province=='黑龙江') {province='黑龙'}
+                    if(province=='内蒙古') {province='内蒙'}
+                    if (province == area[key]['name'].substring(0,2)) {
+                        pro_code=Int(key);
+                        window.dataObj.province_code=pro_code;
+                        getData('filter',getmorepage,'province',pro_code);
+                        $(".now-page-number").data('page',getmorepage);
+                    }
+                }
+            },1000)
+        } 
+        $('.add-more-page').addClass('hide');
+    } else {
+        $('.add-more-page').remove();
+    }
+    
+});

@@ -1,7 +1,7 @@
 .app-bg{width: 100%;height: 487px;overflow:hidden;}
-.app-bg-img{max-width: 1920px;height: 487px;margin: 0 auto;overflow: hidden;position: relative;}
+.app-bg-img{max-width: 1920px;min-width: 1024px;height: 487px;margin: 0 auto;overflow: hidden;position: relative;}
 .app-bg-img>img{min-height: 400px;position: absolute;left: 0;}
-.appdownload-width{width: 1000px;position: absolute;top: 0;left: 50%;margin-left: -500px;}
+.appdownload-width{width: 1000px;overflow: hidden;height: 487px;position: absolute;top: 0;left: 50%;margin-left: -500px;}
 .download-text{width: 550px;position: absolute;left: 90px;margin-top: 80px;}
 .download-text>h1{font-size: 48px;font-weight: bold;color: #fff;margin-top: 100px;}
 .download-method{margin-top: 40px;}
