@@ -151,6 +151,20 @@ def getArticle():
 		article.collect_num  = record
 	session.commit()
 
-g = multiprocessing.Process(name='getArticle',target=getArticle)
+#为每个店铺添加一个默认员工
+def add_staff():
+	shop_list = session.query(models.Shop).all()
+	for shop in shop_list:
+		temp_staff = session.query(models.ShopStaff).get(shop.admin_id)
+		if temp_staff is None:
+			print(shop.id,'this is empty')
+			session.add(models.ShopStaff(id=shop.admin_id,shop_id=shop.id))
+			session.flush()
+			if not session.query(models.HireLink).filter_by(staff_id=shop.admin_id,shop_id=shop.id):
+				session.add(models.HireLink(staff_id=shop.admin_id,shop_id=shop.id,default_staff=1))
+				session.flush()
+	session.commit()
+
+g = multiprocessing.Process(name='getArticle',target=add_staff)
 g.start()
 g.join()

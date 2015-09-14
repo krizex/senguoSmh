@@ -462,6 +462,21 @@ class RefundQuery_pub(Wxpay_client_pub):
         self.result = self.xmlToArray(self.response)
         return self.result
 
+class CloseOrder_pub(Wxpay_client_pub):
+    ''' 订单关闭接口 '''
+    def __init__(self,timeout=WxPayConf_pub.CURL_TIMEOUT):
+        self.url = 'https://api.mch.weixin.qq.com/pay/closeorder'
+        self.curl_timeout = timeout
+        super(CloseOrder_pub,self).__init__()
+
+    def createXml(self):
+        self.parameters["appid"] = WxPayConf_pub.APPID
+        self.parameters["mch_id"]=WxPayConf_pub.MCHID
+        self.parameters["nonce_str"] = self.createNoncestr()
+        self.parameters["sign"] = self.getSign(self.parameters)
+        return self.arrayToXml(self.parameters)
+
+
 
 class DownloadBill_pub(Wxpay_client_pub):
     """对账单接口"""

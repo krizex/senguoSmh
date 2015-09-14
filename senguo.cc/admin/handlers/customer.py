@@ -1,5 +1,5 @@
 from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
-from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub,CloseOrder_pub
 import dal.models as models
 import tornado.web
 from settings import *
@@ -2725,7 +2725,7 @@ class Cart(CustomerBaseHandler):
 		# 如果提交订单是在线支付 ，则将订单号存入 cookie，进入支付前的页面
 		if self.args['pay_type'] == 3:
 			# print('[CustomerCart]This is online pay order, set unpay delete timer: 15min')
-			Timer(60*15,self.order_cancel_auto,(self.session,order.id,)).start()
+			Timer(60*6,self.order_cancel_auto,(self.session,order.id,)).start()
 			online_type = self.args['online_type']
 			self.set_cookie('order_id',str(order.id))
 			self.set_cookie('online_totalPrice',str(order.totalPrice))
@@ -2820,6 +2820,29 @@ class Cart(CustomerBaseHandler):
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
 		if order.status == -1:
+			#如果是微信支付，关闭支付接口
+			if order.online_type == 'wx':
+				print('close order')
+				num = order.num
+				transaction_id = order.transaction_id
+				if order.is_qrwxpay ==1:
+					out_trade_no = num + 'a'
+				else:
+					out_trade_no = num
+				print(out_trade_no,'out_trade_no')
+				colse_order = CloseOrder_pub()
+				colse_order.setParameter("out_trade_no",out_trade_no)
+				# colse_order.setParameter("transaction_id",transaction_id)
+				res = colse_order.postXml()
+				print(res)
+				if isinstance(res,bytes):
+					res = res.decode('utf-8')
+				res_dict = colse_order.xmlToArray(res)
+				return_code = res_dict.get('return_code',None)
+				if return_code == 'SUCCESS':
+					print('order closed success')
+				else:
+					print('order closed failed')
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
