@@ -43,7 +43,9 @@
                         itemStyle:{
                             normal:{
                                 label:{
-                                    show:true},
+                                    show:true,
+                                    textStyle:{color:"#000"}
+                                },
                                 },
                             emphasis:{label:{show:true}}
                         }, 
@@ -261,7 +263,7 @@ $(window).scroll(function() {
                 }
             }
             $('.add-more-page').addClass('hide'); 
-        },1000);
+        },500);
         
     }
 });
