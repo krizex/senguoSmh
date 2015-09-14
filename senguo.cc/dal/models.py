@@ -1603,7 +1603,7 @@ class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	confess_active = Column(TINYINT,nullable=False,default = 1) #1:告白墙开启 0:告白墙关闭
-	coupon_active=Column(TINYINT,nullable=False,default=0)  #0:开启 1:关闭
+	coupon_active=Column(TINYINT,nullable=False,default=0)  #0:关闭 1:开启
 	discount_active=Column(TINYINT,nullable=False,default=1)  #0:开启 1:关闭
 	confess_notice = Column(String(500))
 	confess_type = Column(TINYINT,nullable=False,default = 1) #1:告白模式 0:非告白模式

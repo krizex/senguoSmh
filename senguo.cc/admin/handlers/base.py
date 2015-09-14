@@ -2314,11 +2314,31 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		#3.23
 		shop_id = self.get_cookie("market_shop_id")
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
+
+		coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
+		if coupon_have==0:
+			coupon_active=0
+		else :
+			coupon_active=shop.marketing.coupon_active
+
+		kill_count = self.session.query(models.SeckillActivity.id)\
+		.filter(models.SeckillActivity.activity_status == 1,models.SeckillActivity.shop_id == shop_id)\
+		.order_by(models.SeckillActivity.start_time).count()
+		if kill_count>0 and shop.marketing.seckill_active == 1:
+			seckill_active = 1
+		else:
+			seckill_active = 0
+
+		discount_count=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,status=1).count()
+		if discount_count>0 and shop.marketing.discount_active == 0:
+			discount_active = 1
+		else:
+			discount_active = 0
+
 		if shop:
-			self._shop_marketing = shop.marketing.confess_active+shop.marketing.coupon_active
+			self._shop_marketing = shop.marketing.confess_active+coupon_active+discount_active+seckill_active
 		else:
 			self._shop_marketing = None
-
 		return self._shop_marketing
 
 	@property
