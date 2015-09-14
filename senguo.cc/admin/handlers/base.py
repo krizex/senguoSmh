@@ -1713,7 +1713,8 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			_id = article[0]
 			comment = comment+self.session.query(models.ArticleComment).filter_by(article_id=_id,if_scan=0,status=1,_type=0).count()
 			great = great+self.session.query(models.ArticleGreat).filter_by(article_id=_id,scan=0).count()
-		return comment,great
+		data = comment+great
+		return data
 
 	
 
