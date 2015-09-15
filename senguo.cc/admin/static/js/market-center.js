@@ -12,72 +12,61 @@ $(document).ready(function(){
    var point=Int($('.current_point').data('point'));
    $('.current_point').text(point);
     //收货地址add
-    $(document).on('click','.address-manage',function(e){
-        var $this=$(this);
-        if($(e.target).closest('.forbid_click').length == 0){
-            $('.address-list ').toggle();
-            $this.find('.add-address ').toggle();
-        }
-
+}).on('click','.address-manage',function(e){
+    var $this=$(this);
+    if($(e.target).closest('.forbid_click').length == 0){
+        $('.address-list ').toggle();
+        $this.find('.add-address ').toggle();
+    }
 }).on("click","#coupon_btn",function(){
     window.location.href="/coupon/list?action=get_all";
-});
-    //收货地址编辑
-    $(document).on('click','.edit-address',function(){
-        var $this=$(this);
-        var parent=$this.parents('.address-item');
-        window.dataObj.item_id=parent.index();
-        var name=parent.find('.item_name').text();
-        var phone=parent.find('.item_phone').text();
-        var address=parent.find('.item_address').text();
-        window.dataObj.address_id=$this.parents('.address-item').attr('data-id');
+}).on('click','.edit-address',function(){
+    var $this=$(this);
+    var parent=$this.parents('.address-item');
+    window.dataObj.item_id=parent.index();
+    var name=parent.find('.item_name').text();
+    var phone=parent.find('.item_phone').text();
+    var address=parent.find('.item_address').text();
+    window.dataObj.address_id=$this.parents('.address-item').attr('data-id');
+    var address_box=new Modal('address_box');
+   address_box.modal('show');
+   $('.addressAdd').hide();
+   $('.addressEdit').show();
+   $('#address_name').val(name);
+   $('#address_phone').val(phone);
+   $('#address_address').val(address);
+}).on('click','.addressEdit',function(){
+    var $this=$(this);
+    addressEdit($this,'edit_address');
+}).on('click','.add-address',function(){
+    var $this=$(this);
+    var max= $('.address-list').find('.address-item').length;
+    if(max<5){
         var address_box=new Modal('address_box');
-       address_box.modal('show');
-       $('.addressAdd').hide();
-       $('.addressEdit').show();
-       $('#address_name').val(name);
-       $('#address_phone').val(phone);
-       $('#address_address').val(address);
-    });
-    $('body').on('click','.addressEdit',function(){
-        var $this=$(this);
-        addressEdit($this,'edit_address');
-    });
-    //添加收货地址
-    $('body').on('click','.add-address',function(){
-        var $this=$(this);
-        var max= $('.address-list').find('.address-item').length;
-        if(max<5){
-            var address_box=new Modal('address_box');
-            address_box.modal('show');
-            $('.addressAdd').show();
-            $('.addressEdit').hide();
-        }
-       else return noticeBox('最多可添加五个收货地址！',$this);
-    });
-    $('body').on('click','.addressAdd',function(){
-        var $this=$(this);
-        addressEdit($this,'add_address');
-    });
-    //收货地址删除
-    $(document).on('click','.delete-address',function(){
-        var $this=$(this);
-        var parent=$this.parents('.address-item');
-        var index=parent.index();
-        confirmBox('确认删除该收货地址吗？//(ㄒoㄒ)//',index);
-    });
-    $(document).on('click','.confriming',function(){
-        var $this=$(this);
-        var $item=$this.parents('#confirmBox').find('.message');
-        var result=$this.attr('data-status');
-        var index=$item.attr('data-index');
-        if(result=='true'){
-            var target=$('.address-item').eq(index);
-            var id=target.attr('data-id');
-            addressDel(target,id);
-        }
-        confirmRemove();
-    });
+        address_box.modal('show');
+        $('.addressAdd').show();
+        $('.addressEdit').hide();
+    }
+   else return noticeBox('最多可添加五个收货地址！',$this);
+}).on('click','.addressAdd',function(){
+    var $this=$(this);
+    addressEdit($this,'add_address');
+}).on('click','.delete-address',function(){
+    var $this=$(this);
+    var parent=$this.parents('.address-item');
+    var index=parent.index();
+    confirmBox('确认删除该收货地址吗？//(ㄒoㄒ)//',index);
+}).on('click','.confriming',function(){
+    var $this=$(this);
+    var $item=$this.parents('#confirmBox').find('.message');
+    var result=$this.attr('data-status');
+    var index=$item.attr('data-index');
+    if(result=='true'){
+        var target=$('.address-item').eq(index);
+        var id=target.attr('data-id');
+        addressDel(target,id);
+    }
+    confirmRemove();
 }).on('click','.user-balance',function(){
     var status = $(this).attr('data-status');
     var statu = $(this).attr("data-auth");

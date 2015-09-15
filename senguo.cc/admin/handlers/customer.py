@@ -691,10 +691,15 @@ class Home(CustomerBaseHandler):
 		action = self.args["action"]
 		data = self.args["data"]
 		if action == "add_address":
-			address = models.Address(customer_id=self.current_user.id,
-									 phone=data["phone"],
-									 receiver=data["receiver"],
-									 address_text=data["address_text"])
+			if_default = 0
+			if len(self.current_user.addresses) == 0 :
+				if_default = 1
+			address = models.Address(customer_id = self.current_user.id,
+									 phone = data["phone"],
+									 receiver = data["receiver"],
+									 address_text = data["address_text"],
+									 if_default = if_default
+									 )
 			self.session.add(address)
 			self.session.commit()
 			return self.send_success(address_id=address.id)
@@ -706,10 +711,21 @@ class Home(CustomerBaseHandler):
 						   receiver=data["receiver"],
 						   address_text=data["address_text"])
 		elif action == "del_address":
-			try: q = self.session.query(models.Address).filter_by(id=int(data["address_id"]))
+			try: address = self.session.query(models.Address).filter_by(id=int(data["address_id"]))
 			except:return self.send_error(404)
-			q.delete()
+			address.delete()
 			self.session.commit()
+		elif action == "default_address":
+			address_id = int(data["address_id"])
+			try: address = self.session.query(models.Address).filter_by(id=address_id).one()
+			except:return self.send_error(404)
+			address.if_default = 1
+			address_other = [x for x in self.current_user.addresses if x.id != address_id]
+			for addr in address_other:
+				addr.if_default = 0
+			self.session.commit()
+		else:
+			return self.send_error(404)
 		return self.send_success()
 
 # 发现
@@ -2859,6 +2875,7 @@ class Address(CustomerBaseHandler):
 	def get(self):
 		shop_code = self.get_cookie('market_shop_code')
 		return self.render("customer/address.html",shop_code=shop_code)
+
 
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
