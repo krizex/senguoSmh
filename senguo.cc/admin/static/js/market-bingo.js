@@ -44,14 +44,14 @@ $(document).ready(function(){
                 }
             });
         }else{
-            $('.tab-group li').each(function(){
-                if($(this).index()<3){
-                    if($(this).attr('data-id')!=-2){
-                        gArr.push($(this).attr('data-id'));
-                    }
-                }
+            // $('.tab-group li').each(function(){
+            //     if($(this).index()<3){
+            //         if($(this).attr('data-id')!=-2){
+            //             gArr.push($(this).attr('data-id'));
+            //         }
+            //     }
                 
-            });
+            // });
              $('.more-group li').each(function(){
                  if($(this).attr('data-id')!=-2){
                      gArr.push($(this).attr('data-id'));
