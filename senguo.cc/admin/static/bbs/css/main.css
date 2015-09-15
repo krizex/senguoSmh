@@ -164,6 +164,7 @@ body{background-color: #f3f3f3;overflow-x: hidden;max-width: 800px;min-width: 32
 .wrap-topic-attr{margin-top: 6px;height: 18px;font-size: 12px;line-height:18px;color: #999;}
 .wrap-topic-attr>span{display: inline-block;margin-right: 4px;}
 .topic-class{border: 1px solid #4ab89e;color:#4ab89e;font-size:12px;border-radius: 20px;padding: 0 6px;height: 16px;-webkit-transform:scale(0.9);}
+.topic-tag{color:#4ab89e;font-size:12px;padding: 1px 5px;height: 16px;-webkit-transform:scale(0.9);background-color: #eee;}
 .detail-type{border-color: #999;color: #999;margin-right: 6px;}
 .icon-topic{display: inline-block;height: 16px;padding-left: 18px;font-size: 12px;color: #999;margin-left: 4px;background: url('../img/bbs_icon.png') no-repeat;background-size: 24px;}
 .dianzan{background-position: 0 -29px;}
