@@ -37,7 +37,8 @@
 {% set cart_active = ""%}
 {% set center_active = ""%}
 {% set dis_active ="" %}
-
+{% set shop_marketing="" %}
+{% set get_shop_auth ="" %}
 {% if subpage == "shop" %}
 {% set shop_active = "active"%}
 {% elif subpage == "home"%}
@@ -52,7 +53,7 @@
 
 {% set discover_show="" %}
 {% set w25="w20" %}
-{% if handler.shop_marketing == 0 or handler.shop_auth == 0 %}
+{% if shop_marketing == 0 or get_shop_auth == 0 %}
 {% set discover_show="hidden" %}
 {% set w25="w25" %}
 {% end %}
