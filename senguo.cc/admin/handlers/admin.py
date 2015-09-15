@@ -1377,6 +1377,7 @@ class Comment(AdminBaseHandler):
 
 		return self.send_success()
 
+# 订单导出
 class OrderExport(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("order_type","order_status","order_pay","date1","date2","money1","money2")
@@ -1461,7 +1462,7 @@ class OrderExport(AdminBaseHandler):
 				orders = [x for x in orders if date1< x.create_date.strftime("%Y-%m-%d") <date2] 
 		# print(orders)
 		self.set_header ('Content-Type', 'application/vnd.ms-excel;charset=UTF-8')
-		self.set_header ('Content-Disposition', 'attachment; filename="export.xls"')
+		self.set_header ('Content-Disposition', 'attachment; filename="order_export.xlsx"')
 		wb = Workbook(encoding = 'utf-8')
 		ws = wb.active
 		ws.append(["店铺名称","订单模式","订单号","下单时间","配送时间/自提时间","总金额",\

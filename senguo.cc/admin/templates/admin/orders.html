@@ -33,7 +33,7 @@
 {% end %}
 <input type="hidden" id="receipt-type" value="{{current_shop.config.receipt_type}}" />
 <input type="hidden" id="console-type" value="{{current_shop.config.wireless_type}}" />
-<span class="right-title" id="order-title-manage">订单管理<a href="javascript:;" class="order-export pull-right font12">订单导出</a></span>
+<span class="right-title" id="order-title-manage">订单管理<a href="javascript:;" class="order-export pull-right">订单导出</a></span>
 <div class="subnav-box clearfix">
     <ul class="subnav pull-left order-type">
         <li class="text-center col-lg-3 col-md-3 col-xs-3 col-sm-3 {{now_active}}">
@@ -239,13 +239,14 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header set-width-float">
+                <span class="title pull-left">将订单信息导出为Excel</span>
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
             <div class="modal-body set-width-float bg-white">
                 <ul class="order-export-con">
-                    <li><span class="tit">当前店铺:</span>{{current_shop.shop_name}}</li>
-                    <li><span class="tit">下单时间:</span><input type="text" class="Wdate export-date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'date2\')}'})"/ id= "date1"> 到 <input type="text" class="Wdate export-date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'date1\')}'})" id="date2"/></li>
-                    <li class="export-box hide"><span class="tit">订单类型:</span>
+                    <li><span class="tit">当前店铺：</span>{{current_shop.shop_name}}</li>
+                    <li><span class="tit">下单时间：</span><input type="text" class="Wdate export-date1" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',maxDate:'#F{$dp.$D(\'date2\')}'})"/ id= "date1"> 到 <input type="text" class="Wdate export-date2" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd',minDate:'#F{$dp.$D(\'date1\')}'})" id="date2"/></li>
+                    <li class="export-box hide"><span class="tit">订单类型：</span>
                         <div class="dropdown slide-down-select w130">
                             <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu6" data-toggle="dropdown">
                                 <em class="pull-left export-type" data-id="9">所有</em>
@@ -268,7 +269,7 @@
                         </div>
                     </li>
                     <li class="export-box hide">
-                        <span class="tit">订单状态:</span>
+                        <span class="tit">订单状态：</span>
                         <div class="dropdown slide-down-select w130">
                             <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu7" data-toggle="dropdown">
                                 <em class="pull-left export-status" data-id="9">所有</em>
@@ -297,7 +298,7 @@
                         </div>
                     </li>
                     <li class="export-box hide">
-                         <span class="tit">支付方式:</span>
+                         <span class="tit">支付方式：</span>
                          <div class="dropdown slide-down-select w130">
                             <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
                                 <em class="pull-left export-pay" data-id="9">所有</em>
@@ -320,7 +321,7 @@
                         </div>
                     </li>
                     <li class="export-box hide">
-                        <span class="tit">订单金额:</span>
+                        <span class="tit">订单金额：</span>
                         <input type="text" class="export-money1"/> 到 <input type="text" class="export-money2"/>
                     </li>
                     <li>
