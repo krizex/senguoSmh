@@ -46,6 +46,7 @@
 .shop-set{background-image: url('/static/m-admin/img/top_set.png');background-size: 20px;}
 .wrap-goods-menu{height: auto !important;}
 .goods-menu-list{height: auto !important;}
+.forbid-in .name{color: #bbb !important;}
 /*bbs首页*/
 .bbs-menu{background-image: url('/static/bbs/img/icon_menu.png');background-size: 20px;padding-left: 26px;}
 .wrap-menu-list{position: absolute;width: 112px;background-color: rgba(72,182,164,0.8);top:100%;left: 0;z-index:99;}

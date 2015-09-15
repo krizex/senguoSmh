@@ -1,7 +1,7 @@
 html,body{height: 100%;}
 body{background-color: #f0f4f0;padding-top: 120px;}
 .w980{width: 980px;position: relative;left: 50%;margin-left: -490px;}
-div,span,p,li{-webkit-user-select:none;}
+/*div,span,p,li{-webkit-user-select:none;}*/
 /*.edui-container{z-index:998 !important;}*/
 /*右下角*/
 .scrollUpf{position: fixed; z-index: 9999; display: block;width: 48px;bottom:90px;right: 50px;display: none;}

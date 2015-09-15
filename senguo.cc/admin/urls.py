@@ -73,6 +73,8 @@ handlers = [
 	(r"/staff", handlers.staff.Home, {}, "staffHome"),
 	(r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
 	(r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
+	#地址管理
+	(r"/customer/address", handlers.customer.Address, {}, "AddressList"),
 
 	(r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
 	(r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),

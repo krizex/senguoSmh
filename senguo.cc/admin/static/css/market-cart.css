@@ -71,25 +71,20 @@
 .send-address-choose .address{width:85%;}
 .send-address-choose .to-edit-address{width:15%;margin-top:16px;}
 .send-address-choose .active .phone{color:#33CC66;}
-
-
 .message-input{padding:10px 15px;width:90% !important;border-color:#fff;border-radius:3px;}
 .message-input:focus{border-color:#ddd;}
 .border-grey{border-color:#ddd;}
 .tip-list li{width:32%;margin-right:1%;}
 .tip-list li.active{background:#33CC66 !important;color:#fff !important;}
-
 .tit{width:110px;}
 .tit2{width:80px;}
 .line25{line-height:25px;}
 .line50{line-height:50px;}
 .height50{height:50px;}
-
 .available{color:#333 !important;}
 .available span{color:#333;}
 .not_available{border-color:#f0f4f0;color:#ccc !important;}
 .not_available span{color:#ccc !important;}
-
 .left70{left:70px !important;}
 .left82{left:82px !important;}
 .list-group{padding:0 10px;}
@@ -132,17 +127,14 @@
 .mr10{margin-right: 10px;}
 .cart-titles{background-color: #fff;padding-top: 10px;}
 .has-coupon{line-height: 18px;margin: 0 10px;}
-
 .seth-50{height:50px;line-height:50px;}
 .seth-40{height:40px;line-height:40px;}
 .item-tit{padding:15px;color:#333;}
 .item-tit2{padding:5px 10px;}
 .text-greyc{color:#ccc !important;}
-
 .send-now.active span{color:#33CC66 !important;}
 .self-address-list .active:hover{color:#33CC66;}
 .area-icon{width:14px;height:22px;background:url('../svg/icon_list-2.png') 0 -48px;background-size:140px 180px;position: relative;top:8px;margin:6px 5px 0 0;}
-
 .send-self{margin-bottom:0px;}
 .status-goods{position: absolute;width: 40px;height: 40px;display: inline-block;background-repeat: no-repeat;background-size: 40px;top: 5px;left: 5px;}
 .status-seckill{background-image: url('/static/images/status_seckill.png');}

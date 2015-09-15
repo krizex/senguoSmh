@@ -217,6 +217,14 @@ $(document).ready(function(){
     var $this=$(this);
     var index=$this.index();
     if(index==2&&$this.hasClass("active")&&$(".i-cert").length>0){
+        var text = $("#cur_group").html();
+        $(".more-group li").each(function(){
+            if($(this).html()==text){
+                $(".more-group li").removeClass("hidden");
+                $(this).addClass("hidden");
+                return false;
+            }
+        });
         $(".more-group").removeClass("hidden");
     }
     var group_id=Number($this.attr("data-id"));

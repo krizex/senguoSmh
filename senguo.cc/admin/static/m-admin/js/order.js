@@ -1,6 +1,7 @@
 var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
-$(document).ready(function(){
-    if(parseInt(cookie.getCookie("mdetail"))==1){
+$(document).ready(function (name) {
+    name = name || "mdetail";
+    if(parseInt(cookie.getCookie(name))==1){
         cookie.removeCookie("mdetail");
         $('.wrap-loading-box').removeClass('hide');
         $(".no-result").html("数据正在加载中...");
@@ -10,8 +11,11 @@ $(document).ready(function(){
     width = $(window).width();
     var minheight = $(window).height()-70;
     $(".order-lists").css({minHeight:minheight+"px"});
-
     $(".order-type-list .item").on("click",function(){
+        if($(this).hasClass("c999")){
+            Tip("该方式处于关闭状态，请开启后再查看");
+            return false;
+        }
         var index = $(this).index();
         var _type=parseInt($(this).attr('data-id'));
         if(_type==3){
@@ -27,6 +31,7 @@ $(document).ready(function(){
             $(".second-tab").removeClass("mt40");
             $(".order-lists").removeClass("pt40");
         }
+        history.replaceState({foo:1},"订单管理","/madmin/order?type="+index);
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
         _page=0;
@@ -39,7 +44,6 @@ $(document).ready(function(){
         swiper.swipeTo(index);
         $(this).addClass('active').siblings(".item").removeClass("active");
     });
-
     swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
         grabCursor: true,
@@ -55,14 +59,15 @@ $(document).ready(function(){
         }
     });
     if($.getUrlParam("type")){
-        if(parseInt($.getUrlParam("type"))==2){
+        var index = parseInt($.getUrlParam("type"));
+        if(index==2){
             $(".second-item").html("等待自取");
             $(".third-item").html("已完成");
             $(".second-tab").addClass("mt40");
             $(".wrap-self-choose").removeClass("hide");
             $(".order-lists").addClass("pt40");
         }
-        var index = parseInt($.getUrlParam("type"));
+
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
         _page=0;

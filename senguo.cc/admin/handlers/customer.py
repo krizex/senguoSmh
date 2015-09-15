@@ -2853,6 +2853,12 @@ class CartCallback(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def post(self):
 		return self.send_success()
+#地址管理
+class Address(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_code = self.get_cookie('market_shop_code')
+		return self.render("customer/address.html",shop_code=shop_code)
 
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
