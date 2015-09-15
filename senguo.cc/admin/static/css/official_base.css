@@ -294,9 +294,12 @@ a,input,button{ outline:none; }
 .online-bg .online-business .online-chains{background:url("../official_img/chains.png");}
 .online-bg .online-business .online-chains-content{background:url("../official_img/chains-content.png");}
 /*底部背景图片*/
-.footer-bg-img {position: relative;width: 100%;text-align: center;background-color: #f0f4f0;}
+.footer-bg-img {padding-bottom: 40px;position: relative;width: 100%;text-align: center;background-color: #f0f4f0;}
 .footer-bg-img>img {width: 100%;margin-top: 70px;min-width: 1670px;min-height: 288px;}
 .apply-bottom {position: absolute;top: 200px;left: 50%;width: 1000px;height: 150px;margin-left: -500px;text-align: center;}
 .apply-bottom a {position: absolute;left: 50%;margin-left: -70px;margin-top: 40px;display: block;width: 140px;height: 40px;line-height: 40px;border-radius: 3px;font-size: 18px;font-weight: bold;text-align: center;background-color: #58d0a6;color: #fff;-webkit-transition: all .2s ease-in-out;transition: all .2s ease-in-out;}
 .apply-bottom a:hover {background-color: rgba(255,255,255,0);color: #58d0a6;border: 2px solid #58d0a6;border-radius: 3px;text-decoration: none;}
 .apply-bottom>span {display: inline-block;height: 40px;font-weight: bold;font-size: 36px;color: #fff;}
+/*备案号*/
+.record{position: absolute;bottom: 0;height: 40px;width: 100%;background-color: #ccc;}
+.record>p{height: 40px;line-height: 40px;font-size: 14px;text-align: center;}
