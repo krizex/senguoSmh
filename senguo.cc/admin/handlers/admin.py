@@ -1430,9 +1430,9 @@ class OrderExport(AdminBaseHandler):
 		if order_status == 1:#filter order_status
 			order_list = order_list.filter(models.Order.status==1)
 		elif order_status == 2:#unfinish
-			order_list = order_list.filter(models.Order.status.in_(2,3,4))
+			order_list = order_list.filter(models.Order.status.in_([2,3,4]))
 		elif order_status == 3:
-			order_list = order_list.filter(models.Order.status.in_(5,6,7))
+			order_list = order_list.filter(models.Order.status.in_([5,6,7]))
 		elif order_status == 4:
 			order_list = order_list.filter_by(status=0,del_reason="refund")
 		elif order_status == 5:#all
