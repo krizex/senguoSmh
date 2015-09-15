@@ -2789,7 +2789,10 @@ class Cart(CustomerBaseHandler):
 		# 如果非在线支付订单，则发送模版消息、自动打印订单、订单消息推送给app（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(session,order,access_token)
+			#如果有自己的公众平台，用自己的公众号发送模板消息，之后依旧用森果发送一遍
+			if access_token:
+				self.send_admin_message(session,order,access_token)
+			self.send_admin_message(session,order)
 
 		return True
 

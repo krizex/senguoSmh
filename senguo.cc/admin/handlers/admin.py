@@ -1559,7 +1559,9 @@ class Order(AdminBaseHandler):
 				# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
 			else:
 				access_token = None
-			self.order_done(self.session,order,access_token)
+			if access_token:
+				self.order_done(self.session,order,access_token)
+			self.order_done(self.session,order)
 
 	# 订单计数
 	def _count(self):
