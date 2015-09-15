@@ -1908,8 +1908,11 @@ class AdminBaseHandler(_AccountBaseHandler):
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
 				"headimgurl":staff.accountinfo.headimgurl_small}
 				SH2s.append(staff_data)
-				if staff.id == order.SH2_id:  # todo JH、SH1
-					d["SH2"] = staff_data
+			staffs_info =self.session.query(models.Accountinfo.nickname,models.Accountinfo.realname,models.Accountinfo.phone,\
+				models.Accountinfo.headimgurl_small).filter_by(id=order.SH2_id).first()
+			staffs_info_data = {"id": order.SH2_id, "nickname": staffs_info[0],"realname": staffs_info[1], "phone": staffs_info[2],\
+				"headimgurl":staffs_info[3]}
+			d["SH2"] = staffs_info_data
 					# print("[AdminBaseHandler]getOrder:",d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)

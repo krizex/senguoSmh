@@ -3832,6 +3832,9 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
+			if_orders = self.session.query(models.Order).filter_by(status=4,SH2_id=_id).count()
+			if if_orders > 0:
+				return self.send_fail("该管理员还有订单未完成，请完成后再删除该管理员")
 			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,work=9).delete()
 			self.session.commit()
 			return self.send_success()
