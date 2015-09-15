@@ -29,8 +29,14 @@ handlers = [
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 
-	#(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
+	#秒杀折扣预售团购
+	(r"/seckill/(\w+)", handlers.activity.Seckill, {}, "ConfessionSeckill"),
+	(r"/discount/(\w+)", handlers.activity.Discount, {}, "ConfessionDiscount"),
+	(r"/gbuy", handlers.activity.Gbuy, {}, "ConfessionGbuy"),
+	(r"/presell", handlers.activity.Presell, {}, "ConfessionPresell"),
+	(r"/(\w+)/gbuy/(\w+)", handlers.activity.GbuyDetail, {}, "ConfessionGbuyDetail"),
 
+	#(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
@@ -38,6 +44,7 @@ handlers = [
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
+	(r"/bbs/hot", handlers.bbs.getHotInfo, {}, "BbsHot"),
 
 	#市场推广
 	(r"/market/home", handlers.market.Home, {}, "MarketHome"),
@@ -53,6 +60,11 @@ handlers = [
 	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
 	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
 	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
+	# 限时折扣
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountMain"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountNew"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountDetail"),
+	
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -243,8 +255,9 @@ handlers = [
 	(r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
 	(r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
 	(r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
+	(r"/admin/orderExport", handlers.admin.OrderExport, {}, "adminOrderExport"),
 	(r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
-	(r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
+	# (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
 	(r"/admin/follower", handlers.admin.Follower, {}, "adminStaffFollower"),
 	(r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
 	(r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
@@ -254,6 +267,7 @@ handlers = [
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
+	(r"/admin/marketing/seckill",handlers.admin.MarketingSeckill,{},"adminMarketingSeckill"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
 	(r"/admin",handlers.admin.SwitchShop,{},"switchshop"),
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
@@ -270,6 +284,7 @@ handlers = [
 	(r"/admin/MessageManage", handlers.admin.MessageManage, {}, "adminMessageManage"),
 	(r"/admin/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
 	(r"/admin/import", handlers.admin.GoodsImport, {}, "GoodsImport"),
+	(r"/admin/picture", handlers.admin.GetPicture, {}, "GetPicture"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),

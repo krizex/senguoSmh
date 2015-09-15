@@ -16,7 +16,11 @@ $(document).ready(function(){
             colorDark : "#433943"
         }).makeCode( $("#shop_url").html());
     }
-
+    cur_code =$(".choose_classify").attr("data-code");
+    if($(".choose_classify").text()!=""){
+       $(".pic-classify").text($(".choose_classify").text()); 
+    }
+    
 }).on("click",".gogoods",function(){
     if(confirm("当前编辑未完成，确定返回吗？")){
         window.location.href="/madmin/goods";
@@ -57,6 +61,7 @@ $(document).ready(function(){
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
     $("html,body").removeClass("flow-hidden");
+    document.body.scrollTop = 0;
 }).on("click",".current-unit",function(){//库存单位
     if(confirm("修改库存单位后现有的售价方式会被修改成库存单位，确认修改？")){
         price_type = 0;
@@ -129,8 +134,11 @@ $(document).ready(function(){
     $("#finish_btn").addClass("hide");
     $(".wrap-add-class").addClass("hide");
     $(".wrap-classify").removeClass("hide");
+    $('.upload-pic-list').empty();
 }).on("click",".class-lst li",function(){
-    $(".choose_classify").html($(this).find(".class_name").html()).attr("data-id",$(this).attr("data-id"));
+    $(".choose_classify").html($(this).find(".class_name").html()).attr({"data-id":$(this).attr("data-id"),"data-code":$(this).attr("data-code")});
+    cur_code = $(this).attr("data-code");
+    $(".pic-classify").text($(this).find(".class_name").html());
     if($("#img_list").children("li").size()==6 && $("#img-lst").hasClass("hide")){
     }else{
         if($("#img_list").children("li").size()>4){
@@ -221,7 +229,218 @@ $(document).ready(function(){
     delGoods($("#finish_btn").attr("data-id"));
 }).on("click",".b-close",function(){
     $(this).closest(".pop-bwin").addClass("hide");
+}).on("click","#add-img",function(){
+    getPicture(pictureType,0,cur_code);
+    $(".pop-picture-library").removeClass("hide");
+    var uploader = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'upload-picture',
+        container: 'upload-area',
+        max_file_size: '4mb',
+        filters : {
+            max_file_size : '4mb',//限制图片大小
+            mime_types: [
+                {title : "image type", extensions : "jpg,jpeg,png"}
+            ]
+        },
+        flash_swf_url: 'static/js/plupload/Moxie.swf',
+        dragdrop: false,
+        chunk_size: '4mb',
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
+        uptoken: $("#token").val(),
+        unique_names: false,
+        save_key: false,
+        auto_start: true,
+        init: {
+            'FilesAdded': function (up, files) {
+                var file = files[0];
+                var isOri = "";
+                EXIF.getData(file.getNative(), function() {
+                    var orientation = file.getNative().exifdata.Orientation;
+                    if(orientation && orientation>1){//ios 横拍为3，竖排为6
+                        if(orientation==3){
+                            isOri = "rotate-img2";
+                        }else if(orientation == 6){
+                            isOri = "rotate-img";
+                        }
+                    }
+                });
+                var w = width+10;
+                var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><div style="width:'+width+'px;height:'+width+'px;" class="img-cover2 wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="商品图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></li>');
+                $("#add-img").closest("li").before($item);
+                if ($("#img_list").children("li").size() == 6) {
+                    $("#img-lst").addClass("hide");
+                    $(".moxie-shim").addClass("hide");
+                }
+                !function(){
+                    previewImage(file,function(imgsrc){
+                        $("#"+file.id).attr("src",imgsrc);
+                    })
+                }();
+            },
+            'UploadProgress': function (up, file) {
+            },
+            'FileUploaded': function (up, file, info) {
+                $("#" + file.id).prev(".img-cover2").addClass("hide");
+                $("#" + file.id).next("a").removeClass("hide");
+                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                $(".pop-picture-library").addClass("hide");
+            },
+            'Error': function (up, err, errTip) {
+                if (err.code == -600) {
+                    Tip("图片大小不能超过4M哦");
+                } else if (err.code == -601) {
+                    Tip("图片格式不对哦，只能上传png、jpg格式图片");
+                } else if (err.code == -200) {
+                    Tip("当前页面过期，请刷新页面");
+                } else {
+                    Tip(err.code + ": " + err.message);
+                }
+                up.removeFile(err.file.id);
+                $("#"+err.file.id).closest("li").remove();
+                if($("#"+err.file.id).closest("li").index()==4){
+                    $("#img-lst").removeClass("hide");
+                    $(".moxie-shim").removeClass("hide");
+                }
+            },
+            'Key': function (up, file) {
+                var key = file.id;
+                return key;
+            }
+        }
+    });
+    setTimeout(function(){
+        $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
+    },800);
+}).on("click",".upload-pic-list li",function(e){
+    var imgurl=$(this).find("img").attr("src");
+    var _url=$(this).find("img").attr("url");
+    var w = width+10;
+    if($(e.target).closest(".del-pic-img").size()==0){
+        var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img class="image" style="width:'+width+'px;height:'+width+'px;" id="" src="" alt="商品图片"/><a href="javascript:;" class="icon-del"></a></li>');
+        if ($("#img_list").children("li").size() == 6) {
+            $("#img-lst").addClass("hide");
+            $(".moxie-shim").addClass("hide");
+        }else{
+            if ($("#img_list").children("li").size() == 5){
+                $("#img-lst").addClass("hide");
+                $(".moxie-shim").addClass("hide");
+            }
+            $item.find("img").attr({"src":imgurl,"url":_url});
+            $("#add-img").closest("li").before($item);
+        }
+        $(".pop-picture-library").addClass("hide");
+    }
+}).on("click",".pop-picture-library .cancel-btn",function(){
+    $(this).closest(".pop-picture-library").addClass("hide");
+    $(".default-pic-list").addClass("hide");
+    $(".upload-pic-list").removeClass("hide");
+    $(".show-upload-list").addClass("active").siblings("li").removeClass("active");
+}).on("click",".del-pic-img",function(){
+    if(confirm("是否将该图片从图片库删除？")){
+        var $this=$(this);
+        var id=$this.parents(".picture-list-item").attr("data-id");
+        var url = "/admin/picture";
+        var args={
+            action:"del",
+            data:{
+                id:id
+            }
+        }
+         $.postJson(url,args,function(res) {
+            if (res.success) {
+               $this.parents(".picture-list-item").remove();
+            }else{
+                Tip(res.error_text);
+            }
+        },function(){
+            return Tip('您的网络暂时不通畅，请稍候再试');
+        });
+    }
+   
+}).on("click",".show-upload-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").removeClass("hide");
+    $(".picture-pagination").removeClass("hide");
+    $(".default-pic-list").addClass("hide");
+}).on("click",".show-default-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").addClass("hide");
+    $(".picture-pagination").addClass("hide");
+    $(".default-pic-list").removeClass("hide");
+    $("#demo-img").find("img").attr({"src":"/static/design_img/"+cur_code+".png","url":"/static/design_img/"+cur_code+".png"})
+}).on("click","#demo-img",function(){
+    var imgurl=$(this).find("img").attr("src");
+    var _url=$(this).find("img").attr("url");
+    var w = width+10;
+    var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img class="image" style="width:'+width+'px;height:'+width+'px;" id="" src="" alt="商品图片"/><a href="javascript:;" class="icon-del"></a></li>');
+    if ($("#img_list").children("li").size() == 6) {
+        $("#img-lst").addClass("hide");
+        $(".moxie-shim").addClass("hide");
+    }else{
+        if ($("#img_list").children("li").size() == 5){
+            $("#img-lst").addClass("hide");
+            $(".moxie-shim").addClass("hide");
+        }
+        $item.find("img").attr({"src":imgurl,"url":_url});
+        $("#add-img").closest("li").before($item);
+    }
+    $(".pop-picture-library").addClass("hide");
 });
+
+
+var pictureType="goods",_page = 0,nomore=false,_finished=true,cur_code="",_total;
+function getPicture(action,page,code){
+     $.ajax({
+        url:'/admin/picture?action='+action+'&page='+page+'&code='+code,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.datalist;
+                if(page==0){
+                   _total = res.total_page; 
+                   $('.upload-pic-list').empty();
+                   nomore=false;
+                   _page = 0;
+                }
+                if(_total<=page){
+                    nomore=true;
+                }
+                var item='<li class="img-bo picture-list-item" data-id="{{id}}">'+
+                        '<a href="javascript:;" class="del-pic-img">x</a>'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/80/h/80" url="{{imgurl}}" alt="商品图片"/>'+
+                    '</li>';
+                for(var key in data){
+                    var render = template.compile(item);
+                    var html = render({
+                        imgurl:data[key]['imgurl'],
+                        id:data[key]['id']
+                    });
+                    $('.upload-pic-list').append(html);
+                }
+                _finished = true;
+            }
+        }
+    });
+};
+
+
+$('.picture-library').scroll(function(){
+    var srollPos = $(window).scrollTop();    //滚动条距顶部距离(页面超出窗口的高度)
+    var range = 150;             //距下边界长度/单位px          //插入元素高度/单位px
+    var totalheight = 0;
+    var main = $('.picture-library');              //主体元素
+    totalheight = parseFloat($(window).height()) + parseFloat(srollPos);
+    if(_finished&&(main.height()-range) <= totalheight  && nomore==false) {
+        _finished=false;
+        _page = _page+1;
+        getPicture(pictureType,_page,cur_code);
+    }
+});
+
+
+
 //删除商品
 function delGoods(id){
     var url="/admin/goods/all";
@@ -280,6 +499,7 @@ function finishGoods(){
     var unit = $(".current-unit").attr("data-id");
     var tag =$(".wrap-tag").find(".active").attr("data-id");
     var buylimit =$(".wrap-buylimit").find(".active").attr("data-id");
+    var code=$(".choose_classify").attr("data-code");
     if(name.length>25 || name==""){
         return Tip("商品名称不能为空且不能超过25个字");
     }
@@ -395,7 +615,8 @@ function finishGoods(){
         intro: info,//商品简介,
         name: name,//商品名称,
         tag:tag,
-        buylimit:buylimit
+        buylimit:buylimit,
+        code:code
     };
     if(type == "edit"){
         data.goods_id=goods_id;
@@ -481,86 +702,18 @@ function simpleUnitSwitch(price_unit,cur_unit,id){
     cur_price.find(".first-num").html(first);
     cur_price.find(".second-num").html(second);
 }
+//android端上传图片
+function uploadImgForAndroid(url){
+    var w = width+10;
+    var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img src="'+url+'?imageView2/1/w/100/h/100" url="'+url+'" alt="商品图片" class="image"/><a href="javascript:;" class="icon-del"></a></li>');
+    $("#add-img").closest("li").before($item);
+    if ($("#img_list").children("li").size() == 6) {
+        $("#img-lst").addClass("hide");
+        $(".moxie-shim").addClass("hide");
+    }
+}
 $(document).ready(function(){
-    var uploader = Qiniu.uploader({
-        runtimes: 'html5,flash,html4',
-        browse_button: 'add-img',
-        container: 'img-lst',
-        max_file_size: '4mb',
-        filters : {
-            max_file_size : '4mb',//限制图片大小
-            mime_types: [
-                {title : "image type", extensions : "jpg,jpeg,png"}
-            ]
-        },
-        flash_swf_url: 'static/js/plupload/Moxie.swf',
-        dragdrop: false,
-        chunk_size: '4mb',
-        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
-        uptoken: $("#token").val(),
-        unique_names: false,
-        save_key: false,
-        auto_start: true,
-        init: {
-            'FilesAdded': function (up, files) {
-                var file = files[0];
-                var isOri = "";
-                EXIF.getData(file.getNative(), function() {
-                    var orientation = file.getNative().exifdata.Orientation;
-                    if(orientation && orientation>1){//ios 横拍为3，竖排为6
-                        if(orientation==3){
-                            isOri = "rotate-img2";
-                        }else if(orientation == 6){
-                            isOri = "rotate-img";
-                        }
-                    }
-                });
-                var w = width+10;
-                var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><div style="width:'+width+'px;height:'+width+'px;" class="img-cover2 wrap-img-cover"><span class="loader loader-quart"></span></div><img id="'+file.id+'" src="" alt="商品图片" class="image '+isOri+'"/><a href="javascript:;" class="icon-del hide"></a></li>');
-                $("#add-img").closest("li").before($item);
-                if ($("#img_list").children("li").size() == 6) {
-                    $("#img-lst").addClass("hide");
-                    $(".moxie-shim").addClass("hide");
-                }
-                !function(){
-                    previewImage(file,function(imgsrc){
-                        $("#"+file.id).attr("src",imgsrc);
-                    })
-                }();
-            },
-            'UploadProgress': function (up, file) {
-            },
-            'FileUploaded': function (up, file, info) {
-                $("#" + file.id).prev(".img-cover2").addClass("hide");
-                $("#" + file.id).next("a").removeClass("hide");
-                $("#"+file.id).attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
-            },
-            'Error': function (up, err, errTip) {
-                if (err.code == -600) {
-                    Tip("图片大小不能超过4M哦");
-                } else if (err.code == -601) {
-                    Tip("图片格式不对哦，只能上传png、jpg格式图片");
-                } else if (err.code == -200) {
-                    Tip("当前页面过期，请刷新页面");
-                } else {
-                    Tip(err.code + ": " + err.message);
-                }
-                up.removeFile(err.file.id);
-                $("#"+err.file.id).closest("li").remove();
-                if($("#"+err.file.id).closest("li").index()==4){
-                    $("#img-lst").removeClass("hide");
-                    $(".moxie-shim").removeClass("hide");
-                }
-            },
-            'Key': function (up, file) {
-                var key = file.id;
-                return key;
-            }
-        }
-    });
-    setTimeout(function(){
-        $(".moxie-shim").children("input").attr("capture","camera").attr("accept","image/*").removeAttr("multiple");
-    },500);
+   
 })
 //获取cookie
 function getCookie(key){
@@ -595,6 +748,18 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
         preloader.load( file.getSource() );
     }
 }
+
+//android端上传图片
+function uploadImgForAndroid(url){
+    var w = width+10;
+    var $item = $('<li style="width:'+w+'px;height:'+w+'px;"><img src="'+url+'?imageView2/1/w/100/h/100" url="'+url+'" alt="商品图片" class="image"/><a href="javascript:;" class="icon-del"></a></li>');
+    $("#add-img").closest("li").before($item);
+    if ($("#img_list").children("li").size() == 6) {
+        $("#img-lst").addClass("hide");
+        $(".moxie-shim").addClass("hide");
+    }
+}
+
 /*水果分类*/
 function getData(type,sub_type){
     $.ajax({
@@ -699,4 +864,5 @@ function uploadImgForAndroid(url){
         $("#img-lst").addClass("hide");
         $(".moxie-shim").addClass("hide");
     }
+    $(".pop-picture-library").addClass("hide");
 }

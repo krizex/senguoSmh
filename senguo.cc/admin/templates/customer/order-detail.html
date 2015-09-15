@@ -49,7 +49,7 @@
                                 <img src="{{imgurl}}" alt="商品图片"/>
                             </dd>
                             <dt class="bg">
-                                <p class="color">{{fruits[key]['fruit_name']}}</p>
+                                <p class="color">{% if 'activity_name' in list(fruits[key].keys()) and fruits[key]['activity_name'] %}（{{fruits[key]['activity_name']}}）{% end %}{{fruits[key]['fruit_name']}}</p>
                                 <p class="color txt-ar"><span class="big">{{fruits[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[key]['num'], 2)}}</span>元</p>
                                 <p class="color">{{fruits[key]['charge']}}</p>
                             </dt>
@@ -114,7 +114,7 @@
 </div>
 {% if order.comment%}
 <div class="wrap-bm-btn">
-    <a class="fr add-comment white-btn" href="{{reverse_url('customerShopComment')}}?orderid={{order.id}}">修改评价</a>
+    <a class="fr add-comment white-btn" href="{{reverse_url('customerShopComment')}}?num={{order.id}}">修改评价</a>
     <a class="fr go-shopping white-btn" href="/{{handler.shop_code}}">继续购买</a>
 </div>
 {% end %}

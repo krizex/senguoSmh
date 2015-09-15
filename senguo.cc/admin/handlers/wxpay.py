@@ -74,8 +74,8 @@ class WxPayConf_pub(object):
 
     #=======【证书路径设置】=====================================
     #证书路径,注意应该填写绝对路径
-    SSLCERT_PATH = "/home/woody/senguocc/senguo.cc/admin/libs/cacert/apiclient_cert.pem"
-    SSLKEY_PATH = "/home/woody/senguocc/senguo.cc/admin/libs/cacert/apiclient_key.pem"
+    SSLCERT_PATH = "/home/monk/www/senguo2.0/senguo.cc/admin/libs/cacert/apiclient_cert.pem"
+    SSLKEY_PATH = "/home/monk/www/senguo2.0/senguo.cc/admin/libs/cacert/apiclient_key.pem"
 
     #=======【curl超时设置】===================================
     CURL_TIMEOUT = 30
@@ -461,6 +461,21 @@ class RefundQuery_pub(Wxpay_client_pub):
         self.postXmlSSL()
         self.result = self.xmlToArray(self.response)
         return self.result
+
+class CloseOrder_pub(Wxpay_client_pub):
+    ''' 订单关闭接口 '''
+    def __init__(self,timeout=WxPayConf_pub.CURL_TIMEOUT):
+        self.url = 'https://api.mch.weixin.qq.com/pay/closeorder'
+        self.curl_timeout = timeout
+        super(CloseOrder_pub,self).__init__()
+
+    def createXml(self):
+        self.parameters["appid"] = WxPayConf_pub.APPID
+        self.parameters["mch_id"]=WxPayConf_pub.MCHID
+        self.parameters["nonce_str"] = self.createNoncestr()
+        self.parameters["sign"] = self.getSign(self.parameters)
+        return self.arrayToXml(self.parameters)
+
 
 
 class DownloadBill_pub(Wxpay_client_pub):

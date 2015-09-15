@@ -1,3 +1,4 @@
+var activity_type = 0;
 $(document).ready(function(){
     var shop_code=$('#shop_imgurl').attr('data-code');
     SetCookie('market_shop_code',shop_code);
@@ -35,6 +36,7 @@ $(document).ready(function(){
         var type;
         if(parent.hasClass('fruit_item')){type=0}
         else if(parent.hasClass('menu_item')){type=1}
+        activity_type = $(this).attr("activity_type");
         confirmBox('确认删除该商品吗？//(ㄒoㄒ)//',index,type);
     });
     $(document).on('click','.confriming',function(){
@@ -421,7 +423,6 @@ function todayChoose(){
     if($send_item.length>0){
         stop_range=Int($send_item.siblings('.stop-range').val().trim());
     }
-    
     if(_type=="ontime"){
         if(today==1){
             if(ontime_on!=undefined){
@@ -430,13 +431,9 @@ function todayChoose(){
                     var intime_startHour=Int($this.find('.time_startHour').val());
                     var intime_startMin=Int($this.find('.time_startMin').val());
                     var time;
-                    if(intime_startMin==0){
-                        intime_startHour=intime_startHour-1;
-                    }
                     if(stop_range<=intime_startMin){
                         time=checkTime(intime_startHour)+':'+checkTime(intime_startMin-stop_range)+':00';
-                    }
-                   else{
+                    }else{
                         n = parseInt(stop_range/60)
                         time=checkTime(intime_startHour-n)+':'+checkTime(60-(stop_range-60*n-intime_startMin))+':00';
                     }
@@ -567,7 +564,12 @@ var getPrice=function(){
     $('.item_total_price').each(function(){
         var $this=$(this);
         var parent=$this.parents('.cart-list-item');
-        var num=parent.find('.item_number').val();
+        if (parent.find('.status-seckill').size() != 0){
+            var num = 1;
+        }
+        else{
+            var num=parent.find('.item_number').val();
+        }
         var price=parent.find('.item_price').text();
         var total=mathFloat(num*price);
         $this.text(total);
@@ -693,7 +695,8 @@ function itemDelete(target,menu_type) {
     var args = {
         action: action,
         charge_type_id: charge_type_id,
-        menu_type: menu_type
+        menu_type: menu_type,
+        activity_type:activity_type
     };
     $.postJson(url, args, function (res) {
             if (res.success) {
@@ -782,6 +785,7 @@ function orderSubmit(target){
     var url='';
     var fruits={};
     var mgoods={};
+    var discount_ids=[];
     var online_type = "";
     var period_id = "";
     var self_address_id = "";
@@ -818,11 +822,21 @@ function orderSubmit(target){
     if(!today){today=1;}
     if(!address_id){return noticeBox('请填写您的收货地址！',target);}
     if(!tip) tip=0;
+    discount_ids=[];
     for(var i=0;i<fruit_item.length;i++)
     {
         var id=fruit_item.eq(i).find('.charge-type').data('id');
-        var num=fruit_item.eq(i).find('.number-input').val();
+
+        if (fruit_item.eq(i).find('.status-seckill').size() != 0){
+            var num = 1;
+        }
+        else{
+            var num=fruit_item.eq(i).find('.number-input').val();
+        }
         fruits[id]=parseInt(num);
+        if(fruit_item.eq(i).find(".status-discount").size()>0){//有折扣
+            discount_ids.push(id);
+        }
     }
     var menu_item=$('.menu_item');
     for(var i=0;i<menu_item.length;i++)
@@ -858,15 +872,24 @@ function orderSubmit(target){
         pay_type:pay_type,
         message:message,
         tip:tip,
-        online_type:online_type
+        online_type:online_type,
+        discount_ids:discount_ids
     };
     $.postJson(url,args,function(res) {
         if (res.success) {
+            var overdue = res.overdue;
+            if (overdue == 1){
+                //重定向刷新购物车页面,并给出'当前购物车有参加活动的商品已经过期！'的提示
+                noticeBox("您的购物车有商品已过期~~");
+                setTimeout(function(){
+                    window.location.reload(true);
+                },1200);
+                return false;
+            }
             if(res.notice){
                 noticeBox(res.notice);
             }
             SetCookie('cart_count',0);
-            // window.location.href= '/notice/success'
             var url='/customer/cartback';
             var args={order_id:res.order_id};
             $.postJson(url,args,function(data) {
