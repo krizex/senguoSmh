@@ -724,6 +724,8 @@ class Home(CustomerBaseHandler):
 			for addr in address_other:
 				addr.if_default = 0
 			self.session.commit()
+		else:
+			return self.send_error(404)
 		return self.send_success()
 
 # 发现
