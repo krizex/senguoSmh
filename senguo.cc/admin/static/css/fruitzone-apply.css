@@ -1,4 +1,4 @@
-.apply-title .title{background:url('../images/logo.png') no-repeat 15% center;background-size:3.5em;display:block;}
+.apply-title .title{background:url('/static/official_img/new_logo.png') no-repeat 15% center;background-size:3.5em;display:block;}
 .top{padding:20px 0 10px;}
 .top img{width:100px;border:3px solid #fff;border-radius:50%;}
 

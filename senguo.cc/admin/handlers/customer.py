@@ -2895,7 +2895,16 @@ class CartCallback(CustomerBaseHandler):
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
 	def get(self):
-		return self.render("notice/order-success.html",context=dict(subpage='cart'))
+		shop_id = int(self.get_cookie("market_shop_id"))
+		try:
+			shop_auth = self.session.query(models.Shop.shop_auth).filter_by(id=shop_id).first().shop_auth
+		except:
+			shop_auth = 0
+		try:
+			shop_marketing = self.get_shop_marketing(shop_id)
+		except:
+			shop_marketing = 0
+		return self.render("notice/order-success.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,shop_auth=shop_auth)
 
 class Wexin(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("action?:str", "url:str")
