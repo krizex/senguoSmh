@@ -717,7 +717,7 @@ class Home(CustomerBaseHandler):
 			self.session.commit()
 		elif action == "default_address":
 			address_id = int(data["address_id"])
-			try: address = self.session.query(models.Address).filter_by(id=address_id)
+			try: address = self.session.query(models.Address).filter_by(id=address_id).one()
 			except:return self.send_error(404)
 			address.if_default = 1
 			address_other = [x for x in self.current_user.addresses if x.id != address_id]
