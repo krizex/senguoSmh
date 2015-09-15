@@ -72,9 +72,11 @@
             <div class="modal-content">
                 <ul class="list-group well mb-0 shop-list">
                     {% for shop in current_user.shops%}
+                    {% if shop.status >=0 %}
                     <li data-id="{{shop.id}}" class="list-group-item font14">
                         <a tabindex="-1" href="javascript:;" class="text-green">{{shop.shop_name}}</a>
                     </li>
+                    {% end %}
                     {% end %}
                 </ul>
             </div>

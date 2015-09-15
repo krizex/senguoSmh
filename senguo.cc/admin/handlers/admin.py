@@ -230,7 +230,8 @@ class SwitchShop(AdminBaseHandler):
 
 		try:
 			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
-		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+			models.HireLink.active==1,models.HireLink.work==9,models.Shop.status>=0).all()
 		except:
 			other_shops = None
 
@@ -2970,11 +2971,13 @@ class GoodsImport(AdminBaseHandler):
 			shops = None
 		try:
 			other_shops = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id).\
-						  filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+						  filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+						  	models.HireLink.active==1,models.HireLink.work==9,models.Shop.status>=0).all()
 		except:
 			other_shops = None
 
 		if shops:
+			shops = [x for x in shops if x.status >=0 ]
 			shop_list += self.getshop(shops)
 		if other_shops:
 			shop_list += self.getshop(other_shops)
