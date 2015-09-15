@@ -6,11 +6,11 @@
 {% end %}
 {% block topHeader %}
     {% if handler.shop_tpl == 0 %}
-    <div class="rainshed text-center font18 text-black fix-title">店铺详情<a href="{{reverse_url('fruitzoneShopList')}}?action=shop&&id={{shop.admin_id}}" class="change-item hide"></a></div>
+    <div class="rainshed text-center font18 text-black fix-title">店铺详情<a href="{{reverse_url('fruitzoneShopList')}}?action=shop&&id={{shop.admin_id}}" class="change-item hidden"></a></div>
     {% elif handler.shop_tpl == 1 %}
-    <div class="rainshed_beauty text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item hide"></a></div>
+    <div class="rainshed_beauty text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item hidden"></a></div>
     {% else %}
-    <div class="rainshed_bingo text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item hide"></a></div>
+    <div class="rainshed_bingo text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item hidden"></a></div>
     {% end %}
 {% end %}
 
