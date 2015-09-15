@@ -62,7 +62,7 @@
         </div>
         <div class="sw-bm">
             <div class="sw-top2">
-                <p><span class="font14">我创建的店铺</span> {% if not context['super_admin'] %}(您还不是卖家，无法创建您自己的店铺){% else %}<a href="javascript:;" class="text-link ml10" id="spread-list">推广店铺链接</a><a href="{{reverse_url('switchshop')}}?action=del" class="del-shop-list pull-right text-link">我删除的店铺</a>{% end %}</p>
+                <p><span class="font14">我创建的店铺</span> {% if not context['super_admin'] %}(您还不是卖家，无法创建您自己的店铺){% else %}<a href="javascript:;" class="text-link ml10" id="spread-list">推广店铺链接</a><a href="{{reverse_url('switchshop')}}?action=del" class="del-shop-list pull-right text-link">已删除的店铺</a>{% end %}</p>
                 {% if current_shop %}
                 <div class="sw-er-tip po-list invisible">
                     <div class="left-arr">

@@ -19,7 +19,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 /*创建店铺*/
 .cancel-add-goods{display: inline-block;height: 18px;line-height: 18px;background-size: 18px;background-image: url('/static/images/admin_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
 .wrap-create{background-color: #fff;padding: 20px 0px 40px 0px;border: 1px solid #d9dadc;}
-.choose-text{padding-left: 10px;}
+.choose-text{padding-left: 20px;}
 .tab-list>li{float:left;border-bottom: 1px solid #f1f2f3;text-align: center;color: #333;height: 40px;line-height: 36px;padding: 0 10px;-webkit-box-sizing: border-box;cursor: pointer;}
 .tab-list>li span{display: inline-block;line-height: 14px;text-align: center;vertical-align: middle;}
 .tab-list .active{border-bottom-color: #41b546;border-bottom-width: 3px;}
