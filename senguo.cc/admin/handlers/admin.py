@@ -1377,10 +1377,177 @@ class Comment(AdminBaseHandler):
 
 		return self.send_success()
 
+# 订单导出
 class OrderExport(AdminBaseHandler):
 	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("order_type","order_status","order_pay","date1","date2","money1","money2")
 	def get(self):
-		pass
+		import openpyxl
+		from openpyxl import Workbook
+		import io
+		data = self.args
+		try:
+			order_type = int(data["order_type"])
+		except:
+			order_type = 9
+		try:
+			order_status = int(data["order_status"])
+		except:
+			order_status = 5
+		try:
+			order_pay = int(data["order_pay"])
+		except:
+			order_pay = 9
+		try:
+			date1 = data["date1"]
+		except:
+			date1 = datetime.datetime.now().strftime("%Y-%m-%d")
+		try:
+			date2 = data["date2"]
+		except:
+			date2 = datetime.datetime.now().strftime("%Y-%m-%d")
+		try:
+			money1 = data["money1"]
+		except:
+			money1 = 0
+		try:
+			money2 = data["money2"]
+		except:
+			money2 = 0
+
+		orders = []
+		if self.current_shop.orders:
+			order_list = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id)
+		else:
+			order_list = None
+		if not order_list:
+			return self.send_fail("您的店铺没有任何订单")
+		if order_type == 9:
+			pass
+		else:
+			order_list = order_list.filter_by(type=order_type)
+
+		if order_status == 1:#filter order_status
+			order_list = order_list.filter(models.Order.status==1)
+		elif order_status == 2:#unfinish
+			order_list = order_list.filter(models.Order.status.in_(2,3,4))
+		elif order_status == 3:
+			order_list = order_list.filter(models.Order.status.in_(5,6,7))
+		elif order_status == 4:
+			order_list = order_list.filter_by(status=0,del_reason="refund")
+		elif order_status == 5:#all
+			order_list = order_list.filter_by(status=0,del_reason=None)
+		elif order_status == 9:
+			pass
+		else:
+			return self.send.send_error(404)
+
+
+		if order_pay != 9:
+			order_list = order_list.filter_by(pay_type=order_pay)
+		else:
+			pass
+
+		if money1 and money2:
+			if money1 == money2:
+				order_list = order_list.filter(models.Order.totalPrice == float(money1))
+			else:
+				order_list = order_list.filter(models.Order.totalPrice>money1,models.Order.totalPrice<money2)
+
+		orders = order_list.all()
+		if date1 and date2:
+			if date1 == date2:
+				orders = [x for x in orders if x.create_date.strftime("%Y-%m-%d") == date1]
+			else:
+				orders = [x for x in orders if date1< x.create_date.strftime("%Y-%m-%d") <date2] 
+		# print(orders)
+		self.set_header ('Content-Type', 'application/vnd.ms-excel;charset=UTF-8')
+		self.set_header ('Content-Disposition', 'attachment; filename="order_export.xlsx"')
+		wb = Workbook(encoding = 'utf-8')
+		ws = wb.active
+		ws.append(["店铺名称","订单模式","订单号","下单时间","配送时间/自提时间","总金额",\
+			"配送费","支付信息","订单状态","用户昵称","用户类型","收货人姓名","收货人电话","收货人地址","商品件数","商品总价","商品详情","订单留言"])
+		for order in orders:
+			try:
+				shop_name = self.session.query(models.Shop.shop_name).filter_by(id=order.shop_id).first()[0]
+			except:
+				shop_name = ""
+			_type = ""
+			if order.type == 1:
+				_type = "立即送"
+			elif order.type == 2:
+				_type = "按时达"
+			else:
+				_type = "自提"
+			order_num = order.num
+			order_time = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
+			send_time = order.send_time
+			totalPrice = order.totalPrice
+			freight =  order.freight
+			if order.pay_type == 1:
+				pay_type = "货到付款"
+			elif order.pay_type == 2:
+				pay_type = "余额"
+			elif order.pay_type == 3:
+				if order.online_type == "wx":
+					pay_type = "在线支付-微信"
+				else:
+					pay_type = "在线支付-支付宝"
+			else:
+				pay_type = ""
+			if order.status == -1:
+				order_status = "未付款"
+			elif order.status == 0:
+				order_status = "已删除"
+				if order.del_reason == None:
+					order_status = "用户已取消"
+				elif order.del_reason == "refund":
+					order_status = "已退款"
+			elif order.status == 1:
+				order_status = "未处理"
+			elif order.status == 2:
+				order_status = "JH"
+			elif order.status == 3:
+				order_status = "SH1"
+			elif order.status == 4:
+				order_status = "处理中"
+			elif order.status > 5:
+				order_status = "已完成"
+			try:
+				nickname = self.session.query(models.Accountinfo.nickname).filter_by(id=order.customer_id).first()[0]
+			except:
+				nickname = ""
+			try:
+				follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
+					models.CustomerShopFollow.customer_id == order.customer_id).first()
+				if follow:
+					if follow.shop_new == 0:
+						shop_new ="新用户"
+					else:
+						shop_new ="老用户"
+			except:
+				shop_new = ""
+			receiver = order.receiver
+			phone = order.phone
+			address = order.address_text
+			goods_num = 0
+			goods_price = totalPrice - freight
+			goods_detail = []
+			message = order.message
+			fruits = eval(order.fruits)
+			i = 1
+			for key in fruits:
+				goods_num = goods_num+fruits[key]['num']
+				con = "商品名称:"+str(fruits[key]['fruit_name'])+",价格:"+str(fruits[key]['charge'])+",数量:"+str(fruits[key]['num'])
+				goods_detail.append(con)
+				i = i+1
+			goods_detail = str(goods_detail)
+			ws.append([shop_name,_type,order_num,order_time,send_time,totalPrice,freight,pay_type,order_status,nickname,\
+				shop_new,receiver,phone,address,goods_num,goods_price,goods_detail,message])
+		output = io.BytesIO()
+		wb.save(output)
+		output.seek(0)
+		return self.write(output.getvalue())
 
 # 订单管理
 class Order(AdminBaseHandler):
@@ -1390,6 +1557,8 @@ class Order(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
+		if not self.current_shop:
+			return self.redirect(self.reverse_url("switchshop"))
 		order_type = self.args["order_type"]
 		
 		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
