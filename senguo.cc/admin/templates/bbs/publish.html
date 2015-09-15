@@ -1,56 +1,218 @@
 {% extends 'base.html' %}
-{% block title %}森果社区-发布帖子{% end %}
+{% block title %}森果社区-发布文章{% end %}
 {% block head %}
 <link href="/static/js/ueditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
 {% end %}
-{% block header %}
-<div class="header">
-    <a href="javascript:;" class="back goback">返回</a>
-    <span>发布帖子</span>
-</div>
-{% end %}
 {% block content %}
 <input type="hidden" id="token" value="{{token}}" />
-<div class="wrap-publish pm20">
-    <div class="publish-board">
-        <p class="c333 mt10">选择版块<a href="javascript:;" class="select-box ml5"><span class="type" data-id="{% if edit %}{{article_data['type_id']}}{% end %}">{% if edit %}{{article_data['type']}}{% else %}选择版块{% end %}</span><i class="select-right"></i></a></p>
-        <p class="c333 mt10">标题</p>
-        <input type="text" class="title-ipt" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="输入标题"/>
-        <p class="c333 mt10">正文</p>
-        <div class="wrap-sumary">
-            <script type="text/plain" id="ueditor" style="width:780px;height:400px;">
-                <p>{% if edit %}{% raw article_data['article'] %}{% end %}</p>
-            </script>
+<div class="wrap-main group">
+    <div class="wrap-right fr">
+        <div class="aside-box box-border mt10">
+            <p class="aside-title"><span>热门文章</span></p>
+            <ul class="aside-list hot-artilce-list">
+              
+            </ul>
+        </div>
+        <div class="aside-box box-border mt10">
+            <p class="aside-title"><span>活跃用户</span></p>
+            <ul class="aside-list hot-customer-list">
+               
+            </ul>
         </div>
     </div>
-</div>
-<div class="fix-center publish-btns">
-    <a href="javascript:;" class="save-draft hide">保存草稿</a>
-    <a href="javascript:;" class="publish-tie">发布</a>
-</div>
-<div class="pop-win pop-reply hide">
-    <div class="pop-content plr0">
-        <div class="board-box">
-            <p class="title">选择版块</p>
-            <ul class="board-list">
-                <li class="active" data-id="0"><span class="tit c333">官方公告</span><span>森果官方公告和通知</span></li>
-                <li data-id="1"><span class="tit c333">产品更新</span><span>新功能发布和bug修复</span></li>
-                <li data-id="2"><span class="tit c333">运营干货</span><span>分享运营经验</span></li>
-                <li data-id="3"><span class="tit c333">水果百科</span><span>水果相关知识百科</span></li>
-                <li data-id="4"><span class="tit c333">使用教程</span><span>产品功能的使用说明</span></li>
-                <li data-id="5"><span class="tit c333">水果供求</span><span>水果采购与供货信息</span></li>
-                <li data-id="6"><span class="tit c333">森果前沿</span><span>分享互联网o2o前沿信息</span></li>
-            </ul>
-            <div class="wrap-btns board-btns">
-                <a href="javascript:;" class="ok-btn type-sure">确定</a>
-                <a href="javascript:;" class="cancel-btn">取消</a>
+    <div class="wrap-left">
+        <div class="publish-box-bk box-border">
+            <div class="publish-row">
+                <span>标题</span>
+                <div class="wrap-choose-type">
+                    <i class="i-choose"></i>
+                    <a href="javascript:;" class="choose-type" id="choose_type" data-id="{% if edit %}{{article_data['type_id']}}{% end %}">{% if edit %}{{article_data['type']}}{% else %}选择版块{% end %}</a>
+                    <ul class="type-lst classify_type">
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="0">官方公告</li>
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="1">产品更新</li>
+                        <li data-id="2">运营干货</li>
+                        <li data-id="3">水果百科</li>
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="4">使用教程</li>
+                        <li data-id="5">水果供求</li>
+                        <li class="{% if if_admin==False %}hide{% end %}" data-id="6">森果前沿</li>
+                        <li data-id="7">用户交流</li>
+                    </ul>
+                </div>
+                <input type="text" class="title-ipt article_title" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="请输入标题"/>
+            </div>
+            <div class="publish-row mt10">
+                <span class="edit-left">内容</span>
+                <div class="wrap-editor">
+                    <script type="text/plain" id="ueditor" style="width:582px;height:400px;">
+                        <p>{% if edit %}{% raw article_data['article'] %}{% end %}</p>
+                    </script>
+                </div>
+            </div>
+            <div class="publish-row mt10">
+                <span>&nbsp;</span>
+                <div class="wrap-type-pli">
+                    <span class="checkbox {% if edit %}{% if article_data['public']==1 %}checked{% end %}{% end %} if_bbs">不发表至论坛</span>
+                    <span class="checkbox ml10 if_my {% if edit %}{% if article_data['private']==1 %}checked{% end %}{% end %}">回帖仅自己可见</span>
+                </div>
+            </div>
+            <div class="publish-row mt10 publish-btns">
+                <a href="javascript:;" class="psh-btn fr ml10 draft-bn">保存草稿</a>
+                <a href="javascript:;" class="psh-btn fr ml10 publish-bn">定时发布</a>
+                <a href="javascript:;" class="psh-btn fr ml10 now-bn">立即发布</a>
+                <a href="javascript:;" class="psh-btn cancel-bn">取消</a>
             </div>
         </div>
     </div>
 </div>
-{% end %}
-{% block js %}
-<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<div class="pop-win pop-now hide">
+    <div class="pop-content now-content">
+        <p class="now-title">
+            <a href="javascript:;" class="fr close-win">x</a>
+            <span>定时发布</span>
+        </p>
+        <div class="wrap-now-area">
+            <div class="choose-time-box">
+                <div class="wrap-choose-time">
+                    <i class="icon-ctime"></i>
+                    <span class="time-tt" id="year">{{article_data["year"]}}</span>
+                    <ul class="time-list">
+                        <li>2015</li>
+                        <li>2016</li>
+                        <li>2017</li>
+                    </ul>
+                </div>
+                <span>年</span>
+                <div class="wrap-choose-time">
+                    <i class="icon-ctime"></i>
+                    <span id="month">{{article_data['month']}}</span>
+                    <ul class="time-list">
+                        <li>01</li>
+                        <li>02</li>
+                        <li>03</li>
+                        <li>04</li>
+                        <li>05</li>
+                        <li>06</li>
+                        <li>07</li>
+                        <li>08</li>
+                        <li>09</li>
+                        <li>10</li>
+                        <li>11</li>
+                        <li>12</li>
+                    </ul>
+                </div>
+                <span>月</span>
+                <div class="wrap-choose-time">
+                    <i class="icon-ctime"></i>
+                    <span id="day">{{article_data['day']}}</span>
+                    <ul class="time-list">
+                        <li>01</li>
+                        <li>02</li>
+                        <li>03</li>
+                        <li>04</li>
+                        <li>05</li>
+                        <li>06</li>
+                        <li>07</li>
+                        <li>08</li>
+                        <li>09</li>
+                        <li>10</li>
+                        <li>11</li>
+                        <li>12</li>
+                        <li>13</li>
+                        <li>14</li>
+                        <li>15</li>
+                        <li>16</li>
+                        <li>17</li>
+                        <li>18</li>
+                        <li>19</li>
+                        <li>20</li>
+                        <li>21</li>
+                        <li>22</li>
+                        <li>23</li>
+                        <li>24</li>
+                        <li>25</li>
+                        <li>26</li>
+                        <li>27</li>
+                        <li>28</li>
+                        <li>29</li>
+                        <li>30</li>
+                        <li>31</li>
+                    </ul>
+                </div>
+                <span>日</span>
+                <div class="wrap-choose-time">
+                    <i class="icon-ctime"></i>
+                    <span id="hour">{{article_data['hour']}}</span>
+                    <ul class="time-list">
+                        <li>00</li>
+                        <li>01</li>
+                        <li>02</li>
+                        <li>03</li>
+                        <li>04</li>
+                        <li>05</li>
+                        <li>06</li>
+                        <li>07</li>
+                        <li>08</li>
+                        <li>09</li>
+                        <li>10</li>
+                        <li>11</li>
+                        <li>12</li>
+                        <li>13</li>
+                        <li>14</li>
+                        <li>15</li>
+                        <li>16</li>
+                        <li>17</li>
+                        <li>18</li>
+                        <li>19</li>
+                        <li>20</li>
+                        <li>21</li>
+                        <li>22</li>
+                        <li>23</li>
+                    </ul>
+                </div>
+                <span>时</span>
+                <div class="wrap-choose-time">
+                    <i class="icon-ctime"></i>
+                    <span id="minute">{{article_data['minute']}}</span>
+                    <ul class="time-list">
+                        <li>00</li>
+                        <li>05</li>
+                        <li>10</li>
+                        <li>15</li>
+                        <li>20</li>
+                        <li>25</li>
+                        <li>30</li>
+                        <li>35</li>
+                        <li>40</li>
+                        <li>45</li>
+                        <li>50</li>
+                        <li>55</li>
+                    </ul>
+                </div>
+                <span>分</span>
+            </div>
+            <!--<p class="c999 mt20">本文章将在<span class="dgreen">今天晚上21:35</span>自动发布</p>-->
+            <div class="wrap-bttns">
+                <a href="javascript:;" class="pop-btns commit-btn" id="commit_btn">完成</a>
+                <a href="javascript:;" class="pop-btns ml10 cancel-pop">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pop-win pop-login hide" data-id="{{if_login}}">
+    <div class="pop-content">
+        <div class="login-box">
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
+            <div class="button-box mt10">
+                {% if handler.is_wexin_browser() %}
+                <a href="{{handler.get_weixin_login_url()}}" class="btn">登录</a>
+                {% else %}
+                <a href="{{reverse_url('customerLogin')}}?next=/bbs" class="btn">登录</a>
+                {% end %}
+            </div>
+        </div>
+    </div>
+</div>
 {% end %}
 {% block bottom %}
 <script src="/static/js/ueditor/umeditor.min.js"></script>
@@ -58,5 +220,5 @@
 <script src="/static/js/ueditor/lang/zh-cn/zh-cn.js"></script>
 <script src="/static/js/qiniu.min.js"></script>
 <script src="/static/js/plupload/plupload.full.min.js"></script>
-<script src="{{static_url('bbs/js/publish.js')}}"></script>
+<script src="{{static_url('bbs/js/bbs-main.js')}}"></script>
 {% end %}

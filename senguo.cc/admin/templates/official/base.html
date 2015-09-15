@@ -5,9 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chorme=1">
 <meta name="keywords" content="森果,森果官网,senguo.cc,专业水果O2O第三方平台">
 <meta name="description" content="森果为水果O2O、微信卖水果、水果零售提供免费的水果商城和水果后台管理系统。助力水果O2O，帮您把水果店搬到网上来。">
-<title>森果senguo.cc-专业水果O2O第三方平台 </title>
+<title>森果senguo.cc-专业水果O2O第三方平台</title>
 <link href="{{static_url('css/official_base.css')}}" rel="stylesheet">
-<link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
 <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
 {% block head-css%}{% end %}
     <script>
@@ -45,7 +44,7 @@
 				</div>
 			</div>
 			<div class="senguo-nav font16">
-				<ul>
+				<ul class="group">
 					<li class="{{home_active}}"><a href="{{reverse_url('OfficialHome')}}" >首页</a></li>
 					<li class="{{product_active}} product-link"><a href="{{reverse_url('OfficialProduct')}}">产品介绍</a></li>
                     <li class="{{shop_active}}"><a href="{{reverse_url('OfficialShopList')}}">店铺列表</a></li>
@@ -67,7 +66,7 @@
 	</div>
 	<main class="container clearfix">
 		{% block content%} {% end%}
-	</main>
+	</div>
     <div class="scrollUpf">
         <a href="javascript:;" title="返回顶部" id="scrollUp" class="scrollUp"></a>
         <a title="森果服务号" href="javascript:;" id="r-wx" class="r-wx">

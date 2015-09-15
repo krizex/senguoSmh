@@ -209,6 +209,7 @@ a,input,button{ outline:none; }
 .fi-wx-show{border:2px solid #33CC66; background:#fff; position:absolute;bottom: -14px;left: -220px;display: none;}
 .r-wx:hover .fi-wx-show{display: block;}
 .fi-kf-show{border:2px solid #33CC66; background:#fff; position:absolute;bottom: 0;left: -194px;padding: 6px;display: none;}
+.r-kf,.r-kf:hover{text-decoration: none;}
 .r-kf:hover .fi-kf-show{display: block;}
 .fi-kf-show p{font-size: 14px;line-height: 20px;color: #666;}
 .wx-show-txt{width:200px; height:200px; font-size:18px; line-height:33px;background-size: 200px;}

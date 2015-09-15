@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}我的预售{% end %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" class="back goback"></a>
+    <span>我的预售</span>
+</div>
+{% end %}
+{% block content %}
+<div class="wrap-seckill pm40">
+    <ul class="nav-list group">
+        <li class="active">未处理</li>
+        <li>待到货</li>
+        <li>到货</li>
+        <li>全部</li>
+    </ul>
+    <div class="wrap-order-list pt30">
+
+    </div>
+</div>
+<ul class="hide" id="seckill-item">
+
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/seckill-buy.js')}}"></script>
+{% end %}

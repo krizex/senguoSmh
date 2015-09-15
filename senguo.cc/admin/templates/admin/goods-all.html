@@ -342,7 +342,7 @@
         </div>
     </li>
 </ul>
-<div class="pop-win pop-img-win">
+<!-- <div class="pop-win pop-img-win">
     <div class="pop-up-img" data-index="">
         <div class="pop-img-top">
             <p><span class="c333">本地图片 : </span>最多上传5张</p>
@@ -362,6 +362,53 @@
         </div>
         <div class="wrap-pop-btn">
             <a href="javascript:;" class="ok-btn" id="upload-img">确认上传</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
+    </div>
+</div> -->
+<div class="pop-win pop-picture-library">
+    <div class="wrap-sty-box">
+         <ul class="picture-title wrap-sty">
+            <li class="active show-upload-list">您上传的图片</li>
+            <li class="show-default-list">系统默认图片</li>
+        </ul>
+        <div class="p15" id="upload-area">
+            <span class="pull-left ml5 font14 text-grey9">点击图片即选中（当前类目：<span class="pic-classify">所有</span>）</span>
+            <button id="upload-picture" class="btn bg-green text-white pull-right">上传新图片</button>
+        </div>
+         <div class="picture-library">
+           <ul class="group picture-list upload-pic-list">
+                <li class="img-bo">
+                    <a href="javascript:;" class="del-pic-img">x</a>
+                    <div class="img-selected">已选</div>
+                    <img src="" alt="商品图片"/>
+                </li>
+            </ul>
+            <ul class="group picture-list default-pic-list hide">
+                <li class="picture-list-item" id="demo-img">
+                    <a href="javascript:;" class="del-pic-img">x</a>
+                    <div class="img-selected">已选</div>
+                    <img src="" alt="商品图片"/>
+                </li>
+            </ul>
+            <div class="picture-pagination list-pagination group pull-right mt0">
+                <ul>
+                    <li><a href="javascript:;" class="page-btn pre-page picture-pre-page">&nbsp;</a></li>
+                    <li>
+                        <span class="picture-now">1</span>/<span class="picture-total">1</span>
+                    </li>
+                    <li><a href="javascript:;" class="page-btn next-page picture-next-page">&nbsp;</a></li>
+                    <li><input class="input-page form-control picture-page" type="text" placeholder="输入页码"></li>
+                    <li><a href="javascript:;" class="jump-to pull-left picture-jump-to">跳转</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="picture-title3">已选图片</p>
+        <ul class="choosed-list">
+
+        </ul>
+         <div class="wrap-sty">
+            <a href="javascript:;" class="ok-btn" id="upload-img">确认</a>
             <a href="javascript:;" class="cancel-btn">取消</a>
         </div>
     </div>

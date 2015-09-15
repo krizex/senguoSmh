@@ -65,10 +65,9 @@ class Alipay(object):
         if signmethod == None:
             raise NotImplementedError("This type '%s' of sign is not implemented yet." %(signdescription))
         if self.signKey():
-            params.update({signkey: signvalue})
+            params.update({signkey:signvalue})
         params.update({signkey: signvalue,
                        'sign': signmethod(params)})
-
         return '%s?%s' % (self.GATEWAY_URL, urlencode(encode_dict(params)))
 
     def create_direct_pay_by_user_url(self, **kw):
@@ -89,6 +88,9 @@ class Alipay(object):
                  'logistics_fee', 'logistics_payment', 'price', 'quantity']
         self._check_params(kw, names)
         url = self._build_url('create_partner_trade_by_buyer', **kw)
+        return url
+    def create_refund_url(self,**kw):
+        url = self._build_url('refund_fastpay_by_platform_pwd',**kw)
         return url
 
     def trade_create_by_buyer_url(self, **kw):

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block head %}<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
+{% block content %}
+{% set shop_code = current_shop.shop_code %}
+<div class="wrap-coupontitle">
+    <div class="c333 mt10 choose-text">
+        <a href="javascript:;" class="c999 go-back cancel-add-goods">限时折扣</a>
+        <span class="c333"> / 折扣详情</span>
+    </div>
+</div>
+<div class="wrap-newcoupon mt20 discount-detail">
+    <table class="tb-enty tb-active">
+        <thead>
+         <colgroup>
+            <col width="10%"/>
+            <col width="10%"/>
+            <col width="10%"/>
+        </colgroup>
+            <tr class="thead">
+                <td>商品名{{data1["total"]}}</td>
+                <td>折扣</td>
+                <td>加入购物车/下单</td>
+            </tr>
+        </thead>
+        <tbody id="list-coupons">
+        {% for data in output_data %}
+        <tr>
+            <td>{{data["goods"]}}</td>
+            <td>{{data["discount_rate"]}}</td>
+            <td>{{data["incart_num"]}}/{{data["ordered_num"]}}</td>
+        </tr>
+        {% end %}
+        </tbody>
+    </table>
+    <!-- <div class="users-pagination list-pagination group pull-right mt0 cm_jump">
+        <ul>
+            <li><a href="javascript:;" class="page-btn pre-page pre-page-detail">&nbsp;</a></li>
+            <li>
+                <span class="page-now">1</span>/<span class="page-total">{{data1["totalpage"]}}</span>
+            </li>
+            <li><a href="javascript:;" class="page-btn next-page next-page-detail">&nbsp;</a></li>
+            <li><input class="input-page form-control" type="text" placeholder="输入页码"></li>
+            <li><a href="javascript:;" class="jump-to jmp-detail">跳转</a></li>
+        </ul>
+    </div> -->
+</div>
+<div id="noresult">
+    <h4 class="text-center" id="text"></h4>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="{{static_url('js/admin-discount.js')}}"></script>
+{% end %}

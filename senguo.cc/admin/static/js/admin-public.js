@@ -74,7 +74,107 @@ $(document).ready(function(){
 }).on("click",".no_auth",function(e){
     stopDefault(e);
     return Tip("您的店铺还未进行认证，此功能暂不可用");
+}).on("click",".picture-pre-page",function(){
+    var page_now=parseInt($(".picture-now").text());
+    if(page_now>1){
+        getPicture(pictureType,page_now-1,_cur_code);
+        $(".picture-now").text(parseInt(page_now-1));
+    }
+    $(".picture-next-page").show();
+}).on("click",".picture-next-page",function(){
+    var page_now=parseInt($(".picture-now").text());
+    var page_toatal=parseInt($(".picture-total").text());
+    if(page_toatal==page_now+1){
+        $(".picture-next-page").hide();
+    }
+    if(page_now<=page_toatal){
+        getPicture(pictureType,page_now+1,_cur_code);
+        $(".picture-now").text(parseInt(page_now+1));
+    }
+}).on("click",".picture-jump-to",function(){
+    var page_now=parseInt($(".picture-now").text());
+    var page_toatal=parseInt($(".picture-total").text());
+    var page=parseInt($(".picture-page").val().trim());
+    if(page_toatal==page){
+        $(".picture-next-page").hide();
+    }else{
+        $(".picture-next-page").show();
+    }
+    if(1<=page<=page_toatal){
+        getPicture(pictureType,page,_cur_code);
+        $(".picture-now").text(parseInt(page));
+    }
+   
+}).on("click",".pop-picture-library .cancel-btn",function(){
+    $(this).closest(".pop-win").hide();
+    $(".default-pic-list").addClass("hide");
+    $(".upload-pic-list").removeClass("hide");
+    $(".show-upload-list").addClass("active").siblings("li").removeClass("active");
+}).on("click",".del-pic-img",function(){
+    if(confirm("是否将该图片从图片库删除？")){
+        var $this=$(this);
+        var id=$this.parents(".picture-list-item").attr("data-id");
+        var url = "/admin/picture";
+        var args={
+            action:"del",
+            data:{
+                id:id
+            }
+        }
+         $.postJson(url,args,function(res) {
+            if (res.success) {
+               $this.parents(".picture-list-item").remove();
+            }else{
+                Tip(res.error_text);
+            }
+        },function(){
+            return Tip('您的网络暂时不通畅，请稍候再试');
+        });
+    }
+   
 });
+
+var pictureType="goods",_cur_code="";
+function getPicture(action,page,code){
+    if(page>=1){
+        page=page-1;
+    }
+     $.ajax({
+        url:'/admin/picture?action='+action+'&page='+page+'&code='+code,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.datalist;
+                var total = res.total_page+1;
+                $('.upload-pic-list').empty();
+                if(parseInt(page)==0){
+                    $(".picture-total").text(total);
+                    $(".picture-pre-page").hide();
+                }else{
+                    $(".picture-pre-page").show();
+                }
+                if(total==1){
+                    $(".picture-pagination").hide();
+                }
+                $('.upload-pic-list').empty();
+                var item='<li class="img-bo picture-list-item {{ if status ==1 }} active{{/if}}" data-id="{{id}}">'+
+                        '<a href="javascript:;" class="del-pic-img">x</a>'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/100/h/100" url="{{imgurl}}" alt="商品图片"/>'+
+                    '</li>';
+                for(var key in data){
+                    var render = template.compile(item);
+                    var html = render({
+                        imgurl:data[key]['imgurl'],
+                        id:data[key]['id'],
+                        status:data[key]['status']
+                    });
+                    $('.upload-pic-list').append(html);
+                }
+            }
+        }
+    });
+}
 
 function stopDefault(e){
     if(e&&e.preventDefault){

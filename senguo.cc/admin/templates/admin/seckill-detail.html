@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block title%}秒杀详情{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-reset.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
+{% set action = action%}
+{% block content %}
+<div class="action-div hidden" data-value="{{action}}"></div>
+<div class="font14">
+    <p class="c333 mt10 choose-text">
+        <a href="{{reverse_url('adminMarketingSeckill')}}?action=seckill&page=0&status={{status}}" class="c999 cancel-add-goods">商品秒杀</a>
+        <span class="c333"> / 秒杀详情</span>
+    </p>
+</div>
+<div class="wrap-tb mt10">
+    <table class="tb-enty tb-active">
+        <colgroup>
+            <col width="25%" />
+            <col width="25%" />
+            <col width="20%" />
+            <col width="30%" />
+        </colgroup>
+        <thead>
+            <tr class="thead">
+                <td>商品名</td>
+                <td>秒杀价/原售价</td>
+                <td>秒杀折扣</td>
+                <td>领取/下单/库存</td>
+            </tr>
+        </thead>
+        <tbody class="detail-list">
+            {% for data in output_data %}
+            <tr>
+                <td colspan="1">{{data['fruit_name']}}</td>
+                <td colspan="1">{{data['seckill_price']}} / {{data['former_price']}} {{data['charge_type']}}</td>
+                <td colspan="1">{{data['discount']}}</td>
+                <td colspan="1">{{data['picked']}} / {{data['ordered']}} / {{data['storage_piece']}} {{data['storage_type']}}</td>
+            </tr>
+            {% end %}
+        </tbody>
+    </table>
+</div>
+<div class="users-pagination list-pagination group detail-pager" page-sum="{{page_sum}}">
+    <ul>
+        <li><a href="javascript:;" class="page-btn pre-page detail-pre-page hidden">&nbsp;</a></li>
+        <li>
+            <span class="detail-page-now page-now">1</span>/<span class="page-total detail-page-total">{{page_sum}}</span>
+        </li>
+        <li><a href="javascript:;" class="page-btn next-page detail-next-page {% if page_sum == 1%}hidden{% end %}">&nbsp;</a></li>
+        <li>
+            <input class="detail-input-page  input-page form-control" type="text" placeholder="输入页码">
+        </li>
+        <li><a href="javascript:;" class="detail-jump-to jump-to">跳转</a></li>
+    </ul>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/admin-marketing-seckill.js')}}"></script>
+{% end %}

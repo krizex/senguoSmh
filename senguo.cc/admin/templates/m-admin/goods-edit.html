@@ -19,7 +19,7 @@
             <li>
                 <div class="add-row">
                     <span class="add-left">商品类目</span>
-                    <span class="add-right borderm choose_classify" data-id="{{data['fruit_type_id']}}">{{data['fruit_type_name']}}</span>
+                    <span class="add-right borderm choose_classify" data-id="{{data['fruit_type_id']}}" data-code="{{data['code']}}">{{data['fruit_type_name']}}</span>
                 </div>
             </li>
             <li>
@@ -226,9 +226,9 @@
     <div class="pop-bcontent f12">
         <div class="b-close"></div>
         <img class="code2-logo code2group" src="/static/images/admin_logo1.png" alt="森果logo"/>
-        <p class="c666 mt10">商品链接(长按链接复制到剪切板)</p>
+        <p class="c666 mt10">商品链接 (长按链接复制到剪切板)</p>
         <p class="dgreen mt6 shop_url" id="shop_url">http://senguo.cc/{{handler.current_shop.shop_code}}/goods/{{data['id']}}</p>
-        <p class="c666 mt10">链接二维码(长按二维码保存本地或识别)</p>
+        <p class="c666 mt10">链接二维码 (长按二维码保存本地或识别)</p>
         <div class="big-code2 mt10" id="big-code2">
         </div>
     </div>
@@ -302,6 +302,28 @@
             <div class="ball"></div>
         </div>
         <div class="load-txt">加载中...</div>
+    </div>
+</div>
+<div class="pop-picture-library hide">
+    <div class="wrap-sty-box">
+         <ul class="picture-title wrap-sty">
+            <li class="active show-upload-list">您上传的图片</li>
+            <li class="show-default-list">系统默认图片</li>
+        </ul>
+        <div class="picture-title2" id="upload-area">
+            <span class="fl c999">点击图片即选中 (<span class="pic-classify">所有</span>)</span>
+            <button id="upload-picture" class="btn fr">上传新图片</button>
+        </div>
+         <div class="picture-library">
+            <ul class="group picture-list upload-pic-list">
+            </ul>
+            <ul class="group picture-list default-pic-list hide">
+                <li class="" id="demo-img"><img src="" alt="商品图片"/></li>
+            </ul>
+        </div>
+         <div class="wrap-sty">
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
     </div>
 </div>
 {% end %}

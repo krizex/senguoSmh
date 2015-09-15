@@ -1,4 +1,5 @@
-var NoticeEdit;
+var NoticeEdit,imgIndex;
+pictureType = "notice";
 $(document).ready(function(){
     //添加公告
     $('.add-new-notice').on('click',function(){
@@ -34,6 +35,24 @@ $(document).ready(function(){
     window.onunloadcancel = function(){
         clearTimeout(zb_t);
     }
+}).on("click","#upload-add",function(){
+    $(".pop-picture-library").show().attr({"action":"add"});
+    getPicture("notice",0);
+}).on("click",".link-type li",function(){
+    var $this=$(this);
+    $this.addClass("active").siblings("li").removeClass("active");
+}).on("click",".notice-type-choose li",function(){
+    var $this=$(this);
+    var index=$this.index();
+    $this.addClass("active").siblings("li").removeClass("active");
+    $(".set-list").eq(index).show().siblings(".set-list").hide();
+    if(index==0){
+        $(".add-btn-sty").show();
+    }else{
+        $(".add-btn-sty").hide();
+    }
+}).on("click",".href_type",function(){
+    $(this).addClass("active").siblings().removeClass("active");
 }).on("click",".add-new-address1",function(){
     if(NoticeEdit){
         return Tip("请先完成正在编辑的公告");
@@ -42,7 +61,7 @@ $(document).ready(function(){
     zb_timer = setTimeout(function(){
         var uploader1 = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
-        browse_button: 'upload-add',
+        browse_button: 'upload-picture',
         container: 'wrap-legal-img',
         max_file_size: '4mb',
         filters : {
@@ -72,6 +91,7 @@ $(document).ready(function(){
             },
             'FileUploaded': function (up, file, info) {
                 $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
+                $(".pop-picture-library").hide();
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -91,8 +111,12 @@ $(document).ready(function(){
             }
         }
     });
-    },500);
-    
+},500);
+}).on("click",".add-new-address1",function(){
+    if(NoticeEdit){
+        return Tip("请先完成正在编辑的公告");
+    }
+    $("#noticeBox").modal("show");
 }).on('click','.notice-edit',function(){
     if(NoticeEdit){
         Tip("请先完成正在编辑的公告");
@@ -107,10 +131,15 @@ $(document).ready(function(){
     parent.siblings('.set-list-item').find('.edit-img').attr("id","");
     parent.siblings('.set-list-item').find(".address-show").show().siblings(".address-edit").hide();
       //公告背景添加
+}).on("click","#upload-per",function(){
+    imgIndex=$(this).parents(".set-list-item").index();
+    $(".pop-picture-library").show().attr({"action":"edit"});
+    getPicture("notice",0);
+    var parent=$(this).parents(".set-list-item");
     var uploader = Qiniu.uploader({
         runtimes: 'html5,flash,html4',
-        browse_button: 'upload-per',
-        container: 'wrap-legal-img',
+        browse_button: 'upload-picture',
+        container: 'upload-area',
         max_file_size: '4mb',
         filters : {
             max_file_size : '4mb',//限制图片大小
@@ -140,6 +169,7 @@ $(document).ready(function(){
             },
             'FileUploaded': function (up, file, info) {
                 parent.find(".preview-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                $(".pop-picture-library").hide();
             },
             'Error': function (up, err, errTip) {
                 if (err.code == -600) {
@@ -160,6 +190,29 @@ $(document).ready(function(){
             }
         }
     });
+}).on("click",".picture-list li",function(e){
+    if($(e.target).closest(".del-pic-img").size()==0){
+        var action=$(".pop-picture-library").attr("action");
+        var img_url=$(this).find("img").attr("url");
+        if(action=="edit"){
+            $(".set-list-item").eq(imgIndex-1).find("img").attr({"src":img_url+"?imageView2/1/w/180/h/100"});
+            $(".set-list-item").eq(imgIndex-1).find(".preview-img").attr({"url":img_url});
+        }else{
+            $("#add-img").attr({"url":img_url,"src":img_url}).removeClass("hide");
+        }
+        
+        $(".pop-picture-library").hide(); 
+    }
+}).on("click",".show-upload-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").removeClass("hide");
+    $(".picture-pagination").removeClass("hide");
+    $(".default-pic-list").addClass("hide");
+}).on("click",".show-default-list",function(){
+    $(this).addClass("active").siblings("li").removeClass("active");
+    $(".upload-pic-list").addClass("hide");
+    $(".picture-pagination").addClass("hide");
+    $(".default-pic-list").removeClass("hide");
 });
 function noticeAdd(){
     var url=link;
@@ -167,16 +220,21 @@ function noticeAdd(){
     var summary=$('.new-notice-title').val().trim();
     var detail=$('.new-notice-detail').val().trim();
     var img_url=$("#add-img").attr("url");
+    var link=$(".new-notice-link").val().trim();
+    var link_type=$(".link-type .active").attr("data-id");
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('请输入摘要！')}
-    if(!detail){return Tip('请输入详情！')}
+    if(!detail&&!link){return Tip('请填入详情或链接！')}
+    if(link.length>50){return Tip('链接请不要超过50个字！')}
     if($('.add-new-notice').attr("data-flag")=="off") return false;
     $('.add-new-notice').attr("data-flag","off");
     var data={
         summary:summary,
         detail:detail,
-        img_url:img_url
+        img_url:img_url,
+        link:link,
+        link_type:link_type
     };
     var args={
         action:action,
@@ -199,19 +257,34 @@ function noticeEdit(target){
     var parent=target.parents('.set-list-item');
     var notice_id=parent.data('id');
     var summary=parent.find('.notice_summary').val().trim();
-    var detail=parent.find('.notice_detail').val().trim();
+    var detail
+    var link=parent.find('.notice_link').val().trim();
+    var link_type;
     var img_url=parent.find(".preview-img").attr("url");
+     if(parent.find('.notice_detail').length!=0){
+        detail=parent.find('.notice_detail').val().trim();
+    }else{
+        detail="";
+    }
+    if(parent.find(".href_type.active").length!=0){
+        link_type=parseInt(parent.find(".href_type.active").attr("data-id"));
+    }else{
+        link_type=1;
+    }
     if(summary.length>15){return Tip('摘要请不要超过15个字！')}
     if(detail.length>200){return Tip('详情请不要超过200个字！')}
     if(!summary){return Tip('摘要不能为空！')}
-    if(!detail){return Tip('详情不能为空！')}
+    if(!detail&&!link){return Tip('请填入详情或链接！')}
+    if(link.length>50){return Tip('链接请不要超过50个字！')}
     if(target.attr("data-flag")=="off") return false;
     target.attr("data-flag","off");
     var data={
         notice_id:notice_id,
         summary:summary,
         detail:detail,
-        img_url:img_url
+        img_url:img_url,
+        link:link,
+        link_type:link_type
     };
     var args={
         action:action,
@@ -222,8 +295,15 @@ function noticeEdit(target){
             if(res.success){
                 parent.find('.notice_summary').val(summary);
                 parent.find('.notice_detail').val(detail);
+                parent.find('.notice_link').val(link);
+                if(link_type==0){
+                    detail=detail+" √";
+                }else{
+                    link=link+" √";
+                }
                 parent.find('.summary').text(summary);
-                parent.find('.detail').text(detail);
+                parent.find('.detail').text("").text(detail);
+                parent.find('.link').text("").text(link);
                 parent.find('.address-edit').hide();
                 parent.find('.address-show').show();
                 NoticeEdit=false;
