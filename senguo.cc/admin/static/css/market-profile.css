@@ -64,7 +64,8 @@
 .i-del{background-image: url('../images/icon/2.png');}
 .i-check{background-image: url('../images/icon/7.png');}
 .i-checked{background-image: url('../images/icon/3.png');}
-
+.row-address{height: 30px;line-height: 30px;}
+.row-address input{width: 74%;float: right;}
 
 
 
