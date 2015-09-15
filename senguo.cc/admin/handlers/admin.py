@@ -3441,7 +3441,7 @@ class Staff(AdminBaseHandler):
 			staff_tuple = query.filter(models.HireLink.work == 2).all()
 			staffSub = 'sh1'
 		elif action == "SH2":
-			staff_tuple = query.filter(models.HireLink.work == 3).all()
+			staff_tuple = query.filter(models.HireLink.work.in_([3,9])).all()
 			staffSub = 'sh2'
 		else:
 			return self.send_error(404)
@@ -3611,7 +3611,7 @@ class Config(AdminBaseHandler):
 					notice='管理员添加成功'
 				elif status == 'fail':
 					notice='您不是超级管理员，无法进行管理员添加操作'
-			admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
+			admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,work = 9 ).filter(models.HireLink.active>0).all()
 			datalist =[]
 			for admin in admin_list:
 				info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
@@ -3832,7 +3832,7 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).delete()
+			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,work=9).delete()
 			self.session.commit()
 			return self.send_success()
 		# 店铺超级管理员订单模版消息提醒设置
