@@ -1128,7 +1128,7 @@ function initBmap(){
         if(confirm("确认删除该自提点吗？")){
             var id = $this.closest("li").attr("data-id");
             var args = {
-                action:"set_self_address",
+                action:"del_self_address",
                 data:{
                     address_id:id
                 }
