@@ -2306,16 +2306,13 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
 		return self._shop_code
 
-	@property
-	def shop_marketing(self):
+	def get_shop_marketing(self,shop_id):
 		if hasattr(self, "_shop_marketing"):
 			return self._shop_marketing
 
 		#woody
 		#3.23
-		shop_id = self.get_cookie("market_shop_id")
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-
 		coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
 		if coupon_have==0:
 			coupon_active=0
@@ -2357,6 +2354,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			self._shop_auth = None
 
 		return self._shop_auth
+
 
 	@property
 	def shop_tpl(self):
