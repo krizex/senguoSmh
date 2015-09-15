@@ -1756,7 +1756,6 @@ class ArticleComment(MapBase, _CommonApi):
 
 	accountinfo = relationship(Accountinfo)
 
-
 # 文章点赞
 class ArticleGreat(MapBase, _CommonApi):#文章点赞 收藏 浏览
 	__tablename__ = 'article_great'
@@ -1789,7 +1788,7 @@ class PictureLibrary(MapBase,_CommonApi):
 	_type = Column(String(32),nullable = False) #goods,goods_detail,logo,notice
 	img_url = Column(String(100),nullable = False)
 	shop_id  = Column(Integer,nullable = False)
-	status = Column(TINYINT,nullable=False,default = 1) #0:delete 1:normal
+	status = Column(TINYINT,nullable=False,default = 1) #0:已删除 1:正常
 	create_time = Column(DateTime,nullable=False,default = func.now())
 	code = Column(String(128), nullable=False, default="")
 
