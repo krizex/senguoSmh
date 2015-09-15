@@ -68,4 +68,4 @@ li:last-child{border-bottom:0;}
 .bt-none {border-top:none !important;}
 .comment-title{margin-top:13px;}
 
-.change-item{position:absolute;right:5px;top:5px;display:inline-block;background:url('/static/m-admin/img/icon_shop_active.png') no-repeat center center #fff;height:30px;width:30px;background-size:20px;border-radius:50%;}
+.change-item{position:absolute;right:5px;top:5px;display:inline-block;background:url('/static/images/icon_change.png') no-repeat center center;height:30px;width:30px;background-size:20px;border-radius:50%;}
