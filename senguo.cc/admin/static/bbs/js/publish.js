@@ -47,6 +47,8 @@ $(document).ready(function(){
     if($(e.target).hasClass("dwbg")){
         return false;
     }
+}).on("click",".cancel-btn",function(){
+    $(this).closest(".pop-win").addClass("hide");
 });
 function publishAtical(target){
     if(target.attr("data-statu")=="1") {
@@ -70,11 +72,11 @@ function publishAtical(target){
         return Tip("文章内容不能为空");
     }
     var public = 0;
-    if($(".if_bbs").hasClass("active")){
+    if($(".if-bbs").hasClass("active")){
         public = 1;
     }
     var private = 0;
-    if($(".if_my").hasClass("active")){
+    if($(".if-my").hasClass("active")){
         private = 1;
     }
     var publictime="";

@@ -8,7 +8,7 @@
 <div class="user-info-detail pt36 clea bm-none" id="address_page" data-code="{{shop_code}}">
     <ul class="address-lst">
         {% for address in current_user.addresses%}
-        <li class="active">
+        <li class="{% if address.if_default==1 %}active{% end %}">
             <div class="address-row">
                 <span class="c333 icon-left i-person">{{address.receiver}}</span>
                 <span class="c333 icon-left i-phone">{{address.phone}}</span>
@@ -21,7 +21,7 @@
                     <span class="c666 f12 icon-left i-edit" data-id="{{address.id}}">编辑</span>
                     <span class="c666 f12 icon-left i-del ml10" data-id="{{address.id}}">删除</span>
                 </div>
-                <span class="c666 icon-left i-check i-checked f12" data-id="{{address.id}}">默认地址</span>
+                <span class="c666 icon-left i-check {% if address.if_default==1 %}i-checked{% end %} f12" data-id="{{address.id}}">默认地址</span>
             </div>
         </li>
         {% end %}

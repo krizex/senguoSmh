@@ -2,6 +2,9 @@ var cur_item = null,_type="edit_address";
 $(document).ready(function(){
 
 }).on("click","#new_address",function(){
+    if($(".address-lst li").size()>=5){
+        return noticeBox("最多只能新建5个地址哦");
+    }
     _type = "add_address";
     var name_box=new Modal('address_box');
     name_box.modal('show');
@@ -20,8 +23,12 @@ $(document).ready(function(){
         addressDel($(this),$(this).attr("data-id"));
     }
 }).on("click",".i-check",function(){
-    var id = $(this).attr("data-id");
-    addressDefault($(this),id);
+    if($(this).hasClass("i-checked")){
+        return false;
+    }else{
+        var id = $(this).attr("data-id");
+        addressDefault($(this),id);
+    }
 });
 //地址编辑&添加
 function addressEdit(action){
@@ -82,12 +89,10 @@ function addressDefault(target,id){
     };
     $.postJson(url,args,function(res){
         if(res.success){
-            target.toggleClass("i-checked");
-            if(target.hasClass("i-checked")){
-                target.closest("li").addClass("active");
-            }else{
-                target.closest("li").removeClass("active");
-            }
+            $(".address-lst").find(".i-check").removeClass("i-checked");
+            $(".address-lst li").removeClass("active");
+            target.addClass("i-checked");
+            target.closest("li").addClass("active");
         }
         else return noticeBox(res.error_text)
     },function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')})

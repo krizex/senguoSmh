@@ -1,5 +1,6 @@
 var activity_type = 0;
 $(document).ready(function(){
+    $(".fix-title").addClass("hidden");
     var shop_code=$('#shop_imgurl').attr('data-code');
     SetCookie('market_shop_code',shop_code);
     var $list_total_price=$('#list_total_price');
@@ -14,6 +15,14 @@ $(document).ready(function(){
     if(!_freigh_now) window.dataObj.freigh_now=0;
     $('.address_list .item').eq(0).addClass('active');
     $('.self-address-list .item').eq(0).addClass('active');
+    //页面1
+    if(!$.getUrlParam("type") || $.getUrlParam("type")==1){
+        $(".bg1").removeClass("hidden");
+        $(".bg2").addClass("hidden");
+    }else{
+        $(".bg1").addClass("hidden");
+        $(".bg2").removeClass("hidden");
+    }
     //价格
     getPrice();
     //商品数量操作
@@ -86,7 +95,6 @@ $(document).ready(function(){
         if(max<5) addressAddEdit('add_address',name,address,phone,$this);
         else return noticeBox('最多能添加五个收获地址！',$this);
     });
-
     //收货地址编辑
     $('body').on('click','.to-edit-address',function(){
         $addressBox.removeClass('hidden');
@@ -133,14 +141,12 @@ $(document).ready(function(){
         var $this=$(this);
         orderSubmit($this);
     });
-    //
     //period-time
     $('.check-time').each(function(){
         var $this=$(this);
         var time=$this.text();
         $this.text(checkTime(time));
     });
-    
     //打赏小费
     $('.tip-list .item').on('click',function(){
         var $this=$(this);
@@ -171,7 +177,7 @@ $(document).ready(function(){
         }
     });
     $('.pay_type .available').first().addClass('active').siblings('.item').removeClass('active');
-    var shop_status=parseInt($('.pay_type').attr('data-shop'));
+    var shop_status=parseInt($('#shop_imgurl').attr('data-status'));
     if(shop_status != 1){
         $('.pay_type .item').removeClass('active').removeClass('item').addClass('not_available').removeClass('available');
         $('#submitOrder').attr('disabled',true).removeClass('bg-green').text('暂不可下单');
@@ -190,7 +196,6 @@ $(document).ready(function(){
      }else if(shop_status==0){
         $('#submitOrder').text('店铺已关闭');
      }
-
 //按时达/立即送模式/自提选择
     var intime_on=$('.send-intime').attr('data-config');
     var now_on=$('.send-now').attr('data-config'); 
@@ -215,6 +220,9 @@ $(document).ready(function(){
             $(".self-address").removeClass("hidden");
         }
     }
+    $(".images").each(function(){
+        $(this).css("height",($(".fruits-lst").width()/5-8)+"px");
+    });
     //根据当前时间选择时间段
     todayChoose();
 }).on("click",".send-now",function(){
@@ -227,7 +235,6 @@ $(document).ready(function(){
     }else{
         return noticeBox("抱歉，已超过了该送货时间段的下单时间，请选择下一个时间段！");
     }
-    
 }).on("click",".ontime-period-choose .available",function(){
     $(".send-now").removeClass("active");
     $(".mincharge-box").addClass("hidden");
@@ -355,29 +362,71 @@ $(document).ready(function(){
     if($(this).hasClass("active")){
         $(this).removeClass("active");
         $(this).children("a").removeClass("checkboxed");
-        $("#coupon-money").closest('.coupon-text').addClass("hidden");
-        $(".coupon_cmoney").addClass("hidden");
-        $("#total_price").html(mathFloat($("#final_price").html()));
+        $("#sureCoupon").attr("data-coupon","0");
     }else{
         $(".coupon_type").find(".checkbox-btn").removeClass("checkboxed");
         $(".coupon_type li").removeClass("active").eq(index).addClass("active");
         $(this).children("a").addClass("checkboxed");
         var money = parseFloat($(this).children('.coupon-bg').attr("data-money"));
+        $("#sureCoupon").attr("data-coupon",money);
+    }
+}).on("click",".coupon-cart-box",function(){
+    var coupon_box=new Modal('couponBox');
+    coupon_box.modal('show');
+}).on("click","#sureCoupon",function(){
+    var cmoney = parseFloat($(this).attr("data-coupon"));
+    if(cmoney==0){
+        $(".coupon-stats").html("未使用");
+        $("#coupon_cmoney").html(0);
+    }else{
+        $(".coupon-stats").html("已使用");
+        $("#coupon_cmoney").html(cmoney);
         var last_money = parseFloat($("#final_price").html());
-        $("#coupon_cmoney").html(money);
-        $("#coupon-money").html(money);
-        $("#coupon-money").closest('.coupon-text').removeClass("hidden");
-        $(".coupon_cmoney").removeClass("hidden");
         var smoney = 0;
-        if(money>=last_money){
+        if(cmoney>=last_money){
             smoney = 0;
         }else{
-            smoney = parseFloat(last_money - money).toFixed(2);
+            smoney = parseFloat(last_money - cmoney).toFixed(2);
         }
         $("#total_price").html(mathFloat(smoney));
-    }   
+    }
+    var coupon_box=new Modal('couponBox');
+    coupon_box.modal('hide');
+}).on("click","#go_next",function(){
+    history.replaceState({cart:1},"提交订单","/customer/cart/"+$("#shop_imgurl").attr("data-code")+"?type=2")
+    $(".bg1").addClass("hidden");
+    $(".bg2").removeClass("hidden");
+}).on("click",".return-btn,#go_fruits",function(){
+    $(".bg2").addClass("hidden");
+    $(".bg1").removeClass("hidden");
+}).on("click",".pay_type_list li",function(){
+    var index = $(this).index();
+    if(index==0){
+        $(".wrap-balance-box").addClass("hidden");
+        $(".wrap-online-lst").removeClass("hidden");
+    }else if(index==1){
+        $(".wrap-online-lst").addClass("hidden");
+        $(".wrap-balance-box").removeClass("hidden");
+    }else{
+        $(".wrap-online-lst").addClass("hidden");
+        $(".wrap-balance-box").addClass("hidden");
+    }
+    $(".pay_type_list li").removeClass("active").eq(index).addClass("active");
+}).on("click",".address-box",function(){
+    window.location.href="/customer/address";
+}).on("click",".bili_type li",function(){
+    var index = $(this).index();
+    if(index==0){
+        $(".red-tip-txt").addClass("hidden");
+        $(".deli2").addClass("hidden");
+        $(".deli1").removeClass("hidden");
+    }else if(index==1){
+        $(".red-tip-txt").removeClass("hidden");
+        $(".deli1").addClass("hidden");
+        $(".deli2").removeClass("hidden");
+    }
+    $(".bili_type li").removeClass("active").eq(index).addClass("active");
 });
-
 _price_list=[];
 _total_price=0;
 _freigh_ontime=parseInt($('.freigh_time').attr("data-ontime"));
@@ -578,6 +627,7 @@ var getPrice=function(){
     //商品价格总计
     _total_price=mathFloat(totalPrice(_price_list));
     $list_total_price.text(_total_price);
+    $(".fruits_price").text(_total_price);
     $final_price.text(mathFloat(_total_price+freight));
 }
 
@@ -703,6 +753,7 @@ function itemDelete(target,menu_type) {
                 target.remove();
                 t_price-=parseFloat(price);
                 $list_total_price.text(t_price);
+                $(".fruits_price").text(t_price);
                 var type=$('#sendType').find('.active').data('id');
                 getPrice();
                 mincharge(type,t_price);  
