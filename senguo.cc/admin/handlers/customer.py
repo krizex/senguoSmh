@@ -2919,7 +2919,7 @@ class CartCallback(CustomerBaseHandler):
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
 	def get(self):
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		try:
 			shop_auth = self.session.query(models.Shop.shop_auth).filter_by(id=shop_id).first().shop_auth
 		except:
