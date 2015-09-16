@@ -2904,7 +2904,7 @@ class Notice(CustomerBaseHandler):
 			shop_marketing = self.get_shop_marketing(shop_id)
 		except:
 			shop_marketing = 0
-		return self.render("notice/order-success.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,shop_auth=shop_auth)
+		return self.render("notice/order-success.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 
 class Wexin(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("action?:str", "url:str")
