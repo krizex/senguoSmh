@@ -448,8 +448,8 @@ class RefundQuery_pub(Wxpay_client_pub):
 
     def createXml(self):
         """生成接口参数xml"""
-        if any(self.parameters[key] is None for key in ("out_refund_no", "out_trade_no", "transaction_id", "refund_id")):
-            raise ValueError("missing parameter")
+        # if any(self.parameters[key] is None for key in ("out_refund_no", "out_trade_no", "transaction_id", "refund_id")):
+        #     raise ValueError("missing parameter")
         self.parameters["appid"] = WxPayConf_pub.APPID  #公众账号ID
         self.parameters["mch_id"] = WxPayConf_pub.MCHID  #商户号
         self.parameters["nonce_str"] = self.createNoncestr()  #随机字符串
@@ -476,8 +476,6 @@ class CloseOrder_pub(Wxpay_client_pub):
         self.parameters["sign"] = self.getSign(self.parameters)
         return self.arrayToXml(self.parameters)
 
-
-
 class DownloadBill_pub(Wxpay_client_pub):
     """对账单接口"""
 
@@ -495,6 +493,7 @@ class DownloadBill_pub(Wxpay_client_pub):
 
         self.parameters["appid"] = WxPayConf_pub.APPID  #公众账号ID
         self.parameters["mch_id"] = WxPayConf_pub.MCHID  #商户号
+        self.parameters["bill_type"] = 'ALL'
         self.parameters["nonce_str"] = self.createNoncestr()  #随机字符串
         self.parameters["sign"] = self.getSign(self.parameters)  #签名
         return  self.arrayToXml(self.parameters)

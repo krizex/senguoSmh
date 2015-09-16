@@ -1,6 +1,6 @@
 #coding:utf-8
 from handlers.base import CustomerBaseHandler,WxOauth2
-from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub,Refund_pub
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub,Refund_pub,RefundQuery_pub,DownloadBill_pub
 import dal.models as models
 import tornado.web
 from settings import *
@@ -33,12 +33,12 @@ class RefundWxpay(CustomerBaseHandler):
 	# 	pass
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
-	@CustomerBaseHandler.check_arguments('order_id?:str','action')
-	def get(self):
-			# def wx_refund_pub(self,order_id):
-
+	@CustomerBaseHandler.check_arguments('order_id?:str','action','bill_date?:str')
+	def post(self):
 		order_id = self.args['order_id']
 		action   = self.args['action']
+		bill_date=self.args['bill_date']
+		# if len(bill_date)==0:
 		if len(order_id) == 0:
 				return self.send_fail('order_id error')
 		order = self.session.query(models.Order).filter_by(id=order_id).first()
@@ -47,6 +47,7 @@ class RefundWxpay(CustomerBaseHandler):
 		totalPrice = order.totalPrice	
 		num = order.num
 		transaction_id = order.transaction_id
+		print(transaction_id)
 		if action == 'wx':
 			wx_price = int(100 * totalPrice)
 			refund_pub = Refund_pub()
@@ -125,7 +126,32 @@ class RefundWxpay(CustomerBaseHandler):
 			alipay_response = requests.get(refund_url)
 			alipay_page     = alipay_response.text
 			# print(alipay_page)
-			return self.write(alipay_page)
+			# return self.write(alipay_page)
+			return self.send_success(refund_url=refund_url)
+		elif action == 'wx_refund_query':
+			refund_query = RefundQuery_pub()
+			refund_query.setParameter("transaction_id",transaction_id)
+			res = refund_query.postXml()
+			print(res)
+			if isinstance(res,bytes):
+				res = res.decode('utf-8')
+			res_dict = refund_query.xmlToArray(res)
+			return_code = res_dict.get("return_code",None)
+			if return_code == 'SUCCESS':
+				print('query success')
+			else:
+				print('query fail')
+			return self.send_success()
+		elif action == 'downbill':
+			print(bill_date,'bill_date')
+			downbill = DownloadBill_pub()
+			downbill.setParameter('bill_date',bill_date)
+			res = downbill.postXml()
+			if isinstance(res,bytes):
+				res = res.decode('utf-8')
+			print(type(res))
+		
+
 		else:
 			return self.send_fail('action error')
 
