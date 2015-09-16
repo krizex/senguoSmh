@@ -1,0 +1,38 @@
+{% extends 'count-balance.html' %}
+{% block title%}退款申请{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/superadmin-main.css')}}"/>
+{% end %}
+
+{% block count %}
+<div class="wrap-refund">
+    <ul class="apply-cont-lst" id="apply-cont-lst">
+        {% for apply in data %}
+        <li data-apply-id="{{apply['id']}}">
+            <ul class="shop-attr-lst group">
+                <li>用户id：{{apply['customer_id']}}</a></li>
+                <li>申请时间：{{apply['create_time']}}</li>
+                <li>金额：<span class="red-txt">{{apply['refund_fee']}}</span>元</li>
+                <li>退款类型：{{apply['refund_type']}}</li>
+                {% if apply['refund_type']==1 %}
+                <li>退款地址： <a href="{{apply['refund_url']}}" target="_blank">点击退款</a></li>
+                {% end %}
+            </ul>
+            <div class="apply-btn-group">
+                <a href="javascript:;" class="refund-ok-btn" data-id="{{apply['id']}}" >确认</a>
+            </div>
+        </li>
+        {% end %}
+    </ul>
+   <!--  <nav>
+        <ul class="pager">
+            <li><a href="javascript:;" id="payPrePage">&larr;上一页</a></li>
+            <li><a href="javascript:;" id="payNextPage">下一页&rarr;</a></li>
+        </ul>
+    </nav> -->
+</div>
+
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/super-refund.js')}}"></script>
+{% end %}

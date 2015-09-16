@@ -2627,6 +2627,43 @@ class Balance(SuperBaseHandler):
 
 		# return self.send_success()
 
+
+
+#退款申请
+class ApplyRefund(SuperBaseHandler):
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('page?:int')
+	def get(self):
+		data = []
+		refund_list = self.session.query(models.ApplyRefund).filter_by(has_done=0).all()
+		if not refund_list:
+			return self.send_fail('get refund_list error')
+		for item in refund_list:
+			item_dict = {}
+			item_dict['id'] = item.id
+			item_dict['customer_id'] = item.customer_id
+			item_dict['refund_fee']  = item.refund_fee
+			item_dict['refund_type'] = item.refund_type
+			item_dict['refund_url']  = item.refund_url
+			item_dict['create_time'] = item.create_time.strftime("%Y-%m-%d %H:%M")
+			data.append(item_dict)
+		print(data)
+		return self.render('superAdmin/refund-apply.html',data=data,context=dict(page='refund'))
+
+	@SuperBaseHandler.check_arguments('apply_id')
+	def post(self):
+		apply_id = self.args['apply_id']
+		if len(apply_id) == 0:
+			return self.send_fail('apply id error')
+		apply_id = int(apply_id)
+		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
+		refund_apply.has_done = 1 #将申请退款变为已处理状态
+		self.session.commit()
+		return self.send_success()
+
+
+
+
 # 余额 - 提现申请
 class ApplyCash(SuperBaseHandler):
 
@@ -3217,6 +3254,8 @@ class MakeNewUser(SuperBaseHandler):
 			return self.send_fail(error_text = 'action error!!!')
 		self.session.commit()
 		return self.send_success()
+
+
 
 
 

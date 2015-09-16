@@ -29,9 +29,58 @@ class QrWxpay(CustomerBaseHandler):
 
 class RefundWxpay(CustomerBaseHandler):
 	# @tornado.web.authenticated
-	# def get(self):
-	# 	pass
+	
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
+
+	@CustomerBaseHandler.check_arguments("service","v","sec_id","sign","notify_data")
+	def get(self):
+		print("[Alipay refund] notify_url!!!!!!!!")
+		sign = self.args.pop('sign')
+		signmethod = self._alipay.getSignMethod(**self.args)
+		if signmethod(self.args) != sign:
+			return self.send_fail('sign error')
+		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
+		result_details = notify_data['result_details']
+		transaction_id = result_details.split('^')[0]
+		balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+		if not balance_history:
+			return self.send_fail('old_balance_history not found')
+		order = self.session.query(models.Order).filter_by(transaction_id=transaction_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		##########################################################################
+		order.get_num(session,order.id)  #取消订单,库存增加，在售减少 	
+		shop_id = balance_history.shop_id
+		balance_value = balance_history.balance_value
+		shop = order.shop 
+		#该店铺余额减去订单总额
+		shop.shop_balance -= balance_value
+		balance_history.is_cancel = 1
+		#将这条余额记录作废
+		balance_history.balance_type = -1
+		customer_id = balance_history.customer_id
+		name        = balance_history.name
+		shop_province = balance_history.shop_province
+		shop_name     = balance_history.shop_name
+		balance_record = balance_history.balance_record + '--退款'
+		create_time   = datetime.datetime.now()
+		shop_totalPrice = shop.shop_balance
+		customer_totalPrice = balance_history.customer_totalPrice
+		transaction_id   = balance_history.transaction_id
+		available_balance = balance_history.available_balance
+		#同时生成一条退款记录
+		refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+			balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
+			transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
+		self.session.add(refund_history)
+		# self.session.flush()
+		# # 9.15 woody 
+		# # 生成一条支付宝退款记录
+		# apply_refund = models.ApplyRefund(customer_id=customer_id,order_id=order_id,refund_type=1,refund_fee=totalPrice,
+		# 	transaction_id=transaction_id,order_num=num)
+		# self.session.add(apply_refund)
+		self.session.commit()
+		return self.write('success')
 
 	@CustomerBaseHandler.check_arguments('order_id?:str','action','bill_date?:str')
 	def post(self):
@@ -47,6 +96,8 @@ class RefundWxpay(CustomerBaseHandler):
 		totalPrice = order.totalPrice	
 		num = order.num
 		transaction_id = order.transaction_id
+		customer_id = order.customer_id
+		totalPrice  = order.totalPrice
 		print(transaction_id)
 		if action == 'wx':
 			wx_price = int(100 * totalPrice)
@@ -77,6 +128,7 @@ class RefundWxpay(CustomerBaseHandler):
 				shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
 				if not shop:
 					return self.send_fail("shop not found")
+				order.get_num(session,order.id)  #取消订单,库存增加，在售减少 
 				#该店铺余额减去订单总额
 				shop.shop_balance -= balance_value
 				balance_history.is_cancel = 1
@@ -97,6 +149,12 @@ class RefundWxpay(CustomerBaseHandler):
 					balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
 					transaction_id=transaction_id,balance_type=8,balance_value=balance_value)
 				self.session.add(refund_history)
+				self.session.flush()
+				# 9.15 woody 
+				# 生成一条微信退款记录
+				apply_refund = models.ApplyRefund(customer_id=customer_id,order_id=order_id,refund_type=0,refund_fee=totalPrice,
+					transaction_id=transaction_id,order_num=num)
+				self.session.add(apply_refund)
 				self.session.commit()
 				return self.send_success()
 			else:
@@ -106,28 +164,20 @@ class RefundWxpay(CustomerBaseHandler):
 			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
 			batch_no = now.strftime("%Y%m%d") + num
 			detail_data = transaction_id +'^' + format(totalPrice,'.2f') + '^协商退款'  
-			notify_url = 'http://i.senguo.cc/alipaycallback'
-
-			# params = {
-			# 	"service":'refund_fastpay_by_platform_pwd',
-			# 	"partner":ALIPAY_PID,
-			# 	"_input_charset":"GBK",
-			# 	# "sign":sign,
-			# 	# "sign_type":sign_type,
-			# 	"refund_date":refund_date,
-			# 	"seller_user_id":ALIPAY_PID,
-			# 	"batch_no":batch_no,
-			# 	"batch_num":1,
-			# 	"detail_data":detail_data,
-			# }
+			notify_url = 'http://i.senguo.cc/customer/online/refund'
 			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
-				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data)
-			print(refund_url,'退款地址')
-			alipay_response = requests.get(refund_url)
-			alipay_page     = alipay_response.text
-			# print(alipay_page)
-			# return self.write(alipay_page)
-			return self.send_success(refund_url=refund_url)
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data,notify_url=notify_url)
+			print(refund_url,'refund_url')
+			#################################################################################
+			# 9.15 woody
+			# 生成一条支付宝退款申请记录
+			# 支付宝退款需要后台手动处理，然后确认，微信退款只需要确认
+			#################################################################################
+			apply_refund = models.ApplyRefund(customer_id=customer_id,order_id=order_id,refund_type=1,refund_fee=totalPrice,
+				refund_url=refund_url,transaction_id=transaction_id,order_num=num)
+			self.session.add(apply_refund)
+			self.session.commit()
+			return self.send_success()
 		elif action == 'wx_refund_query':
 			refund_query = RefundQuery_pub()
 			refund_query.setParameter("transaction_id",transaction_id)
@@ -149,8 +199,7 @@ class RefundWxpay(CustomerBaseHandler):
 			res = downbill.postXml()
 			if isinstance(res,bytes):
 				res = res.decode('utf-8')
-			print(type(res))
-		
+			print(type(res))		
 
 		else:
 			return self.send_fail('action error')
