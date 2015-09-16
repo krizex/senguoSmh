@@ -1080,13 +1080,12 @@ class ShopProfile(CustomerBaseHandler):
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
-		print(shop_auth,23333)
 		return self.render("customer/shop-info.html", shop=shop,get_shop_auth=shop_auth,follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
 						   shop_name = shop_name,shop_logo = shop_logo,shop_marketing=shop_marketing,\
-						   context=dict(subpage='shop'),)
+						   context=dict(subpage='shop'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
@@ -2896,7 +2895,16 @@ class CartCallback(CustomerBaseHandler):
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
 	def get(self):
-		return self.render("notice/order-success.html",context=dict(subpage='cart'))
+		shop_id = int(self.get_cookie("market_shop_id"))
+		try:
+			shop_auth = self.session.query(models.Shop.shop_auth).filter_by(id=shop_id).first().shop_auth
+		except:
+			shop_auth = 0
+		try:
+			shop_marketing = self.get_shop_marketing(shop_id)
+		except:
+			shop_marketing = 0
+		return self.render("notice/order-success.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,shop_auth=shop_auth)
 
 class Wexin(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("action?:str", "url:str")
@@ -3760,6 +3768,10 @@ class payTest(CustomerBaseHandler):
 					shop_province=shop_province,shop_name=shop_name)
 				self.session.add(balance_history)
 				# print("[WxCharge]balance_history:",balance_history)
+				## add by sunmh 2015-09-14 
+				## 充值完成后,如果是首次充值,则更新customershopfollow的首次充值时间
+				if shop_follow.first_charge_time==None:
+					shop_follow.first_charge_time=datetime.datetime.now()
 				self.session.commit()
 				
 			# 充值送优惠券

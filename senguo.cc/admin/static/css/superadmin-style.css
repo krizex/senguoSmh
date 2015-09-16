@@ -1,4 +1,4 @@
-.login-box{text-align:center;width:560px;margin:0 auto;margin-top:50px;background:url('../images/logo.png') no-repeat center 0;background-size:200px;padding-top:60px;}
+.login-box{text-align:center;width:560px;margin:0 auto;margin-top:50px;background:url('/static/official_img/new_logo.png') no-repeat center 0;background-size:200px;padding-top:60px;}
 .login-box .login-info{width:280px;margin:0 auto;clear:both;}
 .login-box .login-info .w1{width:60px;margin-bottom:20px;}
 .login-box .login-info input{border:1px solid #e7e7eb;background-color:#fff !important;}

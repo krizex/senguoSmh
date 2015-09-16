@@ -128,3 +128,23 @@
 .user-change-list1 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
 .user-change-list1 li.active{border-color:#44b549;}
 .user-change-list1 li.active a{color:#44b549;}
+
+/*add by sunmh 2015年09月09日*/
+.order_count_comment {height: 30px;font-size: 14px;  background: #f4f5f9;padding: 5px;padding-left:20px;}
+.ordercount-change-list1{margin-left:60px;margin-top: 10px;}
+.ordercount-change-list1 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+.ordercount-change-list1 li.active{border-color:#44b549;}
+.ordercount-change-list1 li.active a{color:#44b549;}
+.val_method_change .choose-btn{display:inline-block;width:14px;height:14px;border:1px solid #ddd;background:#fff;border-radius:50%;}
+.val_method_change .active .choose-btn{background:#44b549}
+.val_method_change {margin-right:60px;margin-top: 10px;}
+.val_method_change li{border-right:2px solid #fff;padding-right:10px;float:right;margin-right: 15px;}
+.ordercount_sumup {height: 30px;font-size: 14px;  background: #f4f5f9;padding: 5px;padding-left:20px;}
+
+.ordercount-change-list2{margin-left:60px;margin-top: 10px;}
+.ordercount-change-list2 li{border-left:2px solid #fff;padding-left:14px;float:left;margin-right: 30px;}
+
+.ordercount_sumup span.active{border-color:#44b549;color:#44b549;padding-right:14px;padding-left:4px;}
+.v_middle {vertical-align: middle;}
+
+.txt-right{text-align: right !important;}
