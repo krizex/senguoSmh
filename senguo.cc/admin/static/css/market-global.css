@@ -59,6 +59,9 @@ div,p,span,ul,li{-webkit-user-select:none;}
 .modal-footer{padding-top:75px;clear:both;}
 .modal-footer2{padding-top:40px;clear:both;}
 .modal-footer .btn{position:absolute;left:85px;z-index:6666;border-radius: 20px;padding:5px 40px;margin-top: -45px;}
+.modal-btn-box{clear:both;margin:15px 0;}
+.modal-btn-box .btn-default{border:1px solid #ccc;background-color:#fff;color:#333;margin-right:10px;}
+.modal-btn-box .btn{border-radius:4px;width:100px;line-height:20px;text-align:center;}
 /*.modal-footer .btn+.btn{margin-bottom:0;margin-left:5px;}*/
 .modal-footer .btn-group .btn+.btn{margin-left:-1px}
 .modal-footer .btn-block+.btn-block{margin-left:0}
