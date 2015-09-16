@@ -1899,7 +1899,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
 			d["nickname"] = info.accountinfo.nickname
 			d["customer_id"] = order.customer_id
-			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
+			staffs = self.session.query(models.ShopStaff,models.HireLink.default_staff).join(models.HireLink).filter(and_(
 				models.HireLink.work.in_([3,9]), models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
@@ -1908,14 +1908,19 @@ class AdminBaseHandler(_AccountBaseHandler):
 				d["shop_new"]=follow.shop_new
 				# print("[AdminBaseHandler]getOrder: Order's User ID:",order.customer_id,", shop_new:",d["shop_new"])
 			SH2s = []
-			for staff in staffs:
+			for item in staffs:
+				staff = item[0]
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
-				"headimgurl":staff.accountinfo.headimgurl_small}
+				"headimgurl":staff.accountinfo.headimgurl_small,"if_default":item[1]}
 				SH2s.append(staff_data)
+			SH2s.sort(key = lambda x:x["if_default"],reverse=True)
 			staffs_info =self.session.query(models.Accountinfo.nickname,models.Accountinfo.realname,models.Accountinfo.phone,\
 				models.Accountinfo.headimgurl_small).filter_by(id=order.SH2_id).first()
-			staffs_info_data = {"id": order.SH2_id, "nickname": staffs_info[0],"realname": staffs_info[1], "phone": staffs_info[2],\
+			try:
+				staffs_info_data = {"id": order.SH2_id, "nickname": staffs_info[0],"realname": staffs_info[1], "phone": staffs_info[2],\
 				"headimgurl":staffs_info[3]}
+			except:
+				staffs_info_data = {}
 			d["SH2"] = staffs_info_data
 					# print("[AdminBaseHandler]getOrder:",d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
