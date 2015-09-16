@@ -83,7 +83,7 @@ function insertGoods(data){
         $item.find(".order_code").html(goods.num);
         $item.find(".order_money").html(goods.totalPrice);
         $item.find(".order_address").html(goods.address_text);
-        $item.find(".order_time").html(goods.send_time);
+        $item.find(".order_time").html(goods.send_time+"送达");
         var pay_type = "";
         if(goods.pay_type==1){
             pay_type="货到付款";

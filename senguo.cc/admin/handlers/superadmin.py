@@ -464,13 +464,21 @@ class ShopManage(SuperBaseHandler):
 				count=count))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action")
+	@SuperBaseHandler.check_arguments("action","code?")
 	def post(self):
 		action = self.args["action"]
 		if action == "updateShopStatus":
 			self.handle_updateStatus()
 		elif action == "shopclose":
 			self.handle_shopclose()
+		elif action == "getin":
+			print(self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0])
+			try:
+				shop_id=self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0]
+			except:
+				return self.send_error(403)
+			self.set_secure_cookie("shop_id", str(shop_id))
+			return self.send_success()
 		else:
 			return self.send(400)
 
@@ -734,15 +742,15 @@ class User(SuperBaseHandler):
 		sum = {}
 		if level == 0:
 			q = self.session.query(models.Accountinfo)
-			sum["admin"] = self.session.query(models.SuperAdmin).count()
-			sum['customer'] = self.session.query(models.Customer).count()
+			sum["admin"] = self.session.query(models.Shop.admin_id).distinct(models.Shop.admin_id).count()
+			sum['customer'] = self.session.query(models.Customer.id).count()
 		elif level == 1:
 			shop_province = self.code_to_text('province',shop_province)
 			shop_province = shop_province[0:len(shop_province)-1]
 			q = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
-			sum["admin"] = self.session.query(models.ShopAdmin).join(models.Accountinfo,models.ShopAdmin.id==models.Accountinfo.id).filter(
-				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.ShopAdmin.id).count()
-			sum["customer"] = self.session.query(models.Customer).filter(models.Customer,models.Accountinfo.id==models.Customer.id).filter(
+			sum["admin"] = self.session.query(models.Shop.admin_id).join(models.Accountinfo,models.Shop.admin_id==models.Accountinfo.id).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.Shop.admin_id).count()
+			sum["customer"] = self.session.query(models.Customer.id).join(models.Accountinfo,models.Accountinfo.id==models.Customer.id).filter(
 				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).distinct(models.Customer.id).count()
 		else:
 			return self.send_fail('level error')
@@ -2753,6 +2761,7 @@ class CheckCash(SuperBaseHandler):
 		level = self.current_user.level
 		if level == 1:
 			return self.send_error(404)
+
 		return self.render("superAdmin/balance-check.html",level=level,context=dict(page='check'))
 
 	@tornado.web.authenticated

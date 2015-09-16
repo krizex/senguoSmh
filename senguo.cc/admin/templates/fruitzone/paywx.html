@@ -49,7 +49,7 @@
                                 <img src="{{imgurl}}" alt="商品图片"/>
                             </dd>
                             <dt class="bg">
-                                <p class="color">{{fruits[key]['fruit_name']}}</p>
+                                <p class="color">{% if 'activity_name' in list(fruits[key].keys()) and fruits[key]['activity_name'] %}（{{fruits[key]['activity_name']}}）{% end %}{{fruits[key]['fruit_name']}}</p>
                                 <p class="color txt-ar"><span class="big">{{fruits[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[key]['num'], 2)}}</span>元</p>
                                 <p class="color">{{fruits[key]['charge']}}</p>
                             </dt>
@@ -114,11 +114,11 @@
 <script type="text/javascript" src="/static/js/third/qrcode.min.js"></script> 
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 <script type="text/javascript">
-  new QRCode(document.getElementById('qrcode'), {
-      width : 280,//设置宽高
-      height : 280,
-      colorDark : "#433943"
-  }).makeCode($("#qr_url").val());
+    new QRCode(document.getElementById('qrcode'), {
+        width : 280,//设置宽高
+        height : 280,
+        colorDark : "#433943"
+    }).makeCode($("#qr_url").val());
     wx.config({
         debug: false,
         appId: "{{wxappid}}",

@@ -5,9 +5,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chorme=1">
 <meta name="keywords" content="森果,森果官网,senguo.cc,专业水果O2O第三方平台">
 <meta name="description" content="森果为水果O2O、微信卖水果、水果零售提供免费的水果商城和水果后台管理系统。助力水果O2O，帮您把水果店搬到网上来。">
-<title>森果senguo.cc-专业水果O2O第三方平台 </title>
+<title>森果senguo.cc-专业水果O2O第三方平台</title>
 <link href="{{static_url('css/official_base.css')}}" rel="stylesheet">
-<link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
 <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
 {% block head-css%}{% end %}
     <script>
@@ -20,6 +19,7 @@
 {% set product_active=''%}
 {% set community_active=''%}
 {% set about_active=''%}
+{% set appdownload_active=''%}
 {% if context['subpage'] == 'home'%}
 {% set home_active='active'%}
 {% elif context['subpage'] == 'about'%}
@@ -30,34 +30,32 @@
 {% set shop_active='active'%}
 {% elif context['subpage'] == 'product'%}
 {% set product_active='active'%}
+{% elif context['subpage'] == 'appdownload'%}
+{% set appdownload_active='active'%}
 {% end %}
 <body>
-	<header class="clearfix head">
+	<div class="clearfix head">
 		<div class="w1000 nav-box group">
 			<div class="senguo-header pull-left">
 				<div class="logo_box pull-left">
-					<!-- <h1 class="pull-left text-green logo">森果</h1>
-					<div class="pull-left ml5 text-center">
-						<p class="mt2 font20 text-grey">水果o2o领跑者</p>
-						<p class="font20 text-green">www.senguo.cc</p>
-					</div> -->
-                    <a href="{{reverse_url('OfficialHome')}}"><img src="{{static_url('official_img/logo2.png')}}" class="logo"/></a>
+                    <a href="{{reverse_url('OfficialHome')}}">
+                        <img src="{{static_url('official_img/new_logo.png')}}" class="logo"/>
+                    </a>
 				</div>
 			</div>
 			<div class="senguo-nav font16">
-				<ul>
+				<ul class="group">
 					<li class="{{home_active}}"><a href="{{reverse_url('OfficialHome')}}" >首页</a></li>
-					<li class="{{product_active}}"><a href="{{reverse_url('OfficialProduct')}}">产品介绍</a></li>
+					<li class="{{product_active}} product-link"><a href="{{reverse_url('OfficialProduct')}}">产品介绍</a></li>
                     <li class="{{shop_active}}"><a href="{{reverse_url('OfficialShopList')}}">店铺列表</a></li>
 					<li class="{{about_active}}"><a href="{{reverse_url('OfficialAbout')}}">关于我们</a></li>
                     <li class="{{community_active}}"><a href="{{reverse_url('BbsMain')}}" target="_blank">森果社区</a></li>
+                    <li class="{{appdownload_active}}"><a href="{{reverse_url('OfficialAppdownload')}}">下载APP</a></li>
                     <div class="admin-box">
                         <div class="login-box hidden-xs">
                             <ul class="text-grey header-top" id="header-top">
-                                <!--<li class="loggedout"><a href="#" id="headertop-signup">注册</a></li>
-                                <li class="loggedout"><a href="#" id="headertop-signin" class="text-grey  head-btn border-none  head-btn">登录</a></li>-->
-                                <li><a href="{{reverse_url('switchshop')}}" class="text-black">管理后台</a></li> |
-                                <li><a href="{{reverse_url('ApplyHome')}}" class="text-black">申请接入</a></li>
+                                <li><a href="{{reverse_url('switchshop')}}" class="new-font-color">管理后台</a></li>
+                                <li><a href="{{reverse_url('ApplyHome')}}" class="new-font-color">申请接入</a></li>
                             </ul>
                         </div>
                     </div>
@@ -65,15 +63,17 @@
 			</div>
 		</div>
 	{%block header-extends%}{%end%}
-	</header>
-	<main class="container clearfix mt20">
+	</div>
+	<main class="container clearfix">
 		{% block content%} {% end%}
-	</main>
+	</div>
     <div class="scrollUpf">
         <a href="javascript:;" title="返回顶部" id="scrollUp" class="scrollUp"></a>
         <a title="森果服务号" href="javascript:;" id="r-wx" class="r-wx">
             <div id="fi-wx-show" class="fi-wx-show">
-                <div class="wx-show-txt"></div>
+                <div class="wx-show-txt">
+                    <img src="{{static_url('official_img/server.jpg')}}" class="logo"/>
+                </div>
                 <div class="wx-threeRs"></div>
                 <div class="wx-threeR"></div>
             </div>
@@ -90,11 +90,11 @@
             <div class="iokf"></div>
         </a>
     </div>
-	<footer class="footer mt30">
+	<!-- <footer class="footer">
 		{% block bottom %}
 		<p class="text-center text-grey">鄂ICP备14012961号-1&nbsp;&nbsp;Copyright&copy;2014-2015 senguo.cc版权所有</p>
 		{% end %}
-	</footer>
+	</footer> -->
     <script>
         var _hmt = _hmt || [];
         (function() {

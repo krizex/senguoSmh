@@ -972,7 +972,7 @@ class BalanceHistory(MapBase,_CommonApi):
 
 	balance_record = Column(String(32))  #充值 或者 消费 的 具体记录
 	balance_type = Column(TINYINT,nullable=False,default = 1) # 0:代表充值 ，1:余额消费 2:提现 3:在线支付 4:商家删除订单 5:用户自己取消订单
-												# 6:余额消费完成 ，可提现额度变化 7:在线支付订单完成，可提现额度变化,-1:错误记录，然后被删掉的
+												# 6:余额消费完成 ，可提现额度变化 7:在线支付订单完成，可提现额度变化,-1:错误记录，然后被删掉的 8:微信在线支付退款记录 9:支付宝在线支付退款记录
 	balance_value  = Column(Float,nullable=False,default=0)
 	create_time    = Column(DateTime,nullable=False,default = func.now())
 	shop_totalPrice = Column(Float,nullable=False,default = 0)
@@ -1311,7 +1311,7 @@ class Order(MapBase, _CommonApi):
 	active = Column(TINYINT, default=1)  # 0删除
 	isprint = Column(Boolean, default=0)  # 是否被打印了 0：否，1：是
 
-	fruits = Column(String(2000))
+	fruits = Column(String(4000))
 	mgoods = Column(String(1000))
 	shop = relationship("Shop", uselist=False,join_depth=1)
 	send_time=Column(String(45))
@@ -1322,6 +1322,7 @@ class Order(MapBase, _CommonApi):
 	shop_service      = Column(Integer)
 
 	online_type       = Column(String(8)) #wx alipay
+	is_qrwxpay        = Column(Integer,default=0) #只有当订单类型为微信支付时才有意义，1表示扫码支付，0表示非扫码支付
 	send_admin_id =Column(Integer,nullable=False,default=0) #记录处理订单配送的管理员id #5.25
 	finish_admin_id =Column(Integer,nullable=False,default=0) #记录处理订单完成的管理员id #5.25
 
@@ -1422,12 +1423,15 @@ class Fruit(MapBase, _CommonApi):
 	add_time = Column(DateTime, default=func.now()) #5.27
 	delete_time = Column(DateTime) #5.27
 	group_id =  Column(Integer,nullable=False, default=0) #商品分组, 0:默认分组 -1:推荐分组 >0:自定义分组 #5.27
-	classify  = Column(TINYINT,nullable=False, default=0)  #0:水果 1:干果 3:其他
+	classify  = Column(TINYINT,nullable=False, default=0) #0:水果 1:干果 3:其他
 	temp_mgoods_id =  Column(Integer,nullable=False, default=0)  #to save mgoods_id for temp
 	detail_describe = Column(String(8000)) #商品详情
 
-	buy_limit = Column(Integer,nullable=False, default=0) #0:all 1:only new user 2:only old user 3:only charge user
-
+	# added by jyj 2015-8-19 for seckill and other activity
+	activity_status = Column(TINYINT,nullable=False,default=0)  #0(该商品未参与任何活动),1(参与秒杀活动),2(参与限时折扣),...(等待扩展中)
+	seckill_charge_type = Column(Integer,nullable=False,default=0) #秒杀活动中该商品所使用的计价方式id
+	##
+	buy_limit = Column(TINYINT,nullable=False, default=0) #0:all 1:only new user 2:only old user 3:only charge user
 	charge_types = relationship("ChargeType") #支持多种计价方式
 	fruit_type = relationship("FruitType", uselist=False)
 	shop = relationship("Shop", uselist=False)
@@ -1440,12 +1444,14 @@ class ChargeType(MapBase, _CommonApi):
 	price = Column(Float,nullable=False,default=0)#售价
 	unit = Column(TINYINT,nullable=False,default=4)#库存单位, 1:个 2:斤 3:份 4:kg 5:克 6:升 7:箱 8:盒 9:件 10:筐 11:包 12:今天价 13:明天价
 	num = Column(Float,nullable=False,default=1)#计价数量
-	unit_num = Column(Float,nullable=False, default=1)#单位换算
 	active = Column(TINYINT,nullable=False, default=1)#0删除，1:上架，2:下架
 	market_price =  Column(Float)#市场价 #5.27
+	unit_num = Column(Float,nullable=False, default=1)#单位换算
 	select_num = Column(Integer,nullable=False, default=1) #6.4
 	relate = Column(Float,nullable=False, default=1) # 库存换算关系
 
+	activity_type = activity_type = Column(TINYINT,nullable=False,default=0) #-1:秒杀活动结束或停用后，其中商品的计价方式;0:正常计价方式，未参与任何活动;1:秒杀活动商品计价方式;2:限时折扣活动商品计价方式
+	
 	fruit = relationship("Fruit", uselist=False)
 
 # 商品评论
@@ -1463,7 +1469,7 @@ class GoodsGroup(MapBase, _CommonApi):
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), nullable=False)
 	name =  Column(String(50),nullable=False)
-	status = Column(TINYINT,nullable=False,default = 1) #0:been deleted 1:normal
+	status = Column(TINYINT,nullable=False,default = 1) #0:已删除 1:正常
 	intro = Column(String(100))
 	create_time = Column(DateTime,nullable=False, default=func.now())
 
@@ -1537,7 +1543,7 @@ class Cart(MapBase, _CommonApi):
 	__tablename__ = "cart"
 	id = Column(Integer, ForeignKey(Customer.id), primary_key=True, nullable=False)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
-	fruits = Column(String(2000),nullable=False, default='{}')
+	fruits = Column(String(4000),nullable=False, default='{}')
 	mgoods = Column(String(1000),nullable=False, default='{}')
 
 # 店铺设置
@@ -1597,16 +1603,17 @@ class SelfAddress(MapBase,_CommonApi):
 	 lat    = Column(MyReal,nullable=False,default = 0)  #纬度
 	 lon    = Column(MyReal,nullable=False,default = 0)  #经度
 
-
 # 店铺营销功能状态
 class Marketing(MapBase, _CommonApi):
 	__tablename__="marketing"
 	id = Column(Integer, ForeignKey(Shop.id), primary_key=True, nullable=False)
 	confess_active = Column(TINYINT,nullable=False,default = 1) #1:告白墙开启 0:告白墙关闭
-	coupon_active=Column(TINYINT,nullable=False,default=0)  #0:开启 1:关闭
+	coupon_active=Column(TINYINT,nullable=False,default=0)  #0:关闭 1:开启
+	discount_active=Column(TINYINT,nullable=False,default=1)  #0:开启 1:关闭
 	confess_notice = Column(String(500))
 	confess_type = Column(TINYINT,nullable=False,default = 1) #1:告白模式 0:非告白模式
 	confess_only = Column(TINYINT,nullable=False,default = 0) #1:单条发布开启  0:单条发布关闭
+	seckill_active=Column(TINYINT,nullable=False,default = 0) #控制店铺秒杀活动是否开启  0:关闭  1:开启
 
 # 商城首页的公告
 class Notice(MapBase):
@@ -1614,10 +1621,20 @@ class Notice(MapBase):
 
 	id = Column(Integer, primary_key=True, nullable=False, autoincrement=True)
 	config_id = Column(Integer, ForeignKey(Config.id), nullable=False)
-	active = Column(TINYINT, default=1)  # 1：开启 2：关闭
+	active = Column(TINYINT,nullable=False,default=1)  # 1：开启 2：关闭
 	summary = Column(String(100)) #摘要
 	detail = Column(String(500)) #详情
 	img_url = Column(String(100)) #公告背景
+	_type = Column(Integer,default=0) 
+	#0:普通公告 
+	#1:秒杀公告 http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp 
+	#2:折扣公告 http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d
+	link = Column(String(60))
+	click_type = Column(TINYINT,nullable=False,default=0) #0:detail 1:link
+	# seckill_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp') #秒杀公告背景
+	# # gbuy_img_url = Column(String(100)) #团购公告背景
+	# discount_img_url = Column(String(100),default='http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d') #折扣公告背景
+	# # presell_img_url = Column(String(100)) #预售公告背景
 
 # 按时达时间段设置
 class Period(MapBase):
@@ -1713,11 +1730,18 @@ class Article(MapBase, _CommonApi):
 	classify = Column(TINYINT,nullable=False,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
 	comment_num = Column(Integer,nullable=False,default = 0)#评论数
+	collect_num = Column(Integer,nullable=False,default = 0)#收藏数
 	scan_num = Column(Integer,nullable=False,default = 0) #0:浏览数
 	if_scan = Column(TINYINT,nullable=False,default = 0) #0:是否浏览
-	status = Column(TINYINT,nullable=False,default = 1) #0:删除 1:正常
+	status = Column(TINYINT,nullable=False,default = 1) # -1:草稿 0:删除 1:正常 2:定时发布
 	del_reason = Column(String(100)) #删除原因
-	create_time = Column(DateTime,nullable=False,default = func.now())
+	create_time = Column(DateTime,default = func.now())
+	
+	#9.3
+	public_time = Column(DateTime,default = func.now())
+	no_public = Column(Boolean,default = 0) #0:发表至论坛 1:不发表至论坛
+	comment_private = Column(Boolean,default = 0) #0:评论所有人可见 1:评论仅作者可见
+	if_admin = Column(Boolean,default = False) #是否是管理员发布
 
 # 文章评论
 class ArticleComment(MapBase, _CommonApi):
@@ -1730,6 +1754,7 @@ class ArticleComment(MapBase, _CommonApi):
 	create_time = Column(DateTime,nullable=False,default = func.now())
 	_type = Column(TINYINT,nullable=False,default = 0) #0: 评论  1:回复
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
+	reply_num = Column(Integer,nullable=False,default = 0) #评论回复数
 	if_scan = Column(TINYINT,nullable=False,default = 0) #0:是否浏览
 	status = Column(TINYINT,nullable=False,default = 1) #0:删除 1:正常
 
@@ -1760,6 +1785,16 @@ class ShortUrl(MapBase,_CommonApi):
 	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
 	short_url = Column(String(32),nullable = False)
 	long_url  = Column(String(64),nullable = False)
+
+class PictureLibrary(MapBase,_CommonApi):
+	__tablename__ = 'picture_library'
+	id = Column(Integer,primary_key = True , nullable = False , autoincrement = True)
+	_type = Column(String(32),nullable = False) #goods,goods_detail,logo,notice
+	img_url = Column(String(100),nullable = False)
+	shop_id  = Column(Integer,nullable = False)
+	status = Column(TINYINT,nullable=False,default = 1) #0:已删除 1:正常
+	create_time = Column(DateTime,nullable=False,default = func.now())
+	code = Column(String(128), nullable=False, default="")
 
 # 数据库初始化
 def init_db_data():
@@ -1913,7 +1948,7 @@ class CouponsShop(MapBase, _CommonApi):
  	start_day=Column(Integer)
  	last_day=Column(Integer)
  	get_limit=Column(Integer)
- 	closed=Column(Integer,nullable=False,default=0)
+ 	closed=Column(TINYINT,nullable=False,default=0)
  	get_rule=Column(Float,nullable=False,default=0)
  	create_date=Column(Integer)
  		 	
@@ -1939,3 +1974,78 @@ class Jpushinfo(MapBase, _CommonApi):
 	user_id=Column(Integer,nullable=False)
 	user_type=Column(TINYINT,nullable=False,default=0)  #0  admin 1 customer
 	jpush_id=Column(String(16),nullable=False)
+
+# 折扣商品
+class DiscountShopGroup(MapBase, _CommonApi):
+	__tablename__="discount_shopgroup"  #每一次新建的限时折扣对应一行
+	id=Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	discount_id=Column(Integer)
+	shop_id=Column(Integer,nullable=False)
+	discount_way=Column(TINYINT,nullable=False,default=0) # 0：表示单次折扣　１：表示周期折扣
+	weeks=Column(String(40)) # 周几生效　依次　１－－７
+	start_date=Column(Integer)
+	end_date=Column(Integer)
+	f_time=Column(Integer)
+	t_time=Column(Integer)
+	create_date=Column(Integer)
+	status=Column(TINYINT,nullable=False,default=0) # ０：未开始　　１：进行中　２：已结束　　３：已停用
+	incart_num=Column(Integer,nullable=False,default=0) 
+	ordered_num=Column(Integer,nullable=False,default=0)
+ 
+# 折扣商品详情
+class DiscountShop(MapBase, _CommonApi):
+	__tablename__="discount_shop"
+	id=Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	discount_id=Column(Integer)
+	inner_id=Column(Integer) # 每一批限时折扣的商品id 用于使用在编辑界面的时候
+	shop_id=Column(Integer,nullable=False)
+	use_goods_group=Column(Integer,nullable=False,default=-2) #商品分组
+	use_goods=Column(Integer,nullable=False,default=-1) #商品id
+	charge_type=Column(String(128)) #原价的价格类型
+	discount_rate=Column(Float) #折扣率
+	incart_num=Column(Integer,nullable=False,default=0) 
+	ordered_num=Column(Integer,nullable=False,default=0)
+	status=Column(TINYINT,nullable=False,default=0) # ０：未开始　　１：进行中　２：已结束　　３：已停用
+
+# 秒杀活动表
+class SeckillActivity(MapBase, _CommonApi):
+	__tablename__='seckill_activity'
+	id=Column(Integer,nullable=False,primary_key=True,autoincrement=True)    #秒杀活动id;
+	shop_id=Column(Integer,ForeignKey(Shop.id),nullable=False)
+
+	start_time=Column(Integer)
+	end_time=Column(Integer)
+	continue_time=Column(Integer)  #秒杀持续的时间
+
+	activity_status = Column(TINYINT,default=1,nullable=False)	#当前秒杀活动的状态,取值：-1(已停用)，0(已结束),1(未开始)，2(进行中)
+
+# 秒杀商品表
+class SeckillGoods(MapBase, _CommonApi):
+	__tablename__='seckill_goods'
+	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	fruit_id = Column(Integer,ForeignKey(Fruit.id),nullable=False)
+	activity_id=Column(Integer,ForeignKey(SeckillActivity.id),nullable=False)   
+
+	charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的原来计价方式id
+	seckill_charge_type_id = Column(Integer,ForeignKey(ChargeType.id),nullable=False)  #当前秒杀商品的计价方式id
+	former_price=Column(Float) 	#原价
+	seckill_price=Column(Float,nullable=False)  	#秒杀价,计价方式与former_price相同
+	storage_piece=Column(Integer)    #当前商品剩余库存换算成当前计价方式的份数，取整
+	activity_piece=Column(Integer)		#活动库存的份数
+	
+	not_pick=Column(Integer)	#未领取的商品的份数，默认等于当前活动库存的份数
+	picked=Column(Integer,nullable=False,default=0)	#已经领取的商品的份数，默认为0
+	ordered=Column(Integer,nullable=False,default=0)	#已经下单的商品的份数，默认为0
+	deleted=Column(Integer,nullable=False,default=0)	#已经被从该秒杀活动中删除的商品的份数，默认为0
+
+	status = Column(TINYINT,default=1,nullable=False)  #该商品的状态值，0(已删除),1(正常)
+
+# 用户抢购的秒杀商品表
+class CustomerSeckillGoods(MapBase, _CommonApi):
+	__tablename__='customer_seckill_goods'
+	id = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False)
+	shop_id = Column(Integer,ForeignKey(Shop.id),nullable=False)
+	seckill_goods_id = Column(Integer,ForeignKey(SeckillGoods.id),nullable=False)
+	status = Column(TINYINT,nullable=False,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
+

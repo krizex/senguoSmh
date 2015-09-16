@@ -11,6 +11,7 @@
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
     window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+    var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
 </script>
 <input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
@@ -24,9 +25,10 @@
             <div class="swiper-wrapper">
                 {% if notices %}
                     {% for notice in notices%}
-                    <div class="swiper-slide item">
+                    <div class="swiper-slide item notice-item" data-url="{{notice[3] or ''}}" data-type="{{notice[4]}}">
                         <img src="{{notice[2] or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/800/h/368" alt="推荐商品图片"/>
                         <p class="notice-title">{{notice[0]}}</p>
+                        <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
                     </div>
                     {% end %}
                 {% else %}
@@ -45,7 +47,6 @@
     </ul> 
     <a href="javascript:;" class="more-goods">点击查看全部商品</a>
 </div>
-
 <div class="wrap-home hidden">
     <div class="header">
         <a href="javascript:;" class="menu" id="menu"></a>
@@ -82,6 +83,21 @@
 
 {% end %}
 {% block bottom %}
+<div class="modal fade detail-box" id="detail_box">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48">公告详情</h2>
+            </div>
+            <div class="modal-body set-width-float text-center">
+                <p class="detail font14 text-center"></p>
+            </div>
+            <!-- <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div> -->
+        </div>
+    </div>
+</div>
 <script src="/static/js/third/idangerous.swiper.min.js"></script>
 <script src="{{static_url('js/beauty/home.js')}}"></script>
 {% end %}

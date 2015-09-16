@@ -269,7 +269,7 @@ function nicknameEdit(name){
             if (res.success) {
                 var name_box=new Modal('nicknameBox');
                 name_box.modal('hide');
-                $('#usernickName').text(name);
+                $('#usernickName1').text(name);
             }
             else noticeBox(res.error_txt);
         },

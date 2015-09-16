@@ -16,23 +16,26 @@
                     {% else %}
                     <img src="/static/images/holder.png" class="goods-img pull-left w15 lazy_img" data-original="/static/design_img/{{cart_f[key]['charge_type'].fruit.fruit_type.code}}.png"/>
                     {% end %}
+                    <span class="status-goods {% if cart_f[key]['activity_type']==1 %}status-seckill{% elif cart_f[key]['activity_type']==2 %}status-discount{% else %}hidden{% end %}"></span>
                     <div class="goods-info pull-left font14 p010">
                         <div class="clearfix">
                             <span class="name pull-left color">{{cart_f[key]['charge_type'].fruit.name}}</span>
                             <span class="price pull-left">￥<span class="item_total_price"></span></span>
                         </div>
                     <span class="p0 charge-type pull-left color" data-id="{{cart_f[key]['charge_type'].id}}">
-                        <span class="item_price">{{cart_f[key]['charge_type'].price}}</span>元/{{cart_f[key]['charge_type'].num}}<span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
+                        <span class="item_price">{{round(cart_f[key]['charge_type'].price*cart_f[key]['discount_rate'],2)}}</span>元/{{cart_f[key]['charge_type'].num}}<span data-id="{{cart_f[key]['charge_type'].unit}}" class="chargeUnit"></span>
                     </span>
                     </div>
                     <div class="action-box font14">
-                    <span class="pull-left number-change set-inl-blo">
-                        <button class="minus-plus text-green  number-plus text-center font18 bg_change"></button>
-                        <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
-                        <button class="minus-plus text-green  number-minus text-center font18 bg_change"></button>
-                    </span>
+                        {% if cart_f[key]['activity_type']!=1 %}
+                        <span class="pull-left number-change set-inl-blo">
+                            <button class="minus-plus text-green  number-plus text-center font18 bg_change"></button>
+                            <input type="text" value="{{cart_f[key]['num']}}" class="number-input item_number text-center bg_change" readonly/>
+                            <button class="minus-plus text-green  number-minus text-center font18 bg_change"></button>
+                        </span>
+                        {% end %}
                         <div class="pull-right delete-btn">
-                            <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey">x</a>
+                            <a href="javascript:;" class="pull-right delete-item text-center font18 text-grey" activity_type="{{cart_f[key]['activity_type']}}">x</a>
                         </div>
                     </div>
                 </div>
@@ -303,7 +306,7 @@
             <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>
             </div>
-             <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+            <!-- <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div> -->
         </div>
     </div>
 </div>

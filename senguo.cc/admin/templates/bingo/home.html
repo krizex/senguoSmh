@@ -15,6 +15,7 @@
 <script>
     window.dataObj.notices = {% raw json.dumps(context["notices"]) %}
     window.dataObj.cart_fs = {% raw json.dumps(context["cart_fs"]) %}
+    var seckill_goods_ids= {% raw json.dumps(context["seckill_goods_ids"]) %}
 </script>
 <input type="hidden" id="shop_status" value="{{context['shop_status']}}"/>
 <input type="hidden" id="if_focus" value="{{context['w_follow']}}"/>
@@ -30,7 +31,7 @@
                     <div class="swiper-container" id="swiper-container">
                         <div class="swiper-wrapper">
                             {% for notice in notices%}
-                            <div class="swiper-slide item notice-item">
+                            <div class="swiper-slide item notice-item" data-url="{{notice[3] or ''}}" data-type="{{notice[4]}}">
                                 <img src="{{notice[2] or '/static/images/banner.png'}}?imageView2/1/w/800/h/320" alt=""/>
                                 <p class="notice-title">{{notice[0]}}</p>
                                 <input type="hidden" value="{{notice[1]}}" class="notice-detail"/>
@@ -56,7 +57,7 @@
                         <span id="cur_group">{{context['group_list'][1]['name'][0:5]}}</span>
                         <ul class="more-group hidden">
                             <li data-id="-2">所有商品</li>
-                            {% for group in context['group_list'] %}
+                            {% for index,group in enumerate(context['group_list']) %}
                             <li data-id="{{group['id']}}">{{group['name'][0:5]}}</li>
                             {% end %}
                         </ul>
@@ -118,7 +119,7 @@
             <div class="modal-body set-width-float text-center">
                 <p class="detail font14 text-center"></p>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+            <!-- <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div> -->
         </div>
     </div>
 </div>

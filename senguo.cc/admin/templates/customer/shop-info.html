@@ -6,11 +6,11 @@
 {% end %}
 {% block topHeader %}
     {% if handler.shop_tpl == 0 %}
-    <div class="rainshed text-center font18 text-black fix-title">店铺详情</div>
+    <div class="rainshed text-center font18 text-black fix-title">店铺详情<a href="{{reverse_url('fruitzoneShopList')}}?action=shop&&id={{shop.admin_id}}" class="change-item"></a></div>
     {% elif handler.shop_tpl == 1 %}
-    <div class="rainshed_beauty text-center font18 text-black fix-title">店铺详情</div>
+    <div class="rainshed_beauty text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item"></a></div>
     {% else %}
-    <div class="rainshed_bingo text-center font18 text-black fix-title">店铺详情</div>
+    <div class="rainshed_bingo text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item"></a></div>
     {% end %}
 {% end %}
 
@@ -78,8 +78,8 @@
 </div>
 <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
     <li class="w25 pull-left">
-        <p class="text-grey9 text-center">运营时间</p>
-        <p class="mt3 text-center">{{operate_days or 0}}天</p>
+        <p class="text-grey9 text-center">{% if shop.config.comment_active == 1 %}店铺评价{% else %}运营时间{% end %}</p>
+        <p class="mt3 text-center">{% if shop.config.comment_active == 1 %}{{comment_sum}}条{% else %}{{operate_days or 0}}天{% end %}</p>
     </li>
     <li class="w25 pull-left">
         <p class="text-grey9 text-center">粉丝</p>

@@ -138,6 +138,22 @@ $(document).ready(function(){
     $(".apply-list").addClass("active");
     window.location = "/super/comment_apply";
 //
+}).on("click",".getin-shop",function(){
+    var action="getin";
+    var url='';
+    var code =$(this).attr("data-url");
+    var args={
+        action:action,
+        code:code
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                window.open("/admin/home");
+            }
+        }
+    )
 });
 
 function insertShop(page){
@@ -155,45 +171,46 @@ function insertShop(page){
                         var shops = res.output_data;
                         $('#list-group').empty();
                         for(var i=0; i<shops.length; i++){
-                                    var shop = shops[i];
-                                    var $item = $("#temp-ul").children("li").clone();
-                                    if(shop.shop_trademark_url){
-                                        $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
-                                    }else{
-                                        $item.find(".shop-img").attr("src","/static/images/TDSG.png");
-                                    } 
-                                    //delete by jyj 2015-6-22    
+                            var shop = shops[i];
+                            var $item = $("#temp-ul").children("li").clone();
+                            if(shop.shop_trademark_url){
+                                $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
+                            }else{
+                                $item.find(".shop-img").attr("src","/static/images/TDSG.png");
+                            } 
+                            //delete by jyj 2015-6-22    
 
-                                    var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
-                                    if (shop.auth_type != '未认证'){
-                                         var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
-                                        $item.find(".auth-link").attr("href",auth_link_url);
-                                    }
-    
-                                    $item.find(".uauth_type").html(shop.auth_type);
-                                    $item.find(".uadmin_nickname").html(shop.admin_nickname);
-                                     $item.find(".uadmin_link").attr("href",admin_link_url);
-                                    $item.find(".ushop_address_name").html(shop.shop_address_detail);
-                                    $item.find(".ushop_code").html(shop.shop_code);
-                                    $item.find(".ushop_status").html(shop.shop_shop_status);
-                                    $item.find(".ucreate_date").html(shop.create_date);
-                                    $item.find(".uold_msg").html(shop.old_msg);
-                                    $item.find(".usatisfy").html(shop.satisfy);
-                                    $item.find(".uorder_count").html(shop.order_count);
-                                    $item.find(".ugoods_count").html(shop.goods_count);
-                                    $item.find(".ushop_property").html(shop.shop_property);
-                                    $item.find(".usingle_price").html(shop.single_price);
-                                    $item.find(".uavailable_balance").html(shop.available_balance);
-                                    $item.find(".ufans_count").html(shop.fans_count);
-                                    $item.find(".uold_user").html(shop.old_user);
-                                    $item.find(".ushop_tpl").html(shop.shop_tpl);
+                            var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                            if (shop.auth_type != '未认证'){
+                                 var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
+                                $item.find(".auth-link").attr("href",auth_link_url);
+                            }
 
-                                    // change by jyj 2015-6-22:
-                                    $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
-                                    $item.find(".ushop_code_link").text(shop.shop_name);
-                                    $("#list-group").append($item);
-                                }
-                         }
+                            $item.find(".uauth_type").html(shop.auth_type);
+                            $item.find(".uadmin_nickname").html(shop.admin_nickname);
+                             $item.find(".uadmin_link").attr("href",admin_link_url);
+                            $item.find(".ushop_address_name").html(shop.shop_address_detail);
+                            $item.find(".ushop_code").html(shop.shop_code);
+                            $item.find(".ushop_status").html(shop.shop_shop_status);
+                            $item.find(".ucreate_date").html(shop.create_date);
+                            $item.find(".uold_msg").html(shop.old_msg);
+                            $item.find(".usatisfy").html(shop.satisfy);
+                            $item.find(".uorder_count").html(shop.order_count);
+                            $item.find(".ugoods_count").html(shop.goods_count);
+                            $item.find(".ushop_property").html(shop.shop_property);
+                            $item.find(".usingle_price").html(shop.single_price);
+                            $item.find(".uavailable_balance").html(shop.available_balance);
+                            $item.find(".ufans_count").html(shop.fans_count);
+                            $item.find(".uold_user").html(shop.old_user);
+                            $item.find(".ushop_tpl").html(shop.shop_tpl);
+                            $item.find(".getin-shop").attr("data-url",shop.shop_code);
+
+                            // change by jyj 2015-6-22:
+                            $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
+                            $item.find(".ushop_code_link").text(shop.shop_name);
+                            $("#list-group").append($item);
+                        }
+                 }
            }
       });
 }
@@ -390,6 +407,7 @@ function searchshop(page){
                                         $item.find(".ufans_count").html(shop.fans_count);
                                         $item.find(".uold_user").html(shop.old_user);
                                         $item.find(".ushop_tpl").html(shop.shop_tpl);
+                                        $item.find(".getin-shop").attr("data-url",shop.shop_code);
 
                                         // add by jyj 2015-6-23:
                                         $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);

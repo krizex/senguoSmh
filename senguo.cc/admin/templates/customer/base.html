@@ -52,7 +52,7 @@
 
 {% set discover_show="" %}
 {% set w25="w20" %}
-{% if handler.shop_marketing == 0 or handler.shop_auth == 0 %}
+{% if shop_marketing == 0 or get_shop_auth == 0 %}
 {% set discover_show="hidden" %}
 {% set w25="w25" %}
 {% end %}

@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+{% block title%}新建秒杀商品{% end %}
+{% block head %}
+<link rel="stylesheet" href="{{static_url('css/admin-reset.css')}}"/>
+<link rel="stylesheet" href="{{static_url('css/admin-marketing.css')}}"/>
+{% end %}
+{% set action = action%}
+{% block content %}
+<div class="action-div hidden" data-value="{{action}}"></div>
+<div class="font14">
+    <p class="c333 mt10 choose-text">
+        <a href="javascript:;" class="c999 cancel-add-goods go-back-page" title="点击返回秒杀管理页面">商品秒杀</a>
+        <span class="c333"> / 新建秒杀商品</span>
+    </p>
+</div>
+<div class="font14 mt20">
+    <div class="group">
+        <div class="wrap-coupontb fl  scroll-bar">
+            <table class="coupon-tb">
+                <colgroup>
+                    <col width="14%" />
+                    <col width="86%" />
+                </colgroup>
+                <tbody class="new-seckill-list">
+                    <tr>
+                        <td class="ver-top"><span class="ver-5">开始时间</span></td>
+                        <td>
+                            <div class="">
+                                <input type="text" class="Wdate start-time" placeholder="请点击选择时间" id="" onFocus="WdatePicker({isShowWeek:true,dateFmt:'yyyy-MM-dd HH:mm:ss',minDate:'%y-%M-%d %H:#{\%m+5}:%s'})" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ver-top"><span class="ver-5">持续时间</span></td>
+                        <td>
+                            <div class="dropdown slide-down-select w110">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 choose-hour" data-id="">选择小时数</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w110 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                    <li class="presentation choose-continue-time" role="presentation">
+                                        {% for i in range(24)%}
+                                        <a class="item" href="javascript:;">{{i}}</a> {% end %}
+                                    </li>
+                                </ul>
+                            </div>
+                            <span class="ver-8">：</span>
+                            <div class="dropdown slide-down-select w110">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 choose-minute" data-id="">选择分钟数</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w110 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                    <li class="presentation choose-continue-time" role="presentation">
+                                        {% for i in range(60)%}
+                                        <a class="item" href="javascript:;">{{i}}</a> {% end %}
+                                    </li>
+                                </ul>
+                            </div>
+                            <span class="ver-8">：</span>
+                            <div class="dropdown slide-down-select w110">
+                                <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                    <em class="pull-left c333 choose-second" data-id="">选择秒数</em>
+                                    <span class="caret pull-right no-margin-left rotate0"></span>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-right w110 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                    <li class="presentation choose-continue-time" role="presentation">
+                                        {% for i in range(60)%}
+                                        <a class="item" href="javascript:;">{{i}}</a> {% end %}
+                                    </li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="ver-top"><span class="ver-5">秒杀商品</span></td>
+                        <td class="ver-top">
+                            <span class="ver-5 text-red">*领取限制：活动期间每种商品每个用户仅限秒杀一份。</span>
+                        </td>
+                    </tr>
+                    <tr class="new-seckill-item">
+                        <td colspan="1"></td>
+                        <td colspan="1">
+                            <div class="seckill-new-div">
+                                <table class="">
+                                    <colgroup>
+                                        <col width="14%" />
+                                        <col width="86%" />
+                                    </colgroup>
+                                    <tbody class="">
+                                        <tr>
+                                            <td class="ver-top c999"><span class="ver-10">商品<span class="goods-num">1</span></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ver-top"><span class="ver-5">商品名称</span></td>
+                                            <td class="ver-top">
+                                                <div class="dropdown slide-down-select w130 mr10">
+                                                    <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" data-toggle="dropdown">
+                                                        <em class="pull-left c333 cur-goods-group" data-id="">选择商品分组</em>
+                                                        <span class="caret pull-right no-margin-left rotate0"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                        <li class="presentation choose-goods-group" role="presentation">
+                                                            {% for key in goods_group_id_name %}
+                                                            <a class="item" href="javascript:;" data-id="{{key}}">{{goods_group_id_name[key]}}</a> {% end %}
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <div class="dropdown slide-down-select w130 mr10">
+                                                    <button class="btn btn-default dropdown-toggle area height25 slide-btn choose-goods-btn" type="button" data-toggle="dropdown" data-flag="">
+                                                        <em class="pull-left c333 cur-goods" data-id="">选择商品</em>
+                                                        <span class="caret pull-right no-margin-left rotate0"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu dropdown-menu-right w130 use_goods_group_lst" role="menu" aria-labelledby="dropdownMenu">
+                                                        <li class="presentation choose-goods hidden" role="presentation" data-value="{{group_usable_fruit_dict}}">
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ver-top"><span class="ver-5 former-price" data-id="">请选择原价<br>（单选）</span></td>
+                                            <td class="ver-top">
+                                                <div class="choose-price send-day clearfix hidden choose-charge-type" data-value="{{fruit_id_charge_type}}" data-flag="">
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ver-top"><span class="ver-5">秒杀价</span></td>
+                                            <td class="ver-top hidden seckill-charge-price">
+                                                <input type="text" class="w130 seckill-price-input" placeholder="最多2位小数" /><span class="ml10 cur-charge-type"></span>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ver-top"><span class="ver-5">剩余库存</span></td>
+                                            <td class="ver-top"><span class="ver-5 remain-store"></span></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="ver-top"><span class="ver-5">活动库存</span></td>
+                                            <td class="activity-store hidden">
+                                                <input type="text" class="w130 activity-store-input" placeholder="请填整数" /><span class="ml10 activity-store-charge-type"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div>
+                                <a href="javascript:;" class="add-link">+新建</a>
+                                <a href="javascript:;" class="delete-link hidden">删除</a>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="wrap-pop-btn wrap-edit-item">
+        <a href="javascript:;" class="new-ok-btn ok-btn ok-coupon" data-flag="on">确定</a>
+        <a href="javascript:;" class="new-cancel-btn cancel-btn cancel-edit-goods goback">取消</a>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="/static/js/third/jquery.zclip.min.js"></script>
+<script src="/static/js/third/datepicker/WdatePicker.js"></script>
+<script src="{{static_url('js/admin-marketing-seckill.js')}}"></script>
+{% end %}
