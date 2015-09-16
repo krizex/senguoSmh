@@ -2226,7 +2226,7 @@ class Order(AdminBaseHandler):
 			shop_lat=shop_lat,shop_lon=shop_lon,self_address_list=self_address_list,context=dict(subpage='order'))
 
 	# 编辑订单状态（order_status == 4:订单配送, order_status == 5:订单送达）
-	def edit_status(self,order,order_status,send_message=True):
+	def edit_status(self,session,order,order_status,send_message=True):
 		# if order_status == 4:
 		# when the order complete
 		# woody
@@ -2236,30 +2236,30 @@ class Order(AdminBaseHandler):
 
 		if order_status == 4:
 			# print('[AdminOrder]edit_status: login in order_status 4')
-			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
+			order.update(session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			# 发送订单模版消息给送货员
 			if send_message:
 				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
-					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					access_token = self.get_other_accessToken(session,order.shop.admin.id)
 					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
 				else:
 					access_token = None
-				self.send_staff_message(self.session,order,access_token)
+				self.send_staff_message(session,order,access_token)
 
 		if order_status == 5:
 			# print('[AdminOrder]edit_status: login in order_status 5')
-			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+			order.update(session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
 			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 				# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
-				access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+				access_token = self.get_other_accessToken(session,order.shop.admin.id)
 				# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
 			else:
 				access_token = None
 			if access_token:
-				self.order_done(self.session,order,access_token)
-			self.order_done(self.session,order)
+				self.order_done(session,order,access_token)
+			self.order_done(session,order)
 
 	# 订单计数
 	def _count(self):
@@ -2496,7 +2496,7 @@ class Order(AdminBaseHandler):
 					return self.send_fail("订单已被取消或删除，不能修改状态")
 				elif order.status > 4:
 					return self.send_fail("订单已经完成，不能修改状态")
-				self.edit_status(order,data['status'])
+				self.edit_status(self.session,order,data['status'])
 			elif action == "edit_totalPrice":
 				if order.pay_type != 1:
 					return self.send_fail("订单非货到付款订单，不能修改价格")
@@ -2596,7 +2596,7 @@ class Order(AdminBaseHandler):
 				elif order.status > 4:
 					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
 					return self.send_fail(notice)
-				self.edit_status(order,data['status'],False)
+				self.edit_status(self.session,order,data['status'],False)
 				count += 1
 			if count > 0:
 				shop_id = self.current_shop.id

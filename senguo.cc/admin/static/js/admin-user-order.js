@@ -82,10 +82,10 @@ $(document).ready(function(){
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
-//    var $this=$(this);
-//    if(confirm('是否批量完成订单？')){
-//    orderEdit($this,'batch_edit_status',5); 
-//    }
+   var $this=$(this);
+   if(confirm('是否批量完成订单？')){
+        orderEdit($this,'batch_edit_status',5); 
+   }
 }).on('click','#batch-print',function(){
     var type=parseInt($("#receipt-type").val());
     orderPrint($(this),'batch_print'); //有线打印
@@ -95,12 +95,10 @@ $(document).ready(function(){
     var status=parseInt($this.attr('data-id'));
      if(status == 1){
         $('.func-btn').show().attr('id','batch-send').text('批量开始配送');
-    }
-    else if(status == 2){
-  //      $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
-	$('.func-btn').hide();
-    }
-    else{
+    }else if(status == 2){
+       // $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
+	   $('.func-btn').hide();
+    }else{
         $('.func-btn').hide();
     }
     _page=0;
@@ -174,11 +172,11 @@ $(document).ready(function(){
     $(this).find(".wrap-operate").removeClass("hide");
 }).on("mouseout",".self-address-list",function(){
     $(".self-address-list").find(".wrap-operate").addClass("hide");
-}).on("click",".order-list-item",function(e){
-    var $this=$(this);
-    var forbid_click=$this.find('.forbid_click');
+}).on("click",".order-inner",function(e){
+    var parent=$(this).parents(".order-list-item");
+    var forbid_click=parent.find('.forbid_click');
     if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
-        $this.find(".arrow").toggleClass("hidden"); 
+        parent.find(".arrow").toggleClass("hidden"); 
     }
 }).on("click",".to-staff-choose",function(){
     var $this=$(this);
@@ -223,7 +221,7 @@ var order_link='/admin/order';
 var _page=0;
 var _page_total;
 function getOrder(){
-    $.getItem('/static/items/admin/order-item.html?v=20150728',function(data){
+    $.getItem('/static/items/admin/order-item.html?v=20150730',function(data){
             $list_item=data;
             //商品列表item
     	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150713');
