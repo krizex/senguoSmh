@@ -2886,7 +2886,7 @@ class Cart(CustomerBaseHandler):
 				qq.update(session,use_number=use_number)
 			session.flush()
 
-			#订单删除，CustomerSeckillGoods表对应的状态恢复为0
+			# 订单删除，CustomerSeckillGoods表对应的状态恢复为0
 			fruits = eval(order.fruits)
 			charge_type_list = list(fruits.keys())
 			seckill_goods = session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
@@ -2901,8 +2901,7 @@ class Cart(CustomerBaseHandler):
 						item.status = 0
 					session.flush()
 			session.commit()
-			
-			print("[CustomerCart]Order auto cancel success: order.num:",order.num)
+			# print("[CustomerCart]Order auto cancel success: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 
