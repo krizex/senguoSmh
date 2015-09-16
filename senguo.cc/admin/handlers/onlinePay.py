@@ -121,7 +121,7 @@ class RefundWxpay(CustomerBaseHandler):
 			# 	"detail_data":detail_data,
 			# }
 			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
-				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data,seller_email="senguo@senguo.cc")
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data)
 			print(refund_url,'退款地址')
 			alipay_response = requests.get(refund_url)
 			alipay_page     = alipay_response.text

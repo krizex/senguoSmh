@@ -73,16 +73,14 @@ class Alipay(object):
     def _build_refund_url(self,service,**kw):
         params = self.default_params.copy()
         params['service'] = service
-        params.pop('v')
-        params.pop('format')
         params.update(kw)
         signkey,signvalue,signdescription = self.getSignTuple()
         signmethod = getattr(self,'_generate_%s_sign' %(signdescription.lower()))
         if signmethod == None:
             raise NotImplementedError("This type '%s' of sign is not implemented yet." %(signdescription))
         if self.signKey():
-            params.update({'sign_type':signvalue})
-        params.update({'sign_type':signvalue,'sign':signmethod(params)})
+            params.update({signkey:signvalue})
+        params.update({signkey:signvalue,'sign':signmethod(params)})
         print(params)
         return '%s?%s' % ('https://mapi.alipay.com/gateway.do',urlencode(encode_dict(params)))
 
