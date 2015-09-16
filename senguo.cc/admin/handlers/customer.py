@@ -3973,8 +3973,39 @@ class InsertData(CustomerBaseHandler):
 			balance_history.balance_type = -1
 			self.session.commit()
 			return self.send_success(text='余额消费记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		
+		elif balance_type == 7 or balance_type ==6:
+			order_num = balance_history.balance_record
+			order_num = ''.join(list(filter(str.isdigit,order_num))) #取出记录里面的数字
+			print(order_num)
+			order  = self.session.query(models.Order).filter_by(num=order_num).first()
+			if not order:
+				return self.send_fail('order not found!')
+			totalPrice = order.totalPrice
+			#将order_done函数里的操作还原
+			order.shop.order_count -= 1 #店铺订单数减1
+			order.shop.shop_property -= totalPrice # ???
+			#库存不变，在售增加，销量减少
+			fruits = eval(order.fruits)
+			if fruits:
+				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).filter(models.ChargeType.id.in_(fruits.keys())).all()
+				for s in ss:
+					num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+					# num = round(float(num),2)  #格式化为小数点后一位小数
+					s[0].current_saled += num
+					s[0].saled         -= num
+				self.session.flush()
+			before = order.shop.available_balance
+			if order.pay_type == 2:
+				order.shop.available_balance -= totalPrice #将店铺余额减少
+			if order.pay_type == 3:
+				order.shop.available_balance -= totalPrice 
+			balance_history.balance_type = -1
+			after = order.shop.available_balance
+			self.session.commit()
+			return self.send_success(text = '完成订单记录取消成功！',before=before,after=after,order_num=order_num,totalPrice=totalPrice)
 
-
+	
 class Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("order_id?:str")
