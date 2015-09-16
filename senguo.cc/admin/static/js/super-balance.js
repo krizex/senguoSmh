@@ -301,6 +301,7 @@ function history(action,page){
                             $('.wrap-acc-num').addClass('hidden');
                             $('.cash-count').removeClass('hidden');
                             $('.cash').text(res.total);
+                            $('.cash-today').text(res.total_today);
                        }
                        else if(action == 'recharge'){
                             $('.wrap-acc-num').addClass('hidden');
@@ -308,6 +309,8 @@ function history(action,page){
                             $('.charge-total').text(res.total);
                             $('.charge-use').text(res.pay);
                             $('.charge-left').text(res.left);
+                            $('.charge-total-today').text(res.total_today);
+                            $('.charge-use-today').text(res.pay_today);
                        }
                        else if(action == 'online'){
                             $('.wrap-acc-num').addClass('hidden');
@@ -315,6 +318,9 @@ function history(action,page){
                             $('.online-total').text(res.total);
                             $('.online-times').text(res.times);
                             $('.online-person').text(res.persons);
+                            $('.online-total-today').text(res.total_today);
+                            $('.online-times-today').text(res.times_today);
+                            $('.online-person-today').text(res.persons_today);
                        }
                        else if(action=='all_history'){
                         $('.wrap-acc-num').addClass('hidden');
