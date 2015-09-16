@@ -923,6 +923,10 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	shop_new = Column(Integer,nullable=False,default = 0)
 	shop_balance  = Column(Float,nullable=False,default = 0)
 
+	# add by sunmh 2015年09月14日08:51:14
+	first_purchase_time=Column(DateTime)	#首次购买时间
+	first_charge_time=Column(DateTime)		#首次充值时间
+
 	remark = Column(String(200))#用户备注 5.25
 
 

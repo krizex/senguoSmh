@@ -1169,6 +1169,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return self.send_fail('[_AccountBaseHandler]order_done: shop_follow error')
 		if shop_follow.shop_new == 0:
 			shop_follow.shop_new = 1
+			## add by sunmh 2015-09-14 
+			## 首次购买完成以后,需要在这里更新customershopfollow的首次更新时间 
+			if shop_follow.first_purchase_time==None:
+				shop_follow.first_purchase_time = datetime.datetime.now()
 		try:
 			order_count = session.query(models.Order).filter_by(customer_id = customer_id,shop_id = shop_id).count()
 		except:

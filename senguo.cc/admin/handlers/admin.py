@@ -996,14 +996,538 @@ class OrderStatic(AdminBaseHandler):
 	@AdminBaseHandler.check_arguments("action:str")
 	def post(self):
 		action = self.args["action"]
-		if action == "sum":
-			return self.sum()
+		if action == "order_amount":
+			return self.order_amount()
+		elif action == "payment_mode":
+			return self.payment_mode()
+		elif action == "order_user":
+			return self.order_user()
+		elif action == "getSumup":
+			return self.getSumup()
 		elif action == "order_time":
 			return self.order_time()
 		elif action == "recive_time":
 			return self.recive_time()
 		elif action == "order_table":
-			return self.order_table()
+		 	return self.order_table()
+		# if action == "sum":
+		# 	return self.sum()
+
+	# sunmh 
+	# 统计订单量
+	# 检查参数分别为排序方式,计价方式,当前年/月
+	@AdminBaseHandler.check_arguments("sortWay:str", "valuationWay:str","current_year:str","current_month?:str")
+	def order_amount(self):
+		sortWay= self.args["sortWay"]
+		valuationWay= self.args["valuationWay"]
+		current_year= self.args["current_year"]
+		currentshop_id=self.current_shop.id
+		#print(sortWay)
+		if sortWay == 'day':
+			current_month=self.args["current_month"]
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.day(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.day(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.day(models.Order.create_date))
+			q_onTime=q.filter(models.Order.type==2).group_by(func.day(models.Order.create_date))
+			q_atOnce=q.filter(models.Order.type==1).group_by(func.day(models.Order.create_date))
+			q_selfGet=q.filter(models.Order.type==3).group_by(func.day(models.Order.create_date))
+			q_range=self.session.query(func.day(func.now()))
+		elif sortWay=='week':
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.week(models.Order.create_date,1)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.week(models.Order.create_date,1)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.week(models.Order.create_date,1))
+			q_onTime=q.filter(models.Order.type==2).group_by(func.week(models.Order.create_date,1))
+			q_atOnce=q.filter(models.Order.type==1).group_by(func.week(models.Order.create_date,1))
+			q_selfGet=q.filter(models.Order.type==3).group_by(func.week(models.Order.create_date,1))	
+			q_range=self.session.query(func.week(func.now(),1))
+		elif sortWay=='month':
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.month(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.month(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.month(models.Order.create_date))
+			q_onTime=q.filter(models.Order.type==2).group_by(func.month(models.Order.create_date))
+			q_atOnce=q.filter(models.Order.type==1).group_by(func.month(models.Order.create_date))
+			q_selfGet=q.filter(models.Order.type==3).group_by(func.month(models.Order.create_date))
+			q_range=self.session.query(func.month(func.now()))
+		else:
+			return self.send_error(404)
+
+		data = []
+		now=datetime.datetime.now()
+		#数组的大小
+		if sortWay=='day' and int(current_year) == now.year and int(current_month) == now.month:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif sortWay=='day':
+			if current_month in ('01','03','05','07','08','10','12'):
+				rangeOfArray=31
+			elif current_month in ('04','06','09','11'):
+				rangeOfArray=30
+			elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
+				rangeOfArray=29
+			else:
+				rangeOfArray=28
+		elif (sortWay=='week' or sortWay=='month') and int(current_year) == now.year:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif sortWay=='week':
+			rangeOfArray=52
+		else:
+			rangeOfArray=12
+
+		#初始化返回的数组
+		for x in range(0, rangeOfArray):
+			data.append({'all': 0, 'onTime': 0, 'atOnce': 0,'selfGet':0})
+
+
+		#组装数组
+		def assembleArray(s_type,q_infos):
+			for info in q_infos:
+				index = int(info[1])-1
+				if valuationWay=='count':
+					value = info[0]
+				else:
+					value = round(info[0],2)
+				data[index][s_type] = value
+
+		assembleArray('all',q_all.all())
+		assembleArray('onTime',q_onTime.all())
+		assembleArray('atOnce',q_atOnce.all())
+		assembleArray('selfGet',q_selfGet.all())
+
+		return self.send_success(data=data)
+
+	# sunmh 
+	# 统计不同支付方式下的订单量与金额
+	@AdminBaseHandler.check_arguments("sortWay:str", "valuationWay:str","current_year:str","current_month?:str")
+	def payment_mode(self):
+		sortWay= self.args["sortWay"]
+		valuationWay= self.args["valuationWay"]
+		current_year= self.args["current_year"]
+		currentshop_id=self.current_shop.id
+		
+		if sortWay == 'day':
+			current_month=self.args["current_month"]
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.day(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.day(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.day(models.Order.create_date))
+			q_payAsArrival=q.filter(models.Order.pay_type==1).group_by(func.day(models.Order.create_date))
+			q_payWithBalance=q.filter(models.Order.pay_type==2).group_by(func.day(models.Order.create_date))
+			q_payOnline=q.filter(models.Order.pay_type==3).group_by(func.day(models.Order.create_date))
+			q_payOnlineWx=q.filter(models.Order.pay_type==3).filter(models.Order.online_type=='wx').group_by(func.day(models.Order.create_date))
+			q_payOnlineAlipay=q.filter(models.Order.pay_type==3).filter(models.Order.online_type=='alipay').group_by(func.day(models.Order.create_date))
+			q_range=self.session.query(func.day(func.now()))
+		elif sortWay=='week':
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.week(models.Order.create_date,1)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.week(models.Order.create_date,1)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.week(models.Order.create_date,1))
+			q_payAsArrival=q.filter(models.Order.pay_type==1).group_by(func.week(models.Order.create_date,1))
+			q_payWithBalance=q.filter(models.Order.pay_type==2).group_by(func.week(models.Order.create_date,1))
+			q_payOnline=q.filter(models.Order.pay_type==3).group_by(func.week(models.Order.create_date,1))	
+			q_payOnlineWx=q.filter(models.Order.pay_type==3).filter(models.Order.online_type=='wx').group_by(func.week(models.Order.create_date,1))
+			q_payOnlineAlipay=q.filter(models.Order.pay_type==3).filter(models.Order.online_type=='alipay').group_by(func.week(models.Order.create_date,1))
+			q_range=self.session.query(func.week(func.now(),1))
+		elif sortWay=='month':
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.month(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.month(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.month(models.Order.create_date))
+			q_payAsArrival=q.filter(models.Order.pay_type==1).group_by(func.month(models.Order.create_date))
+			q_payWithBalance=q.filter(models.Order.pay_type==2).group_by(func.month(models.Order.create_date))
+			q_payOnline=q.filter(models.Order.pay_type==3).group_by(func.month(models.Order.create_date))
+			q_payOnlineWx=q.filter(models.Order.pay_type==3).filter(models.Order.online_type=='wx').group_by(func.month(models.Order.create_date))
+			q_payOnlineAlipay=q.filter(models.Order.pay_type==3).filter(models.Order.online_type=='alipay').group_by(func.month(models.Order.create_date))
+			q_range=self.session.query(func.month(func.now()))
+		else:
+			return self.send_error(404)
+
+		data = []
+		now=datetime.datetime.now()
+		#数组的大小
+		if sortWay=='day' and int(current_year) == now.year and int(current_month) == now.month:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif sortWay=='day':
+			if current_month in ('01','03','05','07','08','10','12'):
+				rangeOfArray=31
+			elif current_month in ('04','06','09','11'):
+				rangeOfArray=30
+			elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
+				rangeOfArray=29
+			else:
+				rangeOfArray=28
+		elif (sortWay=='week' or sortWay=='month') and int(current_year) == now.year:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif sortWay=='week':
+			rangeOfArray=52
+		else:
+			rangeOfArray=12
+
+		#初始化返回的数组
+		for x in range(0, rangeOfArray):
+			data.append({'all': 0, 'payAsArrival': 0, 'payWithBalance': 0,'payOnline':0,'payOnline-wx':0,'payOnline-alipay':0})
+
+
+		#组装数组
+		def assembleArray(s_type,q_infos):
+			for info in q_infos:
+				index = int(info[1])-1
+				if valuationWay=='count':
+					value = info[0]
+				else:
+					value = round(info[0],2)
+				data[index][s_type] = value
+
+		assembleArray('all',q_all.all())
+		assembleArray('payAsArrival',q_payAsArrival.all())
+		assembleArray('payWithBalance',q_payWithBalance.all())
+		assembleArray('payOnline',q_payOnline.all())
+		assembleArray('payOnline-wx',q_payOnlineWx.all())
+		assembleArray('payOnline-alipay',q_payOnlineAlipay.all())
+
+		return self.send_success(data=data)
+
+	# sunmh 
+	# 统计不同用户的订单量与金额
+	@AdminBaseHandler.check_arguments("sortWay:str", "valuationWay:str","current_year:str","current_month?:str")
+	def order_user(self):
+		sortWay= self.args["sortWay"]
+		valuationWay= self.args["valuationWay"]
+		current_year= self.args["current_year"]
+		currentshop_id=self.current_shop.id
+		#currentshop_id=173
+		if sortWay == 'day':
+			current_month=self.args["current_month"]
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.day(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.day(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.day(models.Order.create_date))
+
+			if valuationWay=='count':
+				q=self.session.query(models.Order.id,func.day(models.Order.create_date)).\
+					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else:
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.day(models.Order.create_date)).\
+					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+
+			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
+			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+			q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)
+
+			q_range=self.session.query(func.day(func.now()))
+		elif sortWay=='week':
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.week(models.Order.create_date,1)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.week(models.Order.create_date,1)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.week(models.Order.create_date,1))
+
+			if valuationWay=='count':
+				q=self.session.query(models.Order.id,func.week(models.Order.create_date,1)).\
+					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else:
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.week(models.Order.create_date,1)).\
+					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+
+			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
+			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+			q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)	
+
+			q_range=self.session.query(func.week(func.now(),1))
+		elif sortWay=='month':
+			if valuationWay=='count':
+				q=self.session.query(func.count(1), func.month(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else :
+				q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice), func.month(models.Order.create_date)).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_all=q.group_by(func.month(models.Order.create_date))
+
+
+			if valuationWay=='count':
+				q=self.session.query(models.Order.id,func.month(models.Order.create_date)).\
+					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			else:
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.month(models.Order.create_date)).\
+					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+
+			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
+			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+			q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)	
+
+			q_range=self.session.query(func.month(func.now()))
+		else:
+			return self.send_error(404)
+
+
+		data = []
+		now=datetime.datetime.now()
+		#数组的大小
+		if sortWay=='day' and int(current_year) == now.year and int(current_month) == now.month:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif sortWay=='day':
+			if current_month in ('01','03','05','07','08','10','12'):
+				rangeOfArray=31
+			elif current_month in ('04','06','09','11'):
+				rangeOfArray=30
+			elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
+				rangeOfArray=29
+			else:
+				rangeOfArray=28
+		elif (sortWay=='week' or sortWay=='month') and int(current_year) == now.year:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif sortWay=='week':
+			rangeOfArray=52
+		else:
+			rangeOfArray=12
+
+		#初始化返回的数组
+		for x in range(0, rangeOfArray):
+			data.append({'all': 0, 'new': 0, 'old': 0,'balance':0})
+
+
+		#组装数组
+		def assembleArray(s_type,q_infos):
+			for info in q_infos:
+				index = int(info[1])-1
+				if valuationWay=='count':
+					value = info[0]
+				else:
+					value = round(info[0],2)
+				data[index][s_type] = value
+
+		def assembleArray2(s_type,q_infos):
+			for info in q_infos:
+				index=int(info[1])-1
+				if valuationWay=='count':
+						value = 1
+				else:
+					value = round(info[0],2)
+				data[index][s_type] += value
+
+		assembleArray('all',q_all.all())
+
+		assembleArray2('new',q_new.all())
+		assembleArray2('old',q_old.all())
+		assembleArray2('balance',q_balance.all())
+
+		return self.send_success(data=data)
+	
+	# sunmh 
+	# 订单支付方式,用户重复购买率与下单时间和收货时间的结论
+	@AdminBaseHandler.check_arguments("countfor:str","begin_date?:str","end_date?:str")
+	def getSumup(self):
+		countfor= self.args["countfor"]
+		currentshop_id=self.current_shop.id
+		#currentshop_id=173
+		if countfor == "payment_mode":
+			q=self.session.query(func.sum(models.Order.freight+models.Order.totalPrice)).\
+				filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+			q_payAsArrival=q.filter(models.Order.pay_type==1)
+			q_payWithBalance=q.filter(models.Order.pay_type==2)
+			q_payOnline=q.filter(models.Order.pay_type==3)
+
+			moneyAll=0 if q.all()[0][0]==None else q.all()[0][0] 
+			moneyPayAsArrival=0 if q_payAsArrival.all()[0][0]==None else q_payAsArrival.all()[0][0]
+			moneyPayWithBalance=0 if q_payWithBalance.all()[0][0]==None else q_payWithBalance.all()[0][0]
+			moneyPayOnline=0 if q_payOnline.all()[0][0]==None else q_payOnline.all()[0][0]
+			
+			#print(moneyAll,moneyPayAsArrival,moneyPayWithBalance,moneyPayOnline)
+			if moneyAll==0:
+				data={'payAsArrival':0,'payWithBalance':0,'payOnline':0}
+			else:
+				payAsArrival_percent=format(moneyPayAsArrival/moneyAll,'.2%')
+				payWithBalance_percent=format(moneyPayWithBalance/moneyAll,'.2%')
+				payOnline_percent=format(moneyPayOnline/moneyAll,'.2%')
+				data={'payAsArrival':payAsArrival_percent,'payWithBalance':payWithBalance_percent,'payOnline':payOnline_percent}
+			#print(payAsArrival_percent,payWithBalance_percent,payOnline_percent)
+		elif countfor == "order_user":
+			q_all = self.session.query(models.Order.customer_id).\
+				filter(models.Order.shop_id==currentshop_id,models.Order.status.in_([5,6,7,10])).\
+				group_by(models.Order.customer_id).\
+				having(func.count(models.Order.customer_id) > 0).count()
+			q_old = self.session.query(models.Order.customer_id).\
+				filter(models.Order.shop_id==currentshop_id,models.Order.status.in_([5,6,7,10])).\
+				group_by(models.Order.customer_id).\
+				having(func.count(models.Order.customer_id) > 1).count()
+			if q_all==0:
+				data={'repeatPurRate':0}
+			else:
+				repeatPurRate=format(q_old/q_all,'.2%')
+				data={'repeatPurRate':repeatPurRate}
+		elif countfor == "order_time" or countfor == "recive_time" :
+			begin_date=self.args["begin_date"]
+			end_date=self.args["end_date"]
+			begin_date=time.strptime(begin_date,'%Y-%m-%d')
+			begin_date=datetime.datetime(*begin_date[:3]);
+			end_date=time.strptime(end_date,'%Y-%m-%d')
+			end_date=datetime.datetime(*(end_date[:3]+(23,59,59)));
+			if countfor == "order_time":
+				q_all = self.session.query(func.count(),func.hour(models.Order.create_date)).\
+					filter(models.Order.shop_id==currentshop_id,models.Order.status.in_([5,6,7,10])).\
+					filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date).\
+					group_by(func.hour(models.Order.create_date)).order_by(func.count().desc()).limit(2)
+			elif countfor == "recive_time":
+				q_all = self.session.query(func.count(),func.substring_index(models.Order.arrival_time,':',1)).\
+					filter(models.Order.shop_id==currentshop_id,models.Order.status.in_([5,6,7,10])).\
+					filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date).\
+					group_by(func.substring_index(models.Order.arrival_time,':',1)).order_by(func.count().desc()).limit(2)
+			#print(q_all.all()[0][1])
+			if q_all.count()==0:
+				data={}
+			elif q_all.count()==1:
+				data={'top':q_all.all()[0][1]}
+			else:
+				data={'top':q_all.all()[0][1],'second':q_all.all()[1][1]}
+		else:
+			return self.send_error(404)
+			#print(data)
+		return self.send_success(data=data)
+
+	# modified by sunmh 
+	# 统计不同用户的下单时间
+	@AdminBaseHandler.check_arguments("begin_date:str","end_date:str")
+	def order_time(self):
+		# 处理时间
+		begin_date=self.args["begin_date"]
+		end_date=self.args["end_date"]
+		begin_date=time.strptime(begin_date,'%Y-%m-%d')
+		begin_date=datetime.datetime(*begin_date[:3]);
+		end_date=time.strptime(end_date,'%Y-%m-%d')
+		end_date=datetime.datetime(*(end_date[:3]+(23,59,59)));
+
+		current_shop_id=self.current_shop.id
+		#current_shop_id=173
+		q_all = self.session.query(models.Order.id,func.hour(models.Order.create_date)).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date)
+
+		q=self.session.query(models.Order.id,func.hour(models.Order.create_date)).\
+			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date)
+
+		q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
+		q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+		q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)	
+
+		data = []
+		for key in range(0, 24):
+			data.append({'all': 0, 'new': 0, 'old': 0,'balance':0})
+
+		def assembleArray2(s_type,q_infos):
+			for info in q_infos:
+				index=int(info[1])
+				data[index][s_type] += 1
+
+		assembleArray2('all',q_all.all())
+		assembleArray2('new',q_new.all())
+		assembleArray2('old',q_old.all())
+		assembleArray2('balance',q_balance.all())
+
+		#print(data)
+		return self.send_success(data=data)
+
+	# modified by sunmh
+	# 统计不同用户的收货时间
+	@AdminBaseHandler.check_arguments("begin_date:str","end_date:str")
+	def recive_time(self):
+		# 处理时间
+		begin_date=self.args["begin_date"]
+		end_date=self.args["end_date"]
+		begin_date=time.strptime(begin_date,'%Y-%m-%d')
+		begin_date=datetime.datetime(*begin_date[:3]);
+		end_date=time.strptime(end_date,'%Y-%m-%d')
+		end_date=datetime.datetime(*(end_date[:3]+(23,59,59)));
+
+		current_shop_id=self.current_shop.id
+		#current_shop_id=173
+
+		q_all = self.session.query(models.Order.id,func.substring_index(models.Order.arrival_time,':',1)).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date).\
+			filter(models.Order.arrival_time != None)
+
+		q=self.session.query(models.Order.id,func.substring_index(models.Order.arrival_time,':',1)).\
+			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date).\
+			filter(models.Order.arrival_time != None)
+
+		q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
+		q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+		q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)	
+
+		data = []
+		for key in range(0, 24):
+			data.append({'all': 0, 'new': 0, 'old': 0,'balance':0})
+
+		def assembleArray2(s_type,q_infos):
+			for info in q_infos:
+				index=int(info[1])
+				data[index][s_type] += 1
+
+		assembleArray2('all',q_all.all())
+		assembleArray2('new',q_new.all())
+		assembleArray2('old',q_old.all())
+		assembleArray2('balance',q_balance.all())
+
+		#print(data)
+		return self.send_success(data=data)
 
 	@AdminBaseHandler.check_arguments("page:int", "type:int")
 	def sum(self):
@@ -1058,152 +1582,157 @@ class OrderStatic(AdminBaseHandler):
 			return self.send_error(404)
 		# print("[AdminOrderStatic]data:",data)
 		return self.send_success(data=data)
-
-	@AdminBaseHandler.check_arguments("type:int")
-	def order_time(self):
-		type = self.args["type"]
-		q = self.session.query(func.hour(models.Order.create_date), func.count()).\
-				filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0])))
-		if type == 1:  # 累计数据
-			pass
-		elif type == 2:  # 昨天数据
-			now = datetime.datetime.now() - datetime.timedelta(1)
-			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
-			q = q.filter(models.Order.create_date >= start_date,
-						 models.Order.create_date <= end_date)
-		else:
-			return self.send_error(404)
-		ss = q.group_by(func.hour(models.Order.create_date)).all()
-		data = {}
-		for key in range(0, 24):
-			data[key] = 0
-		for s in ss:
-			data[s[0]] = s[1]
-		return self.send_success(data=data)
-
-	@AdminBaseHandler.check_arguments("type:int")
-	def recive_time(self):
-		type = self.args["type"]
-		q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time).\
-			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0])))
-		if type == 1:
-			orders = q.all()
-		elif type == 2:
-			now = datetime.datetime.now() - datetime.timedelta(1)
-			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
-			orders = q.filter(models.Order.create_date >= start_date,
-							  models.Order.create_date <= end_date).all()
-		else:
-			return self.send_error(404)
-		stop_range = self.current_shop.config.stop_range
-		data = {}
-		for key in range(0, 24):
-			data[key] = 0
-		for order in orders:
-			if order[0] == 1:  # 立即送收货时间估计
-				data[order[1].hour + (order[1].minute+stop_range)//60] += 1
-			else:  # 按时达收货时间估计
-				data[(order[1].hour+order[2].hour)//2] += 1
-		return self.send_success(data=data)
-
-	@AdminBaseHandler.check_arguments("page:int")
+	
+	# modified by sunmh
+	# 详细数据列表的内容取数	
+	@AdminBaseHandler.check_arguments("page:int","list_sort_way:str")
 	def order_table(self):
 		page = self.args["page"]
-		page_size = 15
-		start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
-		start_date = datetime.datetime(start_date.year,start_date.month,start_date.day,23,59,59)
-		end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+		sort_way=self.args["list_sort_way"]
+		current_shop_id=self.current_shop.id
+		#current_shop_id=173
+		if sort_way=="list_day":
+			# 以15天为一次查询，查询:日期，日订单数，日总订单金额
+			page_size = 15
+			start_date = datetime.datetime.now() - datetime.timedelta((page+1)*page_size)
+			start_date = datetime.datetime(start_date.year,start_date.month,start_date.day,23,59,59)
+			end_date = datetime.datetime.now() - datetime.timedelta(page*page_size)
+
+			total = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.freight+models.Order.totalPrice)).\
+				filter_by(shop_id=current_shop_id).\
+				filter(models.Order.create_date > start_date,
+					   models.Order.create_date < end_date,models.Order.status.in_([5,6,7,10])).\
+				group_by(func.date_format(models.Order.create_date,'%Y-%m-%d')).\
+				order_by(desc(models.Order.create_date)).all()
+		elif sort_way=="list_week":
+			# 以53周为一次查询，查询:周数，周订单数，周总订单金额
+			page_size = 53
+			current_week=self.session.query(func.week(func.now(),1))
+			current_year=datetime.datetime.now().year
+			current_month=datetime.datetime.now().month
+			if page==0:
+				start_date=datetime.datetime(current_year,1,1,0,0,0)
+				end_date=datetime.datetime(current_year,12,31,23,59,59)
+				page_size=current_week.all()[0][0]
+			else:
+				start_date=datetime.datetime(current_year-page,1,1,0,0,0)
+				end_date=datetime.datetime(current_year-page,12,31,23,59,59)
+			total = self.session.query(func.week(models.Order.create_date,1), func.count(), func.sum(models.Order.freight+models.Order.totalPrice)).\
+				filter_by(shop_id=current_shop_id).\
+				filter(models.Order.create_date > start_date,
+					   models.Order.create_date < end_date,models.Order.status.in_([5,6,7,10])).\
+				group_by(func.week(models.Order.create_date,1)).\
+				order_by(desc(models.Order.create_date)).all()
+			pass
+		elif sort_way=="list_month":
+			# 以12月为一次查询，查询:周数，周订单数，周总订单金额
+			page_size = 12
+			current_year=datetime.datetime.now().year
+			current_month=datetime.datetime.now().month
+			if page==0:
+				start_date=datetime.datetime(current_year,1,1,0,0,0)
+				end_date=datetime.datetime(current_year,12,31,23,59,59)
+				page_size = current_month
+			else:
+				start_date=datetime.datetime(current_year-page,1,1,0,0,0)
+				end_date=datetime.datetime(current_year-page,12,31,23,59,59)
+			total = self.session.query(func.month(models.Order.create_date), func.count(), func.sum(models.Order.freight+models.Order.totalPrice)).\
+				filter_by(shop_id=current_shop_id).\
+				filter(models.Order.create_date > start_date,
+					   models.Order.create_date < end_date,models.Order.status.in_([5,6,7,10])).\
+				group_by(func.month(models.Order.create_date)).\
+				order_by(desc(models.Order.create_date)).all()
+			#print(total)
+		else:
+			return self.send_error(404)
 		# print("[AdminOrderStatic]order_table: start_date:",start_date,", end_date:",end_date,end_date-start_date)
 
-		# 以15天为一次查询，查询:日期，日订单数，日总订单金额
-		s = self.session.query(models.Order.create_date, func.count(), func.sum(models.Order.totalPrice)).\
-			filter_by(shop_id=self.current_shop.id).\
-			filter(models.Order.create_date > start_date,
-				   models.Order.create_date < end_date,not_(models.Order.status.in_([-1,0]))).\
-			group_by(func.year(models.Order.create_date),
-					 func.month(models.Order.create_date),
-					 func.day(models.Order.create_date)).\
-			order_by(desc(models.Order.create_date)).all()
+
 		# print("[AdminOrderStatic]start_date: s:",s)
 
 		# 总订单数
 		# 截止到end_date的:总订单总价,总订单数
-		total = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
-			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
+		addup = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			filter(models.Order.create_date <= end_date).all()
-		total = list(total[0])
-
-		# 日老用户订单数
-		ids = self.old_follower_ids(self.current_shop.id)
-		s_old = self.session.query(models.Order.create_date, func.count()).\
-			filter(models.Order.create_date >= start_date,
-				   models.Order.create_date <= end_date,
-				   models.Order.customer_id.in_(ids),not_(models.Order.status.in_([-1,0]))).\
-			group_by(func.year(models.Order.create_date),
-					 func.month(models.Order.create_date),
-					 func.day(models.Order.create_date)).\
-			order_by(desc(models.Order.create_date)).all()
-
-		# 总老用户订单数
-		old_total = self.session.query(models.Order).\
-			filter_by(shop_id=self.current_shop.id).\
-			filter(models.Order.create_date <= end_date,
-				   models.Order.customer_id.in_(ids),not_(models.Order.status.in_([-1,0]))).count()
+		addup = list(addup[0])
 
 		data = []
-		i = 0
-		j = 0
-		# data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额，日老用户订单数，累计老用户订单数]
-		for x in range(0, 15):
-			date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
-			# print("[AdminOrderStatic]date:",date.strftime('%Y-%m-%d'))
-			# print(s[0])
-			# if i < len(s) and (datetime.datetime.now()-s[i][0]).days == x+(page*page_size):
-			# if i < len(s):
-			#	print('haha',s[i][0].strftime('%Y-%m-%d'),date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d')==date.strftime('%Y-%m-%d'))
-			if i < len(s) and (s[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
-				if j < len(s_old) and (datetime.datetime.now()-s_old[j][0]).days == x+(page*page_size):
-					data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(float(s[i][2]),'.2f'), format(float(total[0]),'.2f'), s_old[j][1], old_total))
-					# print("[AdminOrderStatic]",s[i][1],date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d'),s[i][2])
-					total[1] -= s[i][1]
-					total[0] -= s[i][2]
-					old_total -= s_old[j][1]
+		if sort_way=="list_day":
+			i = 0
+			j = 0
+			# data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额,日客单价,累计客单价]
+			for x in range(0, page_size):
+				date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
+				if i < len(total) and (total[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
+					if total[i][1]==0:
+						total_price=0
+					else:
+						total_price=format(float(total[i][2])/float(total[i][1]),'.2f')
+
+					if addup[1]==0:
+						addup_price=0
+					else:
+						addup_price=format(float(addup[0])/float(addup[1]),'.2f')
+
+					data.append((date.strftime('%Y-%m-%d'), total[i][1], addup[1], format(float(total[i][2]),'.2f'), format(float(addup[0]),'.2f'),total_price,addup_price))
+					addup[1] -= total[i][1]
+					addup[0] -= total[i][2]
 					i += 1
-					j += 1
 				else:
-					# print("[AdminOrderStatic]",s[i][1],date.strftime('%Y-%m-%d'),s[i][0].strftime('%Y-%m-%d'),s[i][2])
-					data.append((date.strftime('%Y-%m-%d'), s[i][1], total[1], format(float(s[i][2]),'.2f'), format(float(total[0]),'.2f'), 0, old_total))
-					total[1] -= s[i][1]
-					total[0] -= s[i][2]
+					if addup[0]:
+						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, format(float(addup[0]),'.2f'),0,format(float(addup[0])/float(addup[1]),'.2f')))
+					else:
+						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, addup[0],0,format(float(addup[0])/float(addup[1]),'.2f')))
+				if addup[1] <= 0:
+					break
+		elif sort_way=="list_week" or sort_way=="list_month":
+			i = 0
+			j = 0
+			#print(total)
+			for x in range( page_size+1,1,-1):
+				#print(x)
+				if sort_way=="list_month":
+					time=str(current_year-page)+'-'+(str(x) if x>9 else '0'+str(x))
+				else:
+					time=x
+				if i < len(total) and total[i][0]==x:
+					if total[i][1]==0:
+						total_price=0
+					else:
+						total_price=format(float(total[i][2])/float(total[i][1]),'.2f')
+
+					if addup[1]==0:
+						addup_price=0
+					else:
+						addup_price=format(float(addup[0])/float(addup[1]),'.2f')
+					data.append((time, total[i][1], addup[1], format(float(total[i][2]),'.2f'), format(float(addup[0]),'.2f'),total_price,addup_price))
+					addup[1] -= total[i][1]
+					addup[0] -= total[i][2]
 					i += 1
-			else:
-				# print("[AdminOrderStatic]date:",date.strftime('%Y-%m-%d'))
-				if total[0]:
-					data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, format(float(total[0]),'.2f'), 0, old_total))
 				else:
-					data.append((date.strftime('%Y-%m-%d'), 0, total[1], 0, total[0], 0, old_total))
-			if total[1] <= 0:
-				break
+					if addup[0]:
+						data.append((time, 0, addup[1], 0, format(float(addup[0]),'.2f'),0,format(float(addup[0])/float(addup[1]),'.2f')))
+					else:
+						data.append((time, 0, addup[1], 0, addup[0],0,format(float(addup[0])/float(addup[1]),'.2f')))
+				if addup[1] <= 0:
+					break
+
 		first_order = self.session.query(models.Order).\
-			filter(models.Order.shop_id==self.current_shop.id,not_(models.Order.status.in_([-1,0]))).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			order_by(models.Order.create_date).first()
+		print(first_order.create_date)
 		if first_order:  # 新开的店铺一个order都没有，所以要判断一下
-			page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+			if sort_way=="list_day":
+				page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
+			else:
+				print(datetime.datetime.now().year , first_order.create_date.year)
+				page_sum = datetime.datetime.now().year - first_order.create_date.year+1
 		else:
 			page_sum = 0
-		# print("[AdminOrderStatic]data:",data)
-		return self.send_success(page_sum=page_sum, data=data)
 
-	# 老用户的id
-	def old_follower_ids(self, shop_id):
-		q = self.session.query(models.Order.customer_id).\
-			filter(models.Order.shop_id==shop_id,not_(models.Order.status.in_([-1,0]))).\
-			group_by(models.Order.customer_id).\
-			having(func.count(models.Order.customer_id) > 1).all()
-		ids = [x[0] for x in q]
-		return ids
+		#print("[AdminOrderStatic]data:",data)
+		return self.send_success(page_sum=page_sum, data=data)
 
 # 用户统计
 class FollowerStatic(AdminBaseHandler):
