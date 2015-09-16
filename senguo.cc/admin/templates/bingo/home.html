@@ -49,7 +49,7 @@
                 <ul class="tab-group group">
                     {% if len(context['group_list'])>1%}
                     <li data-id="-2">所有商品</li>
-                    <li data-id="{{context['group_list'][0]['id']}}">{{context['group_list'][0]['name'][0:5]}}</li>
+                    <li data-id="{{context['group_list'][0]['id']}}" class="mid-group">{{context['group_list'][0]['name'][0:5]}}</li>
                     <li class="more-group-btn" data-id="{{context['group_list'][1]['id']}}">
                         {% if len(context['group_list']) >2%}
                         <span class="i-cert"></span>
@@ -65,7 +65,7 @@
                         </ul>
                     </li>
                     {% else %}
-                    <li data-id="{{context['group_list'][0]['id'] if context['group_list'] else 0}}" class="only-one">{{context['group_list'][0]['name'][0:5] if context['group_list'] else "默认分组" }}</li>
+                    <li data-id="{{context['group_list'][0]['id'] if context['group_list'] else 0}}" class="only-one mid-group">{{context['group_list'][0]['name'][0:5] if context['group_list'] else "默认分组" }}</li>
                     {% end %}
                 </ul>
             </div>
@@ -121,7 +121,7 @@
             <div class="modal-body set-width-float text-center">
                 <p class="detail font14 text-center"></p>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
+            <!-- <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div> -->
         </div>
     </div>
 </div>

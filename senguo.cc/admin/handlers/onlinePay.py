@@ -252,8 +252,10 @@ class OnlineWxPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
+		order.is_qrwxpay = 1 #表示该订单为扫码支付
 		order_num = order.num
 		totalPrice = order.new_totalprice
+		self.session.commit()
 		# print("[WeixinQrPay]totalPrice:",totalPrice)
 		# shop_name = re.compile(u'[\U00010000-\U0010ffff]').sub(u'',shop_name)
 		wxPrice =int(totalPrice * 100)
@@ -265,6 +267,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml()
+		print(res)
 		if isinstance(res,bytes):
 			bianma = chardet.detect(res)['encoding']
 			res = res.decode(bianma)

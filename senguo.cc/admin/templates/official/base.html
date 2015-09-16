@@ -19,6 +19,7 @@
 {% set product_active=''%}
 {% set community_active=''%}
 {% set about_active=''%}
+{% set appdownload_active=''%}
 {% if context['subpage'] == 'home'%}
 {% set home_active='active'%}
 {% elif context['subpage'] == 'about'%}
@@ -29,41 +30,50 @@
 {% set shop_active='active'%}
 {% elif context['subpage'] == 'product'%}
 {% set product_active='active'%}
+{% elif context['subpage'] == 'appdownload'%}
+{% set appdownload_active='active'%}
 {% end %}
 <body>
 	<div class="clearfix head">
 		<div class="w1000 nav-box group">
 			<div class="senguo-header pull-left">
-				<div class="logo_box">
-                    <a href="{{reverse_url('OfficialHome')}}"><img src="{{static_url('official_img/logo2.png')}}" class="logo"/></a>
+				<div class="logo_box pull-left">
+                    <a href="{{reverse_url('OfficialHome')}}">
+                        <img src="{{static_url('official_img/new_logo.png')}}" class="logo"/>
+                    </a>
 				</div>
 			</div>
 			<div class="senguo-nav font16">
 				<ul class="group">
 					<li class="{{home_active}}"><a href="{{reverse_url('OfficialHome')}}" >首页</a></li>
-					<li class="{{product_active}}"><a href="{{reverse_url('OfficialProduct')}}">产品介绍</a></li>
+					<li class="{{product_active}} product-link"><a href="{{reverse_url('OfficialProduct')}}">产品介绍</a></li>
                     <li class="{{shop_active}}"><a href="{{reverse_url('OfficialShopList')}}">店铺列表</a></li>
 					<li class="{{about_active}}"><a href="{{reverse_url('OfficialAbout')}}">关于我们</a></li>
                     <li class="{{community_active}}"><a href="{{reverse_url('BbsMain')}}" target="_blank">森果社区</a></li>
-                    <li class="admin-box">
-                        <ul class="text-grey header-top" id="header-top">
-                            <li class="border-right"><a href="{{reverse_url('switchshop')}}" class="text-black">管理后台</a></li>
-                            <li><a href="{{reverse_url('ApplyHome')}}" class="text-black">申请接入</a></li>
-                        </ul>
-                    </li>
+                    <li class="{{appdownload_active}}"><a href="{{reverse_url('OfficialAppdownload')}}">下载APP</a></li>
+                    <div class="admin-box">
+                        <div class="login-box hidden-xs">
+                            <ul class="text-grey header-top" id="header-top">
+                                <li><a href="{{reverse_url('switchshop')}}" class="new-font-color">管理后台</a></li>
+                                <li><a href="{{reverse_url('ApplyHome')}}" class="new-font-color">申请接入</a></li>
+                            </ul>
+                        </div>
+                    </div>
 				</ul>
 			</div>
 		</div>
 	{%block header-extends%}{%end%}
 	</div>
-	<div class="container clearfix mt20">
+	<main class="container clearfix">
 		{% block content%} {% end%}
 	</div>
     <div class="scrollUpf">
         <a href="javascript:;" title="返回顶部" id="scrollUp" class="scrollUp"></a>
         <a title="森果服务号" href="javascript:;" id="r-wx" class="r-wx">
             <div id="fi-wx-show" class="fi-wx-show">
-                <div class="wx-show-txt"></div>
+                <div class="wx-show-txt">
+                    <img src="{{static_url('official_img/server.jpg')}}" class="logo"/>
+                </div>
                 <div class="wx-threeRs"></div>
                 <div class="wx-threeR"></div>
             </div>
@@ -80,11 +90,11 @@
             <div class="iokf"></div>
         </a>
     </div>
-	<div class="footer mt30">
+	<!-- <footer class="footer">
 		{% block bottom %}
 		<p class="text-center text-grey">鄂ICP备14012961号-1&nbsp;&nbsp;Copyright&copy;2014-2015 senguo.cc版权所有</p>
 		{% end %}
-	</div>
+	</footer> -->
     <script>
         var _hmt = _hmt || [];
         (function() {
