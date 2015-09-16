@@ -10,9 +10,8 @@ $(document).ready(function(){
     var status=parseInt($('.order-status').find('.active').attr('data-id'));
     if(status == 1){
         $('.func-btn').show().attr('id','batch-send').text('批量开始配送');
-    }
-    else if(status == 2){
-        // $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
+    }else if(status == 2){
+        $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
     initBmap();
 }).on('click','.print-order',function(){
@@ -79,13 +78,15 @@ $(document).ready(function(){
 }).on('click','#batch-send',function(){
     var $this=$(this);
     if(confirm('提示：批量配送订单将全部分配给默认配送员，您可以在批量配送后再到“配送中”的订单中单独指定配送员。\n是否批量开始配送该订单？')){
+        $(".wrap-loading-box").removeClass("hidden");
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
-   // var $this=$(this);
-   // if(confirm('是否批量完成订单？')){
-   //      orderEdit($this,'batch_edit_status',5); 
-   // }
+   var $this=$(this);
+   if(confirm('是否批量完成订单？')){
+        $(".wrap-loading-box").removeClass("hidden");
+        orderEdit($this,'batch_edit_status',5); 
+   }
 }).on('click','#batch-print',function(){
     var type=parseInt($("#receipt-type").val());
     orderPrint($(this),'batch_print'); //有线打印
@@ -96,8 +97,8 @@ $(document).ready(function(){
      if(status == 1){
         $('.func-btn').show().attr('id','batch-send').text('批量开始配送');
     }else if(status == 2){
-       // $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
-	   $('.func-btn').hide();
+       $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
+	   // $('.func-btn').hide();
     }else{
         $('.func-btn').hide();
     }
@@ -893,27 +894,32 @@ function orderEdit(target,action,content){
                             }
                             $item.find('.status-send').find("img").attr({"src":send_img});
                         });
-                    }
-                    else if(content==5) {
+                    }else if(content==5) {
                         $('.order-checked').each(function(){
                             var $this=$(this);
                             var $item =$this.parents('.order-list-item');
-                            var send_name=$item.find(".to-staff-send").text().replace("配送中","");
-                            var send_img=$item.find(".status-send").find("img").attr("src");
-                            $item.find('.status_finish').text().removeClass('hidden');
+                            var send_name=$item.find(".send_person_list li").first().find(".sub-name").text();
+                            var send_img=$item.find(".send_person_list li").first().find(".sub-img").attr("src");
+                            $item.find(".status_finish").removeClass("hidden");
                             $item.find('.status_order').addClass('hidden');
                             $item.find('.status_send').addClass('hidden');
-                            $item.find('.to-finish').attr({'disabled':true}).text(send_name+'已完成');
-                            $item.find('.status-finish')
+                            $item.find('.to-finish').attr({'disabled':true}).text('已完成');
                             $item.find('.status-finish').find("img").attr({"src":send_img});
                         });
                     }
+                    if(res.notice){
+                        Tip(res.notice);
+                    }
+                    $(".wrap-loading-box").addClass("hidden");
                 }else if(action=='edit_totalPrice'){
                     parent.modal('hide');
                     $('.order-list-item').eq(index).find('.order-price').text(content);
                 }
             }
             else {
+                if(action=='batch_edit_status'){
+                    $(".wrap-loading-box").addClass("hidden");
+                }
                 return Tip(res.error_text);
             }
         },

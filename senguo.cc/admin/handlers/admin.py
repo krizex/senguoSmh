@@ -2475,10 +2475,16 @@ class Order(AdminBaseHandler):
 
 		# 编辑订单备注 / 编辑（修改）配送员 / 编辑订单状态（开始配送/完成订单） / 编辑订单总价 / 删除订单 / 打印订单
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
-			try:
-				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).one()
-			except:
-				order = None
+			if action == "edit_status":
+				try:
+					order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).with_lockmode("update").one()
+				except:
+					order = None
+			else:
+				try:
+					order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).one()
+				except:
+					order = None
 			try:
 				shop = self.session.query(models.Shop).filter_by(id=order.shop_id).one()
 			except:
@@ -2615,14 +2621,14 @@ class Order(AdminBaseHandler):
 			for key in order_list_id:
 				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
 				if not order:
-					notice = "没找到订单",order.onum
-					return self.send_fail(notice)
+					notice += " 没找到订单"+str(order.onum)
+					continue
 				elif order.status == 4 and data['status'] == 4:
-					notice = "订单"+str(order.num)+"已在配送中，请不要重复操作"
-					return self.send_fail(notice)
+					notice += " 订单"+str(order.num)+"已在配送中，请不要重复操作"
+					continue
 				elif order.status > 4:
-					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
-					return self.send_fail(notice)
+					notice += " 订单"+str(order.num)+"已完成，请不要重复操作"
+					continue
 				self.edit_status(self.session,order,data['status'],False)
 				count += 1
 			if count > 0:
@@ -2642,6 +2648,7 @@ class Order(AdminBaseHandler):
 					staff_name = self.current_shop.admin.accountinfo.nickname
 				shop_name = self.current_shop.shop_name
 				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count,admin_id)
+			return self.send_success(notice=notice)
 		# 批量打印订单
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
