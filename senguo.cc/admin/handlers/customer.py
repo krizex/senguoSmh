@@ -2127,10 +2127,18 @@ class GoodsSearch(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		shop_id = self.shop_id
-		shop = self.session.query(models.Shop).filter_by(id=shop_id ).first()
+		shop = self.session.query(models.Shop.id,models.Shop.shop_auth).filter_by(id=shop_id).first()
 		if not shop:
 			return self.send_error(404)
-		return self.render("customer/search-goods-list.html",context=dict(subpage='home'))
+		try:
+			shop_auth = shop.shop_auth
+		except:
+			shop_auth = 0
+		try:
+			shop_marketing = self.get_shop_marketing(shop_id)
+		except:
+			shop_marketing = 0
+		return self.render("customer/search-goods-list.html",context=dict(subpage='home'),shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("search:str")
