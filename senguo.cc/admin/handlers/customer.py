@@ -3768,6 +3768,10 @@ class payTest(CustomerBaseHandler):
 					shop_province=shop_province,shop_name=shop_name)
 				self.session.add(balance_history)
 				# print("[WxCharge]balance_history:",balance_history)
+				## add by sunmh 2015-09-14 
+				## 充值完成后,如果是首次充值,则更新customershopfollow的首次充值时间
+				if shop_follow.first_charge_time==None:
+					shop_follow.first_charge_time=datetime.datetime.now()
 				self.session.commit()
 				
 			# 充值送优惠券

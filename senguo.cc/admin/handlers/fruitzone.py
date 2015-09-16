@@ -1040,6 +1040,10 @@ class SystemPurchase(FruitzoneBaseHandler):
 				shop_totalPrice = shop_totalPrice,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
 			self.session.add(balance_history)
 			# print("[AliCharge]balance_history:",balance_history)
+			## add by sunmh 2015-09-14 
+			## 充值完成后,如果是首次充值,则更新customershopfollow的首次充值时间
+			if shop_follow.first_charge_time==None:
+				shop_follow.first_charge_time=datetime.datetime.now()
 			self.session.commit()
 
 		self.updatecoupon(customer_id)
@@ -1215,6 +1219,12 @@ class SystemPurchase(FruitzoneBaseHandler):
 				balance_value = totalPrice,balance_record = '余额充值(支付宝)：用户 '+ name  , name = name , balance_type = 0,\
 				shop_totalPrice = shop_totalPrice,customer_totalPrice = shop_follow.shop_balance,transaction_id =ali_trade_no,shop_province=shop_province,shop_name=shop_name)
 			self.session.add(balance_history)
+			## add by sunmh 2015-09-14 
+			## 充值完成后,如果是首次充值,则更新customershopfollow的首次充值时间
+			if shop_follow.first_charge_time==None:
+				shop_follow.first_charge_time=datetime.datetime.now()
+
+
 			# print("[AliCharge]balance_history:",balance_history)
 			self.session.commit()
 

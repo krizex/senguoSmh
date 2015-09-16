@@ -235,13 +235,14 @@
 .self-address-list>li{height: 25px;overflow: hidden;}
 .self-address-list>li:hover{background-color: #eee;} 
 
+.order-export-box{font-size:14px;}
 .order-export{font-size: 14px;height: 22px;line-height: 22px;}
 .order-export-con{width:360px;margin:0 auto;padding:20px 0;}
 .order-export-con>li{width:100%;clear:both;height:24px;line-height:24px;margin-bottom:10px;}
 .order-export-con>li input{height:24px !important;width:128px;border:1px solid #ddd !important;}
 .order-export-con .tit{display:inline-block;width:80px;float:left;}
 
-
+.order-export-sure{margin-left:2px;}
 
 
 
