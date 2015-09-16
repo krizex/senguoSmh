@@ -4850,12 +4850,14 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
 			shop_city = int(data["shop_city"])
-			if "lat" in data:
-				lat       = float(data["lat"])
-				shop.lat       = lat
-			if "lon" in data:
-				lon       = float(data['lon'])
-				shop.lon       = lon
+			if "lat" in data and "lon" in data:
+				lat = float(data["lat"])
+				lon = float(data['lon'])
+			else:
+				lat = 0
+				lon = 0
+			shop.lat = lat
+			shop.lon = lon
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")
