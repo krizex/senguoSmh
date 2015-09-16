@@ -1681,48 +1681,55 @@ class OrderStatic(AdminBaseHandler):
 
 		# 总订单数
 		# 截止到end_date的:总订单总价,总订单数
+		# current_shop_id=1735
 		addup = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			filter(models.Order.create_date <= end_date).all()
+		#print(addup)
 		addup = list(addup[0])
-
+		#print(addup)
 		data = []
 		if sort_way=="list_day":
 			i = 0
 			j = 0
 			# data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额,日客单价,累计客单价]
 			for x in range(0, page_size):
+				if addup[1]==0:
+					addup_price=0
+				else:
+					addup_price=format(float(addup[0])/float(addup[1]),'.2f')
+
 				date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
 				if i < len(total) and (total[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 					if total[i][1]==0:
 						total_price=0
 					else:
 						total_price=format(float(total[i][2])/float(total[i][1]),'.2f')
-
-					if addup[1]==0:
-						addup_price=0
-					else:
-						addup_price=format(float(addup[0])/float(addup[1]),'.2f')
-
 					data.append((date.strftime('%Y-%m-%d'), total[i][1], addup[1], format(float(total[i][2]),'.2f'), format(float(addup[0]),'.2f'),total_price,addup_price))
 					addup[1] -= total[i][1]
 					addup[0] -= total[i][2]
 					i += 1
 				else:
+
 					if addup[0]:
-						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, format(float(addup[0]),'.2f'),0,format(float(addup[0])/float(addup[1]),'.2f')))
-					else:
-						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, addup[0],0,format(float(addup[0])/float(addup[1]),'.2f')))
+						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, format(float(addup[0]),'.2f'),0,addup_price))
+					# else:
+					# 	data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, addup[0],0,addup_price))
 				if addup[1] <= 0:
 					break
 		elif sort_way=="list_week" or sort_way=="list_month":
 			i = 0
 			j = 0
 			#print(total)
-			for x in range( page_size+1,1,-1):
+			for x in range( page_size,1,-1):
 				#print(x)
+				if addup[1]==0:
+					addup_price=0
+				else:
+					addup_price=format(float(addup[0])/float(addup[1]),'.2f')
+
 				if sort_way=="list_month":
-					time=str(current_year-page)+'-'+(str(x) if x>9 else '0'+str(x))
+					time=str(current_year-page)+'-'+(str(x) if (x)>9 else '0'+str(x))
 				else:
 					time=x
 				if i < len(total) and total[i][0]==x:
@@ -1731,31 +1738,27 @@ class OrderStatic(AdminBaseHandler):
 					else:
 						total_price=format(float(total[i][2])/float(total[i][1]),'.2f')
 
-					if addup[1]==0:
-						addup_price=0
-					else:
-						addup_price=format(float(addup[0])/float(addup[1]),'.2f')
 					data.append((time, total[i][1], addup[1], format(float(total[i][2]),'.2f'), format(float(addup[0]),'.2f'),total_price,addup_price))
 					addup[1] -= total[i][1]
 					addup[0] -= total[i][2]
 					i += 1
 				else:
 					if addup[0]:
-						data.append((time, 0, addup[1], 0, format(float(addup[0]),'.2f'),0,format(float(addup[0])/float(addup[1]),'.2f')))
-					else:
-						data.append((time, 0, addup[1], 0, addup[0],0,format(float(addup[0])/float(addup[1]),'.2f')))
+						data.append((time, 0, addup[1], 0, format(float(addup[0]),'.2f'),0,addup_price))
+					# else:
+					# 	data.append((time, 0, addup[1], 0, addup[0],0,addup_price))
 				if addup[1] <= 0:
 					break
-
+			
 		first_order = self.session.query(models.Order).\
 			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			order_by(models.Order.create_date).first()
-		print(first_order.create_date)
+		
 		if first_order:  # 新开的店铺一个order都没有，所以要判断一下
 			if sort_way=="list_day":
 				page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 			else:
-				print(datetime.datetime.now().year , first_order.create_date.year)
+				#print(datetime.datetime.now().year , first_order.create_date.year)
 				page_sum = datetime.datetime.now().year - first_order.create_date.year+1
 		else:
 			page_sum = 0
