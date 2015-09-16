@@ -195,9 +195,9 @@ class Home(AdminBaseHandler):
 			shop_balance = shop.shop_balance
 			unfinish_orders = [x for x in shop.orders if x.status in [1,2,3,4]]
 			if len(unfinish_orders) !=0 :
-				return self.send_fail('您尚有订单未完成，不可删除店铺')
+				return self.send_fail('该店铺尚有订单未完成，不可删除店铺')
 			if shop_balance !=0:
-				return self.send_fail('您的店铺余额不为0，不可删除店铺')
+				return self.send_fail('该店铺余额不为0，不可删除店铺')
 			shop.status = -1
 			self.session.commit()
 			return self.send_success()
