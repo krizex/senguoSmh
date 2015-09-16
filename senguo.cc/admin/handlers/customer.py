@@ -262,6 +262,8 @@ class customerGoods(CustomerBaseHandler):
 
 		if not shop:
 			return self.send_fail('shop not found')
+		if shop.status == -1:
+			return self.write("该店铺已删除")
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			# w_follow = False
@@ -640,6 +642,8 @@ class Home(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('[CustomerHome]shop code error')
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		if shop is not None:
 			shop_name = shop.shop_name
 			shop_id   = shop.id
@@ -724,6 +728,8 @@ class Discover(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		if shop:
 			if shop.marketing:
 				confess_active = shop.marketing.confess_active
@@ -1026,6 +1032,8 @@ class ShopProfile(CustomerBaseHandler):
 		if not shop:
 			# print("[CustomerShopProfile]Shop not found:",shop_code)
 			return self.send_error(404)
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		shop_auth = 0
 		shop_marketing = self.get_shop_marketing(shop.id)
 		shop_id = shop.id
@@ -1337,13 +1345,14 @@ class Market(CustomerBaseHandler):
 		# return self.send_success()
 		# print(self.current_user.id)
 
-
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		shop_marketing = self.get_shop_marketing(shop.id)
 		if len(self.args.get('action')) < 1: 
 			if shop.admin.has_mp:
@@ -2157,6 +2166,8 @@ class Cart(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop error')
 		if not shop:return self.send_error(404)
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		shop_marketing = self.get_shop_marketing(shop.id)
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
@@ -2272,20 +2283,12 @@ class Cart(CustomerBaseHandler):
 			discount_ids=[]
 		# print("[CustomerCart]json.dumps(self.args):",json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
-		self.updatecoupon(customer_id)
-		self.updatediscount()
+
 		online_type = ''
 		shop_status = current_shop.status
-		can_use_coupon=0  #标记能否使用优惠券
-		coupon_key=self.args["coupon_key"]
-		q=[]
-		qshop=[]
-		if coupon_key!='None':
-			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).first()
-			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
-			now_date=int(time.time())
-			if now_date>q.uneffective_time:
-				return self.send_fail("下单失败，您选择的优惠券已经过期")
+		
+		if shop_status == -1:
+			return self.send_fail('该店铺已删除，暂不能下单(っ´▽`)っ')
 		if shop_status == 0:
 			return self.send_fail('该店铺已关闭，暂不能下单(っ´▽`)っ')
 		elif shop_status == 2:
@@ -2298,6 +2301,19 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
 			return self.send_fail("您的购物篮太满啦！请不要一次性下单超过20种商品")
+
+		q=[]
+		qshop=[]
+		can_use_coupon=0  #标记能否使用优惠券
+		coupon_key=self.args["coupon_key"]
+		self.updatecoupon(customer_id)
+		self.updatediscount()
+		if coupon_key!='None':
+			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).first()
+			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
+			now_date=int(time.time())
+			if now_date>q.uneffective_time:
+				return self.send_fail("下单失败，您选择的优惠券已经过期")
 
 		# added by jyj 2015-8-26
 		#fruits 为一个字典，形式：{'12647': 2, '12667': 6},表示计价方式和数量的键值对字典；
