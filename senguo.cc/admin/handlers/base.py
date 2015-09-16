@@ -1916,8 +1916,11 @@ class AdminBaseHandler(_AccountBaseHandler):
 			SH2s.sort(key = lambda x:x["if_default"],reverse=True)
 			staffs_info =self.session.query(models.Accountinfo.nickname,models.Accountinfo.realname,models.Accountinfo.phone,\
 				models.Accountinfo.headimgurl_small).filter_by(id=order.SH2_id).first()
-			staffs_info_data = {"id": order.SH2_id, "nickname": staffs_info[0],"realname": staffs_info[1], "phone": staffs_info[2],\
+			try:
+				staffs_info_data = {"id": order.SH2_id, "nickname": staffs_info[0],"realname": staffs_info[1], "phone": staffs_info[2],\
 				"headimgurl":staffs_info[3]}
+			except:
+				staffs_info_data = {}
 			d["SH2"] = staffs_info_data
 					# print("[AdminBaseHandler]getOrder:",d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
