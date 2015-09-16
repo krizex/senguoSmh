@@ -9,7 +9,7 @@ $(document).ready(function(){
 	login($this);
 }).on('keydown','#password',function(){
     if(window.event.keyCode == 13){
-        var $this=$(this);
+        var $this=$("#phoneLogin");
         $this.attr({'disabled':true});
         login($this);
     }
