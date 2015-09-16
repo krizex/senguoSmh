@@ -2618,8 +2618,12 @@ class Order(AdminBaseHandler):
 			order_list_id = data["order_list_id"]
 			notice = ''
 			count=0
+			session = self.session
 			for key in order_list_id:
-				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
+				try:
+					order =  session.query(models.Order).filter_by(id=int(key)).with_lockmode("update").one()
+				except:
+					order = None
 				if not order:
 					notice += " 没找到订单"+str(order.onum)
 					continue
@@ -2629,14 +2633,14 @@ class Order(AdminBaseHandler):
 				elif order.status > 4:
 					notice += " 订单"+str(order.num)+"已完成，请不要重复操作"
 					continue
-				self.edit_status(self.session,order,data['status'],False)
+				self.edit_status(session,order,data['status'],False)
 				count += 1
 			if count > 0:
 				shop_id = self.current_shop.id
 				admin_id = self.current_shop.admin.id
 				staff_info = []
 				try:
-					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
+					staff_info = session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
 					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
 				except:
 					print("[AdminOrder]Batch edit order: didn't find default staff")

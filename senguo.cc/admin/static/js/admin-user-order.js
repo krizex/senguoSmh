@@ -785,6 +785,7 @@ function orderEdit(target,action,content){
         var index=parent.attr('data-target');
     }
     else if(action=='batch_edit_status'){
+        $(".wrap-loading-box").removeClass("hidden");
         var list=[];
         $('.order-checked').each(function(){
             var $this=$(this);
