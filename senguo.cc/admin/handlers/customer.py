@@ -2843,7 +2843,7 @@ class Cart(CustomerBaseHandler):
 		if order.status == -1:
 			#如果是微信支付，关闭支付接口
 			if order.online_type == 'wx':
-				print('close order')
+				# print('[CustomerCart]Order auto cancel: close order')
 				num = order.num
 				transaction_id = order.transaction_id
 				if order.is_qrwxpay ==1:
@@ -2860,10 +2860,8 @@ class Cart(CustomerBaseHandler):
 					res = res.decode('utf-8')
 				res_dict = colse_order.xmlToArray(res)
 				return_code = res_dict.get('return_code',None)
-				if return_code == 'SUCCESS':
-					print('order closed success')
-				else:
-					print('order closed failed')
+				if return_code != 'SUCCESS':
+					print('[CustomerCart]Order auto cancel: order closed failed')
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
@@ -2888,7 +2886,7 @@ class Cart(CustomerBaseHandler):
 				qq.update(session,use_number=use_number)
 			session.flush()
 
-			#订单删除，CustomerSeckillGoods表对应的状态恢复为0
+			# 订单删除，CustomerSeckillGoods表对应的状态恢复为0
 			fruits = eval(order.fruits)
 			charge_type_list = list(fruits.keys())
 			seckill_goods = session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
@@ -2903,8 +2901,7 @@ class Cart(CustomerBaseHandler):
 						item.status = 0
 					session.flush()
 			session.commit()
-			
-			print("[CustomerCart]Order auto cancel success: order.num:",order.num)
+			# print("[CustomerCart]Order auto cancel success: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 

@@ -1753,7 +1753,7 @@ class OrderStatic(AdminBaseHandler):
 		first_order = self.session.query(models.Order).\
 			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			order_by(models.Order.create_date).first()
-		
+
 		if first_order:  # 新开的店铺一个order都没有，所以要判断一下
 			if sort_way=="list_day":
 				page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
@@ -3369,6 +3369,9 @@ class Goods(AdminBaseHandler):
 					goods.update(session=self.session, active = 1)
 			# 编辑商品分组
 			elif action =="change_group":
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if goods.activity_status not in [-2,0]:
+					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能更改分组哦！")
 				group_id = int(data["group_id"])
 				if group_id == -1:
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
@@ -3385,7 +3388,7 @@ class Goods(AdminBaseHandler):
 			# 编辑商品
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				if "group_id" in data:
 					group_id = int(data["group_id"])
 					if group_id !=0 and group_id !=-1:
@@ -3546,6 +3549,9 @@ class Goods(AdminBaseHandler):
 						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
 					goods.active = 2
 				elif action == 'batch_group':
+					activity_name = {1:'秒杀',2:'限时折扣'}
+					if goods.activity_status not in [-2,0]:
+						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能更改分组哦！")
 					group_id = int(data["group_id"])
 					if group_id == -1:
 						re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
@@ -4847,12 +4853,14 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
 			shop_city = int(data["shop_city"])
-			if "lat" in data:
-				lat       = float(data["lat"])
-				shop.lat       = lat
-			if "lon" in data:
-				lon       = float(data['lon'])
-				shop.lon       = lon
+			if "lat" in data and "lon" in data:
+				lat = float(data["lat"])
+				lon = float(data['lon'])
+			else:
+				lat = 0
+				lon = 0
+			shop.lat = lat
+			shop.lon = lon
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")

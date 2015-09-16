@@ -609,7 +609,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
 			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单'+order_num,
-				balance_type=3,transaction_id = transaction_id)
+				balance_type=3,transaction_id = ali_trade_no)
 			self.session.add(balance_history)
 			self.session.commit()
 			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
