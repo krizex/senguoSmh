@@ -2022,7 +2022,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 	hirelink = None
 	@tornado.web.authenticated
 	def prepare(self):
-		print(self.current_user)
+		# print(self.current_user)
 		shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
 		shop_id = int(shop_id.decode())
 		if not self.current_user.shops:

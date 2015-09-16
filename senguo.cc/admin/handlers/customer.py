@@ -2843,7 +2843,7 @@ class Cart(CustomerBaseHandler):
 		if order.status == -1:
 			#如果是微信支付，关闭支付接口
 			if order.online_type == 'wx':
-				print('close order')
+				# print('[CustomerCart]Order auto cancel: close order')
 				num = order.num
 				transaction_id = order.transaction_id
 				if order.is_qrwxpay ==1:
@@ -2860,10 +2860,8 @@ class Cart(CustomerBaseHandler):
 					res = res.decode('utf-8')
 				res_dict = colse_order.xmlToArray(res)
 				return_code = res_dict.get('return_code',None)
-				if return_code == 'SUCCESS':
-					print('order closed success')
-				else:
-					print('order closed failed')
+				if return_code != 'SUCCESS':
+					print('[CustomerCart]Order auto cancel: order closed failed')
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行

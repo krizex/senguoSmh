@@ -1750,12 +1750,12 @@ class OrderStatic(AdminBaseHandler):
 		first_order = self.session.query(models.Order).\
 			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			order_by(models.Order.create_date).first()
-		print(first_order.create_date)
+		#print(first_order.create_date)
 		if first_order:  # 新开的店铺一个order都没有，所以要判断一下
 			if sort_way=="list_day":
 				page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 			else:
-				print(datetime.datetime.now().year , first_order.create_date.year)
+				#print(datetime.datetime.now().year , first_order.create_date.year)
 				page_sum = datetime.datetime.now().year - first_order.create_date.year+1
 		else:
 			page_sum = 0
