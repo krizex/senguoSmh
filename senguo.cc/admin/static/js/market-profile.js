@@ -184,7 +184,7 @@ function infoEdit(target){
                         $('#userBirthday').text(year+'-'+month);
                     }
                 }
-                else noticeBox('请填写正确的信息！');
+                else noticeBox('请填写正确的信息');
             },
              function(){return noticeBox('网络好像不给力呢~ ( >O< ) ~')},
              function(){return noticeBox('服务器貌似出错了~ ( >O< ) ~')}
@@ -199,9 +199,9 @@ function birthEdit(){
     var year=$('#year-ipt').val().trim();
     var month=$('#month-ipt').val().trim();
     var day=$('#day-ipt').val().trim();
-    if(!regYear.test(year)) return warnNotice('请输入正确的年份！');
-    if(!regMonth.test(month)) return warnNotice('月份只能为1～12！');
-    if(!regDay.test(day) || parseInt(day)>31) return warnNotice('日期只能为1～31！');
+    if(!regYear.test(year)) return warnNotice('请输入正确的年份');
+    if(!regMonth.test(month)) return warnNotice('月份只能为1～12');
+    if(!regDay.test(day) || parseInt(day)>31) return warnNotice('日期只能为1～31');
     var data={year:year,month:month,day:day};
     var url="";
     var args={action: action, data: data};
@@ -299,7 +299,7 @@ function Vrify(phone,target){
         function(res){
             if(res.success)
             {
-                noticeBox('验证码已发送到您的手机，请注意查收！',target);
+                noticeBox('验证码已发送到您的手机，请注意查收',target);
                 time($('#getVrify'));
                 //$('#getVrify').removeClass('bg-greyc').removeAttr('disabled');
 

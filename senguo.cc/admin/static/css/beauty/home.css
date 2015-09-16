@@ -75,8 +75,7 @@ body{font-size: 14px;}
 .nowrap{white-space: nowrap;}
 .src-txt{display: inline-block;color: #999;font-size: 12px;text-decoration: line-through;}
 
-
-
+.detail-box .detail{padding:10px 5px 30px;}
 
 
 
