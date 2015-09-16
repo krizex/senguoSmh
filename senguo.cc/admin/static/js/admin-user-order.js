@@ -183,7 +183,6 @@ $(document).ready(function(){
     var $this=$(this);
     var staffs=$this.parents(".order-list-item").find(".send_person_list li").clone();
     staff_index = $this.parents(".order-list-item").index();
-    console.log(staff_index);
     $(".choose-staff-list").empty().append(staffs);
     $(".order-staff-box").modal("show");
 }).on('click','.choose-staff-list li',function(){
@@ -540,11 +539,19 @@ function orderItem(page){
                     }else{
                         CurrentStaff($sender,SH2);
                         CurrentStaff($current_sender,SH2);
+                        var _num_ = 0;
                         for(var key in SH2s){
                             var $staff=$($staff_item);
-                            if(SH2s[key]['id']==SH2['id']) $staff.addClass('active');
+                            if(status == 1&&_num_==0){
+                                $staff.addClass('active');
+                            }else if(status!=1){
+                                if(SH2s[key]['id']==SH2['id']){
+                                    $staff.addClass('active');
+                                }
+                            }
                             CurrentStaff($staff,SH2s[key]);
                             $item.find('.send_person_list').append($staff);
+                            _num_++;
                         }
                         }
                     }
@@ -793,6 +800,7 @@ function orderEdit(target,action,content){
             list.push(id);
         });
         if(list.length==0){
+            $(".wrap-loading-box").addClass("hidden");
             return Tip('您还未选择任何订单');
         }
         data.status=Int(content);
