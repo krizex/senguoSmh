@@ -64,23 +64,46 @@ $(document).ready(function(){
 }).on('click','.sw-list li',function(e){
     var shop_id=$(this).data('id');
     var shop_code = $(this).attr("data-code");
-   
-        if(shop_id){
-            if(!$(e.target).hasClass('.forbid_click')){
-                var url='/admin/home';
-                var data={shop_id:shop_id};
-                var args={action:'shop_change',data:data};
-                $.postJson(url,args,function(res){
-                    if(res.success){
-                        if(shop_code!="not set" && typeof(shop_code) != undefined){
-                                window.location.href='/admin/home';
-                        }else{
-                        window.location.href="/admin/config/shop";
-                        }
-
+    if(shop_id){
+        if($(e.target).closest('.forbid_click').size()==0){
+            var url='/admin/home';
+            var data={shop_id:shop_id};
+            var args={action:'shop_change',data:data};
+            $.postJson(url,args,function(res){
+                if(res.success){
+                    if(shop_code!="not set" && typeof(shop_code) != undefined){
+                            window.location.href='/admin/home';
+                    }else{
+                    window.location.href="/admin/config/shop";
                     }
-                });
-            }
+
+                }
+            });
         }
+    }
    
+}).on("click",".del-shop",function(){
+    var $this=$(this);
+    $(".del-box").modal("show");
+    $this.parents("li").addClass("to-del").siblings().removeClass("to-del");
+}).on("click",".del-shop-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false;
+    }
+    $this.attr("data-flag","1");
+    var url='/admin/home';
+    var shop_id=$(".sw-list .to-del").attr('data-id');
+    var data={shop_id:shop_id};
+    var args={action:'del_shop',data:data};
+    $.postJson(url,args,function(res){
+        if(res.success){
+            $(".sw-list .to-del").remove();
+            $(".del-box").modal("hide");
+            $this.attr("data-flag","");
+        }else{
+            $this.attr("data-flag","");
+            return Tip(res.error_text);
+        }
+    });
 });

@@ -17,6 +17,7 @@ class Home(AdminBaseHandler):
 	def if_current_shops(self):
 		return True
 
+	@AdminBaseHandler.check_arguments("action?:str")
 	@tornado.web.authenticated
 	def get(self):
 		# if self.is_pc_browser()==True:
@@ -27,18 +28,19 @@ class Home(AdminBaseHandler):
 			shops = self.current_user.shops
 		except:
 			shops = None
+		super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
+
 		try:
 			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
 		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
 		except:
 			other_shops = None
 		if shops:
+			shops = [x for x in shops if x.status>=0 ]
 			shop_list = self.getshop(shops)
 
 		if other_shops:
 			other_shop_list = self.getshop(other_shops)
-		super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
-
 		return self.render("m-admin/shop-list.html", context=dict(shop_list=shop_list,other_shop_list=other_shop_list,super_admin=super_admin))
 	def getshop(self,shops):
 		shop_list = []
