@@ -12,7 +12,7 @@ $(document).ready(function(){
         $('.func-btn').show().attr('id','batch-send').text('批量开始配送');
     }
     else if(status == 2){
-        $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
+        // $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
     initBmap();
 }).on('click','.print-order',function(){
@@ -82,10 +82,10 @@ $(document).ready(function(){
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
-   var $this=$(this);
-   if(confirm('是否批量完成订单？')){
-        orderEdit($this,'batch_edit_status',5); 
-   }
+   // var $this=$(this);
+   // if(confirm('是否批量完成订单？')){
+   //      orderEdit($this,'batch_edit_status',5); 
+   // }
 }).on('click','#batch-print',function(){
     var type=parseInt($("#receipt-type").val());
     orderPrint($(this),'batch_print'); //有线打印
