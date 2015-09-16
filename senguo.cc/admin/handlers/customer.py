@@ -2216,10 +2216,18 @@ class Cart(CustomerBaseHandler):
 			ontime_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=0).all()
 		except:
 			ontime_periods = []
+		if len(ontime_periods)>0:
+			for period in ontime_periods:
+				period.start = self.getTimeStamp(self.handTime(period.start_time))
+				period.end = self.getTimeStamp(self.handTime(period.end_time))
 		try:
 			self_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=1 ).all()
 		except:
 			self_periods= []
+		if len(self_periods)>0:
+			for period in self_periods:
+				period.start = self.getTimeStamp(self.handTime(period.start_time))
+				period.end = self.getTimeStamp(self.handTime(period.end_time))
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
 		coupon_number=0
@@ -2263,11 +2271,30 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
+		try:
+			default_address =[x for x in self.current_user.addresses if x.if_default ==1 ][0]
+		except:
+			default_address = ""
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,shop_marketing=shop_marketing\
-						   ,get_shop_auth=shop_auth,context=dict(subpage='cart'))
+						   ,get_shop_auth=shop_auth,default_address=default_address,context=dict(subpage='cart'))
+	
+	def handTime(self,_time):
+		date_today = time.strftime("%Y-%m-%d")+" "
+		try:
+			show_time = date_today+(_time).strftime('%H:%M:%S')
+		except:
+			show_time = 0
+		return show_time
+
+	def getTimeStamp(self,_time):
+		try:
+			show_time = int(time.mktime(time.strptime(_time,'%Y-%m-%d %H:%M:%S'))*1000)
+		except:
+			show_time = 0
+		return show_time
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
