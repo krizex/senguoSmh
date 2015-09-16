@@ -1900,7 +1900,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 			d["nickname"] = info.accountinfo.nickname
 			d["customer_id"] = order.customer_id
 			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
+				models.HireLink.work.in_([3,9]), models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
@@ -1912,8 +1912,11 @@ class AdminBaseHandler(_AccountBaseHandler):
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
 				"headimgurl":staff.accountinfo.headimgurl_small}
 				SH2s.append(staff_data)
-				if staff.id == order.SH2_id:  # todo JH、SH1
-					d["SH2"] = staff_data
+			staffs_info =self.session.query(models.Accountinfo.nickname,models.Accountinfo.realname,models.Accountinfo.phone,\
+				models.Accountinfo.headimgurl_small).filter_by(id=order.SH2_id).first()
+			staffs_info_data = {"id": order.SH2_id, "nickname": staffs_info[0],"realname": staffs_info[1], "phone": staffs_info[2],\
+				"headimgurl":staffs_info[3]}
+			d["SH2"] = staffs_info_data
 					# print("[AdminBaseHandler]getOrder:",d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
@@ -2019,6 +2022,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 	hirelink = None
 	@tornado.web.authenticated
 	def prepare(self):
+		print(self.current_user)
 		shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
 		shop_id = int(shop_id.decode())
 		if not self.current_user.shops:
@@ -2027,7 +2031,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 			shop_id = self.current_user.shops[0].id
 			self.set_secure_cookie("staff_shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 		elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
-			return self.finish('你不是这个店铺的员工，可能已经被解雇了')
+			shop_id = self.current_user.shops[0].id
 		self.shop_id = shop_id
 		self.shop_name = next(x for x in self.current_user.shops if x.id == shop_id).shop_name
 		self.shop_code = next(x for x in self.current_user.shops if x.id == shop_id).shop_code
