@@ -1210,7 +1210,7 @@ class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
 		try:
-			shop_id = int(self.get_cookie("market_shop_id"))
+			shop_id = self.shop_id
 		except:
 			return self.send_fail("您访问的店铺有错，请返回后刷新重新访问")
 		# print("[CustomerMember]Shop ID:",shop_id)
@@ -1249,8 +1249,8 @@ class Comment(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page:int")
 	def get(self):
 		customer_id = self.current_user.id
-		shop_id     = self.get_cookie("market_shop_id")
-		shop_code = self.get_cookie("market_shop_code")
+		shop_id     = self.shop_id
+		shop_code = self.shop_code
 		satisfy = 0
 		commodity_quality = 0
 		send_speed = 0
@@ -1873,7 +1873,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		customer_id = self.current_user.id
 
 		# fruits_test = self.session.query(models.Fruit,models.FruitFavour,models.FruitFavour.create_date).join(models.FruitFavour,models.FruitFavour.f_m_id ==
@@ -1903,7 +1903,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		try:
 			fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % name)).order_by(models.Fruit.add_time.desc())
@@ -1951,7 +1951,7 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
 		fruit_id = int(self.args["charge_type_id"])
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		favour = self.session.query(models.FruitFavour).\
 			filter_by(customer_id=self.current_user.id,f_m_id=fruit_id).first()
 		try:
