@@ -3366,6 +3366,9 @@ class Goods(AdminBaseHandler):
 					goods.update(session=self.session, active = 1)
 			# 编辑商品分组
 			elif action =="change_group":
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if goods.activity_status not in [-2,0]:
+					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能更改分组哦！")
 				group_id = int(data["group_id"])
 				if group_id == -1:
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
@@ -3382,7 +3385,7 @@ class Goods(AdminBaseHandler):
 			# 编辑商品
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				if "group_id" in data:
 					group_id = int(data["group_id"])
 					if group_id !=0 and group_id !=-1:
@@ -3543,6 +3546,9 @@ class Goods(AdminBaseHandler):
 						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
 					goods.active = 2
 				elif action == 'batch_group':
+					activity_name = {1:'秒杀',2:'限时折扣'}
+					if goods.activity_status not in [-2,0]:
+						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能更改分组哦！")
 					group_id = int(data["group_id"])
 					if group_id == -1:
 						re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()

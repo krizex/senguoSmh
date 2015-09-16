@@ -56,7 +56,8 @@ div,p,span,ul,li{-webkit-user-select:none;}
 .modal-head{position:absolute;}
 .modal-title{margin:0;font-weight:normal;}
 .modal-body{position:relative;font-size:1em;padding:0 10px;color:#999;}
-.modal-footer{margin-top:75px;clear:both;}
+.modal-footer{padding-top:75px;clear:both;}
+.modal-footer2{padding-top:40px;clear:both;}
 .modal-footer .btn{position:absolute;left:85px;z-index:6666;border-radius: 20px;padding:5px 40px;margin-top: -45px;}
 /*.modal-footer .btn+.btn{margin-bottom:0;margin-left:5px;}*/
 .modal-footer .btn-group .btn+.btn{margin-left:-1px}
