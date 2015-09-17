@@ -2207,6 +2207,8 @@ class Cart(CustomerBaseHandler):
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
 		shop_auth = shop.shop_auth
+		area_radius = shop.area_radius
+		area_list = shop.area_list
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -2231,6 +2233,8 @@ class Cart(CustomerBaseHandler):
 			fruit_storage = fruit.storage
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
+
+		#send period
 		try:
 			ontime_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=0).all()
 		except:
@@ -2247,6 +2251,18 @@ class Cart(CustomerBaseHandler):
 			for period in self_periods:
 				period.start = self.getTimeStamp(self.handTime(period.start_time))
 				period.end = self.getTimeStamp(self.handTime(period.end_time))
+
+		time_now_seconds = self.hourToSeconds(datetime.datetime.now())
+		now_stop_seconds = shop.config.intime_period * 60
+		now_start_seconds = self.hourToSeconds(shop.config.start_time_now)
+		now_end_seconds = self.hourToSeconds(shop.config.end_time_now)
+		now_periods_start = shop.config.start_time_now.strftime("%H:%M")
+		now_periods_end = shop.config.end_time_now.strftime("%H:%M")
+		if now_start_seconds <= time_now_seconds+now_stop_seconds <= now_end_seconds:
+			now_periods = ("{0}~{1}").format(now_periods_start,now_periods_end)
+		else:
+			now_periods = ""
+
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
 		coupon_number=0
@@ -2298,7 +2314,8 @@ class Cart(CustomerBaseHandler):
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,shop_marketing=shop_marketing\
-						   ,get_shop_auth=shop_auth,default_address=default_address,context=dict(subpage='cart'))
+						   ,get_shop_auth=shop_auth,default_address=default_address,now_periods=now_periods,area_radius=area_radius,\
+						   area_list=area_list,context=dict(subpage='cart'))
 	
 	def handTime(self,_time):
 		date_today = time.strftime("%Y-%m-%d")+" "
@@ -2314,6 +2331,12 @@ class Cart(CustomerBaseHandler):
 		except:
 			show_time = 0
 		return show_time
+
+	def hourToSeconds(self,_time):
+		hour = int(_time.strftime("%H"))
+		minute = int(_time.strftime("%M"))
+		seconds = minute*60+hour*60*60
+		return seconds
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
