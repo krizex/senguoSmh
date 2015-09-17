@@ -19,7 +19,7 @@ def Check():
 	# *然后从列表shop_list_query2中除去shop_list_query1中的id 
 	# shop_list_query1 = session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
 	
-	shop_id_list1 = [271]
+	shop_id_list1 = [1044]
 	# for item in shop_list_query1:
 	# 	shop_id_list1.append(item[0])
 	total = len(shop_id_list1)
@@ -108,7 +108,7 @@ def Check():
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
 					if not shop_follow:
-						return self.send_fail('shop_follow not found')
+						return send_fail('shop_follow not found')
 					shop_follow.shop_balance -= insert_list[i][3]   #用户对应 店铺余额减少 
 					shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 					session.commit()
@@ -150,7 +150,7 @@ def Check():
 				for i in range(len(insert_list)):
 					shop = session.query(models.Shop).filter_by(id = shop_id).first()
 					if not shop:
-						return self.send_fail('shop not found')
+						return send_fail('shop not found')
 					shop.shop_balance += insert_list[i][3]
 					shop.shop_balance = round(shop.shop_balance,2)
 					session.commit()
@@ -198,7 +198,7 @@ def Check():
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
 					if not shop_follow:
-						return self.send_fail('shop_follow not found')
+						return send_fail('shop_follow not found')
 					shop_follow.shop_balance += insert_list[i][3]   #用户对应 店铺余额增加 ，单位：元
 					shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 					session.commit()
@@ -251,7 +251,7 @@ def Check():
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
 					if not shop_follow:
-						return self.send_fail('shop_follow not found')
+						return send_fail('shop_follow not found')
 
 					if shop_follow.shop_new == 0:
 						shop_follow.shop_new = 1
@@ -260,7 +260,7 @@ def Check():
 					try:
 						order_count = session.query(models.Order).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).count()
 					except:
-						self.send_fail("[_AccountBaseHandler]order_done: find order by customer_id and shop_id error")
+						send_fail("[_AccountBaseHandler]order_done: find order by customer_id and shop_id error")
 					#首单 积分 加5 
 					if order_count==1:
 						if shop_follow.shop_point == None:
@@ -269,7 +269,7 @@ def Check():
 						try:
 							point_history = models.PointHistory(customer_id = insert_list[i][0],shop_id = shop_id)
 						except NoResultFound:
-							self.send_fail("[_AccountBaseHandler]order_done: point_history error, First_order")
+							send_fail("[_AccountBaseHandler]order_done: point_history error, First_order")
 						if point_history:
 							point_history.point_type = models.POINT_TYPE.FIRST_ORDER
 							point_history.each_point = 5
@@ -283,7 +283,7 @@ def Check():
 						try:
 							point_history = models.PointHistory(customer_id = insert_list[i][0],shop_id = shop_id)
 						except:
-							self.send_fail("[_AccountBaseHandler]order_done: point_history error, PREPARE_PAY")
+							send_fail("[_AccountBaseHandler]order_done: point_history error, PREPARE_PAY")
 						if point_history:
 							point_history.point_type = models.POINT_TYPE.PREPARE_PAY
 							point_history.each_point = 2
@@ -413,7 +413,7 @@ def Check():
 
 			shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,shop_id = shop_id).with_lockmode("update").first()
 			if not shop_follow:
-				return self.send_fail('shop_follow not found')
+				return send_fail('shop_follow not found')
 			cur_shop = session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
 
 			if balance_type == 0:
