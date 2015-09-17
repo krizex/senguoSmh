@@ -22,7 +22,7 @@ $(document).ready(function(){
 
     //二级地址添加设置
     $('body').on('click','.add-address2-btn',function(){
-        var item=' <li class="btn-box"><input type="text" class="address2-value pull-left address-input-box"/><a href="javascript:;" class="address-btn bg-green pull-left address2-sure-btn">确定</a><a href="javascript:;" class="address-btn bg-grey pull-left address2-cancel-btn">取消</a></li>';
+        var item='<li class="btn-box"><input type="text" class="address2-value pull-left address-input-box"/><a href="javascript:;" class="address-btn bg-green pull-left address2-sure-btn">确定</a><a href="javascript:;" class="address-btn bg-grey pull-left address2-cancel-btn">取消</a></li>';
         $(this).siblings('.add-address2-list').append(item);
     });
     $('body').on('click', '.address2-sure-btn', function(){
