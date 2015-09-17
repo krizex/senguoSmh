@@ -2115,7 +2115,7 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 	@tornado.web.authenticated
 	#@get_unblock
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int","print_type?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		if not self.current_shop:
@@ -2176,6 +2176,10 @@ class Order(AdminBaseHandler):
 					order_list = order_list.filter(models.Order.pay_type==pay_type)
 			if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
 				order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
+			if "print_type" in self.args and self.args["print_type"] !="":
+				print_type = int(self.args["print_type"])
+				if print_type != 9:
+					order_list = order_list.filter(models.Order.isprint==print_type)
 
 			if order_status == 1:#filter order_status
 				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -2185,6 +2189,7 @@ class Order(AdminBaseHandler):
 				self.session.commit()
 				if order_list:
 					orders = [x for x in order_list if x.type == order_type and x.status == 1]
+					orders.sort(key = lambda order:order.create_date,reverse = True)
 
 			elif order_status == 2:#unfinish
 				if order_list:

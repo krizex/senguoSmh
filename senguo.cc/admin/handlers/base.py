@@ -1883,7 +1883,7 @@ class AdminBaseHandler(_AccountBaseHandler):
 		data = []
 		for order in orders:
 			order.__protected_props__ = ['shop_id', 'JH_id', 'SH1_id', 'SH2_id','comment','comment_imgUrl','comment_reply',
-										 'comment_create_date', 'start_time', 'end_time','commodity_quality','create_date','today','active','arrival_day','arrival_time','finish_admin_id','intime_period',
+										 'comment_create_date', 'start_time','commodity_quality','create_date','today','active','arrival_day','arrival_time','finish_admin_id','intime_period',
 										 'send_admin_id','send_speed','shop_service']
 			d = order.safe_props(False)
 			if d['fruits']:
@@ -1894,6 +1894,17 @@ class AdminBaseHandler(_AccountBaseHandler):
 				d['mgoods'] = eval(d['mgoods'])
 			else:
 				d['mgoods'] = {}
+			try:
+				d["end_time"] = d["send_time"][0:10]+" "+d["end_time"].strftime('%H:%M')
+			except:
+				d["end_time"] = ""
+
+			time_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+			if d["end_time"] < time_now:
+				d["time_out"] = 1
+			else:
+				d["time_out"] = 0
+			
 			d['create_date'] = order.create_date.strftime('%Y-%m-%d %H:%M:%S')
 			# d["sent_time"] = order.send_time
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
