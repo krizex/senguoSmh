@@ -2826,9 +2826,9 @@ class Cart(CustomerBaseHandler):
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
 			#如果有自己的公众平台，用自己的公众号发送模板消息，之后依旧用森果发送一遍
-			# if access_token:
-			self.send_admin_message(session,order,access_token)
-			# self.send_admin_message(session,order)
+			if access_token:
+				self.send_admin_message(session,order,access_token)
+			self.send_admin_message(session,order)
 
 		return True
 
