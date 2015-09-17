@@ -5,6 +5,7 @@ var _freigh_ontime=0;
 var _freigh_now=0;
 var _mincharge_intime=0;
 var _mincharge_now=0;
+var is_inarea = 1;
 $(document).ready(function(){
     $(".fix-title").addClass("hidden");
     var shop_code=$('#shop_imgurl').attr('data-code');
@@ -123,6 +124,7 @@ $(document).ready(function(){
         }
     });
     initPayType();//初始化支付方式
+    isInArea();
 }).on('click','.a-cz',function(){
     var status = $(this).attr('data-status');
     var statu = $(this).attr("data-auth");
@@ -250,6 +252,10 @@ $(document).ready(function(){
 }).on("change","#deli_self_address",function(){
     var option_item = $("#deli_self_address option").not(function(){ return !this.selected });
     $(this).attr("data-id",option_item.attr("data-id"));
+}).on("click","#sureArea",function(){
+    var area_box=new Modal('areaBox');
+    area_box.modal('hide');
+    orderSubmit($("#submitOrder"));
 });
 //初始化支付方式
 function initPayType(){
@@ -634,6 +640,21 @@ function orderSubmit(target){
     },
     function(){noticeBox('网络好像不给力呢~ ( >O< ) ~')},
     function(){noticeBox('服务器貌似出错了~ ( >O< ) ~')});
+}
+//获取用户是否在店铺配送区域
+function isInArea(){
+    var url = "/customer/"+$("#shop_imgurl").attr("data-code");
+    var args = {
+        data:{
+            address_id:$(".address-box").attr("data-id")
+        }
+    };
+    $.postJson(url,args,function(res){
+        if(res.success){
+            is_inarea = res.in_area;
+            console.log(is_inarea);
+        }
+    });
 }
 //获取手机验证码倒计时
 var wait=60;

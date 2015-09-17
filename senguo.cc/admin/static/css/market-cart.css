@@ -155,6 +155,12 @@
 .select-slide{width: 90%;height: 19px;border: none;font-size: 14px;color: #333;outline: none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
 .red-tip-txt{position: absolute;width: 70px;font-size: 12px;color: #f25f5f;line-height: 14px;right: 10px;top: 2px;}
 .shop-deli{color: #f25f5f;line-height: 18px;text-align: center;padding-bottom: 4px;}
+.area-text-cont{padding: 0 24px;color: #333;font-size: 14px;line-height: 18px;text-align: center;}
+.area-text-tip{padding: 10px 0;color: #666;font-size: 14px;text-align: center;}
+.area-footer{padding-top: 60px !important;}
+.modal-footer .area-btn{padding: 5px 20px;}
+.modal-footer .btn-left{left: 40px;color: #333;background-color: #ddd !important;}
+.modal-footer .btn-right{left: 154px;}
 /*beauty*/
 .yellow-text{color: #ff9800;}
 .pay-bill{position: fixed;bottom:50px;width:100%;max-width:800px;min-width:320px;z-index:100;height: 40px;border-top:1px solid #eee;line-height: 40px;text-align: right;font-size: 14px;background-color: rgba(255,255,255,.8);color: #666;left: 50%;-webkit-transform:translate(-50%,0);}
