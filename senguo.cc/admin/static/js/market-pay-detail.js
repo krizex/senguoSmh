@@ -37,6 +37,11 @@ $(document).ready(function(){
         }
     }
     removeDom();
+}).on("click",".return-btn",function(){
+    var detail_box=new Modal('notice-box');
+    detail_box.modal('show');
+}).on("click",".go-btn",function(){
+    window.history.back(-1);
 }).on("click","#cancel-order",function(){
     confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',"sure-order");
     $('.confriming').attr('id','sure-order');

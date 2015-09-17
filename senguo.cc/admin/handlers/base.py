@@ -1899,8 +1899,8 @@ class AdminBaseHandler(_AccountBaseHandler):
 			info = self.session.query(models.Customer).filter_by(id = order.customer_id).first()
 			d["nickname"] = info.accountinfo.nickname
 			d["customer_id"] = order.customer_id
-			staffs = self.session.query(models.ShopStaff).join(models.HireLink).filter(and_(
-				models.HireLink.work == 3, models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
+			staffs = self.session.query(models.ShopStaff,models.HireLink.default_staff).join(models.HireLink).filter(and_(
+				models.HireLink.work.in_([3,9]), models.HireLink.shop_id == self.current_shop.id,models.HireLink.active == 1)).all()
 			d["shop_new"] = 0
 			follow = self.session.query(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == order.shop_id,\
 				models.CustomerShopFollow.customer_id == order.customer_id).first()
@@ -1908,12 +1908,20 @@ class AdminBaseHandler(_AccountBaseHandler):
 				d["shop_new"]=follow.shop_new
 				# print("[AdminBaseHandler]getOrder: Order's User ID:",order.customer_id,", shop_new:",d["shop_new"])
 			SH2s = []
-			for staff in staffs:
+			for item in staffs:
+				staff = item[0]
 				staff_data = {"id": staff.id, "nickname": staff.accountinfo.nickname,"realname": staff.accountinfo.realname, "phone": staff.accountinfo.phone,\
-				"headimgurl":staff.accountinfo.headimgurl_small}
+				"headimgurl":staff.accountinfo.headimgurl_small,"if_default":item[1]}
 				SH2s.append(staff_data)
-				if staff.id == order.SH2_id:  # todo JH、SH1
-					d["SH2"] = staff_data
+			SH2s.sort(key = lambda x:x["if_default"],reverse=True)
+			staffs_info =self.session.query(models.Accountinfo.nickname,models.Accountinfo.realname,models.Accountinfo.phone,\
+				models.Accountinfo.headimgurl_small).filter_by(id=order.SH2_id).first()
+			try:
+				staffs_info_data = {"id": order.SH2_id, "nickname": staffs_info[0],"realname": staffs_info[1], "phone": staffs_info[2],\
+				"headimgurl":staffs_info[3]}
+			except:
+				staffs_info_data = {}
+			d["SH2"] = staffs_info_data
 					# print("[AdminBaseHandler]getOrder:",d["SH2"],'i am admin order' )
 			d["SH2s"] = SH2s
 			data.append(d)
@@ -2019,6 +2027,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 	hirelink = None
 	@tornado.web.authenticated
 	def prepare(self):
+		# print(self.current_user)
 		shop_id = self.get_secure_cookie("staff_shop_id") or b'0'
 		shop_id = int(shop_id.decode())
 		if not self.current_user.shops:
@@ -2027,7 +2036,7 @@ class StaffBaseHandler(_AccountBaseHandler):
 			shop_id = self.current_user.shops[0].id
 			self.set_secure_cookie("staff_shop_id", str(shop_id), domain=ROOT_HOST_NAME)
 		elif not next((x for x in self.current_user.shops if x.id == shop_id), None):
-			return self.finish('你不是这个店铺的员工，可能已经被解雇了')
+			shop_id = self.current_user.shops[0].id
 		self.shop_id = shop_id
 		self.shop_name = next(x for x in self.current_user.shops if x.id == shop_id).shop_name
 		self.shop_code = next(x for x in self.current_user.shops if x.id == shop_id).shop_code

@@ -12,6 +12,10 @@
         <span class="right-title ml50">提现中</span>
         <span class="acc-money orange-txt">{{cash_on}}<span class="small-txt">元</span></span>
     </div>
+    <div>
+        <span class="right-title">今日新增平台余额</span>
+        <span class="acc-money">{{today_balance}}<span class="small-txt">元</span></span>
+    </div>
     <ul class="acc-report mt20">
         <li>1、用户充值或在线支付的金额记入账户余额里。</li>
         <li>2、在线支付的订单，只有当用户完成评价或订单被完成24小时后，才记入帐号余额中。</li>
@@ -33,17 +37,35 @@
             <!--  -->
         </ul>
         <div class="wrap-acc-num cash-count hidden">
+            <div>
                 <span class="account-num">累计提现&nbsp;<span class="green-txt f16 cash"></span>元</span>
+            </div>
+            <div>
+                <span class="account-num">今日已提现&nbsp;<span class="green-txt f16 cash-today"></span>元</span>
+            </div>
         </div>
         <div class="wrap-acc-num charge-count hidden">
-            <span class="account-num">累计充值&nbsp;<span class="green-txt f16 charge-total"></span>元</span>
-            <span class="account-num">用户已使用&nbsp;<span class="green-txt f16 charge-use"></span>元</span>
-            <span class="account-num">未使用剩余&nbsp;<span class="green-txt f16 charge-left"></span>元</span>
+            <div>
+                <span class="account-num">累计充值&nbsp;<span class="green-txt f16 charge-total"></span>元</span>
+                <span class="account-num">用户已消费&nbsp;<span class="green-txt f16 charge-use"></span>元</span>
+                <span class="account-num">未消费剩余&nbsp;<span class="green-txt f16 charge-left"></span>元</span>
+            </div>
+            <div>
+                <span class="account-num">今日充值&nbsp;<span class="green-txt f16 charge-total-today"></span>元</span>
+                <span class="account-num">今日已消费&nbsp;<span class="green-txt f16 charge-use-today"></span>元</span>
+            </div>
         </div>
          <div class="wrap-acc-num online-count hidden">
-            <span class="account-num">累计支付&nbsp;<span class="green-txt f16 online-total"></span>元</span>
-            <span class="account-num">累计次数&nbsp;<span class="green-txt f16 online-times"></span>次</span>
-            <span class="account-num">累计人数&nbsp;<span class="green-txt f16 online-person"></span>人</span>
+             <div>
+                <span class="account-num">累计支付&nbsp;<span class="green-txt f16 online-total"></span>元</span>
+                <span class="account-num">累计次数&nbsp;<span class="green-txt f16 online-times"></span>次</span>
+                <span class="account-num">累计人数&nbsp;<span class="green-txt f16 online-person"></span>人</span>
+            </div>
+            <div>
+                <span class="account-num">今日支付&nbsp;<span class="green-txt f16 online-total-today"></span>元</span>
+                <span class="account-num">今日次数&nbsp;<span class="green-txt f16 online-times-today"></span>次</span>
+                <span class="account-num">今日人数&nbsp;<span class="green-txt f16 online-person-today"></span>人</span>
+            </div>
         </div>
         <div class="acc-con-lst">
             <table class="tb-account">

@@ -95,7 +95,7 @@ class ShopList(FruitzoneBaseHandler):
 	def get_data(self,q):
 		shops = []
 		for shop in q:
-				if shop.shop_code !='not set' and shop.status !=0:
+				if shop.shop_code !='not set' and shop.status > 0:
 					satisfy = 0
 					shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
 												'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
@@ -145,7 +145,7 @@ class ShopList(FruitzoneBaseHandler):
 			q = self.session.query(models.Shop)
 		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc())\
 		.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-			models.Shop.shop_code !='not set' ,models.Shop.status !=0 )
+			models.Shop.shop_code !='not set' ,models.Shop.status >0 )
 		shop_count = q.count()
 		# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 		q=q.offset(page*_page_count).limit(_page_count).all()
@@ -171,7 +171,7 @@ class ShopList(FruitzoneBaseHandler):
 			q = self.session.query(models.Shop)
 		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).filter(
 			models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,
-			models.Shop.shop_code !='not set',models.Shop.status !=0 )
+			models.Shop.shop_code !='not set',models.Shop.status >0 )
 		# print(q.count(),'店铺总数',page)
 		shops = []
 
@@ -259,6 +259,7 @@ class ShopList(FruitzoneBaseHandler):
 		if not shop_admin:
 			return self.send_fail('shop_admin not found!')
 		shop_list = shop_admin.shops
+		shop_list = [x for x in shop_list if x.status >=0 ]
 		shops = self.get_data(shop_list)
 		return self.send_success(shops=shops)
 
@@ -274,7 +275,7 @@ class ShopList(FruitzoneBaseHandler):
 		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				   models.Shop.shop_code !='not set',models.Shop.status !=0 )
+				   models.Shop.shop_code !='not set',models.Shop.status > 0 )
 		shops = []
 		shop_count = q.count()
 		# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
@@ -294,7 +295,7 @@ class ShopList(FruitzoneBaseHandler):
 		q = q.order_by(models.Shop.shop_auth.desc(),models.Shop.id.desc()).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 				   models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				   models.Shop.shop_code !='not set',models.Shop.status !=0 )
+				   models.Shop.shop_code !='not set',models.Shop.status > 0 )
 		shops = []
 
 		q = q.distinct().count()

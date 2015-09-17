@@ -4,10 +4,14 @@
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
-{% block top %}订单详情{% end %}
+{% block header %}
+<header class="detail-header text-white center-block" id="nav">
+    <a href="javascript:;" class="return-btn bg_change"></a>
+    <span class="title font16">订单详情</span>
+</header>
+{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
-
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
@@ -106,5 +110,18 @@
 <input type="hidden" value="{{order.type}}" class="order_type"/>
 {% end %}
 {% block bottom %}
+<div class="modal fade notice-box" id="notice-box">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-body set-width-float text-center pt-10">
+                <p class="font14 mt42 text-center text-grey3">便宜不等人，还望三思而行~</p>
+                <div class="modal-btn-box text-center">
+                    <button  class="btn btn-default go-btn">去意已决</button>
+                    <button  class="btn dismiss bg-green text-white">我再想想</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 {% end %}

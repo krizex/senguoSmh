@@ -391,8 +391,16 @@ class ShopManage(SuperBaseHandler):
 				# added by jyj 2015-8-7
 				data["admin_id"] = shop.admin.accountinfo.id
 				# #
-
-				data["shop_address_detail"] = shop.shop_address_detail
+				shop_city = self.code_to_text("city",shop.shop_city)
+				shop_province = self.code_to_text("province",shop.shop_province)
+				shop_address_detail=shop.shop_address_detail
+				# 如果地址没有省市的信息就将省市的信息加到地址前面,先判断市,再判断省
+				# sunmh 2015年09月16日
+				if shop_address_detail.find(shop_city)==-1:
+					shop_address_detail=shop_city+shop_address_detail
+				if shop_address_detail.find(shop_province)==-1:
+					shop_address_detail=shop_province+shop_address_detail				
+				data["shop_address_detail"] =shop_address_detail
 				data["shop_code"] = shop.shop_code
 				shop_status_array = ['关闭','营业中','筹备中','休息中']
 
@@ -443,6 +451,25 @@ class ShopManage(SuperBaseHandler):
 
 				data["available_balance"] = shop.available_balance
 				data["fans_count"] = shop.fans_count
+
+				# 计算店铺的购买转换率和重复购买率
+				# modified by sunmh
+				fans_count=shop.fans_count
+				purchase_count=self.session.query(models.Order.customer_id).filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==shop_id).distinct().count()
+				purchase_twice_count=self.session.query(models.Order.customer_id).\
+										filter(models.Order.shop_id==shop_id,models.Order.status.in_([5,6,7,10])).\
+										group_by(models.Order.customer_id).\
+										having(func.count(models.Order.customer_id) > 1).count()
+				if purchase_count==0:
+					data["repeatPurRate"]=0
+				else:
+					data["repeatPurRate"]=format(purchase_twice_count/purchase_count,'.2%')
+
+				if fans_count==0:
+					data["purchaseConverRate"]=0
+				else:
+					data["purchaseConverRate"]=format(purchase_count/fans_count,'.2%')
+
 				output_data.append(data)
 
 			if flag==1:
@@ -1024,11 +1051,20 @@ class AmountStatic(SuperBaseHandler):
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
 			# 按天分组，获取所有进入平台的金额
-			q_total=q.filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			#q_total=q.filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
 			# 按天分组，获取所有的从微信进入平台的金额
 			q_wechat=q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
 			# 按天分组，获取所有的从支付宝进入平台的金额
 			q_alipay=q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+
+			# 按天分组,获取从微信退款的钱
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
+					filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).\
+					group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			# 按天分组,获取从支付包退款的钱
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
+					filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).\
+					group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
 			q_range=self.session.query(func.day(func.now()))
 			#print(q_range.all()[0][0])
 		elif type==2:	#type=2表示按周来进行排序，取全年的所有周的数据
@@ -1036,18 +1072,30 @@ class AmountStatic(SuperBaseHandler):
 			current_year = self.args['current_year']
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			#q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
 			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
 			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
+				filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.week(models.BalanceHistory.create_time,1))
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
+				filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.week(models.BalanceHistory.create_time,1))
 			q_range=self.session.query(func.week(func.now(),1))
 			#print(q_range.all())
 		elif type==3:	#type=3表示按月来进行排序，取全年的所有月份的数据
 			current_year = self.args['current_year']
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
+			#q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
 			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
 			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.month(models.BalanceHistory.create_time))
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.month(models.BalanceHistory.create_time))
 			q_range=self.session.query(func.month(func.now()))
 			#print(q_range.all())
 		else:
@@ -1076,18 +1124,34 @@ class AmountStatic(SuperBaseHandler):
 
 		#初始化返回的数组
 		for x in range(0, rangeOfArray):
-			data.append({'total': 0, 'wechat': 0, 'alipay': 0})
+			data.append({'total': 0, 'wechat': 0, 'alipay': 0,'total_clean':0,'wechat_clean': 0, 'alipay_clean': 0})
 
-		#组装数组
+		#组装数组,毛收入
 		def assembleArray(s_type,q_infos):
 			for info in q_infos:
 				index = info[1]-1
 				value = round(info[0],2)
 				data[index][s_type] = value
+				data[index][s_type+'_clean'] = value
 		
-		assembleArray('total',q_total.all())
+		#assembleArray('total',q_total.all())
 		assembleArray('wechat',q_wechat.all())
 		assembleArray('alipay',q_alipay.all())
+
+		#组装数组,净收入
+		def assembleArray2(s_type,q_infos):
+			for info in q_infos:
+				index = info[1]-1
+				value = round(info[0],2)
+				data[index][s_type] = data[index][s_type]-value
+
+		assembleArray('wechat_clean',q_wechat.all())
+		assembleArray('alipay_clean',q_alipay.all())
+
+		for x in range(0, rangeOfArray):
+			data[x]['total'] = data[x]['wechat'] +data[x]['alipay'] 
+			data[x]['total_clean'] = data[x]['wechat_clean'] +data[x]['alipay_clean']
+
 		
 		return self.send_success(data=data)
 
@@ -2397,11 +2461,19 @@ class Balance(SuperBaseHandler):
 			shop_list = self.session.query(models.Shop).all()
 			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
 			person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
+			# 增加今日新增平台总余额 充值0+在线支付3-微信在线支付退款记录8-支付宝在线支付退款记录9(-提现2   后面不减提现记录)
+			# modified by sunmh 2015年09月16日
+			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0)
 		elif level == 1:
 			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0,shop_province=shop_province).all()
 			shop_list = self.session.query(models.Shop).filter_by(shop_province=shop_province).all()
 			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1,shop_province=shop_province).all()
 			person_num = self.session.query(models.ApplyCashHistory).filter_by(shop_province=shop_province).distinct(models.ApplyCashHistory.shop_id).count()
+			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).\
+				filter(models.BalanceHistory.shop_province==shop_province)
+		today_balance_plus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([0,3])).all()[0][0]
+		today_balance_minus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([8,9])).all()[0][0]
+		today_balance=format(float(0 if today_balance_plus==None else today_balance_plus)-float(0 if today_balance_minus==None else today_balance_minus),'.2f')
 		for item in cash_list:
 			cash_on += item.value
 		for item in shop_list:
@@ -2410,7 +2482,7 @@ class Balance(SuperBaseHandler):
 		cash_on = format(cash_on,'.2f')
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
-			total_balance=total_balance,cash_on=cash_on,level=level,context=dict(page="detail"))
+			total_balance=total_balance,cash_on=cash_on,level=level,today_balance=today_balance,context=dict(page="detail"))
 
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action','page:int','shop_name')
@@ -2437,6 +2509,10 @@ class Balance(SuperBaseHandler):
 		persons = 0
 		pay = 0
 		left = 0
+		total_today=0
+		pay_today=0
+		times_today=0
+		persons_today = 0
 		if level == 0:
 			balance_history = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
 				).order_by(desc(models.BalanceHistory.create_time))
@@ -2457,11 +2533,11 @@ class Balance(SuperBaseHandler):
 					).offset(page*page_size).limit(page_size).all()
 				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
 					models.BalanceHistory.balance_type == 0,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 				q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
 					models.BalanceHistory.balance_type == 1,
 					models.BalanceHistory.is_cancel == 0,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 			elif level == 1:
 				history_list = self.session.query(models.BalanceHistory).filter(
 					models.BalanceHistory.balance_type==0,
@@ -2471,15 +2547,22 @@ class Balance(SuperBaseHandler):
 				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
 					models.BalanceHistory.balance_type==0,
 					models.BalanceHistory.shop_province==shop_province,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 				q1= self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
 					models.BalanceHistory.balance_type==1,
 					models.BalanceHistory.is_cancel==0,
 					models.BalanceHistory.shop_province==shop_province,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 			else:
 				return self.send_fail('level error')
+			# 增加今日充值和今日已消费
+			q_today=q.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
+			q1_today=q1.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
+			q=q.all()
+			q1=q1.all()
 
+			total_today=format(0 if q_today[0][0] == None else q_today[0][0] ,'.2f')
+			pay_today=format(0 if q1_today[0][0] == None else q1_today[0][0] ,'.2f')
 			if q[0][0]:
 				total =q[0][0]
 			count = q[0][1]
@@ -2498,11 +2581,11 @@ class Balance(SuperBaseHandler):
 
 				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
 					models.BalanceHistory.balance_type ==3,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 
 				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter(
 					models.BalanceHistory.balance_type == 3,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).count()
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 			elif level == 1:
 				history_list = self.session.query(models.BalanceHistory).filter(
 					models.BalanceHistory.balance_type==3,
@@ -2514,15 +2597,23 @@ class Balance(SuperBaseHandler):
 					models.BalanceHistory.balance_type==3,
 					models.BalanceHistory.shop_province==shop_province,
 					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
-					).all()
+					)
 
 				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter(
 					models.BalanceHistory.balance_type==3,
 					models.BalanceHistory.shop_province==shop_province,
 					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
-					).count()
+					)
 			else:
 				return self.send_fail('level error')
+
+			q_today=q.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
+			persons_today=persons.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).count()
+			q=q.all()
+			persons=persons.count()
+			times_today=0 if q_today[0][1] == None else q_today[0][1]
+			total_today=format(0 if q_today[0][0] == None else q_today[0][0] ,'.2f')
+
 			if q[0][0]:
 				total = q[0][0]
 				total = format(total,'.2f')
@@ -2540,6 +2631,11 @@ class Balance(SuperBaseHandler):
 				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter(
 					models.BalanceHistory.balance_type == 2,
 					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+				# 今日已提现 sunmh 2015年09月16日
+				q_totay=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
+					models.BalanceHistory.balance_type == 2,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).\
+					filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
 			elif level == 1:
 				history_list = self.session.query(models.BalanceHistory).filter(
 					models.BalanceHistory.balance_type==2,
@@ -2551,6 +2647,12 @@ class Balance(SuperBaseHandler):
 					models.BalanceHistory.balance_type==2,
 					models.BalanceHistory.shop_province==shop_province,
 					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).all()
+				# 今日已提现 sunmh 2015年09月16日
+				q_totay = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(
+					models.BalanceHistory.balance_type==2,
+					models.BalanceHistory.shop_province==shop_province,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)).\
+					filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
 			else:
 				return self.send_fail('level error')
 
@@ -2558,6 +2660,7 @@ class Balance(SuperBaseHandler):
 			if q[0][0]:
 				total=q[0][0]
 			total = format(total,'.2f')
+			total_today=format(0 if q_totay[0][0] ==None else q_totay[0][0],'.2f')
 			times = count
 
 		# add by jyj 2015-7-4:
@@ -2623,7 +2726,7 @@ class Balance(SuperBaseHandler):
 				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
 					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id,'record':record})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
+		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left,total_today=total_today,pay_today=pay_today,times_today=times_today,persons_today=persons_today)
 
 		# return self.send_success()
 

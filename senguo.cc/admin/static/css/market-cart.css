@@ -96,7 +96,7 @@
 .tie-popbox .tie-info .input1:focus{border-color:#00D681;}
 .tie-popbox .tie-info .phone-number{width:100%;float:left;}
 .tie-popbox .tie-info .phone-number .phone{width:65% !important;}
-.tie-popbox .tie-info .phone-number .get-code{width:30%;color:#fff;padding:0.5em 0;text-align:center;}
+.tie-popbox .tie-info .phone-number .get-code{width:30%;color:#fff;padding:5px 0;text-align:center;border-radius:4px;}
 .tie-popbox  .concel-btn{background:#A0A0A0;color:#fff;width:45%;border-radius:1px;}
 .tie-popbox  .tie-btn{;color:#fff;}
 .first_notice{border:none;background:none;color:red}
