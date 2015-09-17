@@ -62,7 +62,7 @@
         </div>
         <div class="sw-bm">
             <div class="sw-top2">
-                <p><span class="font14">我创建的店铺</span> {% if not context['super_admin'] %}(您还不是卖家，无法创建您自己的店铺){% else %}<a href="javascript:;" class="text-link ml10" id="spread-list">推广店铺链接</a>{% end %}</p>
+                <p><span class="font14">我创建的店铺</span> {% if not context['super_admin'] %}(您还不是卖家，无法创建您自己的店铺){% else %}<a href="javascript:;" class="text-link ml10" id="spread-list">推广店铺链接</a><a href="{{reverse_url('switchshop')}}?action=del" class="del-shop-list pull-right text-link">已删除的店铺</a>{% end %}</p>
                 {% if current_shop %}
                 <div class="sw-er-tip po-list invisible">
                     <div class="left-arr">
@@ -135,6 +135,7 @@
                         </dd>
                     </dl>
                     {% end %}
+                    <a href="javascript:;" class="text-link del-shop forbid_click">删除</a>
                 </li>
                 {% end %}
                 <li>
@@ -204,6 +205,20 @@
         </div>
     </div>
 </main>
+<div class="modal fade del-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog w400">
+        <div class="modal-content bg-white">
+            <div class="modal-body">
+                <p class="text-red font14">谨慎操作！不可撤销</p>
+                <p>店铺里有很多重要信息，确定删除吗？</p>
+            </div>
+            <div class="modal-footer text-center">
+                <button class="btn bg-green del-shop-sure text-white">确定</button>
+                <button class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+ </div>
 <div class="foot" id="footer">
     <ul class="links ft">
         <li class="links_item no_extra">

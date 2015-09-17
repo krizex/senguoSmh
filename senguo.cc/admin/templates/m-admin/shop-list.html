@@ -75,6 +75,9 @@
         {% end %}
         {% end %}
     </ul>
+   <!--  {% if context['super_admin'] %}
+    <p class="mb10 txt-center"><a href="{{reverse_url('MadminHome')}}?action=del">已删除的店铺</a></p>
+    {% end %} -->
     <p class="notice">创建新的店铺后请先在电脑上登录管理后台：<br>senguo.cc/admin 进行店铺认证</p>
 </div>
 {% end %}

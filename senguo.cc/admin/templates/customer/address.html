@@ -47,19 +47,27 @@
                     <input type="tel" class="name-ipt input1" id="address_phone" placeholder="请输入手机号" value=""/>
                     <span class="modal-left">电话：</span>
                 </p>
+                <p class="row-address mb6">
+                    <select class="selsect-area ml2" id="address_city">
+                        <option value="请选择">请选择</option>
+                    </select>
+                    <select class="selsect-area" id="address_province">
+                    </select>
+                    <span class="modal-left">选择省市：</span>
+                </p>
                 <p class="row-address">
                     <input type="text" class="name-ipt input1" id="address_address" placeholder="请输入地址" value=""/>
-                    <span class="modal-left">收货地址：</span>
+                    <span class="modal-left">详细地址：</span>
                 </p>
             </div>
             <div class="modal-warn">
             </div>
-            <div class="modal-footer clearfix">
+            <div class="modal-footer clearfix address-footer">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white" id="addressSure">确定</button>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>
+<script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/market-address.js')}}"></script>
 {% end %}

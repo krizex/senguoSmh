@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
-    <span id="shop_imgurl" data-img="{{shop_logo}}" data-auth="{{show_balance}}" data-status="{{shop_status}}" data-code="{{handler.shop_code}}" data-now-money="{{config.freight_now or 0}}" data-ontime-money="{{config.freight_on_time or 0}}" data-now-min="{{config.min_charge_now or 0}}" data-ontime-min="{{config.min_charge_on_time or 0}}"></span>
+    <span id="shop_imgurl" data-img="{{shop_logo}}" data-stop-range="{{config.stop_range}}" data-self-endtime="{{config.self_end_time}}" data-auth="{{show_balance}}" data-status="{{shop_status}}" data-code="{{handler.shop_code}}" data-now-money="{{config.freight_now or 0}}" data-ontime-money="{{config.freight_on_time or 0}}" data-now-min="{{config.min_charge_now or 0}}" data-ontime-min="{{config.min_charge_on_time or 0}}"></span>
     <div class="bg-box bg1">
         <ul class="cart-list set-w100-fle m-b0">
             {% for key in cart_f %}
@@ -119,7 +119,7 @@
                             {% if ontime_periods %}
                                 {% if config.day_on_time==1 or config.day_on_time==0 %}
                                 {% for period in ontime_periods %}
-                                <option data-time="1" class="today_time" data-type="1" data-id="{{period.id}}" start-time="{{period.start}}" end-time="{{period.end}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
+                                <option data-time="1" class="today_time ontime_time" data-type="1" data-id="{{period.id}}" start-time="{{period.start}}" end-time="{{period.end}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
                                 {% end %}
                                 {% end %}
                                 {% if config.day_on_time==2 or config.day_on_time==0%}
@@ -145,7 +145,7 @@
                             {% if self_periods %}
                             {% if config.day_self==1 or config.day_self==0 %}
                             {% for period in self_periods %}
-                            <option data-time="1" class="today_time" data-id="{{period.id}}" start-time="{{period.start}}" end-time="{{period.end}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
+                            <option data-time="1" class="today_time self_self" data-id="{{period.id}}" start-time="{{period.start}}" end-time="{{period.end}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
                             {% end %}
                             {% end %}
                             {% if config.day_self==2 or config.day_self==0%}
@@ -253,6 +253,28 @@
     </div>
 {% end %}
 {% block bottom %}
+<div class="modal fade tie-popbox" id="areaBox">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
+            <div class="modal-header set-width-float">
+                <button type="button" class="close dismiss">✕</button>
+                <h2 class="modal-title  text-center line48"></h2>
+            </div>
+            <div class="modal-body font14 clearfix">
+                <div class="tie-info">
+
+                </div>
+            </div>
+            <div class="modal-warn">
+            </div>
+            <div class="modal-footer clearfix">
+                <button type="button" class="btn pull-right tie-btn bg-grey9 sure_btn"  id="cancelArea">取消</button>
+                <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="sureArea">确定</button>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="modal fade tie-popbox" id="tieBox">
     <div class="modal-dialog anim-bounceIn">
         <div class="modal-content">

@@ -22,7 +22,7 @@
 .delete-btn{display:inline-block;background:url("static/images/container-icon.gif") no-repeat 0 3px;height:26px;line-height:26px;padding:0 10px;}
 
 .address-item{padding:5px 10px;border:none;border-top:1px solid #f2f2f2;}
-.address-box .modal-body{padding:10px 20px 0 20px;}
+.address-box .modal-body{padding:0 20px 0 20px;}
 .address-box .modal-body p{margin-bottom:5px;margin-top:5px;}
 .address-box .modal-body .w60{width:300px;}
 .address-box .modal-body .tit{width:70px;line-height:30px;}
@@ -49,7 +49,7 @@ hr{margin-top:0 !important;;margin-bottom:0 !important;margin-left:24px;}
 
 .discover-list a{display:inline-block;width:100%;height:45px;}
 .discover-list  li{position:relative;margin-bottom: 10px;}
-.discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:14px;text-align:center;right:16px;}
+.discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:14px;text-align:center;right:16px;font-size:12px;}
 
 .confess i{display:inline-block;width:18px;height:18px;background:url('/static/svg/icon_list_beauty.png') -122px -48px;background-size:140px;margin:14px 15px 0 15px;}
 .coupon i{display:inline-block;width:20px;height:20px;background:url('/static/images/coupon.png') left center;background-size:20px;margin:14px 15px 0 15px;}

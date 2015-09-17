@@ -519,7 +519,7 @@ class Shop(MapBase, _CommonApi):
 	shop_auth =Column(TINYINT,nullable=False,default =0) #0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
 	auth_change=Column(TINYINT,nullable=False,default =0)#0:未认证 1:认证一次 2:认证两次 #yy4.30
 	# on or off
-	status   = Column(TINYINT,nullable=False,default = 1) # 0:关闭  1:营业中 2:筹备中 3:休息中
+	status   = Column(TINYINT,nullable=False,default = 1) # -1:删除 0:关闭  1:营业中 2:筹备中 3:休息中
 
 	admin_id = Column(Integer, ForeignKey("shop_admin.id"), nullable=False)
 	admin = relationship("ShopAdmin")
@@ -799,7 +799,7 @@ class HireLink(MapBase, _CommonApi):
 
 	staff_id = Column(Integer, ForeignKey(ShopStaff.id), primary_key=True)
 	shop_id = Column(Integer, ForeignKey(Shop.id), primary_key=True)
-	work = Column(TINYINT,nullable=False, default=3) #工作类型： 1:JH,2:SH1,3:SH2 9:admin
+	work = Column(TINYINT,nullable=False, default=3) #工作类型： 1:JH,2:SH1,3:SH2 9:admin(admin can be all staff role) 
 	money = Column(Float,nullable=False, default=0)  # 已收货款
 	address1 = Column(String(100)) #责任区域一级地址（可多选，空格隔开）
 	address2 = Column(String(200)) #二级

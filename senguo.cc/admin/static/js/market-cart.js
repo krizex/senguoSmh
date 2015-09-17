@@ -109,8 +109,15 @@ $(document).ready(function(){
         $(this).css("height",($(".fruits-lst").width()/5-8)+"px");
     });
     var now_time = new Date().getTime();
+    var range_time = parseInt($("#shop_imgurl").attr("data-stop-range"))*60000;//按时达截至时间
+    var self_time = parseInt($("#shop_imgurl").attr("data-self-endtime"))*60000;//按时达截至时间
     $(".today_time").each(function(){
         var end_time = parseInt($(this).attr("end-time"));
+        if($(this).hasClass("ontime_time")){
+            end_time = end_time-range_time;
+        }else{
+            end_time = end_time-self_time;
+        }
         if(now_time>end_time){
             $(this).remove();
         }
@@ -225,6 +232,7 @@ $(document).ready(function(){
         $("#deli_self_address").attr("data-id",$("#deli_self_address option").first().attr("data-id"));
     }
     $(".bili_type li").removeClass("active").eq(index).addClass("active");
+    calDeli();
 }).on("change","#deli_shop",function(){
     var option_item = $("#deli_shop option").not(function(){ return !this.selected });
     var type = parseInt(option_item.attr("data-type"));
@@ -313,7 +321,9 @@ function calDeli(){
         $(".shop-deli").addClass("hidden");
     }else{
         $("#min_charge").html(min_charge);
-        $(".shop-deli").removeClass("hidden");
+        if(min_charge>0){
+            $(".shop-deli").removeClass("hidden");
+        }
     }
     $("#freight_money").html(freight);
     $('.final_price').html(mathFloat(total_price+freight));

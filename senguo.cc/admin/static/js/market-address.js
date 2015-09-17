@@ -1,6 +1,39 @@
 var cur_item = null,_type="edit_address";
+var area=window.dataObj.area;
 $(document).ready(function(){
-
+    //初始化省份
+    for(var key in area){
+        var $item=$('<option value=""></option>');
+        var city=area[key]['city'];
+        var if_city;
+        if(city) {
+            if_city='1';//有子城市
+        }
+        else if_city='0';
+        $item.attr({'data-code':key,'data-city':if_city,'value':area[key]['name']}).html(area[key]['name']);
+        $('#address_province').append($item);
+    }
+}).on("change","#address_province",function(){
+    var option_item = $("#address_province option").not(function(){ return !this.selected });
+    var if_city = parseInt(option_item.attr("data-city"));
+    var code = option_item.attr("data-code");
+    var name = option_item.html();
+    $('#address_city').empty();
+    if(if_city==1){
+        $('#address_city').removeAttr("disabled");
+        for(var key in area){
+            var city=area[key]['city'];
+            if(code==key){
+                for(var k in city){
+                    var $item=$('<option value=""></option>');
+                    $item.attr({'data-code':k,'value':city[k]['name']}).html(city[k]['name']);
+                    $('#address_city').append($item);
+                }
+            }
+        }
+    }else{
+        $('#address_city').attr("disabled","true").append('<option value="请选择">请选择</option>');
+    }
 }).on("click","#new_address",function(){
     if($(".address-lst li").size()>=5){
         return noticeBox("最多只能新建5个地址哦");
@@ -36,6 +69,7 @@ function addressEdit(action){
     var action=action;
     var name=$('#address_name').val();
     var phone=$('#address_phone').val();
+    var province_city = $("#address_province").val()+($("#address_city").val()=="请选择"?"":$("#address_city").val());
     var address=$('#address_address').val();
     var regPhone=/^(1)\d{10}$/;
     if(!name) {return warnNotice('请填写收货人姓名');}
@@ -46,7 +80,8 @@ function addressEdit(action){
     var data={
         receiver:name,
         phone:phone,
-        address_text:address
+        address_text:address,
+        province_city:province_city
     };
     if(action=='edit_address'){data.address_id=cur_item.find(".i-edit").attr("data-id");}
     var args={
