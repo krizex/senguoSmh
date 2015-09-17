@@ -722,7 +722,7 @@ class Home(CustomerBaseHandler):
 			if not address:
 				return self.send_fail("修改地址失败", 403)
 			address_text = data.get("address_text","")
-			province_city = date.get("province_city","")
+			province_city = data.get("province_city","")
 			lat = self.getLocation(address_text+province_city)[0]
 			lon = self.getLocation(address_text+province_city)[1]
 			address.update(session=self.session, phone=data["phone"],
