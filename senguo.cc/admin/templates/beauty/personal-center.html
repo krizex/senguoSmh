@@ -71,31 +71,10 @@
         </ul>
     </div>
     <div class="box-style bg-white pb0 m-b10 clearfix pr0">
-        <!--<div class="title clearfix">
-            <span class="pull-left font14"><em class="collect-icon set-inl-blo pull-left bg_change"></em>我的收藏</span>
-        </div>
-        <hr/>-->
-        <button class="title clearfix address-manage">
+        <button class="title clearfix address-manage" id="address_btn">
+            <span class="fr imore"></span>
             <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
-            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none">+添加收货地址</a>
         </button>
-        <div class="address-list clearfix" style="display:none;">
-             <ul class="list-group m-b0 clearfix">
-            {% for address in current_user.addresses%}
-            <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
-                <p class="clearfix m-b0 height20">
-                    <span class="pull-left item_name">{{address.receiver}}</span>
-                    <span class="pull-right item_phone">{{address.phone}}</span>
-                </p>
-                <p class="clearfix item_address m-b0 height20">{{address.address_text}}</p>
-                <p class="clearfix height20">
-                    <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
-                    <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
-                </p>
-            </li>
-            {% end %}
-        </ul>
-        </div>
     </div>
      <div class="box-style bg-white pb0 m-b10 clearfix pr0">
         <button class="title clearfix coupon-manage" id="coupon_btn">
@@ -106,42 +85,6 @@
             {%end%}
         </button>
     </div>
-{% end %}
-{% block other %}
-<div class="address-box modal fade" id="address_box">
-    <div class="modal-dialog anim-bounceIn">
-        <div class="modal-content">
-            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
-            <div class="modal-header clearfix bg_change">
-                <h2 class="modal-title line48">收货地址</h2>
-                <button type="button" class="close dismiss">✕</button>
-            </div>
-            <div class="modal-body font14">
-                <div class="w60 center-block">
-                    <p class="set-inl-blo m-b5">
-                        <span class="pull-left tit set-inl-blo">收货人：</span>
-                        <input type="text" id="address_name" class="pull-left bg-white"/>
-                    </p>
-                    <p class="set-inl-blo m-b5">
-                        <span class="pull-left tit set-inl-blo">电话：</span>
-                        <input type="text" id="address_phone" class="pull-left bg-white"/>
-                    </p>
-                    <p class="set-inl-blo">
-                        <span class="pull-left tit set-inl-blo">收货地址：</span>
-                        <input type="text" id="address_address" class="pull-left bg-white"/>
-                    </p>
-                </div>
-            </div>
-            <div class="modal-warn">
-            </div>
-            <div class="modal-footer text-center">
-                <button class="btn sure_btn bg-green3 text-white addressEdit" style="display:none">确定</button>
-                <button class="btn sure_btn bg-green3 text-white addressAdd" style="display:none">确定</button>
-            </div>
-            <!-- <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div> -->
-        </div>
-    </div>
-</div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-center.js')}}"></script>

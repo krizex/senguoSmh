@@ -703,7 +703,7 @@ class Home(CustomerBaseHandler):
 			if len(self.current_user.addresses) == 0 :
 				if_default = 1
 			address_text = data.get("address_text","")
-			province_city = date.get("province_city","")
+			province_city = data.get("province_city","")
 			lat = self.getLocation(address_text+province_city)[0]
 			lon = self.getLocation(address_text+province_city)[1]
 			address = models.Address(customer_id = self.current_user.id,
@@ -762,6 +762,9 @@ class Home(CustomerBaseHandler):
 			customer_lat = address[0]
 			customer_lon = address[1]
 			res = 0
+			print(address,2333)
+			print(area_type,6666)
+			print(customer_lat,8888)
 			if area_type !=0 and customer_lat !=0 and customer_lon !=0:
 				if area_type == 1:
 					distance = self.get_distance(shop_lat,shop_lon,customer_lat,customer_lon)
@@ -776,7 +779,7 @@ class Home(CustomerBaseHandler):
 					else:
 						res = 1
 			else:
-				res = 0
+				res = 1
 			return self.send_success(in_area = res)
 
 		else:
@@ -786,7 +789,7 @@ class Home(CustomerBaseHandler):
 	def getLocation(self,address):
 		lat = 0
 		lon = 0
-		url = "http://api.map.baidu.com/geocoder/v2/?address="+addres+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+		url = "http://api.map.baidu.com/geocoder/v2/?address="+address+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
 		r = requests.get(url)
 		result = json.loads(r.text)
 		if result["status"] == 0:
@@ -2336,9 +2339,9 @@ class Cart(CustomerBaseHandler):
 		now_periods_start = shop.config.start_time_now.strftime("%H:%M")
 		now_periods_end = shop.config.end_time_now.strftime("%H:%M")
 		if now_start_seconds <= time_now_seconds+now_stop_seconds <= now_end_seconds:
-			now_periods = ("{0}~{1}").format(now_periods_start,now_periods_end)
+			now_periods = 1
 		else:
-			now_periods = ""
+			now_periods = 0
 
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()

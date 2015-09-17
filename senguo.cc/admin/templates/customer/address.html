@@ -5,10 +5,10 @@
 <link rel="stylesheet" href="{{static_url('css/market-profile.css')}}"/>
 {% end %}
 {% block content %}
-<div class="user-info-detail pt36 clea bm-none" id="container" data-code="{{shop_code}}">
+<div class="user-info-detail pt36 clea bm-none" id="address_page" data-code="{{shop_code}}">
     <ul class="address-lst">
         {% for address in current_user.addresses%}
-        <li class="active">
+        <li class="{% if address.if_default==1 %}active{% end %}">
             <div class="address-row">
                 <span class="c333 icon-left i-person">{{address.receiver}}</span>
                 <span class="c333 icon-left i-phone">{{address.phone}}</span>
@@ -21,34 +21,16 @@
                     <span class="c666 f12 icon-left i-edit" data-id="{{address.id}}">编辑</span>
                     <span class="c666 f12 icon-left i-del ml10" data-id="{{address.id}}">删除</span>
                 </div>
-                <span class="c666 icon-left i-check i-checked f12" data-id="{{address.id}}">默认地址</span>
+                <span class="c666 icon-left i-check {% if address.if_default==1 %}i-checked{% end %} f12" data-id="{{address.id}}">使用该地址</span>
             </div>
         </li>
         {% end %}
-        <li>
-            <div class="address-row">
-                <span class="c333 icon-left i-person">黄铁森的店铺</span>
-                <span class="c333 icon-left i-phone">12525251212</span>
-            </div>
-            <div class="address-row">
-                <p class="icon-left i-address f12 c666">
-                    斯蒂芬斯蒂芬是的房贷首付斯蒂芬但是范德萨打发似的
-                </p>
-            </div>
-            <div class="address-row line-top">
-                <div class="fr">
-                    <span class="c666 f12 icon-left i-edit">编辑</span>
-                    <span class="c666 f12 icon-left i-del ml10">删除</span>
-                </div>
-                <span class="c666 icon-left i-check f12">默认地址</span>
-            </div>
-        </li>
     </ul>
     <a href="javascript:;" class="new-address" id="new_address">+添加新地址</a>
 </div>
 {% end %}
 {% block bottom %}
-<div class="modal fade sex-popbox" id="nameBox">
+<div class="modal fade sex-popbox" id="address_box">
     <div class="modal-dialog anim-bounceIn">
         <div class="modal-content">
             <div class="modal-top"><img src="/static/images/info_top.png"/></div>
@@ -57,27 +39,35 @@
                 <h2 class="modal-title  text-center line48">收货地址</h2>
             </div>
             <div class="modal-body">
-                <p>
-                    <span class="modal-left">收货人：</span>
+                <p class="row-address">
                     <input type="text" class="name-ipt input1" id="address_name" placeholder="请输入真实姓名" value=""/>
+                    <span class="modal-left">收货人：</span>
                 </p>
-                <p>
-                    <span class="modal-left">电话：</span>
+                <p class="row-address">
                     <input type="tel" class="name-ipt input1" id="address_phone" placeholder="请输入手机号" value=""/>
+                    <span class="modal-left">电话：</span>
                 </p>
-                <p>
-                    <span class="modal-left">收货地址：</span>
+                <p class="row-address mb6">
+                    <select class="selsect-area ml2" id="address_city">
+                        <option value="请选择">请选择</option>
+                    </select>
+                    <select class="selsect-area" id="address_province">
+                    </select>
+                    <span class="modal-left">选择省市：</span>
+                </p>
+                <p class="row-address">
                     <input type="text" class="name-ipt input1" id="address_address" placeholder="请输入地址" value=""/>
+                    <span class="modal-left">详细地址：</span>
                 </p>
             </div>
             <div class="modal-warn">
             </div>
-            <div class="modal-footer clearfix">
+            <div class="modal-footer clearfix address-footer">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn text-white" id="addressSure">确定</button>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>
+<script src="{{static_url('js/area.js')}}"></script>
 <script src="{{static_url('js/market-address.js')}}"></script>
 {% end %}
