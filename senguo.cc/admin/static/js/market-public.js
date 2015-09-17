@@ -356,7 +356,7 @@ function modalNotice(notice){
                             '<div class="modal-body set-width-float text-center">'+
                                 '<p class="detail font14 text-center">{{notice}}</p>'+
                             '</div>'+
-                            '<div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>'+
+                            '<!-- <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div> -->'+
                         '</div>'+
                     '</div>'+
                 '</div>';

@@ -5,8 +5,8 @@
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
-    <span id="shop_imgurl" data-img="{{shop_logo}}" data-status="{{shop_status}}" data-code="{{handler.shop_code}}"></span>
-    <div class="bg-box bg1" data-status="{}">
+    <span id="shop_imgurl" data-img="{{shop_logo}}" data-auth="{{show_balance}}" data-status="{{shop_status}}" data-code="{{handler.shop_code}}" data-now-money="{{config.freight_now or 0}}" data-ontime-money="{{config.freight_on_time or 0}}" data-now-min="{{config.min_charge_now or 0}}" data-ontime-min="{{config.min_charge_on_time or 0}}"></span>
+    <div class="bg-box bg1">
         <ul class="cart-list set-w100-fle m-b0">
             {% for key in cart_f %}
             <li class="cart-list-item set-w100-fle fruit_item text-grey m-b5 {{cart_f[key]['code']}}" data-limit="{{cart_f[key]['limit_num']}}">
@@ -62,14 +62,14 @@
             <span class="pull-right tit2 text-right"><span id="final_price" class="final_price" data-money=""></span>元</span>
             <span class="pull-right tit text-right">实付金额：</span>
         </div>
-        <div class="address-box">
+        <div class="address-box" data-id="{{default_address.id}}">
             <i class="i-more"></i>
             <div class="address-row">
-                <span class="c333 icon-left i-person">周兵的店铺</span>
-                <span class="c333 icon-left i-phone">15002787744</span>
+                <span class="c333 icon-left i-person">{{default_address.receiver}}</span>
+                <span class="c333 icon-left i-phone">{{default_address.phone}}</span>
             </div>
             <div class="address-row">
-                <p class="icon-left i-address f12 c666">剑桥春天小区9栋202</p>
+                <p class="icon-left i-address f12 c666">{{default_address.address_text}}</p>
             </div>
         </div>
         <div class="mt10 fruit-icons">
@@ -100,8 +100,8 @@
                 <span class="left-title">配送方式</span>
                 <div class="right-title">
                     <ul class="bts-lst group bili_type">
-                        <li class="active">商家配送</li>
-                        <li>用户自提</li>
+                        <li class="active" data-status="{{config.ontime_on}}">商家配送</li>
+                        <li data-status="{{config.self_on}}">用户自提</li>
                     </ul>
                     <span class="red-tip-txt hidden">下单{{config.self_end_time}}分钟内不可自提</span>
                 </div>
@@ -111,20 +111,20 @@
                     <i class="i-more"></i>
                     <span class="left-title top4">收货时间</span>
                     <div class="right-title">
-                        <select class="select-slide" name="" id="deli_shop">
+                        <select class="select-slide" name="" id="deli_shop" data-id="0" data-type="0" data-time="0">
                             {% if config.now_on == True%}
-                            <option value="{{config.intime_period or 0}}分钟内送达 ({{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}})">{{config.intime_period or 0}}分钟内送达 ({{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}})</option>
+                            <option data-time="0" id="now_on_time" data-type="0" data-id="0" value="{{config.intime_period or 0}}分钟内送达 ({{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}})">{{config.intime_period or 0}}分钟内送达 ({{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}})</option>
                             {% end %}
                             {% if config.ontime_on == True%}
                             {% if ontime_periods %}
                                 {% if config.day_on_time==1 or config.day_on_time==0 %}
                                 {% for period in ontime_periods %}
-                                <option data-id="{{period.id}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
+                                <option data-time="1" class="today_time" data-type="1" data-id="{{period.id}}" start-time="{{period.start}}" end-time="{{period.end}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
                                 {% end %}
                                 {% end %}
                                 {% if config.day_on_time==2 or config.day_on_time==0%}
                                 {% for period in ontime_periods %}
-                                <option data-id="{{period.id}}" value="明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
+                                <option data-time="2" data-type="1" data-id="{{period.id}}" value="明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
                                 {% end %}
                                 {% end %}
                             {% end %}
@@ -132,6 +132,7 @@
                         </select>
                     </div>
                 </div>
+                <p class="red-txt shop-deli hidden">该方式要满<span id="min_charge">50</span>元才能配送哦</p>
             </div>
             <div class="deli-box deli2 hidden">
                 <div class="cartb-box ptm5">
@@ -139,17 +140,17 @@
                     <span class="left-title top4">自提时间</span>
                     <div class="right-title">
                         <!--<span class="c333 select-time f14">12:40-13:10</span>-->
-                        <select class="select-slide" name="" id="deli_self">
+                        <select class="select-slide" name="" id="deli_self" data-id="0" data-time="0">
                             {% if config.self_on == True%}
                             {% if self_periods %}
                             {% if config.day_self==1 or config.day_self==0 %}
                             {% for period in self_periods %}
-                            <option data-id="{{period.id}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
+                            <option data-time="1" class="today_time" data-id="{{period.id}}" start-time="{{period.start}}" end-time="{{period.end}}" value="今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">今天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
                             {% end %}
                             {% end %}
                             {% if config.day_self==2 or config.day_self==0%}
                             {% for period in self_periods %}
-                            <option data-id="{{period.id}}" value="明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
+                            <option data-time="2" data-id="{{period.id}}" value="明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}">明天 {{period.start_time.strftime("%H : %M")}} ~ {{period.end_time.strftime("%H : %M")}}</option>
                             {% end %}
                             {% end %}
                             {% end %}
@@ -161,7 +162,7 @@
                     <i class="i-more"></i>
                     <span class="left-title top4">自提地点</span>
                     <div class="right-title clip">
-                        <select class="select-slide" name="" id="deli_self_address">
+                        <select class="select-slide" name="" id="deli_self_address" data-id="0">
                         {% if config.self_on == True%}
                         {% if self_address_list %}
                         {% for address in self_address_list %}
@@ -186,13 +187,13 @@
                 <span class="left-title">支付方式</span>
                 <div class="right-title">
                     <ul class="bts-lst group pay_type_list">
-                        <li class="active">在线支付</li>
-                        <li>余额支付</li>
-                        <li>货到付款</li>
+                        <li class="active" data-id="3" data-auth="{{show_balance}}" data-status="{{config.online_on_active}}">在线支付</li>
+                        <li data-id="2" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">余额支付</li>
+                        <li data-id="1" data-auth="True" data-status="{{config.cash_on_active}}">货到付款</li>
                     </ul>
                 </div>
             </div>
-            <div class="cartb-box pay-line">
+            <div class="cartb-box pay-line" id="online_pay" data-type="wx">
                 <div class="wrap-online-lst">
                     <ul class="online-lsts check-lst">
                         <li class="group" data-type="wx">
@@ -214,7 +215,7 @@
                     </ul>
                 </div>
                 <div class="wrap-balance-box hidden">
-                    <a href="{{reverse_url('customerBalance')}}?shop_id={{shop_id}}" class="a-cz pull-right f14" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">充值</a>
+                    <a href="javascript:;" url="{{reverse_url('customerBalance')}}?shop_id={{shop_id}}" class="a-cz pull-right f14" data-auth="{{show_balance}}" data-status="{{config.balance_on_active}}">充值</a>
                     <span class="c333 f14">当前余额</span>
                     <span class="c333 f14 ml10">￥{{balance_value}}元</span>
                 </div>
@@ -227,12 +228,12 @@
             </p>
             <p>
                 <span class="pull-right money-txt">￥<span id="freight_money"></span></span>
-                <span class="pull-right fu-txt">+</span>
+                <span class="fu-txt">+</span>
                 <span class="c333">配送费</span>
             </p>
             <p>
                 <span class="pull-right money-txt">￥<span id="coupon_cmoney">0</span></span>
-                <span class="pull-right fu-txt">-</span>
+                <span class="fu-txt minus-txt">-</span>
                 <span class="c333">优惠券优惠</span>
             </p>
         </div>
@@ -274,7 +275,6 @@
             <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="tiePhone">绑定</button>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>
@@ -303,10 +303,9 @@
                 </div>
                 {%end%}
             </div>
-            <div class="modal-footer clearfix mt0">
+            <div class="modal-footer clearfix">
                 <button type="button" class="btn pull-right tie-btn bg-green3 sure_btn"  id="sureCoupon" data-coupon="0">确定</button>
             </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
         </div>
     </div>
 </div>

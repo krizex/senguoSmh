@@ -923,6 +923,10 @@ class CustomerShopFollow(MapBase, _CommonApi):
 	shop_new = Column(Integer,nullable=False,default = 0)
 	shop_balance  = Column(Float,nullable=False,default = 0)
 
+	# add by sunmh 2015年09月14日08:51:14
+	first_purchase_time=Column(DateTime)	#首次购买时间
+	first_charge_time=Column(DateTime)		#首次充值时间
+
 	remark = Column(String(200))#用户备注 5.25
 
 
@@ -1319,6 +1323,7 @@ class Order(MapBase, _CommonApi):
 	shop_service      = Column(Integer)
 
 	online_type       = Column(String(8)) #wx alipay
+	is_qrwxpay        = Column(Integer,default=0) #只有当订单类型为微信支付时才有意义，1表示扫码支付，0表示非扫码支付
 	send_admin_id =Column(Integer,nullable=False,default=0) #记录处理订单配送的管理员id #5.25
 	finish_admin_id =Column(Integer,nullable=False,default=0) #记录处理订单完成的管理员id #5.25
 
@@ -1756,7 +1761,6 @@ class ArticleComment(MapBase, _CommonApi):
 
 	accountinfo = relationship(Accountinfo)
 
-
 # 文章点赞
 class ArticleGreat(MapBase, _CommonApi):#文章点赞 收藏 浏览
 	__tablename__ = 'article_great'
@@ -1789,7 +1793,7 @@ class PictureLibrary(MapBase,_CommonApi):
 	_type = Column(String(32),nullable = False) #goods,goods_detail,logo,notice
 	img_url = Column(String(100),nullable = False)
 	shop_id  = Column(Integer,nullable = False)
-	status = Column(TINYINT,nullable=False,default = 1) #0:delete 1:normal
+	status = Column(TINYINT,nullable=False,default = 1) #0:已删除 1:正常
 	create_time = Column(DateTime,nullable=False,default = func.now())
 	code = Column(String(128), nullable=False, default="")
 

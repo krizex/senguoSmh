@@ -8,9 +8,17 @@ $(document).ready(function(){
         slide_images("next");
     },4000);
 }).on("click","#prev",function(){
-    slide_images("prev");
+    if($(".swiper-wrapper li").eq(1).is(":animated")){
+       return ;
+    } else {
+        slide_images("prev");
+    }
 }).on("click","#next",function(){
-    slide_images("next");
+    if($(".swiper-wrapper li").eq(1).is(":animated")) {
+
+    } else {
+        slide_images("next");
+    }
 }).on("mouseover",".swiper-wrapper",function(){
     clearInterval(timer);
 }).on("mouseout",".swiper-wrapper",function(){
@@ -22,7 +30,7 @@ function slide_images(type){
     $(".swiper-wrapper li").each(function(){
         var $this = $(this);
         var index = parseInt($this.attr("data-index"));
-        if(type=="next"){
+        if(type=="prev"){
             if(index==0){
                 $this.css("left",3000+"px").attr("data-index",length-1);
                 $this.animate({left:"2000px"},"slow");

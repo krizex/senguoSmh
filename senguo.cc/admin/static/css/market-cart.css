@@ -144,15 +144,17 @@
 .pay-type-box{background-color: #fff;padding-left: 10px;padding-top: 10px;}
 .pay-line{border-top: 1px solid #d3d3d3;padding: 10px 0;}
 .money-box{background-color: #fff;padding: 10px;}
-.money-box>p{line-height: 20px;font-size: 14px;}
+.money-box>p{line-height: 20px;font-size: 14px;position: relative;}
 .money-txt{color: #33CC66;font-size: 14px;}
-.fu-txt{color: #33CC66;font-size: 14px;margin-right: 20px;}
+.fu-txt{color: #33CC66;font-size: 14px;position: absolute;right: 50px;top: 0;}
+.minus-txt{right: 52px;}
 .pointer{cursor: pointer;}
 .p0{padding: 0 !important;}
 .mt0{margin-top: 0px !important;}
 .clip{white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
 .select-slide{width: 90%;height: 19px;border: none;font-size: 14px;color: #333;outline: none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
 .red-tip-txt{position: absolute;width: 70px;font-size: 12px;color: #f25f5f;line-height: 14px;right: 10px;top: 2px;}
+.shop-deli{color: #f25f5f;line-height: 18px;text-align: center;padding-bottom: 4px;}
 /*beauty*/
 .yellow-text{color: #ff9800;}
 .pay-bill{position: fixed;bottom:50px;width:100%;max-width:800px;min-width:320px;z-index:100;height: 40px;border-top:1px solid #eee;line-height: 40px;text-align: right;font-size: 14px;background-color: rgba(255,255,255,.8);color: #666;left: 50%;-webkit-transform:translate(-50%,0);}
@@ -160,8 +162,8 @@
 .coupon-text{color: #666;font-size: 12px;margin-left: 10px;}
 .wrap-coupontype{background-color: #fff;max-height: 200px;overflow: auto;overflow-x: hidden;}
 .coupon_type{border:1px solid #f0f4f0;border-left:none;max-height: 150px;}
-.coupon_type>li{height: 50px;padding:0 6px;cursor: pointer;font-size: 12px;border-left:2px solid #f0f4f0;}
-.coupon_type .active{border-left-color:#33cc66;color: #33CC66;}
+.coupon_type>li{height: 50px;padding:0 6px;cursor: pointer;font-size: 12px;}
+.coupon_type .active{color: #33CC66;}
 .coupon-bg{display: inline-block;height: 30px;width: 57px;color: #fff;text-align: center;line-height: 30px;white-space: nowrap;background: url('/static/images/coupon_pay.png') no-repeat left center;background-size: contain;}
 .coupon-detail{display: inline-block;position: relative;top: 7px;left: 6px;}
 .mr8{margin-right: 8px;}

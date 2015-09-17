@@ -7,6 +7,8 @@ var choose_year1 = current_year;
 var choose_month1 = current_month;
 var current_sort_way1 = 1;  //当前的排列方式  1:按日排,2:按周排,3:按月排
 
+var begin_date= current_date;
+var end_date= current_date;
 
 $(document).ready(function(){
     initCharts();
@@ -356,8 +358,8 @@ function getcurve(action,type,current_year,current_month,options,myChart){
 
         options.xAxis[0].data.unshift(date);
         options.series[0].data.unshift(all);
-        options.series[1].data.unshift(admin);
-        options.series[2].data.unshift(customer);
+        options.series[1].data.unshift(customer);
+        options.series[2].data.unshift(admin);
         options.series[3].data.unshift(phone);
     }
     myChart.refresh();

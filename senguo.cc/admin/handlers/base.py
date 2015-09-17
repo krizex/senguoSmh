@@ -1111,7 +1111,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return self.send_fail('customer not found')
 
 		# print(admin_id,customer_id)
-		if order.shop.admin.has_mp:
+		if order.shop.admin.has_mp and access_token:
 			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
 			if mp_customer:
 				c_touser = mp_customer.wx_openid
@@ -1225,8 +1225,12 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		shop_name = order.shop.shop_name
 		order_id = order.id
 		admin_id = order.shop.admin.id
+		try:
+			customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
+		except NoResultFound:
+			return self.send_fail('[TempMsg]order_done_msg: customer not found')
 		# print('[TempMsg]order_num:',order_num,', order_sendtime:',order_sendtime,', shop_phone:',shop_phone)
-		if order.shop.admin.has_mp:
+		if order.shop.admin.has_mp and other_access_token:
 
 			mp_customer = session.query(models.Mp_customer_link).filter_by(admin_id = int(admin_id) ,customer_id = int(customer_id)).first()
 			if mp_customer:
@@ -1234,14 +1238,11 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				# print(touser,'other openid')
 			else:
 				# print('get mp_customer error')
-				touser = order.shop.admin.accountinfo.wx_openid
-
+				touser = customer_info.wx_openid
 		else:
-			touser = order.shop.admin.accountinfo.wx_openid
-		# try:
-		# 	customer_info = session.query(models.Accountinfo).filter_by(id = customer_id).first()
-		# except NoResultFound:
-		# 	return self.send_fail('[TempMsg]order_done_msg: customer not found')
+			# touser = order.shop.admin.accountinfo.wx_openid
+			touser = customer_info.wx_openid
+		
 		# touser = customer_info.wx_openid
 		WxOauth2.order_done_msg(touser,order_num,order_sendtime,shop_phone,shop_name,order_id,admin_id,other_access_token)
 
@@ -1501,6 +1502,10 @@ class _AccountBaseHandler(GlobalBaseHandler):
 			return self.send_fail('[_AccountBaseHandler]order_done: shop_follow error')
 		if shop_follow.shop_new == 0:
 			shop_follow.shop_new = 1
+			## add by sunmh 2015-09-14 
+			## 首次购买完成以后,需要在这里更新customershopfollow的首次更新时间 
+			if shop_follow.first_purchase_time==None:
+				shop_follow.first_purchase_time = datetime.datetime.now()
 		try:
 			order_count = session.query(models.Order).filter_by(customer_id = customer_id,shop_id = shop_id).count()
 		except:
@@ -2305,16 +2310,13 @@ class CustomerBaseHandler(_AccountBaseHandler):
 
 		return self._shop_code
 
-	@property
-	def shop_marketing(self):
+	def get_shop_marketing(self,shop_id):
 		if hasattr(self, "_shop_marketing"):
 			return self._shop_marketing
 
 		#woody
 		#3.23
-		shop_id = self.get_cookie("market_shop_id")
 		shop = self.session.query(models.Shop).filter_by(id = shop_id).first()
-
 		coupon_have=self.session.query(models.CouponsShop).filter_by(shop_id=shop.id,closed=0).count()
 		if coupon_have==0:
 			coupon_active=0
@@ -2356,6 +2358,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 			self._shop_auth = None
 
 		return self._shop_auth
+
 
 	@property
 	def shop_tpl(self):
@@ -2880,7 +2883,7 @@ class WxOauth2:
 			# else:
 			#	print('template_id get success',template_id)
 		else:
-			template_id = 'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0'
+			template_id = '4QuRCzRuxVFWuz1gw8hHXlAaJZL4H2lLAyPXNr1MXIs'
 		postdata = {
 			'touser' : touser,
 			# 'template_id':'NNOXSZsH76hQX7p2HCNudxLhpaJabSMpLDzuO-2q0Z0',
@@ -2896,10 +2899,12 @@ class WxOauth2:
 				"remark"   : {"value":"\n您的订单我们已经收到，配货后将尽快配送~","color":"#173177"},
 			}
 		}
+		# print(template_id,'template_id')
 		res = requests.post(cls.template_msg_url.format(access_token=access_token),data = json.dumps(postdata),headers = {"connection":"close"})
+		# print(res)
 		data = json.loads(res.content.decode("ascii"))
 		if data["errcode"] != 0:
-			# print("[TempMsg]Order commit message send failed:",data)
+			print("[TempMsg]Order commit message send failed:",data)
 			return False
 		return True
 

@@ -1,5 +1,5 @@
 from handlers.base import CustomerBaseHandler,WxOauth2,QqOauth,get_unblock,unblock
-from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub
+from handlers.wxpay import JsApi_pub, UnifiedOrder_pub, Notify_pub,CloseOrder_pub
 import dal.models as models
 import tornado.web
 from settings import *
@@ -648,8 +648,11 @@ class Home(CustomerBaseHandler):
 			shop_auth = shop.shop_auth
 			if shop_auth !=0:
 				show_balance = True
+			shop_marketing = self.get_shop_marketing(shop.id)
 		else:
 			# print("[CustomerHome]Shop not found:",shop_code)
+			shop_marketing = 0
+			shop_auth = 0
 			return self.write("店铺不存在")
 		customer_id = self.current_user.id
 		self.set_cookie("market_shop_id",str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
@@ -683,7 +686,8 @@ class Home(CustomerBaseHandler):
 		a=self.session.query(models.CouponsCustomer).filter_by(shop_id=shop.id,customer_id=customer_id,coupon_status=1).count()
 		return self.render(self.tpl_path(shop.shop_tpl)+"/personal-center.html", count=count,shop_point =shop_point, \
 			shop_name = shop_name,shop_logo = shop_logo, shop_balance = shop_balance ,\
-			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,shop_id=shop_id,context=dict(subpage='center'))
+			a=a,show_balance = show_balance,balance_on=balance_on,shop_tpl=shop.shop_tpl,\
+			shop_id=shop_id,shop_marketing=shop_marketing,get_shop_auth=shop_auth,context=dict(subpage='center'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data")
@@ -742,11 +746,13 @@ class Discover(CustomerBaseHandler):
 			else:
 				confess_active = 0
 			shop_auth = shop.shop_auth
+			shop_marketing = self.get_shop_marketing(shop.id)
 			self.set_cookie("market_shop_id", str(shop.id))  # 执行完这句时浏览器的cookie并没有设置好，所以执行get_cookie时会报错
 			self.set_cookie("market_shop_code",str(shop.shop_code))
 		else:
 			shop_auth = 0
 			confess_active = 0
+			shop_marketing = 0
 		try:
 			confess_count =self.session.query(models.ConfessionWall).filter_by( shop_id = shop.id,customer_id =self.current_user.id,scan=0).count()
 		except:
@@ -834,7 +840,7 @@ class Discover(CustomerBaseHandler):
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
 			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,\
 			discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
-			seckill_count=goods_count)
+			seckill_count=goods_count,shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -844,6 +850,7 @@ class ShopArea(CustomerBaseHandler):
 		shop = self.session.query(models.Shop).filter_by(shop_code = shop_code).first()
 		if not shop:
 			return self.send_fail('shop not found')
+		shop_marketing = self.get_shop_marketing(shop.id)
 		shop_name = ""
 		address = ""
 		lat = ""
@@ -877,7 +884,8 @@ class ShopArea(CustomerBaseHandler):
 			else:
 				return self.send_error(404)
 		return self.render('customer/shop-area.html',context=dict(subpage=''),\
-			address = address,lat = lat ,lon = lon,shop_name=shop_name,area_type=area_type,roundness=roundness,area_radius=area_radius,area_list=area_list)
+			address = address,lat = lat ,lon = lon,shop_name=shop_name,area_type=area_type,\
+			roundness=roundness,area_radius=area_radius,area_list=area_list,shop_marketing=shop_marketing)
 
 # 个人中心
 class CustomerProfile(CustomerBaseHandler):
@@ -1034,6 +1042,8 @@ class ShopProfile(CustomerBaseHandler):
 		if not shop:
 			# print("[CustomerShopProfile]Shop not found:",shop_code)
 			return self.send_error(404)
+		shop_auth = 0
+		shop_marketing = self.get_shop_marketing(shop.id)
 		shop_id = shop.id
 		shop_name = shop.shop_name
 		shop_logo = shop.shop_trademark_url
@@ -1086,11 +1096,12 @@ class ShopProfile(CustomerBaseHandler):
 		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
 		session = self.session
 		w_id = self.current_user.id
-		return self.render("customer/shop-info.html", shop=shop, follow=follow, operate_days=operate_days,
+		return self.render("customer/shop-info.html", shop=shop,get_shop_auth=shop_auth,follow=follow, operate_days=operate_days,
 						   fans_sum=fans_sum, order_sum=order_sum, goods_sum=goods_sum, address=address,
 						   service_area=service_area, headimgurls=headimgurls, signin=signin,satisfy=satisfy,
 						   comments=self.get_comments(shop_id, page_size=3), comment_sum=comment_sum,
-						   context=dict(subpage='shop'),shop_name = shop_name,shop_logo = shop_logo)
+						   shop_name = shop_name,shop_logo = shop_logo,shop_marketing=shop_marketing,\
+						   context=dict(subpage='shop'))
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str")
@@ -1349,7 +1360,7 @@ class Market(CustomerBaseHandler):
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
-
+		shop_marketing = self.get_shop_marketing(shop.id)
 		if len(self.args.get('action')) < 1: 
 			if shop.admin.has_mp:
 				# print('[CustomerMarket]login shop.admin.has_mp')
@@ -1568,7 +1579,8 @@ class Market(CustomerBaseHandler):
 		return self.render(self.tpl_path(shop.shop_tpl)+"/home.html",
 						   context=dict(cart_count=cart_count, subpage='home',notices=notices,shop_name=shop.shop_name,\
 							w_follow = w_follow,cart_fs=cart_fs,shop_logo = shop_logo,shop_status=shop_status,group_list=group_list,\
-							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity,seckill_goods_ids=seckill_goods_ids))
+							has_seckill_activity=has_seckill_activity,has_discount_activity=has_discount_activity,\
+							seckill_goods_ids=seckill_goods_ids),shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("code?")
@@ -2161,7 +2173,7 @@ class Cart(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop error')
 		if not shop:return self.send_error(404)
-
+		shop_marketing = self.get_shop_marketing(shop.id)
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
 			print("[CustomerCart]present market_shop_code doesn't exist in cookie" )
@@ -2190,10 +2202,10 @@ class Cart(CustomerBaseHandler):
 		self.set_cookie("shop_auth", str(shop_auth))
 		cart = next((x for x in self.current_user.carts if x.shop_id == shop_id), None)
 		if not cart or (not (eval(cart.fruits))): #购物车为空
-			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
+			return self.render("customer/cart-empty.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 		cart_f = self.read_cart(shop_id)
 		if len(cart_f) == 0:
-			return self.render("customer/cart-empty.html",context=dict(subpage='cart'))
+			return self.render("customer/cart-empty.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 		for item in cart_f.keys():
 			fruit = cart_f[item].get('charge_type').fruit
 			fruit_id = fruit.id
@@ -2204,10 +2216,18 @@ class Cart(CustomerBaseHandler):
 			ontime_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=0).all()
 		except:
 			ontime_periods = []
+		if len(ontime_periods)>0:
+			for period in ontime_periods:
+				period.start = self.getTimeStamp(self.handTime(period.start_time))
+				period.end = self.getTimeStamp(self.handTime(period.end_time))
 		try:
 			self_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=1 ).all()
 		except:
 			self_periods= []
+		if len(self_periods)>0:
+			for period in self_periods:
+				period.start = self.getTimeStamp(self.handTime(period.start_time))
+				period.end = self.getTimeStamp(self.handTime(period.end_time))
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
 		coupon_number=0
@@ -2251,11 +2271,30 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
+		try:
+			default_address =[x for x in self.current_user.addresses if x.if_default ==1 ][0]
+		except:
+			default_address = ""
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
-						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list\
-						   ,context=dict(subpage='cart'))
+						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,shop_marketing=shop_marketing\
+						   ,get_shop_auth=shop_auth,default_address=default_address,context=dict(subpage='cart'))
+	
+	def handTime(self,_time):
+		date_today = time.strftime("%Y-%m-%d")+" "
+		try:
+			show_time = date_today+(_time).strftime('%H:%M:%S')
+		except:
+			show_time = 0
+		return show_time
+
+	def getTimeStamp(self,_time):
+		try:
+			show_time = int(time.mktime(time.strptime(_time,'%Y-%m-%d %H:%M:%S'))*1000)
+		except:
+			show_time = 0
+		return show_time
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
@@ -2805,7 +2844,10 @@ class Cart(CustomerBaseHandler):
 		# 如果非在线支付订单，则发送模版消息、自动打印订单、订单消息推送给app（在线支付订单支付成功后再发送，处理逻辑在onlinePay.py里）
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
-			self.send_admin_message(session,order,access_token)
+			#如果有自己的公众平台，用自己的公众号发送模板消息，之后依旧用森果发送一遍
+			if access_token:
+				self.send_admin_message(session,order,access_token)
+			self.send_admin_message(session,order)
 
 		return True
 
@@ -2818,6 +2860,29 @@ class Cart(CustomerBaseHandler):
 			return False
 			# return self.send_fail('[CustomerCart]Order auto cancel: order not found!')
 		if order.status == -1:
+			#如果是微信支付，关闭支付接口
+			if order.online_type == 'wx':
+				print('close order')
+				num = order.num
+				transaction_id = order.transaction_id
+				if order.is_qrwxpay ==1:
+					out_trade_no = num + 'a'
+				else:
+					out_trade_no = num
+				# print(out_trade_no,'out_trade_no')
+				colse_order = CloseOrder_pub()
+				colse_order.setParameter("out_trade_no",out_trade_no)
+				# colse_order.setParameter("transaction_id",transaction_id)
+				res = colse_order.postXml()
+				# print(res)
+				if isinstance(res,bytes):
+					res = res.decode('utf-8')
+				res_dict = colse_order.xmlToArray(res)
+				return_code = res_dict.get('return_code',None)
+				if return_code == 'SUCCESS':
+					print('order closed success')
+				else:
+					print('order closed failed')
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
@@ -2880,7 +2945,16 @@ class Address(CustomerBaseHandler):
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
 	def get(self):
-		return self.render("notice/order-success.html",context=dict(subpage='cart'))
+		shop_id = int(self.get_cookie("market_shop_id"))
+		try:
+			shop_auth = self.session.query(models.Shop.shop_auth).filter_by(id=shop_id).first().shop_auth
+		except:
+			shop_auth = 0
+		try:
+			shop_marketing = self.get_shop_marketing(shop_id)
+		except:
+			shop_marketing = 0
+		return self.render("notice/order-success.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,shop_auth=shop_auth)
 
 class Wexin(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("action?:str", "url:str")
@@ -3191,8 +3265,8 @@ class Order(CustomerBaseHandler):
 			# print(order,'i am order')
 			if not order:return self.send_error(404)
 			# print(order.id,'i am ')
-			if order.status != 5:
-				self.send_fail("只有已送达并且没有评价过的订单才能评价哦！")
+			if order.status not in [5,6]:
+				self.send_fail("只有已送达的订单才能评价哦！")
 			comment = order.comment
 			order.status = 6
 			order.comment_create_date = datetime.datetime.now()
@@ -3744,6 +3818,10 @@ class payTest(CustomerBaseHandler):
 					shop_province=shop_province,shop_name=shop_name)
 				self.session.add(balance_history)
 				# print("[WxCharge]balance_history:",balance_history)
+				## add by sunmh 2015-09-14 
+				## 充值完成后,如果是首次充值,则更新customershopfollow的首次充值时间
+				if shop_follow.first_charge_time==None:
+					shop_follow.first_charge_time=datetime.datetime.now()
 				self.session.commit()
 				
 			# 充值送优惠券
