@@ -16,6 +16,11 @@ import operator
 # added by woody  2015.3.6
 import requests
 
+# add by sunmh
+import tornado.gen
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
+
 # 登录处理
 class Access(SuperBaseHandler):
 
@@ -856,6 +861,8 @@ class User(SuperBaseHandler):
 # 统计 - 用户增长
 # modified by sunmh 2015年09月04日19:36:03
 class IncStatic(SuperBaseHandler):
+	executor = ThreadPoolExecutor(2)
+
 	@tornado.web.authenticated
 	def get(self):
 		# woody
@@ -863,14 +870,20 @@ class IncStatic(SuperBaseHandler):
 		return self.render("superAdmin/count-user.html",level = level, context=dict(subpage='count',subcount='user'))
 
 	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	@tornado.gen.engine
 	@SuperBaseHandler.check_arguments("action:str")
 	def post(self):
 		action = self.args["action"]
 		if action == "user_trend":
-			return self.user_trend()
+			#return self.user_trend()
+			yield self.user_trend()
 		else:
-			return self.error(404)
+			#return self.error(404)
+			yield self.error(404)
+		self.finish()
 
+	@run_on_executor
 	@SuperBaseHandler.check_arguments("action:str","type:int","current_year?:str","current_month?:str")
 	def user_trend(self):
 		level = self.current_user.level
