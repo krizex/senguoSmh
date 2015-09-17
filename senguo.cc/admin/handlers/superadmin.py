@@ -2724,6 +2724,43 @@ class ApplyRefund(SuperBaseHandler):
 		apply_id = int(apply_id)
 		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
 		refund_apply.has_done = 1 #将申请退款变为已处理状态
+		###################################################################
+		# 9.17 woody
+		# 如果该订单是支付宝支付。将支付记录作废,并改变订单状态
+		# 如果是微信支付，则不需要修改
+		##################################################################
+		transaction_id = refund_apply.transaction_id
+		order = self.session.query(models.Order).filter_by(transaction_id=transaction_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		if order.online_type == 'alipay':
+			order.del_reason = 'refund'
+			order.get_num(self.session,order.id)
+			balance_history = session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+			if not balance_history:
+				return self.write('old_balance_history not found')
+			shop_id = balance_history.shop_id
+			balance_value = balance_history.balance_value
+			shop = order.shop 
+			shop.shop_balance -= balance_value
+			balance_history.is_cancel =1
+			balance_history.balance_type = -1
+			customer_id = balance_history.customer_id
+			name        = balance_history.name
+			shop_province = balance_history.shop_province
+			shop_name     = balance_history.shop_name
+			balance_record = balance_history.balance_record + '--退款'
+			create_time   = datetime.datetime.now()
+			shop_totalPrice = shop.shop_balance
+			customer_totalPrice = balance_history.customer_totalPrice
+			transaction_id   = balance_history.transaction_id
+			available_balance = balance_history.available_balance
+			#同时生成一条退款记录
+			refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+				balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
+				transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
+			session.add(refund_history)
+
 		self.session.commit()
 		return self.send_success()
 
