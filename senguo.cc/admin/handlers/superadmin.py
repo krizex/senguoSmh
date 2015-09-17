@@ -2424,7 +2424,7 @@ class Balance(SuperBaseHandler):
 			shop_list = self.session.query(models.Shop).all()
 			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
 			person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
-			# 增加今日新增平台总余额 余额消费1+在线支付3-提现2-微信在线支付退款记录8-支付宝在线支付退款记录9
+			# 增加今日新增平台总余额 余额消费1+在线支付3-微信在线支付退款记录8-支付宝在线支付退款记录9(-提现2   后面不减提现记录)
 			# modified by sunmh 2015年09月16日
 			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0)
 		elif level == 1:
@@ -2435,7 +2435,7 @@ class Balance(SuperBaseHandler):
 			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).\
 				filter(models.BalanceHistory.shop_province==shop_province)
 		today_balance_plus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([1,3])).all()[0][0]
-		today_balance_minus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([2,8,9])).all()[0][0]
+		today_balance_minus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([8,9])).all()[0][0]
 		today_balance=format(float(0 if today_balance_plus==None else today_balance_plus)-float(0 if today_balance_minus==None else today_balance_minus),'.2f')
 		for item in cash_list:
 			cash_on += item.value
