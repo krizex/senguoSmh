@@ -698,11 +698,17 @@ class Home(CustomerBaseHandler):
 			if_default = 0
 			if len(self.current_user.addresses) == 0 :
 				if_default = 1
+			address_text = data.get("address_text","")
+			province_city = date.get("province_city","")
+			lat = self.getLocation(address_text+province_city)[0]
+			lon = self.getLocation(address_text+province_city)[1]
 			address = models.Address(customer_id = self.current_user.id,
 									 phone = data["phone"],
 									 receiver = data["receiver"],
-									 address_text = data["address_text"],
-									 if_default = if_default
+									 address_text = address_text,
+									 if_default = if_default,
+									 lat = lat,
+									 lon = lon
 									 )
 			self.session.add(address)
 			self.session.commit()
@@ -711,9 +717,16 @@ class Home(CustomerBaseHandler):
 			address = next((x for x in self.current_user.addresses if x.id == int(data["address_id"])), None)
 			if not address:
 				return self.send_fail("修改地址失败", 403)
+			address_text = data.get("address_text","")
+			province_city = date.get("province_city","")
+			lat = self.getLocation(address_text+province_city)[0]
+			lon = self.getLocation(address_text+province_city)[1]
 			address.update(session=self.session, phone=data["phone"],
 						   receiver=data["receiver"],
-						   address_text=data["address_text"])
+						   address_text=address_text,
+						   lat = lat,
+						   lon = lon
+						   )
 		elif action == "del_address":
 			try: address = self.session.query(models.Address).filter_by(id=int(data["address_id"]))
 			except:return self.send_error(404)
@@ -731,6 +744,20 @@ class Home(CustomerBaseHandler):
 		else:
 			return self.send_error(404)
 		return self.send_success()
+
+	def getLocation(self,address):
+		lat = 0
+		lon = 0
+		url = "http://api.map.baidu.com/geocoder/v2/?address="+addres+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+		r = requests.get(url)
+		result = json.loads(r.text)
+		if result["status"] == 0:
+			lat = result["result"]["location"]["lat"]
+			lon = result["result"]["location"]["lng"]
+		else:
+			lat = 0
+			lon = 0
+		return lat,lon
 
 # 发现
 class Discover(CustomerBaseHandler):
