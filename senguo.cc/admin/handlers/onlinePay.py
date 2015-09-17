@@ -28,23 +28,29 @@ class QrWxpay(CustomerBaseHandler):
 		totalPrice = order.new_totalprice
 
 class RefundCallback(CustomerBaseHandler):
-	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
+	def get (self):
+		return self.write('success')
+
 	@CustomerBaseHandler.check_arguments("service","v","sec_id","sign","notify_data")
 	def post(self):
 		print("[Alipay refund] notify_url!!!!!!!!")
+		session = models.DBSession()
+		_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 		sign = self.args.pop('sign')
-		signmethod = self._alipay.getSignMethod(**self.args)
+		signmethod = _alipay.getSignMethod(**self.args)
 		if signmethod(self.args) != sign:
-			return self.send_fail('sign error')
+			print('sign error')
+			return self.write('sign error')
 		notify_data = xmltodict.parse(self.args['notify_data'])['notify']
 		result_details = notify_data['result_details']
 		transaction_id = result_details.split('^')[0]
-		balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+		balance_history = session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 		if not balance_history:
-			return self.send_fail('old_balance_history not found')
-		order = self.session.query(models.Order).filter_by(transaction_id=transaction_id).first()
+			return self.write('old_balance_history not found')
+		order = session.query(models.Order).filter_by(transaction_id=transaction_id).first()
 		if not order:
-			return self.send_fail('order not found')
+			print('order not found')
+			return self.write('order not found')
 		##########################################################################
 		order.del_reason = 'refund'
 		order.get_num(session,order.id)  #取消订单,库存增加，在售减少 	
@@ -70,14 +76,14 @@ class RefundCallback(CustomerBaseHandler):
 		refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
 			balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
 			transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
-		self.session.add(refund_history)
+		session.add(refund_history)
 		# self.session.flush()
 		# # 9.15 woody 
 		# # 生成一条支付宝退款记录
 		# apply_refund = models.ApplyRefund(customer_id=customer_id,order_id=order_id,refund_type=1,refund_fee=totalPrice,
 		# 	transaction_id=transaction_id,order_num=num)
 		# self.session.add(apply_refund)
-		self.session.commit()
+		session.commit()
 		return self.write('success')
 
 	def check_xsrf_cookie(self):
