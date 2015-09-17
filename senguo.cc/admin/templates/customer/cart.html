@@ -113,7 +113,9 @@
                     <div class="right-title">
                         <select class="select-slide" name="" id="deli_shop" data-id="0" data-type="0" data-time="0">
                             {% if config.now_on == True%}
+                            {% if now_periods == 1 %}
                             <option data-time="0" id="now_on_time" data-type="0" data-id="0" value="{{config.intime_period or 0}}分钟内送达 ({{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}})">{{config.intime_period or 0}}分钟内送达 ({{config.start_time_now.strftime("%H:%M")}} ~ {{config.end_time_now.strftime("%H:%M")}})</option>
+                            {% end %}
                             {% end %}
                             {% if config.ontime_on == True%}
                             {% if ontime_periods %}

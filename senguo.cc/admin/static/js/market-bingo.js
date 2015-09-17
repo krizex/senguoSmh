@@ -48,17 +48,13 @@ $(document).ready(function(){
                 if($(this).index()<3&&$(this).attr('data-id')!=-2){
                     gArr.push($(this).attr('data-id'));
                 }
-                
             });
-            console.log(gArr);
              $('.more-group li').each(function(){
-                console.log(233333);
                  if($(this).attr('data-id')!=-2){
                      gArr.push($(this).attr('data-id'));
                  }
              });
         }
-        console.log(gArr);
         allList(1,6,gArr[0]);
         sid = gArr[0];
         if(NA == "android"){

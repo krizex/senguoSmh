@@ -253,6 +253,7 @@ $(document).ready(function(){
     var option_item = $("#deli_self_address option").not(function(){ return !this.selected });
     $(this).attr("data-id",option_item.attr("data-id"));
 }).on("click","#sureArea",function(){
+    is_inarea = 1;
     var area_box=new Modal('areaBox');
     area_box.modal('hide');
     orderSubmit($("#submitOrder"));
@@ -520,6 +521,11 @@ function itemDelete(target,menu_type) {
 }
 //订单提交
 function orderSubmit(target){
+    if(is_inarea==0){
+        var area_box=new Modal('areaBox');
+        area_box.modal('show');
+        return false;
+    }
     if($('#submitOrder').attr("disabled")=="true"){
         return false;
     }
@@ -645,6 +651,7 @@ function orderSubmit(target){
 function isInArea(){
     var url = "/customer/"+$("#shop_imgurl").attr("data-code");
     var args = {
+        action:"in_area",
         data:{
             address_id:$(".address-box").attr("data-id")
         }
@@ -652,7 +659,6 @@ function isInArea(){
     $.postJson(url,args,function(res){
         if(res.success){
             is_inarea = res.in_area;
-            console.log(is_inarea);
         }
     });
 }
