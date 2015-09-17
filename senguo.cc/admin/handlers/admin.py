@@ -1267,20 +1267,22 @@ class OrderStatic(AdminBaseHandler):
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
 					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
 			q_all=q.group_by(func.day(models.Order.create_date))
+			#print(q_all.all())
 
 			if valuationWay=='count':
 				q=self.session.query(models.Order.id,func.day(models.Order.create_date)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.day(models.Order.create_date)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.day(models.Order.create_date),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+			#print(q_old.all())
 			q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)
 
 			q_range=self.session.query(func.day(func.now()))
@@ -1299,12 +1301,12 @@ class OrderStatic(AdminBaseHandler):
 				q=self.session.query(models.Order.id,func.week(models.Order.create_date,1)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.week(models.Order.create_date,1)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.week(models.Order.create_date,1),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
@@ -1327,12 +1329,12 @@ class OrderStatic(AdminBaseHandler):
 				q=self.session.query(models.Order.id,func.month(models.Order.create_date)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.month(models.Order.create_date)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.month(models.Order.create_date),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
