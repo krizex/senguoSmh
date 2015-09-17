@@ -3871,7 +3871,7 @@ class wxChargeCallBack(CustomerBaseHandler):
 			qr_url = ""
 		return self.send_success(qr_url=qr_url)
 
-# 插入爬取店铺数据（访问路由：/customer/test）
+#（访问路由：/customer/test）
 class InsertData(CustomerBaseHandler):
 	#对账检验
 	@CustomerBaseHandler.check_arguments('action','day','month')
