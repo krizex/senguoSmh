@@ -3981,10 +3981,10 @@ class InsertData(CustomerBaseHandler):
 			order  = self.session.query(models.Order).filter_by(num=order_num).first()
 			if not order:
 				return self.send_fail('order not found!')
-			totalPrice = order.totalPrice
+			totalPrice = order.new_totalprice
 			#将order_done函数里的操作还原
 			order.shop.order_count -= 1 #店铺订单数减1
-			order.shop.shop_property -= totalPrice # ???
+			order.shop.shop_property -= totalPrice #店铺营业额减掉相应的值
 			#库存不变，在售增加，销量减少
 			fruits = eval(order.fruits)
 			if fruits:
@@ -4011,9 +4011,9 @@ class InsertData(CustomerBaseHandler):
 			order = self.session.query(models.Order).filter_by(num=order_num).first()
 			if not order:
 				return self.send_fail('order not found')
-			totalPrice = order.totalPrice
+			totalPrice = order.new_totalprice
 			order.shop.order_count += 1 #店铺订单数减1
-			order.shop.shop_property += totalPrice # ???
+			order.shop.shop_property += totalPrice #店铺营业额增加相应的值
 			#库存不变，在售增加，销量减少
 			fruits = eval(order.fruits)
 			if fruits:
