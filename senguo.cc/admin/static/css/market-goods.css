@@ -51,6 +51,8 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .wrap-goods-detail{position: relative;}
 .img-list{width: 100%;height: 0;padding-bottom: 60%;position: relative;overflow:hidden !important;background-color: #ebf0ef;max-height:800px;}
 .swiper-container{width: 100%;height: 0;padding-bottom: 60%;overflow:hidden !important;position: relative;max-height:800px;}
+.swiper-wrapper{height:auto !important;}
+.swiper-slide{height:auto !important;}
 @media screen and (max-width:640px){
 	.img-list{width: 100%;height:auto;padding-bottom:0;position: relative;overflow:hidden !important;background-color: #ebf0ef;min-height:192px;max-height:640px;}
 	.swiper-container{width:100%;height:auto;padding-bottom:0;overflow:hidden !important;position: relative;min-height:192px;max-height:640px;}

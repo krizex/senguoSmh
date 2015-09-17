@@ -658,6 +658,12 @@ function showTable(page){
         $('.page-now').text(page_choose+1);
         $('.page-total').text(page_sum);
     }
+    if(data3.length==0){
+        var $item=$('<tr class="item">'+
+            '<td class="time" colSpan="7">该店铺暂时没有数据</td>'+
+            '</tr>');
+        $('.detail-rate').append($item);
+    }
 }
 
 var data3;

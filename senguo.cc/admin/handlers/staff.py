@@ -90,7 +90,7 @@ class Home(StaffBaseHandler):
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).order_by(models.Order.id.desc())
-		elif work ==3: #SH2
+		elif work in [3,9]: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
@@ -157,7 +157,7 @@ class Order(StaffBaseHandler):
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).order_by(models.Order.id.desc())
-		elif work == 3: #SH2
+		elif work in [3,9]: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5]))
 			orders_len = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
@@ -230,7 +230,7 @@ class Order(StaffBaseHandler):
 				if order.status == 4:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 4
-			elif self.current_user.work == 3:#SH2
+			elif self.current_user.work in [3,9]:#SH2
 				if order.status not in [1,2,3,4]:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 5

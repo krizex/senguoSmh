@@ -185,6 +185,22 @@ class Home(AdminBaseHandler):
 					shop = self.session.query(models.Shop).filter_by(id=hire.shop_id).first()
 					shoplist.append({'id':shop.id,'shop_name':shop.shop_name})
 			return self.send_success(data=shoplist)
+		elif action == "del_shop":
+			shop_id = int(self.args["data"]["shop_id"])
+			try:shop = self.session.query(models.Shop).filter_by(id=shop_id).one()
+			except:return self.send_error(404)
+			admin = self.session.query(models.HireLink).filter_by(shop_id=shop_id,staff_id=self.current_user.id,active=1,work=9).first()
+			if not admin and shop.admin != self.current_user:
+				return self.send_error(403)#必须做权限检查：可能这个shop并不属于current_user
+			shop_balance = shop.shop_balance
+			unfinish_orders = [x for x in shop.orders if x.status in [1,2,3,4]]
+			if len(unfinish_orders) !=0 :
+				return self.send_fail('该店铺尚有订单未完成，不可删除店铺')
+			if shop_balance !=0:
+				return self.send_fail('该店铺余额不为0，不可删除店铺')
+			shop.status = -1
+			self.session.commit()
+			return self.send_success()
 		else:
 			return self.send_error(404)
 
@@ -192,31 +208,42 @@ class Home(AdminBaseHandler):
 class SwitchShop(AdminBaseHandler):
 	def if_current_shops(self):
 		return True
-
+	@AdminBaseHandler.check_arguments("action?:str")
 	@tornado.web.authenticated
 	def get(self):
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminHome"))
+
 		shop_list = []
 		other_shop_list = []
+		
 		try:
 			shops = self.current_user.shops
 		except:
 			shops = None
+
+		if "action" in self.args and self.args["action"] == "del":
+			del_shops = [x for x in shops if x.status == -1]
+			if del_shops:
+				shop_list += self.getshop(del_shops)
+			return self.render("admin/del-shop.html", context=dict(shop_list=shop_list))
+
 		try:
 			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
-		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+			models.HireLink.active==1,models.HireLink.work==9,models.Shop.status>=0).all()
 		except:
 			other_shops = None
 
 		if shops:
+			shops = [x for x in shops if x.status>=0 ]
 			shop_list += self.getshop(shops)
 		if other_shops:
 			other_shop_list += self.getshop(other_shops)
 
 		super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
-
 		return self.render("admin/switch-shop.html", context=dict(shop_list=shop_list,other_shop_list=other_shop_list,super_admin=super_admin))
+	
 	def getshop(self,shops):
 		shop_list = []
 		for shop in shops:
@@ -1654,48 +1681,55 @@ class OrderStatic(AdminBaseHandler):
 
 		# 总订单数
 		# 截止到end_date的:总订单总价,总订单数
+		# current_shop_id=1735
 		addup = self.session.query(func.sum(models.Order.totalPrice), func.count()).\
 			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			filter(models.Order.create_date <= end_date).all()
+		#print(addup)
 		addup = list(addup[0])
-
+		#print(addup)
 		data = []
 		if sort_way=="list_day":
 			i = 0
 			j = 0
 			# data的封装格式为：[日期，日订单数，累计订单数，日订单总金额，累计订单总金额,日客单价,累计客单价]
 			for x in range(0, page_size):
+				if addup[1]==0:
+					addup_price=0
+				else:
+					addup_price=format(float(addup[0])/float(addup[1]),'.2f')
+
 				date = (datetime.datetime.now() - datetime.timedelta(x+page*page_size))
 				if i < len(total) and (total[i][0].strftime('%Y-%m-%d') == date.strftime('%Y-%m-%d')):
 					if total[i][1]==0:
 						total_price=0
 					else:
 						total_price=format(float(total[i][2])/float(total[i][1]),'.2f')
-
-					if addup[1]==0:
-						addup_price=0
-					else:
-						addup_price=format(float(addup[0])/float(addup[1]),'.2f')
-
 					data.append((date.strftime('%Y-%m-%d'), total[i][1], addup[1], format(float(total[i][2]),'.2f'), format(float(addup[0]),'.2f'),total_price,addup_price))
 					addup[1] -= total[i][1]
 					addup[0] -= total[i][2]
 					i += 1
 				else:
+
 					if addup[0]:
-						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, format(float(addup[0]),'.2f'),0,format(float(addup[0])/float(addup[1]),'.2f')))
-					else:
-						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, addup[0],0,format(float(addup[0])/float(addup[1]),'.2f')))
+						data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, format(float(addup[0]),'.2f'),0,addup_price))
+					# else:
+					# 	data.append((date.strftime('%Y-%m-%d'), 0, addup[1], 0, addup[0],0,addup_price))
 				if addup[1] <= 0:
 					break
 		elif sort_way=="list_week" or sort_way=="list_month":
 			i = 0
 			j = 0
 			#print(total)
-			for x in range( page_size+1,1,-1):
+			for x in range( page_size,1,-1):
 				#print(x)
+				if addup[1]==0:
+					addup_price=0
+				else:
+					addup_price=format(float(addup[0])/float(addup[1]),'.2f')
+
 				if sort_way=="list_month":
-					time=str(current_year-page)+'-'+(str(x) if x>9 else '0'+str(x))
+					time=str(current_year-page)+'-'+(str(x) if (x)>9 else '0'+str(x))
 				else:
 					time=x
 				if i < len(total) and total[i][0]==x:
@@ -1704,31 +1738,27 @@ class OrderStatic(AdminBaseHandler):
 					else:
 						total_price=format(float(total[i][2])/float(total[i][1]),'.2f')
 
-					if addup[1]==0:
-						addup_price=0
-					else:
-						addup_price=format(float(addup[0])/float(addup[1]),'.2f')
 					data.append((time, total[i][1], addup[1], format(float(total[i][2]),'.2f'), format(float(addup[0]),'.2f'),total_price,addup_price))
 					addup[1] -= total[i][1]
 					addup[0] -= total[i][2]
 					i += 1
 				else:
 					if addup[0]:
-						data.append((time, 0, addup[1], 0, format(float(addup[0]),'.2f'),0,format(float(addup[0])/float(addup[1]),'.2f')))
-					else:
-						data.append((time, 0, addup[1], 0, addup[0],0,format(float(addup[0])/float(addup[1]),'.2f')))
+						data.append((time, 0, addup[1], 0, format(float(addup[0]),'.2f'),0,addup_price))
+					# else:
+					# 	data.append((time, 0, addup[1], 0, addup[0],0,addup_price))
 				if addup[1] <= 0:
 					break
-
+			
 		first_order = self.session.query(models.Order).\
 			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
 			order_by(models.Order.create_date).first()
-		print(first_order.create_date)
+
 		if first_order:  # 新开的店铺一个order都没有，所以要判断一下
 			if sort_way=="list_day":
 				page_sum = (datetime.datetime.now() - first_order.create_date).days//15 + 1
 			else:
-				print(datetime.datetime.now().year , first_order.create_date.year)
+				#print(datetime.datetime.now().year , first_order.create_date.year)
 				page_sum = datetime.datetime.now().year - first_order.create_date.year+1
 		else:
 			page_sum = 0
@@ -2226,7 +2256,7 @@ class Order(AdminBaseHandler):
 			shop_lat=shop_lat,shop_lon=shop_lon,self_address_list=self_address_list,context=dict(subpage='order'))
 
 	# 编辑订单状态（order_status == 4:订单配送, order_status == 5:订单送达）
-	def edit_status(self,order,order_status,send_message=True):
+	def edit_status(self,session,order,order_status,send_message=True):
 		# if order_status == 4:
 		# when the order complete
 		# woody
@@ -2236,30 +2266,30 @@ class Order(AdminBaseHandler):
 
 		if order_status == 4:
 			# print('[AdminOrder]edit_status: login in order_status 4')
-			order.update(self.session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
+			order.update(session, status=order_status,send_admin_id = self.current_user.accountinfo.id)
 			# 发送订单模版消息给送货员
 			if send_message:
 				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 					# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
-					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					access_token = self.get_other_accessToken(session,order.shop.admin.id)
 					# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
 				else:
 					access_token = None
-				self.send_staff_message(self.session,order,access_token)
+				self.send_staff_message(session,order,access_token)
 
 		if order_status == 5:
 			# print('[AdminOrder]edit_status: login in order_status 5')
-			order.update(self.session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
+			order.update(session, status=order_status,finish_admin_id = self.current_user.accountinfo.id)
 			# 更新fruit 的 current_saled
 			if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
 				# print("[AdminOrder]edit_status: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
-				access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+				access_token = self.get_other_accessToken(session,order.shop.admin.id)
 				# print("[AdminOrder]edit_status: order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token:",order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
 			else:
 				access_token = None
-			if access_token:
-				self.order_done(self.session,order,access_token)
-			self.order_done(self.session,order)
+			# if access_token:
+			self.order_done(session,order,access_token)
+			# self.order_done(session,order)
 
 	# 订单计数
 	def _count(self):
@@ -2448,10 +2478,16 @@ class Order(AdminBaseHandler):
 
 		# 编辑订单备注 / 编辑（修改）配送员 / 编辑订单状态（开始配送/完成订单） / 编辑订单总价 / 删除订单 / 打印订单
 		elif action in ("edit_remark", "edit_SH2", "edit_status", "edit_totalPrice", 'del_order', 'print'):
-			try:
-				order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).one()
-			except:
-				order = None
+			if action == "edit_status":
+				try:
+					order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).with_lockmode("update").one()
+				except:
+					order = None
+			else:
+				try:
+					order =  self.session.query(models.Order).filter_by(id=int(data["order_id"])).one()
+				except:
+					order = None
 			try:
 				shop = self.session.query(models.Shop).filter_by(id=order.shop_id).one()
 			except:
@@ -2496,7 +2532,7 @@ class Order(AdminBaseHandler):
 					return self.send_fail("订单已被取消或删除，不能修改状态")
 				elif order.status > 4:
 					return self.send_fail("订单已经完成，不能修改状态")
-				self.edit_status(order,data['status'])
+				self.edit_status(self.session,order,data['status'])
 			elif action == "edit_totalPrice":
 				if order.pay_type != 1:
 					return self.send_fail("订单非货到付款订单，不能修改价格")
@@ -2585,25 +2621,29 @@ class Order(AdminBaseHandler):
 			order_list_id = data["order_list_id"]
 			notice = ''
 			count=0
+			session = self.session
 			for key in order_list_id:
-				order = next((x for x in self.current_shop.orders if x.id==int(key)), None)
+				try:
+					order =  session.query(models.Order).filter_by(id=int(key)).with_lockmode("update").one()
+				except:
+					order = None
 				if not order:
-					notice = "没找到订单",order.onum
-					return self.send_fail(notice)
+					notice += " 没找到订单"+str(order.onum)
+					continue
 				elif order.status == 4 and data['status'] == 4:
-					notice = "订单"+str(order.num)+"已在配送中，请不要重复操作"
-					return self.send_fail(notice)
+					notice += " 订单"+str(order.num)+"已在配送中，请不要重复操作"
+					continue
 				elif order.status > 4:
-					notice = "订单"+str(order.num)+"已完成，请不要重复操作"
-					return self.send_fail(notice)
-				self.edit_status(order,data['status'],False)
+					notice += " 订单"+str(order.num)+"已完成，请不要重复操作"
+					continue
+				self.edit_status(session,order,data['status'],False)
 				count += 1
 			if count > 0:
 				shop_id = self.current_shop.id
 				admin_id = self.current_shop.admin.id
 				staff_info = []
 				try:
-					staff_info = self.session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
+					staff_info = session.query(models.Accountinfo).join(models.HireLink,models.Accountinfo.id == models.HireLink.staff_id)\
 					.filter(models.HireLink.shop_id == shop_id,models.HireLink.default_staff == 1).first()
 				except:
 					print("[AdminOrder]Batch edit order: didn't find default staff")
@@ -2615,6 +2655,7 @@ class Order(AdminBaseHandler):
 					staff_name = self.current_shop.admin.accountinfo.nickname
 				shop_name = self.current_shop.shop_name
 				WxOauth2.post_batch_msg(openid,staff_name,shop_name,count,admin_id)
+			return self.send_success(notice=notice)
 		# 批量打印订单
 		elif action == "batch_print":
 			order_list_id = data["order_list_id"]
@@ -3339,6 +3380,9 @@ class Goods(AdminBaseHandler):
 					goods.update(session=self.session, active = 1)
 			# 编辑商品分组
 			elif action =="change_group":
+				activity_name = {1:'秒杀',2:'限时折扣'}
+				if goods.activity_status not in [-2,0]:
+					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能更改分组哦！")
 				group_id = int(data["group_id"])
 				if group_id == -1:
 					re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
@@ -3355,7 +3399,7 @@ class Goods(AdminBaseHandler):
 			# 编辑商品
 			elif action == "edit_goods":
 				if len(data["intro"]) > 100:
-					return self.send_fail("商品简介不能超过100字噢亲，再精简谢吧！")
+					return self.send_fail("商品简介不能超过100字噢亲，再精简些吧！")
 				if "group_id" in data:
 					group_id = int(data["group_id"])
 					if group_id !=0 and group_id !=-1:
@@ -3516,6 +3560,9 @@ class Goods(AdminBaseHandler):
 						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
 					goods.active = 2
 				elif action == 'batch_group':
+					activity_name = {1:'秒杀',2:'限时折扣'}
+					if goods.activity_status not in [-2,0]:
+						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能更改分组哦！")
 					group_id = int(data["group_id"])
 					if group_id == -1:
 						re_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id,group_id=-1).count()
@@ -3644,11 +3691,13 @@ class GoodsImport(AdminBaseHandler):
 			shops = None
 		try:
 			other_shops = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id).\
-						  filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
+						  filter(models.HireLink.staff_id == self.current_user.accountinfo.id,\
+						  	models.HireLink.active==1,models.HireLink.work==9,models.Shop.status>=0).all()
 		except:
 			other_shops = None
 
 		if shops:
+			shops = [x for x in shops if x.status >=0 ]
 			shop_list += self.getshop(shops)
 		if other_shops:
 			shop_list += self.getshop(other_shops)
@@ -3970,7 +4019,7 @@ class Staff(AdminBaseHandler):
 			staff_tuple = query.filter(models.HireLink.work == 2).all()
 			staffSub = 'sh1'
 		elif action == "SH2":
-			staff_tuple = query.filter(models.HireLink.work == 3).all()
+			staff_tuple = query.filter(models.HireLink.work.in_([3,9])).all()
 			staffSub = 'sh2'
 		else:
 			return self.send_error(404)
@@ -4140,7 +4189,7 @@ class Config(AdminBaseHandler):
 					notice='管理员添加成功'
 				elif status == 'fail':
 					notice='您不是超级管理员，无法进行管理员添加操作'
-			admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,active =1,work = 9 ).all()
+			admin_list = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,work = 9 ).filter(models.HireLink.active>0).all()
 			datalist =[]
 			for admin in admin_list:
 				info = self.session.query(models.ShopStaff).filter_by(id=admin.staff_id).first()
@@ -4361,7 +4410,10 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).delete()
+			if_orders = self.session.query(models.Order).filter_by(status=4,SH2_id=_id).count()
+			if if_orders > 0:
+				return self.send_fail("该管理员还有订单未完成，请完成后再删除该管理员")
+			self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,work=9).delete()
 			self.session.commit()
 			return self.send_success()
 		# 店铺超级管理员订单模版消息提醒设置
@@ -4812,12 +4864,14 @@ class ShopConfig(AdminBaseHandler):
 			shop.shop_phone = data["shop_phone"]
 		elif action == "edit_address":
 			shop_city = int(data["shop_city"])
-			if "lat" in data:
-				lat       = float(data["lat"])
-				shop.lat       = lat
-			if "lon" in data:
-				lon       = float(data['lon'])
-				shop.lon       = lon
+			if "lat" in data and "lon" in data:
+				lat = float(data["lat"])
+				lon = float(data['lon'])
+			else:
+				lat = 0
+				lon = 0
+			shop.lat = lat
+			shop.lon = lon
 			shop_address_detail = data["shop_address_detail"]
 			if shop_city//10000*10000 not in dis_dict:
 				return self.send_fail("没有该省份")

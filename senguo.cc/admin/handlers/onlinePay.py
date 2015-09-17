@@ -211,7 +211,7 @@ class OnlineWxPay(CustomerBaseHandler):
 	def get(self):
 		order_id = self.get_cookie("order_id")
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
-		print("[WeixinPay]Start Pay order.num:",order.num)
+		# print("[WeixinPay]Start Pay order.num:",order.num)
 		if not order:
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
@@ -342,7 +342,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		unifiedOrder.setParameter('total_fee',wxPrice)
 		unifiedOrder.setParameter('trade_type',"NATIVE")
 		res = unifiedOrder.postXml()
-		print(res)
+		# print(res)
 		if isinstance(res,bytes):
 			bianma = chardet.detect(res)['encoding']
 			res = res.decode(bianma)
@@ -550,20 +550,20 @@ class OnlineAliPay(CustomerBaseHandler):
 			return self.handle_onAlipay_callback()
 		# 在线支付提交订单
 		elif self._action == "AliPay":
-			print("[AliPay]login AliPay")
+			# print("[AliPay]login AliPay")
 			order_id = int(self.get_cookie("order_id"))
 			# print("[AliPay]order_id:",order_id)
 			#self.order_num = order_num
 			#order_id = int(self.args['order_id'])
 			order = self.session.query(models.Order).filter_by(id = order_id).first()
-			print("[AliPay]Start Pay order.num:",order.num)
+			# print("[AliPay]Start Pay order.num:",order.num)
 			if not order:
 				return self.send_fail('order not found')
 			totalPrice = order.new_totalprice
 			alipayUrl =  self.handle_onAlipay(order.num,order.shop.shop_name)
 			self.order_num = order.num
-			#print("[AliPay]alipayUrl:",alipayUrl)
-			print("[AliPay]order_num:",self.order_num)
+			# print("[AliPay]alipayUrl:",alipayUrl)
+			# print("[AliPay]order_num:",self.order_num)
 
 			charge_types = self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(eval(order.fruits).keys())).all()
 			# mcharge_types = self.session.query(models.MChargeType).filter(models.MChargeType.id.in_(eval(order.mgoods).keys())).all()
@@ -628,8 +628,6 @@ class OnlineAliPay(CustomerBaseHandler):
 			print("[AliPay]order not found")
 			return self.send_fail(error_text="抱歉，此订单不存在")
 		#跳转到支付页
-		else:
-			print("[AliPay]order:",order)
 		order_id = order.id
 		price    = order.new_totalprice
 
@@ -686,7 +684,7 @@ class OnlineAliPay(CustomerBaseHandler):
 		if not order:
 			# return self.send_fail(error_text = '抱歉，此订单不存在！')
 			balance_history = models.BalanceHistory(customer_id=0,shop_id=0,balance_value=total_fee,balance_record='在线支付(支付宝)异常：空订单'+order_num,
-				balance_type=3,transaction_id = transaction_id)
+				balance_type=3,transaction_id = ali_trade_no)
 			self.session.add(balance_history)
 			self.session.commit()
 			print("[AliPay]No This Order!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")

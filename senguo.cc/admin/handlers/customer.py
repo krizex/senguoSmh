@@ -262,6 +262,8 @@ class customerGoods(CustomerBaseHandler):
 
 		if not shop:
 			return self.send_fail('shop not found')
+		if shop.status == -1:
+			return self.write("该店铺已删除")
 		if not self.session.query(models.CustomerShopFollow).filter_by(
 				customer_id=self.current_user.id, shop_id=shop.id).first():
 			# w_follow = False
@@ -640,6 +642,8 @@ class Home(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('[CustomerHome]shop code error')
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		if shop is not None:
 			shop_name = shop.shop_name
 			shop_id   = shop.id
@@ -724,6 +728,8 @@ class Discover(CustomerBaseHandler):
 			shop = self.session.query(models.Shop).filter_by(shop_code =shop_code).first()
 		except:
 			return self.send_fail('shop error')
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		if shop:
 			if shop.marketing:
 				confess_active = shop.marketing.confess_active
@@ -1026,6 +1032,8 @@ class ShopProfile(CustomerBaseHandler):
 		if not shop:
 			# print("[CustomerShopProfile]Shop not found:",shop_code)
 			return self.send_error(404)
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		shop_auth = 0
 		shop_marketing = self.get_shop_marketing(shop.id)
 		shop_id = shop.id
@@ -1202,7 +1210,7 @@ class Members(CustomerBaseHandler):
 	def get(self):
 		# shop_id = self.shop_id
 		try:
-			shop_id = int(self.get_cookie("market_shop_id"))
+			shop_id = self.shop_id
 		except:
 			return self.send_fail("您访问的店铺有错，请返回后刷新重新访问")
 		# print("[CustomerMember]Shop ID:",shop_id)
@@ -1241,8 +1249,8 @@ class Comment(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("page:int")
 	def get(self):
 		customer_id = self.current_user.id
-		shop_id     = self.get_cookie("market_shop_id")
-		shop_code = self.get_cookie("market_shop_code")
+		shop_id     = self.shop_id
+		shop_code = self.shop_code
 		satisfy = 0
 		commodity_quality = 0
 		send_speed = 0
@@ -1337,13 +1345,14 @@ class Market(CustomerBaseHandler):
 		# return self.send_success()
 		# print(self.current_user.id)
 
-
 		try:
 			shop = self.session.query(models.Shop).filter_by(shop_code=shop_code).one()
 		except NoResultFound:
 			return self.write('您访问的店铺不存在')
 			# return self.send_fail('[CustomerMarket]shop not found')
 		# print('[CustomerMarket]shop.admin.id:',shop.admin.id)
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		shop_marketing = self.get_shop_marketing(shop.id)
 		if len(self.args.get('action')) < 1: 
 			if shop.admin.has_mp:
@@ -1864,7 +1873,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		customer_id = self.current_user.id
 
 		# fruits_test = self.session.query(models.Fruit,models.FruitFavour,models.FruitFavour.create_date).join(models.FruitFavour,models.FruitFavour.f_m_id ==
@@ -1894,7 +1903,7 @@ class Market(CustomerBaseHandler):
 		page_size = 10
 		nomore = False
 		offset = (page-1) * page_size
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		customer_id = self.current_user.id
 		try:
 			fruits = self.session.query(models.Fruit).filter_by(shop_id = shop_id,active=1).filter(models.Fruit.name.like("%%%s%%" % name)).order_by(models.Fruit.add_time.desc())
@@ -1942,7 +1951,7 @@ class Market(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("charge_type_id:int")  # menu_type(0：fruit，1：menu)
 	def favour(self):
 		fruit_id = int(self.args["charge_type_id"])
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		favour = self.session.query(models.FruitFavour).\
 			filter_by(customer_id=self.current_user.id,f_m_id=fruit_id).first()
 		try:
@@ -2118,10 +2127,18 @@ class GoodsSearch(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		shop_id = self.shop_id
-		shop = self.session.query(models.Shop).filter_by(id=shop_id ).first()
+		shop = self.session.query(models.Shop.id,models.Shop.shop_auth).filter_by(id=shop_id).first()
 		if not shop:
 			return self.send_error(404)
-		return self.render("customer/search-goods-list.html",context=dict(subpage='home'))
+		try:
+			shop_auth = shop.shop_auth
+		except:
+			shop_auth = 0
+		try:
+			shop_marketing = self.get_shop_marketing(shop_id)
+		except:
+			shop_marketing = 0
+		return self.render("customer/search-goods-list.html",context=dict(subpage='home'),shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("search:str")
@@ -2157,6 +2174,8 @@ class Cart(CustomerBaseHandler):
 		except:
 			return self.send_fail('shop error')
 		if not shop:return self.send_error(404)
+		if shop and shop.status == -1:
+			return self.write("该店铺已删除")
 		shop_marketing = self.get_shop_marketing(shop.id)
 		self.set_cookie("market_shop_code",str(shop.shop_code))
 		if self.get_cookie("market_shop_code") != shop_code:
@@ -2272,20 +2291,12 @@ class Cart(CustomerBaseHandler):
 			discount_ids=[]
 		# print("[CustomerCart]json.dumps(self.args):",json.dumps(self.args))
 		current_shop = self.session.query(models.Shop).filter_by( id = shop_id).first()
-		self.updatecoupon(customer_id)
-		self.updatediscount()
+
 		online_type = ''
 		shop_status = current_shop.status
-		can_use_coupon=0  #标记能否使用优惠券
-		coupon_key=self.args["coupon_key"]
-		q=[]
-		qshop=[]
-		if coupon_key!='None':
-			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).first()
-			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
-			now_date=int(time.time())
-			if now_date>q.uneffective_time:
-				return self.send_fail("下单失败，您选择的优惠券已经过期")
+		
+		if shop_status == -1:
+			return self.send_fail('该店铺已删除，暂不能下单(っ´▽`)っ')
 		if shop_status == 0:
 			return self.send_fail('该店铺已关闭，暂不能下单(っ´▽`)っ')
 		elif shop_status == 2:
@@ -2298,6 +2309,19 @@ class Cart(CustomerBaseHandler):
 			return self.send_fail('您的购物篮为空，先去添加一些商品吧')
 		elif len(fruits) > 20:
 			return self.send_fail("您的购物篮太满啦！请不要一次性下单超过20种商品")
+
+		q=[]
+		qshop=[]
+		can_use_coupon=0  #标记能否使用优惠券
+		coupon_key=self.args["coupon_key"]
+		self.updatecoupon(customer_id)
+		self.updatediscount()
+		if coupon_key!='None':
+			q=self.session.query(models.CouponsCustomer).filter_by(coupon_key=coupon_key).first()
+			qshop=self.session.query(models.CouponsShop).filter_by(shop_id=q.shop_id,coupon_id=q.coupon_id).first()
+			now_date=int(time.time())
+			if now_date>q.uneffective_time:
+				return self.send_fail("下单失败，您选择的优惠券已经过期")
 
 		# added by jyj 2015-8-26
 		#fruits 为一个字典，形式：{'12647': 2, '12667': 6},表示计价方式和数量的键值对字典；
@@ -2802,9 +2826,9 @@ class Cart(CustomerBaseHandler):
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
 			#如果有自己的公众平台，用自己的公众号发送模板消息，之后依旧用森果发送一遍
-			if access_token:
-				self.send_admin_message(session,order,access_token)
-			self.send_admin_message(session,order)
+			# if access_token:
+			self.send_admin_message(session,order,access_token)
+			# self.send_admin_message(session,order)
 
 		return True
 
@@ -2819,7 +2843,7 @@ class Cart(CustomerBaseHandler):
 		if order.status == -1:
 			#如果是微信支付，关闭支付接口
 			if order.online_type == 'wx':
-				print('close order')
+				# print('[CustomerCart]Order auto cancel: close order')
 				num = order.num
 				transaction_id = order.transaction_id
 				if order.is_qrwxpay ==1:
@@ -2836,10 +2860,8 @@ class Cart(CustomerBaseHandler):
 					res = res.decode('utf-8')
 				res_dict = colse_order.xmlToArray(res)
 				return_code = res_dict.get('return_code',None)
-				if return_code == 'SUCCESS':
-					print('order closed success')
-				else:
-					print('order closed failed')
+				if return_code != 'SUCCESS':
+					print('[CustomerCart]Order auto cancel: order closed failed')
 			order.status = 0
 			order.del_reason = "timeout"
 			order.get_num(session,order.id) ##当订单取消后，库存增加，销量不变，在售减少,该过程已封装，请勿重复执行
@@ -2864,7 +2886,7 @@ class Cart(CustomerBaseHandler):
 				qq.update(session,use_number=use_number)
 			session.flush()
 
-			#订单删除，CustomerSeckillGoods表对应的状态恢复为0
+			# 订单删除，CustomerSeckillGoods表对应的状态恢复为0
 			fruits = eval(order.fruits)
 			charge_type_list = list(fruits.keys())
 			seckill_goods = session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
@@ -2879,8 +2901,7 @@ class Cart(CustomerBaseHandler):
 						item.status = 0
 					session.flush()
 			session.commit()
-			
-			print("[CustomerCart]Order auto cancel success: order.num:",order.num)
+			# print("[CustomerCart]Order auto cancel success: order.num:",order.num)
 		#else:
 		#	print("[CustomerCart]Order auto cancel failed, this order have been paid or deleted, order.num:",order.num)
 
@@ -2895,7 +2916,7 @@ class CartCallback(CustomerBaseHandler):
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
 	def get(self):
-		shop_id = int(self.get_cookie("market_shop_id"))
+		shop_id = self.shop_id
 		try:
 			shop_auth = self.session.query(models.Shop.shop_auth).filter_by(id=shop_id).first().shop_auth
 		except:
@@ -2904,7 +2925,7 @@ class Notice(CustomerBaseHandler):
 			shop_marketing = self.get_shop_marketing(shop_id)
 		except:
 			shop_marketing = 0
-		return self.render("notice/order-success.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,shop_auth=shop_auth)
+		return self.render("notice/order-success.html",context=dict(subpage='cart'),shop_marketing=shop_marketing,get_shop_auth=shop_auth)
 
 class Wexin(CustomerBaseHandler):
 	@CustomerBaseHandler.check_arguments("action?:str", "url:str")
@@ -3952,8 +3973,72 @@ class InsertData(CustomerBaseHandler):
 			balance_history.balance_type = -1
 			self.session.commit()
 			return self.send_success(text='余额消费记录删除成功',before=before_shop_balance,after=after_shop_balance)
+		
+		elif balance_type == 7 or balance_type ==6:
+			order_num = balance_history.balance_record
+			order_num = ''.join(list(filter(str.isdigit,order_num))) #取出记录里面的数字
+			print(order_num)
+			order  = self.session.query(models.Order).filter_by(num=order_num).first()
+			if not order:
+				return self.send_fail('order not found!')
+			totalPrice = order.totalPrice
+			#将order_done函数里的操作还原
+			order.shop.order_count -= 1 #店铺订单数减1
+			order.shop.shop_property -= totalPrice # ???
+			#库存不变，在售增加，销量减少
+			fruits = eval(order.fruits)
+			if fruits:
+				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).filter(models.ChargeType.id.in_(fruits.keys())).all()
+				for s in ss:
+					num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+					# num = round(float(num),2)  #格式化为小数点后一位小数
+					s[0].current_saled += num
+					s[0].saled         -= num
+				self.session.flush()
+			before = order.shop.available_balance
+			if order.pay_type == 2:
+				order.shop.available_balance -= totalPrice #将店铺余额减少
+			if order.pay_type == 3:
+				order.shop.available_balance -= totalPrice 
+			balance_history.balance_type = -1
+			after = order.shop.available_balance
+			self.session.commit()
+			return self.send_success(text = '完成订单记录取消成功！',before=before,after=after,order_num=order_num,totalPrice=totalPrice)
+		#恢复误删的记录
+		elif balance_type == -1:
+			order_num = balance_history.balance_record
+			order_num = ''.join(list(filter(str.isdigit,order_num)))
+			order = self.session.query(models.Order).filter_by(num=order_num).first()
+			if not order:
+				return self.send_fail('order not found')
+			totalPrice = order.totalPrice
+			order.shop.order_count += 1 #店铺订单数减1
+			order.shop.shop_property += totalPrice # ???
+			#库存不变，在售增加，销量减少
+			fruits = eval(order.fruits)
+			if fruits:
+				ss = self.session.query(models.Fruit, models.ChargeType).join(models.ChargeType).filter(models.ChargeType.id.in_(fruits.keys())).all()
+				for s in ss:
+					num = fruits[s[1].id]["num"]*s[1].relate*s[1].num
+					# num = round(float(num),2)  #格式化为小数点后一位小数
+					s[0].current_saled -= num
+					s[0].saled         += num
+				self.session.flush()
+			before = order.shop.available_balance
+			if order.pay_type == 2:
+				order.shop.available_balance += totalPrice #将店铺余额减少
+			if order.pay_type == 3:
+				order.shop.available_balance += totalPrice
+			if order.pay_type == 3: 
+				balance_history.balance_type = 7
+			elif order.pay_type == 2:
+				balance_history.balance_type = 6
+			after = order.shop.available_balance
+			self.session.commit()
+			return self.send_success(text = '完成订单记录取消成功！',before=before,after=after,order_num=order_num,totalPrice=totalPrice)
 
 
+	
 class Overtime(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("order_id?:str")

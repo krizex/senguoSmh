@@ -193,7 +193,7 @@ img{border:none;}
 .text-grey3{color:#333;}
 .text-grey9{color:#999;}
 .text-pink{color:#ff6666 !important;}
-.text-red{color:#E01445;}
+.text-red{color:red;}
 .text-orange{color:#E07D14;}
 .text-orange2{color:#ec6b10}
 .text-black{color:#222;}
@@ -238,11 +238,13 @@ img{border:none;}
 .mt5{margin-top:5px;}
 .mt40{margin-top:40px;}
 .mt30{margin-top: 30px;}
+.ml30{margin-left: 30px;}
 .mt0{margin-top: 0 !important;}
 .p0{padding:0 !important;}
 .p10{padding:10px !important;}
 .p15{padding:15px !important;}
 .ml40{margin-left:55px;}
+.w400{width:400px !important;}
 
 .set-bottom10{margin-bottom:10px;}
 .set-top10{margin-top:10px;}
@@ -310,6 +312,11 @@ input{color:#333;text-indent:5px;}
 .top-arr>span{width: 20px;height: 0;border-top: 1px solid #eee;display: inline-block;position: absolute;right: -3px;}
 .top-arr .line1{-webkit-transform:rotate(-45deg);top: auto;left: -2px;right: auto;bottom: 7px;}
 .top-arr .line2{-webkit-transform:rotate(45deg);top: 18px;}
+.del-shop-list{margin-top:3px;margin-right:32px;}
+.sw-list .del-shop{position:absolute;right:7px;bottom:5px;display:none;}
+.sw-list .da:hover .del-shop{display:block;}
+.switch-title{display: inline-block;height: 18px;line-height: 18px;background-size: 18px;background-image: url('/static/images/admin_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
+.switch-title-text{padding-left: 20px;}
 /*提示框样式*/
 .zb-tip{min-width: 360px;max-width:500px;padding:15px 0;line-height: 28px;text-align: center;font-size: 14px;background-color: rgba(255,101,99,.8);border-radius: 6px;position: fixed;top: 100px;left: 50%;z-index: 9999;color: #fff;-webkit-transform:translate(-50%,0);}
 /*animate*/
