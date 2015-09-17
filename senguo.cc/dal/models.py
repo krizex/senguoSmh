@@ -1118,6 +1118,8 @@ class Address(MapBase,  _CommonApi):
 	receiver = Column(String(64), nullable=False)
 	address_text = Column(String(1024), nullable=False)
 	if_default = Column(TINYINT,nullable=False,default = 0) #0:not default 1:default
+	lat = Column(MyReal,nullable=False,default=0)  #纬度
+	lon = Column(MyReal,nullable=False,default=0)  #经度
 
 #信息墙＝＝＝＝
 class Info(MapBase, _CommonApi):
@@ -1558,7 +1560,7 @@ class Config(MapBase, _CommonApi):
 	freight_on_time = Column(SMALLINT,nullable=False, default=0)  # 按时达运费
 	min_charge_now = Column(SMALLINT,nullable=False, default=25) #立即送起送金额
 	freight_now = Column(SMALLINT,nullable=False, default=2)  # 立即送运费
-	stop_range = Column(SMALLINT,nullable=False, default=0) #下单截止时间（分钟）
+	stop_range = Column(SMALLINT,nullable=False, default=0) #按时达下单截止时间（分钟）
 	start_time_now = Column(Time,nullable=False,default="9:00") #立即送起始时间
 	end_time_now = Column(Time,nullable=False,default="23:00") #立即送结束时间
 	ontime_on = Column(Boolean,nullable=False, default=True)
@@ -1570,7 +1572,7 @@ class Config(MapBase, _CommonApi):
 	notices = relationship("Notice") #公告设置
 	periods = relationship("Period") #时间段设置
 
-	intime_period = Column(Integer,nullable=False,default = 30)
+	intime_period = Column(Integer,nullable=False,default = 30) #立即送送达时间
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(TINYINT,nullable=False,default = 1)
 	cash_on_active = Column(TINYINT,nullable=False,default = 0)#0:货到付款关闭 1:货到付款付开启 5.4
