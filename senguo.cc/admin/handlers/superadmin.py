@@ -1051,11 +1051,20 @@ class AmountStatic(SuperBaseHandler):
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
 			# 按天分组，获取所有进入平台的金额
-			q_total=q.filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			#q_total=q.filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
 			# 按天分组，获取所有的从微信进入平台的金额
 			q_wechat=q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
 			# 按天分组，获取所有的从支付宝进入平台的金额
 			q_alipay=q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+
+			# 按天分组,获取从微信退款的钱
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
+					filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).\
+					group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			# 按天分组,获取从支付包退款的钱
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
+					filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).\
+					group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
 			q_range=self.session.query(func.day(func.now()))
 			#print(q_range.all()[0][0])
 		elif type==2:	#type=2表示按周来进行排序，取全年的所有周的数据
@@ -1063,18 +1072,30 @@ class AmountStatic(SuperBaseHandler):
 			current_year = self.args['current_year']
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			#q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
 			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
 			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
+				filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.week(models.BalanceHistory.create_time,1))
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
+				filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.week(models.BalanceHistory.create_time,1))
 			q_range=self.session.query(func.week(func.now(),1))
 			#print(q_range.all())
 		elif type==3:	#type=3表示按月来进行排序，取全年的所有月份的数据
 			current_year = self.args['current_year']
 			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
 				filter(models.BalanceHistory.balance_type.in_([0,3]))
-			q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
+			#q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
 			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
 			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.month(models.BalanceHistory.create_time))
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.month(models.BalanceHistory.create_time))
 			q_range=self.session.query(func.month(func.now()))
 			#print(q_range.all())
 		else:
@@ -1103,18 +1124,34 @@ class AmountStatic(SuperBaseHandler):
 
 		#初始化返回的数组
 		for x in range(0, rangeOfArray):
-			data.append({'total': 0, 'wechat': 0, 'alipay': 0})
+			data.append({'total': 0, 'wechat': 0, 'alipay': 0,'total_clean':0,'wechat_clean': 0, 'alipay_clean': 0})
 
-		#组装数组
+		#组装数组,毛收入
 		def assembleArray(s_type,q_infos):
 			for info in q_infos:
 				index = info[1]-1
 				value = round(info[0],2)
 				data[index][s_type] = value
+				data[index][s_type+'_clean'] = value
 		
-		assembleArray('total',q_total.all())
+		#assembleArray('total',q_total.all())
 		assembleArray('wechat',q_wechat.all())
 		assembleArray('alipay',q_alipay.all())
+
+		#组装数组,净收入
+		def assembleArray2(s_type,q_infos):
+			for info in q_infos:
+				index = info[1]-1
+				value = round(info[0],2)
+				data[index][s_type] = data[index][s_type]-value
+
+		assembleArray('wechat_clean',q_wechat.all())
+		assembleArray('alipay_clean',q_alipay.all())
+
+		for x in range(0, rangeOfArray):
+			data[x]['total'] = data[x]['wechat'] +data[x]['alipay'] 
+			data[x]['total_clean'] = data[x]['wechat_clean'] +data[x]['alipay_clean']
+
 		
 		return self.send_success(data=data)
 
@@ -2424,7 +2461,7 @@ class Balance(SuperBaseHandler):
 			shop_list = self.session.query(models.Shop).all()
 			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
 			person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
-			# 增加今日新增平台总余额 余额消费1+在线支付3-微信在线支付退款记录8-支付宝在线支付退款记录9(-提现2   后面不减提现记录)
+			# 增加今日新增平台总余额 充值0+在线支付3-微信在线支付退款记录8-支付宝在线支付退款记录9(-提现2   后面不减提现记录)
 			# modified by sunmh 2015年09月16日
 			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0)
 		elif level == 1:
@@ -2434,7 +2471,7 @@ class Balance(SuperBaseHandler):
 			person_num = self.session.query(models.ApplyCashHistory).filter_by(shop_province=shop_province).distinct(models.ApplyCashHistory.shop_id).count()
 			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).\
 				filter(models.BalanceHistory.shop_province==shop_province)
-		today_balance_plus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([1,3])).all()[0][0]
+		today_balance_plus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([0,3])).all()[0][0]
 		today_balance_minus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([8,9])).all()[0][0]
 		today_balance=format(float(0 if today_balance_plus==None else today_balance_plus)-float(0 if today_balance_minus==None else today_balance_minus),'.2f')
 		for item in cash_list:

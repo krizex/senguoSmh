@@ -169,7 +169,7 @@ function show_chart(action,type,current_year,current_month){
                     trigger: 'axis'
                 },
                 legend: {
-                    data:['总流入','支付宝','微信']
+                    data:['总流入','支付宝','微信','总净流入','支付宝净流入','微信净流入']
                 },
                 toolbox: {
                     show : true,
@@ -198,56 +198,7 @@ function show_chart(action,type,current_year,current_month){
                         }
                     }
                 ],
-                series : [
-                    {
-                        name:'总流入',
-                        type:'line',
-                        data:[],
-                        markPoint : {
-                            data : [
-                                {type : 'max', name: '最大值'},
-                                {type : 'min', name: '最小值'}
-                            ]
-                        },
-                        markLine : {
-                            data : [
-                                {type : 'average', name: '平均值'}
-                            ]
-                        }
-                    },
-                    {
-                        name:'支付宝',
-                        type:'line',
-                        data:[],
-                        markPoint : {
-                            data : [
-                                {type : 'max', name: '最大值'},
-                                {type : 'min', name: '最小值'}
-                            ]
-                        },
-                        markLine : {
-                            data : [
-                                {type : 'average', name: '平均值'}
-                            ]
-                        }
-                    },
-                    {
-                        name:'微信',
-                        type:'line',
-                        data:[],
-                        markPoint : {
-                            data : [
-                                {type : 'max', name: '最大值'},
-                                {type : 'min', name: '最小值'}
-                            ]
-                        },
-                        markLine : {
-                            data : [
-                                {type : 'average', name: '平均值'}
-                            ]
-                        }
-                    },
-                ],
+                series:getChartSeries(['总流入','支付宝','微信','总净流入','支付宝净流入','微信净流入']),
                 color: ['#b6a2de','#2ec7c9','#5ab1ef','#ffb980','#d87a80',
                     '#8d98b3','#e5cf0d','#97b552','#95706d','#dc69aa',
                     '#07a2a4','#9a7fd1','#588dd5','#f5994e','#c05050',
@@ -299,6 +250,9 @@ function getCount(action,type,current_year,current_month,options,myChart){
     options.series[0].data=[];
     options.series[1].data=[];
     options.series[2].data=[];
+    options.series[3].data=[];
+    options.series[4].data=[];
+    options.series[5].data=[];
     myChart.clear();
     $('.detail-count').find('.item').remove();
     count(action,type,current_year,current_month,myChart);
@@ -326,6 +280,9 @@ function getCount(action,type,current_year,current_month,options,myChart){
         var totalAmount=data[i]['total'];
         var alipayAmount=data[i]['alipay'];
         var wechatAmount=data[i]['wechat'];
+        var totalAmount_clean=data[i]['total_clean'];
+        var alipayAmount_clean=data[i]['alipay_clean'];
+        var wechatAmount_clean=data[i]['wechat_clean'];
 
         var $item=$('<tr class="item"><td class="date"></td><td class="amount_total"></td><td class="amount_alipay"></td><td class="amount_wechat"></td></tr>');
         
@@ -339,6 +296,9 @@ function getCount(action,type,current_year,current_month,options,myChart){
         options.series[0].data.unshift(totalAmount);
         options.series[1].data.unshift(alipayAmount);
         options.series[2].data.unshift(wechatAmount);
+        options.series[3].data.unshift(totalAmount_clean);
+        options.series[4].data.unshift(alipayAmount_clean);
+        options.series[5].data.unshift(wechatAmount_clean);
     }
     myChart.refresh();
     myChart.setOption(options);
@@ -514,4 +474,18 @@ function GetDateN(date,AddDayCount)
     str = str.replace(/-/g,"/");
     var new_date = new Date(str);
     return new_date;
+}
+
+
+//根据图表默认需要展示的数组,得到series的json对象
+function getChartSeries(seriesData){
+    var strRe="";
+    for(var i=0;i<seriesData.length;i++){
+        if(strRe!=""){
+            strRe+=",";
+        }
+        strRe +="{'name': '"+seriesData[i]+"','type': 'line','data': [],'markPoint': {'data': [{'type': 'max', 'name': '最大值'},{'type': 'min', 'name': '最小值'}]},'markLine': {'data': [{'type': 'average', 'name': '平均值'}]}}"
+    }
+    strRe="["+strRe+"]";
+    return eval(strRe);
 }
