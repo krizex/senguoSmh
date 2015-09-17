@@ -535,7 +535,7 @@ class Shop(MapBase, _CommonApi):
 	shop_province = Column(Integer)
 	shop_city = Column(Integer)
 	shop_address_detail = Column(String(1024), nullable=False)
-	shop_sales_range = Column(String(128))
+	shop_sales_range = Column(String(128)) #备用
 	lat              = Column(MyReal,nullable=False,default=0)  #纬度
 	lon              = Column(MyReal,nullable=False,default=0)  #经度
 	area_type = Column(TINYINT,nullable=False,default=0) #区域类型

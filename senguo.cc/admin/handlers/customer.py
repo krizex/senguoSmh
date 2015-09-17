@@ -741,6 +741,40 @@ class Home(CustomerBaseHandler):
 			for addr in address_other:
 				addr.if_default = 0
 			self.session.commit()
+		elif action == "in_area":
+			address_id = data.get("address_id",0)
+			try:
+				shop = self.session.query(models.Shop.lat,models.Shop.lon,models.Shop.area_type,\
+					models.Shop.area_radius,models.Shop.area_list).filter_by(shop_code =shop_code).first()
+			except:
+				return self.send_error(403)
+			try: address = self.session.query(models.Address.lat,models.Address.lon).filter_by(id=address_id,if_default=1).one()
+			except:return self.send_error(404)
+			shop_lat = shop[0]
+			shop_lon = shop[1]
+			area_type = shop[2]
+			area_radius = shop[3]
+			area_list = shop[4]
+			customer_lat = address[0]
+			customer_lon = address[1]
+			res = 0
+			if area_type !=0 and customer_lat !=0 and customer_lon !=0:
+				if area_type == 1:
+					distance = self.get_distance(shop_lat,shop_lon,customer_lat,customer_lon)
+					if distance <= area_radius:
+						res = 1
+					else:
+						res = 0
+				elif area_type == 2 :
+					if shop_lat !=0 and shop_lon !=0 :
+						pt = {"lat":shop_lat,"lng":shop_lon}
+						res = self.getInArea(pt,area_list)
+					else:
+						res = 1
+			else:
+				res = 0
+			return self.send_success(in_area = res)
+
 		else:
 			return self.send_error(404)
 		return self.send_success()
@@ -758,6 +792,23 @@ class Home(CustomerBaseHandler):
 			lat = 0
 			lon = 0
 		return lat,lon
+
+	def getInArea(self,pt,poly):
+		c = False
+		i = -1
+		l = len(poly)
+		j = l - 1
+		while i < l-1:
+			i += 1
+			if ((poly[i]["lat"] <= pt["lat"] and pt["lat"] < poly[j]["lat"]) or (poly[j]["lat"] <= pt["lat"] and pt["lat"] < poly[i]["lat"])):
+				if (pt["lng"] < (poly[j]["lng"] - poly[i]["lng"]) * (pt["lat"] - poly[i]["lat"]) / (poly[j]["lat"] - poly[i]["lat"]) + poly[i]["lng"]):
+					c = not c
+			j = i
+		if c:
+			return 1
+		else:
+			return 0
+
 
 # 发现
 class Discover(CustomerBaseHandler):
@@ -2215,8 +2266,7 @@ class Cart(CustomerBaseHandler):
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
 		shop_auth = shop.shop_auth
-		area_radius = shop.area_radius
-		area_list = shop.area_list
+		shop_phone = shop.shop_phone
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -2322,8 +2372,8 @@ class Cart(CustomerBaseHandler):
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,shop_marketing=shop_marketing\
-						   ,get_shop_auth=shop_auth,default_address=default_address,now_periods=now_periods,area_radius=area_radius,\
-						   area_list=area_list,context=dict(subpage='cart'))
+						   ,get_shop_auth=shop_auth,default_address=default_address,now_periods=now_periods,shop_phone=shop_phone\
+						   ,context=dict(subpage='cart'))
 	
 	def handTime(self,_time):
 		date_today = time.strftime("%Y-%m-%d")+" "
