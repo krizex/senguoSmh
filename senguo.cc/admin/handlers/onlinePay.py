@@ -27,13 +27,10 @@ class QrWxpay(CustomerBaseHandler):
 			return self.send_fail('order not found')
 		totalPrice = order.new_totalprice
 
-class RefundWxpay(CustomerBaseHandler):
-	# @tornado.web.authenticated
-	
+class RefundCallback(CustomerBaseHandler):
 	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
-
 	@CustomerBaseHandler.check_arguments("service","v","sec_id","sign","notify_data")
-	def get(self):
+	def post(self):
 		print("[Alipay refund] notify_url!!!!!!!!")
 		sign = self.args.pop('sign')
 		signmethod = self._alipay.getSignMethod(**self.args)
@@ -49,6 +46,7 @@ class RefundWxpay(CustomerBaseHandler):
 		if not order:
 			return self.send_fail('order not found')
 		##########################################################################
+		order.del_reason = 'refund'
 		order.get_num(session,order.id)  #取消订单,库存增加，在售减少 	
 		shop_id = balance_history.shop_id
 		balance_value = balance_history.balance_value
@@ -81,6 +79,17 @@ class RefundWxpay(CustomerBaseHandler):
 		# self.session.add(apply_refund)
 		self.session.commit()
 		return self.write('success')
+
+	def check_xsrf_cookie(self):
+		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+		pass
+		return
+
+
+class RefundWxpay(CustomerBaseHandler):
+	# @tornado.web.authenticated
+	
+	_alipay = WapAlipay(pid=ALIPAY_PID, key=ALIPAY_KEY, seller_email=ALIPAY_SELLER_ACCOUNT)
 
 	@CustomerBaseHandler.check_arguments('order_id?:str','action','bill_date?:str')
 	def post(self):
@@ -128,7 +137,8 @@ class RefundWxpay(CustomerBaseHandler):
 				shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
 				if not shop:
 					return self.send_fail("shop not found")
-				order.get_num(session,order.id)  #取消订单,库存增加，在售减少 
+				order.get_num(session,order.id)  #取消订单,库存增加，在售减少
+				order.del_reason = 'refund' 
 				#该店铺余额减去订单总额
 				shop.shop_balance -= balance_value
 				balance_history.is_cancel = 1
@@ -164,7 +174,7 @@ class RefundWxpay(CustomerBaseHandler):
 			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
 			batch_no = now.strftime("%Y%m%d") + num
 			detail_data = transaction_id +'^' + format(totalPrice,'.2f') + '^协商退款'  
-			notify_url = 'http://i.senguo.cc/customer/online/refund'
+			notify_url = 'http://i.senguo.cc/customer/online/refundcallback'
 			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
 				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data,notify_url=notify_url)
 			print(refund_url,'refund_url')

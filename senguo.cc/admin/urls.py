@@ -112,6 +112,7 @@ handlers = [
 	(r"/m", handlers.superadmin.Official,{},"test"),
 	#微信退款
 	(r"/customer/online/refund",handlers.onlinePay.RefundWxpay,{},"onlinerefund"),
+	(r"/customer/online/refundcallback",handlers.onlinePay.RefundCallback,{},"refundcallback"),
 
 	#支付宝在线支付
 	(r"/customer/online/aliPaycallback",handlers.onlinePay.OnlineAliPay,{'action':'AliPayCallback'},

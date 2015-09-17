@@ -2720,7 +2720,7 @@ class ApplyRefund(SuperBaseHandler):
 	def post(self):
 		apply_id = self.args['apply_id']
 		if len(apply_id) == 0:
-			return self.send_fail('apply id error')
+			return self.send_fail('申请记录为空！')
 		apply_id = int(apply_id)
 		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
 		refund_apply.has_done = 1 #将申请退款变为已处理状态
