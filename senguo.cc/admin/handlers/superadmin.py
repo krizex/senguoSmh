@@ -2703,7 +2703,7 @@ class ApplyRefund(SuperBaseHandler):
 		data = []
 		refund_list = self.session.query(models.ApplyRefund).filter_by(has_done=0).all()
 		if not refund_list:
-			return self.send_fail('get refund_list error')
+			return self.write('当前无申请退款！')
 		for item in refund_list:
 			item_dict = {}
 			item_dict['id'] = item.id
@@ -2723,6 +2723,8 @@ class ApplyRefund(SuperBaseHandler):
 			return self.send_fail('申请记录为空！')
 		apply_id = int(apply_id)
 		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
+		if refund_apply.has_done == 1:
+			return self.send_fail('请勿重复处理！')
 		refund_apply.has_done = 1 #将申请退款变为已处理状态
 		###################################################################
 		# 9.17 woody
@@ -2736,7 +2738,7 @@ class ApplyRefund(SuperBaseHandler):
 		if order.online_type == 'alipay':
 			order.del_reason = 'refund'
 			order.get_num(self.session,order.id)
-			balance_history = session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+			balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if not balance_history:
 				return self.write('old_balance_history not found')
 			shop_id = balance_history.shop_id
@@ -2759,7 +2761,7 @@ class ApplyRefund(SuperBaseHandler):
 			refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
 				balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
 				transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
-			session.add(refund_history)
+			self.session.add(refund_history)
 
 		self.session.commit()
 		return self.send_success()

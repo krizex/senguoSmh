@@ -180,9 +180,9 @@ class RefundWxpay(CustomerBaseHandler):
 			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
 			batch_no = now.strftime("%Y%m%d") + num
 			detail_data = transaction_id +'^' + format(totalPrice,'.2f') + '^协商退款'  
-			notify_url = 'http://i.senguo.cc/customer/online/refundcallback'
+			# notify_url = 'http://i.senguo.cc/customer/online/refundcallback'
 			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
-				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data,notify_url=notify_url)
+				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data)
 			print(refund_url,'refund_url')
 			#################################################################################
 			# 9.15 woody
