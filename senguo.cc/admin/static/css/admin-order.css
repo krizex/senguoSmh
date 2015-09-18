@@ -10,7 +10,8 @@
 .order-list-action{margin:10px 0;}
 .order-list-action .select-box{border:1px solid #ccc;}
 .order-list-action .select-all{margin-top:2px;margin-left:5px;}
-.order-list-item{margin-bottom:10px;position:relative;padding-top:10px;border:1px solid #f4f4f4;transition:0.3s;-webkit-transition:0.3s;}
+.order-list-item{margin-bottom:10px;position:relative;padding-top:10px;border:1px solid #f4f4f4;transition:0.3s;-webkit-transition:0.3s;border-left:2px solid #f4f4f4;}
+.order-list-item.time-out{border-left:2px solid #ff6666;}
 .order-list-item:hover{background:#eee;cursor:pointer;border-color:#eee;}
 .order-list-item:hover .custom-order{background:#fff;}
 
@@ -22,10 +23,10 @@
 .order-list-item .list-title .send{width:300px;}
 .order-list-item .list-title .send .send-time{margin-right:5px;}
 .order-list-item .list-title .code{width:200px;}
-.order-list-item .list-title .money{width:200px;}
-.order-list-item .list-title .print-order{padding-left:25px;}
+.order-list-item .list-title .money{width:180px;}
 .order-list-item .list-title .delete-order{margin-right:5px;background:url("../images/container-icon.gif") no-repeat 0 5px;padding-left:20px;}
 .order-list-item .list-title .printed{background-position:-60px -312px;}
+.order-list-item .link-btn{display:inline-block;background:#419BF9;color:#fff;width:52px;height:28px;text-align:center;border-radius:2px;}
 
 .order-list-item .order-content{padding:0 24px;padding-left:30px;}
 .order-list-item .order-warning{background:url("../images/warning-img.jpg") no-repeat 8px 20px;}
@@ -185,7 +186,7 @@
 .blak-set-btn{height:28px;line-height:28px;padding:0 8px;color:#333;}
 
 .category-list{background:#f4f5f9;padding:10px;}
-.category-list>li{float: left;width: 33.3333%;}
+.category-list>li{float: left;width:25%;}
 .cate-title{font-size: 14px;color: #999;height: 28px;line-height: 28px;float: left;margin-right: 5px;}
 .slide-down-select{display:inline-block;width:100%;background:#fff;color:#000;border:1px solid #ddd;margin-left:0;}
 .slide-down-select .slide-btn{height: 24px;line-height: 24px;display: block;border: none;outline: none;width: 100%;}

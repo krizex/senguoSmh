@@ -1267,20 +1267,22 @@ class OrderStatic(AdminBaseHandler):
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
 					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
 			q_all=q.group_by(func.day(models.Order.create_date))
+			#print(q_all.all())
 
 			if valuationWay=='count':
 				q=self.session.query(models.Order.id,func.day(models.Order.create_date)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.day(models.Order.create_date)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.day(models.Order.create_date),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+			#print(q_old.all())
 			q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)
 
 			q_range=self.session.query(func.day(func.now()))
@@ -1299,12 +1301,12 @@ class OrderStatic(AdminBaseHandler):
 				q=self.session.query(models.Order.id,func.week(models.Order.create_date,1)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.week(models.Order.create_date,1)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.week(models.Order.create_date,1),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
@@ -1327,12 +1329,12 @@ class OrderStatic(AdminBaseHandler):
 				q=self.session.query(models.Order.id,func.month(models.Order.create_date)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.month(models.Order.create_date)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.month(models.Order.create_date),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
@@ -1487,7 +1489,7 @@ class OrderStatic(AdminBaseHandler):
 
 		q=self.session.query(models.Order.id,func.hour(models.Order.create_date)).\
 			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
-			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10]),models.CustomerShopFollow.shop_id==current_shop_id).\
 			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date)
 
 		q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
@@ -1533,7 +1535,7 @@ class OrderStatic(AdminBaseHandler):
 
 		q=self.session.query(models.Order.id,func.substring_index(models.Order.arrival_time,':',1)).\
 			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
-			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10]),models.CustomerShopFollow.shop_id==current_shop_id).\
 			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date).\
 			filter(models.Order.arrival_time != None)
 
@@ -2113,7 +2115,7 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 	@tornado.web.authenticated
 	#@get_unblock
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int","print_type?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		if not self.current_shop:
@@ -2174,6 +2176,10 @@ class Order(AdminBaseHandler):
 					order_list = order_list.filter(models.Order.pay_type==pay_type)
 			if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
 				order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
+			if "print_type" in self.args and self.args["print_type"] !="":
+				print_type = int(self.args["print_type"])
+				if print_type != 9:
+					order_list = order_list.filter(models.Order.isprint==print_type)
 
 			if order_status == 1:#filter order_status
 				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -2183,6 +2189,7 @@ class Order(AdminBaseHandler):
 				self.session.commit()
 				if order_list:
 					orders = [x for x in order_list if x.type == order_type and x.status == 1]
+					orders.sort(key = lambda order:order.create_date,reverse = True)
 
 			elif order_status == 2:#unfinish
 				if order_list:
