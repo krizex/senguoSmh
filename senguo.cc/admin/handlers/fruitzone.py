@@ -127,9 +127,9 @@ class ShopList(FruitzoneBaseHandler):
 					# mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
 					# .filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
 					try:
-						shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
+						shop.shop_satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
 					except:
-						shop.satisfy = 0
+						shop.shop_satisfy = 0
 					shop.address = self.code_to_text("city",shop.shop_city)+shop.shop_address_detail
 					try:
 						shop.comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop.id).first()[0]
