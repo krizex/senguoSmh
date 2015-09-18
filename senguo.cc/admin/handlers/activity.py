@@ -952,7 +952,6 @@ class Discount(CustomerBaseHandler,UserLimit):
 						break
 					# 单个商品折扣的情况
 					else:
-						print("into this!!!!")
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
 						charge_type=eval(y.charge_type)
 						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type)).all()
