@@ -1257,7 +1257,7 @@ class Comment(CustomerBaseHandler):
 		commodity_quality = 0
 		send_speed = 0
 		shop_service = 0
-		# orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
 		try:
 			comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop_id).first()[0]
 		except:
