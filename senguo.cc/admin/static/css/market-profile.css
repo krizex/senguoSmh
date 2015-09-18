@@ -54,7 +54,7 @@
 .address-lst>li{background-color: #fff;padding: 10px 0;margin-top: 10px;}
 .address-lst .active{background-color: #fffaf3;}
 .address-row{padding: 0 10px;line-height: 20px;font-size: 14px;margin-top: 6px;}
-.icon-left{padding-left: 20px;background-size: 16px;background-repeat: no-repeat;background-position: left center;}
+.icon-left{padding-left: 20px;background-size: 16px;background-repeat: no-repeat;background-position: left center;display: inline-block;}
 .line-top{border-top: 1px solid #e7e7e7;padding-top: 8px;}
 .new-address{display:block;margin:0 auto;width: 180px;height: 40px;line-height: 40px;text-align: center;border:1px solid #33CC66;border-radius: 4px;color: #33CC66;font-size: 14px;}
 .i-person{background-image: url('../images/icon/4.png');display: inline-block;width: 150px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;vertical-align: middle;}
