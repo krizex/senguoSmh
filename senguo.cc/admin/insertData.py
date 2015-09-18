@@ -202,20 +202,57 @@ session = models.DBSession()
 # 	session.commit()
 
 # 将管理员添加为店铺默认员工
-def add_staff():
-	shop_list = session.query(models.Shop).all()
-	for shop in shop_list:
-		temp_staff = session.query(models.ShopStaff).get(shop.admin_id)
-		if temp_staff is None:
-			print(shop.id,'this is empty')
-			session.add(models.ShopStaff(id=shop.admin_id,shop_id=shop.id))
-			session.flush()
-			if not session.query(models.HireLink).filter_by(staff_id=shop.admin_id,shop_id=shop.id):
-				session.add(models.HireLink(staff_id=shop.admin_id,shop_id=shop.id,default_staff=1))
+# def add_staff():
+#	shop_list = session.query(models.Shop).all()
+#	for shop in shop_list:
+#		temp_staff = session.query(models.ShopStaff).get(shop.admin_id)
+#		if temp_staff is None:
+#			print(shop.id,'this is empty')
+#			session.add(models.ShopStaff(id=shop.admin_id,shop_id=shop.id))
+#			session.flush()
+#			if not session.query(models.HireLink).filter_by(staff_id=shop.admin_id,shop_id=shop.id):
+#				session.add(models.HireLink(staff_id=shop.admin_id,shop_id=shop.id,default_staff=1))
+#				session.flush()
+#	session.commit()
+
+def address_add_location():
+	customer = session.query(models.Customer.id).all()
+	for item in customer:
+		_id=item[0]
+		print(_id)
+		address = session.query(models.Address).filter_by(customer_id =_id,if_default=1).first()
+		if not address:
+			addr = session.query(models.Address).filter_by(customer_id =_id).first()
+			if addr:
+				addr.if_default = 1
 				session.flush()
+
+	# addrss_list = session.query(models.Address).all()
+	# for _address in addrss_list:
+	# 	address = _address.address_text
+	# 	lat = 0
+	# 	lon = 0
+	# 	url = "http://api.map.baidu.com/geocoder/v2/?address="+address+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+	# 	r = requests.get(url)
+	# 	result = json.loads(r.text)
+	# 	print(url)
+	# 	print(result)
+	# 	if result["status"] == 0:
+	# 		lat = result["result"]["location"]["lat"]
+	# 		lon = result["result"]["location"]["lng"]
+	# 	else:
+	# 		lat = 0
+	# 		lon = 0
+	# 	_address.lat = lat
+	# 	_address.lon = lon
+	# 	print(_address.lat)
+	# 	print(_address.lon)
 	session.commit()
 
-g = multiprocessing.Process(name='getPicture',target=getPicture)
+g = multiprocessing.Process(name='address_add_location',target=address_add_location)
+
+
+#g = multiprocessing.Process(name='getPicture',target=getPicture)
 
 g.start()
 g.join()

@@ -1117,6 +1117,9 @@ class Address(MapBase,  _CommonApi):
 	phone = Column(String(32), nullable=False)
 	receiver = Column(String(64), nullable=False)
 	address_text = Column(String(1024), nullable=False)
+	if_default = Column(TINYINT,nullable=False,default = 0) #0:not default 1:default
+	lat = Column(MyReal,nullable=False,default=0)  #纬度
+	lon = Column(MyReal,nullable=False,default=0)  #经度
 
 #信息墙＝＝＝＝
 class Info(MapBase, _CommonApi):
