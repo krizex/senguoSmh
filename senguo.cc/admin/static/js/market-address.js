@@ -2,7 +2,7 @@ var cur_item = null,_type="edit_address";
 var area=window.dataObj.area;
 $(document).ready(function(){
     //初始化省份
-    for(var key in area){
+    /*for(var key in area){
         var $item=$('<option value=""></option>');
         var city=area[key]['city'];
         var if_city;
@@ -12,7 +12,7 @@ $(document).ready(function(){
         else if_city='0';
         $item.attr({'data-code':key,'data-city':if_city,'value':area[key]['name']}).html(area[key]['name']);
         $('#address_province').append($item);
-    }
+    }*/
 }).on("change","#address_province",function(){
     var option_item = $("#address_province option").not(function(){ return !this.selected });
     var if_city = parseInt(option_item.attr("data-city"));
@@ -39,6 +39,7 @@ $(document).ready(function(){
         return noticeBox("最多只能新建5个地址哦");
     }
     _type = "add_address";
+    $(".modal-body").find("input").val("");
     var name_box=new Modal('address_box');
     name_box.modal('show');
 }).on("click","#addressSure",function(){
@@ -69,7 +70,6 @@ function addressEdit(action){
     var action=action;
     var name=$('#address_name').val();
     var phone=$('#address_phone').val();
-    var province_city = $("#address_province").val()+($("#address_city").val()=="请选择"?"":$("#address_city").val());
     var address=$('#address_address').val();
     var regPhone=/^(1)\d{10}$/;
     if(!name) {return warnNotice('请填写收货人姓名');}
@@ -80,8 +80,7 @@ function addressEdit(action){
     var data={
         receiver:name,
         phone:phone,
-        address_text:address,
-        province_city:province_city
+        address_text:address
     };
     if(action=='edit_address'){data.address_id=cur_item.find(".i-edit").attr("data-id");}
     var args={
