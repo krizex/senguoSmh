@@ -119,7 +119,7 @@
 .f12{font-size: 12px !important;}
 .address-box{background-color: #fff;padding: 10px 0;position: relative;background-color: #fffaf3;}
 .address-row{padding: 0 10px;line-height: 20px;font-size: 14px;margin-top: 6px;}
-.icon-left{padding-left: 20px;background-size: 16px;background-repeat: no-repeat;background-position: left center;}
+.icon-left{padding-left: 20px;background-size: 16px;background-repeat: no-repeat;background-position: left center;display: inline-block;}
 .i-person{background-image: url('../images/icon/4.png');display: inline-block;width: 150px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;vertical-align: middle;}
 .i-phone{background-image: url('../images/icon/5.png');}
 .i-address{background-image: url('../images/icon/6.png');background-position: left 2px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
@@ -133,16 +133,16 @@
 .dilivery-box{background-color: #fff;padding-left: 10px;padding-top: 10px;}
 .cartb-box{padding: 0 0 8px 70px;position: relative;}
 .left-title{display: inline-block;width: 70px;height: 33px;font-size:14px;line-height: 32px;color: #333;position: absolute;left: 0;top: 0;}
-.ptm5{padding: 10px 0 10px 70px;border-top: 1px solid #d3d3d3;}
+.ptm5{padding: 10px 0 10px 70px;border-top: 1px solid #e7e7e7;}
 .bt0{border-top: none !important;}
-.bts-lst>li{float:left;margin-right:10px;border-radius:4px;cursor: pointer;width: 70px;height: 32px;line-height:32px;-webkit-box-sizing:border-box;border: 1px solid #a8a8a8;text-align: center;font-size: 14px;color: #333;}
+.bts-lst>li{float:left;margin-right:10px;border-radius:4px;cursor: pointer;width: 70px;height: 32px;line-height:31px;-webkit-box-sizing:border-box;border: 1px solid #a8a8a8;text-align: center;font-size: 14px;color: #333;}
 .bts-lst>li:last-child{margin-right: 0;}
-.bts-lst .active{background-color: #33CC66;color: #fff;border: none;}
+.bts-lst .active{background-color: #33CC66;color: #fff;border-color: #33CC66;}
 .coupon-cart-box{height: 40px;color: #333;line-height: 40px;position: relative;padding-left: 10px;background-color: #fff;}
 .coupon-last{background-color: #33CC66;color: #fff;border-radius: 4px;display: inline-block;font-size: 14px;padding: 0 4px;height: 18px;line-height: 18px;margin-left: 10px;}
 .top4{top: 4px;}
 .pay-type-box{background-color: #fff;padding-left: 10px;padding-top: 10px;}
-.pay-line{border-top: 1px solid #d3d3d3;padding: 10px 0;}
+.pay-line{border-top: 1px solid #e7e7e7;padding: 10px 0;}
 .money-box{background-color: #fff;padding: 10px;}
 .money-box>p{line-height: 20px;font-size: 14px;position: relative;}
 .money-txt{color: #33CC66;font-size: 14px;}

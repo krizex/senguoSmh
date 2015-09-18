@@ -722,7 +722,7 @@ class Home(CustomerBaseHandler):
 			if not address:
 				return self.send_fail("修改地址失败", 403)
 			address_text = data.get("address_text","")
-			province_city = date.get("province_city","")
+			province_city = data.get("province_city","")
 			lat = self.getLocation(address_text+province_city)[0]
 			lon = self.getLocation(address_text+province_city)[1]
 			address.update(session=self.session, phone=data["phone"],
@@ -774,7 +774,7 @@ class Home(CustomerBaseHandler):
 						res = 0
 				elif area_type == 2 :
 					if shop_lat !=0 and shop_lon !=0 :
-						pt = {"lat":shop_lat,"lng":shop_lon}
+						pt = {"lat":customer_lat,"lng":customer_lon}
 						res = self.getInArea(pt,area_list)
 					else:
 						res = 1
@@ -801,16 +801,20 @@ class Home(CustomerBaseHandler):
 		return lat,lon
 
 	def getInArea(self,pt,poly):
+		poly = json.loads(poly)
 		c = False
 		i = -1
 		l = len(poly)
 		j = l - 1
+		print(pt)
 		while i < l-1:
 			i += 1
+			print(i,poly[i], j,poly[j])
 			if ((poly[i]["lat"] <= pt["lat"] and pt["lat"] < poly[j]["lat"]) or (poly[j]["lat"] <= pt["lat"] and pt["lat"] < poly[i]["lat"])):
 				if (pt["lng"] < (poly[j]["lng"] - poly[i]["lng"]) * (pt["lat"] - poly[i]["lat"]) / (poly[j]["lat"] - poly[i]["lat"]) + poly[i]["lng"]):
 					c = not c
 			j = i
+		print(c)
 		if c:
 			return 1
 		else:
