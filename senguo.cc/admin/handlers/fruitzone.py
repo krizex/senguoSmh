@@ -198,6 +198,7 @@ class ShopList(FruitzoneBaseHandler):
 			# print(q.count(),'before')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
+			print(shop_count)
 			# print(shop_count,'after')
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
@@ -248,7 +249,8 @@ class ShopList(FruitzoneBaseHandler):
 				shops.sort(key = lambda shop:shop['comment_count'],reverse = True)
 			else:
 				return self.send_fail(error_text = 'key_word error')
-		shops = shops[_page_count*page:_page_count*page+_page_count]
+		if "province" not in self.args :
+			shops = shops[_page_count*page:_page_count*page+_page_count]
 		# print(shops,"***********shops********")
 		if shops == [] or len(shops)<_page_count:
 			nomore =True

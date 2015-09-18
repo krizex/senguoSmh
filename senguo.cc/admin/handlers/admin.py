@@ -248,10 +248,14 @@ class SwitchShop(AdminBaseHandler):
 		shop_list = []
 		for shop in shops:
 			satisfy = 0
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id',  'wx_accountname','auth_change',
+			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'wx_accountname','auth_change',
 										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 										'alipay_account','alipay_account_name','available_balance',\
-										'new_follower_sum','new_order_sum']
+										'new_follower_sum','new_order_sum','daily_sales','demand_fruits','shop_province',\
+										'shop_phone','shop_url','single_stock_size','spread_member_code','super_temp_active',\
+										'team_size','total_users','shop_start_timestamp','old_msg','onsale_fruits',\
+										'shop_property','shop_sales_range','shop_service_area','shop_tpl','deliver_area',\
+										'have_offline_entity','have_wx_mp','is_balance']
 			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
 			if orders:
 				commodity_quality = 0
