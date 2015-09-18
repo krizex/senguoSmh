@@ -73,7 +73,7 @@
 .send-address-choose .address{width:85%;}
 .send-address-choose .to-edit-address{width:15%;margin-top:16px;}
 .send-address-choose .active .phone{color:#33CC66;}
-.message-input{padding:0 6px;-webkit-box-sizing:border-box;border:1px solid #e7e7e7;border-radius:4px;height: 32px;margin-bottom: 0px;}
+.message-input{padding:0 6px;-webkit-box-sizing:border-box;border:1px solid #e7e7e7;border-radius:4px;height: 32px;line-height: 32px;margin-bottom: 0px;}
 .message-input:focus{border-color:#ddd;}
 .border-grey{border-color:#ddd;}
 .tip-list li{width:32%;margin-right:1%;}
