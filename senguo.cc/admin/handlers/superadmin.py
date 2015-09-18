@@ -503,8 +503,9 @@ class ShopManage(SuperBaseHandler):
 			self.handle_updateStatus()
 		elif action == "shopclose":
 			self.handle_shopclose()
+		# 进入店铺后台
 		elif action == "getin":
-			print(self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0])
+			# print(self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0])
 			try:
 				shop_id=self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0]
 			except:
@@ -3279,7 +3280,7 @@ class AdminManager(SuperBaseHandler):
 			return self.send_error(404)
 
 
-#将平台用户置为新的用户，以便进行测试
+# 将平台用户置为新的用户，以便进行测试
 class MakeNewUser(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action?:str')
@@ -3296,14 +3297,14 @@ class MakeNewUser(SuperBaseHandler):
 			self.session.commit()
 			return self.send_success()
 		for item in super_user:
-			print(item.id,item.accountinfo.nickname)
+			# print(item.id,item.accountinfo.nickname)
 			if item.accountinfo.wx_unionid  is None:
 				isnew = True
 			else:
 				isnew = False
 			item_info = {'id':item.id,'nickname':item.accountinfo.nickname,'isnew':isnew}
 			user_list.append(item_info)
-		print(user_list)
+		# print(user_list)
 		return self.render('superAdmin/new_user.html',level  = 0,if_super = if_super,user_list=user_list)
 
 	@tornado.web.authenticated
@@ -3318,7 +3319,7 @@ class MakeNewUser(SuperBaseHandler):
 			user.accountinfo.wx_openid = None
 			user.accountinfo.wx_unionid = None
 		elif action == 'recover':
-			print('recover')
+			# print('recover')
 			wx_unionid = user.wx_unionid_back
 			wx_openid  = user.wx_openid_back
 			#找到生成的新用户，将unionid和openid清零，以便还原之前的数据
