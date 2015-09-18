@@ -252,7 +252,7 @@ class ShopList(FruitzoneBaseHandler):
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
 
-	@FruitzoneBaseHandler.check_arguments('id:int')
+	@FruitzoneBaseHandler.check_arguments('id:int','lat?:str','lon?:str')
 	def handle_admin_shop(self,province):
 		admin_id = int(self.args['id'])
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
@@ -260,7 +260,20 @@ class ShopList(FruitzoneBaseHandler):
 			return self.send_fail('shop_admin not found!')
 		shop_list = shop_admin.shops
 		shop_list = [x for x in shop_list if x.status >=0 ]
+		lat1 = None
+		lon1 = None
+		if self.args["lat"] != '[]':
+			lat1 = float(self.args['lat'])
+		if self.args["lon"] != '[]' :
+			lon1 = float(self.args['lon'])
 		shops = self.get_data(shop_list)
+		for shop in shops:
+			lat2 = shop['lat']
+			lon2 = shop['lon']
+			if lat1 and lon1 and lat2 and lon2:       
+				shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+			else:
+				shop['distance'] = 9999999
 		return self.send_success(shops=shops)
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
