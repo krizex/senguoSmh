@@ -279,7 +279,7 @@ class SwitchShop(AdminBaseHandler):
 			# shop.comment_count = comment_count
 			# shop.goods_count = fruit_count
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
-			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
+			shop.shop_satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
 			# shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			shop.order_sum = len(shop.orders)
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
