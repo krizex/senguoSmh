@@ -698,12 +698,20 @@ class Home(CustomerBaseHandler):
 	def post(self,shop_code):
 		action = self.args["action"]
 		data = self.args["data"]
+		try:
+			shop = self.session.query(models.Shop.lat,models.Shop.lon,models.Shop.area_type,\
+				models.Shop.area_radius,models.Shop.area_list).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_error(403)
 		if action == "add_address":
 			if_default = 0
 			if len(self.current_user.addresses) == 0 :
 				if_default = 1
 			address_text = data.get("address_text","")
-			province_city = data.get("province_city","")
+			try:
+				province_city = self.code_to_text("shop_city",shop.shop_city)
+			except:
+				province_city = ""
 			lat = self.getLocation(address_text+province_city)[0]
 			lon = self.getLocation(address_text+province_city)[1]
 			address = models.Address(customer_id = self.current_user.id,
@@ -722,7 +730,10 @@ class Home(CustomerBaseHandler):
 			if not address:
 				return self.send_fail("修改地址失败", 403)
 			address_text = data.get("address_text","")
-			province_city = data.get("province_city","")
+			try:
+				province_city = self.code_to_text("shop_city",shop.shop_city)
+			except:
+				province_city = ""
 			lat = self.getLocation(address_text+province_city)[0]
 			lon = self.getLocation(address_text+province_city)[1]
 			address.update(session=self.session, phone=data["phone"],
@@ -747,11 +758,6 @@ class Home(CustomerBaseHandler):
 			self.session.commit()
 		elif action == "in_area":
 			address_id = data.get("address_id",0)
-			try:
-				shop = self.session.query(models.Shop.lat,models.Shop.lon,models.Shop.area_type,\
-					models.Shop.area_radius,models.Shop.area_list).filter_by(shop_code =shop_code).first()
-			except:
-				return self.send_error(403)
 			try: address = self.session.query(models.Address.lat,models.Address.lon).filter_by(id=address_id,if_default=1).one()
 			except:return self.send_error(404)
 			shop_lat = shop[0]
