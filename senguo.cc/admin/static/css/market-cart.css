@@ -139,7 +139,7 @@
 .bts-lst>li:last-child{margin-right: 0;}
 .bts-lst .active{background-color: #33CC66;color: #fff;border-color: #33CC66;}
 .coupon-cart-box{height: 40px;color: #333;line-height: 40px;position: relative;padding-left: 10px;background-color: #fff;}
-.coupon-last{background-color: #33CC66;color: #fff;border-radius: 4px;display: inline-block;font-size: 14px;padding: 0 4px;height: 18px;line-height: 18px;margin-left: 10px;}
+.coupon-last{background-color: #33CC66;color: #fff;border-radius: 4px;display: inline-block;font-size: 12px;padding: 0 4px;height: 19px;line-height: 20px;margin-left: 25px;}
 .top4{top: 4px;}
 .pay-type-box{background-color: #fff;padding-left: 10px;padding-top: 10px;}
 .pay-line{border-top: 1px solid #e7e7e7;padding: 10px 0;}

@@ -895,6 +895,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id,status=1).all()
 				for y in qq:
 					chargesingle=[]
+					# 全场折扣的情况
 					if y.use_goods_group==-2:
 						if_all=1
 						data=[]
@@ -907,7 +908,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 										count=fruits[charge.id]
 									else:
 										count=0
-									x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
+									x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元 ',"src_price":str(charge.price)+"元","charge_unit":'/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
@@ -922,6 +923,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 						data1=[]
 						data.append(data0)
 						break
+					# 分组折扣的情况
 					elif y.use_goods==-1:
 						if_all=2
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=y.use_goods_group).all()
@@ -948,7 +950,9 @@ class Discount(CustomerBaseHandler,UserLimit):
 						data1=[]	
 						data.append(data0)
 						break
+					# 单个商品折扣的情况
 					else:
+						print("into this!!!!")
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
 						charge_type=eval(y.charge_type)
 						ChargeType=self.session.query(models.ChargeType).filter(models.ChargeType.id.in_(charge_type)).all()

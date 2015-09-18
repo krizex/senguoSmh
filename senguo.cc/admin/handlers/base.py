@@ -2105,7 +2105,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 		key=charge_type_id
 		if d:
 			if inc == 2:#加1
-				if charge_type_id in d.keys(): d[charge_type_id] =   int(d[charge_type_id]) + 1
+				if charge_type_id in d.keys(): d[charge_type_id] = int(d[charge_type_id]) + 1
 				else: d[charge_type_id] = 1
 				#加1限时折扣
 				if q_all:
@@ -2153,39 +2153,41 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					self.session.flush()				
 				else:return
 			elif inc == 0:#删除
-				to_delete_num=d[charge_type_id]  # 限时折扣需要删除的数量
-				if charge_type_id in d.keys(): del d[charge_type_id]
-				if activity_type == 1:
-					seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type_id).with_lockmode('update').first()
-					seckill_goods.picked -= 1
-					seckill_goods.not_pick += 1
-					self.session.flush()
+				if charge_type_id in d.keys(): 
+					to_delete_num=d[charge_type_id]  # 限时折扣需要删除的数量
+					del d[charge_type_id]
+					#减少秒杀统计数据
+					if activity_type == 1:
+						seckill_goods = self.session.query(models.SeckillGoods).filter_by(seckill_charge_type_id = charge_type_id).with_lockmode('update').first()
+						seckill_goods.picked -= 1
+						seckill_goods.not_pick += 1
+						self.session.flush()
 
-					customer_id = self.current_user.id
-					seckill_goods_id = seckill_goods.id
-					customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
-					customer_seckill_goods.status = 0
-					# print("@@@@@@@@@",customer_seckill_goods.status)
-					self.session.flush()
-				#减少限时折扣统计数据
-				elif activity_type==2:
-					if q_all:
-						q_all.incart_num-=to_delete_num
-						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
-						qqq.incart_num-=to_delete_num
-					elif q_part:	
-						q_part.incart_num+=to_delete_num
-						qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
-						qqq.incart_num-=to_delete_num
-						
-					else:
-						qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
-						if qq:
-							if key in eval(qq.charge_type):
-								qq.incart_num-=to_delete_num
-								qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
-								qqq.incart_num-=to_delete_num
-					self.session.flush()				
+						customer_id = self.current_user.id
+						seckill_goods_id = seckill_goods.id
+						customer_seckill_goods = self.session.query(models.CustomerSeckillGoods).filter_by(customer_id=customer_id,seckill_goods_id=seckill_goods_id).with_lockmode('update').first()
+						customer_seckill_goods.status = 0
+						# print("@@@@@@@@@",customer_seckill_goods.status)
+						self.session.flush()
+					#减少限时折扣统计数据
+					elif activity_type==2:
+						if q_all:
+							q_all.incart_num-=to_delete_num
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_all.discount_id).with_lockmode('update').first()
+							qqq.incart_num-=to_delete_num
+						elif q_part:	
+							q_part.incart_num+=to_delete_num
+							qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=q_part.discount_id).with_lockmode('update').first()
+							qqq.incart_num-=to_delete_num
+							
+						else:
+							qq=self.session.query(models.DiscountShop).filter_by(shop_id=shop_id,use_goods=tmp_charge.fruit.id).with_lockmode('update').first()
+							if qq:
+								if key in eval(qq.charge_type):
+									qq.incart_num-=to_delete_num
+									qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
+									qqq.incart_num-=to_delete_num
+						self.session.flush()				
 
 			else:return
 			setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）
