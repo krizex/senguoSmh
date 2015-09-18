@@ -1055,20 +1055,20 @@ class ShopProfile(CustomerBaseHandler):
 			shop_id=shop.id).first()
 		if not shop_follow:
 				follow = False
-		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
-		if orders:
-			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
-			if q[0][0]:
-				commodity_quality = int(q[0][0])
-			if q[0][1]:
-				send_speed = int(q[0][1])
-			if q[0][2]:
-				shop_service = int(q[0][2])
-			if commodity_quality and send_speed and shop_service:
-				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
-			else:
-				satisfy = format(1,'.0%')
+		# orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		# if orders:
+		# 	q = self.session.query(func.avg(models.Order.commodity_quality),\
+		# 		func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
+		# 	if q[0][0]:
+		# 		commodity_quality = int(q[0][0])
+		# 	if q[0][1]:
+		# 		send_speed = int(q[0][1])
+		# 	if q[0][2]:
+		# 		shop_service = int(q[0][2])
+		# 	if commodity_quality and send_speed and shop_service:
+		# 		satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+		# 	else:
+		satisfy = format(shop.satisfy,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -1078,14 +1078,16 @@ class ShopProfile(CustomerBaseHandler):
 		operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
 		fans_sum = shop.fans_count
 		order_sum = shop.order_count
-		goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		# goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		goods_sum = shop.goods_count
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
 		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
 					filter(models.Accountinfo.id.in_(shop_members_id)).all()
-		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
+		# comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
+		comment_sum = shop.comment_count
 		session = self.session
 		w_id = self.current_user.id
 		return self.render("customer/shop-info.html", shop=shop,get_shop_auth=shop_auth,follow=follow, operate_days=operate_days,
@@ -1255,7 +1257,7 @@ class Comment(CustomerBaseHandler):
 		commodity_quality = 0
 		send_speed = 0
 		shop_service = 0
-		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		# orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
 		try:
 			comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop_id).first()[0]
 		except:
@@ -3182,11 +3184,28 @@ class Order(CustomerBaseHandler):
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-			order.commodity_quality = int(data["commodity_quality"])
-			order.send_speed        = int(data["send_speed"])
-			order.shop_service      = int(data["shop_service"])
+			if not order:
+				return self.send_error(404)
+			try:
+				commodity_quality = int(data["commodity_quality"])
+			except:
+				commodity_quality = 100
+			try:
+				send_speed = int(data["send_speed"])
+			except:
+				send_speed = 100
+			try:
+				shop_service = int(data["shop_service"])
+			except:
+				shop_service = 100
+			order.commodity_quality = commodity_quality
+			order.send_speed        = send_speed
+			order.shop_service      = shop_service
 			notice =''
-			if int(data["commodity_quality"])==100 and int(data["send_speed"])==100 and int(data["shop_service"])==100:
+			satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			been_commnet_count = self.session.query(models.Order).filter_by(shop_id=order.shop_id,status=6).count()
+			order.shop.satisfy = (order.shop.satisfy*been_commnet_count+satisfy)/(been_commnet_count+1)
+			if commodity_quality ==100 and send_speed==100 and shop_service==100:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 						order.customer_id,shop_id = order.shop_id).first()
@@ -3243,6 +3262,8 @@ class Order(CustomerBaseHandler):
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
 			order.comment_imgUrl = imgUrl
+			if order.status == 5:
+				order.shop.comment_count = order.shop.comment_count + 1
 			shop_follow = ''
 			notice = ''
 			

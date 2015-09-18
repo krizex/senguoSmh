@@ -4,6 +4,7 @@ import json
 import multiprocessing
 from multiprocessing import Process
 from dal.dis_dict import dis_dict
+from sqlalchemy import desc,func
 # from bs4 import BeautifulSoup
 session = models.DBSession()
 
@@ -202,20 +203,50 @@ session = models.DBSession()
 # 	session.commit()
 
 # 将管理员添加为店铺默认员工
-def add_staff():
+# def add_staff():
+# 	shop_list = session.query(models.Shop).all()
+# 	for shop in shop_list:
+# 		temp_staff = session.query(models.ShopStaff).get(shop.admin_id)
+# 		if temp_staff is None:
+# 			print(shop.id,'this is empty')
+# 			session.add(models.ShopStaff(id=shop.admin_id,shop_id=shop.id))
+# 			session.flush()
+# 			if not session.query(models.HireLink).filter_by(staff_id=shop.admin_id,shop_id=shop.id):
+# 				session.add(models.HireLink(staff_id=shop.admin_id,shop_id=shop.id,default_staff=1))
+# 				session.flush()
+# 	session.commit()
+
+def shop_add_some():
 	shop_list = session.query(models.Shop).all()
 	for shop in shop_list:
-		temp_staff = session.query(models.ShopStaff).get(shop.admin_id)
-		if temp_staff is None:
-			print(shop.id,'this is empty')
-			session.add(models.ShopStaff(id=shop.admin_id,shop_id=shop.id))
-			session.flush()
-			if not session.query(models.HireLink).filter_by(staff_id=shop.admin_id,shop_id=shop.id):
-				session.add(models.HireLink(staff_id=shop.admin_id,shop_id=shop.id,default_staff=1))
-				session.flush()
+		print(shop.id)
+		orders = session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
+		satisfy = 0
+		if orders:
+			commodity_quality = 0
+			send_speed = 0
+			shop_service = 0
+			q = session.query(func.avg(models.Order.commodity_quality),\
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id ,models.Order.status.in_((6,7))).all()
+			if q[0][0]:
+				commodity_quality = int(q[0][0])
+			if q[0][1]:
+				send_speed = int(q[0][1])
+			if q[0][2]:
+				shop_service = int(q[0][2])
+			if commodity_quality and send_speed and shop_service:
+				satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			else:
+				satisfy = 0
+		comment_count = session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
+		fruit_count = session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
+		shop.goods_count = fruit_count
+		shop.comment_count = comment_count 
+		shop.satisfy = satisfy
+		session.flush()
 	session.commit()
 
-g = multiprocessing.Process(name='getPicture',target=getPicture)
+g = multiprocessing.Process(name='shop_add_some',target=shop_add_some)
 
 g.start()
 g.join()

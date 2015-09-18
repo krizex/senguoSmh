@@ -512,10 +512,10 @@ class Shop(MapBase, _CommonApi):
 	__tablename__ = "shop"
 
 	id = Column(Integer, primary_key=True, nullable=False)
-	shop_name = Column(String(128), nullable=False)
-	shop_code = Column(String(128), nullable=False, default="not set")
+	shop_name = Column(String(128), nullable=False,index=True)
+	shop_code = Column(String(128), nullable=False, default="not set",index=True)
 	create_date_timestamp = Column(Integer, nullable=False)
-	shop_status = Column(TINYINT,nullable=False, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
+	shop_status = Column(TINYINT,nullable=False, default=SHOP_STATUS.ACCEPTED,index=True)  # 1：申请中 2：申请成功 3：拒绝
 	shop_auth =Column(TINYINT,nullable=False,default =0) #0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
 	auth_change=Column(TINYINT,nullable=False,default =0)#0:未认证 1:认证一次 2:认证两次 #yy4.30
 	# on or off
@@ -532,8 +532,8 @@ class Shop(MapBase, _CommonApi):
 	deliver_area = Column(String(100))  # 配送区域
 
 	# 地址
-	shop_province = Column(Integer)
-	shop_city = Column(Integer)
+	shop_province = Column(TINYINT,index=True)
+	shop_city = Column(TINYINT,index=True)
 	shop_address_detail = Column(String(1024), nullable=False)
 	shop_sales_range = Column(String(128))
 	lat              = Column(MyReal,nullable=False,default=0)  #纬度
@@ -605,6 +605,10 @@ class Shop(MapBase, _CommonApi):
 
 	shop_tpl = Column(TINYINT,nullable=False,default = 0) #店铺模版, 0:customer 1:beauty 6.17
 	spread_member_code = Column(String(30)) #7.27
+
+	satisfy = Column(Float,default = 100,nullable = False) #店铺满意度 9.18 yy
+	comment_count = Column(Integer,default = 0,nullable=False) #店铺评价数 9.18 yy
+	goods_count = Column(SMALLINT,default = 0,nullable=False) #店铺商品数 9.18 yy
 
 
 	def __repr__(self):
@@ -1317,9 +1321,9 @@ class Order(MapBase, _CommonApi):
 	send_time=Column(String(45))
 	del_reason = Column(String(300))
 
-	commodity_quality = Column(Integer)
-	send_speed        = Column(Integer)
-	shop_service      = Column(Integer)
+	commodity_quality = Column(SMALLINT)
+	send_speed        = Column(SMALLINT)
+	shop_service      = Column(SMALLINT)
 
 	online_type       = Column(String(8)) #wx alipay
 	is_qrwxpay        = Column(Integer,default=0) #只有当订单类型为微信支付时才有意义，1表示扫码支付，0表示非扫码支付
