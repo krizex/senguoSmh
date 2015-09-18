@@ -3498,8 +3498,9 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = None
 		shop_code = order.shop.shop_code
 		shop_name = order.shop.shop_name
+		shop_phone = order.shop.shop_phone
 		return self.render("customer/order-detail.html", order=order,charge_types=charge_types,comment_imgUrl=comment_imgUrl,\
-						   online_type=online_type,shop_name=shop_name,shop_code=shop_code)
+						   online_type=online_type,shop_name=shop_name,shop_code=shop_code,shop_phone=shop_phone)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
