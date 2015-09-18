@@ -48,22 +48,30 @@
             <div class="wrap-tab-group">
                 <ul class="tab-group group">
                     {% if len(context['group_list'])>1%}
+                    {% set last ="" %}
+                    {% if len(context['group_list']) <=2 %}
+                        {% set last ="know-last" %}
+                    {% else %}
+                        {% set last ="" %}
+                    {% end %}
                     <li data-id="-2">所有商品</li>
-                    <li data-id="{{context['group_list'][0]['id']}}">{{context['group_list'][0]['name'][0:5]}}</li>
-                    <li class="more-group-btn" data-id="{{context['group_list'][1]['id']}}">
+                    <li data-id="{{context['group_list'][0]['id']}}" class="{{last}}">{{context['group_list'][0]['name'][0:5]}}</li>
+                    <li class="more-group-btn {{last}}" data-id="{{context['group_list'][1]['id']}}">
                         {% if len(context['group_list']) >2%}
                         <span class="i-cert"></span>
                         {% end %}
                         <span id="cur_group">{{context['group_list'][1]['name'][0:5]}}</span>
+                        {% if len(context['group_list']) >2%}
                         <ul class="more-group hidden">
                             <li data-id="-2">所有商品</li>
                             {% for index,group in enumerate(context['group_list']) %}
-                            <li data-id="{{group['id']}}">{{group['name'][0:5]}}</li>
+                            <li data-id="{{group['id']}}" class="know-last">{{group['name'][0:5]}}</li>
                             {% end %}
                         </ul>
+                        {% end %}
                     </li>
                     {% else %}
-                    <li data-id="{{context['group_list'][0]['id'] if context['group_list'] else 0}}" class="only-one">{{context['group_list'][0]['name'][0:5] if context['group_list'] else "默认分组" }}</li>
+                    <li data-id="{{context['group_list'][0]['id'] if context['group_list'] else 0}}" class="only-one know-last">{{context['group_list'][0]['name'][0:5] if context['group_list'] else "默认分组" }}</li>
                     {% end %}
                 </ul>
             </div>
