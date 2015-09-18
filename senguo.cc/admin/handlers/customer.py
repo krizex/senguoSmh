@@ -3865,7 +3865,7 @@ class payTest(CustomerBaseHandler):
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
 		if 'code_url' in res_dict:
-				qr_url = res_dict['code_url']
+			qr_url = res_dict['code_url']
 		else:
 			qr_url = ""
 		return qr_url
