@@ -698,12 +698,20 @@ class Home(CustomerBaseHandler):
 	def post(self,shop_code):
 		action = self.args["action"]
 		data = self.args["data"]
+		try:
+			shop = self.session.query(models.Shop.lat,models.Shop.lon,models.Shop.area_type,\
+				models.Shop.area_radius,models.Shop.area_list).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_error(403)
 		if action == "add_address":
 			if_default = 0
 			if len(self.current_user.addresses) == 0 :
 				if_default = 1
 			address_text = data.get("address_text","")
-			province_city = data.get("province_city","")
+			try:
+				province_city = self.code_to_text("shop_city",shop.shop_city)
+			except:
+				province_city = ""
 			lat = self.getLocation(address_text+province_city)[0]
 			lon = self.getLocation(address_text+province_city)[1]
 			address = models.Address(customer_id = self.current_user.id,
@@ -722,7 +730,10 @@ class Home(CustomerBaseHandler):
 			if not address:
 				return self.send_fail("修改地址失败", 403)
 			address_text = data.get("address_text","")
-			province_city = data.get("province_city","")
+			try:
+				province_city = self.code_to_text("shop_city",shop.shop_city)
+			except:
+				province_city = ""
 			lat = self.getLocation(address_text+province_city)[0]
 			lon = self.getLocation(address_text+province_city)[1]
 			address.update(session=self.session, phone=data["phone"],
@@ -747,11 +758,6 @@ class Home(CustomerBaseHandler):
 			self.session.commit()
 		elif action == "in_area":
 			address_id = data.get("address_id",0)
-			try:
-				shop = self.session.query(models.Shop.lat,models.Shop.lon,models.Shop.area_type,\
-					models.Shop.area_radius,models.Shop.area_list).filter_by(shop_code =shop_code).first()
-			except:
-				return self.send_error(403)
 			try: address = self.session.query(models.Address.lat,models.Address.lon).filter_by(id=address_id,if_default=1).one()
 			except:return self.send_error(404)
 			shop_lat = shop[0]
@@ -762,9 +768,9 @@ class Home(CustomerBaseHandler):
 			customer_lat = address[0]
 			customer_lon = address[1]
 			res = 0
-			print(address,2333)
-			print(area_type,6666)
-			print(customer_lat,8888)
+			# print(address,2333)
+			# print(area_type,6666)
+			# print(customer_lat,8888)
 			if area_type !=0 and customer_lat !=0 and customer_lon !=0:
 				if area_type == 1:
 					distance = self.get_distance(shop_lat,shop_lon,customer_lat,customer_lon)
@@ -786,6 +792,7 @@ class Home(CustomerBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
+	# 判断地址在不在圆形区域内
 	def getLocation(self,address):
 		lat = 0
 		lon = 0
@@ -800,26 +807,26 @@ class Home(CustomerBaseHandler):
 			lon = 0
 		return lat,lon
 
+	# 判断点pt在不在多边形区域poly内
 	def getInArea(self,pt,poly):
 		poly = json.loads(poly)
 		c = False
 		i = -1
 		l = len(poly)
 		j = l - 1
-		print(pt)
+		# print(pt)
 		while i < l-1:
 			i += 1
-			print(i,poly[i], j,poly[j])
+			# print(i,poly[i], j,poly[j])
 			if ((poly[i]["lat"] <= pt["lat"] and pt["lat"] < poly[j]["lat"]) or (poly[j]["lat"] <= pt["lat"] and pt["lat"] < poly[i]["lat"])):
 				if (pt["lng"] < (poly[j]["lng"] - poly[i]["lng"]) * (pt["lat"] - poly[i]["lat"]) / (poly[j]["lat"] - poly[i]["lat"]) + poly[i]["lng"]):
 					c = not c
 			j = i
-		print(c)
+		# print(c)
 		if c:
 			return 1
 		else:
 			return 0
-
 
 # 发现
 class Discover(CustomerBaseHandler):
