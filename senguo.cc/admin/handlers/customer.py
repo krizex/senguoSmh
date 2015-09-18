@@ -33,6 +33,8 @@ import jpush as jpush
 from libs.phonepush.jpush.push import core,payload,audience
 from libs.phonepush.conf import app_key, master_secret
 
+import re
+
 # 登录处理
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
