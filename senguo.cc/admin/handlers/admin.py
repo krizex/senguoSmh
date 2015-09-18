@@ -1489,7 +1489,7 @@ class OrderStatic(AdminBaseHandler):
 
 		q=self.session.query(models.Order.id,func.hour(models.Order.create_date)).\
 			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
-			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10]),models.CustomerShopFollow.shop_id==current_shop_id).\
 			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date)
 
 		q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
@@ -1535,7 +1535,7 @@ class OrderStatic(AdminBaseHandler):
 
 		q=self.session.query(models.Order.id,func.substring_index(models.Order.arrival_time,':',1)).\
 			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
-			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10]),models.CustomerShopFollow.shop_id==current_shop_id).\
 			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date).\
 			filter(models.Order.arrival_time != None)
 
