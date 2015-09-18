@@ -3245,6 +3245,7 @@ class Order(CustomerBaseHandler):
 			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
 			# print("[CustomerOrder]Order cancel, order.status(before):",order.status)
+			old_order_status = order.status
 			order.status = 0
 			# print("[CustomerOrder]Order cancel, order.status(now)   :",order.status)
 			# recover the sale and storage
@@ -3313,7 +3314,7 @@ class Order(CustomerBaseHandler):
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
 
-			#订单删除，CustomerSeckillGoods表对应的状态恢复为0,SeckillGoods表也做相应变化
+			# 订单删除，CustomerSeckillGoods表对应的状态恢复为0,SeckillGoods表也做相应变化
 			charge_type_list = list(fruits.keys())
 			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
 			if seckill_goods:
@@ -3333,12 +3334,13 @@ class Order(CustomerBaseHandler):
 					self.session.flush()
 			self.session.commit()
 
-			# 发送订单取消模版消息
-			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-			if order.shop.admin.has_mp:
-				self.order_cancel_msg(self.session,order,cancel_time)
-			else:
-				self.order_cancel_msg(self.session,order,cancel_time,None)
+			# 如果不是未付款订单取消，则发送订单取消模版消息/打印取消信息/app消息推送
+			if old_order_status == -1:
+				cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+				if order.shop.admin.has_mp:
+					self.order_cancel_msg(self.session,order,cancel_time)
+				else:
+					self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			return self.send_success()
 
