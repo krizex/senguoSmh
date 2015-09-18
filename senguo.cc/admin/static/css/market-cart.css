@@ -131,7 +131,7 @@
 .fruits-lst>li img{width: 100%;border-radius: 4px;}
 .wrap-say-ipt{padding: 6px 10px;border-top: 1px solid #e7e7e7;}
 .dilivery-box{background-color: #fff;padding-left: 10px;padding-top: 10px;}
-.cartb-box{padding: 0 0 8px 70px;position: relative;}
+.cartb-box{padding: 0 0 8px 70px;position: relative;min-height: 38px;}
 .left-title{display: inline-block;width: 70px;height: 33px;font-size:14px;line-height: 32px;color: #333;position: absolute;left: 0;top: 0;}
 .ptm5{padding: 10px 0 10px 70px;border-top: 1px solid #e7e7e7;}
 .bt0{border-top: none !important;}
@@ -151,6 +151,7 @@
 .pointer{cursor: pointer;}
 .p0{padding: 0 !important;}
 .mt0{margin-top: 0px !important;}
+.red{color: #f25f5f !important;}
 .clip{white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
 .select-slide{width: 90%;height: 19px;border: none;font-size: 14px;color: #333;outline: none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
 .red-tip-txt{position: absolute;width: 70px;font-size: 12px;color: #f25f5f;line-height: 14px;right: 10px;top: 2px;}
@@ -161,6 +162,7 @@
 .modal-footer .area-btn{padding: 5px 20px;}
 .modal-footer .btn-left{left: 40px;color: #333;background-color: #ddd !important;}
 .modal-footer .btn-right{left: 154px;}
+.no-deli{display: inline-block;margin-top: 6px;}
 /*beauty*/
 .yellow-text{color: #ff9800;}
 .pay-bill{position: fixed;bottom:50px;width:100%;max-width:800px;min-width:320px;z-index:100;height: 40px;border-top:1px solid #eee;line-height: 40px;text-align: right;font-size: 14px;background-color: rgba(255,255,255,.8);color: #666;left: 50%;-webkit-transform:translate(-50%,0);}

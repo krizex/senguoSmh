@@ -114,8 +114,9 @@ $(document).ready(function(){
     var self_time = parseInt($("#shop_imgurl").attr("data-self-endtime"))*60000;//按时达截至时间
     $(".today_time").each(function(){
         var end_time = parseInt($(this).attr("end-time"));
+        var start_time = parseInt($(this).attr("start-time"));
         if($(this).hasClass("ontime_time")){
-            end_time = end_time-range_time;
+            end_time = start_time-range_time;
         }else{
             end_time = end_time-self_time;
         }
@@ -123,6 +124,17 @@ $(document).ready(function(){
             $(this).remove();
         }
     });
+    if($("#deli_shop").children().size()==0){
+        $("#deli_shop").addClass("hidden");
+        $(".i-more-ontime").addClass("hidden");
+        $(".shop-deli").addClass("hidden");
+        $(".ontime_text").removeClass("hidden");
+    }
+    if($("#deli_self").children().size()==0){
+        $("#deli_self").addClass("hidden");
+        $(".i-more-self").addClass("hidden");
+        $(".self_text").removeClass("hidden");
+    }
     initPayType();//初始化支付方式
     isInArea();
 }).on('click','.a-cz',function(){
@@ -202,7 +214,7 @@ $(document).ready(function(){
         noticeBox("该支付方式已关闭，请选择别的支付方式");
         return false;
     }
-    if(index==0){
+    /*if(index==0){
         $(".wrap-balance-box").addClass("hidden");
         $(".wrap-online-lst").removeClass("hidden");
     }else if(index==1){
@@ -211,11 +223,15 @@ $(document).ready(function(){
     }else{
         $(".wrap-online-lst").addClass("hidden");
         $(".wrap-balance-box").addClass("hidden");
-    }
+    }*/
     $(".pay_type_list li").removeClass("active").eq(index).addClass("active");
+    $("#online_pay>div").addClass("hidden").eq(index).removeClass("hidden");
 }).on("click",".address-box",function(){
     window.location.href="/customer/address";
 }).on("click",".bili_type li",function(){
+    if($(".bili_type li").size()==1){
+        return false;
+    }
     var index = $(this).index();
     var status = $(this).attr("data-status");
     if(status=="False"){
@@ -263,8 +279,9 @@ function initPayType(){
     var auth = $("#shop_imgurl").attr("data-auth");
     if(auth=="False"){
         $(".pay_type_list li").removeClass("active").eq(2).addClass("active");
-        $(".wrap-online-lst").addClass("hidden");
-        $(".wrap-balance-box").addClass("hidden");
+        $("#online_pay>div").addClass("hidden").eq(2).removeClass("hidden");
+        /*$(".wrap-online-lst").addClass("hidden");
+        $(".wrap-balance-box").addClass("hidden");*/
     }
     var $first_item =  $(".pay_type_list li").eq(0);
     var $second_item =  $(".pay_type_list li").eq(1);
@@ -275,34 +292,24 @@ function initPayType(){
     }else if(parseInt($first_item.attr("data-status"))==0 && parseInt($second_item.attr("data-status"))==0){
         if(parseInt($(".pay_type_list li").eq(2).attr("data-status"))==1){
             $(".pay_type_list li").removeClass("active").eq(2).addClass("active");
-            $(".wrap-online-lst").addClass("hidden");
-            $(".wrap-balance-box").addClass("hidden");
+            /*$(".wrap-online-lst").addClass("hidden");
+            $(".wrap-balance-box").addClass("hidden");*/
+            $("#online_pay>div").addClass("hidden").eq(2).removeClass("hidden");
         }else{
             $(".pay_type_list li").removeClass("active");
-            $(".wrap-online-lst").addClass("hidden");
-            $(".wrap-balance-box").addClass("hidden");
+            $("#online_pay>div").addClass("hidden");
+            /*$(".wrap-online-lst").addClass("hidden");
+            $(".wrap-balance-box").addClass("hidden");*/
         }
     }
 }
 //初始化配送方式
 function initType(){
     if($(".bili_type li").first().attr("data-status")=="True"){
-        if($("#now_on_time").size()>0){
-            $("#deli_shop").attr("data-type","0");
-            $("#deli_shop").attr("data-id","0").attr("data-time","1");
+        if($("#now_on_time").size()>0){//立即送
+            $("#deli_shop").attr("data-type","0").attr("data-id","0").attr("data-time","0");
         }else{
-            $("#deli_shop").attr("data-type","1");
-            $("#deli_shop").attr("data-id",$("#deli_shop option").first().attr("data-id")).attr("data-time",$("#deli_shop option").first().attr("data-time"));
-        }
-    }else{
-        if($(".bili_type li").eq(1).attr("data-status")=="True"){
-            $(".bili_type li").removeClass("active").eq(1).addClass("active");
-            $(".deli1").addClass("hidden");
-            $(".deli2").removeClass("hidden");
-        }else{
-            $(".bili_type li").removeClass("active");
-            $(".deli1").removeClass("hidden");
-            $(".deli2").removeClass("hidden");
+            $("#deli_shop").attr("data-type","1").attr("data-id",$("#deli_shop option").first().attr("data-id")).attr("data-time",$("#deli_shop option").first().attr("data-time"));
         }
     }
 }

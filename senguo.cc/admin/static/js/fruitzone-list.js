@@ -378,8 +378,8 @@ var shopsList=function(page,data,action){
     $.postJson(url,args,function(res){
         if(res.success){
             if(action=='admin_shop'){
+                $('.shoplist').empty();
                 if(first){
-                    $('.shoplist').empty();
                     setTimeout(function(){
                         initLocation("admin");
                     },10);
