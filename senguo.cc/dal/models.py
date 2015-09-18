@@ -1940,7 +1940,7 @@ class CouponsShop(MapBase, _CommonApi):
  	from_get_date=Column(Integer)
  	to_get_date=Column(Integer)
  	use_goods_group=Column(Integer)
- 	use_goods=Column(Integer)
+ 	use_goods=Column(Integer) #折扣商品，-2:全场折扣 -1:分组折扣 其他:折扣商品ID
  	use_rule=Column(Float)
  	total_number=Column(Integer)
  	get_number=Column(Integer)

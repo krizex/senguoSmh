@@ -197,10 +197,10 @@ class ConfessionComment(CustomerBaseHandler):
 
 		if confess_list:
 			confess_time = confess_list.create_time.strftime('%Y-%m-%d %H:%M')
-			if confess_list.confession_type == 0 :
+			if confess_list.confession_type == 0:
 				user = '匿名用户'
 				imgurl = '/static/images/TDSG.png'
-			else :
+			else:
 				user = confess_customer.accountinfo.nickname
 				imgurl = confess_customer.accountinfo.headimgurl_small
 			confess.append({'id':confess_list.id,'user':user,'imgurl':imgurl,\
@@ -441,7 +441,7 @@ class Coupon(CustomerBaseHandler):
 	def get(self):
 		return self.render("coupon/coupon.html")
 
-		
+# 我的 - 我的优惠券 
 class CouponProfile(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action?:str","coupon_id?","shop_id?")
@@ -526,7 +526,8 @@ class CouponProfile(CustomerBaseHandler):
 						"from_get_date":from_get_date,"to_get_date":to_get_date}
 					data.append(x_coupon)
 			return self.render("coupon/coupon-profile.html",shop_id=shop_id,output_data=data)
-#优惠券列表		
+
+# 发现 - 优惠券 - 优惠券列表		
 class CouponList(CustomerBaseHandler):
 	def getcoupon(self,coupon_status,data):
 		current_customer_id=self.current_user.id
@@ -588,12 +589,13 @@ class CouponList(CustomerBaseHandler):
 			data.append(x_coupon)
 			return self.render("coupon/coupon-list.html",output_data=data)
 
-#优惠券状态
+# 发现 - 优惠券 - 优惠券状态
 class CouponStatus(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("coupon/coupon-status.html")
 
+# 发现 - 告白墙 - 优惠券详情
 class CouponDetail(CustomerBaseHandler):	
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action:str","coupon_key:str")
@@ -739,7 +741,7 @@ class CouponCustomer(CustomerBaseHandler):
 				return self.send_success(coupon_money=qq.coupon_money,coupon_key=q.coupon_key)
 			else:
 				return self.send_fail("对不起，这批优惠券已经被抢空了，下次再来哦！")
-#秒杀
+# 秒杀
 class Seckill(CustomerBaseHandler,UserLimit):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("activity_id?:int")
@@ -895,6 +897,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 				qq=self.session.query(models.DiscountShop).filter_by(shop_id=current_shop_id,discount_id=x.discount_id,status=1).all()
 				for y in qq:
 					chargesingle=[]
+					# 全场折扣的情况
 					if y.use_goods_group==-2:
 						if_all=1
 						data=[]
@@ -907,7 +910,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 										count=fruits[charge.id]
 									else:
 										count=0
-									x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
+									x_charge={"charge_id":charge.id,"charge":str(round(charge.price*y.discount_rate/10,2))+'元 ',"src_price":str(charge.price)+"元","charge_unit":'/'+str(charge.num)+self.getUnit(charge.unit),"charge_storage":charge_storage,"count":count}
 									chargesingle.append(x_charge)
 							if each_frut.img_url:
 								img_url = each_frut.img_url.split(';')[0]
@@ -922,6 +925,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 						data1=[]
 						data.append(data0)
 						break
+					# 分组折扣的情况
 					elif y.use_goods==-1:
 						if_all=2
 						fruit=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,active=1,group_id=y.use_goods_group).all()
@@ -948,6 +952,7 @@ class Discount(CustomerBaseHandler,UserLimit):
 						data1=[]	
 						data.append(data0)
 						break
+					# 单个商品折扣的情况
 					else:
 						fruit=self.session.query(models.Fruit).filter_by(id=y.use_goods).first()
 						charge_type=eval(y.charge_type)

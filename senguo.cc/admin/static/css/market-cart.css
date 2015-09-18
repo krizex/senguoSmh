@@ -73,7 +73,7 @@
 .send-address-choose .address{width:85%;}
 .send-address-choose .to-edit-address{width:15%;margin-top:16px;}
 .send-address-choose .active .phone{color:#33CC66;}
-.message-input{padding:0 6px;-webkit-box-sizing:border-box;border:1px solid #e7e7e7;border-radius:4px;height: 32px;margin-bottom: 0px;}
+.message-input{padding:0 6px;-webkit-box-sizing:border-box;border:1px solid #e7e7e7;border-radius:4px;height: 32px;line-height: 32px;margin-bottom: 0px;}
 .message-input:focus{border-color:#ddd;}
 .border-grey{border-color:#ddd;}
 .tip-list li{width:32%;margin-right:1%;}
@@ -139,7 +139,7 @@
 .bts-lst>li:last-child{margin-right: 0;}
 .bts-lst .active{background-color: #33CC66;color: #fff;border-color: #33CC66;}
 .coupon-cart-box{height: 40px;color: #333;line-height: 40px;position: relative;padding-left: 10px;background-color: #fff;}
-.coupon-last{background-color: #33CC66;color: #fff;border-radius: 4px;display: inline-block;font-size: 14px;padding: 0 4px;height: 18px;line-height: 18px;margin-left: 10px;}
+.coupon-last{background-color: #33CC66;color: #fff;border-radius: 4px;display: inline-block;font-size: 12px;padding: 0 4px;height: 19px;line-height: 20px;margin-left: 25px;}
 .top4{top: 4px;}
 .pay-type-box{background-color: #fff;padding-left: 10px;padding-top: 10px;}
 .pay-line{border-top: 1px solid #e7e7e7;padding: 10px 0;}
