@@ -3880,6 +3880,7 @@ class payTest(CustomerBaseHandler):
 			# print("[WxCharge]Callback request.body:",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
+			xml = re.sub(u"[\x00-\x08\x0b-\x0c\x0e-\x1f]+",u"",xml)
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
 			orderId      = str(xmlArray['out_trade_no'])
