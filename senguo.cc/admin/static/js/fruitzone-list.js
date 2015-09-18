@@ -377,10 +377,15 @@ var shopsList=function(page,data,action){
     }
     $.postJson(url,args,function(res){
         if(res.success){
-            initData(res);
             if(action=='admin_shop'){
-                initLocation("admin");
+                if(first){
+                    $('.shoplist').empty();
+                    setTimeout(function(){
+                        initLocation("admin");
+                    },10);
+                }
             }
+            initData(res);
         }else{
             return noticeBox(res.error_text);
         }

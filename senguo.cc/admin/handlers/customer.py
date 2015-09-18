@@ -768,9 +768,9 @@ class Home(CustomerBaseHandler):
 			customer_lat = address[0]
 			customer_lon = address[1]
 			res = 0
-			print(address,2333)
-			print(area_type,6666)
-			print(customer_lat,8888)
+			# print(address,2333)
+			# print(area_type,6666)
+			# print(customer_lat,8888)
 			if area_type !=0 and customer_lat !=0 and customer_lon !=0:
 				if area_type == 1:
 					distance = self.get_distance(shop_lat,shop_lon,customer_lat,customer_lon)
@@ -780,7 +780,7 @@ class Home(CustomerBaseHandler):
 						res = 0
 				elif area_type == 2 :
 					if shop_lat !=0 and shop_lon !=0 :
-						pt = {"lat":shop_lat,"lng":shop_lon}
+						pt = {"lat":customer_lat,"lng":customer_lon}
 						res = self.getInArea(pt,area_list)
 					else:
 						res = 1
@@ -792,6 +792,7 @@ class Home(CustomerBaseHandler):
 			return self.send_error(404)
 		return self.send_success()
 
+	# 判断地址在不在圆形区域内
 	def getLocation(self,address):
 		lat = 0
 		lon = 0
@@ -806,22 +807,26 @@ class Home(CustomerBaseHandler):
 			lon = 0
 		return lat,lon
 
+	# 判断点pt在不在多边形区域poly内
 	def getInArea(self,pt,poly):
+		poly = json.loads(poly)
 		c = False
 		i = -1
 		l = len(poly)
 		j = l - 1
+		# print(pt)
 		while i < l-1:
 			i += 1
+			# print(i,poly[i], j,poly[j])
 			if ((poly[i]["lat"] <= pt["lat"] and pt["lat"] < poly[j]["lat"]) or (poly[j]["lat"] <= pt["lat"] and pt["lat"] < poly[i]["lat"])):
 				if (pt["lng"] < (poly[j]["lng"] - poly[i]["lng"]) * (pt["lat"] - poly[i]["lat"]) / (poly[j]["lat"] - poly[i]["lat"]) + poly[i]["lng"]):
 					c = not c
 			j = i
+		# print(c)
 		if c:
 			return 1
 		else:
 			return 0
-
 
 # 发现
 class Discover(CustomerBaseHandler):
