@@ -151,6 +151,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			return self.send_fail('shop not found')
 		shop_name = shop.shop_name
 		shop_code = shop.shop_code
+		shop_phone = shop.shop_phone
 		jsApi  = JsApi_pub()
 
 		# order detail
@@ -192,7 +193,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
-			order=order)
+			order=order,shop_code=shop_code,shop_phone = shop_phone)
 
 		path = APP_OAUTH_CALLBACK_URL + self.reverse_url('onlineWxPay')
 		code = self.args.get('code',None)
@@ -239,7 +240,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			shop_name = shop_name,create_date=create_date,receiver=receiver,phone=phone,address=address,\
 			send_time = send_time,remark=remark,pay_type=pay_type,online_type=online_type,freight = freight,\
 			goods = goods,sender_phone=sender_phone,sender_img=sender_img,charge_types=charge_types,\
-			order=order,shop_code = shop_code)
+			order=order,shop_code = shop_code,shop_phone = shop_phone)
 
 	def check_xsrf_cookie(self):
 		print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!wxpay xsrf pass!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
@@ -496,6 +497,7 @@ class OnlineAliPay(CustomerBaseHandler):
 			shop_id   = order.shop_id
 			shopName  = order.shop.shop_name
 			shop_code = order.shop.shop_code
+			shop_phone = order.shop.shop_phone
 			# order detail
 			create_date = order.create_date
 			receiver    = order.receiver
@@ -528,7 +530,7 @@ class OnlineAliPay(CustomerBaseHandler):
 				alipayUrl = alipayUrl,create_date=create_date,receiver=receiver,phone=phone,\
 				address=address,send_time=send_time,remark=remark,pay_type=pay_type,online_type=\
 				online_type,status=status,freight=freight,goods = goods,order=order,charge_types=\
-				charge_types,shop_code = shop_code)
+				charge_types,shop_code = shop_code,shop_phone = shop_phone)
 		else:
 			return self.send_fail('404')
 	# @tornado.web.authenticated
