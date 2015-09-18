@@ -4,7 +4,14 @@ $(document).ready(function () {
         cookie.removeCookie("mdetail");
         $('.wrap-loading-box').removeClass('hide');
         $(".no-result").html("数据正在加载中...");
+        history.replaceState({foo:1},"订单管理",window.location.href+"&refresh=true");
         window.location.reload();
+        return false;
+    }else{
+        if(!$.getUrlParam("refresh")){
+            cookie.removeCookie("mIndex");
+            cookie.removeCookie("mTop");
+        }
     }
     $("html,body").addClass("h100");
     width = $(window).width();
@@ -42,6 +49,7 @@ $(document).ready(function () {
         $(".second-tab-list .tab-line").css("left",$(this).position().left);
         swiper.swipeTo(index);
         $(this).addClass('active').siblings(".item").removeClass("active");
+        cookie.setCookie("mIndex",index);
     });
     swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
@@ -66,20 +74,26 @@ $(document).ready(function () {
             $(".wrap-self-choose").removeClass("hide");
             $(".order-lists").addClass("pt40");
         }
-
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
         _page=0;
         $(".order-type-list .tab-bg").css("left",33.3*index+"%");
+        if(cookie.getCookie("mIndex")){
+            var mIndex = parseInt(cookie.getCookie("mIndex"));
+            $(".second-tab-list .tab-line").css("left", $(".second-tab-list .item").eq(mIndex).position().left);
+            swiper.swipeTo(mIndex);
+            $(".second-tab-list .item").removeClass("active").eq(mIndex).addClass("active");
+        }
         getOrder(0);
     }
     if(nomore==false){
         scrollLoading();
     }
-
 }).on("click",".order-lists>li",function(e){//进入订单详情
     var $this=$(this);
     var num = $this.attr("data-num");
+    var scrollTop = $(".swiper-slide-active").scrollTop();
+    cookie.setCookie("mTop",scrollTop);
     if($(e.target).closest(".forbid_click").size()==0){
        window.location.href="/madmin/orderDetail/"+num;
     }
@@ -117,7 +131,6 @@ $(document).ready(function () {
     getOrder(0,true);
     $(".pop-self").addClass("hide");
 });
-
 var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="m-order-item" data-id="{{id}}">'+
                     '<p class="order-time item">下单时间 : {{create_date}}</p>'+
                     '<ul class="order-content">'+
@@ -163,7 +176,6 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                         '</ul>'+
                     '</ul>'+
                 '</li>';
-
 function scrollLoading(){
     $('.swiper-slide').scroll(function(){
         var $this=$(this);
@@ -194,7 +206,7 @@ var getOrder=function(page,flag){
     var index=$('.second-tab-list .active').index();
     var url='/admin/order?order_type='+order_type+'&order_status='+order_status+'&page='+page;
     if(order_type==3){
-        url = url+'&self_id='+$(".choose_self").attr("data-id");
+        url = url+'&self_id='+$(".choose_self").attr("data-id");//自提
     }
     $.ajax({
         url:url,
@@ -337,6 +349,11 @@ var getOrder=function(page,flag){
                 }
                 _finished=true;
                 $('.wrap-loading-box').addClass('hide');
+                if(cookie.getCookie("mTop")){
+                    var mTop = parseInt(cookie.getCookie("mTop"));
+                    $(".swiper-slide-active")[0].scrollTop=mTop;
+                    cookie.removeCookie("mTop");
+                }
             }
             else {
                 $('.wrap-loading-box').addClass('hide');

@@ -214,16 +214,6 @@ $(document).ready(function(){
         noticeBox("该支付方式已关闭，请选择别的支付方式");
         return false;
     }
-    /*if(index==0){
-        $(".wrap-balance-box").addClass("hidden");
-        $(".wrap-online-lst").removeClass("hidden");
-    }else if(index==1){
-        $(".wrap-online-lst").addClass("hidden");
-        $(".wrap-balance-box").removeClass("hidden");
-    }else{
-        $(".wrap-online-lst").addClass("hidden");
-        $(".wrap-balance-box").addClass("hidden");
-    }*/
     $(".pay_type_list li").removeClass("active").eq(index).addClass("active");
     $("#online_pay>div").addClass("hidden").eq(index).removeClass("hidden");
 }).on("click",".address-box",function(){
@@ -280,8 +270,6 @@ function initPayType(){
     if(auth=="False"){
         $(".pay_type_list li").removeClass("active").eq(2).addClass("active");
         $("#online_pay>div").addClass("hidden").eq(2).removeClass("hidden");
-        /*$(".wrap-online-lst").addClass("hidden");
-        $(".wrap-balance-box").addClass("hidden");*/
     }
     var $first_item =  $(".pay_type_list li").eq(0);
     var $second_item =  $(".pay_type_list li").eq(1);
@@ -292,14 +280,10 @@ function initPayType(){
     }else if(parseInt($first_item.attr("data-status"))==0 && parseInt($second_item.attr("data-status"))==0){
         if(parseInt($(".pay_type_list li").eq(2).attr("data-status"))==1){
             $(".pay_type_list li").removeClass("active").eq(2).addClass("active");
-            /*$(".wrap-online-lst").addClass("hidden");
-            $(".wrap-balance-box").addClass("hidden");*/
             $("#online_pay>div").addClass("hidden").eq(2).removeClass("hidden");
         }else{
             $(".pay_type_list li").removeClass("active");
             $("#online_pay>div").addClass("hidden");
-            /*$(".wrap-online-lst").addClass("hidden");
-            $(".wrap-balance-box").addClass("hidden");*/
         }
     }
 }
