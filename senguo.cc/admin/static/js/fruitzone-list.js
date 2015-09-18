@@ -379,6 +379,7 @@ var shopsList=function(page,data,action){
         if(res.success){
             if(action=='admin_shop'){
                 if(first){
+                    $('.shoplist').empty();
                     setTimeout(function(){
                         initLocation("admin");
                     },10);
