@@ -3785,7 +3785,9 @@ class GoodsImport(AdminBaseHandler):
 						relate = charge.relate
 					)
 					self.session.add(_charge)
-				self.session.commit()
+					self.session.flush()
+			current_shop.goods_count = current_shop.goods_count + len(fruit_list)
+			self.session.commit()
 			return self.send_success()
 
 		elif  action == "checkyouzan":
@@ -3837,6 +3839,8 @@ class GoodsImport(AdminBaseHandler):
 				storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
 				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 3,num = 1,market_price = None))
 				self.session.add(new_good)
+				self.session.flush()
+			current_shop.goods_count = current_shop.goods_count + len(datalist)
 			self.session.commit()
 			return self.send_success()
 
