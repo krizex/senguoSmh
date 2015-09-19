@@ -3,12 +3,14 @@ var _price_list=[];
 var _total_price=0;
 var _freigh_ontime=0;
 var _freigh_now=0;
+var _freigh_self=0;
 var _mincharge_intime=0;
 var _mincharge_now=0;
+var _mincharge_self=0;
 var is_inarea = 1;
 $(document).ready(function(){
     $(".fix-title").addClass("hidden");
-    if(getCookie("mAddress")){
+    if(getCookie("mAddress")){//选择地址返回
         removeCookie("mAddress");
         window.location.reload(true);
         return false;
@@ -18,9 +20,11 @@ $(document).ready(function(){
     //配送费
     _freigh_ontime=parseInt($('#shop_imgurl').attr("data-ontime-money"));
     _freigh_now=parseInt($('#shop_imgurl').attr("data-now-money"));
+    _freigh_self=parseInt($('#shop_imgurl').attr("data-selfmoney"));
     //最低起送
     _mincharge_intime=parseInt($('#shop_imgurl').attr("data-ontime-min"));
     _mincharge_now=parseInt($('#shop_imgurl').attr("data-now-min"));
+    _mincharge_self=parseInt($('#shop_imgurl').attr("data-minSelfCharge"));
     //页面1
     if(!$.getUrlParam("type") || $.getUrlParam("type")=="1"){
         $(".bg1").removeClass("hidden");
@@ -235,11 +239,15 @@ $(document).ready(function(){
         return false;
     }
     if(index==0){
-        $(".red-tip-txt").addClass("hidden");
+        if($(".red-tip-txt")){
+            $(".red-tip-txt").addClass("hidden");
+        }
         $(".deli2").addClass("hidden");
         $(".deli1").removeClass("hidden");
     }else if(index==1){
-        $(".red-tip-txt").removeClass("hidden");
+        if($(".red-tip-txt")){
+            $(".red-tip-txt").removeClass("hidden");
+        }
         $(".deli1").addClass("hidden");
         $(".deli2").removeClass("hidden");
         $("#deli_self").attr("data-id",$("#deli_self option").first().attr("data-id")).attr("data-time",$("#deli_self option").first().attr("data-time"));
@@ -309,7 +317,7 @@ function calDeli(){
     var min_charge = 0;
     var total_price = mathFloat($('#list_total_price').html());
     //判断配送费方式
-    if($(".bili_type").children(".active").index()==0){
+    if($(".bili_type").children(".active").hasClass("shoper-item")){
         if($("#deli_shop").attr("data-type")=="0"){
             freight = _freigh_now;
             min_charge = _mincharge_now;
@@ -318,8 +326,8 @@ function calDeli(){
             min_charge = _mincharge_intime;
         }
     }else{
-        freight = 0;
-        min_charge = 0;
+        freight = _freigh_self;
+        min_charge = _mincharge_self;
     }
     if(total_price>min_charge){
         $(".shop-deli").addClass("hidden");
@@ -338,7 +346,7 @@ var getPrice=function(){
     var freight = 0;
     var min_charge = 0;
     //判断配送费方式
-    if($(".bili_type").children(".active").index()==0){
+    if($(".bili_type").children(".active").hasClass("shoper-item")){
         if($("#deli_shop").attr("data-type")=="0"){
             freight = _freigh_now;
             min_charge = _mincharge_now;
@@ -347,8 +355,8 @@ var getPrice=function(){
             min_charge = _mincharge_intime;
         }
     }else{
-        freight = 0;
-        min_charge = 0;
+        freight = _freigh_self;
+        min_charge = _mincharge_self;
     }
     var $list_total_price=$('#list_total_price');
     var $final_price=$('.final_price');

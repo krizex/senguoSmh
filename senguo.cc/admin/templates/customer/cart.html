@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
 {% block content %}
-    <span id="shop_imgurl" data-img="{{shop_logo}}" data-stop-range="{{config.stop_range}}" data-self-endtime="{{config.self_end_time}}" data-auth="{{show_balance}}" data-status="{{shop_status}}" data-code="{{handler.shop_code}}" data-now-money="{{config.freight_now or 0}}" data-ontime-money="{{config.freight_on_time or 0}}" data-now-min="{{config.min_charge_now or 0}}" data-ontime-min="{{config.min_charge_on_time or 0}}"></span>
+    <span id="shop_imgurl" data-selfmoney="{{config.freight_self}}" data-minSelfCharge="{{config.min_charge_self}}" data-img="{{shop_logo}}" data-stop-range="{{config.stop_range}}" data-self-endtime="{{config.self_end_time}}" data-auth="{{show_balance}}" data-status="{{shop_status}}" data-code="{{handler.shop_code}}" data-now-money="{{config.freight_now or 0}}" data-ontime-money="{{config.freight_on_time or 0}}" data-now-min="{{config.min_charge_now or 0}}" data-ontime-min="{{config.min_charge_on_time or 0}}"></span>
     <div class="bg-box bg1">
         <ul class="cart-list set-w100-fle m-b0">
             {% for key in cart_f %}
@@ -107,11 +107,10 @@
                 <div class="right-title">
                     {% if config.now_on == False and config.ontime_on == False and config.self_on == False %}<span class="red f14 no-deli">无配送方式</span>{% end %}
                     <ul class="bts-lst group bili_type">
-                        {% if config.now_on == True or config.ontime_on == True %}<li class="active" data-status="{{config.ontime_on or config.now_on}}">商家配送</li>{% end %}
+                        {% if config.now_on == True or config.ontime_on == True %}<li class="shoper-item active" data-status="{{config.ontime_on or config.now_on}}">商家配送</li>{% end %}
                         {% if config.self_on == True%}<li class="{% if config.now_on == False and config.ontime_on == False %}active{% end %}" data-status="{{config.self_on}}">用户自提</li>{% end %}
                     </ul>
-                    <span class="red-tip-txt hidden">下单{{config.self_end_time}}分钟内不可自提</span>
-
+                    {% if config.self_end_time>0 %}<span class="red-tip-txt hidden">下单{{config.self_end_time}}分钟内不可自提</span>{% end %}
                 </div>
             </div>
             {% if config.now_on == True or config.ontime_on == True %}
@@ -144,7 +143,7 @@
                         </select>
                     </div>
                 </div>
-                <p class="red-txt shop-deli hidden">该方式要满<span id="min_charge">50</span>元才能配送哦</p>
+                <p class="shop-deli hidden">该方式要满<span id="min_charge">50</span>元才能配送哦</p>
             </div>
             {% end %}
             {% if config.self_on == True%}
@@ -183,6 +182,7 @@
                         </select>
                     </div>
                 </div>
+                {% if config.freight_self>0 %}<p class="shop-self-deli">该方式满<span id="min_self_charge">{{config.min_charge_self}}</span>元可免配送费哦</p>{% end %}
             </div>
             {% end %}
         </div>
