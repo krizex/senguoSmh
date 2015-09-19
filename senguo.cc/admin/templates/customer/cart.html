@@ -62,8 +62,9 @@
             <span class="pull-right tit2 text-right"><span id="final_price" class="final_price" data-money=""></span>元</span>
             <span class="pull-right tit text-right">实付金额：</span>
         </div>
-        <div class="address-box" data-id="{{default_address.id}}">
+        <div class="address-box" data-id="{% if default_address %}{{default_address.id}}{% end %}">
             <i class="i-more"></i>
+            {% if default_address %}
             <div class="address-row">
                 <span class="c333 icon-left i-person">{{default_address.receiver}}</span>
                 <span class="c333 icon-left i-phone">{{default_address.phone}}</span>
@@ -71,6 +72,11 @@
             <div class="address-row">
                 <p class="icon-left i-address f12 c666">{{default_address.address_text}}</p>
             </div>
+            {% else %}
+            <div class="address-row">
+                <p class="f14 red">您还没有收货地址，点我先去填写地址吧！</p>
+            </div>
+            {% end %}
         </div>
         <div class="mt10 fruit-icons">
             <div class="wrap-fruits" id="go_fruits">

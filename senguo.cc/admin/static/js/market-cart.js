@@ -8,6 +8,11 @@ var _mincharge_now=0;
 var is_inarea = 1;
 $(document).ready(function(){
     $(".fix-title").addClass("hidden");
+    if(getCookie("mAddress")){
+        removeCookie("mAddress");
+        window.location.reload(true);
+        return false;
+    }
     var shop_code=$('#shop_imgurl').attr('data-code');
     SetCookie('market_shop_code',shop_code);
     //配送费
@@ -17,7 +22,7 @@ $(document).ready(function(){
     _mincharge_intime=parseInt($('#shop_imgurl').attr("data-ontime-min"));
     _mincharge_now=parseInt($('#shop_imgurl').attr("data-now-min"));
     //页面1
-    if(!$.getUrlParam("type") || $.getUrlParam("type")==1){
+    if(!$.getUrlParam("type") || $.getUrlParam("type")=="1"){
         $(".bg1").removeClass("hidden");
         $(".bg2").addClass("hidden");
     }else{
@@ -217,6 +222,7 @@ $(document).ready(function(){
     $(".pay_type_list li").removeClass("active").eq(index).addClass("active");
     $("#online_pay>div").addClass("hidden").eq(index).removeClass("hidden");
 }).on("click",".address-box",function(){
+    SetCookie("mAddress","1");
     window.location.href="/customer/address";
 }).on("click",".bili_type li",function(){
     if($(".bili_type li").size()==1){

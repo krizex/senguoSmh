@@ -2400,7 +2400,7 @@ class Cart(CustomerBaseHandler):
 		try:
 			default_address =[x for x in self.current_user.addresses if x.if_default ==1 ][0]
 		except:
-			default_address = ""
+			default_address = None
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,

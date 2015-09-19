@@ -100,7 +100,7 @@ function addressEdit(action){
                     '<div class="address-row line-top"><div class="fr">'+
                         '<span class="c666 f12 icon-left i-edit" data-id="'+res.address_id+'">编辑</span>'+
                         '<span class="c666 f12 icon-left i-del ml10" data-id="'+res.address_id+'">删除</span>'+
-                    '</div><span class="c666 icon-left i-check f12" data-id="'+res.address_id+'">默认地址</span></div></li>');
+                    '</div><span class="c666 icon-left i-check f12" data-id="'+res.address_id+'">使用该地址</span></div></li>');
                 $('.address-lst').prepend($item);
             }
             $(".modal-body").find("input").val("");
