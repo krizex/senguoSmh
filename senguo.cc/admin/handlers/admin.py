@@ -2424,6 +2424,12 @@ class Order(AdminBaseHandler):
 				return self.send_error(403)
 			self.current_shop.config.self_end_time = int(data["end_self"])
 			self.session.commit()
+		elif action == "edit_min_charge_self":
+			self.current_shop.config.min_charge_self = int(data["min_charge_self"]) or 0
+			self.session.commit()
+		elif action == "edit_freight_self":
+			self.current_shop.config.freight_self = int(data["freight_self"]) or 0
+			self.session.commit()
 		# 添加自提点地址
 		elif action == "add_self_address": #7.30
 			try:

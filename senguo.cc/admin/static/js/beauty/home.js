@@ -322,6 +322,8 @@ var goodsList=function(page,action,_group_id,type){
                     }else{
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
+                }else{
+                    $('.loading').html("~努力加载中 ( > < )~").show();
                 }
             }
             else {

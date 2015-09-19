@@ -264,7 +264,7 @@ $(document).ready(function(){
         return Tip("截止时间不能大于起始时间");
     }
     if(money1&&!testNum.test(money1)){
-        return Tip("其实金额只能为数字");
+        return Tip("起始金额只能为数字");
     }
     if(money2&&!testNum.test(money2)){
         return Tip("截止金额只能为数字");
@@ -295,17 +295,75 @@ $(document).ready(function(){
         $(".export-box").removeClass("hide");
         $this.attr({"data-flag":"1"}).text("隐藏高级选项");
     } 
+}).on("click","#self-money-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false;
+    }
+    var url='';
+    var action='edit_min_charge_self';
+    var money=parseInt($("#self-money").val().trim());
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
+    if(!testNum.test(money)){
+        return Tip("金额只能为正整数");
+    }
+    var args={
+        action:action,
+        data:{min_charge_self:money}
+    };
+    $this.attr({"data-flag":"1"});
+    $.postJson(url,args,function(res){
+            if(res.success){
+                $this.attr({"data-flag":""});
+                $(".self-money-show").text(parseInt(money));
+                var parent=$this.parents('.omg_item');
+                parent.find('.show_item').show();
+                parent.find('.edit_item').addClass('hidden');
+                parent.find('.show_value').text(freight);
+                parent.addClass('edit_item_box');
+            }
+            else {
+                $this.attr({"data-flag":""});
+                return Tip(res.error_text);
+            }
+        },
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
+    )
+}).on("click","#self-freight-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false;
+    }
+    var url='';
+    var action='edit_freight_self';
+    var money=parseInt($("#self-freight").val().trim());
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
+    if(!testNum.test(money)){
+        return Tip("金额只能为正整数");
+    }
+    var args={
+        action:action,
+        data:{freight_self:money}
+    };
+    $this.attr({"data-flag":"1"});
+    $.postJson(url,args,function(res){
+            if(res.success){
+                $this.attr({"data-flag":""});
+                $(".self-freight-show").text(parseInt(money));
+                var parent=$this.parents('.omg_item');
+                parent.find('.show_item').show();
+                parent.find('.edit_item').addClass('hidden');
+                parent.find('.show_value').text(freight);
+                parent.addClass('edit_item_box');
+            }
+            else {
+                $this.attr({"data-flag":""});
+                return Tip(res.error_text);
+            }
+        },
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
+    )
 });
-function downloadFile(fileName, content){
-    var aLink = document.createElement('a');
-    var blob = new Blob([content]);
-    var evt = document.createEvent("HTMLEvents");
-    evt.initEvent("click", false, false);
-    aLink.download = fileName;
-    aLink.href = URL.createObjectURL(blob);
-    aLink.dispatchEvent(evt);
-}
-
 
 var link='/admin/order';
 var self_type = parseInt($.getUrlParam("order_type"));//自提判断

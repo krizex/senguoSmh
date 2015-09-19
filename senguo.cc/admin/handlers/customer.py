@@ -33,6 +33,8 @@ import jpush as jpush
 from libs.phonepush.jpush.push import core,payload,audience
 from libs.phonepush.conf import app_key, master_secret
 
+import re
+
 # 登录处理
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -2706,6 +2708,9 @@ class Cart(CustomerBaseHandler):
 
 		elif self.args["type"] == 3: #自提
 			today=int(self.args["today"])
+			freight = config.freight_self
+			if totalPrice < config.min_charge_self:
+				totalPrice += freight
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=1).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:

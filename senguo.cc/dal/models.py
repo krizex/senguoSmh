@@ -1594,6 +1594,8 @@ class Config(MapBase, _CommonApi):
 	self_addresses = relationship("SelfAddress")
 
 	comment_active = Column(TINYINT,nullable=False,default = 1) #0:comment off 1:comment on
+	freight_self = Column(SMALLINT,nullable=False, default=0) #自提服务费 2015-09-19 yy
+	min_charge_self =  Column(SMALLINT,nullable=False, default=0) #自提满一定金额减免服务费
 
 #自提地址 7.30 max10
 class SelfAddress(MapBase,_CommonApi):
