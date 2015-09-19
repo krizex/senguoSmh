@@ -68,41 +68,7 @@ class ShopAdminManage(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
 		return self.redirect('/super/shopManage?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1')
-		offset = (self.args.get("page", 1)-1) * self._page_count
-		try:
-		    q = self.session.query(models.ShopAdmin)
-		except:
-		    return self.send_error('error')
-		q_all = q
-		t = int(time.time())
-		q_using = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
-						 models.ShopAdmin.expire_time > t)
-		q_expire = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
-						 models.ShopAdmin.expire_time <= t)
-		q_common = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
-		count = {
-			"all":q.count(),
-			"using":q_using.count(),
-			"expire":q_expire.count(),
-			"common":q_common.count()
-			}
 
-		if self._action == "all":
-			pass
-		elif self._action == "using":
-			q = q_using
-		elif self._action == "expire":
-			q = q_expire
-		elif self._action == "common":
-			q = q_common
-		else:
-			return self.send_error(404)
-		# 排序规则id, offset 和 limit
-		q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
-
-		admins = q.all()
-		# admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
-		return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
 	@tornado.web.authenticated
 	def post(self):
 		return self.send_error(404)
@@ -152,7 +118,8 @@ class ShopManage(SuperBaseHandler):
 
 		# level = 1
 		# shop_province = 420000
-
+		# 获取不同店铺状态的店铺数量，和不同认证状态下的店铺数量
+		# add commit by sunmh 2015年09月19日17:13:29
 		if level == 0:
 			#add by jyj 2015-6-16
 			output_data_count = {}
@@ -172,7 +139,6 @@ class ShopManage(SuperBaseHandler):
 
 			# print("[SuperShopManage]output_data_count:",output_data_count)
 			##
-
 		elif level == 1:
 			output_data_count = {}
 			output_data_count["status_5_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
@@ -192,7 +158,6 @@ class ShopManage(SuperBaseHandler):
 			return self.send_fail('level error')
 
 		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
-
 		if 'search' in self.args:
 			from sqlalchemy.sql import or_
 			search = self.args["search"]
@@ -231,6 +196,8 @@ class ShopManage(SuperBaseHandler):
 				shops = q.order_by(models.Shop.id).all()
 			else:
 				return self.send_fail('level error')
+
+
 		shop_auth = self.args["shop_auth"]
 		shop_status = self.args["shop_status"]
 		shop_sort_key = self.args["shop_sort_key"]
@@ -998,7 +965,7 @@ class IncStatic(SuperBaseHandler):
 				index = int(info[1])-1
 				value = info[0]
 				data[index][s_type] = value
-		
+
 		assembleArray('admin',q_admin.all())
 		assembleArray('customer',q_customer.all())
 		assembleArray('phone',q_phone.all())
@@ -1012,14 +979,14 @@ class IncStatic(SuperBaseHandler):
 				end_date=datetime.datetime(int(current_year),int(current_month),rangeOfArray,23,59,59)
 			else:
 				end_date=datetime.datetime(int(current_year),12,31,23,59,59)
-			total = self.session.query(models.Accountinfo).\
+			total = self.session.query(models.Accountinfo.id).\
 					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).filter(models.Accountinfo.create_date_timestamp > begin_date.timestamp()).count()
 		elif level == 1:
 			if type==1:
 				end_date=datetime.datetime(int(current_year),int(current_month),rangeOfArray,23,59,59)
 			else:
 				end_date=datetime.datetime(int(current_year),12,31,23,59,59)
-			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).\
+			total = self.session.query(models.Accountinfo.id).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).\
 					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).filter(models.Accountinfo.create_date_timestamp > begin_date.timestamp()).count()
 		else:
 			return self.send_fail('level error')
@@ -1186,7 +1153,7 @@ class DistributStatic(SuperBaseHandler):
 		# level = 1
 		# shop_province = 420000
 		if level == 0:
-			total = self.session.query(models.Accountinfo).count()
+			total = self.session.query(models.Accountinfo.id).count()
 			sex = self.session.query(models.Accountinfo.sex, func.count()).order_by(func.count().desc()).group_by(models.Accountinfo.sex).all()
 			province = self.session.query(models.Accountinfo.wx_province, func.count()).order_by(func.count().desc()).\
 				group_by(models.Accountinfo.wx_province).all()
@@ -1272,9 +1239,9 @@ class ShopStatic(SuperBaseHandler):
 		else:
 			return self.send_fail()
 		if level == 0:
-			total = self.session.query(models.Shop).count()
+			total = self.session.query(models.Shop.id).count()
 		elif level == 1:
-			total = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
+			total = self.session.query(models.Shop.id).filter_by(shop_province=shop_province).count()
 		else:
 			return self.send_fail('level error')
 		return self.send_success(data=data, total=total)
@@ -1362,20 +1329,31 @@ class ShopStatic(SuperBaseHandler):
 # 统计 - 订单统计
 # add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
+	#executor = ThreadPoolExecutor(2)
+
 	def get(self):
 		# woody
 		level = self.current_user.level
 		return self.render("superAdmin/count-order.html",level=level,context=dict(subcount='orderstatic'))
 
 	@tornado.web.authenticated
+	#@tornado.web.asynchronous
+	#@tornado.gen.engine
 	@SuperBaseHandler.check_arguments("action:str")
 	def post(self):
 		action = self.args["action"]
 		if action == "order_time":
 			return self.order_time()
+			##yield self.order_time()
 		elif action == "receive_time":
 			return self.receive_time()
+			#yield self.receive_time()
+		else:
+			return self.error(404)
+			#yield self.error(404)
+		#self.finish()
 
+	#@run_on_executor
 	@SuperBaseHandler.check_arguments("type:int","start_date?:str","end_date?:str")
 	def order_time(self):
 		type = self.args["type"]
@@ -1388,8 +1366,9 @@ class OrderStatic(SuperBaseHandler):
 			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 					filter(not_(models.Order.status.in_([-1,0])))
 		elif level==1:
-			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).join(
-				models.Shop,models.Order.shop_id==models.Shop.id).filter(not_(models.Order.status.in_([-1,0])),models.Shop.shop_province==shop_province)
+			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
+					join(models.Shop,models.Order.shop_id==models.Shop.id).\
+					filter(not_(models.Order.status.in_([-1,0])),models.Shop.shop_province==shop_province)
 		else:
 			return self.send_fail('level error')
 
@@ -1409,19 +1388,20 @@ class OrderStatic(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 
+		orders=q.all()
+
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
-		for e in q.all():
-			if e[1] < 30:
-				data[e[0]] += 1
+		for order in orders:
+			if  order[1] < 30:
+				data[order[0]] += 1
 			else:
-				if e[0]+1 == 24:
-					data[0] += 1
-				else:
-					data[e[0]] += 1
-		return self.send_success(data=data)
+				data[(order[0]+1)%24] += 1
 
+		return self.send_success(data=data)
+	
+	#@run_on_executor
 	@SuperBaseHandler.check_arguments("type:int","start_date?:str","end_date?:str")
 	def receive_time(self):
 		type = self.args["type"]
@@ -1432,16 +1412,16 @@ class OrderStatic(SuperBaseHandler):
 		# shop_province = 420000
 		if level == 0:
 			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
-				filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,models.Shop.id == models.Config.id)
+				filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id  == models.Config.id)
 		elif level == 1:
-			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).join(models.Shop,
-				models.Order.shop_id==models.Shop.id).filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,
-				models.Shop.id == models.Config.id,models.Shop.shop_province==shop_province)
+			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
+				join(models.Shop,models.Order.shop_id==models.Shop.id).\
+				filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Config.id,models.Shop.shop_province==shop_province)
 		else:
 			return self.send_fail('level error')
 
 		if type == 1:
-			orders = q.all()
+			pass
 		elif type == 2:
 			start_date = self.args['start_date']
 			end_date = self.args['end_date']
@@ -1451,20 +1431,19 @@ class OrderStatic(SuperBaseHandler):
 			start_date = datetime.datetime(start_date.year, start_date.month, start_date.day)
 			end_date = end_date + datetime.timedelta(1)
 			end_date = datetime.datetime(end_date.year, end_date.month, end_date.day)
-			orders = q.filter(models.Order.create_date >= start_date,
-							  models.Order.create_date < end_date).all()
+			q = q.filter(models.Order.create_date >= start_date,
+							  models.Order.create_date < end_date)
 		else:
 			return self.send_error(404)
+
+		orders = q.all()
 
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				if order[1].hour + (order[1].minute+order[3])//60 >= 24:
-					data[order[1].hour + (order[1].minute+order[3])//60 - 24] += 1
-				else:
-					data[order[1].hour + (order[1].minute+order[3])//60] += 1
+				data[(order[1].hour + (order[1].minute+order[3])//60)%24] += 1
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
 
