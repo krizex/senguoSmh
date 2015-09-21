@@ -492,13 +492,10 @@ var goodsList=function(page,action,_group_id){
             {
                 var nomore = res.nomore
                 $('.goods-list-'+_group_id).attr({"data-nomore":nomore});
-                console.log(66666);
-                if(nomore==true){
+                if(nomore==true&&res.data.length>0){
                     count_loading ++;
                 }
-                console.log(count_loading);
-                console.log($(".know-last").length);
-                if(_group_id!= undefined&&$(".know-last").length==count_loading&&nomore == true){
+                if(_group_id!= undefined&&$(".know-last").length<=count_loading&&nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
