@@ -345,7 +345,7 @@ function calDeli(){
         freight = _freigh_self;
         min_charge = _mincharge_self;
     }
-    if(total_price>min_charge){
+    if(total_price>=min_charge){
         $(".shop-deli").addClass("hidden");
     }else{
         $("#min_charge").html(min_charge);
