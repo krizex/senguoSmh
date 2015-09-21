@@ -928,6 +928,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		customer_id = self.current_user.id
 		# print(shop_id,customer_id,'idddddddddddddddddddddd')
 		price = float(self.args['price'])
+		if not (shop_id and customer_id and price):
+			return self.send_fail('抱歉,系统繁忙，请稍后重试')
 		# print(price)
 		# print('find the correct way to login?')
 		try:
