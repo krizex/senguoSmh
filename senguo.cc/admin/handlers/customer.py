@@ -2693,7 +2693,7 @@ class Cart(CustomerBaseHandler):
 			freight = config.freight_on_time  # 运费
 			totalPrice += freight
 			today=int(self.args["today"])
-			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=0).one()
+			try:period = self.session.query(models.Period).filter_by(id=int(self.args["period_id"]),config_type=0).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
@@ -2750,7 +2750,7 @@ class Cart(CustomerBaseHandler):
 		if not address:
 			return self.send_fail("没找到地址", 404)
 		if self.args["type"] == 3:
-			self_address = next((x for x in config.self_addresses if x.id == self.args["self_address_id"]), None)
+			self_address = next((x for x in config.self_addresses if x.id == int(self.args["self_address_id"])), None)
 			if not self_address:
 				return self.send_fail("没找到自提点", 404)
 			_order_address = self_address.address

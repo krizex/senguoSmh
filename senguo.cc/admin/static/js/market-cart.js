@@ -29,9 +29,15 @@ $(document).ready(function(){
     if(!$.getUrlParam("type") || $.getUrlParam("type")=="1"){
         $(".bg1").removeClass("hidden");
         $(".bg2").addClass("hidden");
+        $("#nav").removeClass("hidden");
+        $(".phone-box").removeClass("pm40");
+        $(".pay-bill").removeClass("b0");
     }else{
         $(".bg1").addClass("hidden");
         $(".bg2").removeClass("hidden");
+        $("#nav").addClass("hidden");
+        $(".phone-box").addClass("pm40");
+        $(".pay-bill").addClass("b0");
     }
     //送货方式
     initType();
@@ -207,10 +213,16 @@ $(document).ready(function(){
     history.replaceState({cart:1},"提交订单","/customer/cart/"+$("#shop_imgurl").attr("data-code")+"?type=2")
     $(".bg1").addClass("hidden");
     $(".bg2").removeClass("hidden");
+    $("#nav").addClass("hidden");
+    $(".phone-box").addClass("pm40");
+    $(".pay-bill").addClass("b0");
 }).on("click",".return-btn,#go_fruits",function(){
     history.replaceState({cart:1},"提交订单","/customer/cart/"+$("#shop_imgurl").attr("data-code")+"?type=1")
     $(".bg2").addClass("hidden");
     $(".bg1").removeClass("hidden");
+    $("#nav").removeClass("hidden");
+    $(".phone-box").removeClass("pm40");
+    $(".pay-bill").removeClass("b0");
 }).on("click",".pay_type_list li",function(){
     var index = $(this).index();
     var auth = $(this).attr("data-auth");
@@ -310,6 +322,8 @@ function initType(){
             $("#deli_shop").attr("data-type","1").attr("data-id",$("#deli_shop option").first().attr("data-id")).attr("data-time",$("#deli_shop option").first().attr("data-time"));
         }
     }
+    $("#deli_self").attr("data-time",$("#deli_self option").first().attr("data-time")).attr("data-id",$("#deli_self option").first().attr("data-id"));
+    $("#deli_self_address").attr("data-id",$("#deli_self_address option").first().attr("data-id"));
 }
 //配送费选择
 function calDeli(){
@@ -543,7 +557,7 @@ function orderSubmit(target){
     var self_address_id = "";
     var type = 0;
     var today = 0;
-    if($(".bili_type").children(".active").index()==0){
+    if($(".bili_type").children(".active").hasClass("shoper-item")){
         type = parseInt($("#deli_shop").attr("data-type"))+1;
     }else{
         type = 3;
