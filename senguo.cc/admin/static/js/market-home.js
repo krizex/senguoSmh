@@ -378,7 +378,7 @@ var goodsList=function(page,action,_group_id){
                     count_loading ++;
                 }
                 initData(res.data);
-                if(_group_id!= undefined&&$(".classify-list li").length==count_loading&&nomore == true){
+                if(_group_id!= undefined&&$(".classify-list li").length<=count_loading&&nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
