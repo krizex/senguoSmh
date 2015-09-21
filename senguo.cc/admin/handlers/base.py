@@ -2187,7 +2187,7 @@ class CustomerBaseHandler(_AccountBaseHandler):
 									qq.incart_num-=to_delete_num
 									qqq=self.session.query(models.DiscountShopGroup).filter_by(shop_id=shop_id,discount_id=qq.discount_id).with_lockmode('update').first()
 									qqq.incart_num-=to_delete_num
-						self.session.flush()				
+						self.session.flush()
 
 			else:return
 			setattr(cart, menu, str(d))#数据库cart.fruits 保存的是字典（计价类型id：数量）

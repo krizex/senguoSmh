@@ -219,6 +219,7 @@ def address_add_location():
 	customer = session.query(models.Customer.id).all()
 	for item in customer:
 		_id=item[0]
+		print(_id)
 		address = session.query(models.Address).filter_by(customer_id =_id,if_default=1).first()
 		if not address:
 			addr = session.query(models.Address).filter_by(customer_id =_id).first()
