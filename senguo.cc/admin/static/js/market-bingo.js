@@ -337,13 +337,6 @@ function loaded() {
                 sid = gArr[parseInt(main.index())+1];
             }
         }
-        else if(nomore=="true"){
-            if(_action==9){
-                $('.loading').html("~没有更多结果了 ( > < )~").show();
-            }else{
-                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-            }
-        }
     });
 }
 var _action=6;
@@ -408,13 +401,6 @@ var scrollLoading=function(){
                 sid = gArr[parseInt(main.index())+1];
             }
         }
-        else if(nomore=="true"){
-            if(_action==9){
-                $('.loading').html("~没有更多结果了 ( > < )~").show();
-            }else{
-                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
-            }
-        }
     });
 }
 function isNA(){
@@ -445,6 +431,9 @@ var allList=function(page,action,_group_id){
         {
             aindex++;
             var nomore = res.nomore;
+            if(nomore==true){
+                count_loading ++;
+            }
             $('.goods-list-'+_group_id).attr({"data-nomore":nomore})
             initData(res.data,_group_id);
             if(aindex<gArr.length){
@@ -453,7 +442,6 @@ var allList=function(page,action,_group_id){
                 if(NA=="ios"){
                     loaded();
                 }
-                $('.loading').html("~没有更多商品了呢 ( > < )~").show();
             }
         }
         else {
@@ -474,6 +462,7 @@ var allList=function(page,action,_group_id){
         $(".wrap-loading-box").remove();
     }
 };
+var count_loading= 0 ;
 var goodsList=function(page,action,_group_id){
     $(".wrap-loading-box").removeClass("hidden");
     var url='';
@@ -497,13 +486,18 @@ var goodsList=function(page,action,_group_id){
             if(res.success)
             {
                 var nomore = res.nomore
-                $('.goods-list-'+_group_id).attr({"data-nomore":nomore})
-                if(nomore == true){
+                $('.goods-list-'+_group_id).attr({"data-nomore":nomore});
+                if(nomore==true&&res.data.length>0){
+                    count_loading ++;
+                }
+                if(_group_id!= undefined&&$(".know-last").length<=count_loading&&nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
+                }else{
+                    $('.loading').html("~努力加载中 ( > < )~").show();
                 }
                 initData(res.data,_group_id);
                 if(NA == "ios"){

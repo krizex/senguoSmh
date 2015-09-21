@@ -221,7 +221,7 @@ var order_link='/admin/order';
 var _page=0;
 var _page_total;
 function getOrder(){
-    $.getItem('/static/items/admin/order-item.html?v=20150730',function(data){
+    $.getItem('/static/items/admin/order-item.html?v=20150804',function(data){
             $list_item=data;
             //商品列表item
     	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150713');
@@ -252,20 +252,24 @@ function orderItem(page){
     var filter_status = $(".filter").attr("data-id");
     var pay_type = $(".pay_type").attr("data-id");
     var user_type = $(".user_type").attr("data-id");
+    var print_type =$(".print_type").attr("data-id");
     if(action=='order'){
-        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
     }else if(action=='customer_order'){
-        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
     }else if(action=='SH2_order'){
-        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
     }else{
         var link=window.location.href;
         var status=$('.order-status').find('.active').first().attr('data-id');
+        if(status==1){
+            filter_status = "order_desc";
+        }
         if(parseInt($.getUrlParam("order_type"))==3){
             var self_id = $("#self_point").attr("data-id");
-            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page+'&self_id='+self_id;
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page+'&self_id='+self_id;
         }else{
-            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
         }
     }
     $.ajax({
@@ -348,6 +352,10 @@ function orderItem(page){
                     var customer_id=data[i]['customer_id'];
                     var _type=data[i]['type'];
                     var online_type=data[i]['online_type'];
+                    var time_out=data[i]['time_out'];
+                    if(time_out==1&&status==1){
+                        $item.addClass("time-out").find(".list-title").prepend("<p class='text-red'>过期提醒：该订单已过期，请及时处理，以免影响其他操作！</p>");
+                    }
                     if(_type==3){
                         $item.find(".if_self").text("自提");
                     }
@@ -361,7 +369,7 @@ function orderItem(page){
                         $item.find('.saler-remark').hide();
                     }
                     if(isprint==1||isprint==true) {
-                        $item.find('.print-order').addClass('text-grey9');
+                        $item.find('.print-order').addClass('text-grey9').removeClass("link-btn");
                     }
                     if(shop_new!=1) {
                         $item.find('.new').show();
@@ -640,7 +648,7 @@ function orderPrint(target,action){
         };
         $.postJson(url,args,function(res){
                 if(res.success){
-                    target.addClass('text-grey9');
+                    target.addClass('text-grey9').removeClass("link-btn");
                     if(type==0){
                         var inner=window.document.body.innerHTML;
                         window.document.body.innerHTML=html.innerHTML;
@@ -862,6 +870,9 @@ function orderEdit(target,action,content){
                         parent.find('.to-staff-send').text(_staff_name+'配送中');
                     }
                     parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');
+                    if(parent.hasClass("time-out")){
+                        parent.removeClass("time-out");
+                    }
                 }else if(action=='edit_status'){
                     target.addClass('bg-blue').siblings().removeClass('bg-blue');
                     var status=target.text();
@@ -885,9 +896,10 @@ function orderEdit(target,action,content){
                         if(_type==3){
                             target.attr({'disabled':true}).text('等待自取');
                         }else{
-                            target.attr({'disabled':true}).text(send_name+'配送中');
+                            target.attr({'disabled':true}).text('配送中');
                         }
                         parent.find('.status-send').find("img").attr({"src":send_img});
+                        parent.find(".to-staff-send").text(send_name+'配送中');
                         parent.find('.check').removeClass('order-check');
                     }
                     else if(content==5) {
@@ -904,6 +916,9 @@ function orderEdit(target,action,content){
                         target.attr({'disabled':true}).text('已完成');
                         parent.find('.check').removeClass('order-check');
                         parent.find('.status-finish').find("img").attr({"src":send_img});
+                    }
+                    if(parent.hasClass("time-out")){
+                        parent.removeClass("time-out");
                     }
                 }else if(action=='batch_edit_status'){
                     if(content==4) {
@@ -926,6 +941,9 @@ function orderEdit(target,action,content){
                                 $item.find('.to-send').attr({'disabled':true}).text('配送中');
                             }
                             $item.find('.status-send').find("img").attr({"src":send_img});
+                            if(parent.hasClass("time-out")){
+                                parent.removeClass("time-out");
+                            }
                         });
                     }else if(content==5) {
                         $('.order-checked').each(function(){
@@ -938,6 +956,9 @@ function orderEdit(target,action,content){
                             $item.find('.status_send').addClass('hidden');
                             $item.find('.to-finish').attr({'disabled':true}).text('已完成');
                             $item.find('.status-finish').find("img").attr({"src":send_img});
+                            if(parent.hasClass("time-out")){
+                                parent.removeClass("time-out");
+                            }
                         });
                     }
                     if(res.notice){

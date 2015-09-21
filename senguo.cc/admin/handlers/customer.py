@@ -830,7 +830,7 @@ class Discover(CustomerBaseHandler):
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
 			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,\
 			discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
-			seckill_count=goods_count,shop_marketing=shop_marketing,get_shop_auth=shop_auth)
+			seckill_count=goods_count,shop_marketing=shop_marketing,get_shop_auth=shop_auth,shop_id=shop_id)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -1055,20 +1055,20 @@ class ShopProfile(CustomerBaseHandler):
 			shop_id=shop.id).first()
 		if not shop_follow:
 				follow = False
-		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
-		if orders:
-			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
-			if q[0][0]:
-				commodity_quality = int(q[0][0])
-			if q[0][1]:
-				send_speed = int(q[0][1])
-			if q[0][2]:
-				shop_service = int(q[0][2])
-			if commodity_quality and send_speed and shop_service:
-				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
-			else:
-				satisfy = format(1,'.0%')
+		# orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		# if orders:
+		# 	q = self.session.query(func.avg(models.Order.commodity_quality),\
+		# 		func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
+		# 	if q[0][0]:
+		# 		commodity_quality = int(q[0][0])
+		# 	if q[0][1]:
+		# 		send_speed = int(q[0][1])
+		# 	if q[0][2]:
+		# 		shop_service = int(q[0][2])
+		# 	if commodity_quality and send_speed and shop_service:
+		# 		satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+		# 	else:
+		satisfy = format(shop.satisfy,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -1078,14 +1078,16 @@ class ShopProfile(CustomerBaseHandler):
 		operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
 		fans_sum = shop.fans_count
 		order_sum = shop.order_count
-		goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		# goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		goods_sum = shop.goods_count
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
 		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
 					filter(models.Accountinfo.id.in_(shop_members_id)).all()
-		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
+		# comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
+		comment_sum = shop.comment_count
 		session = self.session
 		w_id = self.current_user.id
 		return self.render("customer/shop-info.html", shop=shop,get_shop_auth=shop_auth,follow=follow, operate_days=operate_days,
@@ -2015,7 +2017,10 @@ class Market(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_ids")
 	def cart_list(self):
-		shop_id = int(self.get_cookie('market_shop_id'))
+		try:
+			shop_id = int(self.get_cookie('market_shop_id'))
+		except:
+			return self.send_fail('shop_id error')
 		fruits = self.args["fruits"]
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
@@ -2826,9 +2831,9 @@ class Cart(CustomerBaseHandler):
 		if order.pay_type != 3:
 			# print("[CustomerCart]cart_callback: access_token:",access_token)
 			#如果有自己的公众平台，用自己的公众号发送模板消息，之后依旧用森果发送一遍
-			# if access_token:
-			self.send_admin_message(session,order,access_token)
-			# self.send_admin_message(session,order)
+			if access_token:
+				self.send_admin_message(session,order,access_token)
+			self.send_admin_message(session,order)
 
 		return True
 
@@ -3182,11 +3187,28 @@ class Order(CustomerBaseHandler):
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-			order.commodity_quality = int(data["commodity_quality"])
-			order.send_speed        = int(data["send_speed"])
-			order.shop_service      = int(data["shop_service"])
+			if not order:
+				return self.send_error(404)
+			try:
+				commodity_quality = int(data["commodity_quality"])
+			except:
+				commodity_quality = 100
+			try:
+				send_speed = int(data["send_speed"])
+			except:
+				send_speed = 100
+			try:
+				shop_service = int(data["shop_service"])
+			except:
+				shop_service = 100
+			order.commodity_quality = commodity_quality
+			order.send_speed        = send_speed
+			order.shop_service      = shop_service
 			notice =''
-			if int(data["commodity_quality"])==100 and int(data["send_speed"])==100 and int(data["shop_service"])==100:
+			satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			been_commnet_count = self.session.query(models.Order).filter_by(shop_id=order.shop_id,status=6).count()
+			order.shop.satisfy = (order.shop.satisfy*been_commnet_count+satisfy)/(been_commnet_count+1)
+			if commodity_quality ==100 and send_speed==100 and shop_service==100:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 						order.customer_id,shop_id = order.shop_id).first()
@@ -3243,6 +3265,8 @@ class Order(CustomerBaseHandler):
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
 			order.comment_imgUrl = imgUrl
+			if order.status == 5:
+				order.shop.comment_count = order.shop.comment_count + 1
 			shop_follow = ''
 			notice = ''
 			
@@ -3879,7 +3903,7 @@ class wxChargeCallBack(CustomerBaseHandler):
 			qr_url = ""
 		return self.send_success(qr_url=qr_url)
 
-# 插入爬取店铺数据（访问路由：/customer/test）
+#（访问路由：/customer/test）
 class InsertData(CustomerBaseHandler):
 	#对账检验
 	@CustomerBaseHandler.check_arguments('action','day','month')
@@ -3989,10 +4013,10 @@ class InsertData(CustomerBaseHandler):
 			order  = self.session.query(models.Order).filter_by(num=order_num).first()
 			if not order:
 				return self.send_fail('order not found!')
-			totalPrice = order.totalPrice
+			totalPrice = order.new_totalprice
 			#将order_done函数里的操作还原
 			order.shop.order_count -= 1 #店铺订单数减1
-			order.shop.shop_property -= totalPrice # ???
+			order.shop.shop_property -= totalPrice #店铺营业额减掉相应的值
 			#库存不变，在售增加，销量减少
 			fruits = eval(order.fruits)
 			if fruits:
@@ -4019,9 +4043,9 @@ class InsertData(CustomerBaseHandler):
 			order = self.session.query(models.Order).filter_by(num=order_num).first()
 			if not order:
 				return self.send_fail('order not found')
-			totalPrice = order.totalPrice
+			totalPrice = order.new_totalprice
 			order.shop.order_count += 1 #店铺订单数减1
-			order.shop.shop_property += totalPrice # ???
+			order.shop.shop_property += totalPrice #店铺营业额增加相应的值
 			#库存不变，在售增加，销量减少
 			fruits = eval(order.fruits)
 			if fruits:

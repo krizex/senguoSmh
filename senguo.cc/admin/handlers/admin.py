@@ -248,35 +248,40 @@ class SwitchShop(AdminBaseHandler):
 		shop_list = []
 		for shop in shops:
 			satisfy = 0
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id',  'wx_accountname','auth_change',
+			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'wx_accountname','auth_change',
 										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 										'alipay_account','alipay_account_name','available_balance',\
-										'new_follower_sum','new_order_sum']
+										'new_follower_sum','new_order_sum','daily_sales','demand_fruits','shop_province',\
+										'shop_phone','shop_url','single_stock_size','spread_member_code','super_temp_active',\
+										'team_size','total_users','shop_start_timestamp','old_msg','onsale_fruits',\
+										'shop_property','shop_sales_range','shop_service_area','shop_tpl','deliver_area',\
+										'have_offline_entity','have_wx_mp','is_balance']
 			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
 			if orders:
 				commodity_quality = 0
 				send_speed = 0
 				shop_service = 0
-				q = self.session.query(func.avg(models.Order.commodity_quality),\
-					func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id,models.Order.status.in_((6,7))).all()
-				if q[0][0]:
-					commodity_quality = int(q[0][0])
-				if q[0][1]:
-					send_speed = int(q[0][1])
-				if q[0][2]:
-					shop_service = int(q[0][2])
-				if commodity_quality and send_speed and shop_service:
-					satisfy = float((commodity_quality + send_speed + shop_service)/300)
-			comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
-			fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
-			mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
-			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-			shop.satisfy = satisfy
-			shop.comment_count = comment_count
-			shop.goods_count = fruit_count
+				# q = self.session.query(func.avg(models.Order.commodity_quality),\
+				# 	func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id,models.Order.status.in_((6,7))).all()
+				# if q[0][0]:
+				# 	commodity_quality = int(q[0][0])
+				# if q[0][1]:
+				# 	send_speed = int(q[0][1])
+				# if q[0][2]:
+				# 	shop_service = int(q[0][2])
+				# if commodity_quality and send_speed and shop_service:
+				# 	satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			# comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
+			# fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
+			# mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
+			# .filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
+			# shop.satisfy = satisfy
+			# shop.comment_count = comment_count
+			# shop.goods_count = fruit_count
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
-			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
-			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			shop.shop_satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
+			# shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			shop.order_sum = len(shop.orders)
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
 			if total_money:
@@ -1267,20 +1272,22 @@ class OrderStatic(AdminBaseHandler):
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
 					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
 			q_all=q.group_by(func.day(models.Order.create_date))
+			#print(q_all.all())
 
 			if valuationWay=='count':
 				q=self.session.query(models.Order.id,func.day(models.Order.create_date)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.day(models.Order.create_date)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.day(models.Order.create_date),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y-%m')==current_year+'-'+current_month).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
+			#print(q_old.all())
 			q_balance=q.filter(models.CustomerShopFollow.first_charge_time <= models.Order.create_date)
 
 			q_range=self.session.query(func.day(func.now()))
@@ -1299,12 +1306,12 @@ class OrderStatic(AdminBaseHandler):
 				q=self.session.query(models.Order.id,func.week(models.Order.create_date,1)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.week(models.Order.create_date,1)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.week(models.Order.create_date,1),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
@@ -1327,12 +1334,12 @@ class OrderStatic(AdminBaseHandler):
 				q=self.session.query(models.Order.id,func.month(models.Order.create_date)).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 			else:
-				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.month(models.Order.create_date)).\
+				q=self.session.query(models.Order.freight+models.Order.totalPrice,func.month(models.Order.create_date),models.Order.id).\
 					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
 					filter(func.date_format(models.Order.create_date,'%Y')==current_year).\
-					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id)
+					filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==currentshop_id,models.CustomerShopFollow.shop_id==currentshop_id).distinct()
 
 			q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
 			q_old=q.filter(models.CustomerShopFollow.first_purchase_time < models.Order.create_date)
@@ -1487,7 +1494,7 @@ class OrderStatic(AdminBaseHandler):
 
 		q=self.session.query(models.Order.id,func.hour(models.Order.create_date)).\
 			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
-			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10]),models.CustomerShopFollow.shop_id==current_shop_id).\
 			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date)
 
 		q_new=q.filter(models.CustomerShopFollow.first_purchase_time == models.Order.create_date)
@@ -1533,7 +1540,7 @@ class OrderStatic(AdminBaseHandler):
 
 		q=self.session.query(models.Order.id,func.substring_index(models.Order.arrival_time,':',1)).\
 			join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
-			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10])).\
+			filter(models.Order.shop_id==current_shop_id,models.Order.status.in_([5,6,7,10]),models.CustomerShopFollow.shop_id==current_shop_id).\
 			filter(models.Order.create_date >= begin_date,models.Order.create_date <= end_date).\
 			filter(models.Order.arrival_time != None)
 
@@ -2113,7 +2120,7 @@ class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
 	@tornado.web.authenticated
 	#@get_unblock
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int")
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int","print_type?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
 		if not self.current_shop:
@@ -2174,6 +2181,10 @@ class Order(AdminBaseHandler):
 					order_list = order_list.filter(models.Order.pay_type==pay_type)
 			if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
 				order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
+			if "print_type" in self.args and self.args["print_type"] !="":
+				print_type = int(self.args["print_type"])
+				if print_type != 9:
+					order_list = order_list.filter(models.Order.isprint==print_type)
 
 			if order_status == 1:#filter order_status
 				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
@@ -2183,6 +2194,7 @@ class Order(AdminBaseHandler):
 				self.session.commit()
 				if order_list:
 					orders = [x for x in order_list if x.type == order_type and x.status == 1]
+					orders.sort(key = lambda order:order.create_date,reverse = True)
 
 			elif order_status == 2:#unfinish
 				if order_list:
@@ -3343,6 +3355,7 @@ class Goods(AdminBaseHandler):
 										  relate=relate))
 
 			self.session.add(goods)
+			current_shop.goods_count = current_shop.goods_count+1 #2015-9-18 添加商品商品数量加1
 			self.session.commit()
 			return self.send_success()
 
@@ -3527,6 +3540,7 @@ class Goods(AdminBaseHandler):
 				if goods.activity_status not in [-2,0]:
 					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能删除哦！")
 				time_now = datetime.datetime.now()
+				current_shop.goods_count = current_shop.goods_count -1
 				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
@@ -3771,7 +3785,9 @@ class GoodsImport(AdminBaseHandler):
 						relate = charge.relate
 					)
 					self.session.add(_charge)
-				self.session.commit()
+					self.session.flush()
+			current_shop.goods_count = current_shop.goods_count + len(fruit_list)
+			self.session.commit()
 			return self.send_success()
 
 		elif  action == "checkyouzan":
@@ -3823,6 +3839,8 @@ class GoodsImport(AdminBaseHandler):
 				storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
 				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 3,num = 1,market_price = None))
 				self.session.add(new_good)
+				self.session.flush()
+			current_shop.goods_count = current_shop.goods_count + len(datalist)
 			self.session.commit()
 			return self.send_success()
 
@@ -4434,7 +4452,10 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			admin.temp_active = 0 if admin.temp_active == 1 else 1
+			try:
+				admin.temp_active = 0 if admin.temp_active == 1 else 1
+			except:
+				print("change admin.temp_active error")
 			try:
 				other_admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,work = 9).filter(models.HireLink.staff_id != _id).all()
 			except:
