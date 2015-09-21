@@ -341,8 +341,7 @@ var scrollLoading=function(_group_id){
             page = page+1;
             $('.goods-list-'+_group_id).attr("data-page",page);
             goodsList(page,_action,_group_id);
-        }
-        else if(nomore==true){
+        }else if(nomore==true){
             if(_action==9){
                 $('.loading').html("~没有更多结果了 ( > < )~").show();
             }else{
@@ -352,10 +351,12 @@ var scrollLoading=function(_group_id){
     });
 }
 
+var count_loading= 0 ;
 var goodsList=function(page,action,_group_id){
     $(".wrap-loading-box").removeClass("hidden");
     var url='';
     var action = action;
+    var nomore;
     if(!page){
         page = 1;
     }
@@ -374,13 +375,19 @@ var goodsList=function(page,action,_group_id){
             {
                 nomore = res.nomore
                 initData(res.data);
-                if(nomore == true){
+                if(nomore==true){
+                    count_loading ++;
+                }
+                if(_group_id!= undefined&&$(".classify-list li").length==count_loading&&nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
                         $('.loading').html("~没有更多商品了呢 ( > < )~").show();
                     }
+                }else{
+                    $('.loading').html("~努力加载中 ( > < )~").show();
                 }
+               
             }
             else {
                 noticeBox(res.error_text);
