@@ -694,9 +694,8 @@ function time(evt) {
         wait--;
         $('.get-code').attr({'id':''});
         setTimeout(function() {
-                time(evt)
-            },
-            1000);
+            time(evt)
+        },1000);
     }
 }
 //获取手机验证码
