@@ -2739,7 +2739,7 @@ class ApplyRefund(SuperBaseHandler):
 			item_dict['id'] = item.id
 			item_dict['customer_id'] = item.customer_id
 			item_dict['refund_fee']  = item.refund_fee
-			item_dict['refund_type'] = item.refund_type
+			item_dict['refund_type'] = '支付宝支付' if item.refund_type else '微信支付'
 			item_dict['refund_url']  = item.refund_url
 			item_dict['create_time'] = item.create_time.strftime("%Y-%m-%d %H:%M")
 			data.append(item_dict)
@@ -2768,6 +2768,7 @@ class ApplyRefund(SuperBaseHandler):
 		if order.online_type == 'alipay':
 			order.del_reason = 'refund'
 			order.get_num(self.session,order.id)
+			order.status = 0 #将订单状态改为删除
 			balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
 			if not balance_history:
 				return self.write('old_balance_history not found')

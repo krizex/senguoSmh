@@ -8,7 +8,7 @@ $(document).ready(function(){
 		type:"post",
 		success:function(res){
 			if (res.success){
-				alter('处理成功!');
+				alert('处理成功!');
 			}
 			else{
 				alert(res.error_text);

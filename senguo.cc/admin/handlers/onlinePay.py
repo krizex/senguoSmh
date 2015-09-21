@@ -110,6 +110,8 @@ class RefundWxpay(CustomerBaseHandler):
 				return self.send_fail('order not found')
 		totalPrice = order.totalPrice	
 		num = order.num
+		if order.is_qrwxpay:
+			num = num + 'a'
 		transaction_id = order.transaction_id
 		customer_id = order.customer_id
 		totalPrice  = order.totalPrice
@@ -131,7 +133,7 @@ class RefundWxpay(CustomerBaseHandler):
 			#print('decode success')
 			res_dict = refund_pub.xmlToArray(res)
 			#print(res_dict)
-			return_code = res_dict.get('return_code',None)
+			return_code = res_dict.get('result_code',None)
 			print('refund',return_code)
 			if return_code == 'SUCCESS' or return_code == 'success':
 				#如果退款成功，则将这笔在线支付记录类型置为-1,同时将店铺余额减去订单总额
@@ -143,8 +145,9 @@ class RefundWxpay(CustomerBaseHandler):
 				shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
 				if not shop:
 					return self.send_fail("shop not found")
-				order.get_num(session,order.id)  #取消订单,库存增加，在售减少
-				order.del_reason = 'refund' 
+				order.get_num(self.session,order.id)  #取消订单,库存增加，在售减少
+				order.del_reason = 'refund'
+				order.status = 0  #将订单标志为已删除  
 				#该店铺余额减去订单总额
 				shop.shop_balance -= balance_value
 				balance_history.is_cancel = 1
