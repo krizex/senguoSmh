@@ -1911,6 +1911,7 @@ class Comment(SuperBaseHandler):
 			#order.comment = None
 			#order.comment_reply = None
 			comment_apply.has_done = 1
+			comment_apply.shop.comment_count = comment_apply.shop.comment_count -1
 			self.session.commit()
 			return self.send_success(status = 0, msg = 'success',data = {})
 		elif action == 'decline':

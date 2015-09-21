@@ -620,6 +620,7 @@ class CreateShop(AdminBaseHandler):
 						storage = 100,unit = 3,img_url = temp_good.good_img_url ,)
 					new_good.charge_types.append(models.ChargeType(price = temp_good.goods_price,unit = 3,num = 1,market_price = None))
 					self.session.add(new_good)
+				shop.goods_count = len(spider_goods)
 				self.session.commit()
 				self.create_staff(shop)
 
