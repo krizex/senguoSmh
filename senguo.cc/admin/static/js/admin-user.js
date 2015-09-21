@@ -153,12 +153,12 @@ var item='<li class="users-list-item  clearfix" data-id="{{id}}">'+
                 '<p>生日：{{birthday}}</p>'+
             '</div>'+
             '<div class="focus-shop pull-left">'+
-                '<p class="text-grey9">关注的店铺</p>'+
-                '<ul class="focus-shop-list">'+
-                    '{{each shop_names as name  }}'+
-                    '<li class="text-center bg-grey3 pull-left">{{name}}</li>'+
-                    '{{/each}}'+
-                '</ul>'+
+                // '<p class="text-grey9">关注的店铺</p>'+
+                // '<ul class="focus-shop-list">'+
+                //     '{{each shop_names as name  }}'+
+                //     '<li class="text-center bg-grey3 pull-left">{{name}}</li>'+
+                //     '{{/each}}'+
+                // '</ul>'+
                 '<span class="send-address bg-grey2 text-grey2">送货地址</span>'+
                 '<ul class="address-list">'+
                     '{{ each addresses as address }}'+
