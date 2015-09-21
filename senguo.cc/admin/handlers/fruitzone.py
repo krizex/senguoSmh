@@ -43,11 +43,11 @@ class ShopList(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments('action?:str','province?:str')
 	def get(self):
 		province = self.args.get('province',None)
-		remote_ip = self.remote_ip
+		#remote_ip = self.remote_ip
 		# print("[ShopList]remote_ip:",remote_ip)
-		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
-		res =  requests.get(url,headers = {"connection":"close"})
-		content = res.text
+		#url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
+		#res =  requests.get(url,headers = {"connection":"close"})
+		#content = res.text
 		# print("[ShopList]content:",content)
 		try:
 			t = json.loads(content)

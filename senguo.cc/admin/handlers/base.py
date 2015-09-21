@@ -2153,6 +2153,9 @@ class CustomerBaseHandler(_AccountBaseHandler):
 					self.session.flush()				
 				else:return
 			elif inc == 0:#删除
+				temp_woody = d.get(charge_type_id,None)
+				if not temp_woody:
+					return 
 				to_delete_num=d[charge_type_id]  # 限时折扣需要删除的数量
 				if charge_type_id in d.keys(): del d[charge_type_id]
 				if activity_type == 1:

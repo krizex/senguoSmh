@@ -352,7 +352,10 @@ class WxMessage(CustomerBaseHandler):
 	def check_signature(self,signature,timestamp,nonce):
 		token = 'senguotest123'
 		L = [timestamp,nonce,token]
-		L.sort()
+		try:
+			L.sort()
+		except:
+			print('L sort error')
 		s = L[0]+L[1]+L[2]
 		if isinstance(s,str):
 			s = s.encode('utf-8')

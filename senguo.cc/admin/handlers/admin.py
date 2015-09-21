@@ -4441,7 +4441,10 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			admin.temp_active = 0 if admin.temp_active == 1 else 1
+			try:
+				admin.temp_active = 0 if admin.temp_active == 1 else 1
+			except:
+				print("change admin.temp_active error")
 			try:
 				other_admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,work = 9).filter(models.HireLink.staff_id != _id).all()
 			except:

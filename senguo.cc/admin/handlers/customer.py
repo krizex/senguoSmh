@@ -2015,7 +2015,10 @@ class Market(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_ids")
 	def cart_list(self):
-		shop_id = int(self.get_cookie('market_shop_id'))
+		try:
+			shop_id = int(self.get_cookie('market_shop_id'))
+		except:
+			return self.send_fail('shop_id error')
 		fruits = self.args["fruits"]
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
