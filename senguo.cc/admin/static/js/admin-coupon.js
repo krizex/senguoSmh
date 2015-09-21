@@ -143,7 +143,7 @@ $(document).ready(function () {
         function (res) {
             if (res.success) {
                 $this.closest('tr').addClass('dis-coupon');
-                Tip("成功关闭优惠券!");
+                Tip("成功关闭优惠券");
             }
             else {
                 Tip(res.error_text);
@@ -335,7 +335,7 @@ function insertcoupon(selected_status,page){
                                         });
                                 }
                                 else if (coupon.coupon_status==2){
-                                       trow='<tr class=" ">'
+                                        trow='<tr class=" ">'
                                                     +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
                                                     +'<td>{{coupon_money}}元</td>'
                                                     +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
@@ -381,13 +381,13 @@ function insertcoupon(selected_status,page){
                                                     }
                                                 });
                                             }
-                            }
-                        }
-                        else{
-                            temp= '<tr><td colspan="6" class="txt-center c999">当前没有优惠券</td></tr>';
-                            // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
-                            $("#list-coupons").append(temp);
-                        }
+                                    }
+                                }
+                                else{
+                                    temp= '<tr><td colspan="6" class="txt-center c999">当前没有优惠券</td></tr>';
+                                    // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
+                                    $("#list-coupons").append(temp);
+                                }
                         }
                         else Tip(error_text);
             }, function () {
@@ -568,7 +568,7 @@ function addCoupon(type){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                Tip('新建优惠券成功!');
+                Tip('新建优惠券成功');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
                     $(".ok-coupon").attr("data-flag","on");
@@ -838,7 +838,7 @@ function editCoupon(type,coupon_id,edit_status){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                Tip('编辑优惠券成功!');
+                Tip('编辑优惠券成功');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+res.coupon_type;
                     $(".ok-editcoupon").attr("data-config","on");

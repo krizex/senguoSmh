@@ -830,7 +830,7 @@ class Discover(CustomerBaseHandler):
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
 			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,\
 			discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
-			seckill_count=goods_count,shop_marketing=shop_marketing,get_shop_auth=shop_auth)
+			seckill_count=goods_count,shop_marketing=shop_marketing,get_shop_auth=shop_auth,shop_id=shop_id)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
