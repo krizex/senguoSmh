@@ -39,8 +39,6 @@ $(document).ready(function(){
         $(".phone-box").addClass("pm40");
         $(".pay-bill").addClass("b0");
     }
-    //价格
-    getPrice();
     //商品数量操作
     $(document).on('click','.cart-list-item .number-minus',function(){
         var $this=$(this);
@@ -150,6 +148,8 @@ $(document).ready(function(){
     }
     //送货方式
     initType();
+    //价格
+    getPrice();
     initPayType();//初始化支付方式
     isInArea();
 }).on('click','.a-cz',function(){
@@ -322,8 +322,10 @@ function initType(){
             $("#deli_shop").attr("data-type","1").attr("data-id",$("#deli_shop option").first().attr("data-id")).attr("data-time",$("#deli_shop option").first().attr("data-time"));
         }
     }
-    $("#deli_self").attr("data-time",$("#deli_self option").first().attr("data-time")).attr("data-id",$("#deli_self option").first().attr("data-id"));
-    $("#deli_self_address").attr("data-id",$("#deli_self_address option").first().attr("data-id"));
+    if($("#deli_self").size()>0){
+        $("#deli_self").attr("data-time",$("#deli_self option").first().attr("data-time")).attr("data-id",$("#deli_self option").first().attr("data-id"));
+        $("#deli_self_address").attr("data-id",$("#deli_self_address option").first().attr("data-id"));
+    }
 }
 //配送费选择
 function calDeli(){
@@ -361,14 +363,14 @@ var getPrice=function(){
     var min_charge = 0;
     //判断配送费方式
     if($(".bili_type").children(".active").hasClass("shoper-item")){
-        if($("#deli_shop").attr("data-type")=="0"){
+        if($("#deli_shop").attr("data-type")=="0"){//立即送
             freight = _freigh_now;
             min_charge = _mincharge_now;
-        }else{
+        }else{//按时达
             freight = _freigh_ontime;
             min_charge = _mincharge_intime;
         }
-    }else{
+    }else{//自提
         freight = _freigh_self;
         min_charge = _mincharge_self;
     }
