@@ -215,8 +215,25 @@ class RefundWxpay(CustomerBaseHandler):
 			res = downbill.postXml()
 			if isinstance(res,bytes):
 				res = res.decode('utf-8')
-			print(type(res))		
-
+			print(type(res))
+			#将BOM头去掉
+			# if res.startswith(u'\ufeff'):
+			# 	res = res.encode('utf8')[3:].decode('utf8') 
+			# import json
+			# res_dict = json.loads(res)
+			# return_code = res_dict['success']
+			# data = res_dict[0][0]
+			# print('return_code',return_code,data)
+			f = open('20150920.txt','w')
+			f.write(res)
+			f.close()
+			return self.send_success(data=res)	
+		elif action == 'alipay_query':
+			start_time = '2015-09-20 00:00:00'
+			end_time   = '2015-09-20 23:59:59'
+			query_url = self._alipay.create_query_url(gmt_start_time=start_time,gmt_end_time=end_time,page_no=1)
+			print(query_url,'query_url')
+			return self.send_success()
 		else:
 			return self.send_fail('action error')
 

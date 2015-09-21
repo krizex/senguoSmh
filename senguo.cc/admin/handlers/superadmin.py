@@ -2744,8 +2744,8 @@ class ApplyRefund(SuperBaseHandler):
 			shop_id = balance_history.shop_id
 			balance_value = balance_history.balance_value
 			shop = order.shop 
-			shop.shop_balance -= balance_value
-			balance_history.is_cancel =1
+			shop.shop_balance -= balance_value      #店铺余额减去订单总价，还原店铺余额
+			balance_history.is_cancel =1            #将旧的支付记录作废
 			balance_history.balance_type = -1
 			customer_id = balance_history.customer_id
 			name        = balance_history.name
@@ -2765,9 +2765,6 @@ class ApplyRefund(SuperBaseHandler):
 
 		self.session.commit()
 		return self.send_success()
-
-
-
 
 # 余额 - 提现申请
 class ApplyCash(SuperBaseHandler):

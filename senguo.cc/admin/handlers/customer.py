@@ -3631,9 +3631,17 @@ class payTest(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
-		totalPrice = float(self.get_cookie('money'))
+		totalPrice = self.get_cookie('money')
+		if not totalPrice:
+			return self.send_fail('充值金额未知，请进入个人中心重新充值')
+		totalPrice = float(totalPrice)
 		wxPrice    = int(totalPrice * 100)
-		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		shop_id = self.get_cookie('market_shop_id')
+		if not shop_id:
+			return self.send_fail('充值店铺未知，请重新进入个人中心进行充值')
+		if not self.current_user.id:
+			return self.send_fail('请重新登陆，然后进个人中心进行充值')
+		orderId = str(self.current_user.id) +'a'+str(shop_id)+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
 		qr_url=""
 		if not self.is_wexin_browser():
 			qr_url=self._qr_pay()
@@ -3717,9 +3725,9 @@ class payTest(CustomerBaseHandler):
 			status       = xmlArray['result_code']
 			orderId      = str(xmlArray['out_trade_no'])
 			result       = orderId.split('a')
-			customer_id  = int(result[0])
-			shop_id      = int(result[1])
-			totalPrice   = (float(result[2]))/100
+			customer_id  = int(result[0]) if result[0] else 0
+			shop_id      = int(result[1]) if result[1] else 0
+			totalPrice   = (float(result[2]))/100 if result[2] else 0
 			transaction_id = str(xmlArray['transaction_id'])
 			if status != 'SUCCESS':
 				return False
