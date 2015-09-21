@@ -39,8 +39,6 @@ $(document).ready(function(){
         $(".phone-box").addClass("pm40");
         $(".pay-bill").addClass("b0");
     }
-    //送货方式
-    initType();
     //价格
     getPrice();
     //商品数量操作
@@ -126,7 +124,7 @@ $(document).ready(function(){
     });
     var now_time = new Date().getTime();
     var range_time = parseInt($("#shop_imgurl").attr("data-stop-range"))*60000;//按时达截至时间
-    var self_time = parseInt($("#shop_imgurl").attr("data-self-endtime"))*60000;//按时达截至时间
+    var self_time = parseInt($("#shop_imgurl").attr("data-self-endtime"))*60000;//自提截至时间
     $(".today_time").each(function(){
         var end_time = parseInt($(this).attr("end-time"));
         var start_time = parseInt($(this).attr("start-time"));
@@ -150,6 +148,8 @@ $(document).ready(function(){
         $(".i-more-self").addClass("hidden");
         $(".self_text").removeClass("hidden");
     }
+    //送货方式
+    initType();
     initPayType();//初始化支付方式
     isInArea();
 }).on('click','.a-cz',function(){
@@ -560,7 +560,7 @@ function orderSubmit(target){
     if($(".bili_type").children(".active").hasClass("shoper-item")){
         type = parseInt($("#deli_shop").attr("data-type"))+1;
     }else{
-        type = 3;
+        type = 3; 
     }
     if(type==2){
         today=$("#deli_shop").attr("data-time");
