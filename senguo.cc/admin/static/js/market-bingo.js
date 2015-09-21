@@ -495,7 +495,7 @@ var goodsList=function(page,action,_group_id){
                 if(nomore==true&&res.data.length>0){
                     count_loading ++;
                 }
-                if(_group_id!= undefined&&$(".know-last").length==count_loading&&nomore == true){
+                if(_group_id!= undefined&&$(".know-last").length<=count_loading&&nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
