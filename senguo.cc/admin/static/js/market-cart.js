@@ -33,8 +33,6 @@ $(document).ready(function(){
         $(".bg1").addClass("hidden");
         $(".bg2").removeClass("hidden");
     }
-    //送货方式
-    initType();
     //价格
     getPrice();
     //商品数量操作
@@ -120,7 +118,7 @@ $(document).ready(function(){
     });
     var now_time = new Date().getTime();
     var range_time = parseInt($("#shop_imgurl").attr("data-stop-range"))*60000;//按时达截至时间
-    var self_time = parseInt($("#shop_imgurl").attr("data-self-endtime"))*60000;//按时达截至时间
+    var self_time = parseInt($("#shop_imgurl").attr("data-self-endtime"))*60000;//自提截至时间
     $(".today_time").each(function(){
         var end_time = parseInt($(this).attr("end-time"));
         var start_time = parseInt($(this).attr("start-time"));
@@ -144,6 +142,8 @@ $(document).ready(function(){
         $(".i-more-self").addClass("hidden");
         $(".self_text").removeClass("hidden");
     }
+    //送货方式
+    initType();
     initPayType();//初始化支付方式
     isInArea();
 }).on('click','.a-cz',function(){
@@ -310,6 +310,8 @@ function initType(){
             $("#deli_shop").attr("data-type","1").attr("data-id",$("#deli_shop option").first().attr("data-id")).attr("data-time",$("#deli_shop option").first().attr("data-time"));
         }
     }
+    $("#deli_self").attr("data-time",$("#deli_self option").first().attr("data-time")).attr("data-id",$("#deli_self option").first().attr("data-id"));
+    $("#deli_self_address").attr("data-id",$("#deli_self_address option").first().attr("data-id"));
 }
 //配送费选择
 function calDeli(){
@@ -543,10 +545,10 @@ function orderSubmit(target){
     var self_address_id = "";
     var type = 0;
     var today = 0;
-    if($(".bili_type").children(".active").index()==0){
+    if($(".bili_type").children(".active").hasClass("shoper-item")){
         type = parseInt($("#deli_shop").attr("data-type"))+1;
     }else{
-        type = 3;
+        type = 3; 
     }
     if(type==2){
         today=$("#deli_shop").attr("data-time");
