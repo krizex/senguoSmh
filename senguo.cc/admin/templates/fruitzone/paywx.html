@@ -174,7 +174,6 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                    $this.attr({"data-sta":""});
                                      //  $.ajax({
                                      //     url:"/customer/wxpayCallBack",
                                      //     type:"get",
@@ -190,6 +189,7 @@
                                      // });
                                 }
                             });
+                            $this.attr({"data-sta":""});
                         }
                     }else{
                         $this.attr({"data-sta":""});

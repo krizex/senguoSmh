@@ -16,15 +16,20 @@ $(document).ready(function(){
     initBmap();
 }).on('click','.print-order',function(){
     orderPrint($(this),'print'); //有线打印
-
 }).on('click','.delete-order',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
+    if(parent.attr("data-pay")=="3"&&parent.attr("data-sta")=="1"){
+        $box.find('.title').text('订单删除并退款');
+        $box.find(".del-notice").removeClass("hide");
+    }else{
+        $box.find('.title').text('订单删除');
+        $box.find(".del-notice").addClass("hide");
+    }
     $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check mark_check');
-    $box.find('.title').text('订单删除');
     $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
 }).on('click','.delete_check',function(){
     var $this=$(this);
@@ -376,7 +381,7 @@ function orderItem(page){
                     }
                     $item.find('.name').text(nickname).attr('href','/admin/follower?action=orderuser&&wd='+customer_id);
                     $item.find('.receiver').text(receiver);
-                    $item.attr({'data-id':id,'data-type':type,"data-pay":pay_type,"data-online":online_type});
+                    $item.attr({'data-id':id,'data-type':type,"data-pay":pay_type,"data-online":online_type,"data-sta":status});
                     $item.find('.send-time').text(send_time);
                     $item.find('.order-code').text(num);
                     $item.find('.order-price').text(totalPrice);
@@ -408,9 +413,11 @@ function orderItem(page){
                        }else if(online_type=="alipay"){
                             $item.find('.pay-status').text('在线支付-支付宝');
                        }
-                        
                         $item.find('.price_edit').hide();
                         // if(status!=-1){$item.find('.delete-order').hide();}
+                        if(status==1){
+                            $item.find(".delete-order").text("删除退款");
+                        }
                     }
                     else { 
                         $item.find('.pay-status').text('货到付款'); 
@@ -755,19 +762,18 @@ function orderDelete(target){
     if (pay_type==3){
         url = '/customer/online/refund'
         if (online_type == 'wx'){
-            action = 'wx'
+            action = 'wx';
             args = {
                 action:action,
                 order_id:order_id
             };
         };
         if (online_type == 'alipay') {
-            action = 'alipay'
+            action = 'alipay';
             args = {
                 action:action,
                 order_id:order_id
             };
-            alert(action)
         };
 
     }
