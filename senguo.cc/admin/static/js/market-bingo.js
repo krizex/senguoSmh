@@ -44,14 +44,11 @@ $(document).ready(function(){
                 }
             });
         }else{
-            // $('.tab-group li').each(function(){
-            //     if($(this).index()<3){
-            //         if($(this).attr('data-id')!=-2){
-            //             gArr.push($(this).attr('data-id'));
-            //         }
-            //     }
-                
-            // });
+            $('.mid-group').each(function(){
+                if($(this).index()<3&&$(this).attr('data-id')!=-2){
+                    gArr.push($(this).attr('data-id'));
+                }
+            });
              $('.more-group li').each(function(){
                  if($(this).attr('data-id')!=-2){
                      gArr.push($(this).attr('data-id'));
@@ -225,11 +222,19 @@ $(document).ready(function(){
     var $this=$(this);
     var index=$this.index();
     if(index==2&&$this.hasClass("active")&&$(".i-cert").length>0){
+        var text = $("#cur_group").html();
+        $(".more-group li").each(function(){
+            if($(this).html()==text){
+                $(".more-group li").removeClass("hidden");
+                $(this).addClass("hidden");
+                return false;
+            }
+        });
         $(".more-group").removeClass("hidden");
     }
     var group_id=Number($this.attr("data-id"));
     if(!$this.hasClass("active")){
-        if(group_id==-2){
+        if(group_id==-2){//所有分组
             $(".bingo-list").removeClass("hidden");
         }else{
             $(".bingo-list").addClass("hidden");

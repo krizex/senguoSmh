@@ -197,7 +197,7 @@
 .type-choose .circle{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid #ddd;margin-right:5px;float:left;}
 .iti{width:600px;float:left;margin-bottom:10px;}
 .iti-last{width:600px;float:left;}
-
-.link-type{float:left}
+.shop-point{white-space: nowrap;margin-left: -10px;}
+.link-type{float:left;}
 .link-type li{display:inline-block;width:150px;height:30px;background-color:#ddd;line-height:30px;border-radius:2px;cursor:pointer;text-align:center;float:left;margin-right:10px;}
 .link-type li.active{background-color:#44b549;color:#fff;}

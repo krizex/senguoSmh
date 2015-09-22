@@ -566,6 +566,22 @@
                 </div>
                 {% elif order_type == 3%}
                 <div class="w550 center-block">
+                    <span class="tit pull-left t1">满减服务费：</span>
+                    <div class="send-money clearfix to-edit-item edit_item_box omg_item">
+                        <span class="show_value show_item pull-left tit self-money-show">{{current_shop.config.min_charge_self or 0}}</span>
+                        <input class="pull-left money edit_item hidden" type="number" value="{{current_shop.config.min_charge_self or 0}}" id="self-money"/>
+                        <span class="tit pull-left set-left10">元</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden pl text-center text-white" id="self-money-sure">确定</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
+                    </div>
+                    <span class="tit pull-left t1">服务费：</span>
+                    <div class="send-freight clearfix to-edit-item edit_item_box omg_item">
+                        <span class="show_value show_item pull-left tit self-freight-show">{{current_shop.config.freight_self or 0}}</span>
+                        <input class="pull-left freight edit_item hidden" type="number" value="{{current_shop.config.freight_self or 0}}" id="self-freight"/>
+                        <span class="tit pull-left set-left10">元</span>
+                        <a href="javascript:;" class="sure-btn pull-right edit_item hidden text-center text-white" id="self-freight-sure">确定</a>
+                        <a href="javascript:;" class="edit set-inl-blo show_item pull-left to-edit" style="display:none"></a>
+                    </div>
                     <p class="text-grey3 f14">自提时间设置<span class="text-grey9">（添加、编辑、启用、停用自提时间）</span></p>
                     <div class="self-day mt20 group">
                         <span class="tit pull-left t1"> 今天明天：</span>

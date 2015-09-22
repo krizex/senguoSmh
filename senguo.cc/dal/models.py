@@ -535,7 +535,7 @@ class Shop(MapBase, _CommonApi):
 	shop_province = Column(TINYINT,index=True)
 	shop_city = Column(TINYINT,index=True)
 	shop_address_detail = Column(String(1024), nullable=False)
-	shop_sales_range = Column(String(128))
+	shop_sales_range = Column(String(128)) #备用
 	lat              = Column(MyReal,nullable=False,default=0)  #纬度
 	lon              = Column(MyReal,nullable=False,default=0)  #经度
 	area_type = Column(TINYINT,nullable=False,default=0) #区域类型
@@ -1564,7 +1564,7 @@ class Config(MapBase, _CommonApi):
 	freight_on_time = Column(SMALLINT,nullable=False, default=0)  # 按时达运费
 	min_charge_now = Column(SMALLINT,nullable=False, default=25) #立即送起送金额
 	freight_now = Column(SMALLINT,nullable=False, default=2)  # 立即送运费
-	stop_range = Column(SMALLINT,nullable=False, default=0) #下单截止时间（分钟）
+	stop_range = Column(SMALLINT,nullable=False, default=0) #按时达下单截止时间（分钟）
 	start_time_now = Column(Time,nullable=False,default="9:00") #立即送起始时间
 	end_time_now = Column(Time,nullable=False,default="23:00") #立即送结束时间
 	ontime_on = Column(Boolean,nullable=False, default=True)
@@ -1576,7 +1576,7 @@ class Config(MapBase, _CommonApi):
 	notices = relationship("Notice") #公告设置
 	periods = relationship("Period") #时间段设置
 
-	intime_period = Column(Integer,nullable=False,default = 30)
+	intime_period = Column(Integer,nullable=False,default = 30) #立即送送达时间
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(TINYINT,nullable=False,default = 1)
 	cash_on_active = Column(TINYINT,nullable=False,default = 0)#0:货到付款关闭 1:货到付款付开启 5.4
@@ -1598,6 +1598,8 @@ class Config(MapBase, _CommonApi):
 	self_addresses = relationship("SelfAddress")
 
 	comment_active = Column(TINYINT,nullable=False,default = 1) #0:comment off 1:comment on
+	freight_self = Column(SMALLINT,nullable=False, default=0) #自提服务费 2015-09-19 yy
+	min_charge_self =  Column(SMALLINT,nullable=False, default=0) #自提满一定金额减免服务费
 
 #自提地址 7.30 max10
 class SelfAddress(MapBase,_CommonApi):
@@ -1944,7 +1946,7 @@ class CouponsShop(MapBase, _CommonApi):
  	from_get_date=Column(Integer)
  	to_get_date=Column(Integer)
  	use_goods_group=Column(Integer)
- 	use_goods=Column(Integer)
+ 	use_goods=Column(Integer) #折扣商品，-2:全场折扣 -1:分组折扣 其他:折扣商品ID
  	use_rule=Column(Float)
  	total_number=Column(Integer)
  	get_number=Column(Integer)
@@ -2057,16 +2059,16 @@ class CustomerSeckillGoods(MapBase, _CommonApi):
 	status = Column(TINYINT,nullable=False,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
 
 
-#申请退款
+# 申请退款
 class ApplyRefund(MapBase,_CommonApi):
 	__tablename__ = 'apply_refund'
 	id          = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
-	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False)
-	order_id    = Column(Integer,nullable=False) #订单ID
+	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False,default=0)
+	order_id    = Column(Integer,nullable=False,default=0) #订单ID
 	order_num   = Column(String(15))  #订单编号
-	refund_type = Column(Integer) #0:微信，1:支付宝
-	refund_fee  = Column(Float)  #退款金额。一般等于订单总额
-	has_done    = Column(Float,default=0)  #退款申请是否被确认,
+	refund_type = Column(TINYINT,nullable=False,default=0) #0:微信，1:支付宝
+	refund_fee  = Column(Float,nullable=False,default=0)  #退款金额。一般等于订单总额
+	has_done    = Column(TINYINT,nullable=False,default=0)  #退款申请是否被确认
 	refund_url  = Column(String(450))    #支付宝退款地址，仅当退款类型为支付宝时有效
 	transaction_id=Column(String(64))    #申请退款订单对应的支付编号
 	create_time = Column(DateTime, nullable=False, default=func.now())

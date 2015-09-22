@@ -24,4 +24,11 @@ $(document).ready(function(){
     $(".tab-bm-list li").removeClass("active").eq(index).addClass("active");
     $(".head_tab").addClass("hide").eq(index).removeClass("hide");
     $(".main_tab").addClass("hide").eq(index).removeClass("hide");
+}).on("click",".order-links",function(){
+    if($(this).hasClass("forbid-in")){
+        Tip("该方式处于关闭状态，请开启后再查看");
+        return false;
+    }else{
+        window.location.href=$(this).attr("url");
+    }
 });

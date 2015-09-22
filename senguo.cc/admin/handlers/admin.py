@@ -2429,6 +2429,12 @@ class Order(AdminBaseHandler):
 				return self.send_error(403)
 			self.current_shop.config.self_end_time = int(data["end_self"])
 			self.session.commit()
+		elif action == "edit_min_charge_self":
+			self.current_shop.config.min_charge_self = int(data["min_charge_self"]) or 0
+			self.session.commit()
+		elif action == "edit_freight_self":
+			self.current_shop.config.freight_self = int(data["freight_self"]) or 0
+			self.session.commit()
 		# 添加自提点地址
 		elif action == "add_self_address": #7.30
 			try:
@@ -2559,7 +2565,7 @@ class Order(AdminBaseHandler):
 				elif order.status > 4:
 					return self.send_fail("订单已经完成，不能删除")
 				if order.pay_type == 3 and order.status != -1:
-					return self.send_fail("在线支付『已付款』的订单不在此处进行处理")
+					return self.send_fail("在线支付『已付款』的订单请联系卖家进行取消")
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
