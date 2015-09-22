@@ -432,8 +432,7 @@ var allList=function(page,action,_group_id){
     }
     $.postJson(url,args,function(res){
         $(".wrap-loading-box").remove();
-        if(res.success)
-        {
+        if(res.success){
             aindex++;
             var nomore = res.nomore;
             if(nomore==true){
@@ -448,8 +447,10 @@ var allList=function(page,action,_group_id){
                     loaded();
                 }
             }
-        }
-        else {
+        }else {
+            if(!res.error_text){
+                window.location.reload(true);
+            }
             noticeBox(res.error_text);
         }
     });
@@ -510,7 +511,9 @@ var goodsList=function(page,action,_group_id){
                     }, 0);
                 }
             }else {
-                window.location.reload(true);
+                if(!res.error_text){
+                    window.location.reload(true);
+                }
                 noticeBox(res.error_text);
             }
         });
