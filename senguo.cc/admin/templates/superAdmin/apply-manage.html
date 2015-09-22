@@ -3,16 +3,16 @@
 <div class="admin-right pull-right">
     <ul class="nav apply-nav" role="tablist">
         <li class=" pull-left">
-            <a href="{{reverse_url('superShopManage')}}?action=all_temp&search=jyj&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1">所有店铺({{count['all_temp']}})</a>
+            <a href="{{reverse_url('superShopManage')}}?action=all_temp&page=1">所有店铺({{count['all_temp']}})</a>
         </li>
         <li class=" pull-left">
-            <a href="{{reverse_url('superShopManage')}}?action=applying&search=jyj&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1">正在申请接入店铺({{count['applying']}})</a>
+            <a href="{{reverse_url('superShopManage')}}?action=applying&page=1">正在申请接入店铺({{count['applying']}})</a>
         </li>
         <li class=" pull-left">
-            <a href="{{reverse_url('superShopManage')}}?action=accepted&search=jyj&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1">已经通过申请店铺({{count['accepted']}})</a>
+            <a href="{{reverse_url('superShopManage')}}?action=accepted&page=1">已经通过申请店铺({{count['accepted']}})</a>
         </li>
         <li class=" pull-left">
-            <a href="{{reverse_url('superShopManage')}}?action=declined&search=jyj&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1">已被拒绝店铺({{count['declined']}})</a>
+            <a href="{{reverse_url('superShopManage')}}?action=declined&page=1">已被拒绝店铺({{count['declined']}})</a>
         </li>
     </ul>
 
