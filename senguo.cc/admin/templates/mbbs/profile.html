@@ -1,129 +1,71 @@
 {% extends 'base.html' %}
-{% block title %}店家个人中心{% end %}
+{% block title %}个人中心{% end %}
 {% block head %}
 {% end %}
 {% block header %}
-<div class="header">
-    <span>{{shop.shop_name}}</span>
-    <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"></a>
-</div>
+<span id="title">个人中心</span>
 {% end %}
 {% block content %}
-{% set shop_status="" %}
-{% set shop_auth="" %}
-{% if shop.status == 0 %}
-{% set shop_status="关闭" %}
-{% elif shop.status == 1 %}
-{% set shop_status="营业中" %}
-{% elif shop.status == 2 %}
-{% set shop_status="筹备中" %}
-{% elif shop.status == 3 %}
-{% set shop_status="休息中" %}
-{% end %}
-{% if shop.status in[1,4] %}
-{% set shop_auth="个人认证" %}
-{% elif shop.status in[2,3] %}
-{% set shop_auth="企业认证" %}
-{% end %}
 <div class="shop-profile">
-    <div class="profile-top white-box">
-        <div class="sw-tip shopping" data-status="1"></div>
-        <span class="sw-tip-txt">{{shop_status}}</span>
-        <dl class="dl ptm6">
-            <dt>
-                <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}" alt="店铺logo"/>
-            </dt>
-            <dd>
-                <p class="title c333 mt4">{{shop.shop_name}}<span class="shop-auth" data-auth="{{shop_auth}}">个人认证</span></p>
-                <p class="c333 mt15">{% if shop.shop_code %}店铺链接 : <a href="{{reverse_url('Market',shop.shop_code)}}" class="shop-link">http://senguo.cc/{{shop.shop_code}}</a>{% else %}未设置店铺号 {% end %}</p>
-            </dd>
-        </dl>
-    </div>
-    <div class="white-box pm8">
-        <p class="box-title developing">
-            <a href="javascript:;" class="more fr">更多</a>
-            <span class="box-icon data-stat">数据统计</span>
-        </p>
-        <ul class="group stat-list">
-            <li>
-                <p class="name">新增用户</p>
-                <p class="num">{{new_follower_sum}}</p>
-            </li>
-            <li>
-                <p class="name">新增订单</p>
-                <p class="num">{{new_order_sum}}</p>
-            </li>
-            <li>
-                <p class="name">总订单数</p>
-                <p class="num">{{order_sum}}</p>
-            </li>
-            <li>
-                <p class="name">总营业额</p>
-                <p class="num">{{total_money}}</p>
-            </li>
-        </ul>
-    </div>
-    <div class="white-box">
-        <p class="box-title">
-            <a href="{{reverse_url('MadminOrder')}}" class="more fr">更多</a>
-            <span class="box-icon data-order">订单管理</span>
-        </p>
-        <ul class="group stat-order-list pm8">
-            <a href="{{reverse_url('MadminOrder')}}">
-                <li>
-                    <p class="name">按时达</p>
-                    <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
-                </li>
-            </a>
-            <a href="{{reverse_url('MadminOrder')}}">
-                <li>
-                    <p class="name">立即送</p>
-                    <p class="num"><span class="tip-num">{{intime_count}}</span></p>
-                </li>
-            </a>
-            <a href="{{reverse_url('MadminOrder')}}">
-                <li>
-                    <p class="name">自提</p>
-                    <p class="num"><span class="tip-num">{{self_count}}</span></p>
-                </li>
-            </a>
-        </ul>
-        <a href="javascript:;">
-            <p class="box-title btf5">
-                <span class="more fr">&nbsp;</span>
-                <span class="fr c000">{{goods_count}}</span>
-                <span class="box-icon data-goods">商品管理</span>
-            </p>
-        </a>
-        <a href="javascript:;"  class="developing">
-            <p class="box-title btf5">
-                <span class="more fr">&nbsp;</span>
-                <span class="fr c000">{{staff_count}}</span>
-                <span class="box-icon data-staff">员工管理</span>
-            </p>
-        </a>
-        <a href="javascript:;"  class="developing">
-            <p class="box-title btf5">
-                <span class="more fr">&nbsp;</span>
-                <span class="fr c000">{{shop.fans_count}}</span>
-                <span class="box-icon data-user">用户管理</span>
-            </p>
-        </a>
-    </div>
-    <div class="white-box">
-        <a href="{{reverse_url('MadminComment')}}">
-            <p class="box-title">
-                <span class="more fr">&nbsp;</span>
-                <span class="fr tip-num mt12">{{comment_count}}</span>
-                <span class="box-icon data-msg">消息与评价</span>
-            </p>
-        </a>
-        <a href="javascript:;" class="shop-balance">
-            <p class="box-title btf5">
-                <!-- <span class="fr c000">{{shop.shop_balance}}</span> -->
-                <span class="box-icon data-account">账户余额</span>
-            </p>
-        </a>
+    <div class="wrap-profile">
+        <div class="profile-top">
+            <div class="profile-user">
+                <span class="img-bd">
+                    <img src="{{handler.current_user.accountinfo.headimgurl_small or '/static/images/person.png'}}" alt="{{handler.current_user.accountinfo.nickname}}" class="pro-img"/>
+                </span>
+                <p class="profile-name mt10">{{handler.current_user.accountinfo.nickname}}</p>
+            </div>
+            <ul class="group nav-profle">
+                <li class="active">发布</li>
+                <li>通知</li>
+                <li>收藏</li>
+                <li>草稿</li>
+            </ul>
+        </div>
+        <div class="wrap-profile-list mt10">
+            <ul class="topic-list" id="topic_list">
+
+            </ul>
+            <ul class="inform-list hide" id="inform_list">
+            </ul>
+        </div>
+        <p class="no-result mt10">~没有更多了~</p>
     </div>
 </div>
+<ul class="hide" id="item1">
+    <li>
+        <h4 class="topic-btitle" title="">
+            <span class="topic-class"></span>
+            <span class="topic-title"></span>
+        </h4>
+        <div class="wrap-topic-attr">
+            <div class="fr">
+                <a href="javascript:;" class="icon-topic dianzan">0</a>
+                <a href="javascript:;" class="icon-topic reply">0</a>
+                <a href="javascript:;" class="topic-opt edit_topic">编辑</a>
+                <a href="javascript:;" class="topic-opt del_topic">删除</a>
+            </div>
+            <span class="topic-tm f14"></span>
+        </div>
+    </li>
+</ul>
+<ul class="hide" id="item2">
+    <li>
+        <h4 class="topic-btitle" title="">
+            <span class="topic-class"></span>
+            <span class="topic-tt"></span>
+        </h4>
+        <p class="c666 f14 pro-txt mt6 hide"></p>
+        <div class="wrap-topic-attr mt10">
+            <div class="fr">
+                <a href="javascript:;" class="topic-opt edit_topic">编辑</a>
+                <a href="javascript:;" class="topic-opt del_topic">删除</a>
+            </div>
+            <span class="c999 f14 topic-tm"></span>
+        </div>
+    </li>
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('bbs/js/profile.js')}}"></script>
 {% end %}

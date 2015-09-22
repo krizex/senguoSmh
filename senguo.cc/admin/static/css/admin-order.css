@@ -12,7 +12,7 @@
 .order-list-action .select-all{margin-top:2px;margin-left:5px;}
 .order-list-item{margin-bottom:10px;position:relative;padding-top:10px;border:1px solid #f4f4f4;transition:0.3s;-webkit-transition:0.3s;border-left:2px solid #f4f4f4;}
 .order-list-item.time-out{border-left:2px solid #ff6666;}
-.order-list-item:hover{background:#eee;cursor:pointer;border-color:#eee;}
+.order-list-item:hover{background:#eee;cursor:pointer;border-color:#eee;border-left: 2px solid #44b549;}
 .order-list-item:hover .custom-order{background:#fff;}
 
 .order-list-item .arrow{position:absolute;bottom:0;right:0;width:0;height:0;border-style: solid;border-width: 0 0 20px 20px;border-color: transparent transparent #44b549 transparent;}

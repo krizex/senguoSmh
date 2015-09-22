@@ -142,6 +142,16 @@ function getCookie(key){
     }
     return '';
 }
+function removeCookie(name){
+    if(name.indexOf(",")==-1){
+        SetCookie(name,1,-1);
+    }else{
+        var arr = name.split(",");
+        for(var i=0; i<arr.length; i++){
+            SetCookie(arr[i],1,-1);
+        }
+    }
+}
 function SetCookie(name,value,days){
     var days=arguments[2]?arguments[2]:30; //此 cookie 将被保存 30 天
     var exp=new Date();    //new Date("December 31, 9998");

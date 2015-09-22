@@ -201,7 +201,7 @@ class ShopList(FruitzoneBaseHandler):
 			# print(q.count(),'before')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
-			print(shop_count)
+			# print(shop_count)
 			# print(shop_count,'after')
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
@@ -259,7 +259,7 @@ class ShopList(FruitzoneBaseHandler):
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
 
-	@FruitzoneBaseHandler.check_arguments('id:int')
+	@FruitzoneBaseHandler.check_arguments('id:int','lat?:str','lon?:str')
 	def handle_admin_shop(self,province):
 		admin_id = int(self.args['id'])
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
@@ -267,7 +267,20 @@ class ShopList(FruitzoneBaseHandler):
 			return self.send_fail('shop_admin not found!')
 		shop_list = shop_admin.shops
 		shop_list = [x for x in shop_list if x.status >=0 ]
+		lat1 = None
+		lon1 = None
+		if self.args["lat"] != '[]':
+			lat1 = float(self.args['lat'])
+		if self.args["lon"] != '[]' :
+			lon1 = float(self.args['lon'])
 		shops = self.get_data(shop_list)
+		for shop in shops:
+			lat2 = shop['lat']
+			lon2 = shop['lon']
+			if lat1 and lon1 and lat2 and lon2:       
+				shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+			else:
+				shop['distance'] = 9999999
 		return self.send_success(shops=shops)
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
@@ -929,7 +942,7 @@ class SystemPurchase(FruitzoneBaseHandler):
 		# print(shop_id,customer_id,'idddddddddddddddddddddd')
 		price = float(self.args['price'])
 		if not (shop_id and customer_id and price):
-			return self.send_fail('抱歉,系统繁忙，请稍后重试')
+			return self.send_fail('抱歉，系统繁忙，请稍后重试')
 		# print(price)
 		# print('find the correct way to login?')
 		try:
