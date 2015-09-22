@@ -3829,14 +3829,14 @@ class payTest(CustomerBaseHandler):
 	def get(self):
 		totalPrice = self.get_cookie('money')
 		if not totalPrice:
-			return self.send_fail('充值金额未知，请进入个人中心重新充值')
+			return self.send_fail('充值金额未知，请点击返回重新充值')
 		totalPrice = float(totalPrice)
 		wxPrice    = int(totalPrice * 100)
 		shop_id = self.get_cookie('market_shop_id')
 		if not shop_id:
-			return self.send_fail('充值店铺未知，请重新进入个人中心进行充值')
+			return self.send_fail('充值店铺未知，请点击返回重新充值')
 		if not self.current_user.id:
-			return self.send_fail('请重新登陆，然后进个人中心进行充值')
+			return self.send_fail('登录超时，请重新登录后进行充值')
 		orderId = str(self.current_user.id) +'a'+str(shop_id)+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
 		qr_url=""
 		if not self.is_wexin_browser():

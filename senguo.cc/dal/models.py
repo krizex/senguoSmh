@@ -2059,16 +2059,16 @@ class CustomerSeckillGoods(MapBase, _CommonApi):
 	status = Column(TINYINT,nullable=False,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
 
 
-#申请退款
+# 申请退款
 class ApplyRefund(MapBase,_CommonApi):
 	__tablename__ = 'apply_refund'
 	id          = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
-	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False)
-	order_id    = Column(Integer,nullable=False) #订单ID
+	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False,default=0)
+	order_id    = Column(Integer,nullable=False,default=0) #订单ID
 	order_num   = Column(String(15))  #订单编号
-	refund_type = Column(Integer) #0:微信，1:支付宝
-	refund_fee  = Column(Float)  #退款金额。一般等于订单总额
-	has_done    = Column(Float,default=0)  #退款申请是否被确认,
+	refund_type = Column(TINYINT,nullable=False,default=0) #0:微信，1:支付宝
+	refund_fee  = Column(Float,nullable=False,default=0)  #退款金额。一般等于订单总额
+	has_done    = Column(TINYINT,nullable=False,default=0)  #退款申请是否被确认
 	refund_url  = Column(String(450))    #支付宝退款地址，仅当退款类型为支付宝时有效
 	transaction_id=Column(String(64))    #申请退款订单对应的支付编号
 	create_time = Column(DateTime, nullable=False, default=func.now())
