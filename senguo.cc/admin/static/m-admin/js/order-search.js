@@ -157,7 +157,7 @@ function searchOrder(id){
                                 pay_type = "在线支付-支付宝";
                             }
                         }
-                         switch (order_status){
+                        switch (order_status){
                             case -1:
                                 $("#status-txt").text('未支付');
                                 width='order-w0';
@@ -173,7 +173,11 @@ function searchOrder(id){
                                 if(del_reason){
                                     if(del_reason=='timeout'){
                                         del_status='该订单15分钟未支付，已自动取消';
-                                    }else{
+                                    }
+                                    else if(del_reason=='refund'){
+                                        del_status='该订单已退款并删除';
+                                    }
+                                    else{
                                         del_status='该订单已删除（原因：'+del_reason+')';
                                     }
                                 }

@@ -535,6 +535,7 @@ function itemDelete(target,menu_type,index) {
     $.postJson(url, args, function (res) {
             if (res.success) {
                 $(".fruits-lst li").eq(index).remove();
+                $("#fruits_num").html(parseInt($("#fruits_num").html())-1);
                 target.remove();
                 t_price-=parseFloat(price);
                 $list_total_price.text(t_price);

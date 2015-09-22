@@ -225,142 +225,141 @@ function history(action,page){
 
                // add by jyj 2015-7-4
                if(action == 'balance_list'){
-                        $('.wrap-acc-num').addClass('hidden');
-                        $('.tb-account').addClass('hidden');
-                        $('.shop-list-item').empty();
-                        $('.list-head').empty();
-                        $('.tb-account-shoplist').removeClass('hidden');
+                    $('.wrap-acc-num').addClass('hidden');
+                    $('.tb-account').addClass('hidden');
+                    $('.shop-list-item').empty();
+                    $('.list-head').empty();
+                    $('.tb-account-shoplist').removeClass('hidden');
+                    if(num == 1){
+                    $('.pre-page').addClass('hide');
+                    }
+                    else{
+                        $('.pre-page').removeClass('hide');
+                    }
+                    if(page_sum>1){
+                        $('.list-pagination').removeClass('hide');
+                        $('.page-total').text(page_sum);
+                    }
+                    else{
+                        $('.list-pagination').addClass('hide');
+                    }
+                    if(page==page_sum){
+                        $('.next-page').addClass('hide');
+                        $('.pre-page').removeClass('hide');
+                    }
+                    else{
+                        $('.next-page').removeClass('hide');
+                    }
+                    if(page_sum==0){
+                        $('.no-list').removeClass('hide');
+                    }
+                    else{
+                        $('.no-list').addClass('hide');
+                    }
 
-                         if(num == 1){
-                            $('.pre-page').addClass('hide');
-                         }
-                        else{
-                            $('.pre-page').removeClass('hide');
-                        }
-                        if(page_sum>1){
-                            $('.list-pagination').removeClass('hide');
-                            $('.page-total').text(page_sum);
-                        }
-                        else{
-                            $('.list-pagination').addClass('hide');
-                        }
-                        if(page==page_sum){
-                            $('.next-page').addClass('hide');
-                            $('.pre-page').removeClass('hide');
-                        }
-                        else{
-                            $('.next-page').removeClass('hide');
-                        }
-                        if(page_sum==0){
-                            $('.no-list').removeClass('hide');
-                        }
-                        else{
-                            $('.no-list').addClass('hide');
-                        }
+                    var head = '<tr class="list-head">'
+                                         +'<th class="pl20">店铺名称</th>'
+                                         +'<th>最近变更时间</th>'
+                                         +'<th class="txt-ar">店铺余额</th>'
+                                         +'<th></th>'
+                                         '</tr>'
+                    var render = template.compile(head);
+                    var list_head = render();
+                    $('.tb-account-shoplist').append(list_head);
 
-                        var head = '<tr class="list-head">'
-                                             +'<th class="pl20">店铺名称</th>'
-                                             +'<th>最近变更时间</th>'
-                                             +'<th class="txt-ar">店铺余额</th>'
-                                             +'<th></th>'
-                                             '</tr>'
-                        var render = template.compile(head);
-                        var list_head = render();
-                        $('.tb-account-shoplist').append(list_head);
+                    for(var i in history){
+                        var his = history[i];
+                        
+                        var item= '<tr class="con shop-list-item">'
+                                        +'<td class="pl20"><a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a></td>'
+                                        +'<td class="c999">{{latest_time}}</td>'
+                                        +'<td class="green-txt txt-ar"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
+                                        +'<td></td>'
+                                        '</tr>'
+                        render=template.compile(item);
 
-                        for(var i in history){
-                            var his = history[i];
-                            
-                            var item= '<tr class="con shop-list-item">'
-                                            +'<td class="pl20"><a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a></td>'
-                                            +'<td class="c999">{{latest_time}}</td>'
-                                            +'<td class="green-txt txt-ar"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
-                                            +'<td></td>'
-                                            '</tr>'
-                            render=template.compile(item);
-
-                            var shop_code=his['shop_code'];
-                            var shop_name=his['shop_name'];
-                            var latest_time=his['latest_time'];
-                            var balance=his['total_price'].toFixed(2);
-                            
-                            var list_item =render({
-                                shop_code:shop_code,
-                                shop_name:shop_name,
-                                latest_time:latest_time,
-                                balance:balance,
-                            });
-                            $('.tb-account-shoplist').append(list_item);
-                        }
+                        var shop_code=his['shop_code'];
+                        var shop_name=his['shop_name'];
+                        var latest_time=his['latest_time'];
+                        var balance=his['total_price'].toFixed(2);
+                        
+                        var list_item =render({
+                            shop_code:shop_code,
+                            shop_name:shop_name,
+                            latest_time:latest_time,
+                            balance:balance,
+                        });
+                        $('.tb-account-shoplist').append(list_item);
+                    }
                }
                //
                else{
-                        $('.tb-account-shoplist').addClass('hidden');
-                        $('.tb-account').removeClass('hidden');
-                        if(action == 'cash_history'){
-                            $('.wrap-acc-num').addClass('hidden');
-                            $('.cash-count').removeClass('hidden');
-                            $('.cash').text(res.total);
-                            $('.cash-today').text(res.total_today);
-                       }
-                       else if(action == 'recharge'){
-                            $('.wrap-acc-num').addClass('hidden');
-                            $('.charge-count').removeClass('hidden');
-                            $('.charge-total').text(res.total);
-                            $('.charge-use').text(res.pay);
-                            $('.charge-left').text(res.left);
-                            $('.charge-total-today').text(res.total_today);
-                            $('.charge-use-today').text(res.pay_today);
-                       }
-                       else if(action == 'online'){
-                            $('.wrap-acc-num').addClass('hidden');
-                            $('.online-count').removeClass('hidden');
-                            $('.online-total').text(res.total);
-                            $('.online-times').text(res.times);
-                            $('.online-person').text(res.persons);
-                            $('.online-total-today').text(res.total_today);
-                            $('.online-times-today').text(res.times_today);
-                            $('.online-person-today').text(res.persons_today);
-                       }
-                       else if(action=='all_history'){
+                    $('.tb-account-shoplist').addClass('hidden');
+                    $('.tb-account').removeClass('hidden');
+                    if(action == 'cash_history'){
                         $('.wrap-acc-num').addClass('hidden');
-                       }
-                       if(num == 1){
-                        $('.pre-page').addClass('hide');
-                       }
-                       else{
-                        $('.pre-page').removeClass('hide');
-                       }
-                       if(page_sum>1){
-                        $('.list-pagination').removeClass('hide');
-                        $('.page-total').text(page_sum);
-                       }
-                       else{
-                        $('.list-pagination').addClass('hide');
-                       }
-                       if(page==page_sum){
-                        $('.next-page').addClass('hide');
-                        $('.pre-page').removeClass('hide');
-                       }
-                       else{
-                        $('.next-page').removeClass('hide');
-                       }
-                       if(page_sum==0){
-                        $('.no-list').removeClass('hide');
-                       }
-                       else{
-                        $('.no-list').addClass('hide');
-                       }
-                       for(var i in history){
+                        $('.cash-count').removeClass('hidden');
+                        $('.cash').text(res.context['total']);
+                        $('.cash-today').text(res.context['total_today']);
+                   }
+                   else if(action == 'recharge'){
+                        $('.wrap-acc-num').addClass('hidden');
+                        $('.charge-count').removeClass('hidden');
+                        $('.charge-total').text(res.context['total']);
+                        $('.charge-use').text(res.context['pay']);
+                        $('.charge-left').text(res.context['left']);
+                        $('.charge-total-today').text(res.context['total_today']);
+                        $('.charge-use-today').text(res.context['pay_today']);
+                   }
+                   else if(action == 'online'){
+                        $('.wrap-acc-num').addClass('hidden');
+                        $('.online-count').removeClass('hidden');
+                        $('.online-total').text(res.context['total']);
+                        $('.online-times').text(res.context['times']);
+                        $('.online-person').text(res.context['persons']);
+                        $('.online-total-today').text(res.context['total_today']);
+                        $('.online-times-today').text(res.context['times_today']);
+                        $('.online-person-today').text(res.context['persons_today']);
+                   }
+                   else if(action=='all_history'){
+                    $('.wrap-acc-num').addClass('hidden');
+                   }
+                   if(num == 1){
+                    $('.pre-page').addClass('hide');
+                   }
+                   else{
+                    $('.pre-page').removeClass('hide');
+                   }
+                   if(page_sum>1){
+                    $('.list-pagination').removeClass('hide');
+                    $('.page-total').text(page_sum);
+                   }
+                   else{
+                    $('.list-pagination').addClass('hide');
+                   }
+                   if(page==page_sum){
+                    $('.next-page').addClass('hide');
+                    $('.pre-page').removeClass('hide');
+                   }
+                   else{
+                    $('.next-page').removeClass('hide');
+                   }
+                   if(page_sum==0){
+                    $('.no-list').removeClass('hide');
+                   }
+                   else{
+                    $('.no-list').addClass('hide');
+                   }
+                   for(var i in history){
                         var item= '<tr class="con">'
                         //chang by jyj 2015-6-16
-        +                                       '<td class="pl20">店铺名：<a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a> {{title}} {{record}}</td>'
-                       // 
-        +                                       '<td class="c999">{{time}}</td>'
-        +                                       '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
-        +                                       '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
-        +                                       '<td class="txt-ar pr20">{{admin_id}}</td>'
-                                        '</tr>'
+                            + '<td class="pl20">店铺名：<a href="/super/balance/{{shop_code}}" title="点击查看该店铺余额详情">{{shop_name}}</a> {{title}} {{record}}</td>'
+                                           // 
+                            + '<td class="c999">{{time}}</td>'
+                            + '<td class="orange-txt txt-ar"><span class="f16">{{balance_value}}</span><span class="c999">元</span></td>'
+                            + '<td class="green-txt txt-ar pr20"><span class="f16">{{balance}}</span><span class="c999">元</span></td>'
+                            + '<td class="txt-ar pr20">{{admin_id}}</td>'
+                            '</tr>'
                         var render=template.compile(item);
                         var shop_name=history[i]['shop_name'];
                         var time=history[i]['time'];
@@ -393,16 +392,13 @@ function history(action,page){
                             record:record
                         });
                         $('.tb-account').append(list_item);
-
-                        }
+                    }
                 }
             }
             else{
                     alert(res.error_text);
             }
         }
-        //change by jyj 2015-6-16
-        // function(){alert('网络好像不给力呢~ ( >O< ) ~');}
-        );
+    );
 };
 
