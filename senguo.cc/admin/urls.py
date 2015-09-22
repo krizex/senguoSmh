@@ -113,7 +113,8 @@ handlers = [
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
 	#微信退款
-	(r"/customer/online/refundwxpay",handlers.onlinePay.RefundWxpay,{},"refundWxpay"),
+	(r"/customer/online/refund",handlers.onlinePay.RefundWxpay,{},"onlinerefund"),
+	(r"/customer/online/refundcallback",handlers.onlinePay.RefundCallback,{},"refundcallback"),
 
 	#支付宝在线支付
 	(r"/customer/online/aliPaycallback",handlers.onlinePay.OnlineAliPay,{'action':'AliPayCallback'},
@@ -191,6 +192,9 @@ handlers = [
 	# added by woody 8.3
 	(r"/super/admin",handlers.superadmin.AdminManager,{},"superareaadmin"),
 	(r"/super/newuser",handlers.superadmin.MakeNewUser,{},"newuser"),
+
+	# 9.15 woody
+	(r"/super/refund_apply",handlers.superadmin.ApplyRefund,{},"superRefundApply"),
 
 	## 店铺申请接入管理
 	# 所有店铺

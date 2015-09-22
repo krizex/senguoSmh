@@ -2565,7 +2565,7 @@ class Order(AdminBaseHandler):
 				elif order.status > 4:
 					return self.send_fail("订单已经完成，不能删除")
 				if order.pay_type == 3 and order.status != -1:
-					return self.send_fail("在线支付『已付款』的订单暂时不能删除")
+					return self.send_fail("在线支付『已付款』的订单请联系卖家进行取消")
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)

@@ -156,7 +156,7 @@
 .clip{white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
 .select-slide{width: 90%;height: 19px;border: none;font-size: 14px;color: #333;outline: none;-webkit-tap-highlight-color:rgba(0,0,0,0);}
 .red-tip-txt{position: absolute;width: 70px;font-size: 12px;color: #f25f5f;line-height: 14px;right: 10px;top: 2px;}
-.shop-deli{color: #f25f5f;line-height: 18px;padding-bottom: 4px;text-indent: 74px;}
+.shop-deli{color: #f25f5f;line-height: 18px;padding-bottom: 4px;text-indent: 70px;}
 .shop-self-deli{color: #f25f5f;line-height: 18px;padding-bottom: 4px;text-indent: 74px;}
 .area-text-cont{padding: 0 24px;color: #333;font-size: 14px;line-height: 18px;text-align: center;}
 .area-text-tip{padding: 10px 0;color: #666;font-size: 14px;text-align: center;}

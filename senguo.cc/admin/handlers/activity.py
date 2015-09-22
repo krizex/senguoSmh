@@ -448,13 +448,18 @@ class CouponProfile(CustomerBaseHandler):
 	def get(self):
 		current_customer_id=self.current_user.id
 		action=self.args["action"]
-		shop_id = self.args['shop_id']
+		if self.args['shop_id']:
+			shop_id = self.args['shop_id']
+		elif self.get_cookie("market_shop_id"):
+			shop_id = self.get_cookie("market_shop_id")
+		else:
+			return self.send_fail("[CouponProfile]Get shop_id error")
+		# 我的优惠券
 		if action=="get_all":
-			current_shop_id=self.get_cookie("market_shop_id")
 			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]
-			q=self.session.query(models.CouponsShop).filter_by(shop_id=current_shop_id,coupon_type=0,closed=0).all()
+			q=self.session.query(models.CouponsShop).filter_by(shop_id=shop_id,coupon_type=0,closed=0).all()
 			for x in q:
 				if  x.to_get_date>now_date:
 					if x.use_goods_group==0:
@@ -464,12 +469,12 @@ class CouponProfile(CustomerBaseHandler):
 					elif x.use_goods_group==-2:
 						use_goods_group="所有分组"
 					else:
-						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=current_shop_id,id=x.use_goods_group).first()
+						q1=self.session.query(models.GoodsGroup).filter_by(shop_id=shop_id,id=x.use_goods_group).first()
 						use_goods_group=q1.name
 					if x.use_goods==-1:
 						use_goods="所有商品"
 					else:
-						q1=self.session.query(models.Fruit).filter_by(shop_id=current_shop_id,id=x.use_goods).first()
+						q1=self.session.query(models.Fruit).filter_by(shop_id=shop_id,id=x.use_goods).first()
 						use_goods=q1.name
 					from_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.from_valid_date))
 					to_valid_date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime(x.to_valid_date))
@@ -485,14 +490,9 @@ class CouponProfile(CustomerBaseHandler):
 				else:
 					pass
 			return self.render("coupon/coupon-profile.html",shop_id = shop_id ,output_data=data)
+		# 发现-优惠券
 		elif action=="get_one":
-			market_shop_id=self.args["shop_id"]
-			try:
-				shop = self.session.query(models.Shop).filter_by(id=market_shop_id).first()
-				current_shop_id=shop.id
-				self.set_cookie("market_shop_id",str(current_shop_id))
-			except:
-				return self.render("coupon/coupon-profile.html",shop_id = market_shop_id, output_data=[])
+			self.set_cookie("market_shop_id",str(shop_id))
 			self.updatecoupon(current_customer_id)
 			now_date=int(time.time())
 			data=[]

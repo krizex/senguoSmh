@@ -1,9 +1,6 @@
 {% extends 'base.html' %}
 {% block title %}{{article["title"]}}{% end %}
 {% block head %}
-<style type="text/css">
-    img,section,fieldset{max-width: 100% !important;height: auto !important;}
-</style>
 {% end %}
 {% block header %}
 <span id="title">文章详情</span>
@@ -14,7 +11,7 @@
 <div class="wrap-post pm20" data-id="{{article['id']}}">
     <div class="post-box">
         <h3 class="post-title">{{article["title"]}}</h3>
-        <p class="post-2title mt10 c999"><span class="topic-class detail-type">{{article["type"]}}</span><span class="author clip c999">{{article["nickname"]}}</span>{{article["time"]}}</p>
+        <p class="post-2title mt10 c999"><span class="topic-class detail-type">{{article["type"]}}</span><span class="author clip c999">{{article["time"]}}</span>@{{article["nickname"]}}</p>
         <div class="post-cont">
             {% raw article["article"] %}
         </div>
