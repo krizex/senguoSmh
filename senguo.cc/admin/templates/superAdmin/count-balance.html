@@ -5,6 +5,7 @@
 {% set page = context.get("page", "detail")%}
 {% set detail_active = ""%}
 {% set cash_active = ""%}
+{% set refund_active = "" %}
 
 <!-- add by jyj 2015-6-17 -->
 {% set check_active = ""%}
@@ -17,6 +18,8 @@
     {% set cash_active = "active"%}
 <!--  -->
 <!-- add by jyj 2015-6-17 -->
+{% elif page == "refund" %}
+    {% set refund_active = "active" %}
 {% else %}
     {% set check_active = "active"%}
 <!--  -->
@@ -34,6 +37,9 @@
             {% if level == 0 %}
             <li class="admin nav_item {{check_active}}">
                 <a href="{{reverse_url('superCheckCash')}}">每日对账</a>
+            </li>
+            <li class="admin nav_item {{refund_active}}">
+                <a href="{{reverse_url('superRefundApply')}}">退款申请</a>
             </li>
             {% end %}
             <!-- - -->

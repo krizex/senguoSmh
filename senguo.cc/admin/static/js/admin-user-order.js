@@ -376,7 +376,7 @@ function orderItem(page){
                     }
                     $item.find('.name').text(nickname).attr('href','/admin/follower?action=orderuser&&wd='+customer_id);
                     $item.find('.receiver').text(receiver);
-                    $item.attr({'data-id':id,'data-type':type});
+                    $item.attr({'data-id':id,'data-type':type,"data-pay":pay_type,"data-online":online_type});
                     $item.find('.send-time').text(send_time);
                     $item.find('.order-code').text(num);
                     $item.find('.order-price').text(totalPrice);
@@ -410,7 +410,7 @@ function orderItem(page){
                        }
                         
                         $item.find('.price_edit').hide();
-                        if(status!=-1){$item.find('.delete-order').hide();}
+                        // if(status!=-1){$item.find('.delete-order').hide();}
                     }
                     else { 
                         $item.find('.pay-status').text('货到付款'); 
@@ -734,6 +734,8 @@ function orderDelete(target){
     var order_id=$box.attr('data-id');
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
+    var pay_type=parseInt($('.order-list-item').eq(index).attr("data-pay"));
+    var online_type=$('.order-list-item').eq(index).attr("data-online");
     if(!del_reason){
         return Tip('请输入订单删除的原因');
     }
@@ -746,8 +748,30 @@ function orderDelete(target){
     };
     var args={
         action:action,
-        data:data
+        data:data,
+        pay_type:pay_type,
+        online_type:online_type
     };
+    if (pay_type==3){
+        url = '/customer/online/refund'
+        if (online_type == 'wx'){
+            action = 'wx'
+            args = {
+                action:action,
+                order_id:order_id
+            };
+        };
+        if (online_type == 'alipay') {
+            action = 'alipay'
+            args = {
+                action:action,
+                order_id:order_id
+            };
+            alert(action)
+        };
+
+    }
+
     $.postJson(url,args,function(res){
             if(res.success){
                 $('.order_set_box').modal('hide');
