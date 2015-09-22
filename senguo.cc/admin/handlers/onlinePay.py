@@ -365,7 +365,6 @@ class OnlineWxPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
-		order.is_qrwxpay = 1 #表示该订单为扫码支付
 		order_num = order.num
 		totalPrice = order.new_totalprice
 		self.session.commit()
@@ -404,7 +403,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			##############################################################
 			print("[WeixinPay]handle WeixinPay Callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			data = self.request.body
-			# print("[WeixinPay]request.body:",self.request.body)
+			print("[WeixinPay]request.body:",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
@@ -413,7 +412,10 @@ class OnlineWxPay(CustomerBaseHandler):
 			order_num    = str(xmlArray['out_trade_no'])
 			order_num    = order_num.split('a')[0]
 			print("[WeixinPay]Callback order_num:",order_num)
-
+			try:
+				trade_type = xmlArray['trade_type']
+			except:
+				trade_type = None
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
 			# shop_id      = int(result[1])
@@ -438,7 +440,13 @@ class OnlineWxPay(CustomerBaseHandler):
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
 			totalPrice  = order.new_totalprice
-
+			try:
+				if trade_type == 'NATIVE':
+					order.isqrwxpay = 1 #表示该订单为扫码支付
+				else:
+					order.isqrwxpay = 0
+			except:
+				print("保险起见")
 			create_date = order.create_date.timestamp()
 			now         = datetime.datetime.now().timestamp()
 			time_difference = now - create_date
