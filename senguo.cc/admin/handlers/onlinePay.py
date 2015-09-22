@@ -108,14 +108,14 @@ class RefundWxpay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id=order_id).first()
 		if not order:
 				return self.send_fail('order not found')
-		totalPrice = order.totalPrice	
+		totalPrice = order.new_totalprice
 		num = order.num
 		if order.is_qrwxpay:
 			num = num + 'a'
 		transaction_id = order.transaction_id
 		customer_id = order.customer_id
-		totalPrice  = order.totalPrice
-		print(transaction_id)
+		totalPrice  = order.new_totalprice
+		# print(transaction_id)
 		if action == 'wx':
 			wx_price = int(100 * totalPrice)
 			refund_pub = Refund_pub()
@@ -125,7 +125,7 @@ class RefundWxpay(CustomerBaseHandler):
 			refund_pub.setParameter('refund_fee',wx_price)
 			refund_pub.setParameter('op_user_id','1223121101')
 			res = refund_pub.postXmlSSL()
-			print(res)
+			# print(res)
 			if isinstance(res,bytes):
 				res    = res.decode('utf-8')
 			else:
@@ -134,6 +134,7 @@ class RefundWxpay(CustomerBaseHandler):
 			res_dict = refund_pub.xmlToArray(res)
 			#print(res_dict)
 			return_code = res_dict.get('result_code',None)
+			err_code_des = res_dict.get('err_code_des',None)
 			print('refund',return_code)
 			if return_code == 'SUCCESS' or return_code == 'success':
 				#如果退款成功，则将这笔在线支付记录类型置为-1,同时将店铺余额减去订单总额
@@ -177,7 +178,7 @@ class RefundWxpay(CustomerBaseHandler):
 				self.session.commit()
 				return self.send_success()
 			else:
-				return self.send_fail('fail')
+				return self.send_fail(err_code_des)
 		elif action == 'alipay':
 			now = datetime.datetime.now()
 			refund_date = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -186,7 +187,7 @@ class RefundWxpay(CustomerBaseHandler):
 			# notify_url = 'http://i.senguo.cc/customer/online/refundcallback'
 			refund_url = self._alipay.create_refund_url(partner=ALIPAY_PID,_input_charset='utf-8',
 				refund_date=refund_date,seller_user_id=ALIPAY_PID,batch_no=batch_no,batch_num='1',detail_data=detail_data)
-			print(refund_url,'refund_url')
+			# print(refund_url,'refund_url')
 			#################################################################################
 			# 9.15 woody
 			# 生成一条支付宝退款申请记录
