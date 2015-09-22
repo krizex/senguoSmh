@@ -147,6 +147,11 @@
     });
     wx.ready(function(){
         document.querySelector('#getBrandWCPayRequest').onclick = function () {
+            var $this = $(this);
+            if($this.attr("data-sta")=="1"){
+                return noticeBox("客官不要着急，呼叫微信中...");
+            }
+            $this.attr({"data-sta":"1"});
             $.ajax({
                 url:"/customer/overtime?order_id="+$("#order-id").val(),
                 type:"get",
@@ -157,8 +162,7 @@
                             setTimeout(function(){
                                 window.location.href="/"+res.shop_code;
                             },2000);
-                        }
-                        else{
+                        }else{
                             wx.chooseWXPay({
                                 timestamp: '{{renderPayParams['timeStamp']}}',
                                 nonceStr: '{{renderPayParams['nonceStr']}}',
@@ -186,6 +190,8 @@
                                 }
                             });
                         }
+                    }else{
+                        $this.attr({"data-sta":""});
                     }
                 }
             });
