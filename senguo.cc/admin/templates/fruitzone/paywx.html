@@ -151,7 +151,7 @@
             if($this.attr("data-sta")=="1"){
                 return noticeBox("客官不要着急，呼叫微信中...");
             }
-            $this.attr({"data-sta":"1"});
+            $this.addClass("bg-grey text-grey9").text("提交中...").attr({"data-sta":"1"})
             $.ajax({
                 url:"/customer/overtime?order_id="+$("#order-id").val(),
                 type:"get",
@@ -174,7 +174,7 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                    $this.attr({"data-sta":""});
+                                    $this.removeClass("bg-grey text-grey9").text("去支付").attr({"data-sta":""})
                                      //  $.ajax({
                                      //     url:"/customer/wxpayCallBack",
                                      //     type:"get",
@@ -192,7 +192,7 @@
                             });
                         }
                     }else{
-                        $this.attr({"data-sta":""});
+                        $this.removeClass("bg-grey text-grey9").text("去支付").attr({"data-sta":""})
                     }
                 }
             });

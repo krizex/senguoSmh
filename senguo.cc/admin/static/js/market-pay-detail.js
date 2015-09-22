@@ -52,7 +52,7 @@ $(document).ready(function(){
 }).on("click","#go-alipay",function(){
     var $this = $(this);
     if($this.attr("data-sta")=="1"){
-        return noticeBox("客官不要着急,呼叫支付宝中...");
+        return noticeBox("客官不要着急，呼叫支付宝中...");
     }
     $this.attr({"data-sta":"1"});
     $.ajax({
