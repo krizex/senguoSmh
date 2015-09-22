@@ -488,8 +488,7 @@ var goodsList=function(page,action,_group_id){
     _finished = false;
     $.postJson(url,args,function(res){
         $(".wrap-loading-box").addClass("hidden");
-            if(res.success)
-            {
+            if(res.success){
                 var nomore = res.nomore
                 $('.goods-list-'+_group_id).attr({"data-nomore":nomore});
                 if(nomore==true&&res.data.length>0){
@@ -510,11 +509,8 @@ var goodsList=function(page,action,_group_id){
                         myScroll.refresh();
                     }, 0);
                 }
-            }
-            else {
-                if(!res.error_text){
-                    window.location.reload(true);
-                }
+            }else {
+                window.location.reload(true);
                 noticeBox(res.error_text);
             }
         });
