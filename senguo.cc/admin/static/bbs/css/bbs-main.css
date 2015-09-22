@@ -1,6 +1,7 @@
 html,body{height: 100%;}
 body{background-color: #f0f4f0;padding-top: 120px;}
 .w980{width: 980px;position: relative;left: 50%;margin-left: -490px;}
+/*div,span,p,li{-webkit-user-select:none;}*/
 /*.edui-container{z-index:998 !important;}*/
 /*右下角*/
 .scrollUpf{position: fixed; z-index: 9999; display: block;width: 48px;bottom:90px;right: 50px;display: none;}
@@ -38,7 +39,7 @@ body{background-color: #f0f4f0;padding-top: 120px;}
 .wrap-userinfo img{border: 1px solid #fff;border-radius: 50%;width: 38px;height: 38px;}
 .name-text{font-size: 14px;color: #fff;display: inline-block;vertical-align: middle;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;max-width: 70px;}
 .logo-sg{display: inline-block;width: 178px;height: 49px;background: url("../img/logo.png") no-repeat;position: relative;top: 6px;vertical-align: middle;}
-.wrap-search{display: inline-block;width: 600px;height: 40px;position: relative;margin-left: 20px;position: relative;top: 6px;}
+.wrap-search{display: inline-block;width: 600px;height: 40px;position: relative;margin-left: 20px;top: 6px;}
 .search-input{border: none;width: 100%;height: 40px;font-size: 14px;color: #fff;background-color: rgba(56, 139, 120, 0.66);-webkit-box-sizing: border-box;padding: 0 50px 0 10px;border-radius: 5px;}
 .search-input::-webkit-input-placeholder {color:#b2dfdb;}
 .search-btn{position: absolute;top: 6px;right: 10px;background: url('../img/icon_search.png') no-repeat;display: inline-block;width: 29px;height: 29px;}

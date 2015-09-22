@@ -371,14 +371,13 @@ var goodsList=function(page,action,_group_id){
         args.search = _search;
     }
     $.postJson(url,args,function(res){
-            if(res.success)
-            {
-                nomore = res.nomore
-                initData(res.data);
-                if(nomore==true){
+            if(res.success){
+                nomore = res.nomore;
+                if(nomore==true&&res.data.length>0){
                     count_loading ++;
                 }
-                if(_group_id!= undefined&&$(".classify-list li").length==count_loading&&nomore == true){
+                initData(res.data);
+                if(_group_id!= undefined&&$(".classify-list li").length<=count_loading&&nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
@@ -387,9 +386,10 @@ var goodsList=function(page,action,_group_id){
                 }else{
                     $('.loading').html("~努力加载中 ( > < )~").show();
                 }
-               
-            }
-            else {
+            }else {
+                if(!res.error_text){
+                    window.location.reload(true);
+                } 
                 noticeBox(res.error_text);
                 $(".wrap-loading-box").addClass("hidden");
             }

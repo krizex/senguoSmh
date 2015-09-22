@@ -432,8 +432,9 @@ class ShopManage(SuperBaseHandler):
 			self.handle_updateStatus()
 		elif action == "shopclose":
 			self.handle_shopclose()
+		# 进入店铺后台
 		elif action == "getin":
-			#print(self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0])
+			# print(self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0])
 			try:
 				shop_id=self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0]
 			except:
@@ -1864,6 +1865,7 @@ class Comment(SuperBaseHandler):
 			#order.comment = None
 			#order.comment_reply = None
 			comment_apply.has_done = 1
+			comment_apply.shop.comment_count = comment_apply.shop.comment_count -1
 			self.session.commit()
 			return self.send_success(status = 0, msg = 'success',data = {})
 		elif action == 'decline':
@@ -2395,6 +2397,80 @@ class Balance(SuperBaseHandler):
 			return self.send_error(404)
 		return self.send_success(history = history,page_sum=page_sum,context=context)
 
+
+
+#退款申请
+class ApplyRefund(SuperBaseHandler):
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('page?:int')
+	def get(self):
+		data = []
+		refund_list = self.session.query(models.ApplyRefund).filter_by(has_done=0).all()
+		if not refund_list:
+			return self.write('当前无申请退款！')
+		for item in refund_list:
+			item_dict = {}
+			item_dict['id'] = item.id
+			item_dict['customer_id'] = item.customer_id
+			item_dict['refund_fee']  = item.refund_fee
+			item_dict['refund_type'] = '支付宝支付' if item.refund_type else '微信支付'
+			item_dict['refund_url']  = item.refund_url
+			item_dict['create_time'] = item.create_time.strftime("%Y-%m-%d %H:%M")
+			data.append(item_dict)
+		print(data)
+		return self.render('superAdmin/refund-apply.html',data=data,context=dict(page='refund'))
+
+	@SuperBaseHandler.check_arguments('apply_id')
+	def post(self):
+		apply_id = self.args['apply_id']
+		if len(apply_id) == 0:
+			return self.send_fail('申请记录为空！')
+		apply_id = int(apply_id)
+		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
+		if refund_apply.has_done == 1:
+			return self.send_fail('请勿重复处理！')
+		refund_apply.has_done = 1 #将申请退款变为已处理状态
+		###################################################################
+		# 9.17 woody
+		# 如果该订单是支付宝支付。将支付记录作废,并改变订单状态
+		# 如果是微信支付，则不需要修改
+		##################################################################
+		transaction_id = refund_apply.transaction_id
+		order = self.session.query(models.Order).filter_by(transaction_id=transaction_id).first()
+		if not order:
+			return self.send_fail('order not found')
+		if order.online_type == 'alipay':
+			order.del_reason = 'refund'
+			order.get_num(self.session,order.id)
+			order.status = 0 #将订单状态改为删除
+			balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+			if not balance_history:
+				return self.write('old_balance_history not found')
+			shop_id = balance_history.shop_id
+			balance_value = balance_history.balance_value
+			shop = order.shop 
+			shop.shop_balance -= balance_value      #店铺余额减去订单总价，还原店铺余额
+			balance_history.is_cancel =1            #将旧的支付记录作废
+			balance_history.balance_type = -1
+			customer_id = balance_history.customer_id
+			name        = balance_history.name
+			shop_province = balance_history.shop_province
+			shop_name     = balance_history.shop_name
+			balance_record = balance_history.balance_record + '--退款'
+			create_time   = datetime.datetime.now()
+			shop_totalPrice = shop.shop_balance
+			customer_totalPrice = balance_history.customer_totalPrice
+			transaction_id   = balance_history.transaction_id
+			available_balance = balance_history.available_balance
+			#同时生成一条退款记录
+			refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+				balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
+				transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
+			self.session.add(refund_history)
+
+		self.session.commit()
+		return self.send_success()
+
 # 余额 - 提现申请
 class ApplyCash(SuperBaseHandler):
 
@@ -2922,7 +2998,7 @@ class AdminManager(SuperBaseHandler):
 			return self.send_error(404)
 
 
-#将平台用户置为新的用户，以便进行测试
+# 将平台用户置为新的用户，以便进行测试
 class MakeNewUser(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action?:str')
@@ -2939,14 +3015,14 @@ class MakeNewUser(SuperBaseHandler):
 			self.session.commit()
 			return self.send_success()
 		for item in super_user:
-			print(item.id,item.accountinfo.nickname)
+			# print(item.id,item.accountinfo.nickname)
 			if item.accountinfo.wx_unionid  is None:
 				isnew = True
 			else:
 				isnew = False
 			item_info = {'id':item.id,'nickname':item.accountinfo.nickname,'isnew':isnew}
 			user_list.append(item_info)
-		print(user_list)
+		# print(user_list)
 		return self.render('superAdmin/new_user.html',level  = 0,if_super = if_super,user_list=user_list)
 
 	@tornado.web.authenticated
@@ -2961,7 +3037,7 @@ class MakeNewUser(SuperBaseHandler):
 			user.accountinfo.wx_openid = None
 			user.accountinfo.wx_unionid = None
 		elif action == 'recover':
-			print('recover')
+			# print('recover')
 			wx_unionid = user.wx_unionid_back
 			wx_openid  = user.wx_openid_back
 			#找到生成的新用户，将unionid和openid清零，以便还原之前的数据

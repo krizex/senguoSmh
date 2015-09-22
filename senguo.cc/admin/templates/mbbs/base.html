@@ -27,17 +27,70 @@
     {% set if_login = False %}
     {% end %}
     <header>
-        {% block header %}{% end %}
+        <div class="header">
+            <a href="javascript:;" class="back bbs-menu" id="bbs-menu"></a>
+            {% block header %}{% end %}
+            <div class="wrap-menu-list h0">
+                <div class="wrap-search-box">
+                    <i class="search-icon" id="search_btn"></i>
+                    <input type="text" placeholder="请输入文章标题" class="search-article" id="search_bbs"/>
+                </div>
+                <ul class="menu-list group">
+                    <li class="active bl0" data-id="100">
+                        <i class="menu-icon m1"></i>
+                        <span>首页</span>
+                        <i class="cover-px cover-left"></i>
+                    </li>
+                    <li class="bl0" data-id="0">
+                        <i class="menu-icon m2"></i>
+                        <span>官方公告</span>
+                    </li>
+                    <li class="bl0 br0" data-id="1">
+                        <i class="menu-icon m3"></i>
+                        <span>产品更新</span>
+                        <i class="cover-px cover-right"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="2">
+                        <i class="menu-icon m4"></i>
+                        <span>运营干货</span>
+                        <i class="cover-px cover-left"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="3">
+                        <i class="menu-icon m5"></i>
+                        <span>水果百科</span>
+                    </li>
+                    <li class="bl0 br0 bt0" data-id="4">
+                        <i class="menu-icon m6"></i>
+                        <span>使用教程</span>
+                        <i class="cover-px cover-right"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="5">
+                        <i class="menu-icon m7"></i>
+                        <span>水果供求</span>
+                        <i class="cover-px cover-left"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="6">
+                        <i class="menu-icon m8"></i>
+                        <span>森果前沿</span>
+                    </li>
+                    <li class="bl0 br0 bt0" data-id="7">
+                        <i class="menu-icon m9"></i>
+                        <span>用户交流</span>
+                        <i class="cover-px cover-right"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </header>
     <div class="container">
         {% block content %}{% end %}
     </div>
 {% block js %}
     <script type="text/javascript" src="/static/bbs/js/zepto.min.js"></script>
+    <script type="text/javascript" src="/static/bbs/js/util.js"></script>
+    <script type="text/javascript" src="/static/bbs/js/mbase.js"></script>
 {% end %}
-<script type="text/javascript" src="/static/js/template.js"></script>
-<script type="text/javascript" src="/static/bbs/js/util.js"></script>
-<script type="text/javascript" src="/static/bbs/js/base.js"></script>
+    <script type="text/javascript" src="/static/js/template.js"></script>
 {% block bottom %}{% end %}
 </body>
 </html> 

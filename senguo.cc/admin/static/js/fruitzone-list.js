@@ -1,6 +1,7 @@
 var ulat = 0,ulng =0,first=true;
 var link_action=$.getUrlParam('action');
 var link_province=$.getUrlParam('province');
+var admin_id = 0;
 $(document).ready(function(){
     var area=window.dataObj.area;
     if(link_action){
@@ -8,11 +9,9 @@ $(document).ready(function(){
             $(".filter_search").addClass("hidden");
             $(".area_box").css("padding-top","40px");
             var shops=$('.shoplist').attr('data-shop');
-            var id=$.getUrlParam('id');
-            return shopsList(0,id,'admin_shop');
+            admin_id=$.getUrlParam('id');
+            return shopsList(0,admin_id,'admin_shop');
         }else if(link_action=="province"){
-            $('.city_name').text(province_name).attr("data-id",link_province);
-            $(".comm_name").attr("data-key",2).text("离我最近");
             window.dataObj.type='province';
             window.dataObj.action='filter';
             filter(link_province,'province');
@@ -20,7 +19,8 @@ $(document).ready(function(){
             if(area[link_province]){
                 var province_name=area[link_province]['name'];
             }
-
+            $('.city_name').text(province_name).attr("data-id",link_province);
+            $(".comm_name").attr("data-key",2).text("离我最近");
         }
     }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
@@ -200,7 +200,7 @@ $(document).ready(function(){
 });
 
 //获取用户当前地理位置
-function initLocation(){
+function initLocation(type){
     first=false;
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
@@ -217,7 +217,11 @@ function initLocation(){
                     initProviceAndCityCode(addComp.province, addComp.city);
                     $(".city_name").text(addComp.city);
                     window.dataObj.type='city';
-                    filter($("#city_id").val());
+                    if(type=="admin"){
+                        shopsList(0,admin_id,'admin_shop');
+                    }else{
+                        filter($("#city_id").val());
+                    }
                 });
             });
         },function(error){
@@ -289,7 +293,7 @@ var shopItem=function (shops){
         var address=shops[i].shop_address_detail;
         var intro=shops[i].shop_intro;
         var shop_auth=shops[i].shop_auth;
-        var satisfy = shops[i].satisfy;
+        var satisfy = shops[i].shop_satisfy;
         var comment_count = shops[i].comment_count;
         var goods_count = shops[i].goods_count;
         var status = shops[i].status;
@@ -373,6 +377,14 @@ var shopsList=function(page,data,action){
     }
     $.postJson(url,args,function(res){
         if(res.success){
+            if(action=='admin_shop'){
+                $('.shoplist').empty();
+                if(first){
+                    setTimeout(function(){
+                        initLocation("admin");
+                    },10);
+                }
+            }
             initData(res);
         }else{
             return noticeBox(res.error_text);

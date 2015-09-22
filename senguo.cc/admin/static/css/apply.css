@@ -92,7 +92,9 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
     .tdl{width: 40% !important;}
     .tdr{width: 60% !important;}
 }
-
+@media screen and (max-width: 340px) {
+    .wrap-map{height: 220px;}
+}
 /*override reset.css*/
 body{font-family:"Helvetica Neue","Hiragino Sans GB","Microsoft YaHei","\9ED1\4F53",Arial,sans-serif;color:#222;background:#e7e8eb;-webkit-font-smoothing:antialiased;overflow-x: hidden;line-height: 1.42857143;}
 .f14{font-size: 14px;}

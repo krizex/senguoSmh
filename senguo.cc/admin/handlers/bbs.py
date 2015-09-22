@@ -135,7 +135,7 @@ class Detail(FruitzoneBaseHandler):
 		author_if = False
 		if self.current_user and article[0].account_id == self.current_user.id:
 			author_if = True
-		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].public_time,"article":article[0].article,\
+		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].public_time.strftime("%Y-%m-%d"),"article":article[0].article,\
 						"type":self.article_type(article[0].classify),"nickname":article[1],"imgurl":article[3],\
 						"great_num":article[0].great_num,"comment_num":article[0].comment_num,"private":article[0].comment_private,\
 						"scan_num":article[0].scan_num,"collect_num":article[0].collect_num,"great_if":great_if,"collect_if":collect_if}
@@ -200,6 +200,7 @@ class Detail(FruitzoneBaseHandler):
 				if action == "article_great":
 					if record.great == 0:
 						record.great = 1
+						record.scan = 0
 					else:
 						num_1 = -1
 						record.great = 0
@@ -429,7 +430,7 @@ class DetailEdit(FruitzoneBaseHandler):
 		seconds = public_time.strftime("%S")
 		article_data={"id":article[0].id,"title":article[0].title,"article":article[0].article,"type":self.article_type(article[0].classify)\
 		,"type_id":article[0].classify,"public":article[0].no_public,"private":article[0].comment_private,"status":article[0].status,\
-		"year":year,"month":month,"day":day,"hour":hour,"minute":minute,"seconds":seconds}
+		"year":year,"month":month,"day":day,"hour":hour,"minute":minute,"seconds":seconds,'time':article[0].public_time}
 		_id = str(time.time())
 		qiniuToken = self.get_qiniu_token('article',_id)
 		if_admin = self.if_super()
@@ -606,7 +607,7 @@ class Profile(FruitzoneBaseHandler):
 			datalist = self.getListData(-1,page)[0]
 			nomore = self.getListData(-1,page)[1]
 			return self.send_success(datalist=datalist,nomore=nomore)
-		return self.render("bbs/profile.html")
+		return self.render("{0}/profile.html".format(self.getBbsPath))
 
 
 	@tornado.web.authenticated

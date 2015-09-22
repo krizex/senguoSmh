@@ -19,7 +19,7 @@ def Check():
 	# *然后从列表shop_list_query2中除去shop_list_query1中的id 
 	# shop_list_query1 = session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
 	
-	shop_id_list1 = [1044]
+	shop_id_list1 = [1753]
 	# for item in shop_list_query1:
 	# 	shop_id_list1.append(item[0])
 	total = len(shop_id_list1)

@@ -255,8 +255,8 @@ function addCart(link){
     };
     if(!isEmptyObj(fruits)){fruits={}}
     $.postJson(url,args,function(res){
-            if(res.success)
-            {   if(link){
+            if(res.success){
+                if(link){
                     SetCookie('cart_count', $("#cart-now-num").html());
                     window.location.href=link;
                 }

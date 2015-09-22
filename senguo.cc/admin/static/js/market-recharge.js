@@ -43,6 +43,8 @@ $(document).ready(function(){
                 success:function(res){
                     if(res.success){
                        window.location.href="/customer/recharge/AliPay?alipayUrl="+res.url; 
+                    }else{
+                        return noticeBox(res.error_text);
                     }
                     
                 }

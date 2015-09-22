@@ -44,14 +44,11 @@ $(document).ready(function(){
                 }
             });
         }else{
-            // $('.tab-group li').each(function(){
-            //     if($(this).index()<3){
-            //         if($(this).attr('data-id')!=-2){
-            //             gArr.push($(this).attr('data-id'));
-            //         }
-            //     }
-                
-            // });
+            $('.mid-group').each(function(){
+                if($(this).index()<3&&$(this).attr('data-id')!=-2){
+                    gArr.push($(this).attr('data-id'));
+                }
+            });
              $('.more-group li').each(function(){
                  if($(this).attr('data-id')!=-2){
                      gArr.push($(this).attr('data-id'));
@@ -225,11 +222,19 @@ $(document).ready(function(){
     var $this=$(this);
     var index=$this.index();
     if(index==2&&$this.hasClass("active")&&$(".i-cert").length>0){
+        var text = $("#cur_group").html();
+        $(".more-group li").each(function(){
+            if($(this).html()==text){
+                $(".more-group li").removeClass("hidden");
+                $(this).addClass("hidden");
+                return false;
+            }
+        });
         $(".more-group").removeClass("hidden");
     }
     var group_id=Number($this.attr("data-id"));
     if(!$this.hasClass("active")){
-        if(group_id==-2){
+        if(group_id==-2){//所有分组
             $(".bingo-list").removeClass("hidden");
         }else{
             $(".bingo-list").addClass("hidden");
@@ -427,8 +432,7 @@ var allList=function(page,action,_group_id){
     }
     $.postJson(url,args,function(res){
         $(".wrap-loading-box").remove();
-        if(res.success)
-        {
+        if(res.success){
             aindex++;
             var nomore = res.nomore;
             if(nomore==true){
@@ -443,8 +447,10 @@ var allList=function(page,action,_group_id){
                     loaded();
                 }
             }
-        }
-        else {
+        }else {
+            if(!res.error_text){
+                window.location.reload(true);
+            }
             noticeBox(res.error_text);
         }
     });
@@ -483,17 +489,13 @@ var goodsList=function(page,action,_group_id){
     _finished = false;
     $.postJson(url,args,function(res){
         $(".wrap-loading-box").addClass("hidden");
-            if(res.success)
-            {
+            if(res.success){
                 var nomore = res.nomore
                 $('.goods-list-'+_group_id).attr({"data-nomore":nomore});
-                console.log(66666);
-                if(nomore==true){
+                if(nomore==true&&res.data.length>0){
                     count_loading ++;
                 }
-                console.log(count_loading);
-                console.log($(".know-last").length);
-                if(_group_id!= undefined&&$(".know-last").length==count_loading&&nomore == true){
+                if(_group_id!= undefined&&$(".know-last").length<=count_loading&&nomore == true){
                     if(action==9){
                         $('.loading').html("~没有更多结果了 ( > < )~").show();
                     }else{
@@ -508,8 +510,10 @@ var goodsList=function(page,action,_group_id){
                         myScroll.refresh();
                     }, 0);
                 }
-            }
-            else {
+            }else {
+                if(!res.error_text){
+                    window.location.reload(true);
+                }
                 noticeBox(res.error_text);
             }
         });

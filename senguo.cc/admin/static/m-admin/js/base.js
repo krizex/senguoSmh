@@ -10,7 +10,7 @@ $(document).ready(function(){
          $(".pop-win").addClass("hide");
     });
     $(".goback").on("click",function(){
-        history.back();
+        history.go(-1);
     });
     if($("#order-success").size()>0){
         if(location.href!=parent.location.href){

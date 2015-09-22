@@ -512,10 +512,10 @@ class Shop(MapBase, _CommonApi):
 	__tablename__ = "shop"
 
 	id = Column(Integer, primary_key=True, nullable=False)
-	shop_name = Column(String(128), nullable=False)
-	shop_code = Column(String(128), nullable=False, default="not set")
+	shop_name = Column(String(128), nullable=False,index=True)
+	shop_code = Column(String(128), nullable=False, default="not set",index=True)
 	create_date_timestamp = Column(Integer, nullable=False)
-	shop_status = Column(TINYINT,nullable=False, default=SHOP_STATUS.ACCEPTED)  # 1：申请中 2：申请成功 3：拒绝
+	shop_status = Column(TINYINT,nullable=False, default=SHOP_STATUS.ACCEPTED,index=True)  # 1：申请中 2：申请成功 3：拒绝
 	shop_auth =Column(TINYINT,nullable=False,default =0) #0:未认证 1:个人认证 2:企业认证 3:个人认证转企业认证 4:企业认证转个人认证 #yy4.29
 	auth_change=Column(TINYINT,nullable=False,default =0)#0:未认证 1:认证一次 2:认证两次 #yy4.30
 	# on or off
@@ -532,10 +532,10 @@ class Shop(MapBase, _CommonApi):
 	deliver_area = Column(String(100))  # 配送区域
 
 	# 地址
-	shop_province = Column(Integer)
-	shop_city = Column(Integer)
+	shop_province = Column(TINYINT,index=True)
+	shop_city = Column(TINYINT,index=True)
 	shop_address_detail = Column(String(1024), nullable=False)
-	shop_sales_range = Column(String(128))
+	shop_sales_range = Column(String(128)) #备用
 	lat              = Column(MyReal,nullable=False,default=0)  #纬度
 	lon              = Column(MyReal,nullable=False,default=0)  #经度
 	area_type = Column(TINYINT,nullable=False,default=0) #区域类型
@@ -605,6 +605,10 @@ class Shop(MapBase, _CommonApi):
 
 	shop_tpl = Column(TINYINT,nullable=False,default = 0) #店铺模版, 0:customer 1:beauty 6.17
 	spread_member_code = Column(String(30)) #7.27
+
+	satisfy = Column(Float,default = 100,nullable = False) #店铺满意度 9.18 yy
+	comment_count = Column(Integer,default = 0,nullable=False) #店铺评价数 9.18 yy
+	goods_count = Column(SMALLINT,default = 0,nullable=False) #店铺商品数 9.18 yy
 
 
 	def __repr__(self):
@@ -1117,6 +1121,9 @@ class Address(MapBase,  _CommonApi):
 	phone = Column(String(32), nullable=False)
 	receiver = Column(String(64), nullable=False)
 	address_text = Column(String(1024), nullable=False)
+	if_default = Column(TINYINT,nullable=False,default = 0) #0:not default 1:default
+	lat = Column(MyReal,nullable=False,default=0)  #纬度
+	lon = Column(MyReal,nullable=False,default=0)  #经度
 
 #信息墙＝＝＝＝
 class Info(MapBase, _CommonApi):
@@ -1317,9 +1324,9 @@ class Order(MapBase, _CommonApi):
 	send_time=Column(String(45))
 	del_reason = Column(String(300))
 
-	commodity_quality = Column(Integer)
-	send_speed        = Column(Integer)
-	shop_service      = Column(Integer)
+	commodity_quality = Column(SMALLINT)
+	send_speed        = Column(SMALLINT)
+	shop_service      = Column(SMALLINT)
 
 	online_type       = Column(String(8)) #wx alipay
 	is_qrwxpay        = Column(Integer,default=0) #只有当订单类型为微信支付时才有意义，1表示扫码支付，0表示非扫码支付
@@ -1557,7 +1564,7 @@ class Config(MapBase, _CommonApi):
 	freight_on_time = Column(SMALLINT,nullable=False, default=0)  # 按时达运费
 	min_charge_now = Column(SMALLINT,nullable=False, default=25) #立即送起送金额
 	freight_now = Column(SMALLINT,nullable=False, default=2)  # 立即送运费
-	stop_range = Column(SMALLINT,nullable=False, default=0) #下单截止时间（分钟）
+	stop_range = Column(SMALLINT,nullable=False, default=0) #按时达下单截止时间（分钟）
 	start_time_now = Column(Time,nullable=False,default="9:00") #立即送起始时间
 	end_time_now = Column(Time,nullable=False,default="23:00") #立即送结束时间
 	ontime_on = Column(Boolean,nullable=False, default=True)
@@ -1569,7 +1576,7 @@ class Config(MapBase, _CommonApi):
 	notices = relationship("Notice") #公告设置
 	periods = relationship("Period") #时间段设置
 
-	intime_period = Column(Integer,nullable=False,default = 30)
+	intime_period = Column(Integer,nullable=False,default = 30) #立即送送达时间
 	#4.24 add receipt_img_active
 	receipt_img_active = Column(TINYINT,nullable=False,default = 1)
 	cash_on_active = Column(TINYINT,nullable=False,default = 0)#0:货到付款关闭 1:货到付款付开启 5.4
@@ -1591,6 +1598,8 @@ class Config(MapBase, _CommonApi):
 	self_addresses = relationship("SelfAddress")
 
 	comment_active = Column(TINYINT,nullable=False,default = 1) #0:comment off 1:comment on
+	freight_self = Column(SMALLINT,nullable=False, default=0) #自提服务费 2015-09-19 yy
+	min_charge_self =  Column(SMALLINT,nullable=False, default=0) #自提满一定金额减免服务费
 
 #自提地址 7.30 max10
 class SelfAddress(MapBase,_CommonApi):
@@ -1937,7 +1946,7 @@ class CouponsShop(MapBase, _CommonApi):
  	from_get_date=Column(Integer)
  	to_get_date=Column(Integer)
  	use_goods_group=Column(Integer)
- 	use_goods=Column(Integer)
+ 	use_goods=Column(Integer) #折扣商品，-2:全场折扣 -1:分组折扣 其他:折扣商品ID
  	use_rule=Column(Float)
  	total_number=Column(Integer)
  	get_number=Column(Integer)
@@ -2048,4 +2057,21 @@ class CustomerSeckillGoods(MapBase, _CommonApi):
 	shop_id = Column(Integer,ForeignKey(Shop.id),nullable=False)
 	seckill_goods_id = Column(Integer,ForeignKey(SeckillGoods.id),nullable=False)
 	status = Column(TINYINT,nullable=False,default=0)    #0:未领取   1:已领取（加入购物车）  2:已下单
+
+
+# 申请退款
+class ApplyRefund(MapBase,_CommonApi):
+	__tablename__ = 'apply_refund'
+	id          = Column(Integer,nullable=False,primary_key=True,autoincrement=True)
+	customer_id = Column(Integer,ForeignKey(Customer.id),nullable=False,default=0)
+	order_id    = Column(Integer,nullable=False,default=0) #订单ID
+	order_num   = Column(String(15))  #订单编号
+	refund_type = Column(TINYINT,nullable=False,default=0) #0:微信，1:支付宝
+	refund_fee  = Column(Float,nullable=False,default=0)  #退款金额。一般等于订单总额
+	has_done    = Column(TINYINT,nullable=False,default=0)  #退款申请是否被确认
+	refund_url  = Column(String(450))    #支付宝退款地址，仅当退款类型为支付宝时有效
+	transaction_id=Column(String(64))    #申请退款订单对应的支付编号
+	create_time = Column(DateTime, nullable=False, default=func.now())
+
+
 

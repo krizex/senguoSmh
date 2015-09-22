@@ -70,6 +70,36 @@ class Alipay(object):
                        'sign': signmethod(params)})
         return '%s?%s' % (self.GATEWAY_URL, urlencode(encode_dict(params)))
 
+    def _build_refund_url(self,service,**kw):
+        params = self.default_params.copy()
+        params['service'] = service
+        params.update(kw)
+        signkey,signvalue,signdescription = self.getSignTuple()
+        signmethod = getattr(self,'_generate_%s_sign' %(signdescription.lower()))
+        if signmethod == None:
+            raise NotImplementedError("This type '%s' of sign is not implemented yet." %(signdescription))
+        if self.signKey():
+            params.update({signkey:signvalue})
+        params.update({signkey:signvalue,'sign':signmethod(params)})
+        print(params)
+        return '%s?%s' % ('https://mapi.alipay.com/gateway.do',urlencode(encode_dict(params)))
+    def _build_query_url(self, service, **kw):
+        params = self.default_params.copy()
+        params['service'] = service
+        params.update(kw)
+        params.pop('format')
+        params.pop('v')
+        signkey, signvalue, signdescription = self.getSignTuple()
+        signmethod = getattr(self, '_generate_%s_sign' %(signdescription.lower()))
+        signkey = 'sign_type'
+        if signmethod == None:
+            raise NotImplementedError("This type '%s' of sign is not implemented yet." %(signdescription))
+        if self.signKey():
+            params.update({signkey:signvalue})
+        params.update({signkey: signvalue,
+                       'sign': signmethod(params)})
+        return '%s?%s' % ('https://mapi.alipay.com/gateway.do', urlencode(encode_dict(params)))
+
     def create_direct_pay_by_user_url(self, **kw):
         '''即时到帐'''
         self._check_params(kw, ['out_trade_no', 'subject'])
@@ -89,8 +119,16 @@ class Alipay(object):
         self._check_params(kw, names)
         url = self._build_url('create_partner_trade_by_buyer', **kw)
         return url
+
+    def create_query_url(self,**kw):
+        '''订单查询'''
+        names = ['gmt_start_time','gmt_end_time','page_no']
+        self._check_params(kw,names)
+        url = self._build_query_url('account.page.query',**kw)
+        return url
+
     def create_refund_url(self,**kw):
-        url = self._build_url('refund_fastpay_by_platform_pwd',**kw)
+        url = self._build_refund_url('refund_fastpay_by_platform_pwd',**kw)
         return url
 
     def trade_create_by_buyer_url(self, **kw):

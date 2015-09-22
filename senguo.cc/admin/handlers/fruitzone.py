@@ -43,11 +43,11 @@ class ShopList(FruitzoneBaseHandler):
 	@FruitzoneBaseHandler.check_arguments('action?:str','province?:str')
 	def get(self):
 		province = self.args.get('province',None)
-		remote_ip = self.remote_ip
+		# remote_ip = self.remote_ip
 		# print("[ShopList]remote_ip:",remote_ip)
-		url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
-		res =  requests.get(url,headers = {"connection":"close"})
-		content = res.text
+		# url = 'http://ip.taobao.com/service/getIpInfo.php?ip={0}'.format(remote_ip)
+		# res =  requests.get(url,headers = {"connection":"close"})
+		# content = res.text
 		# print("[ShopList]content:",content)
 		try:
 			t = json.loads(content)
@@ -100,31 +100,36 @@ class ShopList(FruitzoneBaseHandler):
 					shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'id', 'wx_accountname','auth_change',
 												'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 												'alipay_account','alipay_account_name','available_balance',\
-												'new_follower_sum','new_order_sum']
-					orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
-					if orders:
-						commodity_quality = 0
-						send_speed = 0
-						shop_service = 0
-						q = self.session.query(func.avg(models.Order.commodity_quality),\
-							func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id ,models.Order.status.in_((6,7))).all()
-						if q[0][0]:
-							commodity_quality = int(q[0][0])
-						if q[0][1]:
-							send_speed = int(q[0][1])
-						if q[0][2]:
-							shop_service = int(q[0][2])
-						if commodity_quality and send_speed and shop_service:
-							satisfy = float((commodity_quality + send_speed + shop_service)/300)
-						else:
-							satisfy = 0
-					comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
-					fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
-					mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
-					.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-					shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
-					shop.comment_count = comment_count
-					shop.goods_count = fruit_count
+												'new_follower_sum','new_order_sum','daily_sales','demand_fruits','shop_province',\
+												'shop_phone','shop_url','single_stock_size','spread_member_code','super_temp_active',\
+												'team_size','total_users','shop_start_timestamp','old_msg','onsale_fruits',\
+												'shop_property','shop_sales_range','shop_service_area','shop_tpl','deliver_area',\
+												'have_offline_entity','have_wx_mp','is_balance']
+					# orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).first()
+					# if orders:
+					# 	commodity_quality = 0
+					# 	send_speed = 0
+					# 	shop_service = 0
+					# 	q = self.session.query(func.avg(models.Order.commodity_quality),\
+					# 		func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id ,models.Order.status.in_((6,7))).all()
+					# 	if q[0][0]:
+					# 		commodity_quality = int(q[0][0])
+					# 	if q[0][1]:
+					# 		send_speed = int(q[0][1])
+					# 	if q[0][2]:
+					# 		shop_service = int(q[0][2])
+					# 	if commodity_quality and send_speed and shop_service:
+					# 		satisfy = float((commodity_quality + send_speed + shop_service)/300)
+					# 	else:
+					# 		satisfy = 0
+					# comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
+					# fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
+					# mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
+					# .filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
+					try:
+						shop.shop_satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
+					except:
+						shop.shop_satisfy = 0
 					shop.address = self.code_to_text("city",shop.shop_city)+shop.shop_address_detail
 					try:
 						shop.comment_active = self.session.query(models.Config.comment_active).filter_by(id=shop.id).first()[0]
@@ -196,6 +201,7 @@ class ShopList(FruitzoneBaseHandler):
 			# print(q.count(),'before')
 			q = q.filter_by(shop_province=self.args["province"])
 			shop_count = q.count()
+			# print(shop_count)
 			# print(shop_count,'after')
 			# page_total = int(shop_count /_page_count) if shop_count % _page_count == 0 else int(shop_count/_page_count) +1
 			q = q.offset(page * _page_count).limit(_page_count).all()
@@ -246,13 +252,14 @@ class ShopList(FruitzoneBaseHandler):
 				shops.sort(key = lambda shop:shop['comment_count'],reverse = True)
 			else:
 				return self.send_fail(error_text = 'key_word error')
-		# shops = shops[_page_count*page:_page_count*page+_page_count]
+		if "province" not in self.args :
+			shops = shops[_page_count*page:_page_count*page+_page_count]
 		# print(shops,"***********shops********")
 		if shops == [] or len(shops)<_page_count:
 			nomore =True
 		return self.send_success(shops=shops,nomore = nomore)
 
-	@FruitzoneBaseHandler.check_arguments('id:int')
+	@FruitzoneBaseHandler.check_arguments('id:int','lat?:str','lon?:str')
 	def handle_admin_shop(self,province):
 		admin_id = int(self.args['id'])
 		shop_admin = self.session.query(models.ShopAdmin).filter_by(id = admin_id).first()
@@ -260,7 +267,20 @@ class ShopList(FruitzoneBaseHandler):
 			return self.send_fail('shop_admin not found!')
 		shop_list = shop_admin.shops
 		shop_list = [x for x in shop_list if x.status >=0 ]
+		lat1 = None
+		lon1 = None
+		if self.args["lat"] != '[]':
+			lat1 = float(self.args['lat'])
+		if self.args["lon"] != '[]' :
+			lon1 = float(self.args['lon'])
 		shops = self.get_data(shop_list)
+		for shop in shops:
+			lat2 = shop['lat']
+			lon2 = shop['lon']
+			if lat1 and lon1 and lat2 and lon2:       
+				shop['distance'] = int(self.get_distance(lat1,lon1,lat2,lon2))
+			else:
+				shop['distance'] = 9999999
 		return self.send_success(shops=shops)
 
 	@FruitzoneBaseHandler.check_arguments("q","page:int")
@@ -921,6 +941,8 @@ class SystemPurchase(FruitzoneBaseHandler):
 		customer_id = self.current_user.id
 		# print(shop_id,customer_id,'idddddddddddddddddddddd')
 		price = float(self.args['price'])
+		if not (shop_id and customer_id and price):
+			return self.send_fail('抱歉，系统繁忙，请稍后重试')
 		# print(price)
 		# print('find the correct way to login?')
 		try:

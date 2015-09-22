@@ -248,35 +248,40 @@ class SwitchShop(AdminBaseHandler):
 		shop_list = []
 		for shop in shops:
 			satisfy = 0
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id',  'wx_accountname','auth_change',
+			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'wx_accountname','auth_change',
 										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 										'alipay_account','alipay_account_name','available_balance',\
-										'new_follower_sum','new_order_sum']
+										'new_follower_sum','new_order_sum','daily_sales','demand_fruits','shop_province',\
+										'shop_phone','shop_url','single_stock_size','spread_member_code','super_temp_active',\
+										'team_size','total_users','shop_start_timestamp','old_msg','onsale_fruits',\
+										'shop_property','shop_sales_range','shop_service_area','shop_tpl','deliver_area',\
+										'have_offline_entity','have_wx_mp','is_balance']
 			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
 			if orders:
 				commodity_quality = 0
 				send_speed = 0
 				shop_service = 0
-				q = self.session.query(func.avg(models.Order.commodity_quality),\
-					func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id,models.Order.status.in_((6,7))).all()
-				if q[0][0]:
-					commodity_quality = int(q[0][0])
-				if q[0][1]:
-					send_speed = int(q[0][1])
-				if q[0][2]:
-					shop_service = int(q[0][2])
-				if commodity_quality and send_speed and shop_service:
-					satisfy = float((commodity_quality + send_speed + shop_service)/300)
-			comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
-			fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
-			mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
-			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-			shop.satisfy = satisfy
-			shop.comment_count = comment_count
-			shop.goods_count = fruit_count
+				# q = self.session.query(func.avg(models.Order.commodity_quality),\
+				# 	func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id,models.Order.status.in_((6,7))).all()
+				# if q[0][0]:
+				# 	commodity_quality = int(q[0][0])
+				# if q[0][1]:
+				# 	send_speed = int(q[0][1])
+				# if q[0][2]:
+				# 	shop_service = int(q[0][2])
+				# if commodity_quality and send_speed and shop_service:
+				# 	satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			# comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
+			# fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
+			# mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
+			# .filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
+			# shop.satisfy = satisfy
+			# shop.comment_count = comment_count
+			# shop.goods_count = fruit_count
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
-			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
-			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			shop.shop_satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
+			# shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
+			shop.order_sum = len(shop.orders)
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
 			if total_money:
@@ -2424,6 +2429,12 @@ class Order(AdminBaseHandler):
 				return self.send_error(403)
 			self.current_shop.config.self_end_time = int(data["end_self"])
 			self.session.commit()
+		elif action == "edit_min_charge_self":
+			self.current_shop.config.min_charge_self = int(data["min_charge_self"]) or 0
+			self.session.commit()
+		elif action == "edit_freight_self":
+			self.current_shop.config.freight_self = int(data["freight_self"]) or 0
+			self.session.commit()
 		# 添加自提点地址
 		elif action == "add_self_address": #7.30
 			try:
@@ -2554,7 +2565,7 @@ class Order(AdminBaseHandler):
 				elif order.status > 4:
 					return self.send_fail("订单已经完成，不能删除")
 				if order.pay_type == 3 and order.status != -1:
-					return self.send_fail("在线支付『已付款』的订单暂时不能删除")
+					return self.send_fail("在线支付『已付款』的订单请联系卖家进行取消")
 				session = self.session
 				del_reason = data["del_reason"]
 				order.update(session=session, status=0,del_reason = del_reason)
@@ -3350,6 +3361,7 @@ class Goods(AdminBaseHandler):
 										  relate=relate))
 
 			self.session.add(goods)
+			current_shop.goods_count = current_shop.goods_count+1 #2015-9-18 添加商品商品数量加1
 			self.session.commit()
 			return self.send_success()
 
@@ -3534,6 +3546,7 @@ class Goods(AdminBaseHandler):
 				if goods.activity_status not in [-2,0]:
 					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能删除哦！")
 				time_now = datetime.datetime.now()
+				current_shop.goods_count = current_shop.goods_count -1
 				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
@@ -3778,7 +3791,9 @@ class GoodsImport(AdminBaseHandler):
 						relate = charge.relate
 					)
 					self.session.add(_charge)
-				self.session.commit()
+					self.session.flush()
+			current_shop.goods_count = current_shop.goods_count + len(fruit_list)
+			self.session.commit()
 			return self.send_success()
 
 		elif  action == "checkyouzan":
@@ -3830,6 +3845,8 @@ class GoodsImport(AdminBaseHandler):
 				storage = 100,unit = 3,img_url = data.get("imgs",""),detail_describe=data.get("intro",""))
 				new_good.charge_types.append(models.ChargeType(price = data.get("price",0),unit = 3,num = 1,market_price = None))
 				self.session.add(new_good)
+				self.session.flush()
+			current_shop.goods_count = current_shop.goods_count + len(datalist)
 			self.session.commit()
 			return self.send_success()
 
@@ -4441,7 +4458,10 @@ class Config(AdminBaseHandler):
 				admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,staff_id = _id,active=1,work=9).first()
 			except:
 				return self.send_fail('该管理员不存在')
-			admin.temp_active = 0 if admin.temp_active == 1 else 1
+			try:
+				admin.temp_active = 0 if admin.temp_active == 1 else 1
+			except:
+				print("change admin.temp_active error")
 			try:
 				other_admin = self.session.query(models.HireLink).filter_by(shop_id = self.current_shop.id,work = 9).filter(models.HireLink.staff_id != _id).all()
 			except:

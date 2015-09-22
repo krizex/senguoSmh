@@ -16,16 +16,21 @@ $(document).ready(function(){
     initBmap();
 }).on('click','.print-order',function(){
     orderPrint($(this),'print'); //有线打印
-
 }).on('click','.delete-order',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
+    if(parent.attr("data-pay")=="3"&&parent.attr("data-sta")=="1"){
+        $box.find('.title').text('订单退款并删除');
+        $box.find(".del-notice").removeClass("hide");
+    }else{
+        $box.find('.title').text('订单删除');
+        $box.find(".del-notice").addClass("hide");
+    }
     $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check mark_check');
-    $box.find('.title').text('订单删除');
-    $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
+    $('#order_ser_val').val('').attr({'placeholder':'为防止误操作，请输入订单退款或删除原因'});
 }).on('click','.delete_check',function(){
     var $this=$(this);
     orderDelete();
@@ -221,7 +226,7 @@ var order_link='/admin/order';
 var _page=0;
 var _page_total;
 function getOrder(){
-    $.getItem('/static/items/admin/order-item.html?v=20150804',function(data){
+    $.getItem('/static/items/admin/order-item.html?v=20150805',function(data){
             $list_item=data;
             //商品列表item
     	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150713');
@@ -376,7 +381,7 @@ function orderItem(page){
                     }
                     $item.find('.name').text(nickname).attr('href','/admin/follower?action=orderuser&&wd='+customer_id);
                     $item.find('.receiver').text(receiver);
-                    $item.attr({'data-id':id,'data-type':type});
+                    $item.attr({'data-id':id,'data-type':type,"data-pay":pay_type,"data-online":online_type,"data-sta":status});
                     $item.find('.send-time').text(send_time);
                     $item.find('.order-code').text(num);
                     $item.find('.order-price').text(totalPrice);
@@ -404,15 +409,17 @@ function orderItem(page){
                     } 
                     else if(pay_type == 3){
                         if(online_type=="wx"){
-                           $item.find('.pay-status').text('在线支付-微信');  
-                       }else if(online_type=="alipay"){
+                            $item.find('.pay-status').text('在线支付-微信');
+                        }else if(online_type=="alipay"){
                             $item.find('.pay-status').text('在线支付-支付宝');
-                       }
-                        
+                        }
                         $item.find('.price_edit').hide();
-                        if(status!=-1){$item.find('.delete-order').hide();}
+                        // if(status!=-1){$item.find('.delete-order').hide();}
+                        if(status==1){
+                            $item.find(".delete-order").text("退款并删除");
+                        }
                     }
-                    else { 
+                    else {
                         $item.find('.pay-status').text('货到付款'); 
                     }
                     //根据订单状态显示/隐藏
@@ -422,6 +429,9 @@ function orderItem(page){
                         }
                         else if(del_reason=='timeout'){
                             $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消').css({'line-height':'50px','color':'#44b549'});
+                        }
+                        else if(del_reason=='refund'){
+                            $item.find('.order-status').empty().text('该订单已退款并删除').css({'line-height':'50px','color':'#44b549'});
                         }
                         else{
                             $item.find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）').css({'line-height':'50px','color':'#44b549'});
@@ -450,12 +460,12 @@ function orderItem(page){
                             $item.find('.status_send').children('.status').text('等待自取');
                         }else{
                             if(SH2){
-                            $item.find('.status_send').children('.status').text(SH2['nickname']+'配送中');
+                                $item.find('.status_send').children('.status').text(SH2['nickname']+'配送中');
                             }
                         }
                         if(SH2){
-                        $item.find('.status-send').find("img").attr({"src":SH2['headimgurl']});
-                            }
+                            $item.find('.status-send').find("img").attr({"src":SH2['headimgurl']});
+                        }
                         $item.find('.status_send').removeClass('hidden');
                         $item.find('.able_edit_order').show();
                         $item.find('.able_edit_sender').show();
@@ -465,13 +475,13 @@ function orderItem(page){
                         if(_type==3){
                             $item.find('.status_finish').children('.status').text('自取完成');
                         }else{
-                            if (SH2){
-                            $item.find('.status_finish').children('.status').text(SH2['nickname']+'已送达');
+                            if(SH2){
+                                $item.find('.status_finish').children('.status').text(SH2['nickname']+'已送达');
                             }
                         }
                         if(SH2){
-                        $item.find('.status-finish').find("img").attr({"src":SH2['headimgurl']});
-                            }
+                            $item.find('.status-finish').find("img").attr({"src":SH2['headimgurl']});
+                        }
                         $item.find('.status_finish').removeClass('hidden');
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
@@ -479,16 +489,16 @@ function orderItem(page){
                     else if(status==6) {
                         $item.find('.status_comment').removeClass('hidden');
                         if(SH2){
-                        $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
-                            }
+                            $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
+                        }
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
                     }
                     else if(status==7) {
                         $item.find('.status_comment').removeClass('hidden');
                         if(SH2){
-                        $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
-                            }
+                            $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
+                        }
                         $item.find('.status-autocomment').show();
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
@@ -734,6 +744,8 @@ function orderDelete(target){
     var order_id=$box.attr('data-id');
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
+    var pay_type=parseInt($('.order-list-item').eq(index).attr("data-pay"));
+    var online_type=$('.order-list-item').eq(index).attr("data-online");
     if(!del_reason){
         return Tip('请输入订单删除的原因');
     }
@@ -746,8 +758,29 @@ function orderDelete(target){
     };
     var args={
         action:action,
-        data:data
+        data:data,
+        pay_type:pay_type,
+        online_type:online_type
     };
+    if (pay_type==3){
+        url = '/customer/online/refund'
+        if (online_type == 'wx'){
+            action = 'wx';
+            args = {
+                action:action,
+                order_id:order_id
+            };
+        };
+        if (online_type == 'alipay') {
+            action = 'alipay';
+            args = {
+                action:action,
+                order_id:order_id
+            };
+        };
+
+    }
+
     $.postJson(url,args,function(res){
             if(res.success){
                 $('.order_set_box').modal('hide');

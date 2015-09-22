@@ -33,6 +33,8 @@ import jpush as jpush
 from libs.phonepush.jpush.push import core,payload,audience
 from libs.phonepush.conf import app_key, master_secret
 
+import re
+
 # 登录处理
 class Access(CustomerBaseHandler):
 	def initialize(self, action):
@@ -698,11 +700,30 @@ class Home(CustomerBaseHandler):
 	def post(self,shop_code):
 		action = self.args["action"]
 		data = self.args["data"]
+		try:
+			shop = self.session.query(models.Shop.lat,models.Shop.lon,models.Shop.area_type,\
+				models.Shop.area_radius,models.Shop.area_list).filter_by(shop_code =shop_code).first()
+		except:
+			return self.send_error(403)
 		if action == "add_address":
-			address = models.Address(customer_id=self.current_user.id,
-									 phone=data["phone"],
-									 receiver=data["receiver"],
-									 address_text=data["address_text"])
+			if_default = 0
+			if len(self.current_user.addresses) == 0 :
+				if_default = 1
+			address_text = data.get("address_text","")
+			try:
+				province_city = self.code_to_text("shop_city",shop.shop_city)
+			except:
+				province_city = ""
+			lat = self.getLocation(address_text+province_city)[0]
+			lon = self.getLocation(address_text+province_city)[1]
+			address = models.Address(customer_id = self.current_user.id,
+									 phone = data["phone"],
+									 receiver = data["receiver"],
+									 address_text = address_text,
+									 if_default = if_default,
+									 lat = lat,
+									 lon = lon
+									 )
 			self.session.add(address)
 			self.session.commit()
 			return self.send_success(address_id=address.id)
@@ -710,15 +731,104 @@ class Home(CustomerBaseHandler):
 			address = next((x for x in self.current_user.addresses if x.id == int(data["address_id"])), None)
 			if not address:
 				return self.send_fail("修改地址失败", 403)
+			address_text = data.get("address_text","")
+			try:
+				province_city = self.code_to_text("shop_city",shop.shop_city)
+			except:
+				province_city = ""
+			lat = self.getLocation(address_text+province_city)[0]
+			lon = self.getLocation(address_text+province_city)[1]
 			address.update(session=self.session, phone=data["phone"],
 						   receiver=data["receiver"],
-						   address_text=data["address_text"])
+						   address_text=address_text,
+						   lat = lat,
+						   lon = lon
+						   )
 		elif action == "del_address":
-			try: q = self.session.query(models.Address).filter_by(id=int(data["address_id"]))
+			try: address = self.session.query(models.Address).filter_by(id=int(data["address_id"]))
 			except:return self.send_error(404)
-			q.delete()
+			address.delete()
 			self.session.commit()
+		elif action == "default_address":
+			address_id = int(data["address_id"])
+			try: address = self.session.query(models.Address).filter_by(id=address_id).one()
+			except:return self.send_error(404)
+			address.if_default = 1
+			address_other = [x for x in self.current_user.addresses if x.id != address_id]
+			for addr in address_other:
+				addr.if_default = 0
+			self.session.commit()
+		elif action == "in_area":
+			address_id = data.get("address_id",0)
+			try: address = self.session.query(models.Address.lat,models.Address.lon).filter_by(id=address_id,if_default=1).one()
+			except:return self.send_error(404)
+			shop_lat = shop[0]
+			shop_lon = shop[1]
+			area_type = shop[2]
+			area_radius = shop[3]
+			area_list = shop[4]
+			customer_lat = address[0]
+			customer_lon = address[1]
+			res = 0
+			# print(address,2333)
+			# print(area_type,6666)
+			# print(customer_lat,8888)
+			if area_type !=0 and customer_lat !=0 and customer_lon !=0:
+				if area_type == 1:
+					distance = self.get_distance(shop_lat,shop_lon,customer_lat,customer_lon)
+					if distance <= area_radius:
+						res = 1
+					else:
+						res = 0
+				elif area_type == 2 :
+					if shop_lat !=0 and shop_lon !=0 :
+						pt = {"lat":customer_lat,"lng":customer_lon}
+						res = self.getInArea(pt,area_list)
+					else:
+						res = 1
+			else:
+				res = 1
+			return self.send_success(in_area = res)
+
+		else:
+			return self.send_error(404)
 		return self.send_success()
+
+	# 判断地址在不在圆形区域内
+	def getLocation(self,address):
+		lat = 0
+		lon = 0
+		url = "http://api.map.baidu.com/geocoder/v2/?address="+address+"&output=json&ak=2595684c343d6499bf469da8a9c18231"
+		r = requests.get(url)
+		result = json.loads(r.text)
+		if result["status"] == 0:
+			lat = result["result"]["location"]["lat"]
+			lon = result["result"]["location"]["lng"]
+		else:
+			lat = 0
+			lon = 0
+		return lat,lon
+
+	# 判断点pt在不在多边形区域poly内
+	def getInArea(self,pt,poly):
+		poly = json.loads(poly)
+		c = False
+		i = -1
+		l = len(poly)
+		j = l - 1
+		# print(pt)
+		while i < l-1:
+			i += 1
+			# print(i,poly[i], j,poly[j])
+			if ((poly[i]["lat"] <= pt["lat"] and pt["lat"] < poly[j]["lat"]) or (poly[j]["lat"] <= pt["lat"] and pt["lat"] < poly[i]["lat"])):
+				if (pt["lng"] < (poly[j]["lng"] - poly[i]["lng"]) * (pt["lat"] - poly[i]["lat"]) / (poly[j]["lat"] - poly[i]["lat"]) + poly[i]["lng"]):
+					c = not c
+			j = i
+		# print(c)
+		if c:
+			return 1
+		else:
+			return 0
 
 # 发现
 class Discover(CustomerBaseHandler):
@@ -830,7 +940,7 @@ class Discover(CustomerBaseHandler):
 			confess_active=confess_active,confess_count=confess_count,a=a,b=b,seckill_active=seckill_active,seckill_text=seckill_text,\
 			discount_active=discount_active,discount_count=discount_count,discount_text=discount_text,\
 			discount_display_flag=discount_display_flag,seckill_display_flag=seckill_display_flag,\
-			seckill_count=goods_count,shop_marketing=shop_marketing,get_shop_auth=shop_auth)
+			seckill_count=goods_count,shop_marketing=shop_marketing,get_shop_auth=shop_auth,shop_id=shop_id)
 
 # 店铺 - 店铺地图
 class ShopArea(CustomerBaseHandler):
@@ -1055,20 +1165,20 @@ class ShopProfile(CustomerBaseHandler):
 			shop_id=shop.id).first()
 		if not shop_follow:
 				follow = False
-		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
-		if orders:
-			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
-			if q[0][0]:
-				commodity_quality = int(q[0][0])
-			if q[0][1]:
-				send_speed = int(q[0][1])
-			if q[0][2]:
-				shop_service = int(q[0][2])
-			if commodity_quality and send_speed and shop_service:
-				satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
-			else:
-				satisfy = format(1,'.0%')
+		# orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+		# if orders:
+		# 	q = self.session.query(func.avg(models.Order.commodity_quality),\
+		# 		func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
+		# 	if q[0][0]:
+		# 		commodity_quality = int(q[0][0])
+		# 	if q[0][1]:
+		# 		send_speed = int(q[0][1])
+		# 	if q[0][2]:
+		# 		shop_service = int(q[0][2])
+		# 	if commodity_quality and send_speed and shop_service:
+		# 		satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+		# 	else:
+		satisfy = format(shop.satisfy,'.0%')
 		# 今天是否 signin
 		signin = False
 		q=self.session.query(models.ShopSignIn).filter_by(
@@ -1078,14 +1188,16 @@ class ShopProfile(CustomerBaseHandler):
 		operate_days = (datetime.datetime.now() - datetime.datetime.fromtimestamp(shop.create_date_timestamp)).days
 		fans_sum = shop.fans_count
 		order_sum = shop.order_count
-		goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		# goods_sum = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		goods_sum = shop.goods_count
 		address = self.code_to_text("shop_city", shop.shop_city) + " " + shop.shop_address_detail
 		service_area = self.code_to_text("service_area", shop.shop_service_area)
 		staffs = self.session.query(models.HireLink).filter_by(shop_id=shop_id,active=1).all()
 		shop_members_id = [shop.admin_id]+[x.staff_id for x in staffs]
 		headimgurls = self.session.query(models.Accountinfo.headimgurl_small).\
 					filter(models.Accountinfo.id.in_(shop_members_id)).all()
-		comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
+		# comment_sum = self.session.query(models.Order).filter_by(shop_id=shop_id, status=6).count()
+		comment_sum = shop.comment_count
 		session = self.session
 		w_id = self.current_user.id
 		return self.render("customer/shop-info.html", shop=shop,get_shop_auth=shop_auth,follow=follow, operate_days=operate_days,
@@ -2015,7 +2127,10 @@ class Market(CustomerBaseHandler):
 
 	@CustomerBaseHandler.check_arguments("fruits","seckill_goods_ids")
 	def cart_list(self):
-		shop_id = int(self.get_cookie('market_shop_id'))
+		try:
+			shop_id = int(self.get_cookie('market_shop_id'))
+		except:
+			return self.send_fail('shop_id error')
 		fruits = self.args["fruits"]
 		if len(fruits) > 20:
 			return self.send_fail("你往购物篮里塞了太多东西啦！请不要一次性购买超过20种物品～")
@@ -2191,6 +2306,7 @@ class Cart(CustomerBaseHandler):
 		shop_logo = shop.shop_trademark_url
 		shop_status = shop.status
 		shop_auth = shop.shop_auth
+		shop_phone = shop.shop_phone
 		try:
 			customer_follow =self.session.query(models.CustomerShopFollow).\
 			filter_by(customer_id = customer_id,shop_id =shop_id ).first()
@@ -2215,14 +2331,36 @@ class Cart(CustomerBaseHandler):
 			fruit_storage = fruit.storage
 			if fruit_id not in storages:
 				storages[fruit_id] = fruit_storage
+
+		#send period
 		try:
 			ontime_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=0).all()
 		except:
 			ontime_periods = []
+		if len(ontime_periods)>0:
+			for period in ontime_periods:
+				period.start = self.getTimeStamp(self.handTime(period.start_time))
+				period.end = self.getTimeStamp(self.handTime(period.end_time))
 		try:
 			self_periods = self.session.query(models.Period).filter_by(config_id = shop_id ,active = 1,config_type=1 ).all()
 		except:
 			self_periods= []
+		if len(self_periods)>0:
+			for period in self_periods:
+				period.start = self.getTimeStamp(self.handTime(period.start_time))
+				period.end = self.getTimeStamp(self.handTime(period.end_time))
+
+		time_now_seconds = self.hourToSeconds(datetime.datetime.now())
+		now_stop_seconds = shop.config.intime_period * 60
+		now_start_seconds = self.hourToSeconds(shop.config.start_time_now)
+		now_end_seconds = self.hourToSeconds(shop.config.end_time_now)
+		now_periods_start = shop.config.start_time_now.strftime("%H:%M")
+		now_periods_end = shop.config.end_time_now.strftime("%H:%M")
+		if now_start_seconds <= time_now_seconds+now_stop_seconds <= now_end_seconds:
+			now_periods = 1
+		else:
+			now_periods = 0
+
 		data=[]
 		q=self.session.query(models.CouponsCustomer).filter_by(customer_id=customer_id,shop_id=shop.id,coupon_status=1).all()
 		coupon_number=0
@@ -2266,11 +2404,37 @@ class Cart(CustomerBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
+		try:
+			default_address =[x for x in self.current_user.addresses if x.if_default ==1 ][0]
+		except:
+			default_address = None
 		return self.render("customer/cart.html", cart_f=cart_f,config=shop.config,output_data=data,coupon_number=coupon_number,\
 						   ontime_periods=ontime_periods,self_periods=self_periods,phone=phone, storages = storages,show_balance = show_balance,\
 						   shop_name = shop_name,shop_logo = shop_logo,balance_value=balance_value,shop_id=shop_id,
 						   shop_new=shop_new,shop_status=shop_status,self_address_list=self_address_list,shop_marketing=shop_marketing\
-						   ,get_shop_auth=shop_auth,context=dict(subpage='cart'))
+						   ,get_shop_auth=shop_auth,default_address=default_address,now_periods=now_periods,shop_phone=shop_phone\
+						   ,context=dict(subpage='cart'))
+	
+	def handTime(self,_time):
+		date_today = time.strftime("%Y-%m-%d")+" "
+		try:
+			show_time = date_today+(_time).strftime('%H:%M:%S')
+		except:
+			show_time = 0
+		return show_time
+
+	def getTimeStamp(self,_time):
+		try:
+			show_time = int(time.mktime(time.strptime(_time,'%Y-%m-%d %H:%M:%S'))*1000)
+		except:
+			show_time = 0
+		return show_time
+
+	def hourToSeconds(self,_time):
+		hour = int(_time.strftime("%H"))
+		minute = int(_time.strftime("%M"))
+		seconds = minute*60+hour*60*60
+		return seconds
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("fruits", "pay_type:int", "period_id:int",
@@ -2534,7 +2698,7 @@ class Cart(CustomerBaseHandler):
 			freight = config.freight_on_time  # 运费
 			totalPrice += freight
 			today=int(self.args["today"])
-			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=0).one()
+			try:period = self.session.query(models.Period).filter_by(id=int(self.args["period_id"]),config_type=0).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:
 				if period.start_time.hour*60 + period.start_time.minute - \
@@ -2549,11 +2713,14 @@ class Cart(CustomerBaseHandler):
 
 		elif self.args["type"] == 3: #自提
 			today=int(self.args["today"])
+			freight = config.freight_self
+			if totalPrice < config.min_charge_self:
+				totalPrice += freight
 			try:period = self.session.query(models.Period).filter_by(id=self.args["period_id"],config_type=1).one()
 			except:return self.send_fail("找不到该时间段")
 			if today == 1:
 				if period.end_time.hour*60 + period.end_time.minute - \
-					config.stop_range < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
+					config.self_end_time < datetime.datetime.now().hour*60 + datetime.datetime.now().minute:
 					return self.send_fail("下单失败：已超过了该送货时间段的下单时间，请选择其他时间段")
 				send_time = (now).strftime('%Y-%m-%d')+' '+(period.start_time).strftime('%H:%M')+'~'+(period.end_time).strftime('%H:%M')
 			elif today == 2:
@@ -2588,7 +2755,7 @@ class Cart(CustomerBaseHandler):
 		if not address:
 			return self.send_fail("没找到地址", 404)
 		if self.args["type"] == 3:
-			self_address = next((x for x in config.self_addresses if x.id == self.args["self_address_id"]), None)
+			self_address = next((x for x in config.self_addresses if x.id == int(self.args["self_address_id"])), None)
 			if not self_address:
 				return self.send_fail("没找到自提点", 404)
 			_order_address = self_address.address
@@ -2912,6 +3079,13 @@ class CartCallback(CustomerBaseHandler):
 	@tornado.web.authenticated
 	def post(self):
 		return self.send_success()
+#地址管理
+class Address(CustomerBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		shop_code = self.get_cookie('market_shop_code')
+		return self.render("customer/address.html",shop_code=shop_code)
+
 
 # 订单提交成功页面
 class Notice(CustomerBaseHandler):
@@ -3081,6 +3255,7 @@ class Order(CustomerBaseHandler):
 			if order.pay_type == 3 and order.status != -1:
 				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
 			# print("[CustomerOrder]Order cancel, order.status(before):",order.status)
+			old_order_status = order.status
 			order.status = 0
 			# print("[CustomerOrder]Order cancel, order.status(now)   :",order.status)
 			# recover the sale and storage
@@ -3149,7 +3324,7 @@ class Order(CustomerBaseHandler):
 				qq.update(self.session,use_number=use_number)
 				self.session.commit()
 
-			#订单删除，CustomerSeckillGoods表对应的状态恢复为0,SeckillGoods表也做相应变化
+			# 订单删除，CustomerSeckillGoods表对应的状态恢复为0,SeckillGoods表也做相应变化
 			charge_type_list = list(fruits.keys())
 			seckill_goods = self.session.query(models.SeckillGoods).filter(models.SeckillGoods.seckill_charge_type_id.in_(charge_type_list)).with_lockmode('update').all()
 			if seckill_goods:
@@ -3169,12 +3344,13 @@ class Order(CustomerBaseHandler):
 					self.session.flush()
 			self.session.commit()
 
-			# 发送订单取消模版消息
-			cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
-			if order.shop.admin.has_mp:
-				self.order_cancel_msg(self.session,order,cancel_time)
-			else:
-				self.order_cancel_msg(self.session,order,cancel_time,None)
+			# 如果不是未付款订单取消，则发送订单取消模版消息/打印取消信息/app消息推送
+			if old_order_status == -1:
+				cancel_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M')
+				if order.shop.admin.has_mp:
+					self.order_cancel_msg(self.session,order,cancel_time)
+				else:
+					self.order_cancel_msg(self.session,order,cancel_time,None)
 
 			return self.send_success()
 
@@ -3182,11 +3358,28 @@ class Order(CustomerBaseHandler):
 		elif action == "comment_point":
 			data = self.args["data"]
 			order = next((x for x in self.current_user.orders if x.id == int(data["order_id"])), None)
-			order.commodity_quality = int(data["commodity_quality"])
-			order.send_speed        = int(data["send_speed"])
-			order.shop_service      = int(data["shop_service"])
+			if not order:
+				return self.send_error(404)
+			try:
+				commodity_quality = int(data["commodity_quality"])
+			except:
+				commodity_quality = 100
+			try:
+				send_speed = int(data["send_speed"])
+			except:
+				send_speed = 100
+			try:
+				shop_service = int(data["shop_service"])
+			except:
+				shop_service = 100
+			order.commodity_quality = commodity_quality
+			order.send_speed        = send_speed
+			order.shop_service      = shop_service
 			notice =''
-			if int(data["commodity_quality"])==100 and int(data["send_speed"])==100 and int(data["shop_service"])==100:
+			satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			been_commnet_count = self.session.query(models.Order).filter_by(shop_id=order.shop_id,status=6).count()
+			order.shop.satisfy = (order.shop.satisfy*been_commnet_count+satisfy)/(been_commnet_count+1)
+			if commodity_quality ==100 and send_speed==100 and shop_service==100:
 				try:
 					shop_follow = self.session.query(models.CustomerShopFollow).filter_by(customer_id = \
 						order.customer_id,shop_id = order.shop_id).first()
@@ -3243,6 +3436,8 @@ class Order(CustomerBaseHandler):
 			order.comment_create_date = datetime.datetime.now()
 			order.comment = data["comment"]
 			order.comment_imgUrl = imgUrl
+			if order.status == 5:
+				order.shop.comment_count = order.shop.comment_count + 1
 			shop_follow = ''
 			notice = ''
 			
@@ -3334,8 +3529,9 @@ class OrderDetail(CustomerBaseHandler):
 			comment_imgUrl = None
 		shop_code = order.shop.shop_code
 		shop_name = order.shop.shop_name
+		shop_phone = order.shop.shop_phone
 		return self.render("customer/order-detail.html", order=order,charge_types=charge_types,comment_imgUrl=comment_imgUrl,\
-						   online_type=online_type,shop_name=shop_name,shop_code=shop_code)
+						   online_type=online_type,shop_name=shop_name,shop_code=shop_code,shop_phone=shop_phone)
 
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments("action", "data?")
@@ -3631,9 +3827,17 @@ class payTest(CustomerBaseHandler):
 	@tornado.web.authenticated
 	@CustomerBaseHandler.check_arguments('code?:str','totalPrice?')
 	def get(self):
-		totalPrice = float(self.get_cookie('money'))
+		totalPrice = self.get_cookie('money')
+		if not totalPrice:
+			return self.send_fail('充值金额未知，请点击返回重新充值')
+		totalPrice = float(totalPrice)
 		wxPrice    = int(totalPrice * 100)
-		orderId = str(self.current_user.id) +'a'+str(self.get_cookie('market_shop_id'))+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
+		shop_id = self.get_cookie('market_shop_id')
+		if not shop_id:
+			return self.send_fail('充值店铺未知，请点击返回重新充值')
+		if not self.current_user.id:
+			return self.send_fail('登录超时，请重新登录后进行充值')
+		orderId = str(self.current_user.id) +'a'+str(shop_id)+ 'a'+ str(wxPrice)+'a'+str(int(time.time()))
 		qr_url=""
 		if not self.is_wexin_browser():
 			qr_url=self._qr_pay()
@@ -3698,7 +3902,7 @@ class payTest(CustomerBaseHandler):
 		res = unifiedOrder.postXml().decode('utf-8')
 		res_dict = unifiedOrder.xmlToArray(res)
 		if 'code_url' in res_dict:
-				qr_url = res_dict['code_url']
+			qr_url = res_dict['code_url']
 		else:
 			qr_url = ""
 		return qr_url
@@ -3713,13 +3917,14 @@ class payTest(CustomerBaseHandler):
 			# print("[WxCharge]Callback request.body:",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
+			xml = re.sub(u"[\x00-\x08\x0b-\x0c\x0e-\x1f]+",u"",xml)
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
 			status       = xmlArray['result_code']
 			orderId      = str(xmlArray['out_trade_no'])
 			result       = orderId.split('a')
-			customer_id  = int(result[0])
-			shop_id      = int(result[1])
-			totalPrice   = (float(result[2]))/100
+			customer_id  = int(result[0]) if result[0] else 0
+			shop_id      = int(result[1]) if result[1] else 0
+			totalPrice   = (float(result[2]))/100 if result[2] else 0
 			transaction_id = str(xmlArray['transaction_id'])
 			if status != 'SUCCESS':
 				return False
