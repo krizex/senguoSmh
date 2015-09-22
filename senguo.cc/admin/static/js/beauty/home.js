@@ -327,6 +327,9 @@ var goodsList=function(page,action,_group_id,type){
                 }
             }
             else {
+                if(!res.error_text){
+                    window.location.reload(true);
+                }
                 noticeBox(res.error_text);
                 $(".wrap-loading-box").addClass("hidden");
             }
