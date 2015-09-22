@@ -317,7 +317,7 @@ var hotaticle_item = '<li data-id="{{id}}">'+
     ' <p class="clip c333">{{title}}</p>'+
     '<div class="wrap-topic-attr">'+
     '<span>{{nickname}}</span>'+
-    '<span class="wrap-icon people-see"><i class="icon-see"></i><span class="num">{{scan_num}}</span></span>'+
+    '<span class="wrap-icon people-see fr"><i class="icon-see"></i><span class="num">{{scan_num}}</span></span>'+
     '</div>'+
     '</a>'+
     '</li>';

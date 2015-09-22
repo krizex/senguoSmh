@@ -151,7 +151,7 @@
             if($this.attr("data-sta")=="1"){
                 return noticeBox("客官不要着急，呼叫微信中...");
             }
-            $this.attr({"data-sta":"1"});
+            $this.removeClass("red-btn").addClass("white-btn").text("提交中...").attr({"data-sta":"1"});
             $.ajax({
                 url:"/customer/overtime?order_id="+$("#order-id").val(),
                 type:"get",
@@ -174,25 +174,14 @@
                                     window.location.href = '/notice/success';
                                 },
                                 fail:function(){
-                                     //  $.ajax({
-                                     //     url:"/customer/wxpayCallBack",
-                                     //     type:"get",
-                                     //     success:function(res){
-                                     //         if(res.success){
-                                     //             new QRCode(document.getElementById('qrcode'), {
-                                     //                 width : 280,//设置宽高
-                                     //                 height : 280,
-                                     //                 colorDark : "#433943"
-                                     //             }).makeCode(res.qr_url);
-                                     //         }
-                                     //     }
-                                     // });
+                                    $this.removeClass("white-btn").addClass("red-btn").text("去支付").attr({"data-sta":""});
+
                                 }
                             });
                             $this.attr({"data-sta":""});
                         }
                     }else{
-                        $this.attr({"data-sta":""});
+                        $this.removeClass("white-btn").addClass("red-btn").text("去支付").attr({"data-sta":""});
                     }
                 }
             });
