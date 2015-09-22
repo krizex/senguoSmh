@@ -54,7 +54,7 @@ $(document).ready(function(){
     if($this.attr("data-sta")=="1"){
         return noticeBox("客官不要着急，呼叫支付宝中...");
     }
-    $this.attr({"data-sta":"1"});
+    $this.removeClass("red-btn").addClass("white-btn").text("提交中...").attr({"data-sta":"1"});
     $.ajax({
         url:"/customer/overtime?order_id="+$("#order-id").val(),
         type:"get",
@@ -74,7 +74,7 @@ $(document).ready(function(){
                     }
                 }
             }else{
-                $this.attr({"data-sta":""});
+                $this.removeClass("white-btn").addClass("red-btn").text("去支付").attr({"data-sta":""});
             }
         }
     });
