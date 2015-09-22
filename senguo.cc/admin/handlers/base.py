@@ -1597,6 +1597,21 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				break
 		return scene_id
 
+	@property
+	def getNoticeNumber(self):
+		if self.current_user:
+			article_id = self.session.query(models.Article.id).filter_by(account_id=self.current_user.id).filter(models.Article.status>0).all()
+			comment = 0
+			great = 0
+			for article in article_id:
+				_id = article[0]
+				comment = comment+self.session.query(models.ArticleComment).filter_by(article_id=_id,if_scan=0,status=1,_type=0).count()
+				great = great+self.session.query(models.ArticleGreat).filter_by(article_id=_id,scan=0,great=1).count()
+			data = comment+great
+		else:
+			data=0
+		return data
+
 # 超级管理员基类方法
 class SuperBaseHandler(_AccountBaseHandler):
 	__account_model__ = models.SuperAdmin
@@ -1709,22 +1724,6 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			file_name = "mbbs"
 		return file_name
 
-	@property
-	def getNoticeNumber(self):
-		if self.current_user:
-			article_id = self.session.query(models.Article.id).filter_by(account_id=self.current_user.id).filter(models.Article.status>0).all()
-			comment = 0
-			great = 0
-			for article in article_id:
-				_id = article[0]
-				comment = comment+self.session.query(models.ArticleComment).filter_by(article_id=_id,if_scan=0,status=1,_type=0).count()
-				great = great+self.session.query(models.ArticleGreat).filter_by(article_id=_id,scan=0,great=1).count()
-			data = comment+great
-		else:
-			data=0
-		return data
-
-	
 
 # 店铺管理后台基类方法
 class AdminBaseHandler(_AccountBaseHandler):
