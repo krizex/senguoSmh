@@ -28,24 +28,6 @@ $(document).ready(function(){
         articleList(0,true);
         scrollLoading();
     }
-    /*var link_action=$.getUrlParam("action");
-    if(link_action=="official"){
-        page=0;
-        _type=0;
-        $('#bbs-menu').text('官方公告');
-    }else if(link_action=="update"){
-        page=0;
-        _type=1;
-        $('#bbs-menu').text('产品更新');
-    }else if(link_action=="dry"){
-        page=0;
-        _type=2;
-        $('#bbs-menu').text('运营干货');
-    }else{
-        _type=100;
-    }
-    articleList(0);
-    scrollLoading();*/
 }).on("click",".atical-list li",function(e){
     var id=$(this).attr("data-id");
     if($(e.target).closest(".dianzan").size()==0){

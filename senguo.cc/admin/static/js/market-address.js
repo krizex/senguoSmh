@@ -71,9 +71,10 @@ function addressEdit(action){
     var name=$('#address_name').val();
     var phone=$('#address_phone').val();
     var address=$('#address_address').val();
-    var regPhone=/^(1)\d{10}$/;
+    var regPhone=/^\d{4,11}$/;
     if(!name) {return warnNotice('请填写收货人姓名');}
     if(!phone) {return warnNotice('请填写收货人电话');}
+    if(!regPhone.test(phone)){return warnNotice('手机号必须是数字且长度是4到11位');}
     if(!address) {return warnNotice('请填写收货人地址');}
     if(name.length>10) {return warnNotice('姓名请不要超过10个字');}
     if(address.length>50) {return warnNotice('地址请不要超过50个字');}

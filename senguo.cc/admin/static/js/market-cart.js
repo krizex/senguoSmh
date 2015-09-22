@@ -71,11 +71,7 @@ $(document).ready(function(){
         if(result=='true'){
             if(type==0) {
                 $('.cart-list-item').eq(index).addClass('anim-lightSpeedOut');
-                setTimeout(function(){itemDelete($('.cart-list-item').eq(index),0);},300);
-            }
-            else if(type==1) {
-                $('.cart-list-item').eq(index).addClass('anim-lightSpeedOut');
-                setTimeout(function(){itemDelete($('.cart-list-item').eq(index),1);},300);
+                setTimeout(function(){itemDelete($('.cart-list-item').eq(index),type,index);},300);
             }
         }
         confirmRemove();
@@ -332,6 +328,7 @@ function calDeli(){
     var freight = 0;
     var min_charge = 0;
     var total_price = mathFloat($('#list_total_price').html());
+    var type = 0;
     //判断配送费方式
     if($(".bili_type").children(".active").hasClass("shoper-item")){
         if($("#deli_shop").attr("data-type")=="0"){
@@ -341,16 +338,23 @@ function calDeli(){
             freight = _freigh_ontime;
             min_charge = _mincharge_intime;
         }
+        type = 0;
     }else{
         freight = _freigh_self;
         min_charge = _mincharge_self;
+        type = 1;
     }
-    if(total_price>min_charge){
+    if(total_price>=min_charge){
         $(".shop-deli").addClass("hidden");
+        $(".shop-self-deli").addClass("hidden");
     }else{
         $("#min_charge").html(min_charge);
         if(min_charge>0){
-            $(".shop-deli").removeClass("hidden");
+            if(type==0){
+                $(".shop-deli").removeClass("hidden");
+            }else{
+                $(".shop-self-deli").removeClass("hidden");
+            }
         }
     }
     $("#freight_money").html(freight);
@@ -361,6 +365,7 @@ var getPrice=function(){
     _price_list=[];
     var freight = 0;
     var min_charge = 0;
+    var type = 0;
     //判断配送费方式
     if($(".bili_type").children(".active").hasClass("shoper-item")){
         if($("#deli_shop").attr("data-type")=="0"){//立即送
@@ -370,9 +375,11 @@ var getPrice=function(){
             freight = _freigh_ontime;
             min_charge = _mincharge_intime;
         }
+        type=0;
     }else{//自提
         freight = _freigh_self;
         min_charge = _mincharge_self;
+        type=1
     }
     var $list_total_price=$('#list_total_price');
     var $final_price=$('.final_price');
@@ -395,11 +402,18 @@ var getPrice=function(){
     _total_price=mathFloat(totalPrice(_price_list));
     $list_total_price.text(_total_price);
     $(".fruits_price").text(_total_price);
-    if(_total_price>min_charge){
+    if(_total_price>=min_charge){
         $(".shop-deli").addClass("hidden");
+        $(".shop-self-deli").addClass("hidden");
     }else{
         $("#min_charge").html(min_charge);
-        $(".shop-deli").removeClass("hidden");
+        if(min_charge>0){
+            if(type==0){
+                $(".shop-deli").removeClass("hidden");
+            }else{
+                $(".shop-self-deli").removeClass("hidden");
+            }
+        }
     }
     $final_price.text(mathFloat(_total_price+freight));
 }
@@ -505,7 +519,7 @@ function mincharge(n,price){
     }
 }
 //删除商品
-function itemDelete(target,menu_type) {
+function itemDelete(target,menu_type,index) {
     var $list_total_price=$('#list_total_price');
     var url = '/cart';
     var action = 0;
@@ -520,6 +534,7 @@ function itemDelete(target,menu_type) {
     };
     $.postJson(url, args, function (res) {
             if (res.success) {
+                $(".fruits-lst li").eq(index).remove();
                 target.remove();
                 t_price-=parseFloat(price);
                 $list_total_price.text(t_price);
