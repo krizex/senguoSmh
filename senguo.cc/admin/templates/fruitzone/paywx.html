@@ -175,21 +175,10 @@
                                 },
                                 fail:function(){
                                     $this.removeClass("white-btn").addClass("red-btn").text("去支付").attr({"data-sta":""});
-                                     //  $.ajax({
-                                     //     url:"/customer/wxpayCallBack",
-                                     //     type:"get",
-                                     //     success:function(res){
-                                     //         if(res.success){
-                                     //             new QRCode(document.getElementById('qrcode'), {
-                                     //                 width : 280,//设置宽高
-                                     //                 height : 280,
-                                     //                 colorDark : "#433943"
-                                     //             }).makeCode(res.qr_url);
-                                     //         }
-                                     //     }
-                                     // });
+
                                 }
                             });
+                            $this.attr({"data-sta":""});
                         }
                     }else{
                         $this.removeClass("white-btn").addClass("red-btn").text("去支付").attr({"data-sta":""});
