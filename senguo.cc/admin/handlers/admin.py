@@ -3548,8 +3548,9 @@ class Goods(AdminBaseHandler):
 				if goods.activity_status not in [-2,0]:
 					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能删除哦！")
 				time_now = datetime.datetime.now()
-				current_shop.goods_count = current_shop.goods_count -1
-				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
+				if goods.active !=0:
+					current_shop.goods_count = current_shop.goods_count -1
+					goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
 			charge_type_id = self.args["charge_type_id"]
@@ -3575,12 +3576,16 @@ class Goods(AdminBaseHandler):
 				except:
 					return self.send_error(404)
 				if action == 'batch_on':
-					goods.active = 1
+					if goods.active !=1:
+						current_shop.goods_count = current_shop.goods_count+1
+						goods.active = 1
 				elif action == 'batch_off':
 					activity_name = {1:'秒杀',2:'限时折扣'}
 					if goods.activity_status not in [-2,0]:
 						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
-					goods.active = 2
+					if goods.active !=2:
+						current_shop.goods_count = current_shop.goods_count-1
+						goods.active = 2
 				elif action == 'batch_group':
 					activity_name = {1:'秒杀',2:'限时折扣'}
 					if goods.activity_status not in [-2,0]:
@@ -3670,9 +3675,10 @@ class Goods(AdminBaseHandler):
 					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
 				except:
 					return self.send_error(404)
-				if goods:
+				if goods and goods.active !=1:
+					current_shop.goods_count = current_shop.goods_count+1
 					goods.active = 1
-				self.session.commit()
+					self.session.commit()
 
 		# 商品恢复删除
 		elif action == "reset_delete":
@@ -3680,10 +3686,10 @@ class Goods(AdminBaseHandler):
 				goods = self.session.query(models.Fruit).filter_by( id = data["id"] ).first()
 			except:
 				return self.send_error(404)
-			if goods:
+			if goods and goods.active !=1:
+				current_shop.goods_count = current_shop.goods_count+1
 				goods.active = 1
-			current_shop.goods_count = current_shop.goods_count+1
-			self.session.commit()
+				self.session.commit()
 
 		# 商品类目搜索
 		elif action =="classify_search":

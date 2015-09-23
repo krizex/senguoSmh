@@ -426,8 +426,18 @@ $(document).ready(function(){
         $(".pop-unit").hide();
     }
 }).on("click","#batch-up",function(){//批量上架&下架
+    var $this=$(this);
+    if($this.attr("data-sta")=="1"){
+        return false;
+    }
+    $this.attr("data-sta","1");
     batchGoods("up");
 }).on("click","#batch-down",function(){
+    var $this=$(this);
+    if($this.attr("data-sta")=="1"){
+        return false;
+    }
+    $this.attr("data-sta","1");
     batchGoods("down");
 }).on("click",".ok-editor",function(){
     curEditor.attr("data-text",editor.body.innerHTML);
@@ -974,10 +984,12 @@ function batchGoods(type){
         if (res.success) {
             Tip("批量操作成功");
             if(type=="up"){
+                $("#batch-up").attr("data-sta","");
                 batchList.each(function(){
                     $(this).closest(".goods-all-item").find(".switch-btn").addClass("switch-btn-active");
                 });
             }else{
+                $("#batch-dowm").attr("data-sta","");
                 batchList.each(function(){
                     $(this).closest(".goods-all-item").find(".switch-btn").removeClass("switch-btn-active");
                 });
