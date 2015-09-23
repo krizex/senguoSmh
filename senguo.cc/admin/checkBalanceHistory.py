@@ -456,6 +456,8 @@ def Check():
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			elif balance_type in [-1,8,9]:
+				pass
 			else:
 				return self.send_error(404)
 
