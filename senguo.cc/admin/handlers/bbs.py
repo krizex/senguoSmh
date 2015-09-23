@@ -90,7 +90,17 @@ class Main(FruitzoneBaseHandler):
 			return self.send_success(datalist=datalist,nomore=nomore)
 
 		if_admin = self.if_super()
-		return self.render("{0}/main.html".format(self.getBbsPath),if_admin=if_admin)
+		if_saler = False
+		if self.current_user:
+			try:
+				saler = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id).one()
+			except:
+				saler = None
+			if saler:
+				if_saler = True
+		else:
+			if_saler = False
+		return self.render("{0}/main.html".format(self.getBbsPath),if_admin=if_admin,if_saler=if_saler)
 
 # 社区 - 文章详情
 class Detail(FruitzoneBaseHandler):

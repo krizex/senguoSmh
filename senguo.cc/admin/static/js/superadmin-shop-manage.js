@@ -154,6 +154,14 @@ $(document).ready(function(){
             }
         }
     )
+}).on('click',"#applyPrePage",function(){
+    var page=Int($.getUrlParam('page'));
+    if(page>0) {
+        window.location.href=window.location.href.replace("page="+page,"page="+(page-1));
+    }
+}).on('click',"#applyNextPage",function(){
+    var page=Int($.getUrlParam('page'));
+    window.location.href=window.location.href.replace("page="+page,"page="+(page+1));
 });
 
 function insertShop(page){

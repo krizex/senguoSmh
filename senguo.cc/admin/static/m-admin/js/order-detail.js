@@ -88,6 +88,7 @@ $(document).ready(function(){
     $(".sure-btn").attr("id","remark-sure");
     $('.pop-del').removeClass('hide').find('#order-del').val('').attr({'placeholder':'请输入您的订单备注'});
     $('.pop-del').find('.title').text('订单备注');
+    $('.pop-del').find(".del-notice").addClass("hide");
 }).on('click','#remark-sure',function(){
     var remark=$('#order-del').val();
     var $this=$(this);

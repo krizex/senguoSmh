@@ -729,7 +729,7 @@ class GlobalBaseHandler(BaseHandler):
 			great_if=True
 		data={"id":article[0].id,"title":article[0].title,"time":self.timedelta(article[0].public_time),\
 			"type":self.article_type(article[0].classify),"nickname":article[1],"great_num":article[0].great_num,\
-			"comment_num":article[0].comment_num,"great_if":great_if,"admin_if":article[0].if_admin}
+			"comment_num":article[0].comment_num,"great_if":great_if,"admin_if":article[0].if_admin,"scan_num":article[0].scan_num}
 		return data
 
 	# 获取森果社区文章评论
@@ -1652,9 +1652,11 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 # Fruitzone基类方法
 class FruitzoneBaseHandler(_AccountBaseHandler):
-	__account_model__ = models.ShopAdmin
+	# __account_model__ = models.ShopAdmin
 	# __account_cookie_name__ = "admin_id"
-	__wexin_oauth_url_name__ = "adminOauth"
+	# __wexin_oauth_url_name__ = "adminOauth"
+	__account_model__ = models.Customer
+	__wexin_oauth_url_name__ ="customerOauth"
 
 	# woody 4.4
 	# 获取店铺总数
@@ -1724,6 +1726,20 @@ class FruitzoneBaseHandler(_AccountBaseHandler):
 			file_name = "mbbs"
 		return file_name
 
+	@property
+	def getBBSNumber(self):
+		date_today = datetime.datetime.now().date().strftime("%Y-%m-%d")
+		article_list = self.session.query(models.Article.public_time,models.Article.classify).all()
+		comment_list = self.session.query(models.ArticleComment.create_time,models.Article.classify)\
+		.join(models.Article,models.Article.id==models.ArticleComment.article_id).all()
+		number= []
+		for i in range(0,8):
+			comment_num = len([x for x in article_list if x[0].strftime("%Y-%m-%d") == date_today and x[1] == i ])
+			article_num = len([x for x in comment_list if x[0].strftime("%Y-%m-%d") == date_today and x[1] == i ])
+			number.append(comment_num+article_num)
+		return number
+	    
+	
 
 # 店铺管理后台基类方法
 class AdminBaseHandler(_AccountBaseHandler):

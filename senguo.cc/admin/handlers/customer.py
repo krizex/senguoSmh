@@ -3253,7 +3253,7 @@ class Order(CustomerBaseHandler):
 			elif order.status in [5,6,7]:
 				return self.send_fail("该订单已经送达，无法取消")
 			if order.pay_type == 3 and order.status != -1:
-				return self.send_fail("在线支付『已付款』的订单暂时不能取消，如有疑问请直接与店家联系")
+				return self.send_fail("在线支付『已付款』的订单请联系卖家进行取消")
 			# print("[CustomerOrder]Order cancel, order.status(before):",order.status)
 			old_order_status = order.status
 			order.status = 0
