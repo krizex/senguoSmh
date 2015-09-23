@@ -4669,7 +4669,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'cash':
 			apply_value = self.args['apply_value']
 			if apply_value > self.current_shop.available_balance:
-				return self.send_fail("您申请金额大于店铺 可提现的金额，请重新申请")
+				return self.send_fail("您申请的提现金额大于店铺可提现余额，请重新申请")
 			alipay_account = self.args['alipay_account']
 			account_name = self.args['account_name']
 			code = int(self.args['code'])
@@ -4722,7 +4722,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,3,4,5]))
+			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,3,4,5,8,9]))
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -4777,10 +4777,10 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'online':
 			history = []
 			page=int(self.args['page'])-1
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 3)\
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([3,8,9]))\
 			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type =3).all()
-			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3).count()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type =3,is_cancel=0).all()
+			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3,is_cancel=0).count()
 			if q[0][0]:
 				total =q[0][0]
 			count = q[0][1]
@@ -4805,7 +4805,7 @@ class ShopBalance(AdminBaseHandler):
 			page=int(self.args['page'])-1
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5]))\
 			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			count = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5])).count()
+			count = self.session.query(models.BalanceHistory.shop_id).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5])).count()
 			spend_total = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type =1,is_cancel = 0).all()
 			if spend_total[0][0]:
 				total =spend_total[0][0]
@@ -4832,7 +4832,7 @@ class ShopBalance(AdminBaseHandler):
 			page = int(self.args['page']-1)
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).\
 			order_by(models.BalanceHistory.create_time.desc()).offset(page*page_size).limit(page_size).all()
-			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).count()
+			count =  self.session.query(models.BalanceHistory.shop_id).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).count()
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
 			#	print('[AdminShopBalance]get all BalanceHistory error')

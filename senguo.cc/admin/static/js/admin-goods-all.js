@@ -99,8 +99,7 @@ $(document).ready(function(){
                         '<img src="{{imgurl}}?imageView2/1/w/100/h/100" url="{{imgurl}}" alt="商品图片"/>'+
                 '</li>';
         $(".choosed-list").empty();
-        console.log(curpiclist);
-       for(var i =0;i<curpiclist.length;i++){
+        for(var i =0;i<curpiclist.length;i++){
             var img=curpiclist.eq(i).find(".image").attr("url");
             var render = template.compile(_item);
             var html = render({
@@ -989,7 +988,7 @@ function batchGoods(type){
                     $(this).closest(".goods-all-item").find(".switch-btn").addClass("switch-btn-active");
                 });
             }else{
-                $("#batch-dowm").attr("data-sta","");
+                $("#batch-down").attr("data-sta","");
                 batchList.each(function(){
                     $(this).closest(".goods-all-item").find(".switch-btn").removeClass("switch-btn-active");
                 });

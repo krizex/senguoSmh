@@ -415,8 +415,11 @@ def Check():
 			if not shop_follow:
 				return send_fail('shop_follow not found')
 			cur_shop = session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
-
-			if balance_type == 0:
+			# 错误记录（直接忽略）
+			if balance_type == -1:
+				pass
+			# 余额充值
+			elif balance_type == 0:
 				shop_follow.shop_balance += balance_value
 				shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 				cur_shop.shop_balance += balance_value
@@ -424,12 +427,14 @@ def Check():
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 余额消费
 			elif balance_type == 1:
 				shop_follow.shop_balance -= balance_value
 				shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 提现
 			elif balance_type == 2:
 				cur_shop.shop_balance -= balance_value
 				cur_shop.shop_balance = round(cur_shop.shop_balance,2)
@@ -438,28 +443,37 @@ def Check():
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 在线支付
 			elif balance_type == 3:
 				cur_shop.shop_balance += balance_value
 				cur_shop.shop_balance = round(cur_shop.shop_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 余额退款
 			elif balance_type in [4,5]:
 				shop_follow.shop_balance += balance_value
 				shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 可提现额度入账
 			elif balance_type in [6,7]:
 				cur_shop.available_balance += balance_value
 				cur_shop.available_balance = round(cur_shop.available_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
-			elif balance_type in [-1,8,9]:
-				pass
+			# 在线支付退款
+			elif balance_type in [8,9]:
+				cur_shop.shop_balance -= balance_value
+				cur_shop.shop_balance = round(cur_shop.shop_balance,2)
+				history_record.customer_totalPrice = shop_follow.shop_balance
+				history_record.shop_totalPrice = cur_shop.shop_balance
+				history_record.available_balance = cur_shop.available_balance
 			else:
-				return self.send_error(404)
+				print("balance_type错误，未知值: ",balance_type)
+				return send_error(404)
 
 			session.commit()
 		print("Processing [",c,"/",total,"] => Step 3: shop_id",shop_id,"Done")

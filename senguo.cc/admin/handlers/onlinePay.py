@@ -61,7 +61,6 @@ class RefundCallback(CustomerBaseHandler):
 		shop.shop_balance -= balance_value
 		#将这条余额记录作废
 		balance_history.is_cancel = 1
-		balance_history.balance_type = -1
 		customer_id = balance_history.customer_id
 		name        = balance_history.name
 		shop_province = balance_history.shop_province
@@ -153,7 +152,6 @@ class RefundWxpay(CustomerBaseHandler):
 				shop.shop_balance -= balance_value
 				#将这条余额记录作废
 				balance_history.is_cancel = 1
-				balance_history.balance_type = -1
 				customer_id = balance_history.customer_id
 				name        = balance_history.name
 				shop_province = balance_history.shop_province
