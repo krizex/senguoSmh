@@ -403,7 +403,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			##############################################################
 			print("[WeixinPay]handle WeixinPay Callback!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 			data = self.request.body
-			print("[WeixinPay]request.body:",self.request.body)
+			# print("[WeixinPay]request.body:",self.request.body)
 			xml = data.decode('utf-8')
 			UnifiedOrder = UnifiedOrder_pub()
 			xmlArray     = UnifiedOrder.xmlToArray(xml)
@@ -416,7 +416,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				trade_type = xmlArray['trade_type']
 			except:
 				trade_type = None
-			print(trade_type)
+			# print(trade_type)
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
 			# shop_id      = int(result[1])
