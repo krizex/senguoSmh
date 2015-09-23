@@ -146,7 +146,7 @@ class Detail(FruitzoneBaseHandler):
 		if self.current_user and article[0].account_id == self.current_user.id:
 			author_if = True
 		article_data={"id":article[0].id,"title":article[0].title,"time":article[0].public_time.strftime("%Y-%m-%d"),"article":article[0].article,\
-						"type":self.article_type(article[0].classify),"nickname":article[1],"imgurl":article[3],\
+						"type":self.article_type(article[0].classify),"classify":article[0].classify,"nickname":article[1],"imgurl":article[3],\
 						"great_num":article[0].great_num,"comment_num":article[0].comment_num,"private":article[0].comment_private,\
 						"scan_num":article[0].scan_num,"collect_num":article[0].collect_num,"great_if":great_if,"collect_if":collect_if}
 		if "action" in self.args and self.args["action"] == "comment":
