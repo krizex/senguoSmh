@@ -3394,8 +3394,10 @@ class Goods(AdminBaseHandler):
 				if goods.active == 1 and goods.activity_status not in [-2,0]:
 					return self.send_fail("当前商品正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
 				elif goods.active == 1:
+					current_shop.goods_count = current_shop.goods_count-1
 					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
+					current_shop.goods_count = current_shop.goods_count+1
 					goods.update(session=self.session, active = 1)
 			# 编辑商品分组
 			elif action =="change_group":
@@ -3680,6 +3682,7 @@ class Goods(AdminBaseHandler):
 				return self.send_error(404)
 			if goods:
 				goods.active = 1
+			current_shop.goods_count = current_shop.goods_count+1
 			self.session.commit()
 
 		# 商品类目搜索
