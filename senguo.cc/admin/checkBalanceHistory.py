@@ -13,13 +13,15 @@ session = models.DBSession()
 #用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
 
 def Check():
+	input_shop_id = int(input("Input Shop ID to Check:"))
 	print("Start Checking Balance History...")
 	# *将balancehistory表中的所有店铺id查出来存放在列表shop_list_query1中
 	# *将系统中的所有status > -1的订单的数量不为0店铺的id查询出来存在一个列表shop_list_query2中
 	# *然后从列表shop_list_query2中除去shop_list_query1中的id 
 	# shop_list_query1 = session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
 	
-	shop_id_list1 = [1753]
+	shop_id_list1 = []
+	shop_id_list1.append(input_shop_id)
 	# for item in shop_list_query1:
 	# 	shop_id_list1.append(item[0])
 	total = len(shop_id_list1)
