@@ -1597,6 +1597,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 				break
 		return scene_id
 
+	#社区今日文章数及评论数
 	@property
 	def getNoticeNumber(self):
 		if self.current_user:
@@ -1611,6 +1612,7 @@ class _AccountBaseHandler(GlobalBaseHandler):
 		else:
 			data=0
 		return data
+
 
 # 超级管理员基类方法
 class SuperBaseHandler(_AccountBaseHandler):
