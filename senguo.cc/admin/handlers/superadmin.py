@@ -2427,7 +2427,7 @@ class ApplyRefund(SuperBaseHandler):
 		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
 		if action == "confirm":
 			if refund_apply.has_done == 1:
-			return self.send_fail('请勿重复处理！')
+				return self.send_fail('请勿重复处理！')
 			refund_apply.has_done = 1 #将申请退款变为已处理状态
 			###################################################################
 			# 9.17 woody
