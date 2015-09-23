@@ -56,17 +56,17 @@ class RefundCallback(CustomerBaseHandler):
 		order.get_num(session,order.id)  #取消订单,库存增加，在售减少 	
 		shop_id = balance_history.shop_id
 		balance_value = balance_history.balance_value
-		shop = order.shop 
+		shop = order.shop
 		#该店铺余额减去订单总额
 		shop.shop_balance -= balance_value
-		balance_history.is_cancel = 1
 		#将这条余额记录作废
+		balance_history.is_cancel = 1
 		balance_history.balance_type = -1
 		customer_id = balance_history.customer_id
 		name        = balance_history.name
 		shop_province = balance_history.shop_province
 		shop_name     = balance_history.shop_name
-		balance_record = balance_history.balance_record + '--退款'
+		balance_record = '在线支付(支付宝)退款：订单' + order.num + '删除'
 		create_time   = datetime.datetime.now()
 		shop_totalPrice = shop.shop_balance
 		customer_totalPrice = balance_history.customer_totalPrice
@@ -151,14 +151,14 @@ class RefundWxpay(CustomerBaseHandler):
 				order.status = 0  #将订单标志为已删除  
 				#该店铺余额减去订单总额
 				shop.shop_balance -= balance_value
-				balance_history.is_cancel = 1
 				#将这条余额记录作废
+				balance_history.is_cancel = 1
 				balance_history.balance_type = -1
 				customer_id = balance_history.customer_id
 				name        = balance_history.name
 				shop_province = balance_history.shop_province
 				shop_name     = balance_history.shop_name
-				balance_record = balance_history.balance_record + '--退款'
+				balance_record = '在线支付(微信)退款：订单' + order.num + '删除'
 				create_time   = datetime.datetime.now()
 				shop_totalPrice = shop.shop_balance
 				customer_totalPrice = balance_history.customer_totalPrice

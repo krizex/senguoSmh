@@ -668,14 +668,14 @@ function orderPrint(target,action){
                         var img = $("#img");
                         var src=img.attr('src');
                         if(src!='None'&& src!=undefined){
-                          img.on("load",function(){
-                             window.print();
-                             window.document.body.innerHTML=inner;
-                            });  
+                            img.on("load",function(){
+                            window.print();
+                            window.document.body.innerHTML=inner;
+                            });
                         }
                         else{
-                           window.print();
-                           window.document.body.innerHTML=inner; 
+                            window.print();
+                            window.document.body.innerHTML=inner; 
                         }
                     }   
                 }
@@ -781,7 +781,6 @@ function orderDelete(target){
                 order_id:order_id
             };
         };
-
     }
 
     $.postJson(url,args,function(res){
