@@ -8,18 +8,22 @@
 <div class="wrap-refund">
     <ul class="apply-cont-lst" id="apply-cont-lst">
         {% for apply in data %}
-        <li data-apply-id="{{apply['id']}}">
+        <li data-apply-id="{{apply['id']}}" class="item">
             <ul class="shop-attr-lst group">
-                <li>用户id：{{apply['customer_id']}}</a></li>
-                <li>申请时间：{{apply['create_time']}}</li>
-                <li>金额：<span class="red-txt">{{apply['refund_fee']}}</span>元</li>
-                <li>退款类型：{{apply['refund_type']}}</li>
+                <li class="w30m0">退款金额：<span class="red-txt">{{apply['refund_fee']}}</span>元</li>
+                <li class="w30m0">退款类型：{{apply['refund_type']}}</li>
+                <li class="w30m0">退款用户ID：<a href="/super/user?out_link=true&&data_id={{apply['customer_id']}}" target="_blink">{{apply['customer_id']}}</a></li>
+                <li class="w30m0">申请时间：{{apply['create_time']}}</li>
+                <li class="w30m0">店铺名称：<a href="/super/shopManage?action=all&search&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&&page=1&flag=1&search_con={{apply['shop_name']}}" target="_blink">{{apply["shop_name"]}}</a></li>
+                <li class="w30m0">订单号：<a href="javascript:;">{{apply['order_num']}}</a></li>
+                <li class="w30m0">退款申请说明：{{apply['reason']}}</li>
                 {% if apply['refund_type']==1 %}
-                <li>退款地址： <a href="{{apply['refund_url']}}" target="_blank">点击退款</a></li>
+                <li class="w30m0">退款地址： <a href="{{apply['refund_url']}}" target="_blank">点击退款</a></li>
                 {% end %}
             </ul>
             <div class="apply-btn-group">
-                <a href="javascript:;" class="refund-ok-btn" data-id="{{apply['id']}}" >确认</a>
+                <a href="javascript:;" class="refund-ok-btn btn-green btn" data-id="{{apply['id']}}" >确认并退款</a>
+                <a href="javascript:;" class="refund-ignore-btn btn-grey btn" data-id="{{apply['id']}}" >忽略</a>
             </div>
         </li>
         {% end %}

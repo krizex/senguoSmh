@@ -2406,68 +2406,74 @@ class ApplyRefund(SuperBaseHandler):
 	def get(self):
 		data = []
 		refund_list = self.session.query(models.ApplyRefund).filter_by(has_done=0).all()
-		if not refund_list:
-			return self.write('当前无申请退款！')
-		for item in refund_list:
-			item_dict = {}
-			item_dict['id'] = item.id
-			item_dict['customer_id'] = item.customer_id
-			item_dict['refund_fee']  = item.refund_fee
-			item_dict['refund_type'] = '支付宝支付' if item.refund_type else '微信支付'
-			item_dict['refund_url']  = item.refund_url
-			item_dict['create_time'] = item.create_time.strftime("%Y-%m-%d %H:%M")
-			data.append(item_dict)
-		print(data)
+		if refund_list:
+			for item in refund_list:
+				order = self.session.query(models.Order.del_reason,models.Shop.shop_name).join(models.Shop,models.Shop.id==models.Order.shop_id)\
+				.filter(models.Order.id==item.order_id).first()
+				item_dict = {}
+				item_dict['id'] = item.id
+				item_dict['customer_id'] = item.customer_id
+				item_dict['refund_fee']  = item.refund_fee
+				item_dict['refund_type'] = '支付宝支付' if item.refund_type else '微信支付'
+				item_dict['refund_url']  = item.refund_url
+				item_dict['create_time'] = item.create_time.strftime("%Y-%m-%d %H:%M")
+				item_dict['order_num'] = item.order_num
+				item_dict['shop_name'] = order[1]
+				item_dict['reason'] = order[0]
+				data.append(item_dict)
 		return self.render('superAdmin/refund-apply.html',data=data,context=dict(page='refund'))
 
-	@SuperBaseHandler.check_arguments('apply_id')
+	@SuperBaseHandler.check_arguments('apply_id','action')
 	def post(self):
+		action = self.args["action"]
 		apply_id = self.args['apply_id']
 		if len(apply_id) == 0:
 			return self.send_fail('申请记录为空！')
 		apply_id = int(apply_id)
 		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
-		if refund_apply.has_done == 1:
-			return self.send_fail('请勿重复处理！')
-		refund_apply.has_done = 1 #将申请退款变为已处理状态
-		###################################################################
-		# 9.17 woody
-		# 如果该订单是支付宝支付。将支付记录作废,并改变订单状态
-		# 如果是微信支付，则不需要修改
-		##################################################################
-		transaction_id = refund_apply.transaction_id
-		order = self.session.query(models.Order).filter_by(transaction_id=transaction_id).first()
-		if not order:
-			return self.send_fail('order not found')
-		if order.online_type == 'alipay':
-			order.del_reason = 'refund'
-			order.get_num(self.session,order.id)
-			order.status = 0 #将订单状态改为删除
-			balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
-			if not balance_history:
-				return self.write('old_balance_history not found')
-			shop_id = balance_history.shop_id
-			balance_value = balance_history.balance_value
-			shop = order.shop 
-			shop.shop_balance -= balance_value      #店铺余额减去订单总价，还原店铺余额
-			balance_history.is_cancel =1            #将旧的支付记录作废
-			balance_history.balance_type = -1
-			customer_id = balance_history.customer_id
-			name        = balance_history.name
-			shop_province = balance_history.shop_province
-			shop_name     = balance_history.shop_name
-			balance_record = balance_history.balance_record + '--退款'
-			create_time   = datetime.datetime.now()
-			shop_totalPrice = shop.shop_balance
-			customer_totalPrice = balance_history.customer_totalPrice
-			transaction_id   = balance_history.transaction_id
-			available_balance = balance_history.available_balance
-			#同时生成一条退款记录
-			refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
-				balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
-				transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
-			self.session.add(refund_history)
-
+		if action == "confirm":
+			if refund_apply.has_done == 1:
+				return self.send_fail('请勿重复处理！')
+			refund_apply.has_done = 1 #将申请退款变为已处理状态
+			###################################################################
+			# 9.17 woody
+			# 如果该订单是支付宝支付。将支付记录作废,并改变订单状态
+			# 如果是微信支付，则不需要修改
+			##################################################################
+			transaction_id = refund_apply.transaction_id
+			order = self.session.query(models.Order).filter_by(transaction_id=transaction_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			if order.online_type == 'alipay':
+				order.del_reason = 'refund'
+				order.get_num(self.session,order.id)
+				order.status = 0 #将订单状态改为删除
+				balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+				if not balance_history:
+					return self.write('old_balance_history not found')
+				shop_id = balance_history.shop_id
+				balance_value = balance_history.balance_value
+				shop = order.shop 
+				shop.shop_balance -= balance_value      #店铺余额减去订单总价，还原店铺余额
+				balance_history.is_cancel =1            #将旧的支付记录作废
+				balance_history.balance_type = -1
+				customer_id = balance_history.customer_id
+				name        = balance_history.name
+				shop_province = balance_history.shop_province
+				shop_name     = balance_history.shop_name
+				balance_record = balance_history.balance_record + '--退款'
+				create_time   = datetime.datetime.now()
+				shop_totalPrice = shop.shop_balance
+				customer_totalPrice = balance_history.customer_totalPrice
+				transaction_id   = balance_history.transaction_id
+				available_balance = balance_history.available_balance
+				#同时生成一条退款记录
+				refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+					balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
+					transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
+				self.session.add(refund_history)
+		elif action == "ignore":
+			refund_apply.has_done=-1
 		self.session.commit()
 		return self.send_success()
 
