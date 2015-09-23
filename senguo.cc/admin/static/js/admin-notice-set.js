@@ -37,60 +37,6 @@ $(document).ready(function(){
     }
 }).on("click","#upload-add",function(){
     $(".pop-picture-library").show().attr({"action":"add"});
-//      zb_timer = setTimeout(function(){
-//         var uploader1 = Qiniu.uploader({
-//         runtimes: 'html5,flash,html4',
-//         browse_button: 'add-upload-pic',
-//         container: 'add-upload-box',
-//         max_file_size: '4mb',
-//         filters : {
-//             max_file_size : '4mb',//限制图片大小
-//             mime_types: [
-//                 {title : "image type", extensions : "jpg,jpeg,png"}
-//             ]
-//         },
-//         flash_swf_url: 'static/js/plupload/Moxie.swf',
-//         dragdrop: false,
-//         chunk_size: '4mb',
-//         domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
-//         uptoken: $('#data').val(),
-//         unique_names: false,
-//         save_key: false,
-//         auto_start: true,
-//         init: {
-//             'FilesAdded': function (up, files) {
-//                 var file = files[0];
-//                 !function(){
-//                     previewImage(file,function(imgsrc){
-//                         $("#add-img").attr("src",imgsrc);
-//                     })
-//                 }();
-//             },
-//             'UploadProgress': function (up, file) {
-//             },
-//             'FileUploaded': function (up, file, info) {
-//                 $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
-//                 $(".pop-picture-library").hide();
-//             },
-//             'Error': function (up, err, errTip) {
-//                 if (err.code == -600) {
-//                     alert("图片大小不能超过4M哦");
-//                 } else if (err.code == -601) {
-//                     alert("图片格式不对哦");
-//                 } else if (err.code == -200) {
-//                     alert("当前页面过期，请刷新页面再上传");
-//                 } else {
-//                     alert(err.code + ": " + err.message);
-//                 }
-//                 up.removeFile(err.file.id);
-//             },
-//             'Key': function (up, file) {
-//                 var key = file.id;
-//                 return key;
-//             }
-//         }
-//     });
-// },500);
     getPicture("notice",0);
 }).on("click",".link-type li",function(){
     var $this=$(this);
@@ -112,6 +58,60 @@ $(document).ready(function(){
         return Tip("请先完成正在编辑的公告");
     }
     $("#noticeBox").modal("show");
+    zb_timer = setTimeout(function(){
+        var uploader1 = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'upload-picture',
+        container: 'wrap-legal-img',
+        max_file_size: '4mb',
+        filters : {
+            max_file_size : '4mb',//限制图片大小
+            mime_types: [
+                {title : "image type", extensions : "jpg,jpeg,png"}
+            ]
+        },
+        flash_swf_url: 'static/js/plupload/Moxie.swf',
+        dragdrop: false,
+        chunk_size: '4mb',
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
+        uptoken: $('#data').val(),
+        unique_names: false,
+        save_key: false,
+        auto_start: true,
+        init: {
+            'FilesAdded': function (up, files) {
+                var file = files[0];
+                !function(){
+                    previewImage(file,function(imgsrc){
+                        $("#add-img").attr("src",imgsrc);
+                    })
+                }();
+            },
+            'UploadProgress': function (up, file) {
+            },
+            'FileUploaded': function (up, file, info) {
+                $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
+                $(".pop-picture-library").hide();
+            },
+            'Error': function (up, err, errTip) {
+                if (err.code == -600) {
+                    alert("图片大小不能超过4M哦");
+                } else if (err.code == -601) {
+                    alert("图片格式不对哦");
+                } else if (err.code == -200) {
+                    alert("当前页面过期，请刷新页面再上传");
+                } else {
+                    alert(err.code + ": " + err.message);
+                }
+                up.removeFile(err.file.id);
+            },
+            'Key': function (up, file) {
+                var key = file.id;
+                return key;
+            }
+        }
+    });
+},500);
 }).on("click",".add-new-address1",function(){
     if(NoticeEdit){
         return Tip("请先完成正在编辑的公告");
@@ -127,13 +127,69 @@ $(document).ready(function(){
     var parent=$this.parents('.set-list-item');
     parent.find('.address-show').hide();
     parent.find('.address-edit').show();
+    parent.find('.edit-img').attr("id","upload-per");
     parent.siblings('.set-list-item').find('.edit-img').attr("id","");
     parent.siblings('.set-list-item').find(".address-show").show().siblings(".address-edit").hide();
       //公告背景添加
-}).on("click",".edit-img",function(){
+}).on("click","#upload-per",function(){
     imgIndex=$(this).parents(".set-list-item").index();
     $(".pop-picture-library").show().attr({"action":"edit"});
     getPicture("notice",0);
+    var parent=$(this).parents(".set-list-item");
+    var uploader = Qiniu.uploader({
+        runtimes: 'html5,flash,html4',
+        browse_button: 'upload-picture',
+        container: 'upload-area',
+        max_file_size: '4mb',
+        filters : {
+            max_file_size : '4mb',//限制图片大小
+            mime_types: [
+                {title : "image type", extensions : "jpg,jpeg,png"}
+            ]
+        },
+        flash_swf_url: 'static/js/plupload/Moxie.swf',
+        dragdrop: false,
+        chunk_size: '4mb',
+        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
+        uptoken: $('#data').val(),
+        unique_names: false,
+        save_key: false,
+        auto_start: true,
+        init: {
+            'FilesAdded': function (up, files) {
+                var file = files[0];
+                !function(){
+                    previewImage(file,function(imgsrc){
+                        parent.find(".preview-img").attr("src",imgsrc);
+                        parent.find('.notice_img').attr("src",imgsrc);
+                    })
+                }();
+            },
+            'UploadProgress': function (up, file) {
+            },
+            'FileUploaded': function (up, file, info) {
+                parent.find(".preview-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id);
+                $(".pop-picture-library").hide();
+            },
+            'Error': function (up, err, errTip) {
+                if (err.code == -600) {
+                    alert("图片大小不能超过4M哦");
+                } else if (err.code == -601) {
+                    alert("图片格式不对哦");
+                } else if (err.code == -200) {
+                    alert("当前页面过期，请刷新页面再上传");
+                } else {
+                    alert(err.code + ": " + err.message);
+                }
+                up.removeFile(err.file.id);
+                parent.find(".preview-img").attr("src","").attr("url","").closest(".wrap-img").addClass("hide");
+            },
+            'Key': function (up, file) {
+                var key = file.id;
+                return key;
+            }
+        }
+    });
 }).on("click",".picture-list li",function(e){
     if($(e.target).closest(".del-pic-img").size()==0){
         var action=$(".pop-picture-library").attr("action");
@@ -158,83 +214,6 @@ $(document).ready(function(){
     $(".picture-pagination").addClass("hide");
     $(".default-pic-list").removeClass("hide");
 });
-
-$(document).ready(function(){
-     var uploader = Qiniu.uploader({
-        runtimes: 'html5,flash,html4',
-        browse_button: 'upload-picture',
-        container: 'upload-area',
-        max_file_size: '4mb',
-        filters : {
-            max_file_size : '4mb',//限制图片大小
-            mime_types: [
-                {title : "image type", extensions : "jpg,jpeg,png"}
-            ]
-        },
-        flash_swf_url: 'static/js/plupload/Moxie.swf',
-        dragdrop: false,
-        chunk_size: '4mb',
-        domain: "http://7rf3aw.com2.z0.glb.qiniucdn.com/",
-        uptoken: $('#data').val(),
-        unique_names: false,
-        save_key: false,
-        auto_start: true,
-        init: {
-            'FilesAdded': function (up, files) {
-                var file = files[0];
-                if($(".pop-picture-library").attr("action")=="add"){
-                    !function(){
-                        previewImage(file,function(imgsrc){
-                            $("#add-img").attr("src",imgsrc);
-                        })
-                    }();
-                }else{
-                    var parent = $(".set-list-item").eq(imgIndex-1);
-                    !function(){
-                        previewImage(file,function(imgsrc){
-                            parent.find(".preview-img").attr("src",imgsrc);
-                            parent.find('.notice_img').attr("src",imgsrc);
-                        })
-                    }();
-                }
-                
-            },
-            'UploadProgress': function (up, file) {
-            },
-            'FileUploaded': function (up, file, info) {
-                if($(".pop-picture-library").attr("action")=="add"){
-                    $("#add-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id).removeClass("hide");
-                }else{
-                    var parent = $(".set-list-item").eq(imgIndex-1);
-                    parent.find(".preview-img").attr("url","http://7rf3aw.com2.z0.glb.qiniucdn.com/"+file.id); 
-                }
-                $(".pop-picture-library").hide();
-            },
-            'Error': function (up, err, errTip) {
-                if (err.code == -600) {
-                    alert("图片大小不能超过4M哦");
-                } else if (err.code == -601) {
-                    alert("图片格式不对哦");
-                } else if (err.code == -200) {
-                    alert("当前页面过期，请刷新页面再上传");
-                } else {
-                    alert(err.code + ": " + err.message);
-                }
-                up.removeFile(err.file.id);
-                if($(".pop-picture-library").attr("action")=="edit"){
-                     var parent = $(".set-list-item").eq(imgIndex-1);
-                    parent.find(".preview-img").attr("src","").attr("url","").closest(".wrap-img").addClass("hide");
-                }
-               
-            },
-            'Key': function (up, file) {
-                var key = file.id;
-                return key;
-            }
-        }
-    });
-});
-
 function noticeAdd(){
     var url=link;
     var action="add_notice";

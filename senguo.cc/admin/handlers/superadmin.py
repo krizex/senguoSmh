@@ -1084,8 +1084,8 @@ class AmountStatic(SuperBaseHandler):
 		assembleArray('alipay_clean',q_alipay.all())
 
 		for x in range(0, rangeOfArray):
-			data[x]['total'] = data[x]['wechat'] +data[x]['alipay'] 
-			data[x]['total_clean'] = data[x]['wechat_clean'] +data[x]['alipay_clean']
+			data[x]['total'] = round(data[x]['wechat'] +data[x]['alipay'] ,2)
+			data[x]['total_clean'] = round(data[x]['wechat_clean'] +data[x]['alipay_clean'],2)
 
 		
 		return self.send_success(data=data)
@@ -2238,7 +2238,7 @@ class Balance(SuperBaseHandler):
 		today_balance=format(float(0 if today_balance_plus==None else today_balance_plus)-float(0 if today_balance_minus==None else today_balance_minus),'.2f')
 		
 
-		cash_on = format(cash_on,'.2f') if cash_on else 0
+		cash_on = format(cash_on,'.2f')
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
 			total_balance=total_balance,cash_on=cash_on,level=level,today_balance=today_balance,context=dict(page="detail"))

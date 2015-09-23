@@ -56,17 +56,17 @@ class RefundCallback(CustomerBaseHandler):
 		order.get_num(session,order.id)  #取消订单,库存增加，在售减少 	
 		shop_id = balance_history.shop_id
 		balance_value = balance_history.balance_value
-		shop = order.shop
+		shop = order.shop 
 		#该店铺余额减去订单总额
 		shop.shop_balance -= balance_value
-		#将这条余额记录作废
 		balance_history.is_cancel = 1
+		#将这条余额记录作废
 		balance_history.balance_type = -1
 		customer_id = balance_history.customer_id
 		name        = balance_history.name
 		shop_province = balance_history.shop_province
 		shop_name     = balance_history.shop_name
-		balance_record = '在线支付(支付宝)退款：订单' + order.num + '删除'
+		balance_record = balance_history.balance_record + '--退款'
 		create_time   = datetime.datetime.now()
 		shop_totalPrice = shop.shop_balance
 		customer_totalPrice = balance_history.customer_totalPrice
@@ -151,14 +151,14 @@ class RefundWxpay(CustomerBaseHandler):
 				order.status = 0  #将订单标志为已删除  
 				#该店铺余额减去订单总额
 				shop.shop_balance -= balance_value
-				#将这条余额记录作废
 				balance_history.is_cancel = 1
+				#将这条余额记录作废
 				balance_history.balance_type = -1
 				customer_id = balance_history.customer_id
 				name        = balance_history.name
 				shop_province = balance_history.shop_province
 				shop_name     = balance_history.shop_name
-				balance_record = '在线支付(微信)退款：订单' + order.num + '删除'
+				balance_record = balance_history.balance_record + '--退款'
 				create_time   = datetime.datetime.now()
 				shop_totalPrice = shop.shop_balance
 				customer_totalPrice = balance_history.customer_totalPrice
@@ -365,6 +365,7 @@ class OnlineWxPay(CustomerBaseHandler):
 		order = self.session.query(models.Order).filter_by(id = order_id).first()
 		if not order:
 			return self.send_fail('order not found')
+		order.is_qrwxpay = 1 #表示该订单为扫码支付
 		order_num = order.num
 		totalPrice = order.new_totalprice
 		self.session.commit()
@@ -412,11 +413,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			order_num    = str(xmlArray['out_trade_no'])
 			order_num    = order_num.split('a')[0]
 			print("[WeixinPay]Callback order_num:",order_num)
-			try:
-				trade_type = xmlArray['trade_type']
-			except:
-				trade_type = None
-			# print(trade_type)
+
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
 			# shop_id      = int(result[1])
@@ -441,10 +438,7 @@ class OnlineWxPay(CustomerBaseHandler):
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
 			totalPrice  = order.new_totalprice
-			if trade_type == 'NATIVE':
-				order.is_qrwxpay = 1 #表示该订单为扫码支付
-			else:
-				order.is_qrwxpay = 0
+
 			create_date = order.create_date.timestamp()
 			now         = datetime.datetime.now().timestamp()
 			time_difference = now - create_date

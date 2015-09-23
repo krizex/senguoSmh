@@ -1652,11 +1652,9 @@ class SuperBaseHandler(_AccountBaseHandler):
 
 # Fruitzone基类方法
 class FruitzoneBaseHandler(_AccountBaseHandler):
-	# __account_model__ = models.ShopAdmin
+	__account_model__ = models.ShopAdmin
 	# __account_cookie_name__ = "admin_id"
-	# __wexin_oauth_url_name__ = "adminOauth"
-	__account_model__ = models.Customer
-	__wexin_oauth_url_name__ ="customerOauth"
+	__wexin_oauth_url_name__ = "adminOauth"
 
 	# woody 4.4
 	# 获取店铺总数

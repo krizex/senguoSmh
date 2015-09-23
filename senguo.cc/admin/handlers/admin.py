@@ -1659,7 +1659,6 @@ class OrderStatic(AdminBaseHandler):
 					   models.Order.create_date < end_date,models.Order.status.in_([5,6,7,10])).\
 				group_by(func.week(models.Order.create_date,1)).\
 				order_by(desc(models.Order.create_date)).all()
-			pass
 		elif sort_way=="list_month":
 			# 以12月为一次查询，查询:周数，周订单数，周总订单金额
 			page_size = 12
@@ -2118,132 +2117,68 @@ class OrderExport(AdminBaseHandler):
 # 订单管理
 class Order(AdminBaseHandler):
 	# todo: 当订单越来越多时，current_shop.orders 会不会越来越占内存？
-	@tornado.web.authenticated
 	#@get_unblock
-	@AdminBaseHandler.check_arguments("order_type:int", "order_status?:int","page?:int","action?","pay_type?:int","user_type?:int","filter?:str","self_id?:int","print_type?:int")
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("action?","page?:int")
 	#order_type(1:立即送 2：按时达);order_status(1:未处理，2：未完成，3：已送达，4：售后，5：所有订单)
 	def get(self):
-		if not self.current_shop:
-			return self.redirect(self.reverse_url("switchshop"))
-		order_type = self.args["order_type"]
-		
-		if self.args['action'] == "realtime":  #订单管理页实时获取未处理订单的接口
-			atonce,ontime,new_order_sum = 0,0,0
-			count = self._count()
-			atonce = count[11]
-			ontime = count[21]
-			selfPoint = count[31]
-			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
-				not_(models.Order.status.in_([-1,0]))).count() -(self.current_shop.new_order_sum or 0)
-			return self.send_success(atonce=atonce,ontime=ontime,new_order_sum=new_order_sum,selfPoint=selfPoint)
-		elif self.args['action'] == "allreal": #全局实时更新变量
-			atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
-			count = self._count()
-			atonce = count[11]
-			if not self.current_shop:
-				atonce,msg_num,is_balance,new_order_sum,user_num,staff_sum = 0,0,0,0,0,0
-				return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
-			
-			msg_num = self.session.query(models.Order).filter(models.Order.shop_id == self.current_shop.id,\
-					models.Order.status == 6).count() - self.current_shop.old_msg
-			is_balance = self.current_shop.is_balance
-			staff_sum = self.session.query(models.HireForm).filter_by(shop_id = self.current_shop.id).count()
-			new_order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
-				not_(models.Order.status.in_([-1,0]))).count() - (self.current_shop.new_order_sum or 0)
-			user_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count() - \
-			(self.current_shop.new_follower_sum or 0)
-			#new_follower_sum
-			return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
-
-		if "page" in self.args:
-			order_status = self.args["order_status"]
-			page = self.args["page"]
-			page_size = 10
-			count = 0
-			page_sum = 0
-			orders = []
-			if self.current_shop.orders:
-				order_list = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id)
-			else:
-				order_list = None
-
-			if "user_type" in self.args:#filter user_type
-				user_type = int(self.args["user_type"])
-				if user_type != 9:#not all
-					order_list = self.session.query(models.Order).\
-					join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
-					filter(models.Order.shop_id==self.current_shop.id,models.CustomerShopFollow.shop_new==user_type,\
-						models.CustomerShopFollow.shop_id==self.current_shop.id).distinct()
-
-			if "pay_type" in self.args:#filter pay_type
-				pay_type = int(self.args["pay_type"])
-				if pay_type != 9:#not all
-					order_list = order_list.filter(models.Order.pay_type==pay_type)
-			if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
-				order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
-			if "print_type" in self.args and self.args["print_type"] !="":
-				print_type = int(self.args["print_type"])
-				if print_type != 9:
-					order_list = order_list.filter(models.Order.isprint==print_type)
-
-			if order_status == 1:#filter order_status
-				order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
-					not_(models.Order.status.in_([-1,0]))).count()
-				new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
-				self.current_shop.new_order_sum = order_sum
-				self.session.commit()
-				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status == 1]
-					orders.sort(key = lambda order:order.create_date,reverse = True)
-
-			elif order_status == 2:#unfinish
-				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
-
-			elif order_status == 3:
-				if order_list:
-					orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
-
-			elif order_status == 4:
-				pass
-			elif order_status == 5:#all
-				if order_list:
-					orders = [x for x in order_list if x.type == order_type]
-			else:
-				return self.send.send_error(404)
-			if self.args["filter"] !=[]:
-				filter_status = self.args["filter"]
-				if filter_status  == "send_positive":
-					orders.sort(key = lambda order:order.send_time,reverse = False)
-				elif filter_status  == "send_desc":
-					orders.sort(key = lambda order:order.send_time,reverse = True)
-				elif filter_status  == "order_positive":
-					orders.sort(key = lambda order:order.create_date,reverse = False)
-				elif filter_status  == "order_desc":
-					orders.sort(key = lambda order:order.create_date,reverse = True)
-				elif filter_status  == "price_positive":
-					orders.sort(key = lambda order:order.totalPrice,reverse = False)
-				elif filter_status  == "price_desc":
-					orders.sort(key = lambda order:order.totalPrice,reverse = True)
-
-			count = len(orders)
-			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-			session = self.session
-			page_area = page * page_size
-			orders = orders[page_area:page_area+10]
-			data = self.getOrder(orders)
-			delta = datetime.timedelta(1)
-			nomore = False
-			if page+1 == page_sum:
-				nomore = True
-			# print("[AdminOrder]current_shop:",self.current_shop)
-
-			return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
-
+		# 如果不是电脑浏览器,则重定向到手机页面
 		if self.is_pc_browser()==False:
 			return self.redirect(self.reverse_url("MadminOrder"))
+		# 如果没有店铺信息,则直接跳转到后台的admin页面.
+		if not self.current_shop:
+			return self.redirect(self.reverse_url("switchshop"))
+		current_shop_id=self.current_shop.id
+		# current_shop_id=1163
+		action=self.args['action']
+		count = self._count()
+		# 左边的navBar-导航栏和右上角的"立即送"的数量轮询刷新
+		if action == "allreal":
+			return self.refreshNavBar(count,current_shop_id)
+		# 订单管理标签页右边的页面不同订单状态的未处理订单数量轮询刷新
+		elif action == "realtime":
+			return self.refreshOrderCount(count,current_shop_id)
+		else:
+			# 页面js请求数据渲染列表
+			if "page"  in self.args:
+				return self.loadData(current_shop_id)
+				# return self.loadDataOld(current_shop_id)
+			# 首次加载时渲染页面的基本信息
+			else:
+				return self.firstLoad()
 
-		shop_city,shop_province,shop_lat,shop_lon="","",0,0
+
+	# 刷新店铺后台的左边的导航栏和右上角的立即送的数量
+	# add by sunmh 2015年09月23日11:16:02
+	def refreshNavBar(self,orderCount,current_shop_id):
+		now=datetime.datetime.now()
+		atonce,msg_num,is_balance,staff_sum,new_order_sum,user_num = 0,0,0,0,0,0
+		atonce = orderCount[11]
+		msg_num = self.session.query(models.Order.id).\
+			filter(models.Order.shop_id == current_shop_id,models.Order.status == 6).count() - self.current_shop.old_msg
+		is_balance = self.current_shop.is_balance
+		staff_sum = self.session.query(models.HireForm.staff_id).filter_by(shop_id = current_shop_id).count()
+		new_order_sum = self.session.query(models.Order.id).\
+			filter(models.Order.shop_id==current_shop_id,not_(models.Order.status.in_([-1,0]))).count() - (self.current_shop.new_order_sum or 0)
+		user_num = self.session.query(models.CustomerShopFollow.customer_id).filter_by(shop_id=current_shop_id).count() - \
+			(self.current_shop.new_follower_sum or 0)
+		return self.send_success(atonce=atonce,msg_num=msg_num,is_balance=is_balance,new_order_sum=new_order_sum,user_num=user_num,staff_sum=staff_sum)
+
+	# add by sunmh 2015年09月23日11:17:54
+	# 刷新订单管理标签页右边的页面不同订单状态的订单数量
+	def refreshOrderCount(self,orderCount,current_shop_id):
+		atonce,ontime,new_order_sum = 0,0,0
+		atonce = orderCount[11]
+		ontime = orderCount[21]
+		selfPoint = orderCount[31]
+		new_order_sum = self.session.query(models.Order.id).\
+			filter(models.Order.shop_id==current_shop_id,not_(models.Order.status.in_([-1,0]))).count() -(self.current_shop.new_order_sum or 0)
+		return self.send_success(atonce=atonce,ontime=ontime,new_order_sum=new_order_sum,selfPoint=selfPoint)
+
+	# 首次加载页面 sunmh 2015年09月23日11:50:12
+	@AdminBaseHandler.check_arguments("order_type:int")
+	def firstLoad(self):
+		order_type = self.args["order_type"]
 		try:
 			shop_city = self.code_to_text("city", self.current_shop.shop_city)
 			shop_province = self.code_to_text("province", self.current_shop.shop_province)
@@ -2263,9 +2198,173 @@ class Order(AdminBaseHandler):
 				self_address_list=[x for x in self_address]
 			except:
 				self_address_list=None
-
 		return self.render("admin/orders.html",order_type=order_type,shop_city=shop_city,shop_province=shop_province,\
 			shop_lat=shop_lat,shop_lon=shop_lon,self_address_list=self_address_list,context=dict(subpage='order'))
+
+	# 加载页面数据 sunmh 2015年09月23日11:50:12
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int","pay_type?:int","user_type?:int","filter?:str","self_id?:int","print_type?:int")
+	def loadData(self,current_shop_id):
+		order_type = self.args["order_type"]
+		order_status = self.args["order_status"]
+		page = self.args["page"]
+		page_size = 10
+		count = 0
+		page_sum = 0
+		orders = []
+		if self.current_shop.orders:
+			order_list = self.session.query(models.Order).filter_by(shop_id=current_shop_id)
+		else:
+			order_list = None
+
+		if "user_type" in self.args:#filter user_type
+			user_type = int(self.args["user_type"])
+			if user_type != 9:#not all
+				order_list = self.session.query(models.Order).\
+				join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+				filter(models.Order.shop_id==current_shop_id,models.CustomerShopFollow.shop_new==user_type,\
+					models.CustomerShopFollow.shop_id==current_shop_id).distinct()
+
+		if "pay_type" in self.args:#filter pay_type
+			pay_type = int(self.args["pay_type"])
+			if pay_type != 9:#not all
+				order_list = order_list.filter(models.Order.pay_type==pay_type)
+		if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
+			order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
+		if "print_type" in self.args and self.args["print_type"] !="":
+			print_type = int(self.args["print_type"])
+			if print_type != 9:
+				order_list = order_list.filter(models.Order.isprint==print_type)
+
+		if order_status == 1:#filter order_status
+			order_sum = self.session.query(models.Order.id).filter(models.Order.shop_id==current_shop_id,\
+				not_(models.Order.status.in_([-1,0]))).count()
+			new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+			self.current_shop.new_order_sum = order_sum
+			self.session.commit()
+			if order_list:
+				order_list=order_list.filter_by(type=order_type,status = 1).\
+					order_by(models.Order.create_date.desc())
+		elif order_status == 2:#unfinish
+			if order_list:
+				order_list=order_list.filter(models.Order.type==order_type,models.Order.status.in_([2, 3, 4]))
+		elif order_status == 3:
+			if order_list:
+				order_list=order_list.filter(models.Order.type==order_type,models.Order.status.in_([5, 6, 7]))
+		elif order_status == 4:
+				order_list=order_list.filter(models.Order.type==order_type,models.Order.status ==10)
+		elif order_status == 5:#all
+			if order_list:
+				order_list=order_list.filter(models.Order.type==order_type)
+		else:
+			return self.send.send_error(404)
+		if self.args["filter"] !=[]:
+			filter_status = self.args["filter"]
+			if filter_status  == "send_positive":
+				order_list=order_list.order_by(models.Order.send_time.asc())
+			elif filter_status  == "send_desc":
+				order_list=order_list.order_by(models.Order.send_time.desc())
+			elif filter_status  == "order_positive":
+				order_list=order_list.order_by(models.Order.create_date.asc())
+			elif filter_status  == "order_desc":
+				order_list=order_list.order_by(models.Order.create_date.desc())
+			elif filter_status  == "price_positive":
+				order_list=order_list.order_by(models.Order.totalPrice.asc())
+			elif filter_status  == "price_desc":
+				order_list=order_list.order_by(models.Order.totalPrice.desc())
+
+		count = order_list.count()
+		page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+		session = self.session
+		page_area = page * page_size
+		orders=order_list.offset(page_area).limit(page_size)
+		data = self.getOrder(orders)
+		nomore = False
+		if page+1 == page_sum:
+			nomore = True
+		return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
+
+	# 历史加载页面数据 提炼出来对比一下 sunmh 2015年09月23日16:33:46
+	@AdminBaseHandler.check_arguments("order_type:int", "order_status:int","page:int","pay_type?:int","user_type?:int","filter?:str","self_id?:int","print_type?:int")
+	def loadDataOld(self,current_shop_id):
+		order_type = self.args["order_type"]
+		order_status = self.args["order_status"]
+		page = self.args["page"]
+		page_size = 10
+		count = 0
+		page_sum = 0
+		orders = []
+		if self.current_shop.orders:
+			order_list = self.session.query(models.Order).filter_by(shop_id=current_shop_id)
+		else:
+			order_list = None
+
+		if "user_type" in self.args:#filter user_type
+			user_type = int(self.args["user_type"])
+			if user_type != 9:#not all
+				order_list = self.session.query(models.Order).\
+				join(models.CustomerShopFollow,models.Order.customer_id==models.CustomerShopFollow.customer_id).\
+				filter(models.Order.shop_id==current_shop_id,models.CustomerShopFollow.shop_new==user_type,\
+					models.CustomerShopFollow.shop_id==current_shop_id).distinct()
+
+		if "pay_type" in self.args:#filter pay_type
+			pay_type = int(self.args["pay_type"])
+			if pay_type != 9:#not all
+				order_list = order_list.filter(models.Order.pay_type==pay_type)
+		if "self_id" in self.args and self.args["self_id"] != "" and int(self.args["self_id"]) !=-1:
+			order_list = order_list.filter(models.Order.self_address_id==int(self.args["self_id"]))
+		if "print_type" in self.args and self.args["print_type"] !="":
+			print_type = int(self.args["print_type"])
+			if print_type != 9:
+				order_list = order_list.filter(models.Order.isprint==print_type)
+
+		if order_status == 1:#filter order_status
+			order_sum = self.session.query(models.Order.id).filter(models.Order.shop_id==current_shop_id,\
+				not_(models.Order.status.in_([-1,0]))).count()
+			new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
+			self.current_shop.new_order_sum = order_sum
+			self.session.commit()
+			if order_list:
+				orders = [x for x in order_list if x.type == order_type and x.status == 1]
+				orders.sort(key = lambda order:order.create_date,reverse = True)
+		elif order_status == 2:#unfinish
+			if order_list:
+				orders = [x for x in order_list if x.type == order_type and x.status in [2, 3, 4]]
+		elif order_status == 3:
+			if order_list:
+				orders = [x for x in order_list if x.type == order_type and x.status in (5, 6, 7)]
+		elif order_status == 4:
+				orders = [x for x in order_list if x.type == order_type and x.status in (10,)]
+		elif order_status == 5:#all
+			if order_list:
+				orders = [x for x in order_list if x.type == order_type]
+		else:
+			return self.send.send_error(404)
+		if self.args["filter"] !=[]:
+			filter_status = self.args["filter"]
+			if filter_status  == "send_positive":
+				orders.sort(key = lambda order:order.send_time,reverse = False)
+			elif filter_status  == "send_desc":
+				orders.sort(key = lambda order:order.send_time,reverse = True)
+			elif filter_status  == "order_positive":
+				orders.sort(key = lambda order:order.create_date,reverse = False)
+			elif filter_status  == "order_desc":
+				orders.sort(key = lambda order:order.create_date,reverse = True)
+			elif filter_status  == "price_positive":
+				orders.sort(key = lambda order:order.totalPrice,reverse = False)
+			elif filter_status  == "price_desc":
+				orders.sort(key = lambda order:order.totalPrice,reverse = True)
+
+		count = len(orders)
+		page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+		session = self.session
+		page_area = page * page_size
+		orders = orders[page_area:page_area+10]
+		data = self.getOrder(orders)
+		nomore = False
+		if page+1 == page_sum:
+			nomore = True
+		return self.send_success(data = data,page_sum=page_sum,count=self._count(),nomore=nomore)
+
 
 	# 编辑订单状态（order_status == 4:订单配送, order_status == 5:订单送达）
 	def edit_status(self,session,order,order_status,send_message=True):
@@ -2303,14 +2402,19 @@ class Order(AdminBaseHandler):
 			self.order_done(session,order,access_token)
 			# self.order_done(session,order)
 
-	# 订单计数
+	# 订单计数,计算各种状态下的订单数量
+	# 十位数表示:订单类型-立即送/按时达/自提
+	# 个位数表示:订单状态-未处理/配送中/已完成/售后或退款/[所有状态]
 	def _count(self):
 		count = {10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0,
 				 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0,
 				 30: 0, 31: 0, 32: 0, 33: 0, 34: 0, 35: 0,
 				 }
+		current_shop_id=self.current_shop.id
+		# current_shop_id=1163
 		try:
-			orders = self.session.query(models.Order).filter_by(shop_id=self.current_shop.id).all()
+			orders = self.session.query(models.Order.status,models.Order.type).filter_by(shop_id=current_shop_id).all()
+			# orders = self.session.query(models.Order).filter_by(shop_id=current_shop_id).all()
 		except:
 			orders = None
 		if orders:
@@ -2327,15 +2431,16 @@ class Order(AdminBaseHandler):
 				elif order.status == 10:
 					count[order.type*10+4] += 1
 		return count
-
-	@tornado.web.authenticated
+	
 	# @unblock
+	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action", "data")
 	def post(self):
 		action = self.args["action"]
 		data = self.args["data"]
 		# print("[AdminOrder]current_shop:",self.current_shop)
-		
+		current_shop_id=self.current_shop.id
+		# current_shop_id=1163
 		# 添加按时达时间段 / 添加自提时间段
 		if action in ("add_period","add_self_period"):
 			start_time = datetime.time(data["start_hour"],data["start_minute"])
@@ -2345,14 +2450,14 @@ class Order(AdminBaseHandler):
 			elif action == "add_self_period":
 				config_type = 1
 			
-			periods = self.session.query(models.Period).filter_by(config_id=self.current_shop.id)
+			periods = self.session.query(models.Period.id).filter_by(config_id=current_shop_id)
 			periods_count = 0
 			if periods.count()>0:
 					periods_count = periods.filter_by(config_type=config_type).count()
 			if periods_count>=10:
 				return self.send_fail("至多只能添加10个时间段")
 
-			period = models.Period(config_id=self.current_shop.id,
+			period = models.Period(config_id=current_shop_id,
 								   name=data["name"],
 								   start_time=start_time,
 								   end_time=end_time,
@@ -2438,7 +2543,7 @@ class Order(AdminBaseHandler):
 		# 添加自提点地址
 		elif action == "add_self_address": #7.30
 			try:
-				self_address_count = self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id)\
+				self_address_count = self.session.query(models.SelfAddress.id).filter_by(config_id=self.current_shop.config.id)\
 				.filter(models.SelfAddress.active!=0).count()
 			except:
 				self_address_count = 0
@@ -3394,10 +3499,8 @@ class Goods(AdminBaseHandler):
 				if goods.active == 1 and goods.activity_status not in [-2,0]:
 					return self.send_fail("当前商品正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
 				elif goods.active == 1:
-					current_shop.goods_count = current_shop.goods_count-1
 					goods.update(session=self.session, active = 2)
 				elif goods.active == 2:
-					current_shop.goods_count = current_shop.goods_count+1
 					goods.update(session=self.session, active = 1)
 			# 编辑商品分组
 			elif action =="change_group":
@@ -3682,7 +3785,6 @@ class Goods(AdminBaseHandler):
 				return self.send_error(404)
 			if goods:
 				goods.active = 1
-			current_shop.goods_count = current_shop.goods_count+1
 			self.session.commit()
 
 		# 商品类目搜索
