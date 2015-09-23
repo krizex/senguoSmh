@@ -1086,11 +1086,8 @@ class AmountStatic(SuperBaseHandler):
 		for x in range(0, rangeOfArray):
 			data[x]['total'] = data[x]['wechat'] +data[x]['alipay'] 
 			data[x]['total_clean'] = data[x]['wechat_clean'] +data[x]['alipay_clean']
-
 		
 		return self.send_success(data=data)
-
-
 
 # 统计 - 用户属性分布
 class DistributStatic(SuperBaseHandler):
@@ -2308,8 +2305,7 @@ class Balance(SuperBaseHandler):
 			balance_history=balance_history.filter(models.BalanceHistory.balance_type == 0)
 		elif action == 'online':
 			# 取在线支付的余额记录
-			balance_history=balance_history.filter(models.BalanceHistory.balance_type == 3)
-
+			balance_history=balance_history.filter(models.BalanceHistory.balance_type.in_([3,8,9]))
 
 		history_list =balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 		count = balance_history.count()
@@ -2325,9 +2321,9 @@ class Balance(SuperBaseHandler):
 				shop_totalBalance = format(shop_totalBalance,'.2f')
 				record = ''
 				if temp.balance_type in [0,3]:
-					record = temp.balance_record[0:8]
+					record = temp.balance_record.split("：")[0]
 				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
-					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id,'record':record})
+								'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id,'record':record})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 
 		# 2.列表之外的信息
@@ -2337,7 +2333,7 @@ class Balance(SuperBaseHandler):
 		elif action == 'cash_history':
 			q_cash = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).\
 				filter(models.BalanceHistory.balance_type == 2,
-					  models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 			# 今日已提现 sunmh 2015年09月16日
 			q_cash_totay=q_cash.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0)
 			if level == 1:
@@ -2348,15 +2344,15 @@ class Balance(SuperBaseHandler):
 			total = format(0 if q_cash[0][0] ==None else q_cash[0][0],'.2f')
 			total_today=format(0 if q_cash_totay[0][0] ==None else q_cash_totay[0][0],'.2f')
 			context={'total_today':total_today,
-					'total':total}
+					 'total':total}
 		elif action == 'recharge':
 			q_charge = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).\
 				filter(models.BalanceHistory.balance_type == 0,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 			q_consume = self.session.query(func.sum(models.BalanceHistory.balance_value)).\
-				filter(models.BalanceHistory.balance_type == 1
-					,models.BalanceHistory.shop_name.like('%%%s%%' % shop_name)
-					,models.BalanceHistory.is_cancel == 0)
+				filter(models.BalanceHistory.balance_type == 1,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name),
+					   models.BalanceHistory.is_cancel == 0)
 			if level == 1:
 				q_charge = q_charge.filter(models.BalanceHistory.shop_province==shop_province)
 				q_consume= q_consume.filter(models.BalanceHistory.shop_province==shop_province)
@@ -2371,14 +2367,14 @@ class Balance(SuperBaseHandler):
 			pay = format(0 if q_consume[0][0] == None else q_consume[0][0] ,'.2f')
 			left = format(float(total)-float(pay),'.2f')
 			context={'total_today':total_today,'pay_today':pay_today,
-					'total':total,'pay':pay,'left':left}
+					 'total':total,'pay':pay,'left':left}
 		elif action == 'online':
 			q_pay = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).\
-				filter(models.BalanceHistory.balance_type ==3,
-					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+				filter(models.BalanceHistory.balance_type == 3,models.BalanceHistory.is_cancel==0,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 			persons = self.session.query(models.BalanceHistory.customer_id).distinct().\
-				filter(models.BalanceHistory.balance_type == 3,
-				models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+				filter(models.BalanceHistory.balance_type == 3,models.BalanceHistory.is_cancel==0,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
 			if level == 1:
 				q_pay = q_pay.filter(models.BalanceHistory.shop_province==shop_province)
 				persons = persons.filter(models.BalanceHistory.shop_province==shop_province)
@@ -2392,14 +2388,12 @@ class Balance(SuperBaseHandler):
 			times=0 if q_pay[0][1] == None else q_pay[0][1]
 			total=format(0 if q_pay[0][0] == None else q_pay[0][0] ,'.2f')
 			context={'times_today':times_today,'total_today':total_today,'persons_today':persons_today,
-						'times':times,'total':total,'persons':persons}
+					 'times':times,'total':total,'persons':persons}
 		else:
 			return self.send_error(404)
 		return self.send_success(history = history,page_sum=page_sum,context=context)
 
-
-
-#退款申请
+# 退款申请
 class ApplyRefund(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('page?:int')
@@ -2433,7 +2427,7 @@ class ApplyRefund(SuperBaseHandler):
 		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
 		if action == "confirm":
 			if refund_apply.has_done == 1:
-				return self.send_fail('请勿重复处理！')
+			return self.send_fail('请勿重复处理！')
 			refund_apply.has_done = 1 #将申请退款变为已处理状态
 			###################################################################
 			# 9.17 woody
@@ -2455,13 +2449,12 @@ class ApplyRefund(SuperBaseHandler):
 				balance_value = balance_history.balance_value
 				shop = order.shop 
 				shop.shop_balance -= balance_value      #店铺余额减去订单总价，还原店铺余额
-				balance_history.is_cancel =1            #将旧的支付记录作废
-				balance_history.balance_type = -1
+				balance_history.is_cancel = 1            #将旧的支付记录作废
 				customer_id = balance_history.customer_id
 				name        = balance_history.name
 				shop_province = balance_history.shop_province
 				shop_name     = balance_history.shop_name
-				balance_record = balance_history.balance_record + '--退款'
+				balance_record = '在线支付(支付宝)退款：订单' + order.num + '删除'
 				create_time   = datetime.datetime.now()
 				shop_totalPrice = shop.shop_balance
 				customer_totalPrice = balance_history.customer_totalPrice
@@ -2673,7 +2666,7 @@ class CheckCash(SuperBaseHandler):
 			check_profit_len = check_profit.count()
 
 			if check_profit_len == 0:
-				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first()
+				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.is_cancel==0).order_by(models.BalanceHistory.create_time).first()
 				if not check_update_start:
 					page_sum = 0
 					output_data = []
@@ -2692,7 +2685,7 @@ class CheckCash(SuperBaseHandler):
 			##
 
 			balance_history_time = self.session.query(models.BalanceHistory).\
-				   filter(models.BalanceHistory.balance_type.in_([0,3])).\
+				   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.is_cancel==0).\
 				   filter(models.BalanceHistory.create_time > check_update_start,models.BalanceHistory.create_time < now_time).\
 				   group_by(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d")).\
 				   order_by(models.BalanceHistory.create_time)
@@ -2710,8 +2703,8 @@ class CheckCash(SuperBaseHandler):
 				end_time = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 0,0,0)
 
 				balance_his = self.session.query(models.BalanceHistory).\
-						   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.create_time >= start_time,\
-						   	models.BalanceHistory.create_time < end_time);
+						   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.is_cancel==0,models.BalanceHistory.create_time >= start_time,\
+						   models.BalanceHistory.create_time < end_time);
 				his_list = balance_his.all()
 
 				for temp in his_list:
