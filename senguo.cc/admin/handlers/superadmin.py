@@ -2238,7 +2238,7 @@ class Balance(SuperBaseHandler):
 		today_balance=format(float(0 if today_balance_plus==None else today_balance_plus)-float(0 if today_balance_minus==None else today_balance_minus),'.2f')
 		
 
-		cash_on = format(cash_on,'.2f')
+		cash_on = format(cash_on,'.2f') if cash_on else 0
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
 			total_balance=total_balance,cash_on=cash_on,level=level,today_balance=today_balance,context=dict(page="detail"))

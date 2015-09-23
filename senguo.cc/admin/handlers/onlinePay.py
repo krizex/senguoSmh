@@ -416,6 +416,7 @@ class OnlineWxPay(CustomerBaseHandler):
 				trade_type = xmlArray['trade_type']
 			except:
 				trade_type = None
+			print(trade_type)
 			# result       = orderId.split('a')
 			# customer_id  = int(result[0])
 			# shop_id      = int(result[1])
@@ -440,13 +441,10 @@ class OnlineWxPay(CustomerBaseHandler):
 			customer_id = order.customer_id
 			shop_id     = order.shop_id
 			totalPrice  = order.new_totalprice
-			try:
-				if trade_type == 'NATIVE':
-					order.isqrwxpay = 1 #表示该订单为扫码支付
-				else:
-					order.isqrwxpay = 0
-			except:
-				print("保险起见")
+			if trade_type == 'NATIVE':
+				order.is_qrwxpay = 1 #表示该订单为扫码支付
+			else:
+				order.is_qrwxpay = 0
 			create_date = order.create_date.timestamp()
 			now         = datetime.datetime.now().timestamp()
 			time_difference = now - create_date
