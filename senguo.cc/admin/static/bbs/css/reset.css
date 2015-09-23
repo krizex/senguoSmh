@@ -63,6 +63,7 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .red-txt{color: #ff6666!important;}
 .green{color: #4be2d4!important;}
 .c000,.text-black{color: #333 !important;}
+.c0{color: #000000!important;}
 .c333{color: #333!important;}
 .c666{color: #666!important;}
 .c999{color: #999!important;}
@@ -76,12 +77,14 @@ textarea{width: 100%;border: none;overflow: hidden;resize: none;}
 .pt5{padding-top: 5px;}
 .pm10{padding-bottom: 10px;}
 .pm20{padding-bottom: 20px;}
+.pm40{padding-bottom: 40px !important;}
 .ptm6{padding: 6px 0;}
 .pt10{padding-top: 10px !important;}
 .pt30{padding-top: 30px;}
 .pt70{padding-top: 70px !important;}
 .pm80{padding-bottom: 80px;}
 .mt0{margin-top: 0!important;}
+.mt-1{margin-top: -1px !important;}
 .mt2{margin-top: 2px;}
 .mt4{margin-top: 4px;}
 .mt6{margin-top: 6px;}

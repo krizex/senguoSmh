@@ -1,5 +1,6 @@
 var ueditor = null,type= 1;
 $(document).ready(function(){
+    $("#container").addClass("pm40");
     cookie.setCookie("next_url",window.location.href);
     $(".pop-win").on("click",function(e){/*关闭模态框*/
         if($(e.target).closest(".pop-content").length==0){
@@ -21,7 +22,7 @@ $(document).ready(function(){
         type = $(".publish-checks").children(".active").attr("data-id");
     }
     initEditor();
-    initDate();
+    //initDate();
     $("#time_default").on("mousedown",function(){
         var $this = $(this).closest("li");
         type = parseInt($this.attr("data-id"));
@@ -72,17 +73,17 @@ function publishAtical(target){
         return Tip("文章内容不能为空");
     }
     var public = 0;
-    if($(".if-bbs").hasClass("active")){
+    /*if($(".if-bbs").hasClass("active")){
         public = 1;
-    }
+    }*/
     var private = 0;
-    if($(".if-my").hasClass("active")){
+    /*if($(".if-my").hasClass("active")){
         private = 1;
-    }
+    }*/
     var publictime="";
-    if(type==2){
+    /*if(type==2){
         publictime = $("#time_default").val();
-    }
+    }*/
     var args = {
         action:"",
         data:{
@@ -90,7 +91,7 @@ function publishAtical(target){
             title:title,
             article:article,
             public:public,
-            type:type,
+            type:1,
             publictime:publictime,
             private:private
         }

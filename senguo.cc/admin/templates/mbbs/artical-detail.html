@@ -4,14 +4,19 @@
 {% end %}
 {% block header %}
 <span id="title">文章详情</span>
-<a href="javascript:;" url="/bbs/publish" class="right-icons publish-article"></a>
+<a href="javascript:;" url="/bbs/publish" class="right-icons publish-article hide"></a>
 {% end %}
 {% block content %}
+<style>
+    .post-cont img{max-width: 100% !important;}
+    .post-cont>fieldset,.post-cont>section{width: 100% !important;}
+    .post-cont fieldset,.post-cont section{max-width: 100% !important;}
+</style>
 <input type="hidden" value="{{author_if}}" id="author_if"/>
 <div class="wrap-post pm20" data-id="{{article['id']}}">
     <div class="post-box">
-        <h3 class="post-title">{{article["title"]}}</h3>
-        <p class="post-2title mt10 c999"><span class="topic-class detail-type">{{article["type"]}}</span><span class="author clip c999">{{article["time"]}}</span>@{{article["nickname"]}}</p>
+        <h3 class="post-title c0">{{article["title"]}}</h3>
+        <p class="post-2title mt10 c999"><a href="/bbs?id={{article["classify"]}}" class="topic-class detail-type">{{article["type"]}}</a><span class="author clip c999">{{article["time"]}}</span>@{{article["nickname"]}}</p>
         <div class="post-cont">
             {% raw article["article"] %}
         </div>
@@ -42,7 +47,7 @@
 <div class="fix-center wrap-reply-box forbid_click">
     <a href="javascript:;" class="p-article add-great {% if article['great_if'] == True %}add-great-active{% end %} if-login" id="admire-atical" data-id="{{article['id']}}"></a>
     <a href="javascript:;" class="p-article add-store {% if article['collect_if'] == True %}add-store-active{% end %} if-login" id="store-atical" data-id="{{article['id']}}"></a>
-    <div contentEditable="true" class="reply-ipt-temp"></div>
+    <div class="reply-ipt-temp"></div>
     <textarea class="reply-ipt" placeholder="请输入评论"></textarea>
     <a href="javascript:;" class="reply-btn if-login" id="comment" data-id="{{article['id']}}">发表</a>
 </div>

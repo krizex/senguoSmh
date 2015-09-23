@@ -1736,7 +1736,7 @@ class Article(MapBase, _CommonApi):
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
 	title = Column(String(100),nullable=False)
 	article = Column(Text)
-	classify = Column(TINYINT,nullable=False,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
+	classify = Column(TINYINT,nullable=False,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求 6:森果前沿 7:用户交流
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
 	comment_num = Column(Integer,nullable=False,default = 0)#评论数
 	collect_num = Column(Integer,nullable=False,default = 0)#收藏数
