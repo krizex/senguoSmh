@@ -47,59 +47,6 @@
 .wrap-goods-menu{height: auto !important;}
 .goods-menu-list{height: auto !important;}
 .forbid-in .name{color: #bbb !important;}
-/*bbs首页*/
-.bbs-menu{background-image: url('/static/bbs/img/menu.png');background-size: 24px;padding-left: 26px;}
-.bbs-menu-at{background-image: url('/static/bbs/img/menu_at.png');background-size: 18px;}
-.wrap-menu-list{position: absolute;width: 100%;background-color: #48b6a4;top:100%;left: 0;z-index:99;}
-.menu-list{padding: 20px 0;}
-.menu-list>li{float:left;width:33.33%;position: relative;line-height:1;-webkit-box-sizing:border-box;text-align: center;color: #fff;border: 1px solid rgba(255,255,255,.1);padding: 12px 0 16px 0;}
-.menu-list>li>span{margin-top: 4px;line-height:1;font-size: 14px;display: block;text-align: center;max-width: 100%;}
-.menu-icon{background-image: url('/static/bbs/img/menu_icons.png');width: 24px;height: 24px;background-size: 24px;margin-left: 2px;}
-.menu-list .active{background-color: #BDEBE7;color: #36887B;}
-.menu-list .active .cover-px{display: none;}
-.menu-list .active .menu-icon{background-image: url('/static/bbs/img/menu_icon_at.png');}
-.m1{background-position: 0 3px;}
-.m2{background-position: 0 -28px;background-size: 26px;}
-.m3{background-position: 0 -49px;}
-.m4{background-position: 0 -78px;}
-.m5{background-position: 0 -104px;}
-.m6{background-position: 0 -130px;}
-.m7{background-position: 0 -160px;}
-.m8{background-position: 0 -186px;}
-.m9{background-position: 0 -210px;}
-.bt0{border-top: none !important;}
-.bl0{border-left: none !important;}
-.br0{border-right: none !important;}
-.cover-px{position: absolute;top:-1px;width:10px;height:75px;background-color: #4ab89e;}
-.cover-left{left:0;}
-.cover-right{right: 0;}
-.loading{display: none;}
-.wrap-search-box{padding: 10px 10px 0 10px;position: relative;line-height: 1;}
-.search-article{width: 100%;-webkit-box-sizing: border-box;border-radius:4px;height: 26px;font-size: 12px;color: #fff;padding: 0 30px 0 6px;border: none;background-color: rgba(0,0,0,0.15);}
-.search-article:focus{background-color: rgba(0,0,0,.4);}
-.search-article::-webkit-input-placeholder {color:#b2dfdb;}
-.right-icons{position: absolute;display: inline-block;width: 30px;height: 40px;top: 0;background-size:24px;background-repeat: no-repeat;background-position: center center;}
-.publish-article{right: 10px;background-image: url('/static/bbs/img/publish.png');}
-.profile-centers{right: 50px;background-image: url('/static/bbs/img/i_person.png');background-size: 22px;}
-.stat-tip{position: absolute;font-size: 12px;height:12px;line-height:1;color: #fff;background-color: #FFC107;border-radius: 6px;left:14px;top: 4px;padding: 1px 3px;}
-.atical-list{background-color: #fff;}
-.search-icon{position: absolute;right: 16px;top:13px;width: 20px;height: 20px;background: url('/static/bbs/img/icon_search.png') no-repeat center center;background-size: 18px;}
-.atical-list>li{padding: 10px;position: relative;}
-.atical-list>li:after{content: '';display: block;position: absolute;width: 100%;left: 0;bottom: 0;height: 1px;background-color: #dadada;-webkit-transform: scaleY(0.5);transform: scaleY(0.5);}
-.atical-list .title{color: #333;line-height: 24px;cursor: pointer;font-size: 15px;}
-.atical-mark{display: inline-block;height: 16px;line-height: 16px;font-size:12px;margin-right:3px;position:relative;top:-2px;left:-3px;padding: 0 10px;border: 1px solid #4ab89e;color: #4ab89e;border-radius: 9px;transform: scale(0.9);-webkit-transform: scale(0.9);}
-.atical-attr{margin-top: 8px;color: #999;font-size: 13px;}
-.atical-attr>span{display: inline-block;}
-.wrap-icon{display: inline-block;color: #999;position: relative;padding-left: 24px;}
-.wrap-icon>i{position: absolute;left: 0;top: 2px;width: 14px;height: 13px;background-size: 21px;background-image: url('/static/bbs/img/bbs_icon.png');}
-.wrap-icon .icon-dz{background-position: 0 -26px;left: 7px;}
-.wrap-icon .icon-dz2{background-position: 0 -26px;left: 7px;top: 1px;}
-.wrap-icon .icon-dz-active{background-position: 0 -39px;}
-.wrap-icon .icon-com{background-position: 0 -13px;left: 5px;top: 3px;}
-.wrap-icon .icon-com2{background-position: 0 -13px;left: 5px;top: 2px;}
-.wrap-icon .icon-see{background-position: 0 0;width: 21px;}
-.wrap-icon .post-dz{background-position: 0 -52px;left: 2px;}
-.wrap-icon .post-dz-active{background-position: 0 -65px;}
 /*订单详情*/
 .order-detail-box{padding-bottom: 60px;}
 .wrap-bm-btn{height:50px;width: 100%;position: fixed;background-color: #f9f9f9;bottom:0;z-index:999;left: 0;}
@@ -130,11 +77,9 @@
 .goods-lst>li{margin-top: 10px;display: block;}
 .goods-item>dd>p{font-size:12px;line-height: 20px;}
 .user-box{position: absolute;left: 50%;}
-.pop-staff-box{}
 .pop-staff-box .title{text-align: center;margin-bottom:10px;}
 .staff-list{padding: 4px 0 20px 0;max-height: 200px;overflow: auto;-webkit-overflow-scrolling: touch;}
 .staff-list>li{height: 42px;line-height: 42px;padding-left: 20px;color: #999;margin-bottom: 10px;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
-
 .staff-list .img-border{border-color:#999;}
 .staff-list .check{visibility:hidden;}
 .staff-list .active{color: #76ccc0;}
@@ -242,15 +187,15 @@
 .data-list>li>a{display: block;height: 40px;color: #333;}
 .data-list>li:last-child{border-bottom: none;}
 .item-left{display: inline-block;padding-left: 26px;background-repeat: no-repeat;background-size: 20px;background-position: left center;}
-.i-cert{background-image: url(/static/m-admin/img/1.png);}
-.i-piao{background-image: url(/static/m-admin/img/2.png);}
-.i-fmsg{background-image: url(/static/m-admin/img/3.png);}
-.i-gset{background-image: url(/static/m-admin/img/4.png);}
-.i-tpl{background-image: url(/static/m-admin/img/5.png);}
-.i-report{background-image: url(/static/m-admin/img/6.png);}
-.i-pay{background-image: url(/static/m-admin/img/7.png);}
-.i-info{background-image: url(/static/m-admin/img/i_info.png);}
-.data-list .more{display: inline-block;height: 100%;}
+.i-cert{background-image: url('/static/m-admin/img/1.png');}
+.i-piao{background-image: url('/static/m-admin/img/2.png');}
+.i-fmsg{background-image: url('/static/m-admin/img/3.png');}
+.i-gset{background-image: url('/static/m-admin/img/4.png');}
+.i-tpl{background-image: url('/static/m-admin/img/5.png');}
+.i-report{background-image: url('/static/m-admin/img/6.png');}
+.i-pay{background-image: url('/static/m-admin/img/7.png');}
+.i-info{background-image: url('/static/m-admin/img/i_info.png');}
+.data-list .more{display: inline-block;height: 100%;max-width: 70%;}
 .data-list .nomore{display: inline-block;height: 100%;}
 /*店铺信息*/
 .data-list .text-left{color: #48B6A4;}

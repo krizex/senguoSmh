@@ -15,8 +15,8 @@
 <input type="hidden" value="{{author_if}}" id="author_if"/>
 <div class="wrap-post pm20" data-id="{{article['id']}}">
     <div class="post-box">
-        <h3 class="post-title">{{article["title"]}}</h3>
-        <p class="post-2title mt10 c999"><a href="/bbs?id=" class="topic-class detail-type">{{article["type"]}}</a><span class="author clip c999">{{article["time"]}}</span>@{{article["nickname"]}}</p>
+        <h3 class="post-title c0">{{article["title"]}}</h3>
+        <p class="post-2title mt10 c999"><a href="/bbs?id={{article["classify"]}}" class="topic-class detail-type">{{article["type"]}}</a><span class="author clip c999">{{article["time"]}}</span>@{{article["nickname"]}}</p>
         <div class="post-cont">
             {% raw article["article"] %}
         </div>

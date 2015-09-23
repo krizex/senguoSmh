@@ -8,78 +8,6 @@
     <span>{{shop.shop_name}}</span>
     <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"><em></em></a>
 </div>
-<div class="header head_tab hide">
-    <a href="javascript:;" class="back bbs-menu" id="bbs-menu"></a>
-    <span id="title">森果社区</span>
-    <a href="javascript:;" url="/bbs/publish" class="right-icons publish-article"></a>
-    <a href="javascript:;" url="/bbs/profile" class="right-icons profile-centers">
-        {% if handler.getNoticeNumber>0 %}<i class="stat-tip">{{handler.getNoticeNumber}}</i>{% end %}
-    </a>
-    <div class="wrap-menu-list h0">
-        <div class="wrap-search-box">
-            <i class="search-icon" id="search_btn"></i>
-            <input type="text" placeholder="请输入文章标题" class="search-article" id="search_bbs"/>
-        </div>
-        <ul class="menu-list group">
-            <li class="active bl0" data-id="100">
-                <i class="menu-icon m1"></i>
-                <span>首页</span>
-                <i class="cover-px cover-left"></i>
-            </li>
-            <li class="bl0" data-id="0">
-                <i class="menu-icon m2"></i>
-                <span>官方公告</span>
-            </li>
-            <li class="bl0 br0" data-id="1">
-                <i class="menu-icon m3"></i>
-                <span>产品更新</span>
-                <i class="cover-px cover-right"></i>
-            </li>
-            <li class="bl0 bt0" data-id="2">
-                <i class="menu-icon m4"></i>
-                <span>运营干货</span>
-                <i class="cover-px cover-left"></i>
-            </li>
-            <li class="bl0 bt0" data-id="3">
-                <i class="menu-icon m5"></i>
-                <span>水果百科</span>
-            </li>
-            <li class="bl0 br0 bt0" data-id="4">
-                <i class="menu-icon m6"></i>
-                <span>使用教程</span>
-                <i class="cover-px cover-right"></i>
-            </li>
-            <li class="bl0 bt0" data-id="5">
-                <i class="menu-icon m7"></i>
-                <span>水果供求</span>
-                <i class="cover-px cover-left"></i>
-            </li>
-            <li class="bl0 bt0" data-id="6">
-                <i class="menu-icon m8"></i>
-                <span>森果前沿</span>
-            </li>
-            <li class="bl0 br0 bt0" data-id="7">
-                <i class="menu-icon m9"></i>
-                <span>用户交流</span>
-                <i class="cover-px cover-right"></i>
-            </li>
-        </ul>
-    </div>
-    <!--<a href="javascript:;" class="back bbs-menu" id="bbs-menu">所有版块</a>
-    <span>森果社区</span>
-    <a href="{{reverse_url('BbsSearch')}}" class="head-right search"><em></em></a>
-    <div class="wrap-menu-list h0">
-        <ul class="menu-list">
-            <li data-id="0">官方公告</li>
-            <li data-id="1">产品更新</li>
-            <li data-id="2">运营干货</li>
-            <li data-id="3">水果百科</li>
-            <li data-id="4">使用教程</li>
-            <li data-id="5">水果供求</li>
-            <li data-id="6">森果前沿</li>
-        </ul>
-    </div>-->
-</div>
 {% end %}
 {% block content %}
 {% set shop_status="" %}
@@ -201,21 +129,14 @@
         </a>
     </div>
 </div>
-<div class="wrap-main pm80 main_tab hide">
-    <ul class="atical-list">
-
-    </ul>
-    <p class="loading txt-center c999 mt10"></p>
-</div>
 <div class="bm-tab header">
     <ul class="tab-bm-list group">
         <li class="active"><a href="javascript:;"><i class="box-icon ic-shop ic-shop-active"></i><span>店铺</span></a></li>
-        <li class=""><a href="javascript:;"><i class="box-icon ic-bbs"></i><span>社区</span></a></li>
+        <li class=""><a href="/bbs?id=100"><i class="box-icon ic-bbs"></i><span>社区</span></a></li>
     </ul>
 </div>
 {% end %}
 {% block bottom %}
 <script type="text/javascript" src="/static/js/template.js"></script>
 <script type="text/javascript" src="{{static_url('m-admin/js/profile.js')}}"></script>
-<script type="text/javascript" src="{{static_url('bbs/js/main.js')}}"></script>
 {% end %}
