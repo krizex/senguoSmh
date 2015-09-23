@@ -1,5 +1,6 @@
 var ueditor = null,_type = 100,_search=false,key="";
 $(document).ready(function(){
+    cookie.setCookie("next_url",window.location.href);
     getHotInfo("article");
     getHotInfo("customer");
     if($.getUrlParam("search")){

@@ -1736,7 +1736,7 @@ class Article(MapBase, _CommonApi):
 	account_id = Column(Integer, ForeignKey(Accountinfo.id),nullable=False)
 	title = Column(String(100),nullable=False)
 	article = Column(Text)
-	classify = Column(TINYINT,nullable=False,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求
+	classify = Column(TINYINT,nullable=False,default = 0) #0:官方公告 1:产品更新 2:运营干货 3:水果百科 4:使用教程 5:水果供求 6:森果前沿 7:用户交流
 	great_num = Column(Integer,nullable=False,default = 0) #点赞数
 	comment_num = Column(Integer,nullable=False,default = 0)#评论数
 	collect_num = Column(Integer,nullable=False,default = 0)#收藏数
@@ -2068,7 +2068,7 @@ class ApplyRefund(MapBase,_CommonApi):
 	order_num   = Column(String(15))  #订单编号
 	refund_type = Column(TINYINT,nullable=False,default=0) #0:微信，1:支付宝
 	refund_fee  = Column(Float,nullable=False,default=0)  #退款金额。一般等于订单总额
-	has_done    = Column(TINYINT,nullable=False,default=0)  #退款申请是否被确认
+	has_done    = Column(TINYINT,nullable=False,default=0)  #退款申请是否被确认 0:未处理 1:确认 -1:忽略
 	refund_url  = Column(String(450))    #支付宝退款地址，仅当退款类型为支付宝时有效
 	transaction_id=Column(String(64))    #申请退款订单对应的支付编号
 	create_time = Column(DateTime, nullable=False, default=func.now())

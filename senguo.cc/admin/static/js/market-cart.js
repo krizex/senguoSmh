@@ -589,6 +589,10 @@ function orderSubmit(target){
         period_id=$('#deli_self').attr('data-id');
         self_address_id=$('#deli_self_address').attr('data-id');
     }
+    if(!$('.address-box').attr('data-id')){
+        noticeBox("您还没有收货信息，请先填写收货信息");
+        return false;
+    }
     var address_id=$('.address-box').attr('data-id');
     var pay_type=$('.pay_type_list').find('.active').attr('data-id');
     var message=$('#messageCon').val();

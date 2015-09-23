@@ -73,7 +73,7 @@ class RefundCallback(CustomerBaseHandler):
 		transaction_id   = balance_history.transaction_id
 		available_balance = balance_history.available_balance
 		#同时生成一条退款记录
-		refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+		refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,shop_name=shop_name,name=name,
 			balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
 			transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
 		session.add(refund_history)
@@ -165,7 +165,7 @@ class RefundWxpay(CustomerBaseHandler):
 				transaction_id   = balance_history.transaction_id
 				available_balance = balance_history.available_balance
 				#同时生成一条退款记录
-				refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,name=name,
+				refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,shop_name=shop_name,name=name,
 					balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
 					transaction_id=transaction_id,balance_type=8,balance_value=balance_value)
 				self.session.add(refund_history)

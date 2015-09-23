@@ -3651,8 +3651,9 @@ class Goods(AdminBaseHandler):
 				if goods.activity_status not in [-2,0]:
 					return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能删除哦！")
 				time_now = datetime.datetime.now()
-				current_shop.goods_count = current_shop.goods_count -1
-				goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
+				if goods.active !=0:
+					current_shop.goods_count = current_shop.goods_count -1
+					goods.update(session=self.session, active = 0,delete_time = time_now,group_id = 0)
 
 		elif action in ["del_charge_type", "edit_charge_type"]:  # charge_type_id
 			charge_type_id = self.args["charge_type_id"]
@@ -3678,12 +3679,16 @@ class Goods(AdminBaseHandler):
 				except:
 					return self.send_error(404)
 				if action == 'batch_on':
-					goods.active = 1
+					if goods.active !=1:
+						current_shop.goods_count = current_shop.goods_count+1
+						goods.active = 1
 				elif action == 'batch_off':
 					activity_name = {1:'秒杀',2:'限时折扣'}
 					if goods.activity_status not in [-2,0]:
 						return self.send_fail("商品"+goods.name+"正在参加"+activity_name[goods.activity_status]+"活动，不能下架哦！")
-					goods.active = 2
+					if goods.active !=2:
+						current_shop.goods_count = current_shop.goods_count-1
+						goods.active = 2
 				elif action == 'batch_group':
 					activity_name = {1:'秒杀',2:'限时折扣'}
 					if goods.activity_status not in [-2,0]:
@@ -3773,9 +3778,10 @@ class Goods(AdminBaseHandler):
 					goods = self.session.query(models.Fruit).filter_by( id = _id ).first()
 				except:
 					return self.send_error(404)
-				if goods:
+				if goods and goods.active !=1:
+					current_shop.goods_count = current_shop.goods_count+1
 					goods.active = 1
-				self.session.commit()
+					self.session.commit()
 
 		# 商品恢复删除
 		elif action == "reset_delete":
@@ -3783,9 +3789,10 @@ class Goods(AdminBaseHandler):
 				goods = self.session.query(models.Fruit).filter_by( id = data["id"] ).first()
 			except:
 				return self.send_error(404)
-			if goods:
+			if goods and goods.active !=1:
+				current_shop.goods_count = current_shop.goods_count+1
 				goods.active = 1
-			self.session.commit()
+				self.session.commit()
 
 		# 商品类目搜索
 		elif action =="classify_search":
@@ -4765,7 +4772,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'cash':
 			apply_value = self.args['apply_value']
 			if apply_value > self.current_shop.available_balance:
-				return self.send_fail("您申请金额大于店铺 可提现的金额，请重新申请")
+				return self.send_fail("您申请的提现金额大于店铺可提现余额，请重新申请")
 			alipay_account = self.args['alipay_account']
 			account_name = self.args['account_name']
 			code = int(self.args['code'])
@@ -4818,7 +4825,7 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'all_history':
 			history = []
 			page=int(self.args['page'])-1
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,3,4,5]))
+			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,3,4,5,8,9]))
 			history_list = balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
 			count =balance_history.count()
 			page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
@@ -4873,10 +4880,10 @@ class ShopBalance(AdminBaseHandler):
 		elif action == 'online':
 			history = []
 			page=int(self.args['page'])-1
-			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id,balance_type = 3)\
+			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([3,8,9]))\
 			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type =3).all()
-			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3).count()
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(shop_id = shop_id,balance_type =3,is_cancel=0).all()
+			persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(shop_id = shop_id,balance_type = 3,is_cancel=0).count()
 			if q[0][0]:
 				total =q[0][0]
 			count = q[0][1]
@@ -4901,7 +4908,7 @@ class ShopBalance(AdminBaseHandler):
 			page=int(self.args['page'])-1
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5]))\
 			.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-			count = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5])).count()
+			count = self.session.query(models.BalanceHistory.shop_id).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([0,1,2,4,5])).count()
 			spend_total = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(shop_id = shop_id,balance_type =1,is_cancel = 0).all()
 			if spend_total[0][0]:
 				total =spend_total[0][0]
@@ -4928,7 +4935,7 @@ class ShopBalance(AdminBaseHandler):
 			page = int(self.args['page']-1)
 			history_list = self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).\
 			order_by(models.BalanceHistory.create_time.desc()).offset(page*page_size).limit(page_size).all()
-			count =  self.session.query(models.BalanceHistory).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).count()
+			count =  self.session.query(models.BalanceHistory.shop_id).filter_by(shop_id = shop_id).filter(models.BalanceHistory.balance_type.in_([2,6,7])).count()
 			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			#if not history_list:
 			#	print('[AdminShopBalance]get all BalanceHistory error')
