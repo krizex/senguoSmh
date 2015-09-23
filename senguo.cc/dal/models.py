@@ -2068,7 +2068,7 @@ class ApplyRefund(MapBase,_CommonApi):
 	order_num   = Column(String(15))  #订单编号
 	refund_type = Column(TINYINT,nullable=False,default=0) #0:微信，1:支付宝
 	refund_fee  = Column(Float,nullable=False,default=0)  #退款金额。一般等于订单总额
-	has_done    = Column(TINYINT,nullable=False,default=0)  #退款申请是否被确认
+	has_done    = Column(TINYINT,nullable=False,default=0)  #退款申请是否被确认 0:未处理 1:确认 -1:忽略
 	refund_url  = Column(String(450))    #支付宝退款地址，仅当退款类型为支付宝时有效
 	transaction_id=Column(String(64))    #申请退款订单对应的支付编号
 	create_time = Column(DateTime, nullable=False, default=func.now())
