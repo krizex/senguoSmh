@@ -15,10 +15,12 @@ body{background-color: #f3f3f3;overflow-x: hidden;max-width: 800px;min-width: 32
 .bbs-menu-at{background-image: url('/static/bbs/img/menu_at.png');background-size: 18px;}
 .wrap-menu-list{position: absolute;width: 100%;background-color: #48b6a4;top:100%;left: 0;z-index:99;}
 .menu-list{padding: 20px 0;}
-.menu-list>li{float:left;width:33.33%;position: relative;line-height:1;-webkit-box-sizing:border-box;text-align: center;color: #fff;border: 1px solid rgba(255,255,255,.1);padding: 12px 0 16px 0;}
-.menu-list>li>span{margin-top: 4px;line-height:1;font-size: 14px;display: block;text-align: center;}
+.menu-list>li{float:left;width:33.33%;position: relative;line-height:1;-webkit-box-sizing:border-box;text-align: center;color: #fff;border: 1px solid rgba(255,255,255,.1);padding: 12px 0 4px 0;}
+.menu-list>li>span{margin-top: 4px;line-height:1;font-size: 14px;display: block;text-align: center;color: rgba(255,255,255,0.6);}
+.menu-list>li>p{text-align: center;height: 14px;line-height: 14px;padding-top: 4px;}
 .menu-icon{background-image: url('/static/bbs/img/menu_icons.png');width: 24px;height: 24px;background-size: 24px;margin-left: 2px;}
-.menu-list .active{background-color: #BDEBE7;color: #36887B;}
+.menu-list .active{background-color: #BDEBE7;color: #36887B;border-bottom: 1px solid #48b6a4;}
+.menu-list .active>span{color: #36887B;}
 .menu-list .active .cover-px{display: none;}
 .menu-list .active .menu-icon{background-image: url('/static/bbs/img/menu_icon_at.png');}
 .m1{background-position: 0 3px;}
@@ -187,7 +189,7 @@ body{background-color: #f3f3f3;overflow-x: hidden;max-width: 800px;min-width: 32
 .wrap-topic-attr>span{display: inline-block;margin-right: 4px;}
 .topic-class{border: 1px solid #4ab89e;color:#4ab89e;font-size:12px;border-radius: 20px;padding: 0 6px;height: 16px;-webkit-transform:scale(0.9);}
 .topic-tag{color:#4ab89e;font-size:12px;padding: 1px 5px;height: 16px;-webkit-transform:scale(0.9);background-color: #eee;}
-.detail-type{border-color: #999;color: #999;margin-right: 6px;}
+.detail-type{border-color: #999;color: #999;margin-right: 6px;border-radius: 4px;padding-right: 14px;background: url('/static/images/arr-right.png') no-repeat 58px center;background-size: 6px 12px;}
 .icon-topic{display: inline-block;height: 16px;padding-left: 18px;font-size: 12px;color: #999;margin-left: 4px;background: url('../img/bbs_icon.png') no-repeat;background-size: 24px;}
 .dianzan{background-position: 0 -29px;}
 .dianzan-active{background-position: 0 -44px;}

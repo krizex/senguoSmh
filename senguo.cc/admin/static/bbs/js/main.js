@@ -11,6 +11,7 @@ $(document).ready(function(){
         $(".menu_icon_area").removeClass().addClass("menu-icon menu_icon_area").addClass("m"+($(this).index()+1));
         $(".classify_title").html(text);
         $(".classify_cont").html($(this).attr("data-text"));
+        history.replaceState({foo:"bbs"},"森果社区","/bbs?id="+id);
         page=0;
         _type=id;
         articleList(0,true);
@@ -156,7 +157,7 @@ function articleList(page,flag){
                         var great_num=datalist[i]['great_num'];
                         var comment_num=datalist[i]['comment_num'];
                         var great_if=datalist[i]['great_if'];
-                        var see_num=datalist[i]['comment_num'];
+                        var see_num=datalist[i]['scan_num'];
                         if(great_if==true){
                             great_if='icon-dz-active';
                         }
