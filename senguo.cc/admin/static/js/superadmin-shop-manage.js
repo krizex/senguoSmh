@@ -46,6 +46,10 @@ $(document).ready(function(){
                 window.location.href = url;
           }
     }
+    var search_con = $.getUrlParam('search_con');
+    if(search_con!=undefined){
+        searchshop(1,search_con);
+    }
     // 
 
     /*if(localStorage.getItem("itemIndex")){
@@ -369,9 +373,14 @@ function rejectDel(){
     )
 }
 
-function searchshop(page){
+
+function searchshop(page,info){
     var searchinfo=$("#inputinfo")[0].value;
     searchinfo='='+searchinfo;
+    if(info){
+        searchinfo ='='+info;
+    }
+    console.log(searchinfo);
     var url='/super/shopManage?action=all&search'+searchinfo+'&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&page='+page+'&flag=0';
     $.ajax({
             url:url,
