@@ -49,7 +49,7 @@
 .forbid-in .name{color: #bbb !important;}
 /*bbs首页*/
 .bbs-menu{background-image: url('/static/bbs/img/menu.png');background-size: 24px;padding-left: 26px;}
-.bbs-menu-at{background-image: url('/static/bbs/img/menu_at.png');}
+.bbs-menu-at{background-image: url('/static/bbs/img/menu_at.png');background-size: 18px;}
 .wrap-menu-list{position: absolute;width: 100%;background-color: #48b6a4;top:100%;left: 0;z-index:99;}
 .menu-list{padding: 20px 0;}
 .menu-list>li{float:left;width:33.33%;position: relative;line-height:1;-webkit-box-sizing:border-box;text-align: center;color: #fff;border: 1px solid rgba(255,255,255,.1);padding: 12px 0 16px 0;}

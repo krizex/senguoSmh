@@ -23,6 +23,11 @@ $(document).ready(function(){
     });
     $("#bbs-menu").on("click",function(){
         $(".wrap-menu-list").toggleClass("h0");
+        if($(".wrap-menu-list").hasClass("h0")){
+            $(this).removeClass("bbs-menu-at");
+        }else{
+            $(this).addClass("bbs-menu-at");
+        }
     });
     if(cookie.getCookie("mBbs")){
         $(".tab-bm-list li").removeClass("active").eq(1).addClass("active");

@@ -24,6 +24,11 @@ $(document).ready(function(){
     }
     $("#bbs-menu").on("click",function(){
         $(".wrap-menu-list").toggleClass("h0");
+        if($(".wrap-menu-list").hasClass("h0")){
+            $(this).removeClass("bbs-menu-at");
+        }else{
+            $(this).addClass("bbs-menu-at");
+        }
     });
     if($(".atical-list").size()==0){
         $(".menu-list li").on("click",function(){

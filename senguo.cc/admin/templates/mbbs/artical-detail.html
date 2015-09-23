@@ -4,7 +4,7 @@
 {% end %}
 {% block header %}
 <span id="title">文章详情</span>
-<a href="javascript:;" url="/bbs/publish" class="right-icons publish-article"></a>
+<a href="javascript:;" url="/bbs/publish" class="right-icons publish-article hide"></a>
 {% end %}
 {% block content %}
 <input type="hidden" value="{{author_if}}" id="author_if"/>
@@ -42,7 +42,7 @@
 <div class="fix-center wrap-reply-box forbid_click">
     <a href="javascript:;" class="p-article add-great {% if article['great_if'] == True %}add-great-active{% end %} if-login" id="admire-atical" data-id="{{article['id']}}"></a>
     <a href="javascript:;" class="p-article add-store {% if article['collect_if'] == True %}add-store-active{% end %} if-login" id="store-atical" data-id="{{article['id']}}"></a>
-    <div contentEditable="true" class="reply-ipt-temp"></div>
+    <div class="reply-ipt-temp"></div>
     <textarea class="reply-ipt" placeholder="请输入评论"></textarea>
     <a href="javascript:;" class="reply-btn if-login" id="comment" data-id="{{article['id']}}">发表</a>
 </div>

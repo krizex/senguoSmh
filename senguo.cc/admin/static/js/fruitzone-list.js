@@ -43,7 +43,7 @@ $(document).ready(function(){
     //province and city
     //province data
     for(var key in area){
-        var $item=$('<li><span class="name pull-left ml10"></span><em class="arrow pull-right mr10"></em><span class="num pull-right mr10"></span></li>');
+        var $item=$('<li><span class="name pull-left ml10"></span><em class="arrow pull-right mr10"></em><span class="num"></span></li>');
         var city=area[key]['city'];
         if(city) city='true';
         else city='false';

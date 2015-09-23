@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    $(".header").css("position","relative");
+    $(".container").css("paddingTop","0");
     var height = $(window).height();
     $(".wrap-post").css("minHeight",height-60);
     $(".com-atical").on("click",function(){//评论按钮

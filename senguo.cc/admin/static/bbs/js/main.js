@@ -1,7 +1,5 @@
 var _type = 100,_search=false,key="";
 $(document).ready(function(){
-    var height = $(window).height();
-    //$(".atical-list").css("minHeight",height-40);
     $(".menu-list li").on("click",function(){
         var id = parseInt($(this).attr("data-id"));
         var text = $(this).children("span").html();
@@ -9,6 +7,10 @@ $(document).ready(function(){
         $(".menu-list li").removeClass("active");
         $(this).addClass("active");
         $(".wrap-menu-list").addClass("h0");
+        $("#bbs-menu").removeClass("bbs-menu-at");
+        $(".menu_icon_area").removeClass().addClass("menu-icon menu_icon_area").addClass("m"+($(this).index()+1));
+        $(".classify_title").html(text);
+        $(".classify_cont").html($(this).attr("data-text"));
         page=0;
         _type=id;
         articleList(0,true);
@@ -22,8 +24,12 @@ $(document).ready(function(){
         if($.getUrlParam("id")){
             _type = parseInt($.getUrlParam("id"));
             $(".menu-list li").removeClass("active");
-            $(".menu-list").find("li[data-id='"+_type+"']").addClass("active");
-            $("#title").html($(".menu-list").find("li[data-id='"+_type+"']").children("span").html());
+            var uIndexLi =  $(".menu-list").find("li[data-id='"+_type+"']");
+            uIndexLi.addClass("active");
+            $("#title").html(uIndexLi.children("span").html());
+            $(".menu_icon_area").removeClass().addClass("menu-icon menu_icon_area").addClass("m"+(uIndexLi.index()+1));
+            $(".classify_title").html(uIndexLi.children("span").html());
+            $(".classify_cont").html(uIndexLi.attr("data-text"));
         }
         articleList(0,true);
         scrollLoading();
@@ -79,6 +85,12 @@ $(document).ready(function(){
         return false;
     }
     window.location.href=$(this).attr("url");
+}).on("click",".tab-bm-list li",function(){
+    var index = $(this).index();
+    if(index==0){
+        cookie.removeCookie("mBbs");
+        window.location.href="/madmin/shop";
+    }
 });
 var finished=true;
 var nomore =false;
@@ -88,7 +100,8 @@ var item='<li data-id="{{id}}">'+
             '<p class="title"><span class="atical-mark">{{type}}</span>{{title}}</p>'+
             '<div class="atical-attr">'+
                 '<span class="fr">'+
-                    '<a href="javascript:;" class="wrap-icon dianzan mr10"><i class="icon-dz2 {{great_if}}"></i><span>{{great_num}}</span></a>'+
+                    '<a href="javascript:;" class="wrap-icon dianzan hide mr10"><i class="icon-dz2 {{great_if}}"></i><span>{{great_num}}</span></a>'+
+                    '<a href="javascript:;" class="wrap-icon people-see mr10"><i class="icon-see mt-1"></i><span>{{see_num}}</span></a>'+
                     '<a href="javascript:;" class="wrap-icon comment"><i class="icon-com2"></i>{{comment_num}}</a>'+
                 '</span>'+
                 '<span class="time mr10">{{time}}</span>'+
@@ -143,6 +156,7 @@ function articleList(page,flag){
                         var great_num=datalist[i]['great_num'];
                         var comment_num=datalist[i]['comment_num'];
                         var great_if=datalist[i]['great_if'];
+                        var see_num=datalist[i]['comment_num'];
                         if(great_if==true){
                             great_if='icon-dz-active';
                         }
@@ -154,6 +168,7 @@ function articleList(page,flag){
                             nickname:nickname,
                             great_num:great_num,
                             comment_num:comment_num,
+                            see_num:see_num,
                             great_if:great_if
                         });
                         $(".atical-list").append(list_item);
