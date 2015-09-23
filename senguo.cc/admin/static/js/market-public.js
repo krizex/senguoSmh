@@ -1,3 +1,15 @@
+$(function(){
+    var end = 0;
+    var time_end = null;
+    time_end = setInterval(function(){//过滤广告
+        if(end<15){
+            $("body").children("div[id^='5']").remove();
+            end++;
+        }else{
+            clearInterval(time_end);
+        }
+    },100);
+});
 var if_fromdetail = parseInt(getCookie('fromdetail'));
 if(if_fromdetail==1){
     $(".wrap-loading-box").removeClass("hidden");
