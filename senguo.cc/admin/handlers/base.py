@@ -447,7 +447,7 @@ class GlobalBaseHandler(BaseHandler):
 							else:
 								if end==0:
 									end=7
-								for week in weeks:
+								for week in eval(x.weeks):
 									if week>=begin and week<=end:
 										#在具体的周几的时间也要进行判断
 										begin_time=int((start_date+8*3600)%(24*3600))
