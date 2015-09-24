@@ -8,22 +8,6 @@
     <span>{{shop.shop_name}}</span>
     <a href="{{reverse_url('customerProfile')}}" class="head-right profile-center"><em></em></a>
 </div>
-<div class="header head_tab hide">
-    <a href="javascript:;" class="back bbs-menu" id="bbs-menu">所有版块</a>
-    <span>森果社区</span>
-    <a href="{{reverse_url('BbsSearch')}}" class="head-right search"><em></em></a>
-    <div class="wrap-menu-list h0">
-        <ul class="menu-list">
-            <li data-id="0">官方公告</li>
-            <li data-id="1">产品更新</li>
-            <li data-id="2">运营干货</li>
-            <li data-id="3">水果百科</li>
-            <li data-id="4">使用教程</li>
-            <li data-id="5">水果供求</li>
-            <li data-id="6">森果前沿</li>
-        </ul>
-    </div>
-</div>
 {% end %}
 {% block content %}
 {% set shop_status="" %}
@@ -59,8 +43,8 @@
         </dl>
     </div>
     <div class="white-box pm8">
-        <p class="box-title developing">
-            <a href="javascript:;" class="more fr">更多</a>
+        <p class="box-title">
+            <!-- <a href="javascript:;" class="more fr">更多</a> -->
             <span class="box-icon data-stat">数据统计</span>
         </p>
         <ul class="group stat-list">
@@ -84,44 +68,44 @@
     </div>
     <div class="white-box">
         <p class="box-title">
-            <a href="{{reverse_url('MadminOrder')}}" class="more fr">更多</a>
+            <a href="{{reverse_url('MadminOrder')}}?type=0" class="more fr">更多</a>
             <span class="box-icon data-order">订单管理</span>
         </p>
         <ul class="group stat-order-list pm8">
-            <a href="{{reverse_url('MadminOrder')}}">
+            <a href="javascript:;" url="{{reverse_url('MadminOrder')}}?type=0" class="order-links {% if not handler.current_shop.config.now_on %}forbid-in{% end %}" >
                 <li>
                     <p class="name">立即送</p>
                     <p class="num"><span class="tip-num">{{intime_count}}</span></p>
                 </li>
             </a>
-             <a href="{{reverse_url('MadminOrder')}}">
+             <a href="javascript:;" url="{{reverse_url('MadminOrder')}}?type=1" class="order-links {% if not handler.current_shop.config.ontime_on %}forbid-in{% end %}">
                 <li>
                     <p class="name">按时达</p>
                     <p class="num"><span class="tip-num">{{ontime_count}}</span></p>
                 </li>
             </a>
-            <a href="{{reverse_url('MadminOrder')}}">
+            <a href="javascript:;" url="{{reverse_url('MadminOrder')}}?type=2" class="order-links {% if not handler.current_shop.config.self_on %}forbid-in{% end %}">
                 <li>
                     <p class="name">自提</p>
                     <p class="num"><span class="tip-num">{{self_count}}</span></p>
                 </li>
             </a>
         </ul>
-        <a href="javascript:;" class="developing">
+        <a href="/madmin/goods">
             <p class="box-title btf5">
                 <span class="more fr">&nbsp;</span>
                 <span class="fr c000">{{goods_count}}</span>
                 <span class="box-icon data-goods">商品管理</span>
             </p>
         </a>
-        <a href="javascript:;"  class="developing">
+        <!-- <a href="javascript:;">
             <p class="box-title btf5">
                 <span class="more fr">&nbsp;</span>
                 <span class="fr c000">{{staff_count}}</span>
                 <span class="box-icon data-staff">员工管理</span>
             </p>
-        </a>
-        <a href="javascript:;"  class="developing">
+        </a> -->
+        <a href="/madmin/user">
             <p class="box-title btf5">
                 <span class="more fr">&nbsp;</span>
                 <span class="fr c000">{{shop.fans_count}}</span>
@@ -145,21 +129,14 @@
         </a>
     </div>
 </div>
-<div class="wrap-main pm80 main_tab hide">
-    <ul class="atical-list">
-
-    </ul>
-    <p class="loading txt-center c999 mt10"></p>
-</div>
 <div class="bm-tab header">
     <ul class="tab-bm-list group">
         <li class="active"><a href="javascript:;"><i class="box-icon ic-shop ic-shop-active"></i><span>店铺</span></a></li>
-        <li class=""><a href="javascript:;"><i class="box-icon ic-bbs"></i><span>社区</span></a></li>
+        <li class=""><a href="/bbs?id=100"><i class="box-icon ic-bbs"></i><span>社区</span></a></li>
     </ul>
 </div>
 {% end %}
 {% block bottom %}
 <script type="text/javascript" src="/static/js/template.js"></script>
 <script type="text/javascript" src="{{static_url('m-admin/js/profile.js')}}"></script>
-<script type="text/javascript" src="{{static_url('bbs/js/main.js')}}"></script>
 {% end %}

@@ -12,8 +12,18 @@ $(document).ready(function(){
     $(this).toggleClass("checked-box");
 }).on("click",".cancel-del-goods",function(){//撤销删除
     var id = $(this).closest(".goods-all-item").attr("data-id");
+    var $this=$(this);
+    if($this.attr("data-sta")=="1"){
+        return false;
+    }
+    $this.attr("data-sta","1");
     cancelDel(id);
 }).on("click","#batch-cancel",function(){//批量取消删除
+    var $this=$(this);
+    if($this.attr("data-sta")=="1"){
+        return false;
+    }
+    $this.attr("data-sta","1");
     cancelBatchDel();
 }).on("click",".pre-page",function(){//上页
     if(pn==0){

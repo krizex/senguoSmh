@@ -17,18 +17,29 @@
 </head>
 <body>
 {% set current_shop = handler.current_shop %}
-{% set _shop_auth = current_shop.shop_auth %}
-{% set num=0 %}
-{% for order in current_shop.orders %}
-    {% if order.type==1 and order.status==1 %}
-    {% set num=num+1%}
+{% set num1=0 %}
+{% set num2=0 %}
+{% set num3=0 %}
+{% set _shop_auth=0 %}
+{% if current_shop %}
+    {% set _shop_auth = current_shop.shop_auth %}
+    {% for order in current_shop.orders %}
+        {% if order.type==1 and order.status==1 %}
+        {% set num1=num1+1%}
+        {% end %}
+        {% if order.type==2 and order.status==1 %}
+        {% set num2=num2+1%}
+        {% end %}
+        {% if order.type==3 and order.status==1 %}
+        {% set num3=num3+1%}
+        {% end %}
     {% end %}
 {% end %}
 <header class="backstage-header header-fix">
     <div class="w1200 header-box">
         <div class="logo-con height50 pull-left">
             <a href="{{reverse_url('adminHome')}}" class="navbar-brand logo height50 padding-none">
-                <img src="/static/images/logo.png" class="height50"/>
+                <img src="/static/official_img/new_logo.png" class="height50"/>
             </a>
             <span class="title">后台管理系统</span>
             <span class="beta">beta 2.5</span>
@@ -42,13 +53,33 @@
                         <span>0</span>
                     </a>
                 </li>-->
+                {% if current_shop.config.now_on == True %}
                 <li class="active send-now line50">
                     <a href="{{reverse_url('adminOrder')}}?order_type=1">
                         <i class="send-img height50 pull-left"></i>
                         立即送
-                        <span class="on_sum" id="on_sum">{{num}}</span>
+                        <span class="on_sum" id="on_sum">{{num1}}</span>
                     </a>
                 </li>
+                {% end %}
+                {% if current_shop.config.ontime_on == True %}
+                <li class="active send-now line50">
+                    <a href="{{reverse_url('adminOrder')}}?order_type=2">
+                        <!-- <i class="send-img height50 pull-left"></i> -->
+                        按时达
+                        <span class="on_sum">{{num2}}</span>
+                    </a>
+                </li>
+                {% end %}
+                {% if current_shop.config.self_on == 1 %}
+                <li class="active send-now line50">
+                    <a href="{{reverse_url('adminOrder')}}?order_type=3">
+                       <!--  <i class="send-img height50 pull-left"></i> -->
+                        自提
+                        <span class="on_sum">{{num3}}</span>
+                    </a>
+                </li>
+                {% end %}
                 <!--<li class="line50">
                     <a href="javascript:;" class="developing">
                         <i class="message-img height50 pull-left"></i>
@@ -178,7 +209,7 @@
                 <span class="manage"><i></i>管理</span>
                 <a href="{{reverse_url('adminOrder')}}?order_type=1" class="{{order_active}} has-red-tip" data-action="order">订单管理<b class="red-tip hidden" id="order_ordernum">200</b></a>
                 <a href="{{reverse_url('adminGoods')}}" class="{{goods_active}}">商品管理</a>
-                <a href="{{reverse_url('adminStaffFollower')}}?action=all&&order_by=time&&page=0" class="{{user_active}} has-red-tip" data-action="user">用户管理<b class="red-tip hidden" id="user_usernum">5</b></a>
+                <a href="{{reverse_url('adminStaffFollower')}}" class="{{user_active}} has-red-tip" data-action="user">用户管理<b class="red-tip hidden" id="user_usernum">5</b></a>
                 <a href="{{reverse_url('adminStaffJH')}}?action=SH2" class="{{staff_active}} has-red-tip" data-action="staff">员工管理<b class="red-tip hidden" id="staff_staffnum">5</b></a>
                 <!--<a href="javascript:;" class="developing">财务管理</a>
                 <a href="javascript:;" class="developing">活动管理</a>-->

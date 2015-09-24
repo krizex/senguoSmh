@@ -331,29 +331,32 @@ $(document).ready(function(){
 
 }).on('click','.choose-btn',function(){
     var $this=$(this);
-    if($this.attr("data-flag")=="off") return false;
-    $this.attr("data-flag","off");
-    var id =$this.attr('data-id');
-    var url='';
-    var data={tpl_id:id};
-    var action="tpl_choose";
-    var args={
-        action:action,
-        data:data
-    };
-    $.postJson(url,args,
-        function(res){
-            if(res.success){
-                $this.attr("data-flag","on");
-                $this.addClass('active').parents('li').siblings('li').find('.choose-btn').removeClass('active');
-            }
-            else{
-                $this.attr("data-flag","on");
-                return Tip(res.error_text);
-            }
-        },
-        function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
-        );
+    if(confirm("确认切换商城模板吗？")){
+        if($this.attr("data-flag")=="off") return false;
+        $this.attr("data-flag","off");
+        var id =$this.attr('data-id');
+        var url='';
+        var data={tpl_id:id};
+        var action="tpl_choose";
+        var args={
+            action:action,
+            data:data
+        };
+        $.postJson(url,args,
+            function(res){
+                if(res.success){
+                    $this.attr("data-flag","on");
+                    $this.addClass('active').parents('li').siblings('li').find('.choose-btn').removeClass('active');
+                }
+                else{
+                    $this.attr("data-flag","on");
+                    return Tip(res.error_text);
+                }
+            },
+            function(){$this.attr("data-flag","on");Tip('网络好像不给力呢~ ( >O< ) ~');}
+            ); 
+    }
+   
 }).on('click','.pre-view',function(){
     var $this=$(this);
     $('.preview_box').modal('show');
@@ -387,5 +390,63 @@ $(document).ready(function(){
                 return Tip(res.error_text);
             }
         });
+}).on('click','.comment_active',function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var status=Int($this.attr('data-status'));
+    var url='/admin/config';
+    var action="comment_active";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                }
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                }
+            }
+            else{
+                Tip(res.error_text);
+                $this.attr("data-flag","on");
+            }
+        },
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
+}).on('click','.mp_active',function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="off") return false;
+    $this.attr("data-flag","off");
+    var status=Int($this.attr('data-status'));
+    var url='/admin/config';
+    var action="mp_active";
+    var args={
+        action:action,
+        data:''
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success){
+                $this.attr("data-flag","on");
+                if(status==1){
+                    $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                }
+                else if(status == 0){
+                    $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                }
+            }
+            else{
+                Tip(res.error_text);
+                $this.attr("data-flag","on");
+            }
+        },
+        function(){Tip('网络好像不给力呢~ ( >O< ) ~');}
+        );
 });
 var link='/admin/config';

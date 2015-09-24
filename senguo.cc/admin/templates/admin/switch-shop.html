@@ -22,7 +22,7 @@
     <div class="w1200 header-box">
         <div class="logo-con height50 pull-left">
             <a href="{{reverse_url('adminHome')}}" class="navbar-brand logo height50 padding-none">
-                <img src="/static/images/logo.png" class="height50"/>
+                <img src="/static/official_img/new_logo.png" class="height50"/>
             </a>
             <span class="title">后台管理系统</span>
             <span class="beta">beta 2.5</span>
@@ -54,32 +54,35 @@
 <main class="container mt100">
     <div class="s-container">
         <div class="sw-top">
-            <p>多店铺管理中心 {% if current_shop and current_shop.admin_id == current_user.id %}<a href="javascript:;" class="text-link" id="spread-list">推广店铺链接</a>{% end %}</p>
-            {% if current_shop %}
-            <div class="sw-er-tip po-list invisible">
-                <div class="left-arr">
-                    <span class="line1"></span>
-                    <span class="line2"></span>
-                </div>
-                <p class="er-text">店铺导航链接</p>
-                <div class="wrap-ipt">
-                    <input type="text" class="sw-link-txt" value="http://senguo.cc/list?action=shop&&id={{current_shop.admin_id}}" disabled/>
-                    <input type="button" class="sw-link-copy"  id="sw-link-copy" value="复制链接"/>
-                </div>
-                <div class="wrap-er group">
-                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
-                    <div class="er-text lh80 fl">链接二维码</div>
-                    <div class="er-img fl er-code-img">
-                    </div>
-                </div>
-            </div>
-            {% end %}
+            <p>多店铺管理中心</p>
         </div>
         <div class="sw-head">
             <p>每个管理员拥有一个唯一的属于自己的店铺列表和店铺导航链接。</p>
             <p>不论是您创建的店铺还是受其他店铺创建者邀请加入成为管理员的店铺都会显示在这个列表中。</p>
         </div>
         <div class="sw-bm">
+            <div class="sw-top2">
+                <p><span class="font14">我创建的店铺</span> {% if not context['super_admin'] %}(您还不是卖家，无法创建您自己的店铺){% else %}<a href="javascript:;" class="text-link ml10" id="spread-list">推广店铺链接</a><a href="{{reverse_url('switchshop')}}?action=del" class="del-shop-list pull-right text-link">已删除的店铺</a>{% end %}</p>
+                {% if current_shop %}
+                <div class="sw-er-tip po-list invisible">
+                    <div class="left-arr">
+                        <span class="line1"></span>
+                        <span class="line2"></span>
+                    </div>
+                    <p class="er-text">店铺导航链接</p>
+                    <div class="wrap-ipt">
+                        <input type="text" class="sw-link-txt" value="http://senguo.cc/list?action=shop&&id={{handler.current_user.id}}" disabled/>
+                        <input type="button" class="sw-link-copy"  id="sw-link-copy" value="复制链接"/>
+                    </div>
+                    <div class="wrap-er group">
+                        <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                        <div class="er-text lh80 fl">链接二维码</div>
+                        <div class="er-img fl er-code-img">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% end %}
             <ul class="sw-list group">
             {% for shop in context['shop_list']%}
                 <li class="da" data-id="{{shop['id']}}" data-code="{{shop['shop_code']}}">
@@ -113,7 +116,71 @@
                             <ul class="sw-attr group">
                                 <li>商品 {{shop['goods_count']}}件</li>
                                 <li>评价 {{shop['comment_count']}}条</li>
-                                <li>满意度 {{shop['satisfy']}}</li>
+                                <li>满意度 {{shop['shop_satisfy']}}</li>
+                                <li>粉丝 {{shop['fans_sum']}}个</li>
+                                <li>订单 {{shop['order_sum']}}个</li>
+                                <li>营业额 {{shop['total_money'] or 0}}元</li>
+                            </ul>
+                            <p class="text-grey9 sw-addre">店铺地址：{{shop['address']}}</p>
+                        </dd>
+                    </dl>
+                    {% else %}
+                    <dl class="group">
+                        <dt class="fl">
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
+                        </dt>
+                        <dd class="fl sw-listr">
+                            <p class="sw-title">{{shop['shop_name']}}</p>
+                            <p class="unauth">店铺预览暂时无法正常显示，<br>请进入<a href="/admin/config/shop" class="text-link forbid_click">店铺设置</a>进行相关设置。</p>
+                        </dd>
+                    </dl>
+                    {% end %}
+                    <a href="javascript:;" class="text-link del-shop forbid_click">删除</a>
+                </li>
+                {% end %}
+                <li>
+                    {% if context['super_admin'] %}
+                    <a href="{{reverse_url('CreateShop')}}" class="add-swshop">+ 创建店铺</a>
+                    {% else %}
+                    <a href="{{reverse_url('ApplyLogin')}}" class="add-swshop">申请成为卖家</a>
+                    {% end %}
+                </li>
+            </ul>
+            <p class="font14">我管理的店铺</p>
+             <ul class="sw-list group">
+            {% for shop in context['other_shop_list']%}
+                <li class="da" data-id="{{shop['id']}}" data-code="{{shop['shop_code']}}">
+                    {% if shop['shop_code'] !=None and shop['shop_code'] !='not set' %}
+                    <div class="sw-tip shopping" data-status="{{shop['status']}}"></div>
+                    <span class="sw-tip-txt"></span>
+                    <dl class="group">
+                        <dt class="fl">
+                            <img src="{{shop['shop_trademark_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/100/h/100" alt="{{shop['shop_name']}}"/>
+                            <a href="javascript:;" class="text-link spread-shop" data-url="{{reverse_url('Market',shop['shop_code'])}}">推广店铺</a>
+                            <div class="sw-er-tip invisible forbid_click">
+                                <div class="left-arr">
+                                    <span class="line1"></span>
+                                    <span class="line2"></span>
+                                </div>
+                                <p class="er-text">店铺导航链接</p>
+                                <div class="wrap-ipt">
+                                    <input type="text" class="sw-link-txt" value="http://senguo.cc/{{shop['shop_code']}}" disabled/>
+                                    <input type="button" class="sw-link-copy" value="复制链接"/>
+                                </div>
+                                <div class="wrap-er group">
+                                    <img class="er-logo" src="/static/images/favicon.ico" alt=""/>
+                                    <div class="er-text lh80 fl">链接二维码</div>
+                                    <div class="er-img fl er-code-img">
+                                    </div>
+                                </div>
+                            </div>
+                        </dt>
+                        <dd class="fl sw-listr">
+                            <p class="sw-title">{{shop['shop_name']}} <span class="auth hidden" data-auth="{{shop['shop_auth']}}"></span></p>
+                            <ul class="sw-attr group">
+                                <li>商品 {{shop['goods_count']}}件</li>
+                                <li>评价 {{shop['comment_count']}}条</li>
+                                <li>满意度 {{shop['shop_satisfy']}}</li>
                                 <li>粉丝 {{shop['fans_sum']}}个</li>
                                 <li>订单 {{shop['order_sum']}}个</li>
                                 <li>营业额 {{shop['total_money'] or 0}}元</li>
@@ -134,13 +201,24 @@
                     {% end %}
                 </li>
                 {% end %}
-                <li>
-                    <a href="{{reverse_url('CreateShop')}}" class="add-swshop">+ 创建店铺</a>
-                </li>
             </ul>
         </div>
     </div>
 </main>
+<div class="modal fade del-box" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog w400">
+        <div class="modal-content bg-white">
+            <div class="modal-body">
+                <p class="text-red font14">谨慎操作！不可撤销</p>
+                <p>店铺里有很多重要信息，确定删除吗？</p>
+            </div>
+            <div class="modal-footer text-center">
+                <button class="btn bg-green del-shop-sure text-white">确定</button>
+                <button class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+ </div>
 <div class="foot" id="footer">
     <ul class="links ft">
         <li class="links_item no_extra">

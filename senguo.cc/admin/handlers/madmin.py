@@ -14,57 +14,70 @@ import decimal
 
 # 移动后台 - 首页
 class Home(AdminBaseHandler):
+	def if_current_shops(self):
+		return True
+
+	@AdminBaseHandler.check_arguments("action?:str")
 	@tornado.web.authenticated
 	def get(self):
-		if self.is_pc_browser()==True:
-			return self.redirect(self.reverse_url("switchshop"))
+		# if self.is_pc_browser()==True:
+		#	return self.redirect(self.reverse_url("switchshop"))
 		shop_list = []
+		other_shop_list = []
 		try:
 			shops = self.current_user.shops
 		except:
 			shops = None
+		super_admin = self.session.query(models.ShopAdmin).filter_by(id=self.current_user.id,role=1).first()
+
 		try:
 			other_shops  = self.session.query(models.Shop).join(models.HireLink,models.Shop.id==models.HireLink.shop_id)\
 		.filter(models.HireLink.staff_id == self.current_user.accountinfo.id,models.HireLink.active==1,models.HireLink.work==9).all()
 		except:
 			other_shops = None
 		if shops:
+			shops = [x for x in shops if x.status>=0 ]
 			shop_list = self.getshop(shops)
+
 		if other_shops:
-			shop_list = self.getshop(other_shops)
-		return self.render("m-admin/shop-list.html", context=dict(shop_list=shop_list))
+			other_shop_list = self.getshop(other_shops)
+		return self.render("m-admin/shop-list.html", context=dict(shop_list=shop_list,other_shop_list=other_shop_list,super_admin=super_admin))
 	def getshop(self,shops):
 		shop_list = []
 		for shop in shops:
 			satisfy = 0
-			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id',  'wx_accountname','auth_change',
+			shop.__protected_props__ = ['admin', 'create_date_timestamp', 'admin_id', 'wx_accountname','auth_change',
 										'wx_nickname', 'wx_qr_code','wxapi_token','shop_balance',\
 										'alipay_account','alipay_account_name','available_balance',\
-										'new_follower_sum','new_order_sum']
-			orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
-			if orders:
-				commodity_quality = 0
-				send_speed = 0
-				shop_service = 0
-				q = self.session.query(func.avg(models.Order.commodity_quality),\
-					func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop.id).all()
-				if q[0][0]:
-					commodity_quality = int(q[0][0])
-				if q[0][1]:
-					send_speed = int(q[0][1])
-				if q[0][2]:
-					shop_service = int(q[0][2])
-				if commodity_quality and send_speed and shop_service:
-					satisfy = float((commodity_quality + send_speed + shop_service)/300)
-			comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
-			fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
-			mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
-			.filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
-			shop.satisfy = satisfy
-			shop.comment_count = comment_count
-			shop.goods_count = fruit_count
+										'new_follower_sum','new_order_sum','daily_sales','demand_fruits','shop_province',\
+										'shop_phone','shop_url','single_stock_size','spread_member_code','super_temp_active',\
+										'team_size','total_users','shop_start_timestamp','old_msg','onsale_fruits',\
+										'shop_property','shop_sales_range','shop_service_area','shop_tpl','deliver_area',\
+										'have_offline_entity','have_wx_mp','is_balance']
+			# orders = self.session.query(models.Order).filter_by(shop_id = shop.id ,status = 6).first()
+			# if orders:
+			# 	commodity_quality = 0
+			# 	send_speed = 0
+			# 	shop_service = 0
+			# 	q = self.session.query(func.avg(models.Order.commodity_quality),\
+			# 		func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop.id, models.Order.status.in_((6,7))).all()
+			# 	if q[0][0]:
+			# 		commodity_quality = int(q[0][0])
+			# 	if q[0][1]:
+			# 		send_speed = int(q[0][1])
+			# 	if q[0][2]:
+			# 		shop_service = int(q[0][2])
+			# 	if commodity_quality and send_speed and shop_service:
+			# 		satisfy = float((commodity_quality + send_speed + shop_service)/300)
+			# comment_count = self.session.query(models.Order).filter_by(shop_id = shop.id ,status =6).count()
+			# fruit_count = self.session.query(models.Fruit).filter_by(shop_id = shop.id,active = 1).count()
+			# mgoods_count =self.session.query(models.MGoods).join(models.Menu,models.MGoods.menu_id == models.Menu.id)\
+			# .filter(models.Menu.shop_id == shop.id,models.MGoods.active == 1).count()
+			# shop.satisfy = satisfy
+			# shop.comment_count = comment_count
+			# shop.goods_count = fruit_count
 			shop.fans_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=shop.id).count()
-			shop.satisfy = "%.0f%%"  %(round(decimal.Decimal(satisfy),2)*100)
+			shop.shop_satisfy = "%.0f%%"  %(round(decimal.Decimal(shop.satisfy),2)*100)
 			shop.order_sum = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
 			total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id).filter( or_(models.Order.status ==5,models.Order.status ==6 )).all()[0][0]
 			shop.total_money = self.session.query(func.sum(models.Order.totalPrice)).filter_by(shop_id = shop.id ,status =6).all()[0][0]
@@ -80,8 +93,8 @@ class Home(AdminBaseHandler):
 class Shop(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		if self.is_pc_browser()==True:
-			return self.redirect(self.reverse_url("adminHome"))
+		# if self.is_pc_browser()==True:
+		#	return self.redirect(self.reverse_url("adminHome"))
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			shop = self.session.query(models.Shop).filter_by(id=shop_id).first()
@@ -100,7 +113,8 @@ class Shop(AdminBaseHandler):
 		order_sum = self.session.query(models.Order).filter(models.Order.shop_id==self.current_shop.id,\
 			not_(models.Order.status.in_([-1,0]))).count()
 		new_order_sum = order_sum - (self.current_shop.new_order_sum or 0)
-
+		if new_order_sum < 0:
+			new_order_sum = 0
 		follower_sum = self.session.query(models.CustomerShopFollow).filter_by(shop_id=self.current_shop.id).count()
 		new_follower_sum = follower_sum - (self.current_shop.new_follower_sum or 0)
 		self.current_shop.new_follower_sum = follower_sum
@@ -120,7 +134,7 @@ class Shop(AdminBaseHandler):
 		self_count = order_list.filter_by(type=3,status=1).count()
 		comment_count = order_list.filter_by(status = 6).count()
 		staff_count = self.session.query(models.HireLink).filter_by(shop_id = shop.id,active=1).count()
-		goods_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
+		goods_count = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.active!=0).count()
 
 		return self.render("m-admin/shop-profile.html", new_order_sum=new_order_sum, order_sum=order_sum,
 						   new_follower_sum=new_follower_sum, follower_sum=follower_sum,show_balance = show_balance,\
@@ -131,7 +145,6 @@ class Shop(AdminBaseHandler):
 class Set(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		return self.render("m-admin/shop-set.html")
 
 # 移动后台 - 设置
@@ -139,7 +152,6 @@ class SetAttr(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("action","id?:int")
 	def get(self):
-		self.if_current_shops()
 		try:config = self.session.query(models.Config).filter_by(id=self.current_shop.id).one()
 		except:return self.send_error(404)
 		action= self.args["action"]
@@ -187,14 +199,12 @@ class SetAttr(AdminBaseHandler):
 class Address(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		return self.render("m-admin/shop-address.html")
 
 # 移动后台 - 店铺信息
 class Info(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		if self.get_secure_cookie("shop_id"):
 			shop_id = int(self.get_secure_cookie("shop_id").decode())
 			self.clear_cookie("shop_id", domain=ROOT_HOST_NAME)
@@ -216,14 +226,23 @@ class Info(AdminBaseHandler):
 class Order(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
-		return self.render("m-admin/order.html")
+		self_address_list=[]
+		try:
+			self_address=self.session.query(models.SelfAddress).filter_by(config_id=self.current_shop.config.id).\
+			filter(models.SelfAddress.active!=0).order_by(models.SelfAddress.if_default.desc()).all()
+		except:
+			self_address=None
+		if self_address:
+			try:
+				self_address_list=[x for x in self_address]
+			except:
+				self_address_list=None
+		return self.render("m-admin/order.html",self_address_list=self_address_list,)
 
 # 移动后台 - 订单详情
 class OrderDetail(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self,order_num):
-		self.if_current_shops()
 		# 根据url传入的订单号查询店铺
 		try:
 			order = self.session.query(models.Order).filter(models.Order.num==order_num).first()
@@ -277,7 +296,6 @@ class OrderDetail(AdminBaseHandler):
 class OrderSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		self.if_current_shops()
 		return self.render("m-admin/order-search.html")
 
 # 移动后台 - 评论
@@ -285,7 +303,6 @@ class Comment(AdminBaseHandler):
 	@tornado.web.authenticated
 	@AdminBaseHandler.check_arguments("page?:int")
 	def get(self):
-		self.if_current_shops()
 		customer_id = self.current_user.id
 		shop_id     = self.get_secure_cookie("shop_id")
 		shop_code = self.session.query(models.Shop).filter_by(id=shop_id).one().shop_code
@@ -296,7 +313,7 @@ class Comment(AdminBaseHandler):
 		orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
 		if orders:
 			q = self.session.query(func.avg(models.Order.commodity_quality),\
-				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
+				func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
 			if q[0][0]:
 				commodity_quality = int(q[0][0])
 			if q[0][1]:
@@ -331,27 +348,187 @@ class Comment(AdminBaseHandler):
 class Goods(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/goods.html")
-#商品搜索
+		shop_id = self.get_secure_cookie("shop_id")
+		data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						data.append({'id':0,'name':'','intro':'','num':default_count})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							first_text = _group.name[0:1]
+							data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count,"first_text":first_text})
+		else:
+			data.append({'id':0,'name':'','intro':'','num':default_count})
+		return self.render("m-admin/goods.html",data=data,record_count=record_count)
+
+# 商品搜索
 class GoodsSearch(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
 		return self.render("m-admin/goods-search.html")
-#商品新建
+
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("name:str")
+	def post(self):
+		if "name" not in self.args:
+			return self.send_error(403)
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		name = self.args["name"]
+		goods = self.session.query(models.Fruit).filter_by(shop_id=shop_id).filter(models.Fruit.name.like("%%%s%%" % name))
+		count = goods.count()
+		return self.send_success(count=count)
+
+# 商品新建
 class GoodsAdd(AdminBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		return self.render("m-admin/goods-add.html")
+		token = self.get_qiniu_token("shopAuth_cookie","goodsadd")
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		goods = self.session.query(models.Fruit).filter_by(shop_id = self.current_shop.id,active=1)
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						data.append({'id':0,'name':'','intro':'','num':default_count})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+		else:
+			data.append({'id':0,'name':'','intro':'','num':default_count})
+		return self.render("m-admin/goods-add.html",token=token,edit=False,data=data,record_count=record_count)
+
 #商品编辑
 class GoodsEdit(AdminBaseHandler):
 	@tornado.web.authenticated
+	def get(self,id):
+		token = self.get_qiniu_token("shopAuth_cookie","goodsedit")
+		shop_id = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		data = []
+		group_data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id,id=id).filter(models.Fruit.active!=0).all()
+		if not goods:
+			return self.send_error(404)
+		data = self.getGoodsData(goods,"one")
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						group_data.append({'id':0,'name':'','intro':''})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							group_data.append({'id':_group.id,'name':_group.name,'intro':_group.intro})
+		return self.render("m-admin/goods-edit.html",token=token,edit=True,data=data,group_data=group_data)
+
+# 批量管理
+class GoodsBatch(AdminBaseHandler):
+	@tornado.web.authenticated
+	@AdminBaseHandler.check_arguments("gid")
 	def get(self):
-		return self.render("m-admin/goods-edit.html")
+		if "gid" in self.args:
+			_id = int(self.args["gid"])
+		shop_id     = self.get_secure_cookie("shop_id")
+		if not shop_id :
+			return self.send_error(404)
+		group_data = []
+		goods = self.session.query(models.Fruit).filter_by(shop_id = shop_id).filter(models.Fruit.active!=0)
+		default_count = goods.filter_by(group_id=0).count()
+		record_count = goods.filter_by(group_id=-1).count()
+		group_priority = self.session.query(models.GroupPriority).filter_by(shop_id = shop_id).order_by(models.GroupPriority.priority).all()
+		if group_priority:
+			for g in group_priority:
+				group_id = g.group_id
+				if group_id != -1:
+					if group_id == 0:
+						group_data.append({'id':0,'name':'','intro':'','num':default_count})
+					else:
+						_group = self.session.query(models.GoodsGroup).filter_by(id=group_id,shop_id = shop_id,status = 1).first()
+						if _group:
+							goods_count = goods.filter_by( group_id = _group.id ).count()
+							group_data.append({'id':_group.id,'name':_group.name,'intro':_group.intro,'num':goods_count})
+		else:
+			group_data.append({'id':0,'name':'','intro':'','num':default_count})
+		group_goods = self.session.query(models.Fruit.id,models.Fruit.name,models.Fruit.img_url).filter(models.Fruit.active!=0).filter_by(shop_id=shop_id,group_id=_id).all()
+		goods_data = []
+		for good in group_goods:
+			if good[2]:
+				imgurl = good[2].split(";")[0]
+			else:
+				imgurl = ""
+			goods_data.append({"id":good[0],"name":good[1],"imgurl":imgurl})
+		return self.render("m-admin/goods-batch.html",group_data=group_data,goods_data=goods_data,record_count=record_count)
 
+# 用户管理
+class User(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user.html")
 
+# 用户详情
+class UserDetail(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self,_id):
+		try:
+			user=self.session.query(models.Customer,models.CustomerShopFollow)\
+			.join(models.CustomerShopFollow,models.Customer.id==models.CustomerShopFollow.customer_id)\
+			.filter(models.Customer.id==_id,models.CustomerShopFollow.shop_id==self.current_shop.id).first()
+		except:
+			user = None
+			return self.write("该用户不存在")
+		data={}
+		if user:
+			userinfo=user[0]
+			usershopinfo=user[1]
+			shop_names = self.session.query(models.Shop.shop_name,models.Shop.shop_trademark_url).join(models.CustomerShopFollow).\
+				filter(models.CustomerShopFollow.customer_id == _id).all()
+			birthday = datetime.datetime.fromtimestamp(userinfo.accountinfo.birthday).strftime('%Y-%m-%d') if userinfo.accountinfo.birthday else ""
+			data["id"]=userinfo.id
+			data["nickname"]=userinfo.accountinfo.nickname
+			data["headimgurl"]=userinfo.accountinfo.headimgurl_small
+			data["sex"]=userinfo.accountinfo.sex
+			data["realname"]=userinfo.accountinfo.realname
+			data["phone"]=userinfo.accountinfo.phone
+			data["birthday"]=birthday
+			data["address"]=userinfo.addresses
+			data["shop_point"]=usershopinfo.shop_point
+			data["shop_balance"]=usershopinfo.shop_balance
+			data["remark"]=usershopinfo.remark
+			data["shops"]=shop_names
+		return self.render("m-admin/user-detail.html",data=data)
 
-
-
+# 用户搜索
+class UserSearch(AdminBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		data = []
+		return self.render("m-admin/user-search.html")
 
 
 

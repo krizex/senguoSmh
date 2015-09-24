@@ -9,7 +9,7 @@ $(document).ready(function(){
 	login($this);
 }).on('keydown','#password',function(){
     if(window.event.keyCode == 13){
-        var $this=$(this);
+        var $this=$("#phoneLogin");
         $this.attr({'disabled':true});
         login($this);
     }
@@ -44,7 +44,9 @@ function login(target){
 		if(res.success){
 
 			if(next==''||!next){
-				window.location.href='/list';
+                if(res.come_from==0) window.location.href='/madmin';
+                else if (res.come_from==1) window.location.href='/customer/profile';
+                else window.location.href='/list';
 			}
 			else{
 				window.location.href=next;
@@ -65,5 +67,4 @@ function login(target){
 		return noticeBox('服务器貌似出错了~ ( >O< ) ~');
 	}
 	);
-
 }

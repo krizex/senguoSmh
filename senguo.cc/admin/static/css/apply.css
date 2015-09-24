@@ -19,7 +19,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 /*创建店铺*/
 .cancel-add-goods{display: inline-block;height: 18px;line-height: 18px;background-size: 18px;background-image: url('/static/images/admin_back.png');background-repeat: no-repeat;background-position: left center;text-indent: 22px;}
 .wrap-create{background-color: #fff;padding: 20px 0px 40px 0px;border: 1px solid #d9dadc;}
-.choose-text{padding-left: 10px;}
+.choose-text{padding-left: 20px;}
 .tab-list>li{float:left;border-bottom: 1px solid #f1f2f3;text-align: center;color: #333;height: 40px;line-height: 36px;padding: 0 10px;-webkit-box-sizing: border-box;cursor: pointer;}
 .tab-list>li span{display: inline-block;line-height: 14px;text-align: center;vertical-align: middle;}
 .tab-list .active{border-bottom-color: #41b546;border-bottom-width: 3px;}
@@ -62,7 +62,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .tab3{padding: 0 10px;}
 .choose-plant{position: relative;padding-left: 80px;}
 .choose-plant span{display: inline-block;position: absolute;top: 3px;left: 0;}
-.plant-list>li{float: left;white-space: nowrap;width: 80px;height: 20px;font-size:12px;margin-bottom: 6px;line-height: 20px;-webkit-box-sizing: border-box;padding-left: 15px;background-image: url('/static/images/radio.png');background-position: left center;background-size: 12px;background-repeat: no-repeat;}
+.plant-list>li{float: left;white-space: nowrap;width: 80px;height: 20px;font-size:12px;margin-bottom: 6px;line-height: 20px;-webkit-box-sizing: border-box;padding-left: 15px;background-image: url('/static/images/radio_uncheck.png');background-position: left center;background-size: 12px;background-repeat: no-repeat;}
 .plant-list .active{background-image: url('/static/images/radio_checked.png');}
 .sure-btn{width: 120px;}
 /*foot*/
@@ -73,6 +73,7 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
 .ft .links_item a {color: #f1f1f1;}
 
 .anchorBL{display: none !important;}
+.BMap_Marker>div{width: 38px !important;}
 /*media query*/
 /*当屏幕尺寸小于800px时*/
 @media screen and (max-width: 800px) {
@@ -91,7 +92,9 @@ table{width: 100%;border-collapse: collapse;table-layout: fixed;}
     .tdl{width: 40% !important;}
     .tdr{width: 60% !important;}
 }
-
+@media screen and (max-width: 340px) {
+    .wrap-map{height: 220px;}
+}
 /*override reset.css*/
 body{font-family:"Helvetica Neue","Hiragino Sans GB","Microsoft YaHei","\9ED1\4F53",Arial,sans-serif;color:#222;background:#e7e8eb;-webkit-font-smoothing:antialiased;overflow-x: hidden;line-height: 1.42857143;}
 .f14{font-size: 14px;}

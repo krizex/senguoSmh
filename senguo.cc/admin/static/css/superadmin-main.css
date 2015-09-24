@@ -33,6 +33,7 @@
 .account-num{display: inline-block;font-size: 14px;margin-right:20px;}
 .money-ipt{width: 200px;height: 30px;font-size: 14px;color: #333;border-radius: 2px;border: 1px solid #cecece;}
 .wrap-balance{width: 900px;float: right;}
+.wrap-refund{width: 900px;float: right;}
 .apply-lst{padding: 10px;}
 .apply-lst>li{float: left;padding-left:5px;width: 33.3%;cursor: pointer;}
 .apply-lst .active{border-left:2px solid #52b43f;}
@@ -80,9 +81,11 @@
 .btn-checked{background-color: #FFF ;color:#52b43f;border:none;width:60px;height: 35px;}
 .ipt-with100{width: 100px;}
 .mlf15-2{margin-left: 15px;}
-.btn-green{background:#009933;border:none;width: 100px;height:35px;color:white;}
+.btn-green{background:#009933;border:none;width: 100px;height:35px;color:white;padding: 6px 12px !important;}
+.btn-grey{background:#ddd;border:none;width: 100px;height:35px;color:#333 !important;padding:6px 12px !important;}
 .btn-white{background:#FFF;border:1px solid #E8E8E8;width:100px;height:35px;color:black;}
 .mlf170{margin-left: 170px;}
+.w30m0{width:33.3333%;margin:0 !important;}
 /**/
 
 /*add by jyj 2015-6-18*/
@@ -108,7 +111,7 @@
 /*.list-head{height: 30px;}*/
 /**/
 
-
+.no-record{font-size: 20px;text-align:center;margin-top: 30px;}
 
 
 

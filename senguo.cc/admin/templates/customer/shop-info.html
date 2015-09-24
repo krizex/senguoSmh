@@ -4,6 +4,16 @@
 <link rel="stylesheet" href="/static/css/baguetteBox.css"/>
 <link rel="stylesheet" href="{{static_url('css/market-shop.css')}}"/>
 {% end %}
+{% block topHeader %}
+    {% if handler.shop_tpl == 0 %}
+    <div class="rainshed text-center font18 text-black fix-title">店铺详情<a href="{{reverse_url('fruitzoneShopList')}}?action=shop&&id={{shop.admin_id}}" class="change-item"></a></div>
+    {% elif handler.shop_tpl == 1 %}
+    <div class="rainshed_beauty text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item"></a></div>
+    {% else %}
+    <div class="rainshed_bingo text-center font18 text-black fix-title">店铺详情<a href="http://senguo.cc/list?action=shop&&id={{shop.admin_id}}" class="change-item"></a></div>
+    {% end %}
+{% end %}
+
 {% block content %}
 {% set shop_auth ='' %}
 {% set color =''%}
@@ -16,7 +26,6 @@
 {% set color='bg-greyc' %}
 {% end %}
 <span id="shop_imgurl" data-img="{{shop_logo}}"></span>
-<div class="rainshed text-center font18 text-black fix-title bg_change">店铺详情</div>
 <div class="info1 bg-white clearfix mt42 pt20">
     <div class="shop-logo pull-left">
         <img src="{{shop.shop_trademark_url or '/static/images/TDSG.png'}}?imageView2/1/w/170/h/170">
@@ -69,8 +78,8 @@
 </div>
 <ul class="info2 text-center bg-white set-w100-fle font12 m-b10">
     <li class="w25 pull-left">
-        <p class="text-grey9 text-center">运营时间</p>
-        <p class="mt3 text-center">{{operate_days or 0}}天</p>
+        <p class="text-grey9 text-center">{% if shop.config.comment_active == 1 %}店铺评价{% else %}运营时间{% end %}</p>
+        <p class="mt3 text-center">{% if shop.config.comment_active == 1 %}{{comment_sum}}条{% else %}{{operate_days or 0}}天{% end %}</p>
     </li>
     <li class="w25 pull-left">
         <p class="text-grey9 text-center">粉丝</p>
@@ -109,7 +118,8 @@
         {% end %}
     </ul>
 </div>
-<div class="bg-white m-b10 clearfix pb0">
+{% if shop.config.comment_active == 1 %}
+    <div class="bg-white m-b10 clearfix pb0">
         <div class="clearfix box-style bm-line" id="show-more">
             <p class="pull-left font14"><em class="comment-icon set-inl-blo pull-left bg_change"></em><span class="comment-title set-inl-blo pull-left">店铺评价</span></p>
             <p class="comment-satisfy">
@@ -118,40 +128,41 @@
                 <a href="{{reverse_url('customerComment')}}?page=0" class="pull-right text-grey9 font14 m-r5">更多<i class="arr-right-comment pull-right"></i></a>
             </p>
         </div>
-    {% if comments %}
-    <ul class="point-com-lst">
-        {% for comment in comments %}
-        <li>
-            <dl class="ccom-item group">
-                <dd class="fl">
-                    <div class="wrap-img">
-                        <img src="{{comment[6] or '/static/images/TDSG.png'}}" width="50" height="50" alt="头像"/>
-                    </div>
-                </dd>
-                <dt class="fl">
-                <p class="mt4"><span class="nor-txt">{{comment[7]}}</span><span class="time-txt mr10 pull-right">{{handler.timedelta(comment[1])}}</span></p>
-                <p class="com-txt">{{comment[0] or '无'}}</p>
-                {% if comment[10] %}
-                <ul class="group com-goods-lst">
-                    {% for img in comment[10] %}
-                    <li>
-                        <a href="{{img}}" title=""><img src="{{img}}?imageView2/1/w/200/h/200" alt="晒单图片"/></a>
-                    </li>
+        {% if comments %}
+        <ul class="point-com-lst">
+            {% for comment in comments %}
+            <li>
+                <dl class="ccom-item group">
+                    <dd class="fl">
+                        <div class="wrap-img">
+                            <img src="{{comment[6] or '/static/images/TDSG.png'}}" width="50" height="50" alt="头像"/>
+                        </div>
+                    </dd>
+                    <dt class="fl">
+                    <p class="mt4"><span class="nor-txt">{{comment[7]}}</span><span class="time-txt mr10 pull-right">{{handler.timedelta(comment[1])}}</span></p>
+                    <p class="com-txt">{{comment[0] or '无'}}</p>
+                    {% if comment[10] %}
+                    <ul class="group com-goods-lst">
+                        {% for img in comment[10] %}
+                        <li>
+                            <a href="{{img}}?imageView2/5/w/640" title=""><img src="{{img}}?imageView2/1/w/200/h/200" alt="晒单图片"/></a>
+                        </li>
+                        {% end %}
+                    </ul>
                     {% end %}
-                </ul>
-                {% end %}
-                {% if comment[3] %}
-                <p class="reply-txt">商家回复：{{comment[3]}}</p>
-                {% end %}
-                </dt>
-            </dl>
-        </li>
+                    {% if comment[3] %}
+                    <p class="reply-txt">商家回复：{{comment[3]}}</p>
+                    {% end %}
+                    </dt>
+                </dl>
+            </li>
+            {% end %}
+        </ul>
+        {% else %}
+        <p class="no-txt">暂无评价！</p>
         {% end %}
-    </ul>
-    {% else %}
-    <p class="no-txt">暂无评价！</p>
-    {% end %}
-</div>
+    </div>
+{% end %}
 {% end %}
 {% block other %}
 <!--{% if not follow %}

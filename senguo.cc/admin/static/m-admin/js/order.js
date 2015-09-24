@@ -1,18 +1,43 @@
 var curStaff = null,width = 0,_page=0,_finished=true,nomore=false,swiper = null;
-$(document).ready(function(){
+$(document).ready(function () {
+    if(parseInt(cookie.getCookie("mdetail"))==1){
+        cookie.removeCookie("mdetail");
+        $('.wrap-loading-box').removeClass('hide');
+        $(".no-result").html("数据正在加载中...");
+        history.replaceState({foo:1},"订单管理",window.location.href+"&refresh=true");
+        window.location.reload();
+        return false;
+    }else{
+        if(!$.getUrlParam("refresh")){
+            cookie.removeCookie("mIndex");
+            cookie.removeCookie("mTop");
+        }
+    }
     $("html,body").addClass("h100");
     width = $(window).width();
-    $(".no-result").css("width",width);
-    var minheight = $(window).height()-80;
-    //$(".swiper-wrapper").width(width*$(".swiper-slide").size());
+    var minheight = $(window).height()-70;
     $(".order-lists").css({minHeight:minheight+"px"});
-
     $(".order-type-list .item").on("click",function(){
+        if($(this).hasClass("c999")){
+            Tip("该方式处于关闭状态，请开启后再查看");
+            return false;
+        }
         var index = $(this).index();
         var _type=parseInt($(this).attr('data-id'));
         if(_type==3){
-            return Tip('该功能正在开发中，敬请期待');
+            $(".second-item").html("等待自取");
+            $(".third-item").html("已完成");
+            $(".second-tab").addClass("mt40");
+            $(".wrap-self-choose").removeClass("hide");
+            $(".order-lists").addClass("pt40");
+        }else{
+            $(".second-item").html("处理中");
+            $(".third-item").html("已送达");
+            $(".wrap-self-choose").addClass("hide");
+            $(".second-tab").removeClass("mt40");
+            $(".order-lists").removeClass("pt40");
         }
+        history.replaceState({foo:1},"订单管理","/madmin/order?type="+index);
         $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
         $(".order-lists").eq($(".second-tab-list .active").index()).empty();
         _page=0;
@@ -24,11 +49,7 @@ $(document).ready(function(){
         $(".second-tab-list .tab-line").css("left",$(this).position().left);
         swiper.swipeTo(index);
         $(this).addClass('active').siblings(".item").removeClass("active");
-    });
-
-    $("#sure-staff").on("click",function(){
-        var staff_id=$(".staff-list>.active").attr("data-id");
-        orderEdit($(this),"edit_SH2",staff_id)
+        cookie.setCookie("mIndex",index);
     });
     swiper = new Swiper('#swiper-container',{
         mode: 'horizontal',
@@ -44,18 +65,41 @@ $(document).ready(function(){
             $(".second-tab-list .tab-line").css("left",$(".second-tab-list").children(".item").eq(index).position().left);
         }
     });
-    getOrder(0);
-    // swiper.swipeTo(0);
+    if($.getUrlParam("type")){
+        var index = parseInt($.getUrlParam("type"));
+        if(index==2){
+            $(".second-item").html("等待自取");
+            $(".third-item").html("已完成");
+            $(".second-tab").addClass("mt40");
+            $(".wrap-self-choose").removeClass("hide");
+            $(".order-lists").addClass("pt40");
+        }
+        $(".order-type-list .item").removeClass("active").eq(index).addClass("active");
+        $(".order-lists").eq($(".second-tab-list .active").index()).empty();
+        _page=0;
+        $(".order-type-list .tab-bg").css("left",33.3*index+"%");
+        if(cookie.getCookie("mIndex")){
+            var mIndex = parseInt(cookie.getCookie("mIndex"));
+            $(".second-tab-list .tab-line").css("left", $(".second-tab-list .item").eq(mIndex).position().left);
+            swiper.swipeTo(mIndex);
+            $(".second-tab-list .item").removeClass("active").eq(mIndex).addClass("active");
+        }
+        getOrder(0);
+    }
     if(nomore==false){
         scrollLoading();
     }
-
 }).on("click",".order-lists>li",function(e){//进入订单详情
     var $this=$(this);
     var num = $this.attr("data-num");
+    var scrollTop = $(".swiper-slide-active").scrollTop();
+    cookie.setCookie("mTop",scrollTop);
     if($(e.target).closest(".forbid_click").size()==0){
        window.location.href="/madmin/orderDetail/"+num;
     }
+}).on("click","#sure-staff",function(){
+    var staff_id=$(".staff-list>.active").attr("data-id");
+    orderEdit($(this),"edit_SH2",staff_id);
 }).on("click",".order-grade .task-staff",function(e){
     var $this=$(this);
     var status=parseInt($this.parents('.m-order-item').attr('data-status'));
@@ -70,8 +114,23 @@ $(document).ready(function(){
     var src = $(this).find("img").attr("src");
     $("#sure-staff").attr({"data-src":src,"data-tel":$(this).attr("data-tel")});
     $(".staff-list>li").removeClass("active").eq(index).addClass("active");
+}).on("click",".choose_self",function(){
+    var index = $(this).attr("data-index");
+    $(".self_list li").removeClass("active").eq(index).addClass("active");
+    $(".pop-self").removeClass("hide");
+}).on("click",".cancel-bbtn",function(){
+    $(this).closest(".pop-bwin").addClass("hide");
+}).on("click",".self_list li",function(){
+    var index = $(this).index();
+    $(".self_list li").removeClass("active").eq(index).addClass("active");
+}).on("click","#sure_self",function(){
+    var index = $(".self_list").children(".active").index();
+    var id = $(".self_list").children(".active").attr("data-id");
+    var name = $(".self_list").children(".active").html();
+    $(".choose_self").html(name).attr("data-id",id).attr("data-index",index);
+    getOrder(0,true);
+    $(".pop-self").addClass("hide");
 });
-
 var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" class="m-order-item" data-id="{{id}}">'+
                     '<p class="order-time item">下单时间 : {{create_date}}</p>'+
                     '<ul class="order-content">'+
@@ -102,7 +161,7 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                                     '</a>'+
                                 '</div>'+
                                 '<div class="order-status-txt {{left}} forbid_click">'+
-                                    '<a class="task-staff {{color}}" href="javascript:;">{{sender_name}}</a><a class="{{tel_show}}" href="tel:{{staff_phone}}">拨号</a>'+
+                                    '<a class="task-staff {{color}}" href="javascript:;">{{sender_name}}</a><a class="tel-block {{tel_show}}" href="tel:{{staff_phone}}">拨号</a>'+
                                 '</div>'+
                             '</div>'+
                         '</div>'+
@@ -117,7 +176,6 @@ var order_item='<li data-num="{{order_num}}" data-status="{{order_status}}" clas
                         '</ul>'+
                     '</ul>'+
                 '</li>';
-
 function scrollLoading(){
     $('.swiper-slide').scroll(function(){
         var $this=$(this);
@@ -137,7 +195,7 @@ function scrollLoading(){
     });
 }
 
-var getOrder=function(page){
+var getOrder=function(page,flag){
     $('.wrap-loading-box').removeClass('hide');
     if(!page){
         var page = 0;
@@ -147,6 +205,9 @@ var getOrder=function(page){
     var order_status=$('.second-tab-list .active').attr('data-id');
     var index=$('.second-tab-list .active').index();
     var url='/admin/order?order_type='+order_type+'&order_status='+order_status+'&page='+page;
+    if(order_type==3){
+        url = url+'&self_id='+$(".choose_self").attr("data-id");//自提
+    }
     $.ajax({
         url:url,
         type:"get",
@@ -154,6 +215,9 @@ var getOrder=function(page){
             if(res.success){
                 var data=res.data;
                 nomore=res.nomore;
+                if(flag){
+                    $('.order-lists').eq(index).empty();
+                }
                 if(data.length==0){
                     $('.wrap-loading-box').addClass('hide');
                     $(".no-result").html("没有更多订单了");
@@ -183,6 +247,7 @@ var getOrder=function(page){
                     var hide='show';
                     var tel_show='hide';
                     var color="c999";
+                    var online_type=data[i]['online_type'];
 
                     if(data[i]['SH2']){
                         var staff_img=data[i]['SH2']['headimgurl'] || '/static/images/TDSG.png';
@@ -199,8 +264,13 @@ var getOrder=function(page){
                         pay_type = "余额支付";
                     }else{
                         pay_type = "在线支付";
+                        if(online_type=="wx"){
+                            pay_type = "在线支付-微信";
+                        }else if(online_type=="alipay"){
+                            pay_type = "在线支付-支付宝";
+                        }
                     }
-                     switch (order_status){
+                    switch (order_status){
                         case -1:
                             $("#status-txt").text('未支付');
                             width='order-w0';
@@ -279,6 +349,11 @@ var getOrder=function(page){
                 }
                 _finished=true;
                 $('.wrap-loading-box').addClass('hide');
+                if(cookie.getCookie("mTop")){
+                    var mTop = parseInt(cookie.getCookie("mTop"));
+                    $(".swiper-slide-active")[0].scrollTop=mTop;
+                    cookie.removeCookie("mTop");
+                }
             }
             else {
                 $('.wrap-loading-box').addClass('hide');
@@ -297,6 +372,9 @@ function orderEdit(target,action,content){
     data={order_id:order_id};
     if(action=='edit_SH2')
     {
+        if(!content){
+            return Tip("请选择员工");
+        }
         data.staff_id=parseInt(content);
     }
     args={

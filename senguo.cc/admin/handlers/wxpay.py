@@ -47,20 +47,22 @@ try:
 except ImportError:
     pycurl = None
 
+from settings import MP_APPID, MP_APPSECRET
 
 class WxPayConf_pub(object):
     """配置账号信息"""
 
     #=======【基本信息设置】=====================================
     #微信公众号身份的唯一标识。审核通过后，在微信发送的邮件中查看
-    APPID = "wx0ed17cdc9020a96e"
+    APPID = MP_APPID #   "wx0ed17cdc9020a96e"
     #JSAPI接口中获取openid，审核后在公众平台开启开发模式后可查看
-    APPSECRET = "cef2c4c6a59e6d0ae8b5a3f741a9c788"
+    APPSECRET = MP_APPSECRET  # "cef2c4c6a59e6d0ae8b5a3f741a9c788"
     #受理商ID，身份标识
     MCHID = "10023430"
     #商户支付密钥Key。审核通过后，在微信发送的邮件中查看
     KEY = "af8164b968911db7567f98b73122dbc3"
-   
+
+    #商户号:1223121101
 
     #=======【异步通知url设置】===================================
     #异步通知url，商户根据实际开发过程设定
@@ -72,8 +74,8 @@ class WxPayConf_pub(object):
 
     #=======【证书路径设置】=====================================
     #证书路径,注意应该填写绝对路径
-    SSLCERT_PATH = "/******/cacert/apiclient_cert.pem"
-    SSLKEY_PATH = "/******/cacert/apiclient_key.pem"
+    SSLCERT_PATH = "/home/monk/www/senguo2.0/senguo.cc/admin/libs/cacert/apiclient_cert.pem"
+    SSLKEY_PATH = "/home/monk/www/senguo2.0/senguo.cc/admin/libs/cacert/apiclient_key.pem"
 
     #=======【curl超时设置】===================================
     CURL_TIMEOUT = 30
@@ -147,7 +149,7 @@ class CurlClient(object):
         #post提交方式
         if post:
             self.curl.setopt(pycurl.POST, True)
-            self.curl.setopt(pycurl.POSTFIELDS, xml)
+            self.curl.setopt(pycurl.POSTFIELDS, xml.encode('utf-8'))
         buff = StringIO()
         self.curl.setopt(pycurl.WRITEFUNCTION, buff.write)
 
@@ -377,7 +379,7 @@ class UnifiedOrder_pub(Wxpay_client_pub):
         """获取prepay_id"""
         self.postXml()
         self.result = self.xmlToArray(self.response)
-        # print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
+        #print("[微信支付]获取到prepay_id了吗？",self.result,'self.result**************')
         prepay_id = self.result["prepay_id"]
         return prepay_id
 
@@ -446,8 +448,8 @@ class RefundQuery_pub(Wxpay_client_pub):
 
     def createXml(self):
         """生成接口参数xml"""
-        if any(self.parameters[key] is None for key in ("out_refund_no", "out_trade_no", "transaction_id", "refund_id")):
-            raise ValueError("missing parameter")
+        # if any(self.parameters[key] is None for key in ("out_refund_no", "out_trade_no", "transaction_id", "refund_id")):
+        #     raise ValueError("missing parameter")
         self.parameters["appid"] = WxPayConf_pub.APPID  #公众账号ID
         self.parameters["mch_id"] = WxPayConf_pub.MCHID  #商户号
         self.parameters["nonce_str"] = self.createNoncestr()  #随机字符串
@@ -460,6 +462,19 @@ class RefundQuery_pub(Wxpay_client_pub):
         self.result = self.xmlToArray(self.response)
         return self.result
 
+class CloseOrder_pub(Wxpay_client_pub):
+    ''' 订单关闭接口 '''
+    def __init__(self,timeout=WxPayConf_pub.CURL_TIMEOUT):
+        self.url = 'https://api.mch.weixin.qq.com/pay/closeorder'
+        self.curl_timeout = timeout
+        super(CloseOrder_pub,self).__init__()
+
+    def createXml(self):
+        self.parameters["appid"] = WxPayConf_pub.APPID
+        self.parameters["mch_id"]=WxPayConf_pub.MCHID
+        self.parameters["nonce_str"] = self.createNoncestr()
+        self.parameters["sign"] = self.getSign(self.parameters)
+        return self.arrayToXml(self.parameters)
 
 class DownloadBill_pub(Wxpay_client_pub):
     """对账单接口"""
@@ -478,6 +493,7 @@ class DownloadBill_pub(Wxpay_client_pub):
 
         self.parameters["appid"] = WxPayConf_pub.APPID  #公众账号ID
         self.parameters["mch_id"] = WxPayConf_pub.MCHID  #商户号
+        self.parameters["bill_type"] = 'ALL'
         self.parameters["nonce_str"] = self.createNoncestr()  #随机字符串
         self.parameters["sign"] = self.getSign(self.parameters)  #签名
         return  self.arrayToXml(self.parameters)

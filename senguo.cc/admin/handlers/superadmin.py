@@ -3,18 +3,22 @@ import dal.models as models
 import tornado.web
 import time, datetime
 from settings import ROOT_HOST_NAME
-from sqlalchemy import exists, func, extract, DATE, desc,or_
+from sqlalchemy import exists, func, extract, DATE, desc,or_,distinct,and_,not_
 from dal.dis_dict import dis_dict
 from libs.msgverify import check_msg_token,get_access_token,user_subscribe,shop_auth_msg,shop_auth_fail_msg
 
 #add by jyj 2015-6-15
-from sqlalchemy import func, desc, and_, or_, exists,not_
 import operator
 ##
 
 ############################
 # added by woody  2015.3.6
 import requests
+
+# add by sunmh
+import tornado.gen
+from tornado.concurrent import run_on_executor
+from concurrent.futures import ThreadPoolExecutor
 
 # 登录处理
 class Access(SuperBaseHandler):
@@ -63,41 +67,7 @@ class ShopAdminManage(SuperBaseHandler):
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
 		return self.redirect('/super/shopManage?action=all_temp&search&shop_auth=2&shop_status=1&shop_sort_key=1&if_reverse=1&page=1&flag=1')
-		offset = (self.args.get("page", 1)-1) * self._page_count
-		try:
-		    q = self.session.query(models.ShopAdmin)
-		except:
-		    return self.send_error('error')
-		q_all = q
-		t = int(time.time())
-		q_using = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
-						 models.ShopAdmin.expire_time > t)
-		q_expire = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SYSTEM_USER,
-						 models.ShopAdmin.expire_time <= t)
-		q_common = q.filter(models.ShopAdmin.role == models.SHOPADMIN_ROLE_TYPE.SHOP_OWNER)
-		count = {
-			"all":q.count(),
-			"using":q_using.count(),
-			"expire":q_expire.count(),
-			"common":q_common.count()
-			}
 
-		if self._action == "all":
-			pass
-		elif self._action == "using":
-			q = q_using
-		elif self._action == "expire":
-			q = q_expire
-		elif self._action == "common":
-			q = q_common
-		else:
-			return self.send_error(404)
-		# 排序规则id, offset 和 limit
-		q = q.order_by(models.ShopAdmin.id.desc()).offset(offset).limit(self._page_count)
-
-		admins = q.all()
-		# admins 是models.ShopAdmin的实例的列表，具体属性可以去dal/models.py中看到
-		return self.render("superAdmin/shop-admin-manage.html", context=dict(admins = admins, count=count,sunpage='shopAadminManage',action=self._action))
 	@tornado.web.authenticated
 	def post(self):
 		return self.send_error(404)
@@ -135,138 +105,167 @@ class ShopManage(SuperBaseHandler):
 	_page_count = 20
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action","search","shop_auth:int","shop_status:int","shop_status:int","shop_sort_key:int","if_reverse:int","page?:int","flag:int")
+	@SuperBaseHandler.check_arguments("action","page?:int","flag?:int")
 	def get(self):
-		action = self.args["action"]
-		flag=self.args["flag"]
-
 		# woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
-
 		# level = 1
 		# shop_province = 420000
+		if level != 1 and level !=0:
+			return self.send_fail('level error')
 
+		q_temp = self.session.query(models.ShopTemp)
+		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
+		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
+		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
+		if level == 0:
+			comment = self.session.query(models.Order.id).filter(models.Order.status == 6).count()
+			auth_apply=self.session.query(models.ShopAuthenticate.id).filter_by(has_done = 0).count()
+			shop_count = self.session.query(models.Shop.id).count()
+		elif level == 1:
+			comment = self.session.query(models.Order.id).join(models.Shop,models.Order.shop_id == models.Shop.id).\
+				filter(models.Shop.shop_province==shop_province,models.Order.status==6).count()
+			auth_apply=self.session.query(models.ShopAuthenticate.id).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id).\
+				filter(models.Shop.shop_province==shop_province,models.ShopAuthenticate.has_done==0).distinct(models.ShopAuthenticate.id).count()
+			shop_count = self.session.query(models.Shop.id).filter_by(shop_province=shop_province).count()
+		# 获取 入驻申请：所有，申请中，已通过和已拒绝的店铺数量
+		#	  所有店铺，店铺评论，店铺认证申请的数量
+		count = {
+			"all_temp": q_temp.count(),
+			"applying": q_applying.count(),
+			"accepted": q_accepted.count(),
+			"declined": q_declined.count(),
+			"all":shop_count,
+			"comment":comment,
+			"auth_apply":auth_apply
+		}
+
+		action = self.args["action"]
+		# 根据action来进行区分处理
+		if action == "all_temp":
+			q = q_temp
+		elif action == "applying":
+			q = q_applying
+		elif action == "accepted":
+			q = q_accepted
+		elif action == "declined":
+			q = q_declined
+		elif action == "all":
+			flag=self.args["flag"]
+			# 获取不同店铺状态下的店铺数量
+			output_data_count=self.__getShopCountInDiffStatus(level,shop_province)
+			# 获取需要返回到前台的店铺信息，
+			output_data=self.__getShopInfo(level,shop_province)
+			if output_data==[]:
+				return self.send_error(404)
+			if flag==1:
+				return self.render("superAdmin/shop-manage.html",level=level,output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
+			else :
+				return self.send_success(output_data=output_data,level=level,output_data_count=output_data_count)
+		else:
+			return self.send_error(404)
+		offset = (self.args.get("page", 1) - 1) * self._page_count
+
+		# 排序规则id, offset 和 limit
+		q = q.order_by(models.ShopTemp.id.desc()).offset(offset).limit(self._page_count)
+
+		shops = q.all()
+		return self.render("superAdmin/apply-manage.html",level=level,context=dict(
+				shops = shops,subpage='apply', action=action,
+				count=count))
+
+	# 获取不同店铺状态的店铺数量，和不同认证状态下的店铺数量
+	# add commit by sunmh 2015年09月19日17:13:29
+	@SuperBaseHandler.check_arguments("action","search","shop_auth:int","shop_status:int","shop_status:int","shop_sort_key:int","if_reverse:int","page?:int","flag:int")
+	def __getShopCountInDiffStatus(self,level,shop_province):
 		if level == 0:
 			#add by jyj 2015-6-16
 			output_data_count = {}
-			output_data_count["status_5_count"] = self.session.query(models.Shop).count()
-			output_data_count["status_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_code == 'not set').count()
-			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2).count()
-			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1).count()
-			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3).count()
-			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0).count()
+			output_data_count["status_5_count"] = self.session.query(models.Shop.id).count()
+			output_data_count["status_4_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_code == 'not set').count()
+			output_data_count["status_2_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 2).count()
+			output_data_count["status_1_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 1).count()
+			output_data_count["status_3_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 3).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 0).count() - output_data_count["status_4_count"]
 
-			output_data_count["auth_4_count"] = self.session.query(models.Shop).count()
-			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
+			output_data_count["auth_4_count"] = self.session.query(models.Shop.id).count()
+			output_data_count["auth_3_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth.in_([1,2,3,4])).count()
 
-			output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4])).count()
-			output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3])).count()
-			output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0).count()
-
-			# print("[SuperShopManage]output_data_count:",output_data_count)
-			##
+			output_data_count["auth_2_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth.in_([1,4])).count()
+			output_data_count["auth_1_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth.in_([2,3])).count()
+			output_data_count["auth_0_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth == 0).count()
 
 		elif level == 1:
 			output_data_count = {}
-			output_data_count["status_5_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
-			output_data_count["status_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_code == 'not set',models.Shop.shop_province==shop_province).count()
-			output_data_count["status_2_count"] = self.session.query(models.Shop).filter(models.Shop.status == 2,models.Shop.shop_province==shop_province).count()
-			output_data_count["status_1_count"] = self.session.query(models.Shop).filter(models.Shop.status == 1,models.Shop.shop_province==shop_province).count()
-			output_data_count["status_3_count"] = self.session.query(models.Shop).filter(models.Shop.status == 3,models.Shop.shop_province==shop_province).count()
-			output_data_count["status_0_count"] = self.session.query(models.Shop).filter(models.Shop.status == 0,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_5_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_province==shop_province).count()
+			output_data_count["status_4_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_code == 'not set',models.Shop.shop_province==shop_province).count()
+			output_data_count["status_2_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 2,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_1_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 1,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_3_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 3,models.Shop.shop_province==shop_province).count()
+			output_data_count["status_0_count"] = self.session.query(models.Shop.id).filter(models.Shop.status == 0,models.Shop.shop_province==shop_province).count() - output_data_count["status_4_count"]
 
-			output_data_count["auth_4_count"] = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province).count()
-			output_data_count["auth_3_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,2,3,4]),models.Shop.shop_province==shop_province).count()
+			output_data_count["auth_4_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_province==shop_province).count()
+			output_data_count["auth_3_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth.in_([1,2,3,4]),models.Shop.shop_province==shop_province).count()
 
-			output_data_count["auth_2_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([1,4]),models.Shop.shop_province==shop_province).count()
-			output_data_count["auth_1_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth.in_([2,3]),models.Shop.shop_province==shop_province).count()
-			output_data_count["auth_0_count"] = self.session.query(models.Shop).filter(models.Shop.shop_auth == 0,models.Shop.shop_province==shop_province).count()
-		else:
-			return self.send_fail('level error')
+			output_data_count["auth_2_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth.in_([1,4]),models.Shop.shop_province==shop_province).count()
+			output_data_count["auth_1_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth.in_([2,3]),models.Shop.shop_province==shop_province).count()
+			output_data_count["auth_0_count"] = self.session.query(models.Shop.id).filter(models.Shop.shop_auth == 0,models.Shop.shop_province==shop_province).count()
+		return output_data_count
 
-		#add 6.6pm search(根据店铺号或店铺名搜索的功能):
-		if 'search' in self.args:
-			from sqlalchemy.sql import or_
-			search = self.args["search"]
-			if search == '':
-				if level == 0:
-					q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
-					shops = q.order_by(models.Shop.id).all()
-				elif level == 1:
-					q = self.session.query(models.Shop).filter_by(shop_province=shop_province)
-					shops = q.order_by(models.Shop.id).all()
-				else:
-					return self.send_fail('level error')
-			else:
-				if level == 0:
-					q = self.session.query(models.Shop).filter(or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
-					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
-					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
-					shops = q
-				elif level == 1:
-					q = self.session.query(models.Shop).filter(models.Shop.shop_province==shop_province,or_(models.Shop.shop_name.like("%{0}%".format(self.args["search"])),
-					  	models.Shop.shop_code.like("%{0}%".format(self.args["search"]))),\
-					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-					   	models.Shop.shop_code !='not set',models.Shop.status !=0).all()
-					shops = q
-				else:
-					return self.send_fail('level error')
 
-		else:
-		#add6.4pm
-			if level == 0:
-				q = self.session.query(models.Shop)  #把所有店铺查询出来，存放在q中
-				shops = q.order_by(models.Shop.id).all()
-			elif level == 1:
-				q = self.session.query(models.Shop).filter_by(shop_province=shop_province)
-				shops = q.order_by(models.Shop.id).all()
-			else:
-				return self.send_fail('level error')
+	# 前端所有店铺标签点击时，返回需要展示到页面的信息
+	def __getShopInfo(self,level,shop_province):
 		shop_auth = self.args["shop_auth"]
 		shop_status = self.args["shop_status"]
 		shop_sort_key = self.args["shop_sort_key"]
 		if_reverse = self.args["if_reverse"]
 		page_num = self.args["page"]
 		if_reverse_val = [False,True]
-		##
-
 		offset = (self.args.get("page", 1) - 1) * self._page_count
-
-		#add6.5pm shop_auth:
+		output_data = []
+		# 获取所有店铺
+		q = self.session.query(models.Shop)  
+		if level == 1:
+			q = q.filter_by(shop_province=shop_province)
+		# 如果有搜索，加上进一步的过滤
+		if 'search' in self.args:
+			search = self.args["search"]
+			if search !="":
+				q=q.filter(or_(models.Shop.shop_name.like("%{0}%".format(search)),
+					  	models.Shop.shop_code.like("%{0}%".format(search))),\
+					  	models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
+					   	models.Shop.shop_code !='not set')
+		# 根据店铺认证状态进行过滤
 		if shop_auth == 4:
 			pass
 		elif shop_auth == 3:
-			shops = [x for x in shops if x.shop_auth in [1,2,3,4]]
+			q=q.filter(models.Shop.shop_auth.in_([1,2,3,4]))
 		elif shop_auth == 2:
-			shops = [x for x in shops if x.shop_auth in [1,4]]
+			q=q.filter(models.Shop.shop_auth.in_([1,4]))
 		elif shop_auth == 1:
-			shops = [x for x in shops if x.shop_auth in [2,3]]
+			q=q.filter(models.Shop.shop_auth.in_([2,3]))
 		elif shop_auth == 0:
-			shops = [x for x in shops if x.shop_auth == 0]
+			q=q.filter(models.Shop.shop_auth.in_([0]))
 		else:
-			return self.send_error(404)
-		##
-		# print("[SuperShopManage]shops count:",len(shops))
-
-		# add6.5pm shop_status:
+			return output_data
+		# 根据店铺的状态进行过滤
 		if shop_status == 5:
 			pass
 		elif shop_status == 4:
-			shops = [x for x in shops if x.shop_code=="not set"]
+			q=q.filter(models.Shop.shop_code =='not set')
 		elif shop_status == 3:
-			shops = [x for x in shops if x.status==3]
+			q=q.filter(models.Shop.status ==3)
 		elif shop_status == 2:
-			shops = [x for x in shops if x.status==2]
+			q=q.filter(models.Shop.status ==2)
 		elif shop_status == 1:
-			shops = [x for x in shops if x.status==1]
+			q=q.filter(models.Shop.status ==1)
 		elif shop_status == 0:
-			shops = [x for x in shops if x.status==0]
+			q=q.filter(models.Shop.status ==0)
 		else:
-			return self.send_error(404)
-		##
-		# print("[SuperShopManage]shops count:",len(shops))
+			return output_data
+
+		shops = q.order_by(models.Shop.id).all()
 
 		#add 6.4pm sort:
 		if shop_sort_key == 0:
@@ -298,170 +297,150 @@ class ShopManage(SuperBaseHandler):
 			pass
 		##
 
-		#add 6.6pm by jyj,search_count:
-		search_count = len(shops)
+		#add6.4 pm
+		shops = shops[20*page_num-20:20*page_num:1]
 		##
-		q_temp = self.session.query(models.ShopTemp)
-		q_applying = q_temp.filter_by(shop_status=models.SHOP_STATUS.APPLYING)
-		q_declined = q_temp.filter_by(shop_status=models.SHOP_STATUS.DECLINED)
-		q_accepted = q_temp.filter_by(shop_status=models.SHOP_STATUS.ACCEPTED)
 
-		if level == 0:
-			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
-			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
-			shop_count = self.session.query(models.Shop).count()
-		elif level == 1:
-			comment = self.session.query(models.Order).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(
-				models.Shop.shop_province==shop_province,models.Order.status==6).count()
+		
+		for shop in shops:
+			data = {}
+			####################
+			# user's subscribe
+			####################
+			account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
+			wx_openid = account_info.wx_openid
+			# subscribe = user_subscribe(wx_openid)
+			data["subscribe"] = account_info.subscribe
 
-			auth_apply=self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
-				).filter(models.Shop.shop_province==shop_province,models.ShopAuthenticate.has_done==0).distinct(models.ShopAuthenticate.id).count()
-			shop_count = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
-		else:
-			return self.send_fail('level error')
+			data["shop_trademark_url"] = shop.shop_trademark_url
+			data["shop_name"] = shop.shop_name
+			data["city"] = self.code_to_text('shop_city', shop.shop_city)
+			data["staff_count"] = len(shop.staffs)
+			data["follower_count"] = shop.fans_count
+			data["old_user"] = self.session.query(models.Customer.id).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
+			data["shop_tpl"] = shop.shop_tpl+1
+			data["admin_name"] = shop.admin.accountinfo.realname
+			data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
+									fromtimestamp(shop.create_date_timestamp)).days
+			data["order_count"] = shop.order_count
+			data["price_sum"] = shop.shop_property
 
-		count = {
-			"all_temp": q_temp.count(),
-			"applying": q_applying.count(),
-			"accepted": q_accepted.count(),
-			"declined": q_declined.count(),
+			#add 6.8am by jyj
+			if shop.order_count == 0:
+				single_price = 0
+			else:
+				single_price = shop.shop_property/shop.order_count
+			single_price = format(single_price,".2f")
+			data["single_price"] = single_price
+			data["available_balance"] = shop.available_balance
 
-			#change 6.6pm by jyj
-			#old:"all" : q.count(),
-			"all":shop_count,
+			auth_type_array = ['未认证','个人认证','企业认证','企业认证','个人认证']
+			data["auth_type"] = auth_type_array[shop.shop_auth]
+
+			data["admin_nickname"] = shop.admin.accountinfo.nickname
+
+			# added by jyj 2015-8-7
+			data["admin_id"] = shop.admin.accountinfo.id
+			# #
+			shop_city = self.code_to_text("city",shop.shop_city)
+			shop_province = self.code_to_text("province",shop.shop_province)
+			shop_address_detail=shop.shop_address_detail
+			# 如果地址没有省市的信息就将省市的信息加到地址前面,先判断市,再判断省,因为会存在市和省相同的情况，避免加重复了
+			# sunmh 2015年09月16日
+			if shop_address_detail.find(shop_city)==-1:
+				shop_address_detail=shop_city+shop_address_detail
+			if shop_address_detail.find(shop_province)==-1:
+				shop_address_detail=shop_province+shop_address_detail				
+			data["shop_address_detail"] =shop_address_detail
+			data["shop_code"] = shop.shop_code
+			shop_status_array = ['关闭','营业中','筹备中','休息中']
+
+			data["shop_shop_status"] = shop_status_array[shop.status]
+
+			create_date_trans = self.session.query(func.from_unixtime(shop.create_date_timestamp)).scalar()
+			data["create_date"] = self.session.query(func.date_format(create_date_trans,'%Y-%m-%d %H:%i:%s')).scalar()
+
+			data["old_msg"] = shop.old_msg
+
+			#satisfy
+			satisfy = 0.0
+			shop_id = shop.id
+			data["shop_id"] = shop_id
+			orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
+			commodity_quality = 0
+			send_speed = 0
+			shop_service = 0
+			if orders:
+				q = self.session.query(func.avg(models.Order.commodity_quality),\
+					func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter(models.Order.shop_id == shop_id,models.Order.status.in_((6,7))).all()
+				if q[0][0]:
+					commodity_quality = int(q[0][0])
+				if q[0][1]:
+					send_speed = int(q[0][1])
+				if q[0][2]:
+					shop_service = int(q[0][2])
+				if commodity_quality and send_speed and shop_service:
+					satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
+				else:
+					satisfy = format(1,'.0%')
+			data["satisfy"] = satisfy
+
+			data["order_count"] = shop.order_count
+
+			#chang by jyj 2015-6-16
+			data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
 			##
 
-			"comment":comment,
-			"auth_apply":auth_apply
-			}
-		if action == "all_temp":
-			q = q_temp
-		elif action == "applying":
-			q = q_applying
-		elif action == "accepted":
-			q = q_accepted
-		elif action == "declined":
-			q = q_declined
-		elif action == "all":
+			data["shop_property"] = shop.shop_property
 
-			#add6.4 pm
-			shops = shops[20*page_num-20:20*page_num:1]
-			##
+			if shop.order_count == 0:
+				single_price = 0
+			else:
+				single_price = shop.shop_property/shop.order_count
+			single_price = format(single_price,".2f")
+			data["single_price"] = single_price
 
-			output_data = []
-			for shop in shops:
-				data = {}
-				####################
-				# user's subscribe
-				####################
-				account_info = self.session.query(models.Accountinfo).get(shop.admin_id)
-				wx_openid = account_info.wx_openid
-				# subscribe = user_subscribe(wx_openid)
-				data["subscribe"] = account_info.subscribe
+			data["available_balance"] = shop.available_balance
+			data["fans_count"] = shop.fans_count
 
-				data["shop_trademark_url"] = shop.shop_trademark_url
-				data["shop_name"] = shop.shop_name
-				data["city"] = self.code_to_text('shop_city', shop.shop_city)
-				data["staff_count"] = len(shop.staffs)
-				data["follower_count"] = shop.fans_count
-				data["old_user"] = self.session.query(models.Customer).join(models.CustomerShopFollow).filter(models.CustomerShopFollow.shop_id == shop.id,models.CustomerShopFollow.shop_new == 1).count()
-				data["admin_name"] = shop.admin.accountinfo.realname
-				data["operate_days"] = (datetime.datetime.now() - datetime.datetime.
-										fromtimestamp(shop.create_date_timestamp)).days
-				data["order_count"] = shop.order_count
-				data["price_sum"] = shop.shop_property
+			# 计算店铺的购买转换率和重复购买率
+			# modified by sunmh
+			fans_count=shop.fans_count
+			purchase_count=self.session.query(models.Order.customer_id).filter(models.Order.status.in_([5,6,7,10]),models.Order.shop_id==shop_id).distinct().count()
+			purchase_twice_count=self.session.query(models.Order.customer_id).\
+									filter(models.Order.shop_id==shop_id,models.Order.status.in_([5,6,7,10])).\
+									group_by(models.Order.customer_id).\
+									having(func.count(models.Order.customer_id) > 1).count()
+			if purchase_count==0:
+				data["repeatPurRate"]=0
+			else:
+				data["repeatPurRate"]=format(purchase_twice_count/purchase_count,'.2%')
 
-				#add 6.8am by jyj]
-				if shop.order_count == 0:
-					single_price = 0
-				else:
-					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".2f")
-				data["single_price"] = single_price
-				data["available_balance"] = shop.available_balance
+			if fans_count==0:
+				data["purchaseConverRate"]=0
+			else:
+				data["purchaseConverRate"]=format(purchase_count/fans_count,'.2%')
 
-				auth_type_array = ['未认证','个人认证','企业认证','企业认证','个人认证']
-				data["auth_type"] = auth_type_array[shop.shop_auth]
-
-				data["admin_nickname"] = shop.admin.accountinfo.nickname
-				data["shop_address_detail"] = shop.shop_address_detail
-				data["shop_code"] = shop.shop_code
-				shop_status_array = ['关闭','营业中','筹备中','休息中']
-
-				data["shop_shop_status"] = shop_status_array[shop.status]
-
-				create_date_trans = self.session.query(func.from_unixtime(shop.create_date_timestamp)).scalar()
-				data["create_date"] = self.session.query(func.date_format(create_date_trans,'%Y-%m-%d %H:%i:%s')).scalar()
-
-				data["old_msg"] = shop.old_msg
-
-				#satisfy
-				satisfy = 0.0
-				shop_id = shop.id
-				orders = self.session.query(models.Order).filter_by(shop_id = shop_id ,status =6).first()
-				commodity_quality = 0
-				send_speed = 0
-				shop_service = 0
-				if orders:
-					q = self.session.query(func.avg(models.Order.commodity_quality),\
-						func.avg(models.Order.send_speed),func.avg(models.Order.shop_service)).filter_by(shop_id = shop_id).all()
-					if q[0][0]:
-						commodity_quality = int(q[0][0])
-					if q[0][1]:
-						send_speed = int(q[0][1])
-					if q[0][2]:
-						shop_service = int(q[0][2])
-					if commodity_quality and send_speed and shop_service:
-						satisfy = format((commodity_quality + send_speed + shop_service)/300,'.0%')
-					else:
-						satisfy = format(1,'.0%')
-				data["satisfy"] = satisfy
-
-				data["order_count"] = shop.order_count
-
-				#chang by jyj 2015-6-16
-				data["goods_count"] = self.session.query(models.Fruit).filter_by(shop_id=shop_id, active=1).count()
-				##
-
-				data["shop_property"] = shop.shop_property
-
-				if shop.order_count == 0:
-					single_price = 0
-				else:
-					single_price = shop.shop_property/shop.order_count
-				single_price = format(single_price,".2f")
-				data["single_price"] = single_price
-
-				data["available_balance"] = shop.available_balance
-				data["fans_count"] = shop.fans_count
-				output_data.append(data)
-
-			if flag==1:
-				return self.render("superAdmin/shop-manage.html",level=level,output_data=output_data,output_data_count=output_data_count,context=dict(subpage='all',action=action,count=count))
-			else :
-				return self.send_success(output_data=output_data,level=level,output_data_count=output_data_count)
-
-		else:
-			return self.send_error(404)
-
-		# 排序规则id, offset 和 limit
-		q = q.order_by(models.ShopTemp.id.desc()).offset(offset).limit(self._page_count)
-
-		shops = q.all()
-		# shops 是models.Shop实例的列表
-
-		return self.render("superAdmin/apply-manage.html",level=level,context=dict(
-				shops = shops,subpage='apply', action=action,
-				count=count))
+			output_data.append(data)
+		return output_data
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("action")
+	@SuperBaseHandler.check_arguments("action","code?")
 	def post(self):
 		action = self.args["action"]
 		if action == "updateShopStatus":
 			self.handle_updateStatus()
 		elif action == "shopclose":
 			self.handle_shopclose()
+		# 进入店铺后台
+		elif action == "getin":
+			# print(self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0])
+			try:
+				shop_id=self.session.query(models.Shop.id).filter_by(shop_code= self.args["code"]).first()[0]
+			except:
+				return self.send_error(403)
+			self.set_secure_cookie("shop_id", str(shop_id))
+			return self.send_success()
 		else:
 			return self.send(400)
 
@@ -494,11 +473,11 @@ class ShopManage(SuperBaseHandler):
 			shop_frist = shops.first()
 			if shop_frist:
 				if shop_frist.shop_auth==0:
-					return self.send_fail("该商家第一个店铺还未进行认证")
+					return self.send_fail("该商家首个店铺还未进行认证")
 				elif shop_frist.shop_auth in [1,4] and shops.count() >= 5:
-					return self.send_fail("该商家第首个店铺为个人认证,最多只可申请5个店铺")
+					return self.send_fail("该商家首个店铺为个人认证，最多只可申请5个店铺")
 				elif shop_frist.shop_auth in [2,3] and shops.count() >= 15:
-					return self.send_fail("该商家第首个店铺为企业认证,最多只可申请15个店铺")
+					return self.send_fail("该商家首个店铺为企业认证，最多只可申请15个店铺")
 
 		if self.args["new_status"] == models.SHOP_STATUS.DECLINED:
 			shop_temp.update(self.session, shop_status=3,
@@ -605,10 +584,11 @@ class ShopManage(SuperBaseHandler):
 				content = message_content)
 			headers = dict(Host = '106.ihuyi.cn',connection="close")
 			r = requests.post(url,data = postdata , headers = headers)
+			
+			# 发送微信模板消息通知用户
 			# test_openid = 'o5SQ5tyC5Ab_g6PP2uaJV1xe2AZQ'
-
 			WxOauth2.post_template_msg(account_info.wx_openid, shop_temp.shop_name,
-									   account_info.realname, account_info.phone)  # 发送微信模板消息通知用户
+									   account_info.realname, account_info.phone)
 		return self.send_success()
 
 class Feedback(SuperBaseHandler):
@@ -657,6 +637,7 @@ class OrderManage(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("page?:int")
 	def get(self):
+		level = self.current_user.level
 		q_all = self.session.query(models.SystemOrder).filter_by(
 			order_status = models.SYS_ORDER_STATUS.SUCCESS)
 		q_new = q_all.filter_by(have_read=False)
@@ -689,13 +670,11 @@ class OrderManage(SuperBaseHandler):
 		orders = q.all()
 		subpage = self._action
 
-		return self.render("superAdmin/order-manage.html", context=dict(
+		return self.render("superAdmin/order-manage.html",level=level, context=dict(
 			orders = orders,subpage = subpage,count=count))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments("order_id:int", "system_username",
-									  "system_password","system_code" ,
-									  "action")
+	@SuperBaseHandler.check_arguments("order_id:int", "system_username","system_password","system_code" ,"action")
 	def post(self):
 		if self.args["action"] == "set_read":
 			o = self.session.query(models.SystemOrder).\
@@ -720,18 +699,24 @@ class User(SuperBaseHandler):
 		level = self.current_user.level
 		shop_province = self.current_user.province
 		# print("[SuperUser]shop_province:",shop_province)
+		sum = {}
 		if level == 0:
-			q = self.session.query(models.Accountinfo)
+			q = self.session.query(models.Accountinfo.id)
+			sum["admin"] = self.session.query(models.Shop.admin_id).group_by(models.Shop.admin_id).count()
+			sum['customer'] = self.session.query(models.Customer.id).count()
 		elif level == 1:
 			shop_province = self.code_to_text('province',shop_province)
 			shop_province = shop_province[0:len(shop_province)-1]
-			q = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			q = self.session.query(models.Accountinfo.id).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			sum["admin"] = self.session.query(models.Shop.admin_id).join(models.Accountinfo,models.Shop.admin_id==models.Accountinfo.id).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).group_by(models.Shop.admin_id).count()
+			sum["customer"] = self.session.query(models.Customer.id).join(models.Accountinfo,models.Accountinfo.id==models.Customer.id).filter(
+				models.Accountinfo.wx_province.like('{0}'.format(shop_province))).group_by(models.Customer.id).count()
 		else:
 			return self.send_fail('level error')
-		sum = {}
 		sum["all"] = q.count()
-		sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
-		sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
+		# sum["admin"] = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).count()
+		# sum["customer"] = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id)).count()
 		sum["phone"] = q.filter(models.Accountinfo.phone != '').count()
 		return self.render("superAdmin/user.html", sum=sum,level=level, context=dict(subpage='user'))
 
@@ -744,40 +729,38 @@ class User(SuperBaseHandler):
 		#woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
+
+		if level != 0 and level != 1:
+			return self.send_fail('level error')
 		# print("[SuperUser]shop_province:",shop_province)
-		if level == 0:
-			#change by jyj 2015-6-22
-			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
-					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
-					models.Accountinfo.birthday,"%Y-%m-%d")).order_by(desc(models.Accountinfo.id))
-		elif level == 1:
+		q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
+				models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,
+				func.FROM_UNIXTIME(models.Accountinfo.birthday,"%Y-%m-%d"),models.Accountinfo.wx_username)
+		if level == 1:
 			# shop_province = 420000
 			shop_province = self.code_to_text('province',shop_province)  #将省由code转换为汉字
 			shop_province = shop_province[0:len(shop_province)-1]        #去掉‘省’字
-			q = self.session.query(models.Accountinfo.id,models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.sex,
-					models.Accountinfo.wx_province,models.Accountinfo.wx_city,models.Accountinfo.phone,func.FROM_UNIXTIME(
-					models.Accountinfo.birthday,"%Y-%m-%d")).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).order_by(desc(models.Accountinfo.id))
-		else:
-			return self.send_fail('level error')
-		##
+			q = q.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+
 		if action == "all":
 			pass
 		elif action == "admin":
-			q = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id))
-			# print("[SuperUser]q.count():",q.count())
+			q = q.join(models.Shop,models.Accountinfo.id == models.Shop.admin_id)
 		elif action == "customer":
-			q = q.filter(exists().where(models.Accountinfo.id == models.CustomerShopFollow.customer_id))
-			# print("[SuperUser]q.count():",q.count())
+			q=q.join(models.Customer,models.Accountinfo.id == models.Customer.id)
 		elif action == "phone":
 			q = q.filter(models.Accountinfo.phone != '')
-			# print("[SuperUser]q.count():",q.count())
 		# add by jyj 2015-6-23:
 		elif action == "search":
 			inputinfo = self.args["inputinfo"]
 			q = q.filter(or_(models.Accountinfo.nickname.like("%{0}%".format(inputinfo)),(func.concat(models.Accountinfo.id,'')).like("%{0}%".format(inputinfo))))
+		# added by jyj 2015-8-7:
+		elif action == "out_link":
+			admin_id = int(self.args["inputinfo"])
+			q = q.filter(models.Accountinfo.id == admin_id)
 		else:
 			return self.send_error(404)
-		users = q.offset(page*page_size).limit(page_size).all()
+		users = q.order_by(desc(models.Accountinfo.id)).offset(page*page_size).limit(page_size).all()
 		for i in range(len(users)):
 			f_names = self.session.query(models.Shop.id, models.Shop.shop_code,models.Shop.shop_name).\
 				join(models.CustomerShopFollow).\
@@ -798,7 +781,10 @@ class User(SuperBaseHandler):
 		return self.send_success(data=users)
 
 # 统计 - 用户增长
+# modified by sunmh 2015年09月04日19:36:03
 class IncStatic(SuperBaseHandler):
+	executor = ThreadPoolExecutor(2)
+
 	@tornado.web.authenticated
 	def get(self):
 		# woody
@@ -806,90 +792,302 @@ class IncStatic(SuperBaseHandler):
 		return self.render("superAdmin/count-user.html",level = level, context=dict(subpage='count',subcount='user'))
 
 	@tornado.web.authenticated
+	@tornado.web.asynchronous
+	@tornado.gen.engine
 	@SuperBaseHandler.check_arguments("action:str")
 	def post(self):
 		action = self.args["action"]
-		if action == "curve":
-			return self.curve()
+		if action == "user_trend":
+			#return self.user_trend()
+			yield self.user_trend()
 		else:
-			return self.error(404)
+			#return self.error(404)
+			yield self.error(404)
+		self.finish()
 
-	@SuperBaseHandler.check_arguments("page:int")
-	def curve(self):
-		page = self.args["page"]
-
-		if page == 0:
-			now = datetime.datetime.now()
-			start_date = datetime.datetime(now.year, now.month, 1)
-			end_date =datetime.datetime(now.year,now.month,now.day,23,59,59)
-			# print("[SuperIncStatic]end_date:",end_date)
-		else:
-			date = self.monthdelta(datetime.datetime.now(), page)
-			start_date = datetime.datetime(date.year, date.month, 1)
-			end_date = datetime.datetime(date.year, date.month, date.day,23,59,59)
-			# print("[SuperIncStatic]end_date:",end_date)
-
-		# woody 8.4
+	@run_on_executor
+	@SuperBaseHandler.check_arguments("action:str","type:int","current_year?:str","current_month?:str")
+	def user_trend(self):
 		level = self.current_user.level
+		if level != 0 and level != 1:
+			return self.send_fail('level error')
+
 		shop_province = self.current_user.province
-		# level = 1
-		# shop_province = 420000
 		if shop_province:
 			shop_province = self.code_to_text('province',shop_province)
 			shop_province = shop_province[0:len(shop_province)-1]
+		# level = 1
+		# shop_province = 420000
+
+		type = self.args["type"]
+		current_year = self.args['current_year']
+		#type=1表示按天来进行排序,只取当前月份的
+		if type == 1:
+			#先初始化要用的变量
+			current_month = self.args['current_month']
+			#1.定义query和join部分
+			q_all=self.session.query(func.count(distinct(models.Accountinfo.id)),func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_admin=q_all.join(models.Shop,models.Accountinfo.id == models.Shop.admin_id)
+			q_customer=q_all.join(models.Customer,models.Accountinfo.id == models.Customer.id)
+			q_range=self.session.query(func.day(func.now()))
+			#2.定义filter部分
+			q_all=q_all.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y-%m')==current_year+'-'+current_month)
+			q_admin=q_admin.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y-%m')==current_year+'-'+current_month)
+			q_customer=q_customer.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y-%m')==current_year+'-'+current_month)
+			if level==1:
+				q_all=q_all.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_admin=q_admin.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_customer=q_customer.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			q_phone=q_all.filter(models.Accountinfo.phone != '')
+			#3.定义group部分
+			q_all=q_all.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_admin=q_admin.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_customer=q_customer.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+			q_phone=q_phone.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%d'))
+		#type=2表示按周来进行排序，取全年的所有周的数据
+		elif type==2:	
+			#1.定义query和join部分
+			q_all=self.session.query(func.count(distinct(models.Accountinfo.id)),func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_admin=q_all.join(models.Shop,models.Accountinfo.id == models.Shop.admin_id)
+			q_customer=q_all.join(models.Customer,models.Accountinfo.id == models.Customer.id)
+			q_range=self.session.query(func.week(func.now(),1))
+			#2.定义filter部分
+			q_all=q_all.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_admin=q_admin.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_customer=q_customer.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			if level==1:
+				q_all=q_all.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_admin=q_admin.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_customer=q_customer.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			q_phone=q_all.filter(models.Accountinfo.phone != '')
+			#3.定义group部分
+			q_all=q_all.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_admin=q_admin.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_customer=q_customer.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+			q_phone=q_phone.group_by(func.week(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp),1))
+		#type=3表示按月来进行排序，取全年的所有月份的数据
+		elif type==3:
+			#1.定义query和join部分
+			q_all=self.session.query(func.count(distinct(models.Accountinfo.id)),func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_admin=q_all.join(models.Shop,models.Accountinfo.id == models.Shop.admin_id)
+			q_customer=q_all.join(models.Customer,models.Accountinfo.id == models.Customer.id)
+			q_range=self.session.query(func.month(func.now()))
+			#2.定义filter部分
+			q_all=q_all.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_admin=q_admin.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			q_customer=q_customer.filter(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%Y')==current_year)
+			if level==1:
+				q_all=q_all.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_admin=q_admin.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+				q_customer=q_customer.filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)))
+			q_phone=q_all.filter(models.Accountinfo.phone != '')
+			#3.定义group部分
+			q_all=q_all.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_admin=q_admin.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_customer=q_customer.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+			q_phone=q_phone.group_by(func.FROM_UNIXTIME(models.Accountinfo.create_date_timestamp,'%m'))
+		else:
+			return self.send_error(404)
+
+		data = []
+		now=datetime.datetime.now()
+		#数组的大小
+		if type==1 and int(current_year) == now.year and int(current_month) == now.month:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif type==1:
+			if current_month in ('01','03','05','07','08','10','12'):
+				rangeOfArray=31
+			elif current_month in ('04','06','09','11'):
+				rangeOfArray=30
+			elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
+				rangeOfArray=29
+			else:
+				rangeOfArray=28
+		elif (type==2 or type==3) and int(current_year) == now.year:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif type==2:
+			rangeOfArray=52
+		else:
+			rangeOfArray=12
+
+		#初始化返回的数组
+		for x in range(0, rangeOfArray):
+			data.append({'admin': 0, 'customer': 0, 'phone': 0,'all':0,'addup':0})
+
+		#组装数组
+		def assembleArray(s_type,q_infos):
+			for info in q_infos:
+				index = int(info[1])-1
+				value = info[0]
+				data[index][s_type] = value
+
+		assembleArray('admin',q_admin.all())
+		assembleArray('customer',q_customer.all())
+		assembleArray('phone',q_phone.all())
+		assembleArray('all',q_all.all())
+
+		#modified by sunmh 计算total时，需要加上过滤条件
+		#表中包含时间戳为0的数据，不统计这些数据 sunmh 
+		begin_date=datetime.datetime(1970,1,1,8,0,0)
 		if level == 0:
-			q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
-				filter(models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
-					   models.Accountinfo.create_date_timestamp < end_date.timestamp())
+			if type==1:
+				end_date=datetime.datetime(int(current_year),int(current_month),rangeOfArray,23,59,59)
+			else:
+				end_date=datetime.datetime(int(current_year),12,31,23,59,59)
+			total = self.session.query(models.Accountinfo.id).\
+					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).filter(models.Accountinfo.create_date_timestamp > begin_date.timestamp()).count()
 		elif level == 1:
-			q = self.session.query(models.Accountinfo.id, models.Accountinfo.create_date_timestamp).\
-				filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province)),models.Accountinfo.create_date_timestamp >= start_date.timestamp(),
-					   models.Accountinfo.create_date_timestamp < end_date.timestamp())
+			if type==1:
+				end_date=datetime.datetime(int(current_year),int(current_month),rangeOfArray,23,59,59)
+			else:
+				end_date=datetime.datetime(int(current_year),12,31,23,59,59)
+			total = self.session.query(models.Accountinfo.id).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).\
+					filter(models.Accountinfo.create_date_timestamp < end_date.timestamp()).filter(models.Accountinfo.create_date_timestamp > begin_date.timestamp()).count()
 		else:
 			return self.send_fail('level error')
-			
-		all_infos = q.all()
-		admin_infos = q.filter(exists().where(models.Accountinfo.id == models.Shop.admin_id)).all()  # 至少有一家店铺
-		customer_infos = q.filter(exists().where(models.Accountinfo.id == models.Customer.id)).all()
-		phone_infos = q.filter(models.Accountinfo.phone != '').all()
+		#计算累计用户数
+		for x in range(0, rangeOfArray)[::-1]:
+			data[x]['addup'] = total
+			total -= data[x]['all']
 
-		data = {}
-		for x in range(1, end_date.day+1):  # 初始化数据
-			data[x] = {1: 0, 2: 0, 3: 0, 4: 0, 5: 0}
+		return self.send_success(data=data)
 
-		def count(infos, i):
-			for info in infos:
-				day = datetime.datetime.fromtimestamp(info[1]).day
-				data[day][i] += 1
+# 统计 - 余额统计
+# add by sunmh 2015年09月01日11:26:57
+class AmountStatic(SuperBaseHandler):
+	@tornado.web.authenticated
+	def get(self):
+		level = self.current_user.level
+		return self.render("superAdmin/count-amount.html",level=level, context=dict(subpage='count',subcount='amount'))
 
-		count(all_infos, 1)
-		count(admin_infos, 2)
-		count(customer_infos, 3)
-		count(phone_infos, 4)
-		if level == 0:
-			total = self.session.query(models.Accountinfo).count()
-		elif level == 1:
-			total = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).count()
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments("action:str")
+	def post(self):
+		action = self.args["action"]
+		if action == "amount_trend":
+			return self.amount_trend()
 		else:
-			return self.send_fail('level error')
+			return self.error(404)
 
-		for x in range(1, end_date.day+1)[::-1]:
-			data[x][5] = total
-			total -= data[x][1]
-		l = []
-		for key in data:
-			l.append((end_date.strftime('%Y-%m-') + str(key), key, data[key][1],
-					  data[key][2], data[key][3], data[key][4], data[key][5]))
-		if level == 0:
-			first_info = self.session.query(models.Accountinfo).first()
-		elif level == 1:
-			first_info = self.session.query(models.Accountinfo).filter(models.Accountinfo.wx_province.like('{0}'.format(shop_province))).first()
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments("action:str","type:int","current_year?:str","current_month?:str")
+	def amount_trend(self):
+		type = self.args["type"]
+		
+		#type=1表示按天来进行排序,只取当前月份的
+		if type == 1:  
+			current_year = self.args['current_year']
+			current_month = self.args['current_month']
+			if len(current_month)<2:
+				current_month='0'+current_month
+			#print(current_month,current_year,'Test')
+			#current_month='12'
+
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type.in_([0,3]))
+			# 按天分组，获取所有进入平台的金额
+			#q_total=q.filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			# 按天分组，获取所有的从微信进入平台的金额
+			q_wechat=q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			# 按天分组，获取所有的从支付宝进入平台的金额
+			q_alipay=q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+
+			# 按天分组,获取从微信退款的钱
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
+					filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).\
+					group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			# 按天分组,获取从支付包退款的钱
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.day(models.BalanceHistory.create_time)).\
+					filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y-%m')==current_year+'-'+current_month).\
+					group_by(func.date_format(models.BalanceHistory.create_time,'%Y-%m-%d'))
+			q_range=self.session.query(func.day(func.now()))
+			#print(q_range.all()[0][0])
+		elif type==2:	#type=2表示按周来进行排序，取全年的所有周的数据
+			#修改，每周是按照周一到周日来算的，所以要给week的第二个参数赋值 sunmh 2015年09月03日14:52:14
+			current_year = self.args['current_year']
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
+				filter(models.BalanceHistory.balance_type.in_([0,3]))
+			#q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.week(models.BalanceHistory.create_time,1))
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
+				filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.week(models.BalanceHistory.create_time,1))
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.week(models.BalanceHistory.create_time,1)).\
+				filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.week(models.BalanceHistory.create_time,1))
+			q_range=self.session.query(func.week(func.now(),1))
+			#print(q_range.all())
+		elif type==3:	#type=3表示按月来进行排序，取全年的所有月份的数据
+			current_year = self.args['current_year']
+			q = self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type.in_([0,3]))
+			#q_total = q.filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
+			q_wechat = q.filter(models.BalanceHistory.balance_record.like('%(微信)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
+			q_alipay = q.filter(models.BalanceHistory.balance_record.like('%(支付宝)%')).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).group_by(func.month(models.BalanceHistory.create_time))
+			q_wechat_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type==8).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.month(models.BalanceHistory.create_time))
+			q_alipay_out=self.session.query(func.sum(models.BalanceHistory.balance_value), func.month(models.BalanceHistory.create_time)).\
+				filter(models.BalanceHistory.balance_type==9).filter(func.date_format(models.BalanceHistory.create_time,'%Y')==current_year).\
+				group_by(func.month(models.BalanceHistory.create_time))
+			q_range=self.session.query(func.month(func.now()))
+			#print(q_range.all())
 		else:
-			return self.send_fail('level error')
+			return self.send_error(404)
 
-		page_sum = (datetime.datetime.now() - datetime.datetime.
-					fromtimestamp(first_info.create_date_timestamp)).days//30 + 1
-		return self.send_success(data=l[::-1], page_sum=page_sum)
+		data = []
+		now=datetime.datetime.now()
+		#数组的大小
+		if type==1 and int(current_year) == now.year and int(current_month) == now.month:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif type==1:
+			if current_month in ('01','03','05','07','08','10','12'):
+				rangeOfArray=31
+			elif current_month in ('04','06','09','11'):
+				rangeOfArray=30
+			elif (int(current_year)%4==0 and not int(current_year)%100==0) or int(current_year)%400==0:
+				rangeOfArray=29
+			else:
+				rangeOfArray=28
+		elif (type==2 or type==3) and int(current_year) == now.year:
+			rangeOfArray=int(q_range.all()[0][0])
+		elif type==2:
+			rangeOfArray=52
+		else:
+			rangeOfArray=12
+
+		#初始化返回的数组
+		for x in range(0, rangeOfArray):
+			data.append({'total': 0, 'wechat': 0, 'alipay': 0,'total_clean':0,'wechat_clean': 0, 'alipay_clean': 0})
+
+		#组装数组,毛收入
+		def assembleArray(s_type,q_infos):
+			for info in q_infos:
+				index = info[1]-1
+				value = round(info[0],2)
+				data[index][s_type] = value
+				data[index][s_type+'_clean'] = value
+		
+		#assembleArray('total',q_total.all())
+		assembleArray('wechat',q_wechat.all())
+		assembleArray('alipay',q_alipay.all())
+
+		#组装数组,净收入
+		def assembleArray2(s_type,q_infos):
+			for info in q_infos:
+				index = info[1]-1
+				value = round(info[0],2)
+				data[index][s_type] = data[index][s_type]-value
+
+		assembleArray('wechat_clean',q_wechat.all())
+		assembleArray('alipay_clean',q_alipay.all())
+
+		for x in range(0, rangeOfArray):
+			data[x]['total'] = round(data[x]['wechat'] +data[x]['alipay'] ,2)
+			data[x]['total_clean'] = round(data[x]['wechat_clean'] +data[x]['alipay_clean'],2)
+
+		return self.send_success(data=data)
 
 # 统计 - 用户属性分布
 class DistributStatic(SuperBaseHandler):
@@ -907,7 +1105,7 @@ class DistributStatic(SuperBaseHandler):
 		# level = 1
 		# shop_province = 420000
 		if level == 0:
-			total = self.session.query(models.Accountinfo).count()
+			total = self.session.query(models.Accountinfo.id).count()
 			sex = self.session.query(models.Accountinfo.sex, func.count()).order_by(func.count().desc()).group_by(models.Accountinfo.sex).all()
 			province = self.session.query(models.Accountinfo.wx_province, func.count()).order_by(func.count().desc()).\
 				group_by(models.Accountinfo.wx_province).all()
@@ -993,9 +1191,9 @@ class ShopStatic(SuperBaseHandler):
 		else:
 			return self.send_fail()
 		if level == 0:
-			total = self.session.query(models.Shop).count()
+			total = self.session.query(models.Shop.id).count()
 		elif level == 1:
-			total = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
+			total = self.session.query(models.Shop.id).filter_by(shop_province=shop_province).count()
 		else:
 			return self.send_fail('level error')
 		return self.send_success(data=data, total=total)
@@ -1083,23 +1281,33 @@ class ShopStatic(SuperBaseHandler):
 # 统计 - 订单统计
 # add by jyj 2015-6-15
 class OrderStatic(SuperBaseHandler):
+	#executor = ThreadPoolExecutor(2)
+
 	def get(self):
 		# woody
 		level = self.current_user.level
 		return self.render("superAdmin/count-order.html",level=level,context=dict(subcount='orderstatic'))
 
 	@tornado.web.authenticated
+	#@tornado.web.asynchronous
+	#@tornado.gen.engine
 	@SuperBaseHandler.check_arguments("action:str")
 	def post(self):
 		action = self.args["action"]
 		if action == "order_time":
 			return self.order_time()
+			##yield self.order_time()
 		elif action == "receive_time":
 			return self.receive_time()
+			#yield self.receive_time()
+		else:
+			return self.error(404)
+			#yield self.error(404)
+		#self.finish()
 
-	@SuperBaseHandler.check_arguments("type:int")
+	#@run_on_executor
+	@SuperBaseHandler.check_arguments("type:int","start_date?:str","end_date?:str")
 	def order_time(self):
-
 		type = self.args["type"]
 		# woody 8.4
 		level = self.current_user.level
@@ -1110,35 +1318,43 @@ class OrderStatic(SuperBaseHandler):
 			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
 					filter(not_(models.Order.status.in_([-1,0])))
 		elif level==1:
-			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).join(
-				models.Shop,models.Order.shop_id==models.Shop.id).filter(not_(models.Order.status.in_([-1,0])),models.Shop.shop_province==shop_province)
+			q = self.session.query(func.hour(models.Order.create_date), func.minute(models.Order.create_date)).\
+					join(models.Shop,models.Order.shop_id==models.Shop.id).\
+					filter(not_(models.Order.status.in_([-1,0])),models.Shop.shop_province==shop_province)
 		else:
 			return self.send_fail('level error')
 
-		if type == 1:  # 累计数据
+		if type == 1:  # 如果type=1，表示要获取历史累计数据；如果type=2,表示获取指定时间段的数据
 			pass
-		elif type == 2:  # 昨天数据
-			now = datetime.datetime.now() - datetime.timedelta(1)
-			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
+		elif type == 2:  
+			start_date = self.args['start_date']
+			end_date = self.args['end_date']
+			start_date = datetime.datetime.strptime(start_date,'%Y-%m-%d')
+			end_date = datetime.datetime.strptime(end_date,'%Y-%m-%d')
+
+			start_date = datetime.datetime(start_date.year, start_date.month, start_date.day)
+			end_date = end_date + datetime.timedelta(1)
+			end_date = datetime.datetime(end_date.year, end_date.month, end_date.day)
 			q = q.filter(models.Order.create_date >= start_date,
-					   models.Order.create_date <= end_date)
+					   models.Order.create_date < end_date)
 		else:
 			return self.send_error(404)
+
+		orders=q.all()
+
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
-		for e in q.all():
-			if e[1] < 30:
-				data[e[0]] += 1
+		for order in orders:
+			if  order[1] < 30:
+				data[order[0]] += 1
 			else:
-				if e[0]+1 == 24:
-					data[0] += 1
-				else:
-					data[e[0]] += 1
-		return self.send_success(data=data)
+				data[(order[0]+1)%24] += 1
 
-	@SuperBaseHandler.check_arguments("type:int")
+		return self.send_success(data=data)
+	
+	#@run_on_executor
+	@SuperBaseHandler.check_arguments("type:int","start_date?:str","end_date?:str")
 	def receive_time(self):
 		type = self.args["type"]
 		# woody 8.4
@@ -1148,40 +1364,436 @@ class OrderStatic(SuperBaseHandler):
 		# shop_province = 420000
 		if level == 0:
 			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
-				filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,models.Shop.id == models.Config.id)
+				filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id  == models.Config.id)
 		elif level == 1:
-			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).join(models.Shop,
-				models.Order.shop_id==models.Shop.id).filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Shop.id,
-				models.Shop.id == models.Config.id,models.Shop.shop_province==shop_province)
+			q = self.session.query(models.Order.type, models.Order.start_time, models.Order.end_time,models.Config.stop_range).\
+				join(models.Shop,models.Order.shop_id==models.Shop.id).\
+				filter(not_(models.Order.status.in_([-1,0])),models.Order.shop_id == models.Config.id,models.Shop.shop_province==shop_province)
 		else:
 			return self.send_fail('level error')
 
 		if type == 1:
-			orders = q.all()
+			pass
 		elif type == 2:
-			now = datetime.datetime.now() - datetime.timedelta(1)
-			start_date = datetime.datetime(now.year, now.month, now.day, 0)
-			end_date = datetime.datetime(now.year, now.month, now.day, 23,59,59)
-			orders = q.filter(models.Order.create_date >= start_date,
-							  models.Order.create_date <= end_date).all()
+			start_date = self.args['start_date']
+			end_date = self.args['end_date']
+			start_date = datetime.datetime.strptime(start_date,'%Y-%m-%d')
+			end_date = datetime.datetime.strptime(end_date,'%Y-%m-%d')
+
+			start_date = datetime.datetime(start_date.year, start_date.month, start_date.day)
+			end_date = end_date + datetime.timedelta(1)
+			end_date = datetime.datetime(end_date.year, end_date.month, end_date.day)
+			q = q.filter(models.Order.create_date >= start_date,
+							  models.Order.create_date < end_date)
 		else:
 			return self.send_error(404)
 
+		orders = q.all()
 
 		data = {}
 		for key in range(0, 24):
 			data[key] = 0
 		for order in orders:
 			if order[0] == 1:  # 立即送收货时间估计
-				if order[1].hour + (order[1].minute+order[3])//60 >= 24:
-					data[order[1].hour + (order[1].minute+order[3])//60 - 24] += 1
-				else:
-					data[order[1].hour + (order[1].minute+order[3])//60] += 1
+				data[(order[1].hour + (order[1].minute+order[3])//60)%24] += 1
 			else:  # 按时达收货时间估计
 				data[(order[1].hour+order[2].hour)//2] += 1
 
 		return self.send_success(data=data)
 ##
+
+# added by jyj 2015-8-3
+# 统计 － 销售统计
+class SellStatic(SuperBaseHandler):
+	def get(self):
+		# 管理员的level(总超级管理员:0,省级代理管理员:1,已删除:-1)
+		level = self.current_user.level
+		return self.render("superAdmin/count-sell.html",level = level,context=dict(subcount='sell'))
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action:str',"start_date:str","end_date:str")
+	def post(self):
+		action = self.args['action']
+		start_date = self.args['start_date']
+		end_date = self.args['end_date']
+		if action == 'type':
+			return self.type_count(start_date,end_date)
+		elif action == 'shop':
+			return self.shop_count(start_date,end_date)
+		elif action == 'group':
+			return self.group_count(start_date,end_date)
+
+	def get_order(self,start_date,end_date):
+		# added by jyj 2015-8-6 (add level and shop_province filter)
+		level = self.current_user.level
+		shop_province = self.current_user.province
+		##
+
+		start_date_str = start_date
+		end_date_str = end_date
+
+		start_date = datetime.datetime.strptime(start_date_str,'%Y-%m-%d')
+		start_date_pre = start_date + datetime.timedelta(days = -1)
+		start_date_pre = datetime.datetime(start_date_pre.year,start_date_pre.month,start_date_pre.day)
+		start_date_pre_str = start_date_pre.strftime('%Y-%m-%d')
+
+		end_date = datetime.datetime.strptime(end_date_str,'%Y-%m-%d')
+		end_date_next = end_date + datetime.timedelta(days = 1)
+		end_date_next = datetime.datetime(end_date_next.year,end_date_next.month,end_date_next.day)
+		end_date_next_str = end_date_next.strftime('%Y-%m-%d')
+
+		if level == 0:
+			fruit_list_query = self.session.query(models.Order.fruits).filter(models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+			mgoods_list_query = self.session.query(models.Order.mgoods).filter(models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+		elif level == 1:
+			fruit_list_query = self.session.query(models.Order.fruits).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Shop.shop_province == shop_province,models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+			mgoods_list_query = self.session.query(models.Order.mgoods).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Shop.shop_province == shop_province,models.Order.status >= 5,\
+						        or_(and_(models.Order.create_date >= start_date_str,models.Order.create_date < end_date_next_str,models.Order.today == 1),\
+						        	and_(models.Order.create_date >= start_date_pre_str,models.Order.create_date < end_date_str,models.Order.today == 2))).all()
+
+		return [fruit_list_query,mgoods_list_query]
+
+	def type_count(self,start_date,end_date):
+		# 从fruit_type表中查出所有商品类目的id和名称，存到一个字典fruit_type_price_dict中
+		# 键为id，值为名称和销售额组成的列表，且销售额都初始化为0．
+		fruit_type_price_dict = {}
+		query_list = self.session.query(models.FruitType.id,models.FruitType.name).all()
+		for item in query_list:
+			fruit_type_price_dict[str(item[0])] = [item[1],0]
+		
+		# 获取指定时间段内的所有订单的fruits字段和mgoods字段并分别存到两个列表中：fruit_list,mgoods_list
+		order_list = self.get_order(start_date,end_date)
+
+		fruit_list = []
+		mgoods_list = []
+
+		for item in order_list[0]:
+			if item[0] != '{}' and item[0] != None:
+				fruit_list.append(item[0])
+
+		for item in order_list[1]:
+			if item[0] != '{}' and item[0] != None:
+				mgoods_list.append(item[0])	
+
+		# 从fruit_list列表的每一项中分离出charge_type_id和对应的金额，
+		# 然后从charge_type_id反查到fruit_type_id,最后将fruit_type_price_dict中与此id相同的项的金额自加这个金额．
+		# 计价方式-商品类目id对照表:
+		charge_type_fruit_type_id = {}
+		query_list = self.session.query(models.ChargeType.id,models.Fruit.fruit_type_id).filter(models.ChargeType.fruit_id == models.Fruit.id).all()
+		for item in query_list:
+			charge_type_fruit_type_id[str(item[0])] = item[1]
+
+		for goods_item in fruit_list:
+			goods_item = eval(goods_item)
+			for key in goods_item:
+				fl_value = goods_item[key]
+				num = float(fl_value["num"])
+				single_price = float(fl_value["charge"].split('元')[0])
+				total_price = single_price * num
+
+				# 如果计价方式被删掉了,金额就统一归为'其他水果'的类目中
+				if str(key) not  in list(charge_type_fruit_type_id.keys()):
+					fruit_type_price_dict['999'][1] += total_price
+					fruit_type_price_dict['999'][1] = round(fruit_type_price_dict['999'][1],2)
+					continue
+
+				fruit_type_id = charge_type_fruit_type_id[str(key)]
+				fruit_type_price_dict[str(fruit_type_id)][1] += total_price
+				fruit_type_price_dict[str(fruit_type_id)][1] = round(fruit_type_price_dict[str(fruit_type_id)][1],2)
+
+		# 从mgoods_list列表的每一项中分离出对应的金额，直接将fruit_type_price_dict中id=2000项(其他商品)的金额自加这个金额．
+		for goods_item in mgoods_list:
+			goods_item = eval(goods_item)
+			for key in goods_item:
+				fl_value = goods_item[key]
+				num = float(fl_value["num"])
+				single_price = float(fl_value["charge"].split('元')[0])
+				total_price = single_price * num
+
+				fruit_type_price_dict['2000'][1] += total_price
+				fruit_type_price_dict['2000'][1] = round(fruit_type_price_dict['2000'][1],2)
+
+		fruit_type_price_dict['999'][0] = '其他水果'
+		fruit_type_price_dict['1999'][0] = '其他干果'
+		fruit_type_price_dict['2000'][0] = '其他商品'
+
+		# 将字典fruit_type_price_dict转化成列表fruit_type_price_list,该列表的每一个元素都为一个子列表
+		# 子列表有三个元素：商品类目id,名称，金额．将fruit_type_price_list列表按照每一项的金额降序排序
+		# 取前30个元素作为output_data，返回给前台．
+		output_data = []
+		type_select_list = []
+		for key in fruit_type_price_dict:
+			output_data.append(fruit_type_price_dict[key])
+			type_select_list.append([int(key),fruit_type_price_dict[key][0]])
+		output_data.sort(key = lambda item : item[1],reverse = True)
+		output_data = output_data[0 : 30]
+		output_data.sort(key = lambda item : item[1],reverse = False)
+		output_data = [item for item in output_data if item[1] != 0]
+
+		type_select_list.sort(key = lambda item : item[0],reverse = False)
+
+		return self.send_success(output_data = output_data,type_select_list = type_select_list)
+
+	@SuperBaseHandler.check_arguments("id:int")
+	def shop_count(self,start_date,end_date):
+		goods_type_id = self.args['id']
+
+		# 先从fruit表和charge_type表联合查询查出所有fruit_type_id等于cur_selected_type_id的charge_type.id,shop_id,并建立一个字典charge_type_shop_dict
+		# 该字典的键是charge_type.id，值是一个列表，列表的第一项是shop_id，第二项是金额，初始化为0.
+		charge_type_shop_dict = {}
+		query_list = self.session.query(models.ChargeType.id,models.Fruit.shop_id).filter(models.ChargeType.fruit_id == models.Fruit.id,\
+				 	            models.Fruit.fruit_type_id == goods_type_id).all()
+		for item in query_list:
+			charge_type_shop_dict[str(item[0])] = [item[1],0]
+		
+		# 获取指定时间段内的所有订单的fruits字段和mgoods字段并分别存到两个列表中：fruit_list,mgoods_list
+		order_list = self.get_order(start_date,end_date)
+
+		fruit_list = []
+		mgoods_list = []
+
+		for item in order_list[0]:
+			if item[0] != '{}' and item[0] != None:
+				fruit_list.append(item[0])
+
+		if goods_type_id == 2000:
+			for item in order_list[1]:
+				if item[0] != '{}' and item[0] != None:
+					mgoods_list.append(item[0])	
+
+		# 从fruit_list列表的每一项中分离出charge_type_id和对应的金额，然后将charge_type_shop_dict键等于charge_type_id的项的金额自加对应的金额.
+		# 如果查不到计价方式对应的shop_id（可能计价方式已经被删除了）那么直接continue.需要建立一个列表cur_charge_type_list，该列表包含cur_selected_type_id对应的所有计价方式的id.
+		cur_charge_type_list = []
+		query_list = self.session.query(models.ChargeType.id).join(models.Fruit).filter(models.Fruit.fruit_type_id == goods_type_id).all()
+		for item in query_list:
+			cur_charge_type_list.append(item[0])
+
+		for goods_item in fruit_list:
+			goods_item = eval(goods_item)
+			for key in goods_item:
+				fl_value = goods_item[key]
+				num = float(fl_value["num"])
+				single_price = float(fl_value["charge"].split('元')[0])
+				total_price = single_price * num
+
+				if key not in cur_charge_type_list:
+					continue
+
+				if str(key) not in list(charge_type_shop_dict.keys()):
+					continue
+
+				charge_type_shop_dict[str(key)][1] += total_price
+				charge_type_shop_dict[str(key)][1] = round(charge_type_shop_dict[str(key)][1],2)
+
+		# 将字典charge_type_shop_dict的值([shop_id,price])存到一个列表中，考虑到shop_id会有重复的情况(因为同一个charge_type_id可能对应多个shop_id)，
+		# 所以先要把shop_id存到一个列表cur_shop_id中，然后将该列表去重，然后再遍历charge_type_shop_dict的值，累加每个店铺的price，存到each_shop_price_dict字典中，键为shop_id,值为price．
+		cur_shop_id_list = []
+		for key in charge_type_shop_dict:
+			cur_shop_id_list.append(charge_type_shop_dict[key][0])
+
+		# 去重
+		cur_shop_id_list = set(cur_shop_id_list)
+
+		each_shop_price_dict = {}
+		for item in cur_shop_id_list:
+			each_shop_price_dict[str(item)] = 0
+		for key in charge_type_shop_dict:
+			item = charge_type_shop_dict[key]
+			shop_id = item[0]
+			price = item[1]
+			each_shop_price_dict[str(shop_id)] += price
+
+		# 如果cur_selected_type_id == 2000：从m_charge_type,m_goods,menu三表联合查询，查出所有m_charge_type中id对应的menu表中的shop_id,并建立字典，键为m_charge_type_id,值为shop_id,
+		# 然后根据shop_id将金额累加到charge_type_shop_dict中去．如果查不到计价方式对应的shop_id（可能计价方式已经被删除了）那么直接continue.
+		# 完了以后再遍历当前字典，如果shop_id在each_shop_price_dict的键列表中，则将这这个键对应的price自加，否则新增键值对.
+		if goods_type_id == 2000:
+			mcharge_type_shop_dict = {}
+			query_list = self.session.query(models.MChargeType.id,models.Menu.shop_id).filter(models.MChargeType.mgoods_id == models.MGoods.id,\
+						            models.MGoods.menu_id == models.Menu.id).all()
+			for item in query_list:
+				mcharge_type_shop_dict[str(item[0])] = [item[1],0]
+			# 从mgoods_list列表的每一项中分离出对应的金额
+			for goods_item in mgoods_list:
+				goods_item = eval(goods_item)
+				for key in goods_item:
+					fl_value = goods_item[key]
+					num = float(fl_value["num"])
+					single_price = float(fl_value["charge"].split('元')[0])
+					total_price = single_price * num
+
+					if str(key) not in list(mcharge_type_shop_dict.keys()):
+						continue
+
+					mcharge_type_shop_dict[str(key)][1] += total_price
+					mcharge_type_shop_dict[str(key)][1] = round(mcharge_type_shop_dict[str(key)][1],2)
+
+			for key in mcharge_type_shop_dict:
+				item = mcharge_type_shop_dict[key]
+				if str(item[0]) not in list(each_shop_price_dict.keys()):
+					each_shop_price_dict[str(item[0])] = 0
+				each_shop_price_dict[str(item[0])] += item[1]
+				each_shop_price_dict[str(item[0])] = round(each_shop_price_dict[str(item[0])],2)
+
+		# 最后新建一个列表each_shop_price_list，每一个元素为一个子列表，子列表的第一项为shop_id,第二项为shop_name,第三项为price,
+		# 将each_shop_price_list按照price降序排列，然后取each_shop_price_list的前十项返回到前台．
+		each_shop_price_list = []
+		for key in each_shop_price_dict:
+			shop_id = int(key)
+			shop_name = self.session.query(models.Shop.shop_name).filter_by(id = shop_id).first()[0]
+			shop_price = each_shop_price_dict[key]
+			each_shop_price_list.append([shop_id,shop_name,shop_price])
+
+		each_shop_price_list.sort(key = lambda item : item[2],reverse = True)
+		each_shop_price_list = each_shop_price_list[0:10]
+		each_shop_price_list.sort(key = lambda item : item[2],reverse = False)
+		output_data = each_shop_price_list
+		output_data = [item for item in output_data if item[2] != 0]
+
+		return self.send_success(output_data = output_data)
+
+	@SuperBaseHandler.check_arguments("id:int")
+	def group_count(self,start_date,end_date):
+		group_id = self.args['id']
+
+		charge_type_shop_dict = {}
+		# 先从fruit表和charge_type表联合查询查出所有fruit_type_id在当前分组的fruit_type_id的范围之内的charge_type.id,shop_id,并建立一个字典charge_type_shop_dict
+		# 该字典的键是charge_type.id，值是一个列表，列表的第一项是shop_id，第二项是金额，初始化为0.
+		query_list = []
+		if group_id == 0:
+			query_list = self.session.query(models.ChargeType.id,models.Fruit.shop_id).filter(models.ChargeType.fruit_id == models.Fruit.id,\
+					 	            models.Fruit.fruit_type_id == 2000).all()
+		elif group_id == 1:
+			query_list = self.session.query(models.ChargeType.id,models.Fruit.shop_id).filter(models.ChargeType.fruit_id == models.Fruit.id,\
+					 	            models.Fruit.fruit_type_id < 1000).all()
+		elif group_id == 2:	
+			query_list = self.session.query(models.ChargeType.id,models.Fruit.shop_id).filter(models.ChargeType.fruit_id == models.Fruit.id,\
+					 	            models.Fruit.fruit_type_id > 1000,models.Fruit.fruit_type_id < 2000).all()
+		for item in query_list:
+			charge_type_shop_dict[str(item[0])] = [item[1],0]
+
+		
+		# 获取指定时间段内的所有订单的fruits字段和mgoods字段并分别存到两个列表中：fruit_list,mgoods_list
+		order_list = self.get_order(start_date,end_date)
+
+		fruit_list = []
+		mgoods_list = []
+
+		for item in order_list[0]:
+			if item[0] != '{}' and item[0] != None:
+				fruit_list.append(item[0])
+
+		if group_id == 0:
+			for item in order_list[1]:
+				if item[0] != '{}' and item[0] != None:
+					mgoods_list.append(item[0])	
+
+		# 从fruit_list列表的每一项中分离出charge_type_id和对应的金额，然后将charge_type_shop_dict键在当前分组的fruit_type_id的范围之内的项的金额自加对应的金额.
+		# 如果查不到计价方式对应的shop_id（可能计价方式已经被删除了）那么直接continue.需要建立一个列表cur_charge_type_list，该列表包含在当前分组的fruit_type_id的范围之内的所有fruit_type_id对应的所有计价方式的id.
+		cur_charge_type_list = []
+		query_list = []
+		if group_id == 0:
+			query_list = self.session.query(models.ChargeType.id).join(models.Fruit).filter(models.Fruit.fruit_type_id == 2000).all()
+		elif group_id == 1:
+			query_list = self.session.query(models.ChargeType.id).join(models.Fruit).filter(models.Fruit.fruit_type_id < 999).all()
+		elif group_id == 2:
+			query_list = self.session.query(models.ChargeType.id).join(models.Fruit).filter(models.Fruit.fruit_type_id < 2000,models.Fruit.fruit_type_id > 1000).all()
+		for item in query_list:
+			cur_charge_type_list.append(item[0])
+
+		for goods_item in fruit_list:
+			goods_item = eval(goods_item)
+			for key in goods_item:
+				fl_value = goods_item[key]
+				num = float(fl_value["num"])
+				single_price = float(fl_value["charge"].split('元')[0])
+				total_price = single_price * num
+
+				if key not in cur_charge_type_list:
+					continue
+
+				if str(key) not in list(charge_type_shop_dict.keys()):
+					continue
+
+				charge_type_shop_dict[str(key)][1] += total_price
+				charge_type_shop_dict[str(key)][1] = round(charge_type_shop_dict[str(key)][1],2)
+
+		# 将字典charge_type_shop_dict的值([shop_id,price])存到一个列表中，考虑到shop_id会有重复的情况(因为同一个charge_type_id可能对应多个shop_id)，
+		# 所以先要把shop_id存到一个列表cur_shop_id中，然后将该列表去重，然后再遍历charge_type_shop_dict的值，累加每个店铺的price，存到each_shop_price_dict字典中，键为shop_id,值为price．
+		cur_shop_id_list = []
+		for key in charge_type_shop_dict:
+			cur_shop_id_list.append(charge_type_shop_dict[key][0])
+
+		# 去重
+		cur_shop_id_list = set(cur_shop_id_list)
+
+		each_shop_price_dict = {}
+		for item in cur_shop_id_list:
+			each_shop_price_dict[str(item)] = 0
+		for key in charge_type_shop_dict:
+			item = charge_type_shop_dict[key]
+			shop_id = item[0]
+			price = item[1]
+			each_shop_price_dict[str(shop_id)] += price
+
+		# 如果group_id == 0：从m_charge_type,m_goods,menu三表联合查询，查出所有m_charge_type中id对应的menu表中的shop_id,并建立字典，键为m_charge_type_id,值为shop_id,
+		# 然后根据shop_id将金额累加到charge_type_shop_dict中去．如果查不到计价方式对应的shop_id（可能计价方式已经被删除了）那么直接continue.
+		# 完了以后再遍历当前字典，如果shop_id在each_shop_price_dict的键列表中，则将这这个键对应的price自加，否则新增键值对.
+		if group_id == 0:
+			mcharge_type_shop_dict = {}
+			query_list = self.session.query(models.MChargeType.id,models.Menu.shop_id).filter(models.MChargeType.mgoods_id == models.MGoods.id,\
+						            models.MGoods.menu_id == models.Menu.id).all()
+			for item in query_list:
+				mcharge_type_shop_dict[str(item[0])] = [item[1],0]
+			# 从mgoods_list列表的每一项中分离出对应的金额
+			for goods_item in mgoods_list:
+				goods_item = eval(goods_item)
+				for key in goods_item:
+					fl_value = goods_item[key]
+					num = float(fl_value["num"])
+					single_price = float(fl_value["charge"].split('元')[0])
+					total_price = single_price * num
+
+					if str(key) not in list(mcharge_type_shop_dict.keys()):
+						continue
+
+					mcharge_type_shop_dict[str(key)][1] += total_price
+					mcharge_type_shop_dict[str(key)][1] = round(mcharge_type_shop_dict[str(key)][1],2)
+
+			for key in mcharge_type_shop_dict:
+				item = mcharge_type_shop_dict[key]
+				if str(item[0]) not in list(each_shop_price_dict.keys()):
+					each_shop_price_dict[str(item[0])] = 0
+				each_shop_price_dict[str(item[0])] += item[1]
+				each_shop_price_dict[str(item[0])] = round(each_shop_price_dict[str(item[0])],2)
+
+		# 最后新建一个列表each_shop_price_list，每一个元素为一个子列表，子列表的第一项为shop_id,第二项为shop_name,第三项为price,
+		# 将each_shop_price_list按照price降序排列，然后取each_shop_price_list的前十项返回到前台．
+		each_shop_price_list = []
+		for key in each_shop_price_dict:
+			shop_id = int(key)
+			shop_name = self.session.query(models.Shop.shop_name).filter_by(id = shop_id).first()[0]
+			shop_price = each_shop_price_dict[key]
+			each_shop_price_list.append([shop_id,shop_name,shop_price])
+
+		each_shop_price_list.sort(key = lambda item : item[2],reverse = True)
+		each_shop_price_list = each_shop_price_list[0:10]
+		each_shop_price_list.sort(key = lambda item : item[2],reverse = False)
+		output_data = each_shop_price_list
+		output_data = [item for item in output_data if item[2] != 0]
+		# print(output_data)
+
+		return self.send_success(output_data = output_data)
+
+
+##
+
+
 
 class Official(SuperBaseHandler):
 	def get(self):
@@ -1205,6 +1817,7 @@ class Comment(SuperBaseHandler):
 			shop_name = shop.shop_name
 			has_done = comment_apply.has_done
 			admin_name= shop.admin.accountinfo.nickname
+			admin_id = shop.admin.accountinfo.id
 			# order info
 			customer_id = order.customer_id
 			customer = self.session.query(models.Accountinfo).filter_by(id = customer_id).first()
@@ -1218,8 +1831,8 @@ class Comment(SuperBaseHandler):
 			create_date = comment_apply.create_date
 			order_info = dict(
 				headimgurl_small = headimgurl_small,name = name , num = num ,order_create_date = order_create_date,\
-				comment = comment)
-			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id])
+				comment = comment,customer_id = customer_id)
+			data.append([shop_code,shop_name,admin_name ,create_date, comment_apply.delete_reason,order_info,has_done,apply_id,admin_id])
 
 		q_temp = self.session.query(models.ShopTemp).count()
 		all_shop = self.session.query(models.Shop).count()
@@ -1249,6 +1862,7 @@ class Comment(SuperBaseHandler):
 			#order.comment = None
 			#order.comment_reply = None
 			comment_apply.has_done = 1
+			comment_apply.shop.comment_count = comment_apply.shop.comment_count -1
 			self.session.commit()
 			return self.send_success(status = 0, msg = 'success',data = {})
 		elif action == 'decline':
@@ -1260,6 +1874,8 @@ class Comment(SuperBaseHandler):
 			return self.send_error(404)
 
 # add by jyj 2015-7-5
+# modified by sunmh 2015年09月21日15:57:25
+# 店铺-店铺评论
 class CommentInfo(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments("ajaxFlag")
@@ -1276,16 +1892,17 @@ class CommentInfo(SuperBaseHandler):
 		# level = 1
 		# shop_province = 420000
 
+		# 所有评论，满分评论和有图评论
 		if level == 0:
 			order_list =  self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-			all_comment_order = self.session.query(models.Order).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
+			all_comment_order = self.session.query(models.Order.id).filter(models.Order.status == 6).order_by(desc(models.Order.comment_create_date))
 			all_count = all_comment_order.count()
 			full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
 			img_count = all_comment_order.filter(models.Order.comment_imgUrl.like('http:%')).count()
 		elif level == 1:
 			order_list = self.session.query(models.Order).join(models.Shop,models.Order.shop_id==models.Shop.id).filter(models.Order.status==6,models.Shop.shop_province==shop_province
 				).distinct(models.Order.id).order_by(desc(models.Order.comment_create_date)).offset(page*page_size).limit(page_size).all()
-			all_comment_order = self.session.query(models.Order).join(models.Shop,models.Order.shop_id==models.Shop.id).filter(models.Order.status==6,models.Shop.shop_province==shop_province
+			all_comment_order = self.session.query(models.Order.id).join(models.Shop,models.Order.shop_id==models.Shop.id).filter(models.Order.status==6,models.Shop.shop_province==shop_province
 				).distinct(models.Order.id).order_by(desc(models.Order.comment_create_date))
 			all_count = all_comment_order.count()
 			full_count = all_comment_order.filter(models.Order.commodity_quality == 100,models.Order.send_speed == 100,models.Order.shop_service == 100).count()
@@ -1295,69 +1912,12 @@ class CommentInfo(SuperBaseHandler):
 
 		for order in order_list:
 			data = {}
-			comment_image_list = []
 			data["all_count"] = all_count
 			data["full_count"] = full_count
 			data["img_count"] = img_count
-			data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
-						filter(models.Accountinfo.id == order.customer_id).first()[0]
-			data["nickname"] = self.session.query(models.Accountinfo.nickname).\
-						filter(models.Accountinfo.id == order.customer_id).first()[0]
-			if len(data["nickname"]) > 6:
-				data["nickname"] = data["nickname"][0:6] + '...'
-			data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
-			if order.comment_create_date == None:
-				data["comment_create_date"] = ''
-			else:
-				data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
-			data["shop_name"] = self.session.query(models.Shop.shop_name).\
-						filter(models.Shop.id == order.shop_id).first()[0]
-			if len(data["shop_name"]) > 6:
-				data["shop_name"] = data["shop_name"][0:5] + '...'
+			# 组装字典
+			self.__assemblyDict(order,data)
 
-			data["shop_code"] = self.session.query(models.Shop.shop_code).\
-						filter(models.Shop.id == order.shop_id).first()[0]
-			data["order_num"] = order.num
-
-			if order.comment == None:
-				data["comment"] = "未评价"
-			else:
-				if len(order.comment) == 0:
-					data["comment"] = "未评价"
-				else:
-					data["comment"] = order.comment
-
-			if order.comment_imgUrl == None:
-				data["has_comment_img"] = 0
-			else:
-				if len(order.comment_imgUrl) == 0:
-					data["has_comment_img"] = 0
-				else:
-					data["has_comment_img"] = 1
-
-			if data["has_comment_img"] == 1:
-				comment_image_list = order.comment_imgUrl.split(';')
-				data["comment_image_list"] = comment_image_list
-
-			if order.commodity_quality == None:
-				data["commodity_quality"] = '未评价'
-			else:
-				data["commodity_quality"] = order.commodity_quality
-
-			if order.send_speed == None:
-				data["send_speed"] = '未评价'
-			else:
-				data["send_speed"] = order.send_speed
-
-			if order.shop_service == None:
-				data["shop_service"] = '未评价'
-			else:
-				data["shop_service"] = order.shop_service
-
-			if order.comment_reply == None:
-				data["comment_reply"] = "无回复"
-			else:
-				data["comment_reply"] = order.comment_reply
 			output_data_tmp.append(data)
 
 		output_data = output_data_tmp
@@ -1368,19 +1928,18 @@ class CommentInfo(SuperBaseHandler):
 			page_sum = all_count//page_size
 
 
-		q_temp = self.session.query(models.ShopTemp).count()
+		q_temp = self.session.query(models.ShopTemp.id).count()
 		if level == 0:
-			all_shop = self.session.query(models.Shop).count()
-			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
-			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+			all_shop = self.session.query(models.Shop.id).count()
+			comment = self.session.query(models.Order.id).filter(models.Order.status == 6).count()
+			auth_apply=self.session.query(models.ShopAuthenticate.id).filter_by(has_done = 0).count()
 		elif level == 1:
-			all_shop = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
-			comment = self.session.query(models.Order).join(models.Shop,models.Order.shop_id==models.Shop.id).filter(models.Order.status==6,
-				models.Shop.shop_province==shop_province).distinct(models.Order.id).count()
-			auth_apply = self.session.query(models.ShopAuthenticate,models.ShopAuthenticate.shop_id==models.Shop.id).filter(models.ShopAuthenticate.has_done==0,
-				models.Shop.shop_province == shop_province).distinct(models.ShopAuthenticate.id).count()
-		else:
-			return self.send_fail('level error')
+			all_shop = self.session.query(models.Shop.id).filter_by(shop_province=shop_province).count()
+			comment = self.session.query(models.Order.id).join(models.Shop,models.Order.shop_id==models.Shop.id).\
+				filter(models.Order.status==6,models.Shop.shop_province==shop_province).distinct(models.Order.id).count()
+			auth_apply = self.session.query(models.ShopAuthenticate,models.ShopAuthenticate.shop_id==models.Shop.id).\
+				filter(models.ShopAuthenticate.has_done==0,models.Shop.shop_province == shop_province).distinct(models.ShopAuthenticate.id).count()
+
 		count = {
 			"all_temp": q_temp,
 			"all": all_shop,
@@ -1392,6 +1951,7 @@ class CommentInfo(SuperBaseHandler):
 			self.render('superAdmin/shop-comment-info.html',output_data = output_data,level=level,page_sum = page_sum,context=dict(count = count,subpage="comment",subpage2="info"))
 		else:
 			return self.send_success(page_sum = page_sum)
+
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('page:int','action:str')
 	def post(self):
@@ -1399,7 +1959,6 @@ class CommentInfo(SuperBaseHandler):
 		action = self.args['action']
 		page_size = 15
 
-		output_data_tmp = []
 		output_data = []
 
 		# woody 8.3
@@ -1414,72 +1973,10 @@ class CommentInfo(SuperBaseHandler):
 			order_list = order_list_data.offset(page*page_size).limit(page_size).all()
 			for order in order_list:
 				data = {}
-				comment_image_list = []
+				# 组装字典
+				self.__assemblyDict(order,data)
+				output_data.append(data)
 
-				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
-							filter(models.Accountinfo.id == order.customer_id).first()[0]
-				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
-							filter(models.Accountinfo.id == order.customer_id).first()[0]
-				if len(data["nickname"]) > 6:
-					data["nickname"] = data["nickname"][0:5] + '...'
-				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
-				if order.comment_create_date == None:
-					data["comment_create_date"] = ''
-				else:
-					data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
-
-				data["shop_name"] = self.session.query(models.Shop.shop_name).\
-							filter(models.Shop.id == order.shop_id).first()[0]
-				if len(data["shop_name"]) > 6:
-					data["shop_name"] = data["shop_name"][0:5] + '...'
-
-				data["shop_code"] = self.session.query(models.Shop.shop_code).\
-							filter(models.Shop.id == order.shop_id).first()[0]
-				data["order_num"] = order.num
-
-				if order.comment == None:
-					data["comment"] = "未评价"
-				else:
-					if len(order.comment) == 0:
-						data["comment"] = "未评价"
-					else:
-						data["comment"] = order.comment
-
-				if order.comment_imgUrl == None:
-					data["has_comment_img"] = 0
-				else:
-					if len(order.comment_imgUrl) == 0:
-						data["has_comment_img"] = 0
-					else:
-						data["has_comment_img"] = 1
-
-				if data["has_comment_img"] == 1:
-					comment_image_list = order.comment_imgUrl.split(';')
-					data["comment_image_list"] = comment_image_list
-
-				if order.commodity_quality == None:
-					data["commodity_quality"] = '未评价'
-				else:
-					data["commodity_quality"] = order.commodity_quality
-
-				if order.send_speed == None:
-					data["send_speed"] = '未评价'
-				else:
-					data["send_speed"] = order.send_speed
-
-				if order.shop_service == None:
-					data["shop_service"] = '未评价'
-				else:
-					data["shop_service"] = order.shop_service
-
-				if order.comment_reply == None:
-					data["comment_reply"] = "无回复"
-				else:
-					data["comment_reply"] = order.comment_reply
-
-				output_data_tmp.append(data)
-
-			output_data = output_data_tmp
 			all_count = order_list_data.count()
 			if all_count//page_size < all_count/page_size:
 				page_sum = all_count//page_size + 1
@@ -1491,73 +1988,9 @@ class CommentInfo(SuperBaseHandler):
 							 models.Order.send_speed ==100,models.Order.shop_service == 100).offset(page*page_size).limit(page_size).all()
 			for order in order_list:
 				data = {}
-				comment_image_list = []
-
-				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
-							filter(models.Accountinfo.id == order.customer_id).first()[0]
-				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
-							filter(models.Accountinfo.id == order.customer_id).first()[0]
-				if len(data["nickname"]) > 6:
-					data["nickname"] = data["nickname"][0:6] + '...'
-
-				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
-				if order.comment_create_date == None:
-					data["comment_create_date"] = ''
-				else:
-					data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
-
-				data["shop_name"] = self.session.query(models.Shop.shop_name).\
-							filter(models.Shop.id == order.shop_id).first()[0]
-				if len(data["shop_name"]) > 6:
-					data["shop_name"] = data["shop_name"][0:5] + '...'
-
-				data["shop_code"] = self.session.query(models.Shop.shop_code).\
-							filter(models.Shop.id == order.shop_id).first()[0]
-				data["order_num"] = order.num
-
-				if order.comment == None:
-					data["comment"] = "未评价"
-				else:
-					if len(order.comment) == 0:
-						data["comment"] = "未评价"
-					else:
-						data["comment"] = order.comment
-
-				if order.comment_imgUrl == None:
-					data["has_comment_img"] = 0
-				else:
-					if len(order.comment_imgUrl) == 0:
-						data["has_comment_img"] = 0
-					else:
-						data["has_comment_img"] = 1
-
-				if data["has_comment_img"] == 1:
-					comment_image_list = order.comment_imgUrl.split(';')
-					data["comment_image_list"] = comment_image_list
-
-				if order.commodity_quality == None:
-					data["commodity_quality"] = '未评价'
-				else:
-					data["commodity_quality"] = order.commodity_quality
-
-				if order.send_speed == None:
-					data["send_speed"] = '未评价'
-				else:
-					data["send_speed"] = order.send_speed
-
-				if order.shop_service == None:
-					data["shop_service"] = '未评价'
-				else:
-					data["shop_service"] = order.shop_service
-
-				if order.comment_reply == None:
-					data["comment_reply"] = "无回复"
-				else:
-					data["comment_reply"] = order.comment_reply
-
-				output_data_tmp.append(data)
-
-			output_data = output_data_tmp
+				# 组装字典
+				self.__assemblyDict(order,data)
+				output_data.append(data)
 
 			full_count = order_list_data.filter(models.Order.commodity_quality == 100,\
 							 models.Order.send_speed ==100,models.Order.shop_service == 100).count()
@@ -1570,72 +2003,9 @@ class CommentInfo(SuperBaseHandler):
 			order_list = order_list_data.filter(models.Order.comment_imgUrl.like('http:%')).offset(page*page_size).limit(page_size).all()
 			for order in order_list:
 				data = {}
-				comment_image_list = []
-
-				data["headimgurl"] = self.session.query(models.Accountinfo.headimgurl_small).\
-							filter(models.Accountinfo.id == order.customer_id).first()[0]
-				data["nickname"] = self.session.query(models.Accountinfo.nickname).\
-							filter(models.Accountinfo.id == order.customer_id).first()[0]
-				if len(data["nickname"]) > 6:
-					data["nickname"] = data["nickname"][0:6] + '...'
-
-				data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
-				if order.comment_create_date == None:
-					data["comment_create_date"] = ''
-				else:
-					data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
-
-				data["shop_name"] = self.session.query(models.Shop.shop_name).\
-							filter(models.Shop.id == order.shop_id).first()[0]
-				if len(data["shop_name"]) > 6:
-					data["shop_name"] = data["shop_name"][0:5] + '...'
-
-				data["shop_code"] = self.session.query(models.Shop.shop_code).\
-							filter(models.Shop.id == order.shop_id).first()[0]
-				data["order_num"] = order.num
-
-				if order.comment == None:
-					data["comment"] = "未评价"
-				else:
-					if len(order.comment) == 0:
-						data["comment"] = "未评价"
-					else:
-						data["comment"] = order.comment
-
-				if order.comment_imgUrl == None:
-					data["has_comment_img"] = 0
-				else:
-					if len(order.comment_imgUrl) == 0:
-						data["has_comment_img"] = 0
-					else:
-						data["has_comment_img"] = 1
-
-				if data["has_comment_img"] == 1:
-					comment_image_list = order.comment_imgUrl.split(',')
-					data["comment_image_list"] = comment_image_list
-
-				if order.commodity_quality == None:
-					data["commodity_quality"] = '未评价'
-				else:
-					data["commodity_quality"] = order.commodity_quality
-
-				if order.send_speed == None:
-					data["send_speed"] = '未评价'
-				else:
-					data["send_speed"] = order.send_speed
-
-				if order.shop_service == None:
-					data["shop_service"] = '未评价'
-				else:
-					data["shop_service"] = order.shop_service
-
-				if order.comment_reply == None:
-					data["comment_reply"] = "无回复"
-				else:
-					data["comment_reply"] = order.comment_reply
-
-				output_data_tmp.append(data)
-			output_data = output_data_tmp
+				# 组装字典
+				self.__assemblyDict(order,data)
+				output_data.append(data)
 
 			img_count = order_list_data.filter(models.Order.comment_imgUrl.like('http:%')).count()
 			if img_count//page_size < img_count/page_size:
@@ -1646,38 +2016,118 @@ class CommentInfo(SuperBaseHandler):
 		else:
 			return self.send_error(404)
 		return self.send_success(output_data = output_data,page_sum = page_sum)
+
+
+	# 根据订单信息来组装字典
+	# add by sunmh 2015年09月21日16:01:15
+	def __assemblyDict(self,order,data):
+		comment_image_list = []
+		q_temp=self.session.query(models.Accountinfo.headimgurl_small,models.Accountinfo.nickname,models.Accountinfo.id).\
+				filter(models.Accountinfo.id == order.customer_id).first()
+		data["headimgurl"] = q_temp[0]
+		data["nickname"] = q_temp[1]
+		data["user_id"] = q_temp[2]
+		if len(data["nickname"]) > 6:
+			data["nickname"] = data["nickname"][0:5] + '...'
+		data["create_date"] = order.create_date.strftime("%Y-%m-%d %H:%M:%S")
+		if order.comment_create_date == None:
+			data["comment_create_date"] = ''
+		else:
+			data["comment_create_date"] = order.comment_create_date.strftime("%Y-%m-%d %H:%M:%S")
+
+		q_temp=self.session.query(models.Shop.shop_name,models.Shop.shop_code).\
+				filter(models.Shop.id == order.shop_id).first()
+		data["shop_name"] = q_temp[0]
+		data["shop_code"] = q_temp[1]
+		if len(data["shop_name"]) > 6:
+			data["shop_name"] = data["shop_name"][0:5] + '...'
+
+		data["order_num"] = order.num
+
+		if order.comment == None:
+			data["comment"] = "未评价"
+		else:
+			if len(order.comment) == 0:
+				data["comment"] = "未评价"
+			else:
+				data["comment"] = order.comment
+
+		if order.comment_imgUrl == None:
+			data["has_comment_img"] = 0
+		else:
+			if len(order.comment_imgUrl) == 0:
+				data["has_comment_img"] = 0
+			else:
+				data["has_comment_img"] = 1
+
+		if data["has_comment_img"] == 1:
+			comment_image_list = order.comment_imgUrl.split(',')
+		data["comment_image_list"] = comment_image_list
+
+		if order.commodity_quality == None:
+			data["commodity_quality"] = '未评价'
+		else:
+			data["commodity_quality"] = order.commodity_quality
+
+		if order.send_speed == None:
+			data["send_speed"] = '未评价'
+		else:
+			data["send_speed"] = order.send_speed
+
+		if order.shop_service == None:
+			data["shop_service"] = '未评价'
+		else:
+			data["shop_service"] = order.shop_service
+
+		if order.comment_reply == None:
+			data["comment_reply"] = "无回复"
+		else:
+			data["comment_reply"] = order.comment_reply
+		return
 ##
 
 # 店铺 - 店铺认证申请
 class ShopAuthenticate(SuperBaseHandler):
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('page')
+	@SuperBaseHandler.check_arguments('page:str','out_link?:str','data_id?:int')
 	def get(self):
-		page=int(self.args["page"])
+		page=self.args["page"]
 		page_size = 10
 		page_area = page*page_size
+		out_link = ''
+		if 'out_link' in self.args:
+			if self.args['out_link'] == 'true':
+				shop_id = self.args['data_id']
+				out_link = 'true'
 		# woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
 		# level = 1
 		# shop_province = 420000
 		if  level == 0:
-			apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
-
-			q_temp = self.session.query(models.ShopTemp).count()
-			all_shop = self.session.query(models.Shop).count()
-			comment = self.session.query(models.Order).filter(models.Order.status == 6).count()
-
-			auth_apply=self.session.query(models.ShopAuthenticate).filter_by(has_done = 0).count()
+			if out_link != 'true':
+				apply_list=self.session.query(models.ShopAuthenticate).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			else:
+				apply_list=self.session.query(models.ShopAuthenticate).filter_by(shop_id = shop_id).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			q_temp = self.session.query(models.ShopTemp.id).count()
+			all_shop = self.session.query(models.Shop.id).count()
+			comment = self.session.query(models.Order.id).filter(models.Order.status == 6).count()
+			auth_apply=self.session.query(models.ShopAuthenticate.id).filter_by(has_done = 0).count()
+			
 		elif level == 1:
-			apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
-				).filter(models.Shop.shop_province==shop_province).distinct(models.ShopAuthenticate.id
-				).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
-			q_temp = self.session.query(models.ShopTemp).count()
-			all_shop = self.session.query(models.Shop).filter_by(shop_province=shop_province).count()
-			comment = self.session.query(models.Order).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Order.status==6,
+			if out_link != 'true':
+				apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
+						).filter(models.Shop.shop_province==shop_province).distinct(models.ShopAuthenticate.id
+						).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			else:
+				apply_list = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id
+						).filter(models.Shop.shop_province==shop_province,models.ShopAuthenticate.shop_id == shop_id).distinct(models.ShopAuthenticate.id
+						).order_by(desc(models.ShopAuthenticate.id)).offset(page_area).limit(10).all()
+			q_temp = self.session.query(models.ShopTemp.id).count()
+			all_shop = self.session.query(models.Shop.id).filter_by(shop_province=shop_province).count()
+			comment = self.session.query(models.Order.id).join(models.Shop,models.Order.shop_id == models.Shop.id).filter(models.Order.status==6,
 				models.Shop.shop_province==shop_province).distinct(models.Order.id).count()
-			auth_apply = self.session.query(models.ShopAuthenticate).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id).filter(
+			auth_apply = self.session.query(models.ShopAuthenticate.id).join(models.Shop,models.ShopAuthenticate.shop_id == models.Shop.id).filter(
 				models.ShopAuthenticate.has_done==0,models.Shop.shop_province==shop_province).distinct(models.ShopAuthenticate.id).count()
 
 		count = {
@@ -1753,7 +2203,6 @@ class ShopAuthenticate(SuperBaseHandler):
 class Balance(SuperBaseHandler):
 	@tornado.web.authenticated
 	def get(self):
-		cash_list = []
 		cash_on = 0
 		total_balance = 0
 		cash_success = 0
@@ -1767,132 +2216,56 @@ class Balance(SuperBaseHandler):
 		shop_province = super_admin.province
 		# print("[SuperBalance]Current super_admin level:",level,", shop_province:",shop_province)
 		if level == 0:
-			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=0).all()
-			shop_list = self.session.query(models.Shop).all()
-			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
-			person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
+			cash_on = self.session.query(func.sum(models.ApplyCashHistory.value)).filter_by(has_done=0).all()[0][0]
+			total_balance = self.session.query(func.sum(models.Shop.shop_balance)).all()[0][0]
+			# cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1).all()
+			# person_num = self.session.query(models.ApplyCashHistory).distinct(models.ApplyCashHistory.shop_id).count()
+			# 增加今日新增平台总余额 充值0+在线支付3-微信在线支付退款记录8-支付宝在线支付退款记录9(-提现2   后面不减提现记录)
+			# modified by sunmh 2015年09月16日
+			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0)
 		elif level == 1:
-			cash_list = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0,shop_province=shop_province).all()
-			shop_list = self.session.query(models.Shop).filter_by(shop_province=shop_province).all()
-			cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1,shop_province=shop_province).all()
-			person_num = self.session.query(models.ApplyCashHistory).filter_by(shop_province=shop_province).distinct(models.ApplyCashHistory.shop_id).count()
-		for item in cash_list:
-			cash_on += item.value
-		for item in shop_list:
-			total_balance += item.shop_balance
+			cash_on = self.session.query(func.sum(models.ApplyCashHistory.value)).filter_by(has_done = 0,shop_province=shop_province).all()[0][0]
+			total_balance = self.session.query(func.sum(models.Shop.shop_balance)).filter_by(shop_province=shop_province).all()[0][0]
+			# cash_success_list = self.session.query(models.ApplyCashHistory).filter_by(has_done=1,shop_province=shop_province).all()
+			# person_num = self.session.query(models.ApplyCashHistory).filter_by(shop_province=shop_province).distinct(models.ApplyCashHistory.shop_id).count()
+			today_balance_base=self.session.query(func.sum(models.BalanceHistory.balance_value)).filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).\
+				filter(models.BalanceHistory.shop_province==shop_province)
+		today_balance_plus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([0,3])).all()[0][0]
+		today_balance_minus=today_balance_base.filter(models.BalanceHistory.balance_type.in_([8,9])).all()[0][0]
+		today_balance=format(float(0 if today_balance_plus==None else today_balance_plus)-float(0 if today_balance_minus==None else today_balance_minus),'.2f')
+		
 
 		cash_on = format(cash_on,'.2f')
 		total_balance = format(total_balance,'.2f')
 		return self.render('superAdmin/balance-detail.html',cash_times=cash_times,cash_success=cash_success,\
-			total_balance=total_balance,cash_on=cash_on,level=level,context=dict(page="detail"))
+			total_balance=total_balance,cash_on=cash_on,level=level,today_balance=today_balance,context=dict(page="detail"))
 
 	@tornado.web.authenticated
-	@SuperBaseHandler.check_arguments('action','page:int')
+	@SuperBaseHandler.check_arguments('action','page:int','shop_name')
 	def post(self):
 		# 当level=1时，表示区域管理员，只显示该区域的数据
 		# woody 8.3
 		level = self.current_user.level
 		shop_province = self.current_user.province
-
-		history = []
-		page =0
-		page_size=15
-		page_sum=0
-		count=0
+		if level != 0 and level != 1:
+			return self.send_fail('level error')
+		
 		action = self.args['action']
 		page = self.args['page']-1
-		history_list = []
-		total = 0
-		times = 0
-		persons = 0
-		pay = 0
-		left = 0
-		if level == 0:
-			balance_history = self.session.query(models.BalanceHistory).order_by(desc(models.BalanceHistory.create_time))
-		elif level == 1:
-			balance_history = self.session.query(models.BalanceHistory).filter_by(shop_province=shop_province).order_by(desc(models.BalanceHistory.create_time))
-		else:
-			return self.send_fail('level error')
-		if action == 'all_history':
-			history_list =balance_history .offset(page*page_size).limit(page_size).all()
-			count = balance_history.count()
-		elif action == 'recharge':
-			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 0).\
-				order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 0).all()
-				q1 = self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type = 1,is_cancel = 0).all()
-			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=0,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=0,
-					shop_province=shop_province).all()
-				q1= self.session.query(func.sum(models.BalanceHistory.balance_value)).filter_by(balance_type=1,is_cancel=0,
-					shop_province=shop_province).all()
-			else:
-				return self.send_fail('level error')
-
-			if q[0][0]:
-				total =q[0][0]
-			count = q[0][1]
-			if q1[0][0]:
-				pay = q1[0][0]
-			total = format(total,'.2f')
-			pay = format(pay,'.2f')
-			left = float(total)-float(pay)
-			left = format(left,'.2f')
-		elif action == 'online':
-			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 3)\
-				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type =3).all()
-				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type = 3).count()
-			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=3,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
-					shop_province=shop_province).all()
-				persons = self.session.query(models.BalanceHistory.customer_id).distinct().filter_by(balance_type=3,
-					shop_province=shop_province).count()
-			else:
-				return self.send_fail('level error')
-			if q[0][0]:
-				total = q[0][0]
-			total = format(total,'.2f')
-			count = q[0][1]
-			times = count
-		elif action == 'cash_history':
-			if level == 0:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type = 2)\
-				.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type = 2).all()
-			elif level == 1:
-				history_list = self.session.query(models.BalanceHistory).filter_by(balance_type=2,shop_province=shop_province).order_by(
-					desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
-				q = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).filter_by(balance_type=2,
-					shop_province=shop_province).all()
-			else:
-				return self.send_fail('level error')
-
-			count =q[0][1]
-			if q[0][0]:
-				total=q[0][0]
-			total = format(total,'.2f')
-			times = count
-
+		page_size=15
+		shop_name = self.args.get('shop_name','')
 		# add by jyj 2015-7-4:
-		elif action == 'balance_list':
-			if level == 0:
-				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
-						filter(models.BalanceHistory.shop_totalPrice >= 0,models.BalanceHistory.shop_totalPrice != None).order_by(desc(models.BalanceHistory.create_time))
-			elif level == 1:
-				balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).filter(
-					models.BalanceHistory.shop_totalPrice >=0,models.BalanceHistory.shop_totalPrice != None,models.Shop.shop_province==shop_province).order_by(
-					desc(models.BalanceHistory.create_time))
-			else:
-				return self.send_fail('level error')
-			history_list = balance_list.all()
+		# modified by sunmh :Cause it's different with others
+		if action == 'balance_list':
+			# 余额列表，取余额记录表中店的最新记录，得到该店的最新更新时间和余额
+			balance_list = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice).\
+				filter(models.BalanceHistory.shop_totalPrice >= 0,
+					models.BalanceHistory.shop_totalPrice != None,
+					models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+			if level == 1:
+				balance_list = balance_list.filter(models.BalanceHistory.shop_province==shop_province)
 
+			history_list = balance_list.order_by(desc(models.BalanceHistory.create_time)).all()
 			exist_id_list = []
 			history = []
 			for tmp in history_list:
@@ -1907,21 +2280,36 @@ class Balance(SuperBaseHandler):
 						item["total_price"] =  tmp[2]
 						item["shop_code"] = shop_code[0][0]
 						history.append(item)
-				else:
-					pass
 			history.sort(key=operator.itemgetter("total_price"),reverse=True)
-			if len(history)//page_size < len(history)/page_size:
-				page_sum = len(history)//page_size + 1
-			else:
-				page_sum = len(history)//page_size
+			count=len(history)
+			page_sum = int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
 			history = history[page*page_size:page*page_size+page_size:1]
 
 			return self.send_success(page_sum=page_sum,history = history)
 		##
-		else:
-			return self.send_error(404)
-		if not history_list:
-			print('[SuperBalance]history_list error')
+
+		# 1.先获取列表记录，包括列表展示和页数
+		# 基本查询 sunmh 2015年09月22日09:19:01
+		balance_history = self.session.query(models.BalanceHistory.shop_id,models.BalanceHistory.create_time,models.BalanceHistory.shop_totalPrice,models.BalanceHistory.balance_type,
+			models.BalanceHistory.balance_value,models.BalanceHistory.superAdmin_id,models.BalanceHistory.balance_record).\
+			filter(models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+		if level == 1:
+			balance_history = balance_history.filter(models.BalanceHistory.shop_province==shop_province)
+		if action == 'all_history':
+			pass
+		elif action == 'cash_history':
+			# 取提现对应的余额记录
+			balance_history=balance_history.filter(models.BalanceHistory.balance_type == 2)
+		elif action == 'recharge':
+			# 取充值的余额记录
+			balance_history=balance_history.filter(models.BalanceHistory.balance_type == 0)
+		elif action == 'online':
+			# 取在线支付的余额记录
+			balance_history=balance_history.filter(models.BalanceHistory.balance_type.in_([3,8,9]))
+
+		history_list =balance_history.order_by(desc(models.BalanceHistory.create_time)).offset(page*page_size).limit(page_size).all()
+		count = balance_history.count()
+		history = []
 		for temp in history_list:
 				shop = self.session.query(models.Shop).filter_by(id=temp.shop_id).first()
 				shop_name = shop.shop_name
@@ -1933,13 +2321,154 @@ class Balance(SuperBaseHandler):
 				shop_totalBalance = format(shop_totalBalance,'.2f')
 				record = ''
 				if temp.balance_type in [0,3]:
-					record = temp.balance_record[0:8]
+					record = temp.balance_record.split("：")[0]
 				history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
-					'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id,'record':record})
+								'balance_value':temp.balance_value,'type':temp.balance_type,'admin_id':temp.superAdmin_id,'record':record})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
-		return self.send_success(history = history,page_sum=page_sum,total = total,times = times,persons=persons,pay=pay,left = left)
 
-		# return self.send_success()
+		# 2.列表之外的信息
+		context={}
+		if action == 'all_history':
+			pass
+		elif action == 'cash_history':
+			q_cash = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).\
+				filter(models.BalanceHistory.balance_type == 2,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+			# 今日已提现 sunmh 2015年09月16日
+			q_cash_totay=q_cash.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0)
+			if level == 1:
+				q_cash = q_cash.filter(models.BalanceHistory.shop_province==shop_province)
+				q_cash_totay = q_cash_totay.filter(models.BalanceHistory.shop_province==shop_province)
+			q_cash=q_cash.all()
+			q_cash_totay=q_cash_totay.all()
+			total = format(0 if q_cash[0][0] ==None else q_cash[0][0],'.2f')
+			total_today=format(0 if q_cash_totay[0][0] ==None else q_cash_totay[0][0],'.2f')
+			context={'total_today':total_today,
+					 'total':total}
+		elif action == 'recharge':
+			q_charge = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).\
+				filter(models.BalanceHistory.balance_type == 0,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+			q_consume = self.session.query(func.sum(models.BalanceHistory.balance_value)).\
+				filter(models.BalanceHistory.balance_type == 1,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name),
+					   models.BalanceHistory.is_cancel == 0)
+			if level == 1:
+				q_charge = q_charge.filter(models.BalanceHistory.shop_province==shop_province)
+				q_consume= q_consume.filter(models.BalanceHistory.shop_province==shop_province)
+			# 增加今日充值和今日已消费
+			q_charge_today=q_charge.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
+			q_consume_today=q_consume.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
+			q_charge=q_charge.all()
+			q_consume=q_consume.all()
+			total_today=format(0 if q_charge_today[0][0] == None else q_charge_today[0][0] ,'.2f')
+			pay_today=format(0 if q_consume_today[0][0] == None else q_consume_today[0][0] ,'.2f')
+			total=format(0 if q_charge[0][0] == None else q_charge[0][0] ,'.2f')
+			pay = format(0 if q_consume[0][0] == None else q_consume[0][0] ,'.2f')
+			left = format(float(total)-float(pay),'.2f')
+			context={'total_today':total_today,'pay_today':pay_today,
+					 'total':total,'pay':pay,'left':left}
+		elif action == 'online':
+			q_pay = self.session.query(func.sum(models.BalanceHistory.balance_value),func.count()).\
+				filter(models.BalanceHistory.balance_type == 3,models.BalanceHistory.is_cancel==0,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+			persons = self.session.query(models.BalanceHistory.customer_id).distinct().\
+				filter(models.BalanceHistory.balance_type == 3,models.BalanceHistory.is_cancel==0,
+					   models.BalanceHistory.shop_name.like('%%%s%%' % shop_name))
+			if level == 1:
+				q_pay = q_pay.filter(models.BalanceHistory.shop_province==shop_province)
+				persons = persons.filter(models.BalanceHistory.shop_province==shop_province)
+			# 增加今日支付
+			q_pay_today=q_pay.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).all()
+			q_pay=q_pay.all()
+			persons_today=persons.filter(func.datediff(models.BalanceHistory.create_time,func.now())==0).count()
+			persons=persons.count()
+			times_today=0 if q_pay_today[0][1] == None else q_pay_today[0][1]
+			total_today=format(0 if q_pay_today[0][0] == None else q_pay_today[0][0] ,'.2f')
+			times=0 if q_pay[0][1] == None else q_pay[0][1]
+			total=format(0 if q_pay[0][0] == None else q_pay[0][0] ,'.2f')
+			context={'times_today':times_today,'total_today':total_today,'persons_today':persons_today,
+					 'times':times,'total':total,'persons':persons}
+		else:
+			return self.send_error(404)
+		return self.send_success(history = history,page_sum=page_sum,context=context)
+
+# 退款申请
+class ApplyRefund(SuperBaseHandler):
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('page?:int')
+	def get(self):
+		data = []
+		refund_list = self.session.query(models.ApplyRefund).filter_by(has_done=0).all()
+		if refund_list:
+			for item in refund_list:
+				order = self.session.query(models.Order.del_reason,models.Shop.shop_name).join(models.Shop,models.Shop.id==models.Order.shop_id)\
+				.filter(models.Order.id==item.order_id).first()
+				item_dict = {}
+				item_dict['id'] = item.id
+				item_dict['customer_id'] = item.customer_id
+				item_dict['refund_fee']  = item.refund_fee
+				item_dict['refund_type'] = '支付宝支付' if item.refund_type else '微信支付'
+				item_dict['refund_url']  = item.refund_url
+				item_dict['create_time'] = item.create_time.strftime("%Y-%m-%d %H:%M")
+				item_dict['order_num'] = item.order_num
+				item_dict['shop_name'] = order[1]
+				item_dict['reason'] = order[0]
+				data.append(item_dict)
+		return self.render('superAdmin/refund-apply.html',data=data,context=dict(page='refund'))
+
+	@SuperBaseHandler.check_arguments('apply_id','action')
+	def post(self):
+		action = self.args["action"]
+		apply_id = self.args['apply_id']
+		if len(apply_id) == 0:
+			return self.send_fail('申请记录为空！')
+		apply_id = int(apply_id)
+		refund_apply = self.session.query(models.ApplyRefund).filter_by(id=apply_id).first()
+		if action == "confirm":
+			if refund_apply.has_done == 1:
+				return self.send_fail('请勿重复处理！')
+			refund_apply.has_done = 1 #将申请退款变为已处理状态
+			###################################################################
+			# 9.17 woody
+			# 如果该订单是支付宝支付。将支付记录作废,并改变订单状态
+			# 如果是微信支付，则不需要修改
+			##################################################################
+			transaction_id = refund_apply.transaction_id
+			order = self.session.query(models.Order).filter_by(transaction_id=transaction_id).first()
+			if not order:
+				return self.send_fail('order not found')
+			if order.online_type == 'alipay':
+				order.del_reason = 'refund'
+				order.get_num(self.session,order.id)
+				order.status = 0 #将订单状态改为删除
+				balance_history = self.session.query(models.BalanceHistory).filter_by(transaction_id=transaction_id).first()
+				if not balance_history:
+					return self.write('old_balance_history not found')
+				shop_id = balance_history.shop_id
+				balance_value = balance_history.balance_value
+				shop = order.shop 
+				shop.shop_balance -= balance_value      #店铺余额减去订单总价，还原店铺余额
+				balance_history.is_cancel = 1            #将旧的支付记录作废
+				customer_id = balance_history.customer_id
+				name        = balance_history.name
+				shop_province = balance_history.shop_province
+				shop_name     = balance_history.shop_name
+				balance_record = '在线支付(支付宝)退款：订单' + order.num + '删除'
+				create_time   = datetime.datetime.now()
+				shop_totalPrice = shop.shop_balance
+				customer_totalPrice = balance_history.customer_totalPrice
+				transaction_id   = balance_history.transaction_id
+				available_balance = balance_history.available_balance
+				#同时生成一条退款记录
+				refund_history = models.BalanceHistory(customer_id=customer_id,shop_id=shop_id,shop_province=shop_province,shop_name=shop_name,name=name,
+					balance_record=balance_record,create_time=create_time,shop_totalPrice=shop_totalPrice,customer_totalPrice=customer_totalPrice,
+					transaction_id=transaction_id,balance_type=9,balance_value=balance_value)
+				self.session.add(refund_history)
+		elif action == "ignore":
+			refund_apply.has_done=-1
+		self.session.commit()
+		return self.send_success()
 
 # 余额 - 提现申请
 class ApplyCash(SuperBaseHandler):
@@ -1947,16 +2476,17 @@ class ApplyCash(SuperBaseHandler):
 	@tornado.web.authenticated
 	@SuperBaseHandler.check_arguments('action:?str','page?:int')
 	def get(self):
+		# woody
 		level = self.current_user.level
-		if level == 1:
-			return self.send_error(404)
+		shop_province = self.current_user.province
+		if level != 0 and level != 1:
+			return self.send_fail('level error')
 		page_size =10
 		page_sum =0
 		count = 0
 		history = []
 		apply_list = None
 		action = self.args['action']
-		nomore = False
 		page = 0
 		all_cash = 0
 		person_cash = 0
@@ -1964,17 +2494,25 @@ class ApplyCash(SuperBaseHandler):
 		all_num = 0
 		person_num = 0
 		company_num = 0
-		cash_history = []
-		try:
-			cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0).all()
-		except:
-			print('[SuperApplyCash]no cash_history')
-		if cash_history!=[]:
-			alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).all()
-			persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
-			.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).all()
-			companys = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)\
-			.filter(models.ApplyCashHistory.shop_auth.in_([2,3])).all()
+
+		cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0)
+		if level == 1:
+			cash_history = cash_history.filter_by(shop_province=shop_province)
+		# 提现申请界面上的汇总信息
+		if cash_history.count()!=0:
+			alls = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0)
+			persons = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).\
+				filter(models.ApplyCashHistory.shop_auth.in_([1,4]))
+			companys = self.session.query(func.sum(models.ApplyCashHistory.value),func.count()).filter_by(has_done = 0).\
+				filter(models.ApplyCashHistory.shop_auth.in_([2,3]))
+			if level == 1:
+				alls = alls.filter_by(shop_province=shop_province)
+				persons = persons.filter_by(shop_province=shop_province)
+				companys = companys.filter_by(shop_province=shop_province)
+
+			alls=alls.all()
+			persons=persons.all()
+			companys=companys.all()
 			if alls[0][0]:
 				all_num = alls[0][1]
 				all_cash = alls[0][0]
@@ -1989,7 +2527,7 @@ class ApplyCash(SuperBaseHandler):
 		person_cash=format(person_cash,'.2f')
 		company_cash=format(company_cash,'.2f')
 
-		cash_history = self.session.query(models.ApplyCashHistory).filter_by(has_done = 0)
+		# 提现界面上的列表展示
 		if 'page' in self.args:
 			page = int(self.args['page'])
 		if action == 'all_apply' or action == '[]':
@@ -2001,6 +2539,7 @@ class ApplyCash(SuperBaseHandler):
 		elif action == 'person':
 			apply_list = cash_history.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).offset(page*page_size).limit(page_size).all()
 			count = cash_history.filter(models.ApplyCashHistory.shop_auth.in_([1,4])).count()
+
 		if apply_list:
 			for temp in apply_list:
 				shop_name = self.session.query(models.Shop).filter_by(id=temp.shop_id).first().shop_name
@@ -2008,6 +2547,7 @@ class ApplyCash(SuperBaseHandler):
 					"shop_balance":temp.shop_balance,"create_time":temp.create_time.strftime('%Y-%m-%d %H:%M:%S'),"value":temp.value,\
 					"alipay_account":temp.alipay_account,"applicant_name":temp.applicant_name,'account_name':temp.account_name})
 		page_sum=int(count/page_size) if (count % page_size == 0) else int(count/page_size) + 1
+		# action='[]'表示是页面加载,其他的则是页面里的ajax get请求
 		if action!='[]':
 			return self.send_success(history=history,page_sum=page_sum)
 		else:
@@ -2047,7 +2587,7 @@ class ApplyCash(SuperBaseHandler):
 			balance_history = models.BalanceHistory(balance_record = '提现：管理员 '+name,balance_type =\
 				2,balance_value = apply_cash.value ,customer_id = apply_cash.shop.admin.accountinfo.id,name = \
 				name,shop_id = apply_cash.shop_id,shop_totalPrice = shop.shop_balance,superAdmin_id = \
-				self.current_user.id,available_balance = shop.available_balance,shop_province=shop.shop_province)
+				self.current_user.id,available_balance = shop.available_balance,shop_province=shop.shop_province,shop_name=shop.shop_name)
 			self.session.add(balance_history)
 			self.session.commit()
 		return self.send_success(history = history)
@@ -2059,6 +2599,7 @@ class CheckCash(SuperBaseHandler):
 		level = self.current_user.level
 		if level == 1:
 			return self.send_error(404)
+
 		return self.render("superAdmin/balance-check.html",level=level,context=dict(page='check'))
 
 	@tornado.web.authenticated
@@ -2125,12 +2666,18 @@ class CheckCash(SuperBaseHandler):
 			check_profit_len = check_profit.count()
 
 			if check_profit_len == 0:
-				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3])).order_by(models.BalanceHistory.create_time).first().create_time
+				check_update_start = self.session.query(models.BalanceHistory).filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.is_cancel==0).order_by(models.BalanceHistory.create_time).first()
+				if not check_update_start:
+					page_sum = 0
+					output_data = []
+					return self.send_success(output_data=output_data,page_sum = page_sum)
+				check_update_start = check_update_start.create_time				
 				check_update_start  = check_update_start - datetime.timedelta(1)
 				check_update_start = datetime.datetime(check_update_start.year, check_update_start.month, check_update_start.day, 23,59,59)
 			else:
 				check_profit_last  = check_profit.first().create_time
 				check_update_start = datetime.datetime(check_profit_last.year, check_profit_last.month, check_profit_last.day, 23,59,59)
+
 			# add by jyj 2015-7-7
 			now_time = time.localtime(time.time())
 			now_time = datetime.datetime(*now_time[:6])
@@ -2138,7 +2685,7 @@ class CheckCash(SuperBaseHandler):
 			##
 
 			balance_history_time = self.session.query(models.BalanceHistory).\
-				   filter(models.BalanceHistory.balance_type.in_([0,3])).\
+				   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.is_cancel==0).\
 				   filter(models.BalanceHistory.create_time > check_update_start,models.BalanceHistory.create_time < now_time).\
 				   group_by(func.date_format(models.BalanceHistory.create_time,"%Y-%m-%d")).\
 				   order_by(models.BalanceHistory.create_time)
@@ -2156,8 +2703,8 @@ class CheckCash(SuperBaseHandler):
 				end_time = datetime.datetime(tomorrow.year, tomorrow.month, tomorrow.day, 0,0,0)
 
 				balance_his = self.session.query(models.BalanceHistory).\
-						   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.create_time >= start_time,\
-						   	models.BalanceHistory.create_time < end_time);
+						   filter(models.BalanceHistory.balance_type.in_([0,3]),models.BalanceHistory.is_cancel==0,models.BalanceHistory.create_time >= start_time,\
+						   models.BalanceHistory.create_time < end_time);
 				his_list = balance_his.all()
 
 				for temp in his_list:
@@ -2268,11 +2815,9 @@ class ShopBalanceDetail(SuperBaseHandler):
 
 		cash_applying = self.session.query(models.ApplyCashHistory.value).filter(models.ApplyCashHistory.has_done == 0,models.ApplyCashHistory.shop_id == shop_id).first()
 		if(cash_applying == None):
-			cash_applying = 0
-			cash_applying = format(cash_applying,'.2f')
+			cash_applying = format(0,'.2f')
 		else:
-			cash_applying = cash_applying[0]
-			cash_applying = format(cash_applying,'.2f')
+			cash_applying = format(cash_applying[0],'.2f')
 
 		balance_history = self.session.query(models.BalanceHistory).\
 				   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,2,3])).order_by(desc(models.BalanceHistory.create_time)).offset(0).limit(1)
@@ -2289,7 +2834,6 @@ class ShopBalanceDetail(SuperBaseHandler):
 			shop_totalBalance = format(shop_totalBalance,'.2f')
 
 			history.append({'shop_name':shop_name,'balance':shop_totalBalance,'cash_applying':cash_applying})
-
 		return self.render("superAdmin/shop-balance-detail.html",level=level,history = history,context=dict())
 
 	@tornado.web.authenticated
@@ -2307,7 +2851,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 		shop_id = self.session.query(models.Shop.id).filter(models.Shop.shop_code == shop_code).first()
 		shop_id = shop_id[0]
 
-		record_num = balance_history = self.session.query(models.BalanceHistory).\
+		record_num = balance_history = self.session.query(models.BalanceHistory.id).\
 				   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,2,3])).order_by(desc(models.BalanceHistory.create_time)).count()
 		page_sum = record_num/page_size
 		if page == 0:  #如果前台传来的page=0，表示只获取page_sum
@@ -2315,11 +2859,9 @@ class ShopBalanceDetail(SuperBaseHandler):
 
 		cash_applying = self.session.query(models.ApplyCashHistory.value).filter(models.ApplyCashHistory.has_done == 0).first()
 		if(cash_applying == None):
-			cash_applying = 0
-			cash_applying = format(cash_applying,'.2f')
+			cash_applying = format(0,'.2f')
 		else:
-			cash_applying = cash_applying[0]
-			cash_applying = format(cash_applying,'.2f')
+			cash_applying = format(cash_applying[0],'.2f')
 
 		balance_history = self.session.query(models.BalanceHistory).\
 				   filter(models.BalanceHistory.shop_id == shop_id,models.BalanceHistory.balance_type.in_([0,2,3])).order_by(desc(models.BalanceHistory.create_time)).offset((page-1)*page_size).limit(page_size)
@@ -2340,6 +2882,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 			record = ''
 			order_num = ''
 			order_num_txt = ''
+			user_id = 0
 			if temp.balance_type == 3:
 				record = temp.balance_record[0:4] + ':'
 				if temp.balance_record[5:7] == '支付':
@@ -2347,6 +2890,7 @@ class ShopBalanceDetail(SuperBaseHandler):
 				else:
 					order_num = temp.balance_record[11:32]
 				name = temp.name[0:6]
+				user_id = temp.customer_id
 				order_num_txt = "-订单编号"
 			elif temp.balance_type == 2:
 				record = "提现:"
@@ -2354,12 +2898,13 @@ class ShopBalanceDetail(SuperBaseHandler):
 			elif temp.balance_type == 0:
 				record = "用户充值:"
 				name = temp.name
+				user_id = temp.customer_id
 
 			balance_value = format(temp.balance_value,'.2f')
 
 			history.append({'shop_name':shop_name,'shop_code':shop_code,'time':create_time,'balance':shop_totalBalance,\
 					'balance_value':balance_value,'type':temp.balance_type,'record':record,'order_num':order_num,\
-					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying})
+					'name':name,'order_num_txt':order_num_txt,'cash_applying':cash_applying,'user_id':user_id})
 		return self.send_success(page_sum=page_sum,history = history)
 ##
 
@@ -2417,6 +2962,7 @@ class AdminManager(SuperBaseHandler):
 		elif action == 'all':
 			data = []
 			admin_list = self.session.query(models.SuperAdmin).filter_by(level=1).all()
+			print(admin_list)
 			for item in admin_list:
 				temp = {}
 				province = self.code_to_text("province",item.province) if  item.province else ""
@@ -2449,3 +2995,59 @@ class AdminManager(SuperBaseHandler):
 			return self.send_success()
 		else:
 			return self.send_error(404)
+
+
+# 将平台用户置为新的用户，以便进行测试
+class MakeNewUser(SuperBaseHandler):
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('action?:str')
+	def get(self):
+		action = self.args.get('action',None)
+		user_list = []
+		level = 0
+		if_super = True
+		super_user = self.session.query(models.SuperAdmin).all()
+		if action == 'backup':
+			for item in super_user:
+				item.wx_unionid_back = item.accountinfo.wx_unionid
+				item.wx_openid_back  = item.accountinfo.wx_openid
+			self.session.commit()
+			return self.send_success()
+		for item in super_user:
+			# print(item.id,item.accountinfo.nickname)
+			if item.accountinfo.wx_unionid  is None:
+				isnew = True
+			else:
+				isnew = False
+			item_info = {'id':item.id,'nickname':item.accountinfo.nickname,'isnew':isnew}
+			user_list.append(item_info)
+		# print(user_list)
+		return self.render('superAdmin/new_user.html',level  = 0,if_super = if_super,user_list=user_list)
+
+	@tornado.web.authenticated
+	@SuperBaseHandler.check_arguments('user_id','action')
+	def post(self):
+		user_id = self.args.get('user_id')
+		action  = self.args.get('action',None)
+		user = self.session.query(models.SuperAdmin).filter_by(id = user_id).first()
+		if not user:
+			return self.send_fail("该用户不存在")
+		if action == 'modify':
+			user.accountinfo.wx_openid = None
+			user.accountinfo.wx_unionid = None
+		elif action == 'recover':
+			# print('recover')
+			wx_unionid = user.wx_unionid_back
+			wx_openid  = user.wx_openid_back
+			#找到生成的新用户，将unionid和openid清零，以便还原之前的数据
+			new_user = self.session.query(models.Accountinfo).filter_by(wx_unionid=wx_unionid).first()
+			if new_user and new_user.id != user_id:
+				new_user.wx_unionid = None
+				new_user.wx_openid  = None
+			#将旧用户信息还原
+			user.accountinfo.wx_unionid = wx_unionid
+			user.accountinfo.wx_openid  = wx_openid
+		else:
+			return self.send_fail(error_text = 'action error!!!')
+		self.session.commit()
+		return self.send_success()

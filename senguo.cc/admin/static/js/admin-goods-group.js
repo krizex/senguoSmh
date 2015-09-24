@@ -1,4 +1,4 @@
-var curGroup = null,aLis=[],aPos=[],zIndex=1;
+var curGroup = null,aLis=[],aPos=[],zIndex=1,sLeft=0;
 $(document).ready(function(){
     $(document).on("click",function(e){
         if($(e.target).closest(".sw-er-tip").size()==0){
@@ -7,12 +7,13 @@ $(document).ready(function(){
     });
     //初始化组
     var groupList = $(".group-lst").children(".self-group");
+    sLeft = Math.round($(".group-lst").children().first().position().left);
     for(var i=0; i<groupList.size(); i++){
         var obj = groupList[i];
         obj.zIndex = 1;
         obj.index = i;
+        $(obj).css({left:sLeft+"px",top:$(obj).position().top+"px",zIndex:"1"});
         var pos = getPos($(obj));
-        $(obj).css({left:pos.left+"px",top:pos.top+"px",zIndex:"1"});
         aPos.push(pos);
         aLis.push(obj);
         drag(obj);
@@ -49,7 +50,8 @@ $(document).ready(function(){
     $(this).closest(".right-link").children(".sw-er-tip").toggleClass("invisible");
 }).on("mousedown mousemove",".sw-er-tip",function(e){
     e.stopPropagation();
-}).on("click",".del-group",function(){
+}).on("click",".del-group",function(e){
+    e.stopPropagation();
     curGroup = $(this).closest("li");
     $("#del-win").modal('show');
 }).on("click",".ok-del-group",function(){
@@ -183,10 +185,11 @@ $(document).ready(function(){
 }).on("click","#add-goods",function(){//添加商品
     window.location.href="/admin/goods/all?do=addgoods";
 });
+
 //drag
 function drag(obj){
     obj.onmousedown=function(ev){
-        if($(ev.target).closest(".right-link").length>0){
+        if($(ev.target).closest(".forbid-click").length>0){
         }else{
             $(".sw-er-tip").addClass("invisible");
             var $this = $(obj);
@@ -238,7 +241,7 @@ function drag(obj){
 }
 //获取元素位置
 function getPos($obj){
-    return $obj.position();
+    return {left:parseInt($obj.css("left")),top:parseInt($obj.css("top"))};
 }
 //获取两个元素的距离
 function getDis($a,$b){

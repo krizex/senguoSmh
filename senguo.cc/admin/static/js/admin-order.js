@@ -235,6 +235,134 @@ $(document).ready(function(){
         }
         else return Tip(res.error_text);
     });
+}).on("click",".order-export",function(){
+    $(".order-export-box").modal("show");
+}).on("click",".order-export-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false
+    }
+    $this.attr({"data-flag":"1"});
+    var status=$(".export-status").attr("data-id");
+    var type=$(".export-type").attr("data-id");
+    var pay=$(".export-pay").attr("data-id");
+    var date1=$(".export-date1").val().trim();
+    var date2=$(".export-date2").val().trim();
+    var money1=$(".export-money1").val().trim();
+    var money2=$(".export-money2").val().trim();
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
+    if(!type){
+        type = 9
+    }
+    if(!date1){
+        return Tip("请选择起始时间");
+    }
+    if(!date2){
+        return Tip("请选择截止时间");
+    }
+    if(date1>date2){
+        return Tip("截止时间不能大于起始时间");
+    }
+    if(money1&&!testNum.test(money1)){
+        return Tip("起始金额只能为数字");
+    }
+    if(money2&&!testNum.test(money2)){
+        return Tip("截止金额只能为数字");
+    }
+    var data={
+        order_type:type,
+        order_status:status,
+        order_pay:pay,
+        date1:date1,
+        date2:date2,
+        money1:money1,
+        money2:money2
+    };
+    var args={
+        data:data
+    };
+    var url="/admin/orderExport?order_type="+type+"&order_status="+status+"&order_pay="+pay+"&date1="+date1+"&date2="+date2+"&money1="+money1+"&money2="+money2;
+    window.open(url)
+    $this.attr({"data-flag":""});
+}).on('click','.condition-list2 li',function(){
+    $(this).closest("ul").prev("button").children("em").html($(this).text()).attr("data-id",$(this).find('a').attr("data-id"));
+}).on("click",".export-notice",function(){
+    var $this=$(this);
+     if($this.attr("data-flag")=="1"){
+        $(".export-box").addClass("hide");
+        $this.attr({"data-flag":""}).text("展开高级选项");
+    }else{
+        $(".export-box").removeClass("hide");
+        $this.attr({"data-flag":"1"}).text("隐藏高级选项");
+    } 
+}).on("click","#self-money-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false;
+    }
+    var url='';
+    var action='edit_min_charge_self';
+    var money=parseInt($("#self-money").val().trim());
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
+    if(!testNum.test(money)){
+        return Tip("金额只能为正整数");
+    }
+    var args={
+        action:action,
+        data:{min_charge_self:money}
+    };
+    $this.attr({"data-flag":"1"});
+    $.postJson(url,args,function(res){
+            if(res.success){
+                $this.attr({"data-flag":""});
+                $(".self-money-show").text(parseInt(money));
+                var parent=$this.parents('.omg_item');
+                parent.find('.show_item').show();
+                parent.find('.edit_item').addClass('hidden');
+                parent.find('.show_value').text(freight);
+                parent.addClass('edit_item_box');
+            }
+            else {
+                $this.attr({"data-flag":""});
+                return Tip(res.error_text);
+            }
+        },
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
+    )
+}).on("click","#self-freight-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false;
+    }
+    var url='';
+    var action='edit_freight_self';
+    var money=parseInt($("#self-freight").val().trim());
+    var testNum = /^[0-9]\d*(\.\d+)?$/;
+    if(!testNum.test(money)){
+        return Tip("金额只能为正整数");
+    }
+    var args={
+        action:action,
+        data:{freight_self:money}
+    };
+    $this.attr({"data-flag":"1"});
+    $.postJson(url,args,function(res){
+            if(res.success){
+                $this.attr({"data-flag":""});
+                $(".self-freight-show").text(parseInt(money));
+                var parent=$this.parents('.omg_item');
+                parent.find('.show_item').show();
+                parent.find('.edit_item').addClass('hidden');
+                parent.find('.show_value').text(freight);
+                parent.addClass('edit_item_box');
+            }
+            else {
+                $this.attr({"data-flag":""});
+                return Tip(res.error_text);
+            }
+        },
+        function(){return Tip('网络好像不给力呢~ ( >O< ) ~！')}
+    )
 });
 
 var link='/admin/order';
@@ -247,8 +375,11 @@ function addActive(target,id){
     }
 }
 function orderSearch(){
-    var order_num=Int($('.search-con').val());
-    var url='/admin/searchorder?action=order&&id='+order_num;
+    var order_num=$('.search-con').val();
+    if($.trim(order_num)==""){
+        return Tip("请输入订单编号，收货人姓名或收货人电话");
+    }
+    var url='/admin/searchorder?action=order&&wd='+order_num;
     window.open(url);
 }
 

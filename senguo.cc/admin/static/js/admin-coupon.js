@@ -1,14 +1,12 @@
 var type = 0,goods_list = null;
 $(document).ready(function () {
-    $('.action-btn').each(function () {
-        var $this = $(this);
-        var status = $this.data('status');
-        if (status == 1) {
-            $this.addClass('bg-pink').text('停用');
-        }
-        else {
-            $this.addClass('bg-green').text('启用');
-        }
+    $('.action-mode').each(function(){
+        var $this=$(this);
+        var status=$this.data('status');
+        if(status==1)
+            $this.find('.work-mode').show();
+        else $this.find('.stop-mode').show();
+
     });
     goods_list=eval($("#goods").val());
     if($("#coupon_detail").size()>0){//详情
@@ -31,8 +29,8 @@ $(document).ready(function () {
                 Tip("优惠券链接已经复制到剪切板");
             }
         });
-  var id=parseInt($.getUrlParam("coupon_type"));
-  if(id){
+    var id=parseInt($.getUrlParam("coupon_type"));
+    if(id){
         type = id;
         if(id==0){
             $(".chinav li").removeClass("active").eq(id).addClass("active");
@@ -41,7 +39,7 @@ $(document).ready(function () {
            $(".chinav li").removeClass("active").eq(id).addClass("active");
             $(".wrap-tb table").addClass("hidden").eq(id).removeClass("hidden");
         }
-  }
+    }
 
     $(".er-code-img").each(function(){
         var _this = $(this);
@@ -89,7 +87,7 @@ $(document).ready(function () {
         tip_info="优惠券一旦关闭将不能重新开启,你确定要关闭所有优惠券吗？";
     }
     if(confirm(tip_info)){
-            var $this = $(this);
+        var $this = $(this);
         $this.attr("data-flag", "on");
         if($this.attr("data-flag")=="off"){
                 return false;
@@ -108,14 +106,14 @@ $(document).ready(function () {
                     else{
                          $("#coupon_hidden").addClass("hidden");
                     }
-                    $this.attr("data-flag", "off");
-                    if (status == 1) {
-                        $this.attr({'data-status': 0}).addClass('bg-green').removeClass('bg-pink').text('启用');
-                        $(".coupon-show-txt").children("span").html('停用');
+                    $this.attr("data-flag","on");
+                    if(status==1){
+                        $this.attr({'data-status':0}).find('.stop-mode').show().siblings('.work-mode').hide();
+                        $(".coupon-status").text("停用");
                     }
-                    else if (status == 0) {
-                        $this.attr({'data-status': 1}).removeClass('bg-green').addClass('bg-pink').text('停用');
-                        $(".coupon-show-txt").children("span").html('启用');
+                    else if(status == 0){
+                        $this.attr({'data-status':1}).find('.stop-mode').hide().siblings('.work-mode').show();
+                        $(".coupon-status").text("启用");
                     }
                 }
                 else {
@@ -128,11 +126,9 @@ $(document).ready(function () {
                 Tip('网络好像不给力呢~ ( >O< ) ~');
             }
         );
-
-
     }
 }).on('click', '.close_one', function(e){
-        e.stopPropagation();
+    e.stopPropagation();
     if(confirm('你确定要关闭该优惠券吗？')){
     var $this = $(this);
     var coupon_id = $(this).attr("data-id");
@@ -145,7 +141,7 @@ $(document).ready(function () {
         function (res) {
             if (res.success) {
                 $this.closest('tr').addClass('dis-coupon');
-                Tip("成功关闭优惠券!");
+                Tip("成功关闭优惠券");
             }
             else {
                 Tip(res.error_text);
@@ -249,16 +245,16 @@ $(document).ready(function () {
         insertcoupon(selected_status,pagenow-1);
     }
 }).on('click','.next-page',function(){
-     var pagenow=parseInt($('.page-now').text());
-     var pagetotal=parseInt($('.page-total').text());
-     var select_rule=$(".use_goods_group").attr("data-id");
-     if (pagenow==pagetotal){
+    var pagenow=parseInt($('.page-now').text());
+    var pagetotal=parseInt($('.page-total').text());
+    var select_rule=$(".use_goods_group").attr("data-id");
+    if (pagenow==pagetotal){
         Tip("当前已经是最后一页，不能再向后翻页");
-     }
-     else{
+    }
+    else{
         $('.page-now').text(pagenow+1);
         insertcoupon(select_rule,pagenow+1);
-     }
+    }
 }).on("click",".jump-to",function(){
     var inputpage=parseInt($(".input-page").val())
     var pagetotal=parseInt($('.page-total').text());
@@ -289,112 +285,112 @@ function insertcoupon(selected_status,page){
     var url='';
     var action="details";
     var data={
-   action:action,coupon_type:coupon_type,coupon_id:coupon_id,page:page,select_rule:selected_status
+    action:action,coupon_type:coupon_type,coupon_id:coupon_id,page:page,select_rule:selected_status
     }
-    var  args={
+    var args={
         action:action,data:data
     }
     $.postJson(url,args,function(res){
-                if(res.success){
-                        var coupons = res.output_data;
-                        $('#list-coupons').empty();
-                        if(coupons.length!=0){
-                            for(var i=0; i<coupons.length; i++){
-                                var coupon = coupons[i];
-                                var trow='';
-                                var temp=null;
-                            if(coupon.coupon_status==0 && coupon.close==0 ){
-                                        trow='<tr>'
-                                                +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                +'<td>{{coupon_money}}元</td>'
-                                                +'<td>未领取</td>'
-                                                +'<td>未领取</td>'
-                                                +'<td>未领取</td>'
-                                                +'<td>订单号:<a href="javascript:;">无</a></td>'
-                                            +'</tr>';
-                                        var render=template.compile(trow);
-                                        temp=render({
-                                            coupon_money:coupon.coupon_money,
-                                            coupon_key:coupon.coupon_key
-                                        });
-                                }
-                                else if (coupon.coupon_status==1) {
-                                        trow='<tr class=" ">'
-                                                +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                +'<td>{{coupon_money}}元</td>'
-                                                +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
-                                                +'<td>{{get_date}}</td>'
-                                                +'<td>未使用</td>'
-                                                +'<td>订单号:<a href="javascript:;">无</a></td>'
-                                            +'</tr>';
-                                        var render=template.compile(trow);
-                                        temp=render({
-                                            coupon_money:coupon.coupon_money,
-                                            nickname:coupon.nickname,
-                                            coupon_id:coupon.coupon_id,
-                                            get_date:coupon.get_date,
-                                            coupon_key:coupon.coupon_key
-                                        });
-                                }
-                                else if (coupon.coupon_status==2){
-                                       trow='<tr class=" ">'
-                                                    +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                    +'<td>{{coupon_money}}元</td>'
-                                                    +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
-                                                    +'<td>{{get_date}}</td>'
-                                                    +'<td>{{use_date}}</td>'
-                                                    +'<td>订单号:<a href="javascript:;">{{order_id}}</a></td>'
-                                                +'</tr>';
-                                        var render=template.compile(trow);
-                                        temp=render({
-                                            coupon_money:coupon.coupon_money,
-                                            nickname:coupon.nickname,
-                                            coupon_id:coupon.coupon_id,
-                                            get_date:coupon.get_date,
-                                            order_id:coupon.order_id,
-                                            use_date:coupon.use_date,
-                                            coupon_key:coupon.coupon_key
-                                        });
-                                }
-                                else if ((coupon.coupon_status==0&&coupon.close==1 )||(coupon.coupon_status==3&&coupon.close==0)){
-                                            trow='<tr class=" dis-coupon">'
-                                                    +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
-                                                    +'<td>{{coupon_money}}元</td>'
-                                                    +'<td>已失效</td>'
-                                                    +'<td>已失效</td>'
-                                                    +'<td>已失效</td>'
-                                                    +'<td>已失效:<a href="javascript:;">无</a></td>'
-                                                +'</tr>';
-                                            var render=template.compile(trow);
-                                            temp=render({
-                                                coupon_money:coupon.coupon_money,
-                                                coupon_key:coupon.coupon_key
-                                            });
-                                }
-                                $("#list-coupons").append(temp);
-                                if($("#coupon_detail").size()>0){//详情
-                                            $(".copy-coupon-code").zclip({
-                                                    path: "/static/js/third/ZeroClipboard.swf",
-                                                    copy: function(){
-                                                        return $(this).prev('span').html();
-                                                    },
-                                                    afterCopy:function(){
-                                                        Tip("优惠券码已经复制到剪切板");
-                                                    }
-                                                });
-                                            }
+        if(res.success){
+            var coupons = res.output_data;
+            $('#list-coupons').empty();
+            if(coupons.length!=0){
+                for(var i=0; i<coupons.length; i++){
+                    var coupon = coupons[i];
+                    var trow='';
+                    var temp=null;
+                    if(coupon.coupon_status==0 && coupon.close==0 ){
+                        trow='<tr>'
+                                +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                +'<td>{{coupon_money}}元</td>'
+                                +'<td>未领取</td>'
+                                +'<td>未领取</td>'
+                                +'<td>未领取</td>'
+                                +'<td>订单号:<a href="javascript:;">无</a></td>'
+                            +'</tr>';
+                        var render=template.compile(trow);
+                        temp=render({
+                            coupon_money:coupon.coupon_money,
+                            coupon_key:coupon.coupon_key
+                        });
+                    }
+                    else if (coupon.coupon_status==1) {
+                        trow='<tr class=" ">'
+                                +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                +'<td>{{coupon_money}}元</td>'
+                                +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
+                                +'<td>{{get_date}}</td>'
+                                +'<td>未使用</td>'
+                                +'<td>订单号:<a href="javascript:;">无</a></td>'
+                            +'</tr>';
+                        var render=template.compile(trow);
+                        temp=render({
+                            coupon_money:coupon.coupon_money,
+                            nickname:coupon.nickname,
+                            coupon_id:coupon.coupon_id,
+                            get_date:coupon.get_date,
+                            coupon_key:coupon.coupon_key
+                        });
+                    }
+                    else if (coupon.coupon_status==2){
+                        trow='<tr class=" ">'
+                                    +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                    +'<td>{{coupon_money}}元</td>'
+                                    +'<td>{{nickname}}<br>ID:{{coupon_id}}</td>'
+                                    +'<td>{{get_date}}</td>'
+                                    +'<td>{{use_date}}</td>'
+                                    +'<td>订单号:<a href="javascript:;">{{order_id}}</a></td>'
+                                +'</tr>';
+                        var render=template.compile(trow);
+                        temp=render({
+                            coupon_money:coupon.coupon_money,
+                            nickname:coupon.nickname,
+                            coupon_id:coupon.coupon_id,
+                            get_date:coupon.get_date,
+                            order_id:coupon.order_id,
+                            use_date:coupon.use_date,
+                            coupon_key:coupon.coupon_key
+                        });
+                    }
+                    else if ((coupon.coupon_status==0&&coupon.close==1 )||(coupon.coupon_status==3&&coupon.close==0)){
+                        trow='<tr class=" dis-coupon">'
+                                +'<td class="relative"><span>{{coupon_key}}</span><span class="copy-coupon-code">复制</span></td>'
+                                +'<td>{{coupon_money}}元</td>'
+                                +'<td>已失效</td>'
+                                +'<td>已失效</td>'
+                                +'<td>已失效</td>'
+                                +'<td>已失效:<a href="javascript:;">无</a></td>'
+                            +'</tr>';
+                        var render=template.compile(trow);
+                        temp=render({
+                            coupon_money:coupon.coupon_money,
+                            coupon_key:coupon.coupon_key
+                        });
+                    }
+                    $("#list-coupons").append(temp);
+                    if($("#coupon_detail").size()>0){//详情
+                        $(".copy-coupon-code").zclip({
+                            path: "/static/js/third/ZeroClipboard.swf",
+                            copy: function(){
+                                return $(this).prev('span').html();
+                            },
+                            afterCopy:function(){
+                                Tip("优惠券码已经复制到剪切板");
                             }
-                        }
-                        else{
-                            temp= '<tr><td colspan="6" class="txt-center c999">当前没有优惠券</td></tr>';
-                            // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
-                            $("#list-coupons").append(temp);
-                        }
-                        }
-                        else Tip(error_text);
-            }, function () {
-            Tip('网络好像不给力呢~ ( >O< ) ~');
-        });
+                        });
+                    }
+                }
+            }
+            else{
+                temp= '<tr><td colspan="6" class="txt-center c999">当前没有优惠券</td></tr>';
+                // $item.find("#text").html("没有相关查询的优惠券信心呢～（O.O）～");
+                $("#list-coupons").append(temp);
+            }
+        }
+        else Tip(error_text);
+    }, function () {
+                Tip('网络好像不给力呢~ ( >O< ) ~');
+    });
 }
 function addCoupon(type){
     var currentdate=getNowFormatDate();
@@ -570,7 +566,7 @@ function addCoupon(type){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                Tip('新建优惠券成功!');
+                Tip('新建优惠券成功');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+type;
                     $(".ok-coupon").attr("data-flag","on");
@@ -840,7 +836,7 @@ function editCoupon(type,coupon_id,edit_status){
     $.postJson(url,args,
         function(res){
             if(res.success){
-                Tip('编辑优惠券成功!');
+                Tip('编辑优惠券成功');
                 setTimeout(function(){
                     window.location.href="/admin/marketing?action=coupon&coupon_type="+res.coupon_type;
                     $(".ok-editcoupon").attr("data-config","on");

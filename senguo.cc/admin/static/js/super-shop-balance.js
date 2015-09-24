@@ -66,12 +66,12 @@ function showHistory(page){
 					var item2 = '<td width="17%">{{record}}{{name}}</td>';
 				}
 				else{
-					var item2 = '<td width="17%">{{record}}<a href="/super/user" title="点击查看该用户详情" target="_blank" class=" text-blue">{{name}}</a></td>';
+					var item2 = '<td width="17%">{{record}}<a href="/super/user?out_link=true&&data_id={{user_id}}" title="点击查看该用户详情" target="_blank" class=" text-blue">{{name}}</a></td>';
 				}
 				var item= '<tr>'
 					 +'<td class="pl10" width="20%">店铺：<a href="/{{shop_code}}" title="点击查看该店铺商品首页" target="_blank" class=" text-blue">{{shop_name}}</a></td>'
 					 +item2
-					 +'<td width="21%">{{order_num_txt}}<a href="/super/orderManage/" title="点击查看该订单详情" target="_blank" class="text-blue">{{order_num}}</a></td>'
+					 +'<td width="21%">{{order_num_txt}}<a class="text-blue">{{order_num}}</a></td>'
 					 +'<td class="text-gray" width="15%">{{time}}</td>'
 					 +'<td class="txt-ar" width="12%"><span class="orange-txt">{{balance_value}}</span>元</td>'
 					 +'<td class="txt-ar pr10" width="15%"><span class="green-txt">{{balance}}</span>元</td>'
@@ -83,7 +83,8 @@ function showHistory(page){
 		        	shop_name = shop_name.slice(0,7) + '...';
 		        }
 		        var record = his["record"];
-		        var name = his["name"]
+		        var name = his["name"];
+		        var user_id = his["user_id"];
 		        if(name.length >=6){
 		        	name =name.slice(0,5)+'...';
 		        }
@@ -109,7 +110,8 @@ function showHistory(page){
 		            order_num:order_num,
 		            time:time,
 		            balance_value:balance_value,
-		            balance:balance
+		            balance:balance,
+		            user_id:user_id
 		        });
 		        $('.tb-account').append(list_item);
 		    }

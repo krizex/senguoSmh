@@ -11,6 +11,19 @@ function Tip(text){
         $("#zb-tip").addClass("hidden");
     },3000);
 }
+$(document).ready(function(){
+    if($(".scrollUpf").size()>0){
+        $(window).scroll(function(){
+            if($(window).scrollTop()>150){
+                $(".scrollUpf").show();
+            }else{
+                $(".scrollUpf").hide();
+            }
+        });
+    }
+}).on("click","#scrollUp",function(){
+    $('html,body').animate({scrollTop: '0px'}, 300);
+});
 (function ($) {
     $.getUrlParam = function (name, default_value) {
         var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
@@ -33,17 +46,26 @@ $.postJson = function(url, args,successCall, failCall, alwaysCall){
     req.always(alwaysCall);
 };
 
-$.getItem=function(url,success){
-    $.get(url,success);
+$.getItem = function(url, success) {
+    $.ajax({
+        url: url,
+        type: "get",
+        dataType: "html",
+        success: success,
+        error: function() {
+            Tip("您的网络暂时不通畅，请稍候再试");
+        },
+        fail: function() {
+            Tip("您的网络暂时不通畅，请稍候再试");
+        }
+    });
 };
-
 (function ($) {
     $.getNum=function(text) {
         var value = text.replace(/[^0-9]/ig, "");
         return value;
     }
 })(jQuery);
-
 
 function Int(target){
     target=parseInt(target);
@@ -56,6 +78,7 @@ function checkTime(i)
     {i="0" + i}
     return i
 }
+
 function percentNum(num,num2){
     return Math.round(num/num2*10000)/100.00+"%";
 }

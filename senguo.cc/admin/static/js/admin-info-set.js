@@ -228,6 +228,7 @@ function initBmap(){
     var lat = parseFloat($("#lat").val());
     var lon = parseFloat($("#lon").val());
     var marker = null;
+    var myCompOverlay = null;
     var marker1 = null;
     var map1 = null;
     var isHand = false;
@@ -294,9 +295,10 @@ function initBmap(){
         if(!isHand){
             var address = $("#provinceAddress").text()+$("#cityAddress").text()+$("#addressDetail").val();
             getPointByName(map, myGeo, address,true);
+        }else{
+            infoEdit($("#save-lbs"));
         }
     });
-
     function getPointByName(map, myGeo, address,flag){
         myGeo.getPoint(address, function(point){
             if (point) {
@@ -305,7 +307,7 @@ function initBmap(){
                 map.centerAndZoom(point, 17);
                 $("#info_address").attr("data-lng",point.lng).attr("data-lat", point.lat);
                 if(flag){
-                    initPoint(map,point,myGeo,flag);
+                    initPoint(map,point,myGeo,true);
                 }else{
                     initPoint(map,point,myGeo);
                 }
@@ -318,9 +320,15 @@ function initBmap(){
     }
     function initPoint(map,point,myGeo,flag){
         marker = new BMap.Marker(point);
+        map.removeOverlay(myCompOverlay);
+        myCompOverlay = new ComplexCustomOverlay(point,$("#addressDetail").val());
+        map.addOverlay(myCompOverlay);
         marker.addEventListener("dragend",attribute);
         map.addOverlay(marker);
         if(flag){
+            map.removeOverlay(myCompOverlay);
+            myCompOverlay = new ComplexCustomOverlay(marker.getPosition(),$("#addressDetail").val());
+            map.addOverlay(myCompOverlay);
             infoEdit($("#save-lbs"));
         }
         function attribute(){
@@ -331,7 +339,11 @@ function initBmap(){
                 var addComp = rs.addressComponents;
                 $("#provinceAddress").text(addComp.province);
                 $("#cityAddress").text(addComp.city);
-                $("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                //$("#addressDetail").val(addComp.district+addComp.street+addComp.streetNumber);
+                map.removeOverlay(myCompOverlay);
+                myCompOverlay = new ComplexCustomOverlay(p,addComp.district+addComp.street+addComp.streetNumber);
+                map.addOverlay(myCompOverlay);
+                $("#address_text").html(addComp.district+addComp.street+addComp.streetNumber);
                 $("#info_address").html(addComp.province + addComp.city + addComp.district + addComp.street + addComp.streetNumber);
                 initProviceAndCityCode(addComp.province,addComp.city);
                 $("#hand-search").html("手动标注位置");
@@ -369,6 +381,50 @@ function initBmap(){
             polygon.enableEditing();
         }
     }
+}
+// 复杂的自定义覆盖物
+function ComplexCustomOverlay(point, text){
+    this._point = point;
+    this._text = text;
+}
+ComplexCustomOverlay.prototype = new BMap.Overlay();
+ComplexCustomOverlay.prototype.initialize = function(map){
+    this._map = map;
+    var div = this._div = document.createElement("div");
+    div.style.position = "absolute";
+    div.style.zIndex = BMap.Overlay.getZIndex(this._point.lat);
+    div.style.backgroundColor = "#EE5D5B";
+    div.style.border = "1px solid #BC3B3A";
+    div.style.color = "white";
+    div.style.height = "18px";
+    div.style.padding = "2px";
+    div.style.lineHeight = "12px";
+    div.style.whiteSpace = "nowrap";
+    div.style.MozUserSelect = "none";
+    div.style.fontSize = "12px"
+    div.style.marginTop="-10px";
+    var span = this._span = document.createElement("span");
+    span.setAttribute("id","address_text");
+    div.appendChild(span);
+    span.appendChild(document.createTextNode(this._text));
+    var that = this;
+    var arrow = this._arrow = document.createElement("div");
+    arrow.style.background = "url(http://map.baidu.com/fwmap/upload/r/map/fwmap/static/house/images/label.png) no-repeat";
+    arrow.style.position = "absolute";
+    arrow.style.width = "11px";
+    arrow.style.height = "10px";
+    arrow.style.top = "16px";
+    arrow.style.left = "10px";
+    arrow.style.overflow = "hidden";
+    div.appendChild(arrow);
+    map.getPanes().labelPane.appendChild(div);
+    return div;
+}
+ComplexCustomOverlay.prototype.draw = function(){
+    var map = this._map;
+    var pixel = map.pointToOverlayPixel(this._point);
+    this._div.style.left = pixel.x - parseInt(this._arrow.style.left) + "px";
+    this._div.style.top  = pixel.y - 30 + "px";
 }
 //根据省市名称获取code
 function initProviceAndCityCode(p, c){

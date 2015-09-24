@@ -37,6 +37,11 @@ $(document).ready(function(){
         }
     }
     removeDom();
+}).on("click",".return-btn",function(){
+    var detail_box=new Modal('notice-box');
+    detail_box.modal('show');
+}).on("click",".go-btn",function(){
+    window.history.back(-1);
 }).on("click","#cancel-order",function(){
     confirmBox('确认取消该订单吗？//(ㄒoㄒ)//',"sure-order");
     $('.confriming').attr('id','sure-order');
@@ -46,6 +51,10 @@ $(document).ready(function(){
     confirmRemove();
 }).on("click","#go-alipay",function(){
     var $this = $(this);
+    if($this.attr("data-sta")=="1"){
+        return noticeBox("客官不要着急，呼叫支付宝中...");
+    }
+    $this.removeClass("red-btn").addClass("white-btn").text("提交中...").attr({"data-sta":"1"});
     $.ajax({
         url:"/customer/overtime?order_id="+$("#order-id").val(),
         type:"get",
@@ -64,6 +73,8 @@ $(document).ready(function(){
                         window.location.href=$this.attr("data-url");
                     }
                 }
+            }else{
+                $this.removeClass("white-btn").addClass("red-btn").text("去支付").attr({"data-sta":""});
             }
         }
     });

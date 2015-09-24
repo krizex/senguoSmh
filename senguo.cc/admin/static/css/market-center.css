@@ -28,7 +28,7 @@
 .collect-icon{width:20px;height:15px;background:url('../svg/icon_list-2.png') -99px -27px;margin-right:5px;background-size:140px;margin-top:15px;}
 .address-icon{width:20px;height:20px;background:url('../svg/icon_list-2.png') -98px -24px;margin-right:10px;background-size:140px;margin-top:13px;}
 .order-icon{width:21px;height:20px;background:url('../svg/icon_list-2.png') -98px 0;margin-right:10px;background-size:140px;margin-top:13px;}
-
+.presell-icon{width:21px;height:21px;background:url('../images/presell.png') no-repeat;margin-right:10px;background-size:21px;margin-top:13px;}
 .order-num{position:absolute;display:inline-block;min-width:16px;height:16px;line-height:16px;border-radius:8px;font-size:10px;margin:-4px -6px;padding:0 4px;}
 .order1-icon{width:22px;height:22px;background:url('../images/order_unhandled.png');background-size:22px 22px;}
 .order2-icon{width:22px;height:22px;background:url('../images/order_handling.png');background-size:22px 22px;}
@@ -46,13 +46,18 @@ hr{margin-top:0 !important;;margin-bottom:0 !important;margin-left:24px;}
 
 .discover-list a{display:inline-block;width:100%;height:45px;}
 .discover-list  li{position:relative;margin-bottom: 10px;}
-.discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:14px;text-align:center;right:22px;}
+.discover-list .circle{position:absolute;display:inline-block;width:18px;height:18px;line-height:18px;border-radius:50%;top:14px;text-align:center;right:22px;font-size:12px;}
 
-.confess i{display:inline-block;width:20px;height:20px;background:url('../images/i_discover.png');background-size:20px;margin:14px 12px 0 12px;}
-.coupon i{display:inline-block;width:20px;height:20px;background:url('../images/i_discover.png');background-size:20px;background-position:0 -21px;margin:12px 12px 0 12px;}
-
-.arr-right{background-image: url('../images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:16px;}
-.confess-text{line-height: 18px;padding-top: 5px;}
+.confess i{display:inline-block;width:22px;height:22px;background-image:url('../images/discover_list.png');background-size:22px;margin:13px 12px 0 12px;background-position: 0 0;}
+.coupon i{display:inline-block;width:22px;height:22px;background-image:url('../images/discover_list.png');background-size:22px;background-position:0 -25px;margin:13px 12px 0 12px;}
+.seckill i{display:inline-block;width:22px;height:22px;background-image:url('../images/discover_list.png');background-size:22px;background-position:0 -50px;margin:13px 12px 0 12px;}
+.discount i{display:inline-block;width:22px;height:22px;background-image:url('../images/discover_list.png');background-size:22px;background-position:0 -77px;margin:13px 12px 0 12px;}
+.gbuy i{display:inline-block;width:22px;height:22px;background-image:url('../images/discover_list.png');background-size:22px;background-position:0 -104px;margin:13px 12px 0 12px;}
+.presell i{display:inline-block;width:22px;height:22px;background-image:url('../images/discover_list.png');background-size:22px;background-position:0 -129px;margin:13px 12px 0 12px;}
+.ml6{margin-left: 6px;}
+.arr-right{background-image: url('/static/images/arr-right.png');width:8px;display:block;margin-left:6px;height:14px;background-size:contain;background-repeat:no-repeat;position:relative;top:16px;}
 .imore{display:inline-block;width:12px;height:100%;background: url('/static/images/arr-right.png') no-repeat;background-size:8px 14px;background-position: right center;margin-right: 10px;}
 .tip-text{display: inline-block;width: 16px;height: 16px;color: #fff;text-align: center;line-height: 16px;background-color: #ff6563!important;border-radius: 50%;margin-top: 14px;margin-right: 4px;}
-.coupon-icon{width:20px;height:20px;background:url('../images/i_coupon.png') left center;margin-right:10px;background-size:20px;margin-top:13px;}
+.coupon-icon{width:20px;height:20px;background:url('../images/circle_coupon.png') left center;margin-right:10px;background-size:20px;margin-top:13px;}
+.w33{width:33.33% !important;}
+.c333{color: #333 !important;}

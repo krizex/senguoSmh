@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}{{article["title"]}}{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<span id="title">文章详情</span>
+<a href="javascript:;" url="/bbs/publish" class="right-icons publish-article hide"></a>
+{% end %}
+{% block content %}
+<style>
+    .post-cont img{max-width: 100% !important;}
+    .post-cont>fieldset,.post-cont>section{width: 100% !important;}
+    .post-cont fieldset,.post-cont section{max-width: 100% !important;}
+</style>
+<input type="hidden" value="{{author_if}}" id="author_if"/>
+<div class="wrap-post pm20" data-id="{{article['id']}}">
+    <div class="post-box">
+        <h3 class="post-title c0">{{article["title"]}}</h3>
+        <p class="post-2title mt10 c999"><a href="/bbs?id={{article["classify"]}}" class="topic-class detail-type">{{article["type"]}}</a><span class="author clip c999">{{article["time"]}}</span>@{{article["nickname"]}}</p>
+        <div class="post-cont">
+            {% raw article["article"] %}
+        </div>
+        <div class="post-attr forbid_click">
+            {% if if_admin == True %}
+                <a href="javascript:;" id="del-atical" class="del-atical fr c999" data-id='{{article["id"]}}'>删除</a>
+                {% if author_if == True %}
+                <a href="{{reverse_url('BbsDetailEdit',article['id'])}}" class="fr c999 mr10">编辑</a>
+                {% end %}
+            {% end %}
+            <span class="wrap-icon people-see fr"><i class="icon-see"></i><span class="num">{{article["scan_num"]}}</span></span>
+            <span class="wrap-icon dianzan article-great add-great ml0" data-id='{{article["id"]}}'><i class="icon-dz {% if article['great_if'] == True %}icon-dz-active{% end %}"></i><span class="num">{{article["great_num"]}}</span></span>
+            <a href="javascript:;" class="wrap-icon comment com-atical" data-id='{{article["id"]}}'><i class="icon-com"></i><span class="num">{{article["comment_num"]}}</span></a>
+        </div>
+    </div>
+    <div class="wrap-comment">
+        <ul class="comment-list">
+        </ul>
+        <p class='sofa txt-center c999 hide'>~ 快来抢沙发 ~</p>
+    </div>
+    <div class="aside-box">
+        <p class="aside-title"><span>热门文章</span></p>
+        <ul class="aside-list hot-artilce-list">
+
+        </ul>
+    </div>
+</div>
+<div class="fix-center wrap-reply-box forbid_click">
+    <a href="javascript:;" class="p-article add-great {% if article['great_if'] == True %}add-great-active{% end %} if-login" id="admire-atical" data-id="{{article['id']}}"></a>
+    <a href="javascript:;" class="p-article add-store {% if article['collect_if'] == True %}add-store-active{% end %} if-login" id="store-atical" data-id="{{article['id']}}"></a>
+    <div class="reply-ipt-temp"></div>
+    <textarea class="reply-ipt" placeholder="请输入评论"></textarea>
+    <a href="javascript:;" class="reply-btn if-login" id="comment" data-id="{{article['id']}}">发表</a>
+</div>
+<div class="pop-win pop-login hide" data-id="{{if_login}}">
+    <div class="pop-content">
+        <div class="login-box">
+            <!-- <p class="title">商家回复</p> -->
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
+            <div class="button-box mt10">
+                {% if handler.is_wexin_browser()%}
+                <a href="{{handler.get_weixin_login_url()}}" class="btn">登录</a>
+                {% else %}
+                <a href="{{reverse_url('customerLogin')}}?next=/bbs/detail/{{article['id']}}" class="btn">登录</a>
+                {% end %}
+            </div>
+        </div>
+    </div>
+</div>
+<div class="pop-win pop-del hide">
+    <div class="pop-content">
+        <div class="login-box">
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10">将不可恢复！确认删除？</p>
+            <div class="button-box mt10">
+                <a href="javascript:;" class="btn del-sure">确认</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('bbs/js/artical-detail.js')}}"></script>
+{% end %}

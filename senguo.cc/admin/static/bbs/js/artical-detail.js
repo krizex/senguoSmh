@@ -1,4 +1,6 @@
 $(document).ready(function(){
+    $(".header").css("position","relative");
+    $(".container").css("paddingTop","0");
     var height = $(window).height();
     $(".wrap-post").css("minHeight",height-60);
     $(".com-atical").on("click",function(){//评论按钮
@@ -8,17 +10,16 @@ $(document).ready(function(){
            $('.pop-login').removeClass("hide");
            return false; 
         }
-        $(".wrap-post-attr").removeClass("bm10");
         if(_type=='reply'){
-            $(".reply-ipt").val("").attr("placeholder","");
-        } 
-        
-        $(".wrap-reply-box").removeClass("hide");
+            $(".reply-ipt").val("").attr("placeholder","请输入评论");
+        }
         $('.reply-btn').attr("id","comment").attr("data-id",id);
         $(".reply-ipt").focus();
     });
+    calTextHeight();
     commentList(0);
     scrollLoading();
+    getHotInfo("article");
 }).on("click",".del-comment",function(){  
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
@@ -48,11 +49,6 @@ $(document).ready(function(){
             Tip(res.error_text);
         }
     });
-}).on("click","body",function(e){
-    if($(e.target).closest(".forbid_click").size()==0){
-        $('.wrap-reply-box').addClass("hide");
-        $(".wrap-post-attr").addClass("bm10");
-    }
 }).on("click","#store-atical",function(){//收藏
     if(if_login=='False'){
        $('.pop-login').removeClass("hide");
@@ -64,7 +60,7 @@ $(document).ready(function(){
     var args={action:"collect",data:""};
     $.postJson(url,args,function(res){
         if(res.success){
-            $this.children("i").toggleClass("i-store-active");
+            $this.toggleClass("add-store-active");
         }else{
             Tip(res.error_text);
         }
@@ -101,8 +97,8 @@ $(document).ready(function(){
     var id = $(this).parents("li").find(".nickname").attr("data-id");
     $(".reply-ipt").attr("placeholder","@"+$(this).parents("li").find(".nickname").html());
     $('.reply-btn').attr("id","reply").attr("data-id",id);
-    $(".wrap-reply-box").removeClass("hide");
-    $(".wrap-post-attr").removeClass("bm10");
+    /*$(".wrap-reply-box").removeClass("hide");
+    $(".wrap-post-attr").removeClass("bm10");*/
     if(_type=='comment'){
         $(".reply-ipt").val("");
     }   
@@ -117,12 +113,12 @@ $(document).ready(function(){
     $.postJson(url,args,function(res){
         if(res.success){
             var num_1=1;
-            if($('#admire-atical').children("i").hasClass('i-admire-active')){
-                num_1=-1
+            if($('#admire-atical').hasClass('add-great-active')){
+                num_1=-1;
             }
             $('.article-great .num').text(parseInt($('.article-great .num').text())+num_1);
             $('.article-great i').toggleClass("icon-dz-active");
-            $('#admire-atical').children("i").toggleClass("i-admire-active");
+            $('#admire-atical').toggleClass("add-great-active");
         }else{
             Tip(res.error_text);
         }
@@ -150,7 +146,23 @@ $(document).ready(function(){
         var id = $(this).attr("data-id");
         delAtical(id);
     }
+}).on("click",".publish-article",function(){
+    if(if_login=='False'){
+        $('.pop-login').removeClass("hide");
+        return false;
+    }
+    window.location.href=$(this).attr("url");
 });
+function calTextHeight(){
+    setInterval(function(){
+        var text = $(".reply-ipt").val();
+        var width = $(".reply-ipt").width();
+        $(".reply-ipt-temp").width(width);
+        $(".reply-ipt-temp").html(text);
+        var height = $(".reply-ipt-temp").height();
+        $(".reply-ipt").height(height);
+    },50);
+}
 var comment_item;
 var finished=true;
 var nomore =false;
@@ -249,8 +261,8 @@ function admireAtical(id,action,target){
     }
     var args = {action:action,data:data};
     $.postJson(url,args,function(res){
+        target.attr("data-statu", "0");
         if(action=="reply"){
-            $(".wrap-reply-box").addClass("hide");
             $(".reply-ipt").val("");
         }
         if(res.success){
@@ -258,14 +270,11 @@ function admireAtical(id,action,target){
             $('.comment .num').text(parseInt($('.comment .num').text()));
             var data=res.data;
             commentItem(data,"new");
-            $(".wrap-reply-box").addClass("hide");
-            $(".reply-ipt").val("");
+            $(".reply-ipt").val("").attr("placeholder","请输入评论");
             $(".wrap-post-attr").addClass("bm10");
             $(".com-atical .num").text(parseInt($(".com-atical .num").text())+1);
-            target.attr("data-statu", "0");
-            $('html,body').scrollTop($(".comment-list").offset().top);
+            $('html,body').scrollTop($(".comment-list").offset().top-80);
         }else{
-            target.attr("data-statu", "0");
             Tip(res.error_text);
         }
     });
@@ -304,5 +313,41 @@ function commentItem(data,_type){
     }else{
        $(".comment-list").append(list_item); 
     }
-    
 }
+var hotaticle_item = '<li data-id="{{id}}">'+
+    '<a href="/bbs/detail/{{id}}">'+
+    ' <p class="clip c333">{{title}}</p>'+
+    '<div class="wrap-topic-attr">'+
+    '<span>{{nickname}}</span>'+
+    '<span class="wrap-icon people-see fr"><i class="icon-see"></i><span class="num">{{scan_num}}</span></span>'+
+    '</div>'+
+    '</a>'+
+    '</li>';
+function getHotInfo(action){
+    $.ajax({
+        url:'/bbs/hot?action='+action,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var datalist=res.datalist;
+                for(var i in datalist){
+                    var render = template.compile(hotaticle_item);
+                    var id=datalist[i]['id'];
+                    var title=datalist[i]['title'];
+                    var scan_num=datalist[i]['scan_num'];
+                    var nickname=datalist[i]['nickname'];
+                    var list_item =render({
+                        id:id,
+                        title:title,
+                        scan_num:scan_num,
+                        nickname:nickname
+                    });
+                    $(".hot-artilce-list").append(list_item);
+                }
+            }
+            else {
+                return Tip(res.error_text);
+            }
+        }
+    })
+};

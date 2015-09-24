@@ -9,7 +9,8 @@ $(document).ready(function(){
     chooseAuth();
     new QRCode($("#big-code2")[0],{
         width : 300,
-        height : 300
+        height : 300,
+        colorDark : "#433943"
     }).makeCode($("#shop_link").html());
 }).on("click",".cancel-bbtn",function(){
     $(this).closest(".pop-bwin").addClass("hide");
@@ -264,7 +265,8 @@ function infoEdit(action_name){
                 $("#big-code2").empty();
                 new QRCode($("#big-code2")[0],{
                     width : 300,
-                    height : 300
+                    height : 300,
+                    colorDark : "#433943"
                 }).makeCode($("#shop_link").html());
             }
             else if(action_name=='intro')
@@ -297,4 +299,9 @@ function infoEdit(action_name){
             Tip(res.error_text);
         }
     });
+}
+//android端上传图片
+function uploadImgForAndroid(url){
+    $("#shop_logo").attr("src",url+"?imageView2/1/w/100/h/100").attr("url",url);
+    infoEdit("edit_shop_logo");
 }

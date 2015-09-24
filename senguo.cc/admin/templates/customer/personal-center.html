@@ -24,7 +24,7 @@
     </div>-->
     <div class="bg-white m-b10 clearfix font14 box-style">
         <div class="w50 pull-left text-center border-rd title2"><a href="{{reverse_url('customerPoints')}}" class="text-grey3 bk">积分&nbsp;&nbsp;{{shop_point}}</a></div>
-        <div class="w50 pull-left text-center title2"><a href="{{reverse_url('customerBalance')}}" class="text-grey3 bk user-balance" data-auth="{{show_balance}}" data-status="{{balance_on}}">余额&nbsp;&nbsp;{{shop_balance}}</a></div>
+        <div class="w50 pull-left text-center title2"><a href="{{reverse_url('customerBalance')}}?shop_id={{shop_id}}" class="text-grey3 bk user-balance" data-auth="{{show_balance}}" data-status="{{balance_on}}">余额&nbsp;&nbsp;{{shop_balance}}</a></div>
     </div>
     <div class="bg-white m-b10 clearfix pb0">
         <p class="title clearfix box-style">
@@ -60,7 +60,7 @@
                 </a>
             </li>
             <li class="w25 pull-left prl0 m-b8">
-                <a href="#">
+                <a href="javascript:;">
                     <em class="order4-icon set-inl-blo bg_change"></em>
                     {% if count[6] != 0 %}
                     <span class="order-num bg-pink text-white">{{count[6]}}</span>
@@ -70,32 +70,48 @@
             </li>
         </ul>
     </div>
-    <div class="box-style bg-white pb0 m-b10 clearfix pr0">
-        <!--<div class="title clearfix">
-            <span class="pull-left font14"><em class="collect-icon set-inl-blo pull-left bg_change"></em>我的收藏</span>
-        </div>
-        <hr/>-->
-        <button class="title clearfix address-manage">
-            <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
-            <a href="javascript:;" class="text-green3 pull-right add-address  m-r10  font14 forbid_click" style="display:none">+添加收货地址</a>
-        </button>
-        <div class="address-list clearfix" style="display:none;">
-             <ul class="list-group m-b0   clearfix">
-            {% for address in current_user.addresses%}
-            <li class="address-item list-group-item radius0 clearfix" data-id="{{address.id}}">
-                <p class="clearfix m-b0 height20">
-                    <span class="pull-left item_name">{{address.receiver}}</span>
-                    <span class="pull-right item_phone">{{address.phone}}</span>
-                </p>
-                <p class="clearfix item_address m-b0 height20">{{address.address_text}}</p>
-                <p class="clearfix height20">
-                    <a href="javascript:;" class="delete-btn pull-right delete-address"></a>
-                    <a href="javascript:;" class="edit-btn m-r10 pull-right edit-address"></a>
-                </p>
+    <div class="bg-white m-b10 clearfix pb0 hidden">
+        <a href="{{reverse_url('customerOrder')}}?action=all">
+            <p class="title clearfix box-style">
+                <span class="pull-left font14 c333"><em class="presell-icon set-inl-blo pull-left bg_change"></em>我的预售</span>
+                <span class="text-grey9 pull-right font14"><i class="arr-right pull-right"></i></span>
+            </p>
+        </a>
+        <ul class="center-nav row text-center m-b0 clearfix font12 center-block box-style">
+            <li class="w33 pull-left prl0 m-b8">
+                <a href="{{reverse_url('customerOrder')}}?action=unhandled">
+                    <em class="order1-icon set-inl-blo bg_change"></em>
+                    {% if count[3] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[3]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">未处理</p>
+                </a>
             </li>
-            {% end %}
+            <li class="w33 pull-left prl0 m-b8">
+                <a href="{{reverse_url('customerOrder')}}?action=waiting">
+                    <em class="order2-icon set-inl-blo bg_change"></em>
+                    {% if count[4] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[4]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">待收货</p>
+                </a>
+            </li>
+            <li class="w33 pull-left prl0 m-b8">
+                <a href="{{reverse_url('customerOrder')}}?action=finish">
+                    <em class="order3-icon set-inl-blo bg_change"></em>
+                    {% if count[5] != 0 %}
+                    <span class="order-num bg-pink text-white">{{count[5]}}</span>
+                    {% end %}
+                    <p class="text-grey3 text-center font10 mt1">到货</p>
+                </a>
+            </li>
         </ul>
-        </div>   
+    </div>
+    <div class="box-style bg-white pb0 m-b10 clearfix pr0">
+        <button class="title clearfix address-manage" id="address_btn">
+            <span class="fr imore"></span>
+            <span class="pull-left font14"><em class="address-icon set-inl-blo pull-left bg_change"></em>我的地址管理</span>
+        </button>
     </div>
     <div class="box-style bg-white pb0 m-b10 clearfix pr0">
         <button class="title clearfix coupon-manage" id="coupon_btn">
@@ -106,42 +122,6 @@
             {%end%}
         </button>
     </div>
-{% end %}
-{% block other %}
-<div class="address-box modal fade" id="address_box">
-    <div class="modal-dialog anim-bounceIn">
-        <div class="modal-content">
-            <div class="modal-top"><img src="/static/images/info_top.png"/></div>
-            <div class="modal-header clearfix bg_change">
-                <h2 class="modal-title line48">收货地址</h2>
-                <button type="button" class="close dismiss">✕</button>
-            </div>
-            <div class="modal-body font14">
-                <div class="w60 center-block pt10">
-                    <p class="set-inl-blo m-b5">
-                        <span class="pull-left tit set-inl-blo">收货人：</span>
-                        <input type="text" id="address_name" class="pull-left bg-white"/>
-                    </p>
-                    <p class="set-inl-blo m-b5">
-                        <span class="pull-left tit set-inl-blo">电话：</span>
-                        <input type="text" id="address_phone" class="pull-left bg-white"/>
-                    </p>
-                    <p class="set-inl-blo">
-                        <span class="pull-left tit set-inl-blo">收货地址：</span>
-                        <input type="text" id="address_address" class="pull-left bg-white"/>
-                    </p>
-                </div>
-            </div>
-            <div class="modal-warn">
-            </div>
-            <div class="modal-footer text-center">
-                <button class="btn sure_btn bg-green3 text-white addressEdit" style="display:none">确定</button>
-                <button class="btn sure_btn bg-green3 text-white addressAdd" style="display:none">确定</button>
-            </div>
-            <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>
-        </div>
-    </div>
-</div>
 {% end %}
 {% block bottom %}
 <script src="{{static_url('js/market-center.js')}}"></script>

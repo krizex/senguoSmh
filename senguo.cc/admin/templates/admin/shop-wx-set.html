@@ -1,59 +1,78 @@
 {% extends 'shop-set-base.html' %}
 {% block title%}微信通知{% end %}
 {% block setcontent %}
-	{% if _shop_auth ==0 %}
-	 <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
-	{% else %}
-	<div class="set-description">
-	    <p>如果您有已认证的微信服务号，则可开通订单微信通知。开通后的公众号具有订单模板消息通知功能。</p>
-	    <p>订单微信通知包括：管理员新订单通知、用户已下单通知、配送员新订单通知等。</p>
-	</div>
-	<ul class="info-set-list mt20 font14">
-	    <li class="item clearfix">
-	    	<a href="{{reverse_url('BbsDetail',21)}}" target="_blank" class="pull-right mt30">查看模板添加详细教程</a>
-	    	<div class="clearfix">
-	      		<p class="tit">第一步：进入微信公众平台后台，从模板库添加以下模板：</p>
-	      		<p class="text-grey2 ml40">编号：OPENTM200746866 标题：订单提交成功通知</p>
-	      		<p class="text-grey2 ml40">编号：TM00351 标题：新订单通知</p>
-	      		<p class="text-grey2 ml40">编号：OPENTM202521011 标题：订单完成通知</p>
-	      	</div>
-	    </li>
-	     <li class="item clearfix">
-	    	<a href="javascript:;" class="wx-edit pull-right mt30">编辑</a>
-	    	<div class="clearfix">
-	      		<p class="tit">第二步：提交微信公众平台相关信息</p>
-	      		<p class="text-grey2 ml40">微信公众号名称：<span class="name">{{current_shop.admin.mp_name}}</span></p>
-	      		<p class="text-grey2 ml40">AppID:<span class="id">{{current_shop.admin.mp_appid}}</span></p>
-	      		<p class="text-grey2 ml40">AppSecret:<span class="secret">{{current_shop.admin.mp_appsecret}}</span></p>
-	      	</div>
-	    </li>
-	</ul>
-	<div class="modal wx-edit-box" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+    {% if _shop_auth ==0 %}
+    <h4 class="mt20">您还未进行店铺认证，暂不能使用该功能，<a href="{{reverse_url('adminShopAuth')}}">点击进行店铺认证</a></h4>
+    {% else %}
+    <div class="edit-box bg-greyf9 group">
+        <div class="mode action-mode mp_active pull-right mt10" data-flag="on" title="点击切换状态" data-status="{{current_shop.admin.has_mp}}">
+            <a class="work-mode" href="javascript:;" style="display:none;">已启用<span class="circle"></span></a>
+            <a class="stop-mode" href="javascript:;" style="display:none;">未启用<span class="circle"></span></a>
+        </div>
+        <div class="wrap-pay-txt">
+            <p>如果您有已认证的微信服务号，则可开通订单微信通知。开通后的公众号具有订单模板消息通知功能。</p>
+            <p>订单微信通知包括：管理员新订单通知、用户已下单通知、配送员新订单通知等。</p>
+            <p>该功能仅限已认证的微信服务号使用。</p>
+        </div>
+    </div>
+    <ul class="info-set-list mt20 font14">
+        <li class="item clearfix">
+            <div class="clearfix">
+                <p class="tit">请注意：您的微信公众平台必须具备以下条件才能开启微信通知：</p>
+                <p class="text-grey2 ml40">1. 您的公众平台必须为已经通过认证的服务号；</p>
+                <p class="text-grey2 ml40">2. 您的公众平台『模版消息』中『模版库』选项卡下的所在行业必须有『IT科技/互联网|电子商务』；</p>
+                <p class="text-grey2 ml40">3. 开启微信通知后，森果会自动在您的公众平台模版消息中添加3个模版，而每个公众平台最多可添加</p>
+                <p class="text-grey2 ml40">　15个模版，所以请确认『模版消息』中『我的模版』选项卡下已有的模版数量小于13个。</p>
+            </div>
+        </li>
+        <li class="item clearfix">
+            <a href="{{reverse_url('BbsDetail',99)}}" target="_blank" class="pull-right mt40">查看详细教程</a>
+            <div class="clearfix">
+                <p class="tit">第一步：进入微信公众平台管理后台，点击页面左下方的『开发者中心』进行如下操作：</p>
+                <p class="text-grey2 ml40">1. 在『开发者中心』的『配置项』选项卡下，找到『接口权限表』板块下的『网页服务』类目；</p>
+                <p class="text-grey2 ml40">2. 点击『网页服务』类目中第一项『网页授权获取用户基本信息』后面的『修改』按钮；</p>
+                <p class="text-grey2 ml40">3. 在弹出的对话框中填入链接“auth.senguo.cc”（不包含引号），并点击『确认』按钮。</p>
+                <p class="text-pink ml40">注意：请务必设置正确的链接，否则所有用户将无法正常登录您的森果店铺。</p>
+            </div>
+        </li>
+        <li class="item clearfix">
+            <a href="javascript:;" class="wx-edit pull-right mt40">编辑</a>
+            <div class="clearfix">
+                <p class="tit">第二步：提交微信公众平台相关信息</p>
+                <p class="text-grey2 ml40">微信公众号名称：<span class="name">{{current_shop.admin.mp_name}}</span></p>
+                <p class="text-grey2 ml40">AppID：<span class="id">{{current_shop.admin.mp_appid}}</span></p>
+                <p class="text-grey2 ml40">AppSecret：<span class="secret">{{current_shop.admin.mp_appsecret}}</span></p>
+                <p class="text-pink ml40">提示：AppID、AppSecret 请在微信公众平台管理后台的『开发者中心』查看。</p>
+            </div>
+        </li>
+    </ul>
+    <div class="modal wx-edit-box" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body font14">
-                   <ul>
-                   		<li class="clearfix">
-                   			<input type="text" class="pull-right" id="AppName"/>
-                   			公众号名称
-                   		</li>
-                   		<li class="clearfix">
-                   			<input type="text" class="pull-right" id="AppID"/>
-                   			AppID
-                   		</li>
-                   		<li class="clearfix">
-                   			<input type="text" class="pull-right" id="AppSecret"/>
-                   			AppSecret
-                   		</li>
-                   </ul>
+                    <h5 class="text-pink">注意：该功能仅限已认证的服务号使用，使用未认证服务号或订阅号使用该功能会导致您的店铺参数出错，无法进入您的店铺。</h5>
+                    <ul>
+                        <li class="clearfix">
+                            <input type="text" class="pull-right" id="AppName" value="{{current_shop.admin.mp_name or ''}}" />
+                            公众号名称
+                        </li>
+                        <li class="clearfix">
+                            <input type="text" class="pull-right" id="AppID" value="{{current_shop.admin.mp_appid or ''}}"/>
+                            AppID
+                        </li>
+                        <li class="clearfix">
+                            <input type="text" class="pull-right" id="AppSecret" value="{{current_shop.admin.mp_appsecret or ''}}"/>
+                            AppSecret
+                        </li>
+                    </ul>
                 </div>
                 <div class="modal-footer text-center">
-                     <button class="btn bg-green wx-sure text-white">确定</button>
-                     <button class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button class="btn bg-green wx-sure text-white">确定</button>
+                    <button class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
             </div>
         </div>
     </div>
-	{% end %}
+    {% end %}
 {% end %}
 {% block setbottom %}<script src="{{static_url('js/admin-set.js')}}"></script>{% end %}

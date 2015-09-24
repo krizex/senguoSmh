@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% block title %}森果社区{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<span id="title">森果社区</span>
+<a href="javascript:;" url="/bbs/publish" class="right-icons publish-article"></a>
+<a href="javascript:;" url="/bbs/profile" class="right-icons profile-center">
+    {% if handler.getNoticeNumber>0 %}<i class="stat-tip">{{handler.getNoticeNumber}}</i>{% end %}
+</a>
+{% end %}
+{% block content %}
+<div class="wrap-main">
+    <div class="classify-top group">
+        <div class="classify-icon">
+            <i class="menu-icon menu_icon_area m1"></i>
+        </div>
+        <div class="classify-txts">
+            <p class="dgreen f14 classify_title">首页</p>
+            <p class="c666 mt4 f12 classify_cont">森果社区所有文章</p>
+        </div>
+    </div>
+    <ul class="atical-list">
+
+    </ul>
+    <p class="loading txt-center c999 mt10"></p>
+</div>
+{% if if_saler %}
+<div class="bm-tab header">
+    <ul class="tab-bm-list group">
+        <li class=""><a href="javascript:;"><i class="box-icon ic-shop ic-shop-active"></i><span>店铺</span></a></li>
+        <li class="active"><a href="javascript:;"><i class="box-icon ic-bbs"></i><span>社区</span></a></li>
+    </ul>
+</div>
+{% end %}
+<div class="wrap-loading-box hide">
+    <div class="loading-box">
+        <div class="loader">
+            <div class="ball"></div>
+            <div class="ball"></div>
+            <div class="ball"></div>
+        </div>
+        <div class="load-txt">加载中...</div>
+    </div>
+</div>
+<div class="pop-win pop-login hide" data-id="{{if_login}}">
+    <div class="pop-content">
+        <div class="login-box">
+            <span class="close close-btn">X</span>
+            <p class="txt-center c999 mt10 mb10"> 您还未登录，去登录？</p>
+            <div class="button-box mt10">
+                {% if handler.is_wexin_browser() %}
+                <a href="{{handler.get_weixin_login_url()}}" class="btn">登录</a>
+                {% else %}
+                <a href="{{reverse_url('customerLogin')}}?next=/bbs" class="btn">登录</a>
+                {% end %}
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('bbs/js/main.js')}}"></script>
+{% end %}

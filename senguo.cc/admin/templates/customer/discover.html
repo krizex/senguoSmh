@@ -4,41 +4,75 @@
 <link rel="stylesheet" href="{{static_url('css/market-center.css')}}"/>
 {% end %}
 {% block content %}
-<div class="rainshed2 text-center font18 text-white bg_change fix-title"></div>
 <div class="mt42"></div>
 <ul class="mt20 discover-list">
-{% if shop_auth != 0%}
+{% if handler.shop_auth != 0%}
 {% if confess_active == 1%}
     <li class="title clearfix bg-white font14 confess">
 	    <a href="{{reverse_url('ConfessionHome',handler.shop_code)}}" class="text-grey3 confess-wall">
             <span class="pull-right imore"></span>
 	    	<i class="pull-left"></i>
-	    	<span class="pull-left confess-text">告白墙<br><span class="font12 text-grey">看看果友们的真情告白</span></span>
-	    	<span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
+	    	<span class="pull-left confess-text">告白墙<span class="font12 text-grey ml6">看看果友们的真情告白</span></span>
+	    	<span class="confess-circle circle bg-pink text-white {% if confess_count==0 %}hidden{% end %}">{{confess_count}}</span>
 	    </a>
     </li>
     {% end %}
     {% if coupon_active_cm==1%}
     {% if a or b %}
     <li class="title clearfix bg-white font14 coupon">
+        <a href="{% if a==0%}/coupon/profile?action=get_one&coupon_id=-1&shop_id={{shop_id}}{% else %}/coupon/profile?action=get_all&shop_id={{shop_id}}{% end %}" class="text-grey3 confess-wall">
+            <span class="pull-right imore"></span>
+            <i class="pull-left"></i>
+            <span class="pull-left confess-text">优惠券<span class="font12 text-grey ml6">{% if a== 0%}更多优惠券等你来抢{% else %}{{a}}批优惠券等你来抢{% end %}</span></span>
+            <span class="confess-circle circle bg-pink text-white {% if a==0 %}hidden{% end %}">{{a}}</span>
+        </a>
+    </li>
+    {% end %}
+    {%end%}
+    {% if seckill_active == 1 and seckill_display_flag == 1%}
+    <li class="title clearfix bg-white font14 seckill">
+        <a href="{{reverse_url('ConfessionSeckill',handler.shop_code)}}" class="text-grey3 confess-wall">
+            <span class="pull-right imore"></span>
+            <i class="pull-left"></i>
+            <span class="pull-left confess-text">秒杀活动<span class="font12 text-grey ml6">{{seckill_text}}</span></span>
+            <span class="confess-circle circle bg-pink text-white {% if seckill_count == 0 %}hidden{% end %}">{{seckill_count}}</span>
+        </a>
+    </li>
+    {% end %}
+    {%if discount_active==0 and discount_display_flag==1%}
+    <li class="title clearfix bg-white font14 discount">
+        <a href="{{reverse_url('ConfessionDiscount',handler.shop_code)}}?action=detail" class="text-grey3 confess-wall">
+            <span class="pull-right imore"></span>
+            <i class="pull-left"></i>
+            <span class="pull-left confess-text">限时折扣<span class="font12 text-grey ml6">{{discount_text}}</span></span>
+            <span class="confess-circle circle bg-pink text-white {% if discount_count==0 %}hidden{% end %}">{{discount_count}}</span>
+        </a>
+    </li>
+    {%end%}
+    <!--<li class="title clearfix bg-white font14 gbuy">
+        <a href="javascript:;" class="text-grey3 confess-wall">
+            <span class="pull-right imore"></span>
+            <i class="pull-left"></i>
+            <span class="pull-left confess-text">团购<span class="font12 text-grey ml6">5件商品等你一起团，购任性</span></span>
+            <span class="confess-circle circle bg-pink text-white hidden">10</span>
+        </a>
+    </li>
+    <li class="title clearfix bg-white font14 presell">
         <a href="{% if a==0%}/coupon/profile?action=get_one&coupon_id=-1{% else %}/coupon/profile?action=get_all{% end %}" class="text-grey3 confess-wall">
             <span class="pull-right imore"></span>
             <i class="pull-left"></i>
-            <span class="pull-left confess-text">优惠券<br><span class="font12 text-grey">{% if a== 0%}更多优惠券等你来抢{% else %}{{a}}批优惠券等你来抢{% end %}</span></span>
-            <span class="confess-circle circle bg-pink text-white hidden">{{confess_count}}</span>
+            <span class="pull-left confess-text">预售<span class="font12 text-grey ml6">10余件水果抢先看</span></span>
+            <span class="confess-circle circle bg-pink text-white hidden">10</span>
         </a>
-    </li>
-    {%else%}
-    {% end %}
-    {%end%}
+    </li>-->
 {% end %}
 </ul>
 {% end %}
 {% block bottom %}
 <script type="text/javascript">
-var confess = parseInt($('.confess-circle').text());
-if(confess != 0){
-	$('.confess-circle').removeClass('hidden');
-}
+    var confess = parseInt($('.confess-circle').text());
+    if(confess != 0){
+    	$('.confess-circle').removeClass('hidden');
+    }
 </script>
 {% end %}

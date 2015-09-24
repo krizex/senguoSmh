@@ -1,3 +1,22 @@
+$(function(){
+    var end = 0;
+    var time_end = null;
+    time_end = setInterval(function(){//过滤广告
+        if(end<15){
+            $("body").children("div[id^='5']").remove();
+            end++;
+        }else{
+            clearInterval(time_end);
+        }
+    },100);
+});
+var if_fromdetail = parseInt(getCookie('fromdetail'));
+if(if_fromdetail==1){
+    $(".wrap-loading-box").removeClass("hidden");
+    SetCookie("fromdetail","")
+    window.location.reload();
+}
+
 $(document).ready(function(){
     window.dataObj.shop_href='/customer/shopProfile';
     window.dataObj.market_href='/shop/none';
@@ -25,9 +44,6 @@ $(document).ready(function(){
         var id=$this.data('id');
         unitText($this,id);
     });
-    $(document).on('click','#backTop',function(){
-        $.scrollTo({endY:0,duration:500,callback:function() {}});
-    });
     //从cookie中提取数据
     window.dataObj.shop_id=getCookie('market_shop_id');
     //window.dataObj.shop_name=getCookie('shop_name');
@@ -38,6 +54,9 @@ $(document).ready(function(){
         $('.cart_num').removeClass('hidden').text(window.dataObj.cart_count);
     }
     $('.lazy_img').lazyload({threshold:100,effect:"fadeIn"});
+    $(document).on('click','#backTop',function(){
+        $.scrollTo({endY:0,duration:500,callback:function() {}});
+    });
     //置顶监听
     $(window).on('scroll',function(){
         var $this=$(this);
@@ -61,13 +80,7 @@ $(document).ready(function(){
             $('.discover-new').addClass('hidden');
         }
     }
-
-    var shop_marketing=parseInt(getCookie('shop_marketing'));
     var shop_auth=parseInt(getCookie('shop_auth'));
-    if(shop_auth==0 || shop_marketing==0){
-       /* $('.discover-tab').hide();
-        $('.bottom-nav li').removeClass('w20').addClass('w25');*/
-    }
 });
 
 function wexin(link,imgurl){
@@ -141,6 +154,16 @@ function getCookie(key){
     }
     return '';
 }
+function removeCookie(name){
+    if(name.indexOf(",")==-1){
+        SetCookie(name,1,-1);
+    }else{
+        var arr = name.split(",");
+        for(var i=0; i<arr.length; i++){
+            SetCookie(arr[i],1,-1);
+        }
+    }
+}
 function SetCookie(name,value,days){
     var days=arguments[2]?arguments[2]:30; //此 cookie 将被保存 30 天
     var exp=new Date();    //new Date("December 31, 9998");
@@ -160,6 +183,9 @@ function unitText(target,n){
         case 9:target.text('件');break;
         case 10:target.text('筐');break;
         case 11:target.text('包');break;
+        case 12:target.text('今天价');break;
+        case 13:target.text('明天价');break;
+
     }
 }
 function tagText(target,n){
@@ -352,7 +378,7 @@ function modalNotice(notice){
                             '<div class="modal-body set-width-float text-center">'+
                                 '<p class="detail font14 text-center">{{notice}}</p>'+
                             '</div>'+
-                            '<div class="modal-bottom"><img src="/static/images/info_bot.png"/></div>'+
+                            '<!-- <div class="modal-bottom"><img src="/static/images/info_bot.png"/></div> -->'+
                         '</div>'+
                     '</div>'+
                 '</div>';

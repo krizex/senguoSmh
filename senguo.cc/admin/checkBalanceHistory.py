@@ -13,15 +13,17 @@ session = models.DBSession()
 #用此处测试整个系统的余额和在线支付记录错误、重复、遗漏、数值计算错误的问题
 
 def Check():
+	input_shop_id = int(input("Input Shop ID to Check:"))
 	print("Start Checking Balance History...")
 	# *将balancehistory表中的所有店铺id查出来存放在列表shop_list_query1中
 	# *将系统中的所有status > -1的订单的数量不为0店铺的id查询出来存在一个列表shop_list_query2中
 	# *然后从列表shop_list_query2中除去shop_list_query1中的id 
-	shop_list_query1 = session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
+	# shop_list_query1 = session.query(models.BalanceHistory.shop_id).distinct(models.BalanceHistory.shop_id).all()
 	
 	shop_id_list1 = []
-	for item in shop_list_query1:
-		shop_id_list1.append(item[0])
+	shop_id_list1.append(input_shop_id)
+	# for item in shop_list_query1:
+	# 	shop_id_list1.append(item[0])
 	total = len(shop_id_list1)
 
 	# *设定一个change_shop_id列表,把balancehistory表中修改过的店铺的id都存进去.
@@ -103,12 +105,12 @@ def Check():
 				# print("@@@@",len(pay_type_2))
 				# print(len(balance_type_1))
 				insert_order_num = [i for i in pay_type_2 if i not in balance_type_1]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s')).\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s')).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
 					if not shop_follow:
-						return self.send_fail('shop_follow not found')
+						return send_fail('shop_follow not found')
 					shop_follow.shop_balance -= insert_list[i][3]   #用户对应 店铺余额减少 
 					shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 					session.commit()
@@ -145,12 +147,12 @@ def Check():
 			# *判断pay_type_3的长度是否大于balance_type_3，若大于，则说明order表中肯定有在线支付的订单记录没有插入到balancehistory表中，这时就要把相关记录插入到balancehistory表中
 			if len(pay_type_3) > len(balance_type_3):
 				insert_order_num = [i for i in pay_type_3 if i not in balance_type_3]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.online_type).\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.online_type).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				for i in range(len(insert_list)):
 					shop = session.query(models.Shop).filter_by(id = shop_id).first()
 					if not shop:
-						return self.send_fail('shop not found')
+						return send_fail('shop not found')
 					shop.shop_balance += insert_list[i][3]
 					shop.shop_balance = round(shop.shop_balance,2)
 					session.commit()
@@ -193,12 +195,12 @@ def Check():
 				# print("@@@@",len(pay_type_2_delete))
 				# print(len(balance_type_4_5))
 				insert_order_num = [i for i in pay_type_2_delete if i not in balance_type_4_5]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.del_reason).\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),models.Order.del_reason).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
 					if not shop_follow:
-						return self.send_fail('shop_follow not found')
+						return send_fail('shop_follow not found')
 					shop_follow.shop_balance += insert_list[i][3]   #用户对应 店铺余额增加 ，单位：元
 					shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 					session.commit()
@@ -244,14 +246,14 @@ def Check():
 				# print("@@@@",len(pay_type_2_3_done))
 				# print(len(balance_type_6_7))
 				insert_order_num = [i for i in pay_type_2_3_done if i not in balance_type_6_7]
-				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.totalPrice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),\
+				insert_list = session.query(models.Order.customer_id,models.Order.shop_id,models.Accountinfo.nickname,models.Order.new_totalprice,models.Order.num,func.date_format(models.Order.create_date,'%Y-%m-%d %H:%i:%s'),\
 					       models.Order.arrival_day,models.Order.arrival_time,models.Order.pay_type,models.Order.today,models.Order.end_time).\
 					       join(models.Accountinfo,models.Accountinfo.id == models.Order.customer_id).filter(models.Order.num.in_(insert_order_num)).all()
 				
 				for i in range(len(insert_list)):
 					shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).with_lockmode("update").first()
 					if not shop_follow:
-						return self.send_fail('shop_follow not found')
+						return send_fail('shop_follow not found')
 
 					if shop_follow.shop_new == 0:
 						shop_follow.shop_new = 1
@@ -260,7 +262,7 @@ def Check():
 					try:
 						order_count = session.query(models.Order).filter_by(customer_id = insert_list[i][0],shop_id = shop_id).count()
 					except:
-						self.send_fail("[_AccountBaseHandler]order_done: find order by customer_id and shop_id error")
+						send_fail("[_AccountBaseHandler]order_done: find order by customer_id and shop_id error")
 					#首单 积分 加5 
 					if order_count==1:
 						if shop_follow.shop_point == None:
@@ -269,7 +271,7 @@ def Check():
 						try:
 							point_history = models.PointHistory(customer_id = insert_list[i][0],shop_id = shop_id)
 						except NoResultFound:
-							self.send_fail("[_AccountBaseHandler]order_done: point_history error, First_order")
+							send_fail("[_AccountBaseHandler]order_done: point_history error, First_order")
 						if point_history:
 							point_history.point_type = models.POINT_TYPE.FIRST_ORDER
 							point_history.each_point = 5
@@ -283,7 +285,7 @@ def Check():
 						try:
 							point_history = models.PointHistory(customer_id = insert_list[i][0],shop_id = shop_id)
 						except:
-							self.send_fail("[_AccountBaseHandler]order_done: point_history error, PREPARE_PAY")
+							send_fail("[_AccountBaseHandler]order_done: point_history error, PREPARE_PAY")
 						if point_history:
 							point_history.point_type = models.POINT_TYPE.PREPARE_PAY
 							point_history.each_point = 2
@@ -389,7 +391,18 @@ def Check():
 			available_balance =  item[9]
 			is_cancel =  item[10]
 
+			# added by jyj 2015-8-10
+			shop_province = session.query(models.Shop.shop_province).filter_by(id = shop_id).all()[0][0]
+			shop_name = session.query(models.Shop.shop_name).filter_by(id = shop_id).all()[0][0]
+			##
+
 			history_record = session.query(models.BalanceHistory).filter_by(id = id).with_lockmode("update").first()
+
+			# added by jyj 2015-8-10
+			history_record.shop_province = shop_province
+			history_record.shop_name = shop_name
+			##
+
 			if history_record.is_cancel != 1:
 				history_record.is_cancel = 0
 			if balance_type == 1:
@@ -402,10 +415,13 @@ def Check():
 
 			shop_follow = session.query(models.CustomerShopFollow).filter_by(customer_id = customer_id,shop_id = shop_id).with_lockmode("update").first()
 			if not shop_follow:
-				return self.send_fail('shop_follow not found')
+				return send_fail('shop_follow not found')
 			cur_shop = session.query(models.Shop).filter_by(id = shop_id).with_lockmode("update").first()
-
-			if balance_type == 0:
+			# 错误记录（直接忽略）
+			if balance_type == -1:
+				pass
+			# 余额充值
+			elif balance_type == 0:
 				shop_follow.shop_balance += balance_value
 				shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 				cur_shop.shop_balance += balance_value
@@ -413,12 +429,14 @@ def Check():
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 余额消费
 			elif balance_type == 1:
 				shop_follow.shop_balance -= balance_value
 				shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 提现
 			elif balance_type == 2:
 				cur_shop.shop_balance -= balance_value
 				cur_shop.shop_balance = round(cur_shop.shop_balance,2)
@@ -427,26 +445,37 @@ def Check():
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 在线支付
 			elif balance_type == 3:
 				cur_shop.shop_balance += balance_value
 				cur_shop.shop_balance = round(cur_shop.shop_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 余额退款
 			elif balance_type in [4,5]:
 				shop_follow.shop_balance += balance_value
 				shop_follow.shop_balance = round(shop_follow.shop_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 可提现额度入账
 			elif balance_type in [6,7]:
 				cur_shop.available_balance += balance_value
 				cur_shop.available_balance = round(cur_shop.available_balance,2)
 				history_record.customer_totalPrice = shop_follow.shop_balance
 				history_record.shop_totalPrice = cur_shop.shop_balance
 				history_record.available_balance = cur_shop.available_balance
+			# 在线支付退款
+			elif balance_type in [8,9]:
+				cur_shop.shop_balance -= balance_value
+				cur_shop.shop_balance = round(cur_shop.shop_balance,2)
+				history_record.customer_totalPrice = shop_follow.shop_balance
+				history_record.shop_totalPrice = cur_shop.shop_balance
+				history_record.available_balance = cur_shop.available_balance
 			else:
-				return self.send_error(404)
+				print("balance_type错误，未知值: ",balance_type)
+				return send_error(404)
 
 			session.commit()
 		print("Processing [",c,"/",total,"] => Step 3: shop_id",shop_id,"Done")

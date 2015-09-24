@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}森果社区{% end %}</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,maximum-scale=1,minimum-scale=1,initial-scale=1,user-scalable=no">
+    <meta name="keywords" content="森果,水果商城,水果,O2O,森果登录,微信卖水果,水果系统,森果后台,微信商城运营,生鲜商城,线上水果">
+    <meta name="description" content="森果是帮助商家在微信上搭建微信商城的平台，提供店铺、商品、订单、消息和客户的管理模块，同时还提供丰富的营销应用和活动插件。">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="yes" name="apple-touch-fullscreen">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
+    <link rel="stylesheet" type="text/css" href="{{static_url('bbs/css/reset.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{static_url('bbs/css/main.css')}}">
+    {% block head %}{% end %}
+    <script>
+        window.dataObj = {
+            _xsrf: "{{handler.xsrf_token}}"};
+    </script>
+</head>
+<body>
+    {% set if_login = '' %}
+    {% if handler.current_user %}
+    {% set if_login = True %}
+    {% else %}
+    {% set if_login = False %}
+    {% end %}
+    <header>
+        <div class="header">
+            <a href="javascript:;" class="back bbs-menu" id="bbs-menu"></a>
+            {% block header %}{% end %}
+            <div class="wrap-menu-list h0">
+                <div class="wrap-search-box">
+                    <i class="search-icon" id="search_btn"></i>
+                    <input type="text" placeholder="请输入文章标题" class="search-article" id="search_bbs"/>
+                </div>
+                <ul class="menu-list group">
+                    <li class="active bl0" data-id="100" data-text="森果社区所有文章">
+                        <i class="menu-icon m1"></i>
+                        <span>首页</span>
+                        <p class="f12">&nbsp;</p>
+                        <i class="cover-px cover-left"></i>
+                    </li>
+                    <li class="bl0" data-id="0" data-text="森果官方公告和通知">
+                        <i class="menu-icon m2"></i>
+                        <span>官方公告</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[0]}}</p>
+                    </li>
+                    <li class="bl0 br0" data-id="1" data-text="新功能发布和bug修复">
+                        <i class="menu-icon m3"></i>
+                        <span>产品更新</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[1]}}</p>
+                        <i class="cover-px cover-right"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="2" data-text="分享运营经验">
+                        <i class="menu-icon m4"></i>
+                        <span>运营干货</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[2]}}</p>
+                        <i class="cover-px cover-left"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="3" data-text="水果相关知识百科">
+                        <i class="menu-icon m5"></i>
+                        <span>水果百科</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[3]}}</p>
+                    </li>
+                    <li class="bl0 br0 bt0" data-id="4" data-text="产品功能的使用说明">
+                        <i class="menu-icon m6"></i>
+                        <span>使用教程</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[4]}}</p>
+                        <i class="cover-px cover-right"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="5" data-text="水果采购与供货信息">
+                        <i class="menu-icon m7"></i>
+                        <span>水果供求</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[5]}}</p>
+                        <i class="cover-px cover-left"></i>
+                    </li>
+                    <li class="bl0 bt0" data-id="6" data-text="分享互联网o2o前沿信息">
+                        <i class="menu-icon m8"></i>
+                        <span>森果前沿</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[6]}}</p>
+                    </li>
+                    <li class="bl0 br0 bt0" data-id="7" data-text="与他人交流运营心得">
+                        <i class="menu-icon m9"></i>
+                        <span>用户交流</span>
+                        <p class="f12">今日 : {{handler.getBBSNumber[7]}}</p>
+                        <i class="cover-px cover-right"></i>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </header>
+    <div class="container">
+        {% block content %}{% end %}
+    </div>
+{% block js %}
+    <script type="text/javascript" src="/static/bbs/js/zepto.min.js"></script>
+    <script type="text/javascript" src="/static/bbs/js/util.js"></script>
+    <script type="text/javascript" src="/static/bbs/js/mbase.js"></script>
+{% end %}
+    <script type="text/javascript" src="/static/js/template.js"></script>
+{% block bottom %}{% end %}
+</body>
+</html> 

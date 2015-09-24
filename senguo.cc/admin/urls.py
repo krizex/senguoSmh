@@ -29,6 +29,14 @@ handlers = [
 	(r"/lovewall/comment/(\w+)", handlers.activity.ConfessionComment, {}, "ConfessionComment"),
 	(r"/lovewall/(\w+)", handlers.activity.ConfessionHome, {}, "ConfessionHome"),
 
+	#秒杀折扣预售团购
+	(r"/seckill/(\w+)", handlers.activity.Seckill, {}, "ConfessionSeckill"),
+	(r"/discount/(\w+)", handlers.activity.Discount, {}, "ConfessionDiscount"),
+	(r"/gbuy", handlers.activity.Gbuy, {}, "ConfessionGbuy"),
+	(r"/presell", handlers.activity.Presell, {}, "ConfessionPresell"),
+	(r"/(\w+)/gbuy/(\w+)", handlers.activity.GbuyDetail, {}, "ConfessionGbuyDetail"),
+
+	#(r"/wxopen",handlers.apply.WxOpen,{},"wxopen"),
 	#bbs
 	(r"/bbs", handlers.bbs.Main, {}, "BbsMain"),
 	(r"/bbs/detail/(\w+)", handlers.bbs.Detail, {}, "BbsDetail"),
@@ -36,6 +44,7 @@ handlers = [
 	(r"/bbs/publish", handlers.bbs.Publish, {}, "BbsPublish"),
 	(r"/bbs/search", handlers.bbs.Search, {}, "BbsSearch"),
 	(r"/bbs/profile", handlers.bbs.Profile, {}, "BbsProfile"),
+	(r"/bbs/hot", handlers.bbs.getHotInfo, {}, "BbsHot"),
 
 	#市场推广
 	(r"/market/home", handlers.market.Home, {}, "MarketHome"),
@@ -51,6 +60,11 @@ handlers = [
 	(r"/coupon/customer",handlers.activity.CouponCustomer,{},"CouponCustomer"),
 	(r"/coupon/profile",handlers.activity.CouponProfile,{},"CouponProfile"),
 	(r"/coupon/list",handlers.activity.CouponList,{},"CouponList"),
+	# 限时折扣
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountMain"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountNew"),
+	(r"/admin/discount",handlers.admin.Discount,{},"DiscountDetail"),
+	
 	
 	(r"/staff/login", handlers.staff.Access, {"action":"login"}, "staffLogin"),
 	(r"/staff/oauth", handlers.staff.Access, {"action":"oauth"}, "staffOauth"),
@@ -59,6 +73,8 @@ handlers = [
 	(r"/staff", handlers.staff.Home, {}, "staffHome"),
 	(r"/staff/order", handlers.staff.Order, {}, "staffOrder"),
 	(r"/staff/hire/(\d+)", handlers.staff.Hire, {}, "staffHire"),
+	#地址管理
+	(r"/customer/address", handlers.customer.Address, {}, "AddressList"),
 
 	(r"/customer/login", handlers.customer.Access, {"action":"login"}, "customerLogin"),
 	(r"/customer/oauth", handlers.customer.Access, {"action":"oauth"}, "customerOauth"),
@@ -67,6 +83,7 @@ handlers = [
 	(r"/customer/logout", handlers.customer.Access, {"action":"logout"}, "customerLogout"),
 	(r"/customer/weixin", handlers.customer.Third, {"action":"weixin"}, "customerWeixin"),
 	(r"/customer/weixinphone", handlers.customer.Third, {"action":"weixinphone"}, "customerWeixinphone"),
+	(r"/customer/weixinphoneadmin", handlers.customer.Third, {"action":"weixinphoneadmin"}, "customerWeixinphoneadmin"),
 	(r"/customer/register", handlers.customer.RegistByPhone, {}, "customerRegister"),
 	(r"/customer/password", handlers.customer.Password, {}, "customerPassword"),
 
@@ -89,12 +106,15 @@ handlers = [
 	#official
 	(r"/",handlers.official.Home,{},"OfficialHome"),
 
-
+	(r"/appdownload",handlers.official.Appdownload,{},"OfficialAppdownload"),
 	(r"/shoplist",handlers.official.ShopList,{},"OfficialShopList"),
 	(r"/about",handlers.official.About,{},"OfficialAbout"),
 	(r"/product",handlers.official.Product,{},"OfficialProduct"),
 	#to remove
 	(r"/m", handlers.superadmin.Official,{},"test"),
+	#微信退款
+	(r"/customer/online/refund",handlers.onlinePay.RefundWxpay,{},"onlinerefund"),
+	(r"/customer/online/refundcallback",handlers.onlinePay.RefundCallback,{},"refundcallback"),
 
 	#支付宝在线支付
 	(r"/customer/online/aliPaycallback",handlers.onlinePay.OnlineAliPay,{'action':'AliPayCallback'},
@@ -171,6 +191,10 @@ handlers = [
 
 	# added by woody 8.3
 	(r"/super/admin",handlers.superadmin.AdminManager,{},"superareaadmin"),
+	(r"/super/newuser",handlers.superadmin.MakeNewUser,{},"newuser"),
+
+	# 9.15 woody
+	(r"/super/refund_apply",handlers.superadmin.ApplyRefund,{},"superRefundApply"),
 
 	## 店铺申请接入管理
 	# 所有店铺
@@ -210,6 +234,14 @@ handlers = [
 	#add by jyj 2015-6-15
 	(r"/super/orderstatic", handlers.superadmin.OrderStatic, {}, "superOrderStatic"),
 	##
+	# added by jyj 2015-8-3
+	(r"/super/sellstatic",handlers.superadmin.SellStatic,{},"superSellStatic"),
+	# #
+	# added by sunmh 2015年09月01日11:18:22
+	(r"/super/amountstatic",handlers.superadmin.AmountStatic,{},"superAmountStatic"),
+	# #
+
+
 	# (r"/super/Commentdelete",handlers.superadmin.CommentApplyDelete,{},"superCommentDelete"),
 
 
@@ -217,6 +249,7 @@ handlers = [
 
 	(r"/admin/login", handlers.admin.Access,{"action":"login"}, "adminLogin"),
 	(r"/admin/oauth", handlers.admin.Access, {"action":"oauth"}, "adminOauth"),
+	(r"/admin/weixinphoneadmin", handlers.admin.Access, {"action":"weixinphoneadmin"}, "weixinphoneadmin"),
 	(r"/admin/logout", handlers.admin.Access, {"action":"logout"}, "adminLogout"),
 	(r"/admin/register", handlers.admin.Access, {"action":"register"}, "adminRegister"),
 	(r"/admin/home", handlers.admin.Home, {},  "adminHome"),# 匹配参数为admin_id
@@ -228,8 +261,9 @@ handlers = [
 	(r"/admin/ostatic", handlers.admin.OrderStatic, {}, "adminOrderStatic"),
 	(r"/admin/fstatic", handlers.admin.FollowerStatic, {}, "adminFollowerStatic"),
 	(r"/admin/order", handlers.admin.Order, {}, "adminOrder"),
+	(r"/admin/orderExport", handlers.admin.OrderExport, {}, "adminOrderExport"),
 	(r"/admin/comment", handlers.admin.Comment, {}, "adminComment"),
-	(r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
+	# (r"/admin/shelf", handlers.admin.Shelf, {}, "adminShelf"),# 货架管理/商品管理
 	(r"/admin/follower", handlers.admin.Follower, {}, "adminStaffFollower"),
 	(r"/admin/staff", handlers.admin.Staff, {}, "adminStaffJH"),
 	(r"/admin/config", handlers.admin.Config, {}, "adminConfig"),
@@ -239,6 +273,7 @@ handlers = [
 	(r"/admin/shopbalance",handlers.admin.ShopBalance,{},"adminShopBalance"),
 	(r"/admin/realtime",handlers.admin.Realtime,{},""),
 	(r"/admin/marketing",handlers.admin.Marketing,{},"adminMarketing"),
+	(r"/admin/marketing/seckill",handlers.admin.MarketingSeckill,{},"adminMarketingSeckill"),
 	(r"/admin/confession",handlers.admin.Confession,{},"adminConfession"),
 	(r"/admin",handlers.admin.SwitchShop,{},"switchshop"),
 	(r"/admin/wxauth", handlers.admin.AdminAuth, {"action":"wxauth"}, "adminwxAuth"),
@@ -255,6 +290,7 @@ handlers = [
 	(r"/admin/MessageManage", handlers.admin.MessageManage, {}, "adminMessageManage"),
 	(r"/admin/WirelessPrint", handlers.admin.WirelessPrint, {}, "WirelessPrint"),
 	(r"/admin/import", handlers.admin.GoodsImport, {}, "GoodsImport"),
+	(r"/admin/picture", handlers.admin.GetPicture, {}, "GetPicture"),
 
 	# (r"/admin/customer", handlers.admin.Customer, {}, "adminCustomer"),
 	# (r"/admin/staff", handlers.admin.Staff, {}, "adminStaff"),
@@ -275,9 +311,11 @@ handlers = [
 	(r"/madmin/goods", handlers.madmin.Goods, {}, "MadminGoods"),
 	(r"/madmin/gsearch", handlers.madmin.GoodsSearch, {}, "MadminGoodsSearch"),
 	(r"/madmin/goodsAdd", handlers.madmin.GoodsAdd, {}, "MadminGoodsAdd"),
-	(r"/madmin/goodsEdit", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
-
-
+	(r"/madmin/goodsEdit/(\w+)", handlers.madmin.GoodsEdit, {}, "MadminGoodsEdit"),
+	(r"/madmin/goodsBatch", handlers.madmin.GoodsBatch, {}, "MadminGoodsBatch"),
+	(r"/madmin/user", handlers.madmin.User, {}, "MadminUser"),
+	(r"/madmin/userDetail/(\w+)", handlers.madmin.UserDetail, {}, "MadminUserDetail"),
+	(r"/madmin/usearch", handlers.madmin.UserSearch, {}, "MadminUserSearch"),
 	# 主页
 	(r"/fruitzone\/{0,1}", handlers.fruitzone.Home, {}, "fruitzoneHome2"),  # 匹配'\' 0~1次
 	# (r"/fruitzone", handlers.fruitzone.Home, {}, "fruitzoneHome"),  # 匹配'\' 0~1次
@@ -290,6 +328,7 @@ handlers = [
 	#to remove
 	#woody
 	(r"/apply/toweixin", handlers.fruitzone.ToWeixin, {}, "fruitzoneToWexin"),
+	(r"/apply/geetest",handlers.apply.GeeTest,{},"geetest"),
 	# (r"/fruitzone/apply", handlers.fruitzone.ShopApply, {"action": "apply"}, "fruitzoneShopApply"),
 	# (r"/fruitzone/apply/addImg", handlers.fruitzone.ShopApplyImg, {}, "fruitzoneShopApplyAddImg"),#增加的功能：申请店铺时支持图片上传
 	# (r"/fruitzone/reApply", handlers.fruitzone.ShopApply, {"action": "reApply"}, "fruitzoneShopReApply"),

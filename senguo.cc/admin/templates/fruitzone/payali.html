@@ -4,16 +4,20 @@
 <link rel="stylesheet" href="{{static_url('css/market-order-detail.css')}}"/>
 <link rel="stylesheet" href="{{static_url('css/fruit-color.css')}}"/>
 {% end %}
-{% block top %}订单详情{% end %}
+{% block header %}
+<header class="detail-header text-white center-block" id="nav">
+    <a href="javascript:;" class="return-btn bg_change"></a>
+    <span class="title font16">订单详情</span>
+</header>
+{% end %}
 {% block content %}
 {% set fruits=eval(order.fruits)%}
-
 <div class="container mb50" id="container">
     <div class="order-grade">
         <div class="order-line">
             <div class="order-line-grade"></div>
             <div class="order-wawa">
-                <a href="tel:{{order.phone}}">
+                <a href="tel:{{order.sender_phone}}">
                     {% if order.status == -1%}
                     <img src="/static/images/TDSG.png" alt="配送员头像"/>
                     {% else %}
@@ -22,12 +26,12 @@
                 </a>
             </div>
             <div class="order-status-txt">
-                <span id="status-txt" data-id="{{order.status}}">配送中</span><a class="tel-btn" href="tel:{{order.phone}}">拨号</a>
+                <span id="status-txt" data-id="{{order.status}}">配送中</span><a class="tel-btn" href="tel:{{order.sender_phone}}">拨号</a>
             </div>
         </div>
     </div>
     <div class="order-item">
-        <h4 class="top-title"><a href="/{{shop_code}}"><span class="black-txt">{{shopName}}</span><span class="arr-right"></span><a href="tel:{{order.phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系卖家</a></a></h4>
+        <h4 class="top-title"><a href="/{{shop_code}}"><span class="black-txt">{{shopName}}</span><span class="arr-right"></span><a href="tel:{{shop_phone}}" class="contact-us fr tel-btn"><i class="i-contact"></i>联系卖家</a></a></h4>
         <ul class="goods-lst">
            {% if order.fruits %}
                 {% set fruits = eval(order.fruits) %}
@@ -49,7 +53,7 @@
                                 <img src="{{imgurl}}" alt="商品图片"/>
                             </dd>
                             <dt class="bg">
-                                <p class="color">{{fruits[key]['fruit_name']}}</p>
+                                <p class="color">{% if 'activity_name' in list(fruits[key].keys()) and fruits[key]['activity_name'] %}（{{fruits[key]['activity_name']}}）{% end %}{{fruits[key]['fruit_name']}}</p>
                                 <p class="color txt-ar"><span class="big">{{fruits[key]['num']}}</span>x<span>1</span>&nbsp;&nbsp;小计：<span>{{round(float(price1)*fruits[key]['num'], 2)}}</span>元</p>
                                 <p class="color">{{fruits[key]['charge']}}</p>
                             </dt>
@@ -79,7 +83,7 @@
         </ul>
         <p>商品总价<span class="fr"><span class="text-red3">{{order.totalPrice-order.freight}}元</span></span></p>
         <p>配送费<span class="fr"><span class="text-red3">{{order.freight}}元</span></span></p>
-         <p>优惠券金额：<span class="fr"><span class="text-red3">{{order.coupon_money}}元</span></span></p>
+        <p>优惠券金额<span class="fr"><span class="text-red3">{{order.coupon_money}}元</span></span></p>
         <p class="dash-bt group"><span class="fr black-txt">应付款：<span class="text-red3">{{order.new_totalprice}}元</span></span></p>
     </div>
     <div class="order-item pt10">
@@ -106,5 +110,18 @@
 <input type="hidden" value="{{order.type}}" class="order_type"/>
 {% end %}
 {% block bottom %}
+<div class="modal fade notice-box" id="notice-box">
+    <div class="modal-dialog anim-bounceIn">
+        <div class="modal-content">
+            <div class="modal-body set-width-float text-center pt-10">
+                <p class="font14 mt42 text-center text-grey3">便宜不等人，还望三思而行~</p>
+                <div class="modal-btn-box text-center">
+                    <button  class="btn btn-default go-btn">去意已决</button>
+                    <button  class="btn dismiss bg-green text-white">我再想想</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="{{static_url('js/market-pay-detail.js')}}"></script>
 {% end %}

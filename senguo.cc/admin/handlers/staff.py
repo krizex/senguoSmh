@@ -57,9 +57,19 @@ class Home(StaffBaseHandler):
 	#    pass
 
 	@tornado.web.authenticated
+	@StaffBaseHandler.check_arguments("action?:str","shop?:int")
 	def get(self):
 		# print("[StaffHome]Shop ID:",self.shop_id)
-
+		if "action" in self.args and self.args["action"] =="home" and "shop" in self.args:
+			_shop_id=int(self.args["shop"])
+			self.shop_id = _shop_id
+			self.set_secure_cookie("staff_shop_id", str(_shop_id), domain=ROOT_HOST_NAME)
+			_shop = self.session.query(models.Shop.shop_code,models.Shop.shop_name).filter_by(id=_shop_id).first()
+			try:
+				self.shop_code = _shop[0]
+				self.shop_name = _shop[1]
+			except:
+				pass
 		try:
 			hirelink = self.session.query(models.HireLink).\
 				filter_by(staff_id=self.current_user.id, shop_id=self.shop_id).one()
@@ -80,7 +90,7 @@ class Home(StaffBaseHandler):
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).order_by(models.Order.id.desc())
-		elif work ==3: #SH2
+		elif work in [3,9]: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4]))
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
@@ -112,14 +122,26 @@ class Home(StaffBaseHandler):
 
 class Order(StaffBaseHandler):
 	@tornado.web.authenticated
-	@StaffBaseHandler.check_arguments("order_type","day_type?")
+	@StaffBaseHandler.check_arguments("order_type","day_type?","shop?:int")
 	def get(self):
+		if "shop" in self.args:
+			_shop_id=int(self.args["shop"])
+			self.shop_id = _shop_id
+			self.set_secure_cookie("staff_shop_id", str(_shop_id), domain=ROOT_HOST_NAME)
+			_shop = self.session.query(models.Shop.shop_code,models.Shop.shop_name).filter_by(id=_shop_id).first()
+			try:
+				self.shop_code = _shop[0]
+				self.shop_name = _shop[1]
+			except:
+				pass
+
 		order_type = self.args["order_type"]
 		try:
 			hirelink = self.session.query(models.HireLink).\
 				filter_by(staff_id=self.current_user.id, shop_id=self.shop_id).one()
 		except:
 			return self.send_error(404)
+
 		work = hirelink.work
 		self.current_user.work = work #增加work属性
 		orders = []
@@ -135,7 +157,7 @@ class Order(StaffBaseHandler):
 				SH1_id=self.current_user.id, status=models.ORDER_STATUS.SH1)
 			history_orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 								  models.Order.SH1_id==self.current_user.id,models.Order.status.in_([4,5,6,7])).order_by(models.Order.id.desc())
-		elif work == 3: #SH2
+		elif work in [3,9]: #SH2
 			orders = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
 				models.Order.SH2_id==self.current_user.id, models.Order.status.in_([4,5]))
 			orders_len = self.session.query(models.Order).filter(models.Order.shop_id==self.shop_id,
@@ -171,6 +193,9 @@ class Order(StaffBaseHandler):
 		elif order_type == "history":
 			orders = history_orders
 			page = 'history'
+		elif order_type == "self":
+			orders = orders.filter_by(type=3).filter(models.Order.status!=5 or 6 or 7).order_by(models.Order.send_time).all()
+			page = 'self'
 		else:
 			return self.send_error(404)
 		if "day_type" in self.args:
@@ -205,11 +230,17 @@ class Order(StaffBaseHandler):
 				if order.status == 4:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 4
-			elif self.current_user.work == 3:#SH2
+			elif self.current_user.work in [3,9]:#SH2
 				if order.status not in [1,2,3,4]:
 					return self.send_fail("已完成操作，请勿重复")
 				status = 5
-				self.order_done(self.session,order)
+				if order.shop.admin.mp_name and order.shop.admin.mp_appid and order.shop.admin.mp_appsecret and order.shop.admin.has_mp:
+					# print("[CustomerCart]cart_callback: shop.admin.mp_appsecret:",shop.admin.mp_appsecret,shop.admin.mp_appid)
+					access_token = self.get_other_accessToken(self.session,order.shop.admin.id)
+					# print(order.shop.admin.mp_name,order.shop.admin.mp_appid,order.shop.admin.mp_appsecret,access_token)
+				else:
+					access_token = None
+				self.order_done(self.session,order,access_token)
 				if order.pay_type == 1:  # 货到付款订单，员工需收款
 					self.hirelink.money += order.totalPrice
 

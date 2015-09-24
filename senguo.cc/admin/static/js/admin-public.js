@@ -1,5 +1,17 @@
 var notify = null,notice = false;
 $(document).ready(function(){
+   if(!isWebkit()){
+        document.write ('<div class="no-webkit-notice" style="width:350;height:150px;margin:0 auto;font-size:14px;border:1px solid #ddd;background:#f7f7f7;padding:30px;line-height:20px;">'+
+                '<img src="/static/images/apply_pear3.png" style="width:80px;float:left"/>'+
+                    '<div style="float:right">'+
+                        '<p style="padding:0;margin:5px">矮油，您的浏览器与森果后台不兼容，</p>'+
+                        '<p style="padding:0;margin:5px">推荐使用谷歌浏览器访问本网站，</p>'+
+                        '<p style="padding:0;margin:5px">使用国产浏览器的请使用高速模式。</p>'+
+                        '<a href="http://rj.baidu.com/soft/detail/14744.html?ald" target="_blank" style="display:inline-block;border:none;background:#44b549;color:#fff;padding:5px 10px;margin-top:10px;font-size:12px;width:100px;text-align:center;text-decoration:none;">谷歌浏览器下载</a>'+
+                        '<a href="http://senguo.cc" target="_blank" style="display:inline-block;border:none;background:#44b549;color:#fff;padding:5px 10px;margin-top:10px;font-size:12px;margin-left:10px;width:100px;text-align:center;text-decoration:none;">森果官网</a>'+
+                    '</div>'+
+            '</div>');
+   }
     if (window.screen.width=='600')
         document.write ('<body style="zoom: 55%">');
     else if (window.screen.width=='800')
@@ -62,7 +74,107 @@ $(document).ready(function(){
 }).on("click",".no_auth",function(e){
     stopDefault(e);
     return Tip("您的店铺还未进行认证，此功能暂不可用");
+}).on("click",".picture-pre-page",function(){
+    var page_now=parseInt($(".picture-now").text());
+    if(page_now>1){
+        getPicture(pictureType,page_now-1,_cur_code);
+        $(".picture-now").text(parseInt(page_now-1));
+    }
+    $(".picture-next-page").show();
+}).on("click",".picture-next-page",function(){
+    var page_now=parseInt($(".picture-now").text());
+    var page_toatal=parseInt($(".picture-total").text());
+    if(page_toatal==page_now+1){
+        $(".picture-next-page").hide();
+    }
+    if(page_now<=page_toatal){
+        getPicture(pictureType,page_now+1,_cur_code);
+        $(".picture-now").text(parseInt(page_now+1));
+    }
+}).on("click",".picture-jump-to",function(){
+    var page_now=parseInt($(".picture-now").text());
+    var page_toatal=parseInt($(".picture-total").text());
+    var page=parseInt($(".picture-page").val().trim());
+    if(page_toatal==page){
+        $(".picture-next-page").hide();
+    }else{
+        $(".picture-next-page").show();
+    }
+    if(1<=page<=page_toatal){
+        getPicture(pictureType,page,_cur_code);
+        $(".picture-now").text(parseInt(page));
+    }
+   
+}).on("click",".pop-picture-library .cancel-btn",function(){
+    $(this).closest(".pop-win").hide();
+    $(".default-pic-list").addClass("hide");
+    $(".upload-pic-list").removeClass("hide");
+    $(".show-upload-list").addClass("active").siblings("li").removeClass("active");
+}).on("click",".del-pic-img",function(){
+    if(confirm("是否将该图片从图片库删除？")){
+        var $this=$(this);
+        var id=$this.parents(".picture-list-item").attr("data-id");
+        var url = "/admin/picture";
+        var args={
+            action:"del",
+            data:{
+                id:id
+            }
+        }
+         $.postJson(url,args,function(res) {
+            if (res.success) {
+               $this.parents(".picture-list-item").remove();
+            }else{
+                Tip(res.error_text);
+            }
+        },function(){
+            return Tip('您的网络暂时不通畅，请稍候再试');
+        });
+    }
+   
 });
+
+var pictureType="goods",_cur_code="";
+function getPicture(action,page,code){
+    if(page>=1){
+        page=page-1;
+    }
+     $.ajax({
+        url:'/admin/picture?action='+action+'&page='+page+'&code='+code,
+        type:"get",
+        success:function(res){
+            if(res.success){
+                var data = res.datalist;
+                var total = res.total_page+1;
+                $('.upload-pic-list').empty();
+                if(parseInt(page)==0){
+                    $(".picture-total").text(total);
+                    $(".picture-pre-page").hide();
+                }else{
+                    $(".picture-pre-page").show();
+                }
+                if(total==1){
+                    $(".picture-pagination").hide();
+                }
+                $('.upload-pic-list').empty();
+                var item='<li class="img-bo picture-list-item {{ if status ==1 }} active{{/if}}" data-id="{{id}}">'+
+                        '<a href="javascript:;" class="del-pic-img">x</a>'+
+                        '<div class="img-selected">已选</div>'+
+                        '<img src="{{imgurl}}?imageView2/1/w/100/h/100" url="{{imgurl}}" alt="商品图片"/>'+
+                    '</li>';
+                for(var key in data){
+                    var render = template.compile(item);
+                    var html = render({
+                        imgurl:data[key]['imgurl'],
+                        id:data[key]['id'],
+                        status:data[key]['status']
+                    });
+                    $('.upload-pic-list').append(html);
+                }
+            }
+        }
+    });
+}
 
 function stopDefault(e){
     if(e&&e.preventDefault){
@@ -160,6 +272,15 @@ function isWeiXin(){
         else{
             return false;
         }
+}
+function isWebkit(){
+    var ua = window.navigator.userAgent.toLowerCase();
+    if(ua.match(/webkit/i) == 'webkit'){
+        return true;
+    }
+    else{
+        return false;
+    }
 }
 
 function worMode(target){

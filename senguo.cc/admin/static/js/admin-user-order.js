@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
     //订单数据
     getOrder();
     orderItem(0);
@@ -9,23 +10,27 @@ $(document).ready(function(){
     var status=parseInt($('.order-status').find('.active').attr('data-id'));
     if(status == 1){
         $('.func-btn').show().attr('id','batch-send').text('批量开始配送');
-    }
-    else if(status == 2){
+    }else if(status == 2){
         $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
     }
     initBmap();
 }).on('click','.print-order',function(){
     orderPrint($(this),'print'); //有线打印
-
 }).on('click','.delete-order',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
     var id=parent.data('id');
     var index=parent.index();
     var $box=$('.order_set_box');
+    if(parent.attr("data-pay")=="3"&&parent.attr("data-sta")=="1"){
+        $box.find('.title').text('订单退款并删除');
+        $box.find(".del-notice").removeClass("hide");
+    }else{
+        $box.find('.title').text('订单删除');
+        $box.find(".del-notice").addClass("hide");
+    }
     $box.modal('show').attr({'data-id':id,'data-target':index}).find('.modal-sure-btn').addClass('delete_check').removeClass('price_check mark_check');
-    $box.find('.title').text('订单删除');
-    $('#order_ser_val').val('').attr({'placeholder':'为防止误删除操作，请输入订单删除原因'});
+    $('#order_ser_val').val('').attr({'placeholder':'为防止误操作，请输入订单退款或删除原因'});
 }).on('click','.delete_check',function(){
     var $this=$(this);
     orderDelete();
@@ -42,12 +47,6 @@ $(document).ready(function(){
     if(confirm('是否完成该订单？')){
        orderEdit($this,'edit_status',5); 
     }
-}).on('click','.send_person_list li',function(){
-    var $this=$(this);
-    var val=$this.data('id');
-    if(confirm('是否选择该员工进行配送？')){
-        orderEdit($this,'edit_SH2',val);
-    }//员工修改
 }).on('click','.order_mark',function(){
     var $this=$(this);
     var parent=$this.parents('.list-item');
@@ -84,13 +83,15 @@ $(document).ready(function(){
 }).on('click','#batch-send',function(){
     var $this=$(this);
     if(confirm('提示：批量配送订单将全部分配给默认配送员，您可以在批量配送后再到“配送中”的订单中单独指定配送员。\n是否批量开始配送该订单？')){
+        $(".wrap-loading-box").removeClass("hidden");
         orderEdit($this,'batch_edit_status',4);
     }
 }).on('click','#batch-finish',function(){
-//    var $this=$(this);
-//    if(confirm('是否批量完成订单？')){
-//    orderEdit($this,'batch_edit_status',5); 
-//    }
+   var $this=$(this);
+   if(confirm('是否批量完成订单？')){
+        $(".wrap-loading-box").removeClass("hidden");
+        orderEdit($this,'batch_edit_status',5); 
+   }
 }).on('click','#batch-print',function(){
     var type=parseInt($("#receipt-type").val());
     orderPrint($(this),'batch_print'); //有线打印
@@ -100,12 +101,10 @@ $(document).ready(function(){
     var status=parseInt($this.attr('data-id'));
      if(status == 1){
         $('.func-btn').show().attr('id','batch-send').text('批量开始配送');
-    }
-    else if(status == 2){
-  //      $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
-	$('.func-btn').hide();
-    }
-    else{
+    }else if(status == 2){
+       $('.func-btn').show().attr('id','batch-finish').text('批量完成订单');
+	   // $('.func-btn').hide();
+    }else{
         $('.func-btn').hide();
     }
     _page=0;
@@ -155,14 +154,13 @@ $(document).ready(function(){
     var index = $(".self-address-list").children("li").size();
     if(index==10) return Tip("最多只能新建10个自提点");
     edit_flag = true;
-    var $item = $('<li class="group"><div class="wrap-operate pull-right">'+
-        '<a href="javascript:;" class="pull-right set-default">设为默认</a>'+
+    var $item = $('<li class="group"><div class="wrap-operate pull-right hide">'+
         '<a href="javascript:;" class="delete pull-right set-inl-blo"></a>'+
         '<a href="javascript:;" class="edit pull-right set-inl-blo to-edit"></a></div>'+
         '<a href="javascript:;" class="switch-abtn switch-abtn-active">'+
         '<span class="a_on">已</span><span class="a_off">未</span>启用</a> <a href="javascript:;" class="cur_loc"></a> <span class="text-grey3  address-text">'+
         '<span>自提点<span class="self-index">'+num_arr[index]+'</span> : <span class="self-addr">点击右方修改设置</span></span>' +
-        '<span class="default-address dgreen hidden">（默认自提点）</span></span></li>');
+        '</span></li>');
     $(".self-address-list").append($item);
     $("#addressDetail").removeAttr("disabled").val("").focus();
     $("#save-lbs").attr("data-type","add");
@@ -171,9 +169,54 @@ $(document).ready(function(){
     operateSelf("set",$(this).closest("li"));
 }).on("click",".wrap-operate .set-default",function(){
     operateSelf("default",$(this).closest("li"));
+}).on("click",".reProvince",function(){
+    return Tip("自提点只能在店铺所在的省");
+}).on("click",".reCity",function(){
+    return Tip("自提点只能在店铺所在的城市");
+}).on("mouseover",".self-address-list li",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
+    $(this).find(".wrap-operate").removeClass("hide");
+}).on("mouseout",".self-address-list",function(){
+    $(".self-address-list").find(".wrap-operate").addClass("hide");
+}).on("click",".order-inner",function(e){
+    var parent=$(this).parents(".order-list-item");
+    var forbid_click=parent.find('.forbid_click');
+    if(!forbid_click.is(e.target) &&forbid_click.has(e.target).length === 0){
+        parent.find(".arrow").toggleClass("hidden"); 
+    }
+}).on("click",".to-staff-choose",function(){
+    var $this=$(this);
+    var staffs=$this.parents(".order-list-item").find(".send_person_list li").clone();
+    staff_index = $this.parents(".order-list-item").index();
+    $(".choose-staff-list").empty().append(staffs);
+    $(".order-staff-box").modal("show");
+}).on('click','.choose-staff-list li',function(){
+    var $this=$(this);
+    $this.addClass("active").siblings("li").removeClass("active");
+}).on("click",".choose-staff-sure",function(){
+    var $this=$(this);
+    if($this.attr("data-flag")=="1"){
+        return false
+    }
+    $this.attr({"data-flag":"1"});
+    var $item=$('.choose-staff-list .active');
+    _staff_id=$item.attr("data-id");
+    _staff_name=$item.find(".sub-name").text();
+    _staff_img=$item.find(".sub-img").attr("src");
+    if(!_staff_id){
+        return Tip("请选择员工!");
+    }
+    if(window.location.href.indexOf("searchorder")!=-1){
+        staff_index = staff_index;
+    }else{
+        staff_index = staff_index+1;
+    }
+    orderEdit($(".order-status").eq(staff_index),'edit_SH2',_staff_id);
+    $(".order-staff-box").modal("hide");  
+    $this.attr({"data-flag":""});
 });
 
-var cur_address = null,edit_flag=false,is_drag = false;
+var cur_address = null,edit_flag=false,is_drag = false,staff_index,_staff_id,_staff_name,_staff_img;
 var num_arr = ["一","二","三","四","五","六","七","八","九","十"];
 var orders=window.dataObj.order;
 var $list_item;
@@ -183,12 +226,12 @@ var order_link='/admin/order';
 var _page=0;
 var _page_total;
 function getOrder(){
-    $.getItem('/static/items/admin/order-item.html?v=20150713',function(data){
+    $.getItem('/static/items/admin/order-item.html?v=20150805',function(data){
             $list_item=data;
             //商品列表item
-    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150613');
+    	    getGoodsItem('/static/items/admin/order-goods-item.html?v=20150713');
     	    //员工列表item
-    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150613');
+    	    getStaffItem('/static/items/admin/order-staff-item.html?v=20150722');
         }
     );
 }
@@ -214,20 +257,24 @@ function orderItem(page){
     var filter_status = $(".filter").attr("data-id");
     var pay_type = $(".pay_type").attr("data-id");
     var user_type = $(".user_type").attr("data-id");
+    var print_type =$(".print_type").attr("data-id");
     if(action=='order'){
-        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
     }else if(action=='customer_order'){
-        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
     }else if(action=='SH2_order'){
-        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+        url=window.location.href+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
     }else{
         var link=window.location.href;
         var status=$('.order-status').find('.active').first().attr('data-id');
+        if(status==1){
+            filter_status = "order_desc";
+        }
         if(parseInt($.getUrlParam("order_type"))==3){
             var self_id = $("#self_point").attr("data-id");
-            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page+'&self_id='+self_id;
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page+'&self_id='+self_id;
         }else{
-            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+'&page='+page;
+            url=link+'&order_status='+status+'&filter='+filter_status+'&pay_type='+pay_type+'&user_type='+user_type+"&print_type="+print_type+'&page='+page;
         }
     }
     $.ajax({
@@ -306,8 +353,14 @@ function orderItem(page){
                     var shop_new=data[i]['shop_new'];
                     var del_reason=data[i]['del_reason'];
                     var nickname=data[i]['nickname'];
+                    // console.log(nickname)
                     var customer_id=data[i]['customer_id'];
                     var _type=data[i]['type'];
+                    var online_type=data[i]['online_type'];
+                    var time_out=data[i]['time_out'];
+                    if(time_out==1&&status==1){
+                        $item.addClass("time-out").find(".list-title").prepend("<p class='text-red'>过期提醒：该订单已过期，请及时处理，以免影响其他操作！</p>");
+                    }
                     if(_type==3){
                         $item.find(".if_self").text("自提");
                     }
@@ -321,14 +374,14 @@ function orderItem(page){
                         $item.find('.saler-remark').hide();
                     }
                     if(isprint==1||isprint==true) {
-                        $item.find('.print-order').addClass('text-grey9');
+                        $item.find('.print-order').addClass('text-grey9').removeClass("link-btn");
                     }
                     if(shop_new!=1) {
                         $item.find('.new').show();
                     }
-                    $item.find('.name').text(nickname).attr('href','/admin/follower?action=filter&&order_by=time&&page=0&&wd='+customer_id);
+                    $item.find('.name').text(nickname).attr('href','/admin/follower?action=orderuser&&wd='+customer_id);
                     $item.find('.receiver').text(receiver);
-                    $item.attr({'data-id':id,'data-type':type});
+                    $item.attr({'data-id':id,'data-type':type,"data-pay":pay_type,"data-online":online_type,"data-sta":status});
                     $item.find('.send-time').text(send_time);
                     $item.find('.order-code').text(num);
                     $item.find('.order-price').text(totalPrice);
@@ -355,11 +408,18 @@ function orderItem(page){
                         $item.find('.price_edit').hide();
                     } 
                     else if(pay_type == 3){
-                        $item.find('.pay-status').text('在线支付'); 
+                        if(online_type=="wx"){
+                            $item.find('.pay-status').text('在线支付-微信');
+                        }else if(online_type=="alipay"){
+                            $item.find('.pay-status').text('在线支付-支付宝');
+                        }
                         $item.find('.price_edit').hide();
-                        if(status!=-1){$item.find('.delete-order').hide();}
+                        // if(status!=-1){$item.find('.delete-order').hide();}
+                        if(status==1){
+                            $item.find(".delete-order").text("退款并删除");
+                        }
                     }
-                    else { 
+                    else {
                         $item.find('.pay-status').text('货到付款'); 
                     }
                     //根据订单状态显示/隐藏
@@ -369,6 +429,9 @@ function orderItem(page){
                         }
                         else if(del_reason=='timeout'){
                             $item.find('.order-status').empty().text('该订单15分钟未支付，已自动取消').css({'line-height':'50px','color':'#44b549'});
+                        }
+                        else if(del_reason=='refund'){
+                            $item.find('.order-status').empty().text('该订单已退款并删除').css({'line-height':'50px','color':'#44b549'});
                         }
                         else{
                             $item.find('.order-status').empty().text('该订单已删除（原因：'+del_reason+'）').css({'line-height':'50px','color':'#44b549'});
@@ -396,7 +459,12 @@ function orderItem(page){
                         if(_type==3){
                             $item.find('.status_send').children('.status').text('等待自取');
                         }else{
-                            $item.find('.status_send').children('.status').text('配送中');
+                            if(SH2){
+                                $item.find('.status_send').children('.status').text(SH2['nickname']+'配送中');
+                            }
+                        }
+                        if(SH2){
+                            $item.find('.status-send').find("img").attr({"src":SH2['headimgurl']});
                         }
                         $item.find('.status_send').removeClass('hidden');
                         $item.find('.able_edit_order').show();
@@ -407,7 +475,12 @@ function orderItem(page){
                         if(_type==3){
                             $item.find('.status_finish').children('.status').text('自取完成');
                         }else{
-                            $item.find('.status_finish').children('.status').text('已送达');
+                            if(SH2){
+                                $item.find('.status_finish').children('.status').text(SH2['nickname']+'已送达');
+                            }
+                        }
+                        if(SH2){
+                            $item.find('.status-finish').find("img").attr({"src":SH2['headimgurl']});
                         }
                         $item.find('.status_finish').removeClass('hidden');
                         $item.find('.unable_edit_order').show();
@@ -415,12 +488,17 @@ function orderItem(page){
                     }
                     else if(status==6) {
                         $item.find('.status_comment').removeClass('hidden');
-                        $item.find('.status-comment').show();
+                        if(SH2){
+                            $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
+                        }
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
                     }
                     else if(status==7) {
                         $item.find('.status_comment').removeClass('hidden');
+                        if(SH2){
+                            $item.find('.status-comment').find("img").attr({"src":SH2['headimgurl']}).show();
+                        }
                         $item.find('.status-autocomment').show();
                         $item.find('.unable_edit_order').show();
                         $item.find('.unable_edit_sender').show();
@@ -433,7 +511,13 @@ function orderItem(page){
                         g_num++;
                         var $goods=$($goods_item);
                         $goods.find('.code').text(g_num);
-                        $goods.find('.goods-name').text(fruits[key]['fruit_name']);
+
+                        var activity_name = "";
+                        if (fruits[key]['activity_name']){
+                                activity_name = '（' +  fruits[key]['activity_name'] + '）';
+                        }
+
+                        $goods.find('.goods-name').text(activity_name + fruits[key]['fruit_name']);
                         $goods.find('.goods-price').text(fruits[key]['charge']);
                         $goods.find('.goods-number').text(fruits[key]['num']);
                         $item.find('.goods-list').append($goods);
@@ -455,36 +539,49 @@ function orderItem(page){
                     var $send_change=$item.find('.send_change');
                     var $sender=$send_change.find('.send_person');
                     var CurrentStaff=function(target,val){
-                      target.attr({'data-id':val['id']});
-                      target.find('.sender-code').text(val['id']);
-                      target.find('.sender-name').text(val['nickname']);
-                      target.find('.sender-phone').text(val['phone']);
-                };
-                if(SH2s.length>0){
-                    if(!SH2){
-                        CurrentStaff($sender,SH2s[0]);
-                        CurrentStaff($current_sender,SH2s[0]);
-                         for(var key in SH2s){
-                            var $staff=$($staff_item);
-                            CurrentStaff($staff,SH2s[key]);
-                            $item.find('.send_person_list').append($staff);
-                        }       
-                    }else{
-                        CurrentStaff($sender,SH2);
-                        CurrentStaff($current_sender,SH2);
-                        for(var key in SH2s){
-                            var $staff=$($staff_item);
-                            if(SH2s[key]['id']==SH2['id']) $staff.addClass('bg-blue');
-                            CurrentStaff($staff,SH2s[key]);
-                            $item.find('.send_person_list').append($staff);
+                        target.attr({'data-id':val['id']});
+                        target.find('.sub-id').text(val['id']);
+                        target.find('.sub-name').text(val['nickname']);
+                        target.find('.sub-img').attr("src",val['headimgurl']);
+                        if(val['phone']){
+                            target.find('.sub-phone').text(val['phone']);
+                        }else{
+                            target.find('.sub-phone').text('未设置');
                         }
+                    };
+                    if(SH2s.length>0){
+                        if(!SH2){
+                            CurrentStaff($sender,SH2s[0]);
+                            CurrentStaff($current_sender,SH2s[0]);
+                            for(var key in SH2s){
+                                var $staff=$($staff_item);
+                                CurrentStaff($staff,SH2s[key]);
+                                $item.find('.send_person_list').append($staff);
+                            }
+                        }else{
+                            CurrentStaff($sender,SH2);
+                            CurrentStaff($current_sender,SH2);
+                            var _num_ = 0;
+                            for(var key in SH2s){
+                                var $staff=$($staff_item);
+                                if(status == 1&&_num_==0){
+                                    $staff.addClass('active');
+                                }else if(status!=1){
+                                    if(SH2s[key]['id']==SH2['id']){
+                                        $staff.addClass('active');
+                                    }
+                                }
+                                CurrentStaff($staff,SH2s[key]);
+                                $item.find('.send_person_list').append($staff);
+                                _num_++;
+                            }
                         }
                     }
                     //商品总件数
                     $item.find('.goods-total-number').text(goods_num);
                     $('.order-list-content').append($item);
                 }
-             $(".wrap-loading-box").addClass("hidden");
+            $(".wrap-loading-box").addClass("hidden");
             }
             else {
                 $(".wrap-loading-box").addClass("hidden");
@@ -492,7 +589,6 @@ function orderItem(page){
             }
         }
     })
-    
 }
 
 function orderPrint(target,action){
@@ -543,7 +639,7 @@ function orderPrint(target,action){
         }
         var _action;
         if(console_type==0){
-             _action="ylyprint";
+            _action="ylyprint";
         }else if(console_type==1){
             _action="fyprint";
         }
@@ -565,31 +661,31 @@ function orderPrint(target,action){
         };
         $.postJson(url,args,function(res){
                 if(res.success){
-                    target.addClass('text-grey9');
+                    target.addClass('text-grey9').removeClass("link-btn");
                     if(type==0){
                         var inner=window.document.body.innerHTML;
                         window.document.body.innerHTML=html.innerHTML;
                         var img = $("#img");
                         var src=img.attr('src');
                         if(src!='None'&& src!=undefined){
-                          img.on("load",function(){
-                             window.print();
-                             window.document.body.innerHTML=inner;
-                            });  
+                            img.on("load",function(){
+                            window.print();
+                            window.document.body.innerHTML=inner;
+                            });
                         }
                         else{
-                           window.print();
-                           window.document.body.innerHTML=inner; 
+                            window.print();
+                            window.document.body.innerHTML=inner; 
                         }
                     }   
                 }
                 else return Tip(res.error_text);
             },
-            function(){return Tip('网络错误')}
+            function(){return Tip('您的网络暂时不通畅，请稍候再试')}
         );
         function getData(target){
             var parent=target.parents('.order-list-item');
-            var order_id=parent.data('id');
+            var order_id=parent.attr('data-id');
             var order_num=parent.find('.order-code').text();
             var shop_name=$('#shop_name').text();
             var order_time=parent.find('.order-time').text();
@@ -606,8 +702,9 @@ function orderPrint(target,action){
             var print_img_active=$('.shop-receipt-info').attr('data-active');
             var saler_remark=parent.find('.order_remark').text(); 
             var user_remark=parent.find('.message-content').text();
+            var _type=parent.attr('data-type');
 
-            $.getItem('/static/items/admin/order-print-page.html?v=20150706',function(data){
+            $.getItem('/static/items/admin/order-print-page.html?v=20150806',function(data){
                 var $item=$(data);
                 $item.find('.notes-head').text(shop_name);
                 $item.find('.orderId').text(order_num);
@@ -624,7 +721,7 @@ function orderPrint(target,action){
                 if(user_remark=='null'){$item.find('.user-remark').hide()}
                 if(print_remark) {$item.find('.extra-info-box').show().find('.print-remark').text(print_remark); }
                 if(print_img_active == 1){
-                     if(!print_img||print_img=='None') {
+                    if(!print_img||print_img=='None') {
                         $item.find('.shop-img').remove();
                     }
                     else {
@@ -634,10 +731,13 @@ function orderPrint(target,action){
                 else{
                     $item.find('.shop-img').remove(); 
                 }
-               $item.find('.moneyPaid').text(paid);
-               html.innerHTML+=$item[0].innerHTML;
-        });
-    }
+                if(_type==3||_type=="3"){
+                    $item.find(".self").text("自提");
+                }
+                $item.find('.moneyPaid').text(paid);
+                html.innerHTML+=$item[0].innerHTML;
+            });
+        }
 }
 
 function orderDelete(target){
@@ -647,6 +747,8 @@ function orderDelete(target){
     var order_id=$box.attr('data-id');
     var index=$box.attr('data-target');
     var del_reason=$('#order_ser_val').val();
+    var pay_type=parseInt($('.order-list-item').eq(index).attr("data-pay"));
+    var online_type=$('.order-list-item').eq(index).attr("data-online");
     if(!del_reason){
         return Tip('请输入订单删除的原因');
     }
@@ -659,8 +761,28 @@ function orderDelete(target){
     };
     var args={
         action:action,
-        data:data
+        data:data,
+        pay_type:pay_type,
+        online_type:online_type
     };
+    if (pay_type==3){
+        url = '/customer/online/refund'
+        if (online_type == 'wx'){
+            action = 'wx';
+            args = {
+                action:action,
+                order_id:order_id
+            };
+        };
+        if (online_type == 'alipay') {
+            action = 'alipay';
+            args = {
+                action:action,
+                order_id:order_id
+            };
+        };
+    }
+
     $.postJson(url,args,function(res){
             if(res.success){
                 $('.order_set_box').modal('hide');
@@ -671,7 +793,7 @@ function orderDelete(target){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误')}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试')}
     )
 }
 
@@ -713,6 +835,7 @@ function orderEdit(target,action,content){
         var index=parent.attr('data-target');
     }
     else if(action=='batch_edit_status'){
+        $(".wrap-loading-box").removeClass("hidden");
         var list=[];
         $('.order-checked').each(function(){
             var $this=$(this);
@@ -720,6 +843,7 @@ function orderEdit(target,action,content){
             list.push(id);
         });
         if(list.length==0){
+            $(".wrap-loading-box").addClass("hidden");
             return Tip('您还未选择任何订单');
         }
         data.status=Int(content);
@@ -738,30 +862,28 @@ function orderEdit(target,action,content){
              	    $remark_box.show().find('.order_remark').text(content);
                     $('.order-list-item').eq(index).find('.saler-remark').val(content);
                 }else if(action=='edit_SH2'){
-                    var code=target.find('.sender-code').text();
-                    var name=target.find('.sender-name').text();
-                    var phone=target.find('.sender-phone').text();
-                    var $sender=parent.find('.order-sender');
                     var order_status=Int($('.order-status').find('.active').first().attr('data-id'));
                     if(order_status==1){
                         if(_type==3){
                             parent.find('.to-send').attr({'disabled':true}).text('等待自取');
                         }else{
                             parent.find('.to-send').attr({'disabled':true}).text('配送中');
+
                         }
                     }
-                    $sender.find('.sender-code').text(code);
-                    $sender.find('.sender-name').text(name);
-                    $sender.find('.sender-phone').text(phone);
+                    parent.find('.status-send').find("img").attr({"src":_staff_img});
                     parent.find('.status_send').removeClass('hidden');
                     parent.find('.status_order').addClass('hidden');
                     parent.find('.status_finish').addClass('hidden');
                     if(_type==3){
-                        parent.find('.status_word').text('等待自取');
+                        parent.find('.to-staff-send').text('等待自取');
                     }else{
-                        parent.find('.status_word').text('配送中');
+                        parent.find('.to-staff-send').text(_staff_name+'配送中');
                     }
                     parent.find('.status-send').addClass('bg-blue').siblings().removeClass('bg-blue');
+                    if(parent.hasClass("time-out")){
+                        parent.removeClass("time-out");
+                    }
                 }else if(action=='edit_status'){
                     target.addClass('bg-blue').siblings().removeClass('bg-blue');
                     var status=target.text();
@@ -777,6 +899,8 @@ function orderEdit(target,action,content){
                         }else{
                             parent.find('.status_send').children('.status').text('配送中');
                         }
+                        var send_name=parent.find(".send_person_list li").first().find(".sub-name").text();
+                        var send_img=parent.find(".send_person_list li").first().find(".sub-img").attr("src");
                         parent.find('.status_send').removeClass('hidden');
                         parent.find('.status_order').addClass('hidden');
                         parent.find('.status_finish').addClass('hidden');
@@ -785,29 +909,39 @@ function orderEdit(target,action,content){
                         }else{
                             target.attr({'disabled':true}).text('配送中');
                         }
+                        parent.find('.status-send').find("img").attr({"src":send_img});
+                        parent.find(".to-staff-send").text(send_name+'配送中');
                         parent.find('.check').removeClass('order-check');
                     }
                     else if(content==5) {
+                        var send_name=parent.find(".to-staff-send").text().replace("配送中","");
+                        var send_img=parent.find(".status-send").find("img").attr("src");
                         if(_type==3){
                             parent.find('.status_finish').children('.status').text('自取完成');
                         }else{
-                            parent.find('.status_finish').children('.status').text('已送达');
+                            parent.find('.status_finish').children('.status').text(send_name+'已送达');
                         }
             			parent.find('.status_finish').removeClass('hidden');
                         parent.find('.status_order').addClass('hidden');
                         parent.find('.status_send').addClass('hidden');
                         target.attr({'disabled':true}).text('已完成');
                         parent.find('.check').removeClass('order-check');
+                        parent.find('.status-finish').find("img").attr({"src":send_img});
+                    }
+                    if(parent.hasClass("time-out")){
+                        parent.removeClass("time-out");
                     }
                 }else if(action=='batch_edit_status'){
                     if(content==4) {
                         $('.order-checked').each(function(){
                             var $this=$(this);
                             var $item =$this.parents('.order-list-item');
+                            var send_name=$item.find(".send_person_list li").first().find(".sub-name").text();
+                            var send_img=$item.find(".send_person_list li").first().find(".sub-img").attr("src");
                             if(_type==3){
                                 $item.find('.status_send').children('.status').text('等待自取');
                             }else{
-                                $item.find('.status_send').children('.status').text('配送中');
+                                $item.find('.status_send').children('.status').text(send_name+'配送中');
                             }
                             $item.find('.status_send').removeClass('hidden');
                             $item.find('.status_order').addClass('hidden');
@@ -817,28 +951,44 @@ function orderEdit(target,action,content){
                             }else{
                                 $item.find('.to-send').attr({'disabled':true}).text('配送中');
                             }
+                            $item.find('.status-send').find("img").attr({"src":send_img});
+                            if(parent.hasClass("time-out")){
+                                parent.removeClass("time-out");
+                            }
                         });
-                    }
-                    else if(content==5) {
+                    }else if(content==5) {
                         $('.order-checked').each(function(){
                             var $this=$(this);
                             var $item =$this.parents('.order-list-item');
-                            $item.find('.status_finish').removeClass('hidden');
+                            var send_name=$item.find(".send_person_list li").first().find(".sub-name").text();
+                            var send_img=$item.find(".send_person_list li").first().find(".sub-img").attr("src");
+                            $item.find(".status_finish").removeClass("hidden");
                             $item.find('.status_order').addClass('hidden');
                             $item.find('.status_send').addClass('hidden');
                             $item.find('.to-finish').attr({'disabled':true}).text('已完成');
+                            $item.find('.status-finish').find("img").attr({"src":send_img});
+                            if(parent.hasClass("time-out")){
+                                parent.removeClass("time-out");
+                            }
                         });
                     }
+                    if(res.notice){
+                        Tip(res.notice);
+                    }
+                    $(".wrap-loading-box").addClass("hidden");
                 }else if(action=='edit_totalPrice'){
                     parent.modal('hide');
                     $('.order-list-item').eq(index).find('.order-price').text(content);
                 }
             }
             else {
+                if(action=='batch_edit_status'){
+                    $(".wrap-loading-box").addClass("hidden");
+                }
                 return Tip(res.error_text);
             }
         },
-        function(){return Tip('网络错误')}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试')}
     )
 }
 
@@ -925,7 +1075,7 @@ function operateSelf(type,$obj){
             }
             else return Tip(res.error_text);
         },
-        function(){return Tip('网络错误')}
+        function(){return Tip('您的网络暂时不通畅，请稍候再试')}
     );
 }
 //初始化百度地图
@@ -1047,7 +1197,7 @@ function initBmap(){
         if(confirm("确认删除该自提点吗？")){
             var id = $this.closest("li").attr("data-id");
             var args = {
-                action:"set_self_address",
+                action:"del_self_address",
                 data:{
                     address_id:id
                 }
@@ -1061,7 +1211,7 @@ function initBmap(){
                     }
                     else return Tip(res.error_text);
                 },
-                function(){return Tip('网络错误')}
+                function(){return Tip('您的网络暂时不通畅，请稍候再试')}
             );
         }
     });

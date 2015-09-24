@@ -61,6 +61,16 @@ $(document).ready(function(){
 }).on("click",".wrap-pay-more",function(){
     $(this).toggleClass("wrap-apay-more");
     $(this).next(".wrap-pay-text").toggleClass("hide");
+}).on("click",".notice-type-choose li",function(){
+    var $this=$(this);
+    var index=$this.index();
+    $this.addClass("active").siblings("li").removeClass("active");
+    $(".set-list").eq(index).show().siblings(".set-list").hide();
+    if(index==0){
+        $(".add-notice").show();
+    }else{
+        $(".add-notice").hide();
+    }
 });
 /*支付方式*/
 function switchPay(active,type,$obj){
@@ -323,4 +333,9 @@ function previewImage(file,callback){//file为plupload事件监听函数参数�
         };
         preloader.load( file.getSource() );
     }
+}
+//android端上传图片
+function uploadImgForAndroid(url){
+    $("#receipt_img").attr("src",url+"?imageView2/1/w/100/h/100").attr("url",url);
+    receiptImg();
 }

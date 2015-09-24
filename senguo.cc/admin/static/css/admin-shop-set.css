@@ -1,7 +1,7 @@
 .set-description{width:100%;background:#f4f5f9;padding:20px;clear:both;}
 .set-description p{margin-bottom:0;}
 
-.set-list{width:100%;margin-top:10px;}
+.set-list{width:100%;margin-top:20px;}
 .set-list .set-list-item p{clear:both;margin:0;}
 .set-list .set-list-item .addres1-box{padding:1px 3px;margin:0 5px 5px 0;border-radius:1px;}
 .set-list .set-list-item .address-list li{float:left;padding:1px 3px;margin:0 5px 5px 0;border-radius:1px;}
@@ -17,12 +17,13 @@
 .add-address-box .add-address2-list li{width:100%;float:left;margin-top:5px;}
 
 .new-notice-title{width:470px;margin-bottom:20px;font-size:14px;}
+.new-notice-link{width:470px;margin-bottom:20px;font-size:14px;}
 .new-notice-detail{width:470px;height:100px;margin-bottom:20px;font-size:14px;}
 
 .info-set-list{border:1px solid #eee;border-bottom:none;}
 .info-set-list .item{border-bottom:1px solid #eee;padding:15px;}
 .info-set-list .w1{width:20%; color:#999;}
-.info-set-list p{max-width:610px;}
+.info-set-list p{max-width:650px;}
 .logo-box{width:80px;height:80px;display:inline-block;text-align:center;position:relative;overflow:hidden;}
 .logo-box #logoImg{width:100%;margin-bottom:5px;}
 .logo-box .title{width:100%;height:20px;background:rgba(0,0,0,0.3);position:absolute;bottom:0;left:0;line-height:20px;}
@@ -41,7 +42,8 @@
 .receipt-msg{width:400px;overflow:hidden;}
 
 .notice_summary{width:100%;height:28px;overflow:hidden;}
-.notice_detail{width:100%;height:120px;overflow:hidden;}
+.notice_link{width:80%;height:28px;overflow:hidden;}
+.notice_detail{width:75%;height:120px;overflow:hidden;}
 
 .download_img{line-height:100px;}
 
@@ -50,7 +52,7 @@
 .address-list>ul>li:hover{background-color: #efefef;}
 .address-list>ul>li:hover span{color: #666;}
 .wrap-bmap{width: 732px;height: 500px;border: 1px solid #e7e7eb;}
-.wrap-map{width: 800px;height: 500px;border: 1px solid #e7e7eb;position: relative;overflow: hidden;z-index:1;}
+.wrap-map{width: 700px;height: 500px;border: 1px solid #e7e7eb;position: relative;overflow: hidden;z-index:1;}
 .search-lbs{width: 80px;height: 30px;text-align: center;color: #666;margin-left: 10px;text-indent: 0;}
 .area-tip-box{width: 360px;height: 50px;line-height: 50px;text-align: center;font-size: 14px;background-color: rgba(255,101,99,.8);border-radius: 6px;position: fixed;top: 100px;left: 50%;margin-left: -180px;z-index: 999;color: #fff;}
 .wrap-bmap-box{position: relative;padding-top: 15px;}
@@ -58,11 +60,12 @@
 .address-sure{width: 60px;height: 30px;line-height: 30px;text-align: center;font-size: 14px;border-radius: 2px;color:#44b549;background-color: #f0f4f0;display: inline-block;border: 1px solid #e7e7eb;}
 .pop-bmap{position: fixed;background-color: rgba(0,0,0,0.4);width: 100%;height: 100%;z-index:9999;top: 0;left: 0;}
 .pop-content{background-color: #fff;position:absolute;width: 820px;top: 50%;left: 50%;-webkit-transform:translate(-50%,-50%);border-radius: 2px;}
-.pop-content>div{border-top: 1px solid #eee;padding: 10px;}
-.pop-content .title{font-size: 16px;text-align: center;color: #333;border-top: none;}
+.pop-content .title{font-size: 16px;text-align: center;color: #333;border-top: none;padding: 10px 0;}
 .pop-content .name{color: #999;font-size: 14px;line-height: 24px;}
 .pop-content .name span{float: left;display: block;width: 100px;}
 .pop-content .shop-area-text{height: 24px;border: 1px solid #ddd;width: 400px;color: #333;font-size: 14px;}
+.pop-content  .pop-content-box{padding:0 40px;max-height:500px;overflow-y:scroll;overflow-x:hidden;}
+.pop-content  .pop-content-box>div{border-top: 1px solid #eee;padding: 10px;}
 .map-sharp-list{float: left;}
 .map-sharp-list>li{float: left;height:26px;font-size: 14px;margin-right:20px;color: #999;border: 1px solid #999;border-radius: 4px;width: 180px;line-height: 26px;cursor: pointer;text-align: center;}
 .map-sharp-list .active{color: #33CC66;border-color: #33CC66;}
@@ -70,6 +73,10 @@
 .pop-btns>a{display: inline-block;width: 80px;margin: 0 10px;border: 1px solid #eee;border-radius: 2px;text-align: center;height: 28px;line-height: 28px;}
 .pop-btns .ok-btn{background-color: #33CC66;color: #fff;display: inline-block !important;}
 .pop-btns .cancel-btn{color: #999;background: #fff;}
+
+.href_type{padding:5px 10px;background-color:#f2f2f2;}
+.href_type.active{background:url('/static/images/check_checked.png') no-repeat center right;background-size:20px;background-color:#f2f2f2;}
+
 /*店铺认证*/
 .invisible{visibility: hidden;}
 .hide{display: none!important;}
@@ -106,7 +113,7 @@
 .bind-btn{color: #0081c2;font-size: 14px;}
 .wrap-img{position: relative;}
 /*支付方式*/
-.edit-box{background-color: #f4f5f9;padding: 15px 20px;margin-top: 30px;}
+.edit-box{background-color: #f4f5f9;padding: 15px 20px;}
 .edit-box .mode a{width:120px;height:32px; border-radius:30px;line-height:30px;position:relative;font-size:14px;}
 .edit-box .mode .circle{position:absolute;display:inline-block;width:28px;height:28px;top:2px;background:#fff;border-radius:50%;}
 .edit-box .work-mode{text-indent:28px;}
@@ -174,7 +181,7 @@
 .mr20{margin-right:20px;}
 
 .notice_img_box {position:relative;max-height:120px;overflow:hidden;}
-.notice_img_box .title{display:inline-block;width:100%;background:rgba(0,0,0,0.5);position:absolute;bottom:0;left:0;height:30px;line-height:30px;}
+.notice_img_box .title{display:inline-block;width:100%;background:rgba(0,0,0,0.5);position:absolute;bottom:0;left:0;height:30px;line-height:30px;cursor: pointer;}
 .notice_img{width:100%;border:1px solid #eee;}
 .img_add_box .button{display:inline-block;width:150px;height:30px;line-height:30px;border-radius:2px;cursor:pointer;}
 .img_add_box{width:220px;height:140px;overflow:hidden;}
@@ -190,3 +197,7 @@
 .type-choose .circle{display:inline-block;width:18px;height:18px;border-radius:50%;border:1px solid #ddd;margin-right:5px;float:left;}
 .iti{width:600px;float:left;margin-bottom:10px;}
 .iti-last{width:600px;float:left;}
+.shop-point{white-space: nowrap;margin-left: -10px;}
+.link-type{float:left;}
+.link-type li{display:inline-block;width:150px;height:30px;background-color:#ddd;line-height:30px;border-radius:2px;cursor:pointer;text-align:center;float:left;margin-right:10px;}
+.link-type li.active{background-color:#44b549;color:#fff;}

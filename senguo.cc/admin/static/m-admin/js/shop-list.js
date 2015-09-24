@@ -32,8 +32,9 @@ $(document).ready(function(){
     });
     new QRCode($("#big-code2")[0],{
         width : 300,
-        height : 300
-    }).makeCode($("#shop_list_link").html());
+        height : 300,
+        colorDark : "#433943"
+    }).makeCode($("#shop_list_link").attr("url"));
 }).on("click","#qa",function(){
     $(this).addClass("hide");
     $(".pop-qa").removeClass("hide");

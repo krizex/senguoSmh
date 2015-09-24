@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
-{% block title %}添加公告{% end %}
+{% block title %}{% if notice %}编辑公告{% else %}添加公告{% end %}{% end %}
 {% block head %}
 {% end %}
 {% block header %}
 <input type="hidden" id="token" value="{{token}}"/>
 <div class="header">
-    <a href="javascript:;" class="back goback">返回</a>
-    <span>添加公告</span>
+    <a href="javascript:;" class="back backset">返回</a>
+    <span>{% if notice %}编辑公告{% else %}添加公告{% end %}</span>
     <a href="javascript:;" class="head-right finish-btn" id="finish_btn" data-action="{% if notice %}edit{% else %}add{% end %}" data-id="{% if notice %}{{notice.id}}{% end %}">完成</a>
 </div>
 {% end %}
@@ -14,12 +14,23 @@
 <div class="wrap-shop-address" id="wrap-shop-address">
     <p class="list-title pt10">摘要</p>
     <div class="address-item">
-        <input type="text" class="address-ipt new-notice-title" placeholder="请输入公告摘要" autofocus="true" value="{% if notice %}{{notice.summary}}{% end %}"/>
+        <input type="text" class="address-ipt new-notice-title" placeholder="请输入公告摘要" autofocus="true" value="{% if notice and notice.summary %}{{notice.summary.strip()}}{% end %}"/>
     </div>
+    {% if notice and notice._type==0 or not notice%}
     <p class="list-title pt10">详情</p>
     <div class="notice-item">
-        <textarea class="notice-area new-notice-detail" placeholder="请输入公告详情"/>{% if notice %}{{notice.detail}}{% end %}</textarea>
+        <textarea class="notice-area new-notice-detail" placeholder="请输入公告详情"/>{% if notice and notice.detail%}{{notice.detail.strip()}}{% end %}</textarea>
     </div>
+    {% end %}
+    <p class="list-title pt10">链接</p>
+    <div class="address-item">
+        <input type="text" class="address-ipt new-notice-link" placeholder="请输入公告摘要" autofocus="true" value="{% if notice and notice.link %}{{notice.link.strip() or ''}}{% end %}"/>
+    </div>
+    <p class="list-title pt10">点击公告背景跳转</p>
+    <ul class="link-type">
+        <li class="{%if notice and notice.click_type == 0 or not notice%}active{% end %} fl" data-id="0">详情</li>
+        <li class="{%if notice and notice.click_type == 1 %}active{% end %} fr" data-id="1">链接</li>
+    </ul>
     <p class="list-title pt10">图片</p>
     <a href="javascript:;" class="create-btn add-notice-img {% if notice %}hidden{% end %}" id="add-notice-img">+添加图片</a>
     <div class="notive-temp-img {% if notice %}{% else %}hidden{% end %}" id="notice-temp-img">
@@ -32,9 +43,52 @@
 {% block fix %}
 {% end %}
 {% block bottom %}
+<div class="pop-picture-library hide">
+    <div class="wrap-sty-box">
+          <ul class="picture-title wrap-sty">
+                <li class="active show-upload-list">您上传的图片</li>
+                <li class="show-default-list">系统默认图片</li>
+            </ul>
+             <div class="picture-title2" id="upload-area">
+                <span class="fl c999">点击图片即选中</span>
+                <button id="upload-picture" class="btn fr">上传新图片</button>
+            </div>
+             <div class="picture-library">
+                <ul class="group picture-list upload-pic-list">
+                   
+                </ul>
+                <ul class="group picture-list default-pic-list hide">
+                    <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="/static/images/banner.png" url="/static/images/banner.png" alt="商品图片"/>
+                    </li>
+                    <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="/static/images/holder_fruit.jpg"  url="/static/images/holder_fruit.jpg" alt="商品图片"/>
+                    </li>
+                     <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp?imageView2/1/w/100/h/100" url="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp" alt="商品图片"/>
+                    </li>
+                     <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d?imageView2/1/w/100/h/100" url="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d" alt="商品图片"/>
+                    </li>
+                </ul>
+            </div>
+         <div class="wrap-sty">
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
+    </div>
+</div>
 <script src="/static/js/exif.min.js"></script>
 <script src="/static/js/plupload/plupload.full.min.js"></script>
 <script src="/static/js/plupload/i18n/zh_CN.js"></script>
 <script src="/static/js/qiniu.min.js"></script>
+<script src="/static/js/template.js"></script>
 <script type="text/javascript" src="{{static_url('m-admin/js/shop-set-notice.js')}}"></script>
 {% end %}

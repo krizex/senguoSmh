@@ -10,7 +10,6 @@
     <meta charset="UTF-8"/>
     <title>{% block title%} {% end %}</title>
     <link rel="stylesheet" href="{{static_url('css/market-global.css')}}"/>
-    <link rel="shortcut icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     <link rel="icon" href="{{static_url('images/favicon.ico')}}" type="image/x-icon">
     {% block head %}{% end %}
     <script>
@@ -22,7 +21,7 @@
     <main class="container phone-box" id="container">
         {% block header %}
         <header class="detail-header text-white center-block" id="nav">
-            <a href="{%block back%}javascript:history.back(-1){% end %}" class="return-btn bg_change"></a>
+            <a href="{%block back%}javascript:history.go(-1){% end %}" class="return-btn bg_change"></a>
             <span class="title font16">{% block top %}{% end %}</span>
         </header>
         {% end %}

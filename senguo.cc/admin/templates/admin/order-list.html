@@ -17,12 +17,34 @@
                 <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
             </div>
             <div class="modal-body set-width-float">
-		<input type="text" id="order_ser_val"/>
-	    </div>
-             <div class="modal-footer">
+                <p class="text-pink del-notice hide mb5">注意：该订单会被删除，并且订单金额会退还给用户支付的账户</p>
+                <input type="text" id="order_ser_val"/>
+    	    </div>
+            <div class="modal-footer">
                 <div class="btn-box">
                     <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
                     <button type="button" class="pull-left modal-sure-btn" href="javascript:;">确认</button>
+                </div>
+            </div>
+       </div>
+    </div>
+</div>
+<div class="order-staff-box modal fade" id="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header set-width-float">
+                <span class="title pull-left">处理该订单的员工（单击选择）</span>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body set-width-float">
+                <ul class="choose-staff-list send-staff-list">
+                    
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-box">
+                    <button type="button" class="pull-right modal-concel-btn" href="javascript:;" data-dismiss="modal">取消</button>
+                    <button type="button" class="pull-left modal-sure-btn choose-staff-sure" href="javascript:;">确认</button>
                 </div>
             </div>
        </div>

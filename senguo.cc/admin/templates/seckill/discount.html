@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% block title %}限时折扣{% end %}
+{% block head %}
+<div class="header">
+    <a href="javascript:;" url="/customer/discover/{{shop_code}}" class="back back-prev"></a>
+    <span id="discount">限时折扣</span>
+</div>
+{% end %}
+{% block content %}
+{% import json%}
+<script>
+    window.dataObj.fruits={% raw json.dumps(context["fruits"]) %};
+</script>
+<input type="hidden" id="shop_code" value="{{shop_code}}"/>
+<div class="wrap-seckill pm80">
+    {% if output_data %}
+    {% for item in output_data %}
+    <div class="discount-item-box">
+        <div class="show-time-box no-seckill-time txt-al" data-time="{{item['end_time']}}">
+            <span>距结束&nbsp;<span class="day"></span><span class="hour"></span><span class="minute"></span><span class="second"></span></span>
+        </div>
+        <ul class="nm-list">
+            {% for goods in item['group_data']%}
+            <li data-id="{{goods['goods_id']}}">
+                <dl class="nm-dl">
+                    <dt>
+                        <img src="{{goods['img_url'] or '/static/images/TDSG.png'}}?imageView2/1/w/170/h/170" alt="{{goods['goods_name']}}"/>
+                        <div class="cover-img {% if goods['storage']!=0%}hide{% end %}"></div>
+                    </dt>
+                    <dd>
+                        <p class="c333 clip nm-name pt0">{{goods['goods_name']}}</p>
+                        {% for charge in goods['charge_types']%}
+                        <div class="wrap-discount-item {% if goods['storage']==0 %}no-goods{% end %}" data-id="{{charge['charge_id']}}">
+                            <span class="price-bo">{{charge['charge']}}<span class="src-txt">{{charge['src_price']}}</span><span class="charge-unit">{{charge['charge_unit']}}</span></span>
+                            <span class="price-tip">{{goods['discount_rate']}}折</span>
+                            <div class="wrap-operate" data-num="{{charge['count']}}" data-id="{{charge['charge_id']}}" data-storage="{{goods['storage']}}" charge-storage="{{charge['charge_storage']}}">
+                                <span class="roll-btn minus-btn {% if charge['count']==0 %}hide{% end %}">-</span>
+                                <span class="num-txt {% if charge['count']==0 %}hide{% end %}">{{charge['count']}}</span>
+                                <span class="roll-btn add-btn">+</span>
+                            </div>
+                        </div>
+                        {% end %}
+                    </dd>
+                </dl>
+            </li>
+            {% end %}
+        </ul>
+    </div>
+    {% end %}
+    {% else %}
+    <p class="no-result mt40">限时折扣活动还未开始，请耐心等待哦~</p>
+    {% end %}
+    <p class="no-result mt10 hide">加载中...</p>
+</div>
+<a href="javascript:;" class="go-cart" url="/customer/cart/{{shop_code}}">
+    <span class="cart-num origin-cart hide">0</span>
+</a>
+<ul class="hide" id="discount-item">
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('js/seckill-buy.js')}}"></script>
+{% end %}

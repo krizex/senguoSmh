@@ -37,10 +37,16 @@
             <div class="cate-title">排列方式 : </div>
             <div class="dropdown slide-down-select pull-left w130">
                 <button class="btn btn-default dropdown-toggle area height25 slide-btn" type="button" id="dropdownMenu4" data-toggle="dropdown">
-                    <em title="{{current_shop.shop_name}}" class="pull-left order_status1" data-id="group">按商品分组</em>
+                    <em title="{{current_shop.shop_name}}" class="pull-left order_status1" data-id="all">所有方式</em>
                     <span class="caret pull-right no-margin-left rotate0"></span>
                 </button>
                 <ul class="dropdown-menu dropdown-menu-right w130 condition-list" role="menu" aria-labelledby="dropdownMenu4" id="currentShopChange4">
+
+                <!-- added by jyj 2015-8-8 -->
+                    <li role="presentation">
+                        <a class="item" href="javascript:;" data-id="all">所有方式</a>
+                    </li>
+                    <!--  -->
                     <li role="presentation">
                         <a class="item" href="javascript:;" data-id="group">按商品分组</a>
                     </li>
@@ -239,10 +245,16 @@
                             <a class="item" href="javascript:;" data-id="9">件</a>
                         </li>
                         <li role="presentation">
-                            <a class="item" href="javascript:;" data-id="10">框</a>
+                            <a class="item" href="javascript:;" data-id="10">筐</a>
                         </li>
                         <li role="presentation">
                             <a class="item" href="javascript:;" data-id="11">包</a>
+                        </li>
+                        <li role="presentation">
+                            <a class="item" href="javascript:;" data-id="12">今天价</a>
+                        </li>
+                        <li role="presentation">
+                            <a class="item" href="javascript:;" data-id="13">明天价</a>
                         </li>
                     </ul>
                 </div>
@@ -330,7 +342,7 @@
         </div>
     </li>
 </ul>
-<div class="pop-win pop-img-win">
+<!-- <div class="pop-win pop-img-win">
     <div class="pop-up-img" data-index="">
         <div class="pop-img-top">
             <p><span class="c333">本地图片 : </span>最多上传5张</p>
@@ -350,6 +362,53 @@
         </div>
         <div class="wrap-pop-btn">
             <a href="javascript:;" class="ok-btn" id="upload-img">确认上传</a>
+            <a href="javascript:;" class="cancel-btn">取消</a>
+        </div>
+    </div>
+</div> -->
+<div class="pop-win pop-picture-library">
+    <div class="wrap-sty-box">
+         <ul class="picture-title wrap-sty">
+            <li class="active show-upload-list">您上传的图片</li>
+            <li class="show-default-list">系统默认图片</li>
+        </ul>
+        <div class="p15" id="upload-area">
+            <span class="pull-left ml5 font14 text-grey9">点击图片即选中（当前类目：<span class="pic-classify">所有</span>）</span>
+            <button id="upload-picture" class="btn bg-green text-white pull-right">上传新图片</button>
+        </div>
+         <div class="picture-library">
+           <ul class="group picture-list upload-pic-list">
+                <li class="img-bo">
+                    <a href="javascript:;" class="del-pic-img">x</a>
+                    <div class="img-selected">已选</div>
+                    <img src="" alt="商品图片"/>
+                </li>
+            </ul>
+            <ul class="group picture-list default-pic-list hide">
+                <li class="picture-list-item" id="demo-img">
+                    <a href="javascript:;" class="del-pic-img">x</a>
+                    <div class="img-selected">已选</div>
+                    <img src="" alt="商品图片"/>
+                </li>
+            </ul>
+            <div class="picture-pagination list-pagination group pull-right mt0">
+                <ul>
+                    <li><a href="javascript:;" class="page-btn pre-page picture-pre-page">&nbsp;</a></li>
+                    <li>
+                        <span class="picture-now">1</span>/<span class="picture-total">1</span>
+                    </li>
+                    <li><a href="javascript:;" class="page-btn next-page picture-next-page">&nbsp;</a></li>
+                    <li><input class="input-page form-control picture-page" type="text" placeholder="输入页码"></li>
+                    <li><a href="javascript:;" class="jump-to pull-left picture-jump-to">跳转</a></li>
+                </ul>
+            </div>
+        </div>
+        <p class="picture-title3">已选图片</p>
+        <ul class="choosed-list">
+
+        </ul>
+         <div class="wrap-sty">
+            <a href="javascript:;" class="ok-btn" id="upload-img">确认</a>
             <a href="javascript:;" class="cancel-btn">取消</a>
         </div>
     </div>

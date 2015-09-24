@@ -5,63 +5,150 @@
 <input type="hidden" id="data" value="{{token}}"/>
 <div class="set-description">
     <p>编辑和修改商城水果公告栏的内容</p>
-    <p>摘要为公告栏直接显示的内容，用户可点击查看详情。</p>
+    <p>标题为公告栏直接显示的内容，用户可点击查看详情或跳转到特定的链接。</p>
 </div>
-    <table class="set-list table table-bordered">
-        <tr class="bg-grey2">
-            <td colspan="2">摘要</td>
-            <td>详情</td>
-            <td colspan="2">背景</td>
-        </tr>
-        {% for notice in notices %}
-        <tr class="set-list-item" data-id="{{notice.id}}">
-            <td>
-                <div class="mode action-mode notice_active" data-status="{{notice.active}}">
-                    <a class="work-mode" href="javascript:;" style="display:none;">已启用</a>
-                    <a class="stop-mode" href="javascript:;" style="display:none;">未启用</a>
-                </div>
-            </td>
-            <td class="col-lg-3 address-show summary">{{notice.summary.strip() or '无'}}</td>
-            <td class="col-lg-3 address-edit" style="display:none;"><textarea class="notice_summary">{{notice.summary}}</textarea></td>
-            <td class="col-lg-4 address-show detail">{{notice.detail.strip() or '无'}}</td>
-            <td class="col-lg-4 address-edit" style="display:none;"> <textarea class="notice_detail">{{notice.detail}}</textarea></td>
-            <td class="col-lg-3 address-show img_url"><img src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" class="notice_img"/></td>
-            <td class="col-lg-3 address-edit"  style="display:none;">
-                <div class="notice_img_box" id="wrap-legal-img">
-                    <img class="notice_img preview-img" src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" alt="背景" url="{{notice.img_url}}"/>
-                    <span class="title text-white text-center edit-img">点击修改</span>
-                </div>
-            </td>
-            <td class="address-show">
-                <a href="javascript:;" class="edit-btn2 info-edit">编辑</a>
-            </td>
-            <td class="address-edit" style="display:none;">
-                <a href="javascript:;" class="edit-btn2 info-sure notice_edit">确定</a>
-            </td>
-        </tr>
-        {% end %}
-    </table>
-    <a href="javascript:;" class="add-new-address1  add-btn-sty" data-toggle="modal" data-target="#noticeBox">+ 新建公告消息</a>
+<ul class="notice-type-choose subnav">
+    <li class="active">普通公告</li>
+    <li>活动公告</li>
+</ul>
+<table class="set-list table table-bordered ">
+    <tr class="bg-grey2">
+        <td>状态</td>
+        <td>标题</td>
+        <td>链接 / 详情（二选一）</td>
+        <td>背景图片</td>
+        <td>操作</td>
+    </tr>
+    {% for notice in notices  %}
+    {% if not notice._type %}
+    {% set notice._type = 0%}
+    {% end %}
+    {% if notice._type == 0 %}
+    <tr class="set-list-item" data-id="{{notice.id}}">
+        <td>
+            <div class="mode action-mode notice_active" data-status="{{notice.active}}">
+                <a class="work-mode" href="javascript:;" style="display:none;">已启用</a>
+                <a class="stop-mode" href="javascript:;" style="display:none;">未启用</a>
+            </div>
+        </td>
+        <td class="col-lg-3 address-show summary">{% if notice.summary %}{{notice.summary.strip() or '无'}}{% end %}</td>
+        <td class="col-lg-3 address-edit" style="display:none;">
+            <textarea class="notice_summary">{{notice.summary}}</textarea>
+        </td>
+        <td class="col-lg-4 address-show">
+            <p>链接：<span class="link"><a class="con" href="{{notice.link or ''}}" target="_blank">{% if notice.link %}{{notice.link.strip() or ''}}{% end %}</a>{%if notice.click_type==1 %}&nbsp;&nbsp;√{% end %}</span></p>
+            <p>详情：<span class="detail"><span class="con">{% if notice.detail %}{{notice.detail.strip() or '无'}}{% else %}无{% end %}</span>{%if notice.click_type==0 %}&nbsp;&nbsp;√{% end %}</span></p>
+        </td>
+        <td class="col-lg-4 address-edit" style="display:none;">
+            <div class="href_type {%if notice.click_type==1 %}active{% end %}" data-id="1"><span class="pull-left">链接：</span><input class="notice_link ml10" value="{{notice.link}}"></div>
+            <div class="href_type mt10 {%if notice.click_type==0 %}active{% end %}" data-id="0"><span class="pull-left">详情：</span><textarea class="notice_detail ml10">{{notice.detail}}</textarea></div>
+        </td>
+        <td class="col-lg-3 address-show img_url">
+            <div class="notice_img_box">
+                <img src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" class="notice_img"/>
+            </div>
+        </td>
+        <td class="col-lg-3 address-edit"  style="display:none;">
+            <div class="notice_img_box" id="wrap-legal-img">
+                <img class="notice_img preview-img" src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" alt="背景" url="{{notice.img_url}}"/>
+                <span class="title text-white text-center edit-img">点击修改</span>
+            </div>
+        </td>
+        <td class="address-show">
+            <a href="javascript:;" class="edit-btn2 notice-edit">编辑</a>
+        </td>
+        <td class="address-edit" style="display:none;">
+            <a href="javascript:;" class="edit-btn2 info-sure notice_edit bg-green text-white text-center">确定</a>
+        </td>
+    </tr>
+    {% end %}
+    {% end %}
+</table>
+<table class="set-list table table-bordered" style="display:none">
+    <tr class="bg-grey2">
+        <td>状态</td>
+        <td>活动</td>
+        <td>标题</td>
+        <td>链接（默认跳转到活动专场，可修改）</td>
+        <td>公告背景</td>
+        <td>操作</td>
+    </tr>
+    {% for notice in notices  %}
+    {% if not notice._type %}
+    {% set notice._type = 0%}
+    {% end %}
+    {% if notice._type > 0 %}
+    <tr class="set-list-item" data-id="{{notice.id}}">
+        <td>
+            <div class="mode action-mode notice_active" data-status="{{notice.active}}">
+                <a class="work-mode" href="javascript:;" style="display:none;">已启用</a>
+                <a class="stop-mode" href="javascript:;" style="display:none;">未启用</a>
+            </div>
+        </td>
+        <td class="col-lg-1">{% if notice._type==1 %}秒杀{% elif notice._type == 2 %}限时折扣{% elif notice_type == 3%}优惠券{% end %}</td>
+        <td class="col-lg-3 address-show summary">{% if notice.summary %}{{notice.summary.strip() or '无'}}{% end %}</td>
+        <td class="col-lg-3 address-edit" style="display:none;">
+            <textarea class="notice_summary">{{notice.summary or ''}}</textarea>
+        </td>
+        <td class="col-lg-3 address-show">
+            <span class="link"><a class="con" href="{{notice.link or ''}}" target="_blank">{% if notice.link %}{{notice.link.strip() or '未设置'}}{% end %}</a></span>
+        </td>
+        <td class="col-lg-3 address-edit" style="display:none;">
+            <input class="notice_link ml10" value="{{notice.link or ''}}">
+        </td>
+        <td class="col-lg-3 address-show img_url">
+            <div class="notice_img_box">
+                <img src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" class="notice_img"/>
+            </div>
+        </td>
+        <td class="col-lg-3 address-edit"  style="display:none;">
+            <div class="notice_img_box" id="wrap-legal-img">
+                <img class="notice_img preview-img" src="{{notice.img_url or '/static/images/holder_fruit.jpg'}}?imageView2/1/w/180/h/100" alt="背景" url="{{notice.img_url}}"/>
+                <span class="title text-white text-center edit-img">点击修改</span>
+            </div>
+        </td>
+        <td class="col-lg-1 address-show">
+            <a href="javascript:;" class="edit-btn2 notice-edit">编辑</a>
+        </td>
+        <td class="col-lg-1 address-edit" style="display:none;">
+            <a href="javascript:;" class="edit-btn2 info-sure notice_edit bg-green text-white text-center">确定</a>
+        </td>
+    </tr>
+    {% end %}
+    {% end %}
+</table>
+    <a href="javascript:;" class="add-new-address1  add-btn-sty">+ 新建公告消息</a>
     <div class="modal fade text-grey3" id="noticeBox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                    <h4 class="modal-title" id="myModalLabel">新建公告消息</h4>
+                    <h4 class="modal-title" id="myModalLabel">添加新公告</h4>
                 </div>
                 <div class="modal-body">
                     <p class="clearfix set-top10">
-                        <span class="pull-left set-left20 set-right20 font14">摘要</span>
+                        <span class="pull-left set-left20 set-right20 font14">标题</span>
                         <input type="text" class="new-notice-title pull-left"/>
                     </p>
                     <div class="clearfix">
                         <span class="pull-left set-left20 set-right20 font14">详情</span>
                         <textarea class="new-notice-detail pull-left"></textarea>
                     </div>
+                     <div class="clearfix">
+                        <span class="pull-left set-left20 set-right20 font14">链接</span>
+                        <input type="text" class="new-notice-link pull-left"/>
+                    </div>
+                    <div class="clearfix mt10">
+                        <span class="pull-left set-left20 set-right20 font14">点击公告背景时：</span>
+                        <ul class="link-type">
+                            <li class="active fl" data-id="0">显示详情</li>
+                            <li class="fr" data-id="1">跳转链接</li>
+                        </ul>
+                    </div>
                     <div class="clearfix mt10">
                         <span class="pull-left set-left20 set-right20 font14">背景</span>
                         <div class="img_add_box" id="wrap-add-img">
-                            <span class="title text-white text-center button bg-green" id="upload-add">添加背景</span>
+                            <span class="title text-white text-center button bg-green" id="upload-add">添加背景图片</span>
                             <img class="hide mt10" src="" alt="背景" id="add-img"/>
                         </div>
                     </div>
@@ -70,6 +157,59 @@
                     <button class="btn bg-green text-white add-new-notice">确定</button>
                     <button class="btn btn-default" data-dismiss="modal">取消</button>
                 </div>
+            </div>
+        </div>
+    </div>
+    <div class="pop-win pop-picture-library">
+        <div class="wrap-sty-box">
+            <ul class="picture-title wrap-sty">
+                <li class="active show-upload-list">您上传的图片</li>
+                <li class="show-default-list">系统默认图片</li>
+            </ul>
+            <div class="p15" id="upload-area">
+                <span class="pull-left ml5 font14 text-grey9">点击图片即选中</span>
+                <button id="upload-picture" class="btn bg-green text-white pull-right">上传新图片</button>
+            </div>
+             <div class="picture-library">
+                <ul class="group picture-list upload-pic-list">
+                
+                </ul>
+                <ul class="group picture-list default-pic-list hide">
+                    <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="/static/images/banner.png" url="/static/images/banner.png" alt="商品图片"/>
+                    </li>
+                    <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="/static/images/holder_fruit.jpg"  url="/static/images/holder_fruit.jpg" alt="商品图片"/>
+                    </li>
+                     <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp?imageView2/1/w/100/h/100" url="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7n14fh1c0s1g0hne1gu45jhp" alt="商品图片"/>
+                    </li>
+                     <li class="picture-list-item">
+                        <a href="javascript:;" class="del-pic-img">x</a>
+                        <div class="img-selected">已选</div>
+                        <img src="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d?imageView2/1/w/100/h/100" url="http://7rf3aw.com2.z0.glb.qiniucdn.com/o_19t7mvj70f7dn221sd1pfn18l2d" alt="商品图片"/>
+                    </li>
+                </ul>
+                <div class="picture-pagination list-pagination group pull-right mt0">
+                    <ul>
+                        <li><a href="javascript:;" class="page-btn pre-page picture-pre-page">&nbsp;</a></li>
+                        <li>
+                            <span class="picture-now">1</span>/<span class="picture-total">1</span>
+                        </li>
+                        <li><a href="javascript:;" class="page-btn next-page picture-next-page">&nbsp;</a></li>
+                        <li><input class="input-page form-control picture-page" type="text" placeholder="输入页码"></li>
+                        <li><a href="javascript:;" class="jump-to pull-left picture-jump-to">跳转</a></li>
+                    </ul>
+                </div>
+            </div>
+             <div class="wrap-sty">
+                <a href="javascript:;" class="cancel-btn">取消</a>
             </div>
         </div>
     </div>

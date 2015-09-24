@@ -1,13 +1,26 @@
 var ulat = 0,ulng =0,first=true;
+var link_action=$.getUrlParam('action');
+var link_province=$.getUrlParam('province');
+var admin_id = 0;
 $(document).ready(function(){
-    var link_action=$.getUrlParam('action');
+    var area=window.dataObj.area;
     if(link_action){
         if(link_action=='shop'){
             $(".filter_search").addClass("hidden");
             $(".area_box").css("padding-top","40px");
             var shops=$('.shoplist').attr('data-shop');
-            var id=$.getUrlParam('id');
-            return shopsList(0,id,'admin_shop');
+            admin_id=$.getUrlParam('id');
+            return shopsList(0,admin_id,'admin_shop');
+        }else if(link_action=="province"){
+            window.dataObj.type='province';
+            window.dataObj.action='filter';
+            filter(link_province,'province');
+            $(".whole_country").hide();
+            if(area[link_province]){
+                var province_name=area[link_province]['name'];
+            }
+            $('.city_name').text(province_name).attr("data-id",link_province);
+            $(".comm_name").attr("data-key",2).text("离我最近");
         }
     }else{
         var q = decodeURIComponent(decodeURIComponent($.getUrlParam('q')));
@@ -28,10 +41,9 @@ $(document).ready(function(){
     //search
     $(document).on('click','#searchSubmit',function(evt){Search(evt);});
     //province and city
-    var area=window.dataObj.area;
     //province data
     for(var key in area){
-        var $item=$('<li><span class="name pull-left ml10"></span><em class="arrow pull-right mr10"></em><span class="num pull-right mr10"></span></li>');
+        var $item=$('<li><span class="name pull-left ml10"></span><em class="arrow pull-right mr10"></em><span class="num"></span></li>');
         var city=area[key]['city'];
         if(city) city='true';
         else city='false';
@@ -51,6 +63,30 @@ $(document).ready(function(){
         }
         var p_num=$this.find('.num').text();
         if(!p_num) $this.find('.num').text(0);
+        if(link_action=="province"){
+            if(code!=link_province){
+                $this.hide();
+            }else{
+                var province_name=$this.find('.name').text();
+                var if_city=$this.attr('data-city');
+                var pro_num=$this.find('.num').text();
+                $('.all_city').attr({'data-code':code,'data-name':province_name}).find('.num').text(pro_num);
+                $('.city_list').removeClass('hidden');
+                if(if_city=='true'){
+                    $('.citylist').empty();
+                    for(var key in area){
+                        var city=area[key]['city'];
+                        if(key==code&&city){
+                            for(var c_code in city){
+                                var $item=$('<li><span class="name"></span><span class="num"></span></li>');
+                                $item.attr({'data-code':c_code}).find('.name').text(city[c_code]['name']);
+                                $('.citylist').append($item);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     });
     //choose province
     $(document).on('click','.provincelist li',function(){
@@ -98,6 +134,9 @@ $(document).ready(function(){
         else{
             add_bg();
             $('.province_list').removeClass('hidden');
+            if(link_action=="province"){
+                $('.city_list').removeClass('hidden');
+            }
             $this.addClass('city_choosed');
         }
     });
@@ -161,7 +200,7 @@ $(document).ready(function(){
 });
 
 //获取用户当前地理位置
-function initLocation(){
+function initLocation(type){
     first=false;
     if(navigator.geolocation){
         navigator.geolocation.getCurrentPosition(function(position){
@@ -178,7 +217,11 @@ function initLocation(){
                     initProviceAndCityCode(addComp.province, addComp.city);
                     $(".city_name").text(addComp.city);
                     window.dataObj.type='city';
-                    filter($("#city_id").val());
+                    if(type=="admin"){
+                        shopsList(0,admin_id,'admin_shop');
+                    }else{
+                        filter($("#city_id").val());
+                    }
                 });
             });
         },function(error){
@@ -209,7 +252,7 @@ function initProviceAndCityCode(p, c){
         }
     })
 }
-/*根据经纬度获取距离*/
+/*距离转换*/
 function getDist(dis){
     var res = 0;
     if(dis<1000){
@@ -238,7 +281,7 @@ var shopItem=function (shops){
             '</div>'+
             '<div class="pull-left info">'+
             '<p class="shop_name font14"><span class="shop_auth"></span></p>'+
-            '<p class="shop_attr">满意度 <span class="shop_satisfy"></span>&nbsp;&nbsp;&nbsp;评价 <span class="shop_comment_cont"></span>&nbsp;&nbsp;&nbsp;商品数 <span class="shop_goods_count"></span></p>'+
+            '<p class="shop_attr"><span class="tit">满意度</span> <span class="shop_satisfy"></span><span class="tit">&nbsp;&nbsp;&nbsp;评价</span><span class="shop_comment_cont"></span>&nbsp;&nbsp;&nbsp;商品数 <span class="shop_goods_count"></span></p>'+
             '<p class="text-grey9 adre-box"><span class="distance"></span><i class="location"></i><span class="shop_code"></span></p>'+
             '</div>'+
             '</div>'+
@@ -250,17 +293,23 @@ var shopItem=function (shops){
         var address=shops[i].shop_address_detail;
         var intro=shops[i].shop_intro;
         var shop_auth=shops[i].shop_auth;
-        var satisfy = shops[i].satisfy;
+        var satisfy = shops[i].shop_satisfy;
         var comment_count = shops[i].comment_count;
         var goods_count = shops[i].goods_count;
         var status = shops[i].status;
         var lat = shops[i].lon;//经度
         var lon = shops[i].lat;//纬度
         var distance = shops[i].distance;
+        var comment_active = shops[i].comment_active;
         var hide='';
         var statu = '';
         var dishide = '';
         var link = '/'+shop_code;
+        if(comment_active==0){
+            $item.find('.tit').hide();
+            $item.find('.shop_satisfy').hide();
+            $item.find('.shop_comment_cont').hide();
+        }
         if(!lat || lat == 0 || !ulat || ulat == 0){
             dishide = "hidden";
         }else{
@@ -328,6 +377,14 @@ var shopsList=function(page,data,action){
     }
     $.postJson(url,args,function(res){
         if(res.success){
+            if(action=='admin_shop'){
+                $('.shoplist').empty();
+                if(first){
+                    setTimeout(function(){
+                        initLocation("admin");
+                    },10);
+                }
+            }
             initData(res);
         }else{
             return noticeBox(res.error_text);
@@ -410,7 +467,8 @@ function filter(data){
         action:action,
         page:page,
         service_area:$("#school_name").attr("data-key"),
-        key_word:$("#comm_name").attr("data-key")
+        key_word:$("#comm_name").attr("data-key"),
+        province:link_province
     };
     if(ulat != 0){
         args.lat = ulat;
@@ -423,18 +481,21 @@ function filter(data){
         }
         else if(type=='province') {
             args.province=Int(data);
+            if(link_action=="province"){
+                args.province=Int(link_province);
+            }
             window.dataObj.type=='province';
         }
     }
     $.postJson(url,args,
         function(res){
             if(res.success)
-            {
-                if(first){
+            {    
+               if(first){
                     setTimeout(function(){
                         initLocation();
                     },10);
-                }
+                } 
                 $(".wrap-loading-box").addClass("hidden");
                 remove_bg();
                 var shops=res.shops;

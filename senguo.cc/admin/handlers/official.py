@@ -30,6 +30,11 @@ class About(FruitzoneBaseHandler):
 	def get(self):
 		return self.render("official/about.html",context=dict(subpage="about"))
 
+# 官网 - APP下载
+class Appdownload(FruitzoneBaseHandler):
+	def get(self):
+		return self.render("official/appdownload.html",context=dict(subpage="appdownload"))
+
 # 官网 - 产品介绍
 class Product(FruitzoneBaseHandler):
 	def get(self):
@@ -59,13 +64,12 @@ class ShopList(FruitzoneBaseHandler):
 			return self.send_error(403)
 	def handle_top(self):
 		try:
-			q = self.session.query(models.Shop).order_by(desc(models.Shop.id))\
+			q = self.session.query(models.Shop).order_by(desc(models.Shop.order_count))\
 			.filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set' )
+				models.Shop.shop_code !='not set').limit(8)
 		except:
 			return self.send_fail("shoplist error")
 		shops = []
-
 		for shop in q:
 			# try:
 			# 	order_count = self.session.query(models.Order).filter_by(shop_id=shop.id).count()
@@ -80,21 +84,19 @@ class ShopList(FruitzoneBaseHandler):
 			shops.append(dict(shop_name=shop.shop_name,shop_code = shop.shop_code,\
 				shop_province = shop.shop_province ,shop_city = shop.shop_city ,\
 				shop_address_detail = shop.shop_address_detail,\
-				shop_intro = shop.shop_intro ,shop_trademark_url=shop.shop_trademark_url,\
+				shop_intro = shop.shop_intro,shop_trademark_url=shop.shop_trademark_url,\
 				order_count = shop.order_count,shop_admin_name = shop.admin.accountinfo.nickname))
-		shops = sorted(shops,key = lambda x:x['order_count'],reverse = True)
+		# shops = sorted(shops,key = lambda x:x['order_count'],reverse = True)
 		# shops = shops.sort(key = lambda x:x['order_count'])
-		shoplist = shops[0:8]
-		return self.send_success(shoplist = shoplist)
-
+		return self.send_success(shoplist = shops)
 
 	@FruitzoneBaseHandler.check_arguments("page?:int",'province?:int','city?:int')
 	def handle_filter(self):
 		_page_count = 8
 		page = self.args["page"] - 1
-		q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
+		q = self.session.query(models.Shop).order_by(desc(models.Shop.order_count)).\
 			filter(models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
-				models.Shop.shop_code !='not set' )
+				models.Shop.shop_code !='not set')
 		# if "city" in self.args:
 		#     q = q.filter_by(shop_city=self.args["city"])
 		#     shop_count = q.count()
@@ -124,7 +126,7 @@ class ShopList(FruitzoneBaseHandler):
 	def hander_search(self):
 		_page_count = 8
 		page = self.args["page"] - 1
-		q = self.session.query(models.Shop).order_by(desc(models.Shop.id)).\
+		q = self.session.query(models.Shop).order_by(desc(models.Shop.order_count)).\
 			filter(models.Shop.shop_name.like("%{0}%".format(self.args["q"])),
 					models.Shop.shop_status == models.SHOP_STATUS.ACCEPTED,\
 					models.Shop.shop_code !='not set' )

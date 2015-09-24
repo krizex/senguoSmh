@@ -23,7 +23,14 @@ function shopChange(id){
         if(res.success){
             var shop_box=new Modal('shopList');
             shop_box.modal('hide');
-            window.location.reload();
+            if(parseInt($.getUrlParam("shop"))!=NaN && $.getUrlParam("order_type")!=undefined){
+                window.location.href="/staff/order?order_type="+$.getUrlParam("order_type");
+            }else if(parseInt($.getUrlParam("shop"))!=NaN && $.getUrlParam("action") == "home"){
+                window.location.href="/staff";
+            }else{
+               window.location.reload(); 
+            }
+            
         }
         else return alert(res.error_text)
     },function(){return $.noticeBox('网络好像不给力呢~ ( >O< ) ~')},function(){return $.noticeBox('服务器貌似出错了~ ( >O< ) ~')})

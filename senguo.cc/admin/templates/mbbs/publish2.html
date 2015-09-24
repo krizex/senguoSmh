@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% block title %}森果社区-发布帖子{% end %}
+{% block head %}
+<link href="/static/js/ueditor/themes/default/css/umeditor.min.css" type="text/css" rel="stylesheet">
+<!--<link href="/static/css/mobi/mobiscroll.core-2.5.2.css" type="text/css" rel="stylesheet">
+<link href="/static/css/mobi/mobiscroll.animation-2.5.2.css" type="text/css" rel="stylesheet">
+<link href="/static/css/mobi/mobiscroll.android-ics-2.5.2.css" type="text/css" rel="stylesheet">-->
+{% end %}
+{% block header %}
+<div class="header">
+    <a href="javascript:;" class="back goback">返回</a>
+    <span>发表文章</span>
+    <a href="javascript:;" class="publish-tie">发表</a>
+</div>
+{% end %}
+{% block content %}
+<input type="hidden" id="token" value="{{token}}" />
+<div class="wrap-publish pm20" data-edit="{{edit}}" data-status="{% if edit %}{{article_data['status']}}{% end %}">
+    <div class="wrap-publish-title">
+        <div class="c333 title-left">
+            <a href="javascript:;" class="select-box">
+                <span class="type" data-id="{% if edit %}{{article_data['type_id']}}{% end %}">{% if edit %}{{article_data['type']}}{% else %}选择版块{% end %}</span>
+                <i class="select-right"></i>
+            </a>
+        </div>
+        <input type="text" class="title-ipt" value="{% if edit %}{{article_data['title']}}{% end %}" placeholder="输入标题"/>
+    </div>
+    <div class="publish-board mt10">
+        <p class="c333">正文</p>
+        <div class="wrap-sumary">
+            <script type="text/plain" id="ueditor" style="width:100%;height:340px;">
+                <p>{% if edit %}{% raw article_data['article'] %}{% end %}</p>
+            </script>
+        </div>
+    </div>
+    {#<p class="c999 title-row"><span class="must">*</span>必选</p>
+    <ul class="check-items publish-checks">
+        <li class="{% if edit %}{% if article_data['status'] == 1%}active{% end %}{% end %}" data-id="1">
+            <span class="fr check-box checked"></span>
+            <span>现在发布</span>
+        </li>
+        <li data-id="2" class="{% if edit %}{% if article_data['status'] == 2%}active{% end %}{% end %}">
+            <span class="fr check-box"></span>
+            <input class="fr c-time-txt" id="time_default" name="time_default"  value="{% if edit %}{% if article_data['status'] == 2%}{{article_data['time']}}{% end %}{% end %}">
+            <span>定时发布</span>
+        </li>
+        <li data-id="-1" class="{% if edit %}{% if article_data['status'] == -1%}active{% end %}{% end %}">
+            <span class="fr check-box"></span>
+            <span>保存草稿</span>
+        </li>
+    </ul>
+    <p class="c999 title-row">可选</p>
+    <ul class="check-items author-checks">
+        <li class="if-bbs {% if edit %}{% if article_data['public']==1 %}active{% end %}{% end %}">
+            <span class="fr check-box"></span>
+            <span>不发表至论坛</span>
+        </li>
+        <li class="if-my {% if edit %}{% if article_data['private']==1 %}active{% end %}{% end %}">
+            <span class="fr check-box"></span>
+            <span>回帖仅作者可见</span>
+        </li>
+    </ul>#}
+</div>
+<div class="pop-win pop-reply hide">
+    <div class="pop-content plr0">
+        <div class="board-box">
+            <p class="title">选择版块</p>
+            <ul class="board-list">
+                <li class="active {% if if_admin==False %}hide{% end %}" data-id="0"><span class="tit c333">官方公告</span><span>森果官方公告和通知</span></li>
+                <li class="{% if if_admin==False %}hide{% end %}" data-id="1"><span class="tit c333">产品更新</span><span>新功能发布和bug修复</span></li>
+                <li class="{% if if_admin==False %}hide{% end %}" data-id="2"><span class="tit c333">运营干货</span><span>分享运营经验</span></li>
+                <li class="{% if if_admin==False %}hide{% end %}" data-id="3"><span class="tit c333">水果百科</span><span>水果相关知识百科</span></li>
+                <li class="{% if if_admin==False %}hide{% end %}" data-id="4"><span class="tit c333">使用教程</span><span>产品功能的使用说明</span></li>
+                <li class="{% if if_admin==False %}hide{% end %}" data-id="5"><span class="tit c333">水果供求</span><span>水果采购与供货信息</span></li>
+                <li class="{% if if_admin==False %}hide{% end %}" data-id="6"><span class="tit c333">森果前沿</span><span>分享互联网o2o前沿信息</span></li>
+                <li data-id="7">用户交流</li>
+            </ul>
+            <div class="wrap-btns board-btns">
+                <a href="javascript:;" class="ok-btn type-sure">确定</a>
+                <a href="javascript:;" class="cancel-btn">取消</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% end %}
+{% block js %}
+<script type="text/javascript" src="/static/js/jquery.min.js"></script>
+<script type="text/javascript" src="/static/bbs/js/util.js"></script>
+{% end %}
+{% block bottom %}
+<script src="/static/js/ueditor/umeditor.min.js"></script>
+<script src="/static/js/ueditor/umeditor.config.js"></script>
+<script src="/static/js/ueditor/lang/zh-cn/zh-cn.js"></script>
+<script src="/static/js/qiniu.min.js"></script>
+<script src="/static/js/plupload/plupload.full.min.js"></script>
+<!--<script src="/static/js/third/mobi/mobiscroll.core-2.5.2.js"></script>
+<script src="/static/js/third/mobi/mobiscroll.core-2.5.2-zh.js"></script>
+<script src="/static/js/third/mobi/mobiscroll.datetime-2.5.1.js"></script>
+<script src="/static/js/third/mobi/mobiscroll.datetime-2.5.1-zh.js"></script>
+<script src="/static/js/third/mobi/mobiscroll.android-ics-2.5.2.js"></script>-->
+<script src="{{static_url('bbs/js/publish.js')}}"></script>
+{% end %}

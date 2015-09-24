@@ -13,7 +13,24 @@ $(document).ready(function(){
         }
     }
 }).on("click","#get_code",function(){
+   
+    var geetest_challenge = $('.geetest_challenge').val();
+    var geetest_validate = $('.geetest_validate').val();
+    var geetest_seccode = $('.geetest_seccode').val();
+    if(!geetest_seccode){
+        geetest_seccode = '';
+    }
+    if(!geetest_validate){
+        geetest_validate = '';
+    }
+    if(!geetest_challenge){
+        geetest_challenge = '';
+    }
+    if (geetest_seccode==""||geetest_seccode==""||geetest_challenge==""){
+        return Tip("请先完成图形验证")
+    }
     getCode($(this));
+
 }).on("click","#commit",function(){
     if($(this).attr("data-flag")=="off"){
         return Tip("请勿重复提交");
@@ -21,14 +38,35 @@ $(document).ready(function(){
     var tel = $.trim($("#tel").val());
     var name = $.trim($("#name").val());
     var code = $.trim($("#code").val());
+    var wx_username = $.trim($("#wx-username").val());
+    var geetest_challenge = $('.geetest_challenge').val();
+    var geetest_validate = $('.geetest_validate').val();
+    var geetest_seccode = $('.geetest_seccode').val();
+    // alert(geetest_challenge,geetest_validate,geetest_seccode);
     if(tel == "" || name == "" || code == ""){
         return Tip("姓名、手机号及验证码都不能为空");
+    }
+    if(!wx_username){
+        return Tip("填写个人微信号，方便我们将您加入卖家交流群，获得更多行业信息与资源");
+    }
+    if(!geetest_seccode){
+        geetest_seccode = '';
+    }
+    if(!geetest_validate){
+        geetest_validate = '';
+    }
+    if(!geetest_challenge){
+        geetest_challenge = '';
     }
     var args={
         _xsrf:window.dataObj._xsrf,
         phone:tel,
         realname:name,
-        code:code
+        code:code,
+        wx_username:wx_username,
+        geetest_seccode:geetest_seccode,
+        geetest_validate:geetest_validate,
+        geetest_challenge:geetest_challenge,
     };
     $(this).attr("data-flag","off");
     $.ajax({

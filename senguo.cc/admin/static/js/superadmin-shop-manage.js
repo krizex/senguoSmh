@@ -1,4 +1,4 @@
-page_shop=1,inputinfo=$("#inputinfo").val();
+var page_shop=1,inputinfo=$("#inputinfo").val();
 var apply_page = 1;
 var apply_status = "all_temp";
 $(document).ready(function(){
@@ -32,6 +32,26 @@ $(document).ready(function(){
             searchshop(page_shop);
         }
     });
+    // added by jyj 2015-8-11
+    var out_link = $.getUrlParam('out_link');
+    if (out_link == 'true'){
+          var data_id = $.getUrlParam('data_id');
+          var if_stop='true';
+          var url = '/super/shopauth?page=0&&out_link=true&&data_id=' + data_id + '&&if_stop=' + if_stop;
+          $("#authPrePage").hide();
+          $("#authNextPage").hide();
+
+          var stop_flag = $.getUrlParam('if_stop');
+          if (stop_flag != 'true'){
+                window.location.href = url;
+          }
+    }
+    var search_con = $.getUrlParam('search_con');
+    if(search_con!=undefined){
+        searchshop(1,search_con);
+    }
+    // 
+
     /*if(localStorage.getItem("itemIndex")){
         $(".shop-manage-nav li").removeClass("active").eq(localStorage.getItem("itemIndex")).addClass("active");
     }else{
@@ -122,6 +142,30 @@ $(document).ready(function(){
     $(".apply-list").addClass("active");
     window.location = "/super/comment_apply";
 //
+}).on("click",".getin-shop",function(){
+    var action="getin";
+    var url='';
+    var code =$(this).attr("data-url");
+    var args={
+        action:action,
+        code:code
+    };
+    $.postJson(url,args,
+        function(res){
+            if(res.success)
+            {
+                window.open("/admin/home");
+            }
+        }
+    )
+}).on('click',"#applyPrePage",function(){
+    var page=Int($.getUrlParam('page'));
+    if(page>0) {
+        window.location.href=window.location.href.replace("page="+page,"page="+(page-1));
+    }
+}).on('click',"#applyNextPage",function(){
+    var page=Int($.getUrlParam('page'));
+    window.location.href=window.location.href.replace("page="+page,"page="+(page+1));
 });
 
 function insertShop(page){
@@ -139,37 +183,46 @@ function insertShop(page){
                         var shops = res.output_data;
                         $('#list-group').empty();
                         for(var i=0; i<shops.length; i++){
-                                    var shop = shops[i];
-                                    var $item = $("#temp-ul").children("li").clone();
-                                    if(shop.shop_trademark_url){
-                                        $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
-                                    }else{
-                                        $item.find(".shop-img").attr("src","/static/images/TDSG.png");
-                                    } 
-                                    //delete by jyj 2015-6-22    
+                            var shop = shops[i];
+                            var $item = $("#temp-ul").children("li").clone();
+                            if(shop.shop_trademark_url){
+                                $item.find(".shop-img").attr("src",shop.shop_trademark_url+"?imageView2/1/w/100/h/100");
+                            }else{
+                                $item.find(".shop-img").attr("src","/static/images/TDSG.png");
+                            } 
+                            //delete by jyj 2015-6-22    
 
-                                    $item.find(".uauth_type").html(shop.auth_type);
-                                    $item.find(".uadmin_nickname").html(shop.admin_nickname);
-                                    $item.find(".ushop_address_name").html(shop.shop_address_detail);
-                                    $item.find(".ushop_code").html(shop.shop_code);
-                                    $item.find(".ushop_status").html(shop.shop_shop_status);
-                                    $item.find(".ucreate_date").html(shop.create_date);
-                                    $item.find(".uold_msg").html(shop.old_msg);
-                                    $item.find(".usatisfy").html(shop.satisfy);
-                                    $item.find(".uorder_count").html(shop.order_count);
-                                    $item.find(".ugoods_count").html(shop.goods_count);
-                                    $item.find(".ushop_property").html(shop.shop_property);
-                                    $item.find(".usingle_price").html(shop.single_price);
-                                    $item.find(".uavailable_balance").html(shop.available_balance);
-                                    $item.find(".ufans_count").html(shop.fans_count);
-                                    $item.find(".uold_user").html(shop.old_user);
+                            var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                            if (shop.auth_type != '未认证'){
+                                 var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
+                                $item.find(".auth-link").attr("href",auth_link_url);
+                            }
 
-                                    // change by jyj 2015-6-22:
-                                    $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
-                                    $item.find(".ushop_code_link").text(shop.shop_name);
-                                    $("#list-group").append($item);
-                                }
-                         }
+                            $item.find(".uauth_type").html(shop.auth_type);
+                            $item.find(".uadmin_nickname").html(shop.admin_nickname);
+                             $item.find(".uadmin_link").attr("href",admin_link_url);
+                            $item.find(".ushop_address_name").html(shop.shop_address_detail);
+                            $item.find(".ushop_code").html(shop.shop_code);
+                            $item.find(".ushop_status").html(shop.shop_shop_status);
+                            $item.find(".ucreate_date").html(shop.create_date);
+                            $item.find(".uold_msg").html(shop.old_msg);
+                            $item.find(".usatisfy").html(shop.satisfy);
+                            $item.find(".uorder_count").html(shop.order_count);
+                            $item.find(".ugoods_count").html(shop.goods_count);
+                            $item.find(".ushop_property").html(shop.shop_property);
+                            $item.find(".usingle_price").html(shop.single_price);
+                            $item.find(".uavailable_balance").html(shop.available_balance);
+                            $item.find(".ufans_count").html(shop.fans_count);
+                            $item.find(".uold_user").html(shop.old_user);
+                            $item.find(".ushop_tpl").html(shop.shop_tpl);
+                            $item.find(".getin-shop").attr("data-url",shop.shop_code);
+
+                            // change by jyj 2015-6-22:
+                            $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);
+                            $item.find(".ushop_code_link").text(shop.shop_name);
+                            $("#list-group").append($item);
+                        }
+                 }
            }
       });
 }
@@ -277,7 +330,7 @@ function Reject(evt){
 
 function delComment(apply_id,target){
      var action="commit";
-    var url='/super/comment';
+    var url='/super/comment_apply';
     var args={
         action:action,
         apply_id:apply_id,
@@ -296,7 +349,7 @@ function delComment(apply_id,target){
 
 function rejectDel(){
      var action="decline";
-    var url='/super/comment';
+    var url='/super/comment_apply';
     var apply_id=$(".wrap-com-pop").attr('data-id');
     var index=$(".wrap-com-pop").attr('data-index');
     var decline_reason=$('#com-cont').val();
@@ -320,9 +373,14 @@ function rejectDel(){
     )
 }
 
-function searchshop(page){
+
+function searchshop(page,info){
     var searchinfo=$("#inputinfo")[0].value;
     searchinfo='='+searchinfo;
+    if(info){
+        searchinfo ='='+info;
+    }
+    console.log(searchinfo);
     var url='/super/shopManage?action=all&search'+searchinfo+'&shop_auth=4&shop_status=5&shop_sort_key=4&if_reverse=1&page='+page+'&flag=0';
     $.ajax({
             url:url,
@@ -343,6 +401,13 @@ function searchshop(page){
                                         }else{
                                             $item.find(".shop-img").attr("src","/static/images/TDSG.png");
                                         }     
+                                        var admin_link_url = '/super/user?out_link=true&&data_id=' + shop.admin_id;
+                                        if (shop.auth_type != '未认证'){
+                                             var auth_link_url = '/super/shopauth?page=0&&out_link=true&&data_id=' + shop.shop_id;
+                                            $item.find(".auth-link").attr("href",auth_link_url);
+                                        }
+
+                                        $item.find(".uadmin_link").attr("href",admin_link_url);
                                         $item.find(".uauth_type").html(shop.auth_type);
                                         $item.find(".uadmin_nickname").html(shop.admin_nickname);
                                         $item.find(".ushop_address_name").html(shop.shop_address_detail);
@@ -358,6 +423,8 @@ function searchshop(page){
                                         $item.find(".uavailable_balance").html(shop.available_balance);
                                         $item.find(".ufans_count").html(shop.fans_count);
                                         $item.find(".uold_user").html(shop.old_user);
+                                        $item.find(".ushop_tpl").html(shop.shop_tpl);
+                                        $item.find(".getin-shop").attr("data-url",shop.shop_code);
 
                                         // add by jyj 2015-6-23:
                                         $item.find(".ushop_code_link").attr("href",'/'+shop.shop_code);

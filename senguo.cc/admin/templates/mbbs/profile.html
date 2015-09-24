@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}个人中心{% end %}
+{% block head %}
+{% end %}
+{% block header %}
+<span id="title">个人中心</span>
+{% end %}
+{% block content %}
+<div class="shop-profile">
+    <div class="wrap-profile">
+        <div class="profile-top">
+            <div class="profile-user">
+                <span class="img-bd">
+                    <img src="{{handler.current_user.accountinfo.headimgurl_small or '/static/images/person.png'}}" alt="{{handler.current_user.accountinfo.nickname}}" class="pro-img"/>
+                </span>
+                <p class="profile-name mt10">{{handler.current_user.accountinfo.nickname}}</p>
+            </div>
+            <ul class="group nav-profle">
+                <li class="active">发布</li>
+                <li>通知</li>
+                <li>收藏</li>
+                <li>草稿</li>
+            </ul>
+        </div>
+        <div class="wrap-profile-list mt10">
+            <ul class="topic-list" id="topic_list">
+
+            </ul>
+            <ul class="inform-list hide" id="inform_list">
+            </ul>
+        </div>
+        <p class="no-result mt10">~没有更多了~</p>
+    </div>
+</div>
+<ul class="hide" id="item1">
+    <li>
+        <h4 class="topic-btitle" title="">
+            <span class="topic-class"></span>
+            <span class="topic-title"></span>
+        </h4>
+        <div class="wrap-topic-attr">
+            <div class="fr">
+                <a href="javascript:;" class="icon-topic dianzan">0</a>
+                <a href="javascript:;" class="icon-topic reply">0</a>
+                <a href="javascript:;" class="topic-opt edit_topic">编辑</a>
+                <a href="javascript:;" class="topic-opt del_topic">删除</a>
+            </div>
+            <span class="topic-tm f14"></span>
+        </div>
+    </li>
+</ul>
+<ul class="hide" id="item2">
+    <li>
+        <h4 class="topic-btitle" title="">
+            <span class="topic-class"></span>
+            <span class="topic-tt"></span>
+        </h4>
+        <p class="c666 f14 pro-txt mt6 hide"></p>
+        <div class="wrap-topic-attr mt10">
+            <div class="fr">
+                <a href="javascript:;" class="topic-opt edit_topic">编辑</a>
+                <a href="javascript:;" class="topic-opt del_topic">删除</a>
+            </div>
+            <span class="c999 f14 topic-tm"></span>
+        </div>
+    </li>
+</ul>
+{% end %}
+{% block bottom %}
+<script src="{{static_url('bbs/js/profile.js')}}"></script>
+{% end %}

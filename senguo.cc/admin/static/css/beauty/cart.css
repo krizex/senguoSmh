@@ -15,7 +15,7 @@
 .list-group-item{border-color:#f0f4f0;}
 .list-group-item.active .title{color: #afd6a5;}
 
-.cart-list{padding:10px;border-radius:3px;}
+.cart-list{padding:45px 10px 20px 10px;border-radius:3px;}
 .cart-list-item{position:relative;}
 .cart-list-item .box{padding:5px;}
 .cart-list-item .goods-img{border-radius:2px;width:60px;}
